@@ -341,6 +341,7 @@ export default function SelectVendorMultiStepForm() {
               benificiaryGroups={benGroups}
               handleStepDataChange={handleStepDataChange}
               stepData={stepData}
+              pagination={pagination}
             />
           )}
           {activeStep === 2 && (

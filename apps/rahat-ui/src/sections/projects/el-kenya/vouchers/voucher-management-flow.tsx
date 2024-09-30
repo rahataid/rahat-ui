@@ -24,6 +24,7 @@ export const initialStepData = {
 
 const VouchersManagementFlow = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [error, setError] = useState('');
   const [beneficiaryGroupSelected, setBeneficiaryGroupSelected] =
     useState(false);
 
@@ -46,12 +47,17 @@ const VouchersManagementFlow = () => {
   };
 
   const handleNext = () => {
+    const isValid = steps[currentStep]?.validation();
+    if (!isValid) {
+      return;
+    }
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
 
   const handleBack = () => {
+    setError('');
     setCurrentStep(currentStep - 1);
   };
 
@@ -100,6 +106,17 @@ const VouchersManagementFlow = () => {
           stepData={stepData}
         />
       ),
+      validation: () => {
+        if (
+          stepData.selectedBeneficiaries.length > 0 ||
+          stepData.selectedGroups.length > 0
+        ) {
+          setError('');
+          return true;
+        }
+        setError('Please select beneficiaries');
+        return false;
+      },
     },
     {
       id: 'step2',
@@ -112,6 +129,9 @@ const VouchersManagementFlow = () => {
           beneficiaryGroupSelected={beneficiaryGroupSelected}
         />
       ),
+      validation: () => {
+        return true;
+      },
     },
     {
       id: 'confirm_send',
@@ -130,14 +150,9 @@ const VouchersManagementFlow = () => {
     return steps[currentStep].component;
   };
 
-  useEffect(() => {
-    if (createDisbursementPlan.isSuccess) {
-      // router.push(`/projects/rp/${id}/fundManagement`);
-    }
-  }, [createDisbursementPlan.isSuccess, id, router]);
-
   return (
     <div className="p-2">
+      <div>{error && <p className="text-red-700 mr-8">{error}</p>}</div>
       <div>{renderComponent()}</div>
     </div>
   );

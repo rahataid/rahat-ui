@@ -49,10 +49,7 @@ export default function BeneficiaryView() {
   const columns = useElkenyaBeneficiaryTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: [
-      { uuid: '123', name: 'A1' },
-      { uuid: '456', name: 'B1' },
-    ],
+    data: beneficiaries.data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -106,7 +103,7 @@ export default function BeneficiaryView() {
         </div>
       </div>
       <CustomPagination
-        meta={{ total: 0, currentPage: 0 }}
+        meta={meta || { total: 0, currentPage: 0 }}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}

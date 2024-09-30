@@ -74,8 +74,8 @@ export default function ConfirmSelection({
             </p>
             <p className="text-sm text-muted-foreground">
               {beneficiaryGroupSelected
-                ? stepData.selectedGroups.length + ' Beneficiaries Groups'
-                : selectedBeneficiaries}
+                ? stepData.selectedGroups.length + ' Beneficiaries Groups '
+                : selectedBeneficiaries}{' '}
               Selected
             </p>
             <div className="flex flex-col gap-4">
@@ -92,33 +92,6 @@ export default function ConfirmSelection({
                   </div>
                 );
               })}
-              {/* <div className="flex justify-between">
-                <div className="flex space-x-2">
-                  <div className="p-2 rounded-full bg-secondary">
-                    <User size={18} strokeWidth={1.5} />
-                  </div>
-                  <p>A L</p>
-                </div>
-                <p>1</p>
-              </div>
-              <div className="flex justify-between">
-                <div className="flex space-x-2">
-                  <div className="p-2 rounded-full bg-secondary">
-                    <User size={18} strokeWidth={1.5} />
-                  </div>
-                  <p>A L</p>
-                </div>
-                <p>1</p>
-              </div>
-              <div className="flex justify-between">
-                <div className="flex space-x-2">
-                  <div className="p-2 rounded-full bg-secondary">
-                    <User size={18} strokeWidth={1.5} />
-                  </div>
-                  <p>A L</p>
-                </div>
-                <p>1</p>
-              </div> */}
             </div>
           </div>
         </div>

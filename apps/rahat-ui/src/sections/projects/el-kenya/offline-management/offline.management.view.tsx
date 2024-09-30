@@ -18,6 +18,7 @@ import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Plus } from 'lucide-react';
+import Pagination from 'apps/rahat-ui/src/components/pagination';
 
 export default function OfflineManagementView() {
   const router = useRouter();
@@ -73,6 +74,15 @@ export default function OfflineManagementView() {
             </Button>
           </div>
           <ElkenyaTable table={table} />
+          <Pagination
+            pageIndex={table.getState().pagination.pageIndex}
+            pageCount={table.getPageCount()}
+            setPageSize={table.setPageSize}
+            canPreviousPage={table.getCanPreviousPage()}
+            previousPage={table.previousPage}
+            canNextPage={table.getCanNextPage()}
+            nextPage={table.nextPage}
+          />
         </div>
       </div>
     </>

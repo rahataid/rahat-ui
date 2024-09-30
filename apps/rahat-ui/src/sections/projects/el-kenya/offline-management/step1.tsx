@@ -7,12 +7,14 @@ import {
 import BeneficiaryView from './beneficiary.view';
 import BeneficiaryGroupsView from './beneficiary.groups.view';
 import { initialStepData } from './select.vendor.multi.step.form';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 interface SelectBeneficiaryProps {
   disbursmentList: [];
   benificiaryGroups: [];
   handleStepDataChange: (e) => void;
   stepData: typeof initialStepData;
+  pagination: any;
 }
 
 export default function SelectBeneficiary({
@@ -20,6 +22,7 @@ export default function SelectBeneficiary({
   handleStepDataChange,
   benificiaryGroups,
   stepData,
+  pagination,
 }: SelectBeneficiaryProps) {
   return (
     <div className="p-4">
@@ -41,10 +44,20 @@ export default function SelectBeneficiary({
           </TabsList>
         </div>
         <TabsContent value="beneficiary">
-          <BeneficiaryView
-            disbursmentList={disbursmentList}
-            handleStepDataChange={handleStepDataChange}
-          />
+          <div>
+            <BeneficiaryView
+              disbursmentList={disbursmentList}
+              handleStepDataChange={handleStepDataChange}
+            />
+            <CustomPagination
+              currentPage={pagination?.pagination?.page}
+              handleNextPage={pagination?.setNextPage}
+              handlePageSizeChange={pagination?.setPerPage}
+              handlePrevPage={pagination?.setPrevPage}
+              perPage={pagination?.pagination?.perPage}
+              meta={pagination?.meta || { total: 0, currentPage: 0 }}
+            />
+          </div>
         </TabsContent>
         <TabsContent value="beneficiaryGroups">
           <BeneficiaryGroupsView

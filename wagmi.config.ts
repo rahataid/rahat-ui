@@ -27,6 +27,7 @@ import { rahatTokenAbi } from './abis/rp/RahatToken';
 import { rahatTreasuryAbi } from './abis/rp/RahatTreasury';
 import { vendorAbi } from './abis/rp/Vendor';
 import { redemptionsAbi } from './abis/rp/Redemptions';
+import { rahatCVACambodiaAbi } from './abis/cambodia/RahatCVACambodia';
 
 const ELConfig = [
   {
@@ -253,10 +254,75 @@ const RPConfig = [
   },
   
 ];
+
+const CambodiaConfig = [
+  {
+    out: 'libs/query/src/lib/cambodia/contracts/generated-hooks/rahatToken.ts',
+    contracts: [
+      {
+        name: 'RahatToken',
+        abi: rahatTokenAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/cambodia/contracts/generated-hooks/vendor.ts',
+    contracts: [
+      {
+        name: 'Vendor',
+        abi: vendorAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/cambodia/contracts/generated-hooks/rahatAccessManager.ts',
+    contracts: [
+      {
+        name: 'RahatAccessManager',
+        abi: rahatAccessManagerAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/cambodia/contracts/generated-hooks/rahatCVACambodia.ts',
+    contracts: [
+      {
+        name: 'RahatPayrollProject',
+        abi: rahatPayrollProjectAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/cambodia/contracts/generated-hooks/rahatTreasury.ts',
+    contracts: [
+      {
+        name: 'RahatTreasury',
+        abi: rahatTreasuryAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/cambodia/contracts/generated-hooks/redemptions.ts',
+    contracts: [
+      {
+        name: 'Redemptions',
+        abi: redemptionsAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  
+];
 export default defineConfig([
   ...ELConfig,
   ...CVAConfig,
   ...AAConfig,
   ...C2CConfig,
   ...RPConfig,
+  ...CambodiaConfig
 ]);

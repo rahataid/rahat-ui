@@ -112,12 +112,12 @@ export default function SimpleDataCardsContainer({
     {
       title: 'Balance',
       Icon: Coins,
-      number: tempDashboardStats ? formatToEnglishNumberSystem(tempDashboardStats.BALANCE) : `NRs. ${formatToEnglishNumberSystem(projectBalance) ?? 0}`,
+      number: tempDashboardStats ? `NRs. ${formatToEnglishNumberSystem(tempDashboardStats.BALANCE)}` : `NRs. ${formatToEnglishNumberSystem(projectBalance) ?? 0}`,
     },
     {
       title: 'Fund Distributed',
       Icon: HandCoins,
-      number: tempDashboardStats ? formatToEnglishNumberSystem(tempDashboardStats.FUND_DISTRIBUTED) : `NRs. ${formatToEnglishNumberSystem(totalDistributed) ?? 0}`,
+      number: tempDashboardStats ? `NRs. ${formatToEnglishNumberSystem(tempDashboardStats.FUND_DISTRIBUTED)}` : `NRs. ${formatToEnglishNumberSystem(totalDistributed) ?? 0}`,
     },
     {
       title: 'Number of Communication Project',

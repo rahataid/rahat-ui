@@ -86,6 +86,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
 
     if (selectedBeneficiaries && selectedBeneficiaries?.length > 0) {
       if (stepData.treasurySource === 'MULTISIG') {
+        console.log("amount", +stepData.disburseAmount * selectedBeneficiaries?.length)
         await disburseMultiSig.mutateAsync({
           amount: String(
             +stepData.disburseAmount * selectedBeneficiaries?.length ?? 0,

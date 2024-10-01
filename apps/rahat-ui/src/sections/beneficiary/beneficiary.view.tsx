@@ -223,7 +223,9 @@ function BeneficiaryView() {
         />
       </TabsContent>
       <TabsContent value="beneficiaryGroups">
-        <BeneficiaryGroupsView />
+        <div className="p-4">
+          <BeneficiaryGroupsView />
+        </div>
       </TabsContent>
     </Tabs>
   );

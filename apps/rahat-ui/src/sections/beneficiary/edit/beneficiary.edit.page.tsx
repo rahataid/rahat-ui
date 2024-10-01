@@ -1,7 +1,11 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateBeneficiary } from '@rahat-ui/query';
+import {
+  useBeneficiaryStore,
+  useCreateBeneficiary,
+  useUpdateBeneficiary,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 
@@ -26,18 +30,21 @@ import { toast } from 'react-toastify';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
 import { Loader2, Wallet } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import {
   RadioGroup,
   RadioGroupItem,
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
 import Back from '../../projects/components/back';
+import { UUID } from 'crypto';
 import HeaderWithBack from '../../projects/components/header.with.back';
 
 export default function AddBeneficiaryForm() {
-  const addBeneficiary = useCreateBeneficiary();
+  const updateBeneficiary = useUpdateBeneficiary();
   const router = useRouter();
+  const { id } = useParams() as { id: UUID };
+  const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
 
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
@@ -60,60 +67,49 @@ export default function AddBeneficiaryForm() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: '',
-      gender: '',
-      walletAddress: '',
-      email: '',
-      phone: '',
-      bankedStatus: '',
-      internetStatus: '',
-      phoneStatus: '',
-      age: '',
-      address: '',
+      name: beneficiary?.firstName?.concat('', beneficiary?.lastName as string),
+      gender: beneficiary?.gender,
+      walletAddress: beneficiary?.walletAddress,
+      email: beneficiary?.email,
+      phone: beneficiary?.phone,
+      bankedStatus: beneficiary?.bankedStatus,
+      internetStatus: beneficiary?.internetStatus,
+      phoneStatus: beneficiary?.phoneStatus,
+      age: beneficiary?.extras?.age,
+      address: beneficiary?.extras?.address,
     },
   });
 
-  const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
+  const handleEditBeneficiary = async (data: z.infer<typeof FormSchema>) => {
     try {
-      const result = await addBeneficiary.mutateAsync({
+      await updateBeneficiary.mutateAsync({
+        id: beneficiary?.id,
+        uuid: beneficiary?.uuid,
         gender: data.gender,
-        location: data.address,
-        age: data.age,
-        bankedStatus: data.bankedStatus || 'UNKNOWN',
-        internetStatus: data.internetStatus || 'UNKNOWN',
-        phoneStatus: data.phoneStatus || 'UNKNOWN',
+        bankedStatus: data.bankedStatus,
+        internetStatus: data.internetStatus,
+        phoneStatus: data.phoneStatus,
         piiData: {
-          email: data.email,
           name: data.name,
           phone: data.phone,
         },
         walletAddress: data.walletAddress,
       });
-      if (result) {
-        toast.success('Beneficiary added successfully!');
-        router.push('/beneficiary');
-        form.reset();
-      }
+      router.push('/beneficiary');
     } catch (e) {
-      toast.error(e?.response?.data?.message || 'Failed to add beneficiary');
+      console.error('Error::', e);
     }
   };
-
-  useEffect(() => {
-    if (addBeneficiary.isSuccess) {
-      router.push('/beneficiary');
-    }
-  }, [addBeneficiary.isSuccess]);
 
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleCreateBeneficiary)}>
+        <form onSubmit={form.handleSubmit(handleEditBeneficiary)}>
           <div className="p-4 h-[calc(100vh-115px)]">
             <HeaderWithBack
-              title="Add Beneficiary"
-              subtitle="Create a new beneficiary"
-              path="/beneficiary/add"
+              title="Edit Beneficiary"
+              subtitle="Edit Beneficiary Detail"
+              path="/beneficiary"
             />
             <div className="shadow-md p-4 rounded-sm bg-card">
               <div className="grid grid-cols-2 gap-4">
@@ -386,13 +382,13 @@ export default function AddBeneficiaryForm() {
             >
               Cancel
             </Button>
-            {addBeneficiary.isPending ? (
+            {updateBeneficiary.isPending ? (
               <Button disabled>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Please wait
               </Button>
             ) : (
-              <Button className="px-10">Add</Button>
+              <Button className="px-10">Save Changes</Button>
             )}
           </div>
         </form>

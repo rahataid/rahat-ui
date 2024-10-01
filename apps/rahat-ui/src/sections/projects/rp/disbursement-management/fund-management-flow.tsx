@@ -239,7 +239,7 @@ const FundManagementFlow = () => {
     console.log('formDatayouInd', formData);
     formData.append('email', 'owner@sandab.stellar.rahat.io');
     formData.append('password', 'Password123!');
-    formData.append('tenant_name', tenantName);
+    formData.append('tenant_name', 'sandab');
     formData.append('disbursement_name', disbursementName);
     formData.append('action', 'rpProject.stellar.createDisbursement');
 
@@ -293,12 +293,12 @@ const FundManagementFlow = () => {
             onConfirm={handleModalSubmit}
             onCancel={() => setShowModal(false)}
           >
-            <Input
+            {/* <Input
               placeholder="Tenant Name"
               value={tenantName}
               onChange={(e) => setTenantName(e.target.value)}
               className="mt-4"
-            />
+            /> */}
             <Input
               placeholder="Disbursement Name"
               value={disbursementName}

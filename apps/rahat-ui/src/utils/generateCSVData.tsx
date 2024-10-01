@@ -15,10 +15,10 @@ export const generateCSVData = (beneficiaries: any, disbursementList: any) => {
     );
 
     const phone = beneficiary.phone || 'N/A';
-    const id = `beneficiary_${index + 1}`;
+    const id = `beneficiary_${index}`;
     const amount = disbursement?.amount || 0;
-    const verification = generateOTP(index);
-    const paymentID = `PAY_${index + 2}`;
+    const verification = '1111';
+    const paymentID = `PAY_${index}`;
 
     csvRows.push([phone, id, amount, verification, paymentID].join(','));
   });

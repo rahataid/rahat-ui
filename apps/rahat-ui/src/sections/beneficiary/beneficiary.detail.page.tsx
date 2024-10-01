@@ -28,7 +28,7 @@ import { UUID } from 'crypto';
 import CoreBtnComponent from '../../components/core.btn';
 import { useBeneficiaryStore, useSingleBeneficiary } from '@rahat-ui/query';
 
-export default function VendorDetail() {
+export default function BeneficiaryDetail() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
   // const [walletAddressCopied, setWalletAddressCopied] =

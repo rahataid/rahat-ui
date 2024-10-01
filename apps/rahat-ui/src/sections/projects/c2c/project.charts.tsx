@@ -1,16 +1,14 @@
-import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
-import React from 'react';
-import RecentTransaction from './fundManagement/recent.transaction';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
   useRecentTransactionsList,
 } from '@rahat-ui/query';
-import { useSearchParams } from 'next/navigation';
-import { UUID } from 'crypto';
+import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
+import { useParams } from 'next/navigation';
+import RecentTransaction from './fundManagement/recent.transaction';
 
 const ProjectCharts = () => {
-  const { id } = useSearchParams();
+  const { id } = useParams();
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],

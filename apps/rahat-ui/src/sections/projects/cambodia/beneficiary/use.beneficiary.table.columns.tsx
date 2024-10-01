@@ -1,4 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table';
+import { formatUnderScoredString } from 'apps/rahat-ui/src/utils/string';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
@@ -14,7 +15,7 @@ export const useCambodiaBeneficiaryTableColumns = () => {
     {
       accessorKey: 'type',
       header: 'Type',
-      cell: ({ row }) => <div>{row.getValue('voucherType')}</div>,
+      cell: ({ row }) => <div>{row.getValue('type')}</div>,
     },
     {
       accessorKey: 'phone',
@@ -25,6 +26,15 @@ export const useCambodiaBeneficiaryTableColumns = () => {
       accessorKey: 'gender',
       header: 'Gender',
       cell: ({ row }) => <div>{row.getValue('gender')}</div>,
+    },
+    {
+      accessorKey: 'healthWorker',
+      header: 'Health Worker',
+      cell: ({ row }) => (
+        <div>
+          {formatUnderScoredString(row.getValue('healthWorker') ?? '-')}
+        </div>
+      ),
     },
     {
       id: 'actions',

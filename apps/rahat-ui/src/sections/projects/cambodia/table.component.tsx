@@ -8,13 +8,16 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { CircleEllipsisIcon } from 'lucide-react';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 type IProps = {
   table: Table<any>;
   tableHeight?: string;
+  loading?: boolean;
 };
 
-export default function CambodiaTable({ table, tableHeight }: IProps) {
+export default function CambodiaTable({ table, tableHeight, loading }: IProps) {
   return (
     <TableComponent>
       <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
@@ -56,7 +59,16 @@ export default function CambodiaTable({ table, tableHeight }: IProps) {
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                No results.
+                {loading ? (
+                  <div className="flex items-center justify-center mt-4">
+                    <div className="text-center">
+                      <CircleEllipsisIcon className="animate-spin h-8 w-8 ml-4" />
+                      <Label className="text-base">Loading ...</Label>
+                    </div>
+                  </div>
+                ) : (
+                  'No result found'
+                )}
               </TableCell>
             </TableRow>
           )}

@@ -12,7 +12,8 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { useVendorsTableColumns } from './use.vendors.table.columns';
-import { usePagination } from '@rahat-ui/query';
+import { useGetOfflineSingleVendor, usePagination } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 const cardData = [
   'Offline Beneficiaries',
@@ -21,34 +22,48 @@ const cardData = [
 ];
 
 export default function VendorsDetail() {
-  const { id } = useParams();
+  const { id, vid } = useParams();
   const columns = useVendorsTableColumns();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    resetSelectedListItems,
-  } = usePagination();
-
+  const [rowData, setRowData] = React.useState([]);
+  const { data: offlineVendor, isSuccess } = useGetOfflineSingleVendor(
+    id as UUID,
+    Number(vid),
+  );
+  const cardData = [
+    { name: 'Offline Beneficiaries', value: offlineVendor?.data.length },
+    {
+      name: 'Vouchers Assigned',
+      value: offlineVendor.extras.totalAmountAssigned,
+    },
+    {
+      name: 'Voucher Numbers',
+      value: offlineVendor.extras.totalAmountAssigned,
+    },
+  ];
+  React.useEffect(() => {
+    if (offlineVendor?.data.length > 0) {
+      const benDetails = offlineVendor?.data.map((ben: any) => {
+        return {
+          amount: ben?.amount,
+          name: ben?.piiData?.name,
+          status: ben?.status,
+        };
+      });
+      if (JSON.stringify(benDetails) !== JSON.stringify(rowData)) {
+        setRowData(benDetails);
+      }
+    }
+  }, [offlineVendor?.data, rowData]);
   const table = useReactTable({
     manualPagination: true,
-    data: [
-      { uuid: '123', name: 'A1' },
-      { uuid: '456', name: 'B1' },
-    ],
+    data: rowData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setSelectedListItems,
+    // onRowSelectionChange: setSelectedListItems,
     getFilteredRowModel: getFilteredRowModel(),
     getRowId(originalRow) {
       return originalRow.walletAddress;
@@ -56,7 +71,7 @@ export default function VendorsDetail() {
 
     state: {
       columnVisibility,
-      rowSelection: selectedListItems,
+      // rowSelection: selectedListItems,
     },
   });
   return (
@@ -70,12 +85,12 @@ export default function VendorsDetail() {
         {cardData?.map((d) => (
           <div className="rounded-sm bg-card p-4 shadow-md">
             <div className="flex justify-between items-center">
-              <h1 className="text-sm">{d}</h1>
+              <h1 className="text-sm">{d.name}</h1>
               <div className="p-1 rounded-full bg-secondary">
                 <UsersRound size={16} strokeWidth={2.5} />
               </div>
             </div>
-            <p className="text-primary font-semibold text-xl">143</p>
+            <p className="text-primary font-semibold text-xl">{d.value}</p>
           </div>
         ))}
       </div>

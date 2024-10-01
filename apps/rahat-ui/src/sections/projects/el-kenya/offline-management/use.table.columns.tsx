@@ -32,16 +32,18 @@ export default function useTableColumn() {
       enableHiding: false,
     },
     {
-      accessorKey: 'vendors',
+      accessorKey: 'name',
       header: 'Vendors',
-      cell: ({ row }) => <div>{row.getValue('vendors')}</div>,
+      cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-      accessorKey: 'offlineBeneficiaryAssigned',
+      accessorKey: '_count.offlineBeneficiaries',
       header: 'Offline Beneficiary Assigned',
-      cell: ({ row }) => {
-        row.getValue('offlineBeneficiaryAssigned');
-      },
+      cell: ({ getValue }) => (
+        <div className="capitalize">
+          {getValue('_count.offlineBeneficiaries')}
+        </div>
+      ),
     },
     {
       accessorKey: 'vouchersType',
@@ -68,7 +70,7 @@ export default function useTableColumn() {
               strokeWidth={1.5}
               onClick={() =>
                 router.push(
-                  `/projects/el-kenya/${id}/offline-management/${row.original.uuid}`,
+                  `/projects/el-kenya/${id}/offline-management/${row.original.id}`,
                 )
               }
             />

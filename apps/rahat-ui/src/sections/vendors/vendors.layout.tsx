@@ -12,7 +12,7 @@ import VendorsNavView from './vendors.nav.view';
 
 type VendorsLayoutProps = {
   children: React.ReactNode | React.ReactNode[];
-  menuItems: NavItem[];
+  menuItems?: NavItem[];
 };
 
 const VendorsLayout: FC<VendorsLayoutProps> = ({ children, menuItems }) => {
@@ -46,7 +46,7 @@ const VendorsLayout: FC<VendorsLayoutProps> = ({ children, menuItems }) => {
   return (
     <>
       <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={20} minSize={20} maxSize={20}>
+        {/* <ResizablePanel defaultSize={20} minSize={20} maxSize={20}>
           {menuItems.map((item) => (
             <VendorsNavView
               key={item.title}
@@ -54,7 +54,7 @@ const VendorsLayout: FC<VendorsLayoutProps> = ({ children, menuItems }) => {
               items={item.children}
             />
           ))}
-        </ResizablePanel>
+        </ResizablePanel> */}
         {renderChildren()}
       </ResizablePanelGroup>
     </>

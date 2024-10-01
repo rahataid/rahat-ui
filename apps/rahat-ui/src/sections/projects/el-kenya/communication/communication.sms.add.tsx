@@ -1,7 +1,11 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateBeneficiary } from '@rahat-ui/query';
+import {
+  useCreateBeneficiary,
+  useCreateCampaign,
+  useListRpTransport,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 import {
@@ -25,18 +29,24 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Loader2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import Back from '../../components/back';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import HeaderWithBack from '../../components/header.with.back';
+import { UUID } from 'crypto';
 
 export default function AddSMSForm() {
   const addBeneficiary = useCreateBeneficiary();
+
   const router = useRouter();
   const { id } = useParams();
 
+  const createCampaign = useCreateCampaign(id as UUID);
+  const { data: transportData } = useListRpTransport(id as UUID);
+  const transportId = transportData?.find(
+    (transport) => transport.type === 'SMS' || transport.name === 'Prabhu SMS',
+  ).cuid;
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
-    group: z.string().min(1, { message: 'Please select a group' }),
+    group: z.string().optional(),
     message: z
       .string()
       .min(5, { message: 'message must be at least 5 character' }),
@@ -51,43 +61,21 @@ export default function AddSMSForm() {
     },
   });
 
-  const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
-    // try {
-    //   const result = await addBeneficiary.mutateAsync({
-    //     gender: data.gender,
-    //     location: data.address,
-    //     age: data.age,
-    //     bankedStatus: data.bankedStatus || 'UNKNOWN',
-    //     internetStatus: data.internetStatus || 'UNKNOWN',
-    //     phoneStatus: data.phoneStatus || 'UNKNOWN',
-    //     piiData: {
-    //       email: data.email,
-    //       name: data.name,
-    //       phone: data.phone,
-    //     },
-    //     walletAddress: data.walletAddress,
-    //     projectUUIDs: [id],
-    //   });
-    //   if (result) {
-    //     toast.success('Beneficiary added successfully!');
-    //     router.push('/beneficiary');
-    //     form.reset();
-    //   }
-    // } catch (e) {
-    //   toast.error(e?.response?.data?.message || 'Failed to add beneficiary');
-    // }
+  const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
+    const createCampagin = {
+      name: data.name,
+      message: data.message,
+      transportId: transportId,
+    };
+    createCampaign.mutate(createCampagin);
+    form.reset();
+    router.push(`/projects/el-kenya/${id}/communication/manage`);
   };
-
-  // useEffect(() => {
-  //   if (addBeneficiary.isSuccess) {
-  //     router.push(`/projects/rp/${id}/beneficiary`);
-  //   }
-  // }, [addBeneficiary.isSuccess, id, router]);
 
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleCreateBeneficiary)}>
+        <form onSubmit={form.handleSubmit(handleCreateCampaign)}>
           <div className="h-[calc(100vh-145px)] m-4">
             <HeaderWithBack
               title="Add SMS"
@@ -176,7 +164,9 @@ export default function AddSMSForm() {
                 Please wait
               </Button>
             ) : (
-              <Button className="px-8">Add</Button>
+              <Button type="submit" className="px-8">
+                Add
+              </Button>
             )}
           </div>
         </form>

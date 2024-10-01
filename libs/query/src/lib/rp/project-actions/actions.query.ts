@@ -13,6 +13,7 @@ const GET_DISBURSEMENT_PLAN = 'rpProject.disbursementPlan.getOne';
 const GET_ALL_DISBURSEMENT_PLANS = 'rpProject.disbursementPlan.get';
 const UPDATE_DISBURSEMENT_PLAN = 'rpProject.disbursementPlan.update';
 const CREATE_BULK_DISBURSEMENT = 'rpProject.disbursement.bulkCreate';
+const GET_UNSYNCED_BENEFICIARIES = 'rpProject.beneficiaries.getUnsynced';
 
 const GET_ALL_BENEFICIARY_GROUPS = 'rpProject.beneficiary.getAllGroups';
 
@@ -123,10 +124,10 @@ export const useCreateDisbursement = (projectUUID: UUID) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, {}],
+        queryKey: [GET_UNSYNCED_BENEFICIARIES, {}],
       });
       queryClient.invalidateQueries({
-        queryKey: ['disbursements', projectUUID],
+        queryKey: ['unsyncedBeneficiaries', projectUUID],
       });
     },
   });
@@ -158,6 +159,25 @@ export const useFindAllDisbursements = (projectUUID: UUID, payload: any) => {
     data,
   };
 };
+
+
+export const useFindUnSyncedBenefiicaries = (projectUUID: UUID,payload:any) => {
+  const action = useProjectAction(['findUnSyncedBeneficiaries-rpProject']);
+
+  return useQuery({
+    queryKey: ['unsyncedBeneficiaries', projectUUID,payload],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: GET_UNSYNCED_BENEFICIARIES,
+          payload,
+        },
+      });
+      return res;
+    },
+  });
+}
 // type GetProjectBeneficiaries = Pagination & {
 //   order?: 'asc' | 'desc';
 //   sort?: string;
@@ -219,7 +239,7 @@ export const useUpdateRPDisbursement = () => {
 
 export const useBulkCreateDisbursement = (projectUUID: UUID) => {
   const action = useProjectAction(['createBulkDisbursement-rpProject']);
-
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: {
       amount: number;
@@ -233,6 +253,14 @@ export const useBulkCreateDisbursement = (projectUUID: UUID) => {
         },
       });
       return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, {}],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['disbursements', projectUUID],
+      });
     },
   });
 };
@@ -254,16 +282,16 @@ export const useRedeemToken = (projectUUID: UUID) => {
   });
 };
 
-export const useListRedemptions = (projectUUID: UUID,payload:any) => {
+export const useListRedemptions = (projectUUID: UUID, payload: any) => {
   const action = useProjectAction(['listRedemptions-rpProject']);
   return useQuery({
-    queryKey: ['redemptions', projectUUID,payload],
+    queryKey: ['redemptions', projectUUID, payload],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'rpProject.listRedemption',
-          payload: {...payload},
+          payload: { ...payload },
         },
       });
       const data = res.data;
@@ -277,7 +305,7 @@ export const useListRedemptions = (projectUUID: UUID,payload:any) => {
           walletAddress: item?.Vendor?.walletAddress,
         };
       });
-      return {redemptions:formattedData,meta:res.response.meta};
+      return { redemptions: formattedData, meta: res.response.meta };
     },
   });
 };

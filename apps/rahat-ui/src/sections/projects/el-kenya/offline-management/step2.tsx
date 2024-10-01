@@ -1,24 +1,59 @@
-import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { User } from 'lucide-react';
+import { ConfirmModal } from './confirm-modal';
+import { initialStepData } from './select.vendor.multi.step.form';
 
-export default function Confirmation({}) {
-  const { id } = useParams() as { id: UUID };
-  const searchParam = useSearchParams();
+interface ConfirmationProps {
+  stepData: typeof initialStepData;
+  beneficiariesDisbursements: [];
+  isOpen: boolean;
+}
+
+export default function Confirmation({
+  stepData,
+  beneficiariesDisbursements,
+  isOpen,
+}: ConfirmationProps) {
+  let noOfBeneficiarySelected = stepData.disbursements.length;
+  let data = stepData.disbursements;
+
+  if (stepData.groups.length > 0) {
+    data = beneficiariesDisbursements;
+    stepData.groups.map((group) => {
+      noOfBeneficiarySelected += group._count.groupedBeneficiaries;
+    });
+  }
+
+  let totalVouchersAssigned = 0;
+  data?.map((disbursment: any) => {
+    totalVouchersAssigned +=
+      Number(disbursment?.disbursementAmount) ||
+      Number(disbursment?.amount) ||
+      0;
+  });
+
   return (
     <div className="flex flex-col justify-between">
+      {
+        <ConfirmModal
+          isOpen={isOpen}
+          vendorName={stepData.vendor.name}
+          beneficiaries={noOfBeneficiarySelected}
+          tokens={totalVouchersAssigned}
+        />
+      }
       <div className="p-4">
         <div className="rounded-md border p-4 grid grid-cols-2 gap-4">
           <div className="bg-secondary rounded-md p-4">
             <div>
               <p className="text-sm text-muted-foreground">Vendor Name</p>
-              <p className="text-base font-medium">Ram Bahadur</p>
+              <p className="text-base font-medium">{stepData.vendor.name}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">
                 Beneficiaries Selected
               </p>
-              <p className="text-base font-medium">4</p>
+              <p className="text-base font-medium">{noOfBeneficiarySelected}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Vendor Vouchers</p>
@@ -28,7 +63,7 @@ export default function Confirmation({}) {
               <p className="text-sm text-muted-foreground">
                 Total no. of Vouchers assigned
               </p>
-              <p className="text-base font-medium">100</p>
+              <p className="text-base font-medium">{totalVouchersAssigned}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Voucher Numbers</p>
@@ -38,45 +73,17 @@ export default function Confirmation({}) {
           <div className="rounded-md p-4">
             <p className="text-base font-medium">Beneficiary List</p>
             <p className="text-sm text-muted-foreground">
-              40 Beneficiaries Selected
+              {noOfBeneficiarySelected} Beneficiaries Selected
             </p>
-            <div className="flex flex-col gap-4">
-              <div className="flex justify-between">
+            <div className="flex flex-col">
+              {data.map((beneficiary) => (
                 <div className="flex space-x-2">
                   <div className="p-2 rounded-full bg-secondary">
                     <User size={18} strokeWidth={1.5} />
                   </div>
-                  <p>A L</p>
+                  <p>{beneficiary.name}</p>
                 </div>
-                <p>1</p>
-              </div>
-              <div className="flex justify-between">
-                <div className="flex space-x-2">
-                  <div className="p-2 rounded-full bg-secondary">
-                    <User size={18} strokeWidth={1.5} />
-                  </div>
-                  <p>A L</p>
-                </div>
-                <p>1</p>
-              </div>
-              <div className="flex justify-between">
-                <div className="flex space-x-2">
-                  <div className="p-2 rounded-full bg-secondary">
-                    <User size={18} strokeWidth={1.5} />
-                  </div>
-                  <p>A L</p>
-                </div>
-                <p>1</p>
-              </div>
-              <div className="flex justify-between">
-                <div className="flex space-x-2">
-                  <div className="p-2 rounded-full bg-secondary">
-                    <User size={18} strokeWidth={1.5} />
-                  </div>
-                  <p>A L</p>
-                </div>
-                <p>1</p>
-              </div>
+              ))}
             </div>
           </div>
         </div>

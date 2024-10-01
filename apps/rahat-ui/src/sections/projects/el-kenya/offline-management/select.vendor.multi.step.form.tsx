@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Step, Stepper } from 'react-form-stepper';
 import HeaderWithBack from '../../components/header.with.back';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -25,12 +25,78 @@ import SelectBeneficiary from './step1';
 import Confirmation from './step2';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
+import { MS_ACTIONS } from '@rahataid/sdk';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useFindAllBeneficiaryGroups,
+  useFindAllDisbursements,
+  useGetBeneficiariesDisbursements,
+  usePagination,
+  useProjectAction,
+  useProjectBeneficiaries,
+  useProjectSettingsStore,
+  useSyncOfflineBeneficiaries,
+} from '@rahat-ui/query';
+import { useRSQuery } from '@rumsan/react-query';
 
 const steps = [{ label: 'Step 1' }, { label: 'Step 2' }, { label: 'Step 3' }];
+
+export const initialStepData = {
+  vendor: {},
+  disbursements: [],
+  groups: [],
+};
 
 export default function SelectVendorMultiStepForm() {
   const { id } = useParams() as { id: UUID };
   const [activeStep, setActiveStep] = React.useState(0);
+  const [vendors, setVendors] = React.useState([]);
+  const [rowData, setRowData] = React.useState([]);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [error, setError] = React.useState('');
+  const [stepData, setStepData] =
+    React.useState<typeof initialStepData>(initialStepData);
+  const [groupIds, setGroupIds] = React.useState([]);
+
+  const getVendors = useProjectAction();
+  const {
+    pagination,
+    filters,
+    setFilters,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+  } = usePagination();
+
+  const { data: disbursmentList, isSuccess } = useFindAllDisbursements(
+    id as UUID,
+    {
+      hideAssignedBeneficiaries: true,
+    },
+  );
+  const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID, {
+    disableSync: true,
+  });
+
+  const { data: beneficiariesDisbursements } = useGetBeneficiariesDisbursements(
+    id as UUID,
+    groupIds,
+  );
+  const disBursementIds = beneficiariesDisbursements?.map((disBursement) => {
+    return { id: disBursement.id.toString, phone: disBursement.phone };
+  });
+  const syncBen = useSyncOfflineBeneficiaries(id as UUID);
+  const { queryClient, rumsanService } = useRSQuery();
+
+  const projectBeneficiaries = useProjectBeneficiaries({
+    page: pagination.page,
+    perPage: pagination.perPage,
+    // pagination.perPage,
+    order: 'desc',
+    sort: 'updatedAt',
+    projectUUID: id,
+    ...filters,
+  });
 
   const formSchema = z.object({
     name: z.string().min(2, { message: 'Please enter valid name' }),
@@ -43,11 +109,136 @@ export default function SelectVendorMultiStepForm() {
     },
   });
 
+  const handleStepDataChange = (e) => {
+    const { name, value } = e.target;
+    setStepData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handlePrev = () => {
+    setError('');
+
     setActiveStep((prev) => prev - 1);
   };
   const handleNext = () => {
+    switch (activeStep) {
+      case 0:
+        if (Object.entries(stepData.vendor).length === 0) {
+          setError('Please select vendor');
+          return;
+        }
+        break;
+      case 1:
+        if (
+          stepData.groups.length === 0 &&
+          stepData.disbursements.length === 0
+        ) {
+          setError('Please select beneficiries');
+          return;
+        }
+        break;
+    }
+    setError('');
+
     setActiveStep((prev) => prev + 1);
+  };
+
+  async function fetchVendors() {
+    const result = await getVendors.mutateAsync({
+      uuid: id as UUID,
+      data: {
+        action: MS_ACTIONS.VENDOR.LIST_BY_PROJECT,
+        payload: {
+          page: 1,
+          perPage: 100,
+        },
+      },
+    });
+    setVendors(result.data);
+  }
+
+  useEffect(() => {
+    fetchVendors();
+  }, []);
+
+  useEffect(() => {
+    if (stepData.groups.length > 0) {
+      const groupIds = stepData.groups.map((group) => group.uuid);
+      setGroupIds(groupIds);
+    }
+  }, [stepData.groups]);
+
+  useEffect(() => {
+    if (
+      projectBeneficiaries.isSuccess &&
+      projectBeneficiaries.data?.data &&
+      isSuccess
+    ) {
+      const projectBeneficiaryDisbursements = disbursmentList
+        .filter((beneficiary) => {
+          return projectBeneficiaries.data?.data?.some(
+            (disbursement) =>
+              disbursement.walletAddress === beneficiary.walletAddress,
+          );
+        })
+        .map((beneficiary) => {
+          const beneficiaryDisbursement = projectBeneficiaries.data?.data?.find(
+            (disbursement) =>
+              disbursement.walletAddress === beneficiary.walletAddress,
+          );
+          return {
+            ...beneficiaryDisbursement,
+            disbursementAmount: beneficiary?.amount || '0',
+            disbursmentId: beneficiary?.id,
+            voucherType: beneficiary.status,
+          };
+        });
+
+      if (
+        JSON.stringify(projectBeneficiaryDisbursements) !==
+        JSON.stringify(rowData)
+      ) {
+        setRowData(projectBeneficiaryDisbursements);
+      }
+    }
+  }, [
+    disbursmentList,
+    isSuccess,
+    projectBeneficiaries.data?.data,
+    projectBeneficiaries.isSuccess,
+    rowData,
+  ]);
+
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+
+  const handleSyncBen = () => {
+    const vendorId = stepData.vendor.id;
+    let selectedDisbursementId = stepData.disbursements.map(
+      (disbursement: any) => {
+        return { id: disbursement.disbursmentId, phone: disbursement.phone };
+      },
+    );
+
+    if (stepData.groups.length > 0) {
+      selectedDisbursementId = disBursementIds;
+    }
+
+    syncBen.mutateAsync({
+      vendorId,
+      disbursements: selectedDisbursementId,
+      tokenAddress: contractSettings?.rahattoken?.address || '',
+      groupIds,
+    });
+    setTimeout(() => {
+      queryClient.invalidateQueries({
+        queryKey: ['rpGetOfflineVendors'],
+        refetchType: 'all',
+        type: 'all',
+      });
+    }, 10000);
+
+    setIsOpen(true);
   };
 
   return (
@@ -106,7 +297,17 @@ export default function SelectVendorMultiStepForm() {
                     return (
                       <FormItem className="w-full">
                         <Select
-                          onValueChange={field.onChange}
+                          onValueChange={(e) => {
+                            const vendor = vendors.find(
+                              (vendorData) => vendorData.id == e,
+                            );
+                            handleStepDataChange({
+                              target: {
+                                name: 'vendor',
+                                value: vendor,
+                              },
+                            });
+                          }}
                           defaultValue={field.value}
                         >
                           <FormLabel>Vendor</FormLabel>
@@ -116,7 +317,14 @@ export default function SelectVendorMultiStepForm() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="a">A1</SelectItem>
+                            {vendors.map((vendor) => (
+                              <SelectItem
+                                key={vendor?.id}
+                                value={vendor?.id.toString()}
+                              >
+                                {vendor.name}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -127,9 +335,25 @@ export default function SelectVendorMultiStepForm() {
               </form>
             </Form>
           )}
-          {activeStep === 1 && <SelectBeneficiary />}
-          {activeStep === 2 && <Confirmation />}
+          {activeStep === 1 && (
+            <SelectBeneficiary
+              disbursmentList={rowData}
+              benificiaryGroups={benGroups}
+              handleStepDataChange={handleStepDataChange}
+              stepData={stepData}
+              pagination={pagination}
+            />
+          )}
+          {activeStep === 2 && (
+            <Confirmation
+              isOpen={isOpen}
+              stepData={stepData}
+              beneficiariesDisbursements={beneficiariesDisbursements}
+            />
+          )}
         </div>
+        <div>{error && <p className="text-red-700 mr-8">{error}</p>}</div>
+
         <div className="flex justify-end space-x-2 border-t p-4">
           {activeStep > 0 && (
             <Button variant="secondary" onClick={handlePrev}>
@@ -137,7 +361,9 @@ export default function SelectVendorMultiStepForm() {
             </Button>
           )}
           {activeStep < 2 && <Button onClick={handleNext}>Next</Button>}
-          {activeStep === 2 && <Button type="submit">Submit</Button>}
+          {activeStep === 2 && (
+            <Button onClick={() => handleSyncBen()}>Submit</Button>
+          )}
         </div>
       </div>
     </div>

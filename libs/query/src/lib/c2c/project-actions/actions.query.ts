@@ -302,8 +302,11 @@ export const useDisburseTokenUsingMultisig = () => {
   return useMutation({
     mutationKey: ['disburse-token-using-multisig'],
     async onSuccess(data, variables, context) {
+      console.log('variables', variables);
       await addDisbursement.mutateAsync({
-        amount: variables.amount,
+        amount: String(
+          +variables.amount / variables.beneficiaryAddresses.length,
+        ),
         projectUUID: variables.projectUUID,
         type: DisbursementType.MULTISIG,
         beneficiaries: variables.beneficiaryAddresses,

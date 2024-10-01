@@ -66,7 +66,7 @@ export default function Step2DisburseAmount({
               Project Balance
             </label>
             <div className="bg-gray-100 text-gray-800 p-2 rounded-md w-1/2">
-              2000 USDC {/* Replace with dynamic value if needed */}
+              {projectBalance} USDC {/* Replace with dynamic value if needed */}
             </div>
           </div>
         )}

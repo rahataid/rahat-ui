@@ -1,10 +1,8 @@
+'use client';
 import { BeneficiaryDetailView } from 'apps/rahat-ui/src/sections/beneficiary';
-import { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: 'Beneficiaries: Detail',
+const Page = () => {
+  return <BeneficiaryDetailView />;
 };
 
-export default function BeneficiaryDetailPage() {
-  return <BeneficiaryDetailView />;
-}
+export default Page;

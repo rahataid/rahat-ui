@@ -29,8 +29,10 @@ import AddButton from '../../projects/components/add.btn';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 function BeneficiaryGroupsView() {
+  const router = useRouter();
   const {
     pagination,
     selectedListItems,
@@ -137,7 +139,7 @@ function BeneficiaryGroupsView() {
       /> */}
       <div className="p-4 rounded-sm border">
         <div className="flex justify-between space-x-2 items-center mb-4">
-          <SearchInput className="w-full" name="group" onSearch={() => {}} />
+          <SearchInput className="w-full" name="group" onSearch={() => { }} />
           <AddButton name="Group" path="/beneficiary/groups/add" />
         </div>
         <ScrollArea className="h-[calc(100vh-300px)]">
@@ -148,6 +150,9 @@ function BeneficiaryGroupsView() {
                   <div
                     key={index}
                     className="cursor-pointer rounded-md border shadow p-4"
+                    onClick={() => {
+                      router.push(`/beneficiary/groups/${i?.uuid}`);
+                    }}
                   >
                     <div className="flex flex-col space-y-2">
                       <div className="rounded-md bg-secondary grid place-items-center h-28">

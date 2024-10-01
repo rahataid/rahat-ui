@@ -1,4 +1,3 @@
-'use client';
 // import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
 // // import BeneficiaryDetailTableView from './beneficiaryDetailTable';
 // import InfoCards from './infoCards';

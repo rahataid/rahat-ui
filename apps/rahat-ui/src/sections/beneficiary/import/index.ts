@@ -1,1 +1,1 @@
-export { default as ImportBeneficiaryView } from './import.beneficiary';
+export { default as ImportBeneficiaryView } from './beneficiary.import';

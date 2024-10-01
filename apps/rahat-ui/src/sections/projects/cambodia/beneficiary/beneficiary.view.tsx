@@ -52,13 +52,15 @@ export default function BeneficiaryView() {
     ...(debouncedSearch as any),
   });
   console.log(data);
+
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
-      table.getColumn(name)?.setFilterValue(value);
+      const filterValue = value === 'ALL' ? '' : value;
+      table.getColumn(name)?.setFilterValue(filterValue);
       setFilters({
         ...filters,
-        [name]: value,
+        [name]: filterValue,
       });
     }
   };
@@ -81,6 +83,7 @@ export default function BeneficiaryView() {
       rowSelection: selectedListItems,
     },
   });
+  console.log(filters);
   return (
     <>
       <div className="p-4 bg-white ">
@@ -91,7 +94,7 @@ export default function BeneficiaryView() {
               Track all the beneficiaries here.
             </p>
           </div>
-          <div className="flex space-x-3">
+          {/* <div className="flex space-x-3">
             <Link
               href={`/projects/el-cambodia/${id}/beneficiary/discardedbenificary`}
             >
@@ -104,7 +107,7 @@ export default function BeneficiaryView() {
                 <CloudUpload className="mr-2 h-4 w-4" /> Upload Beneficiaries
               </Button>
             </Link>
-          </div>
+          </div> */}
         </div>
 
         <div className="rounded-lg border bg-card p-4 ">
@@ -118,12 +121,23 @@ export default function BeneficiaryView() {
               }
               onSearch={(event) => handleFilterChange(event)}
             />
-            <SelectComponent name="Type" options={['Sale', 'Lead']} />
-            <Button>
-              <PlusIcon />
-              Add Beneficiary
-            </Button>
-            {/* <ViewColumns table={table} /> */}
+            <div className="flex justify-between space-x-2 w-[40%]">
+              <SelectComponent
+                name="Type"
+                options={['ALL', 'Sale', 'Lead', 'Home_Visit']}
+                onChange={(value) =>
+                  handleFilterChange({
+                    target: { name: 'type', value },
+                  })
+                }
+                value={filters?.type || ''}
+              />
+              {/* <Button>
+                <PlusIcon />
+                Add Beneficiary
+              </Button>
+              <ViewColumns table={table} /> */}
+            </div>
           </div>
           <CambodiaTable table={table} loading={isLoading} />
         </div>

@@ -39,7 +39,7 @@ export default function BeneficiaryDetail() {
           subtitle="Here is the detailed view of selected beneficiary"
           path={`/projects/el-cambodia/${id}/beneficiary`}
         />
-        <div className="flex space-x-3">
+        {/* <div className="flex space-x-3">
           <div className="flex bg-secondary rounded-full w-10 h-10 justify-center items-center hover:cursor-pointer">
             <Edit2 color="skyBlue" size={20} />
           </div>
@@ -47,7 +47,7 @@ export default function BeneficiaryDetail() {
           <div className="flex bg-secondary rounded-full w-10 h-10 justify-center items-center hover:cursor-pointer">
             <Trash2 color="red" size={20} />
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="p-5 rounded-md border grid grid-cols-4 gap-5 mb-5">
         <div>
@@ -58,6 +58,11 @@ export default function BeneficiaryDetail() {
           <h1 className="text-md text-muted-foreground">Gender</h1>
           <p className="font-medium">{data?.data?.gender}</p>
         </div>
+
+        <div>
+          <h1 className="text-md text-muted-foreground">Phone Number</h1>
+          <p className="font-medium">{data?.data?.piiData?.phone ?? '-'}</p>
+        </div>
         <div>
           <h1 className="text-md text-muted-foreground">
             Beneficiary Data Upload Date
@@ -66,19 +71,6 @@ export default function BeneficiaryDetail() {
             {/* {data?.data?.createdAt.toLocaleString()} */}
             {formatDT(data?.data?.createdAt)}
           </p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Beneficiary Type</h1>
-
-          <Badge variant="secondary">{data?.data?.extras?.type}</Badge>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Refered By</h1>
-          <p className="font-medium">Hima Tamang</p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Phone Number</h1>
-          <p className="font-medium">{data?.data?.piiData?.phone}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Wallet Address</h1>
@@ -104,8 +96,20 @@ export default function BeneficiaryDetail() {
           </TooltipProvider>
         </div>
         <div>
+          <h1 className="text-md text-muted-foreground">Beneficiary Type</h1>
+
+          <Badge variant="secondary">{data?.data?.extras?.type}</Badge>
+        </div>
+        <div>
+          <h1 className="text-md text-muted-foreground">Refered By</h1>
+          <p className="font-medium">Hima Tamang</p>
+        </div>
+
+        <div>
           <h1 className="text-md text-muted-foreground">Transaction Type</h1>
-          <Badge variant="secondary">Donation</Badge>
+          <Badge variant="secondary">
+            {data?.data?.conversionType ?? 'N/A'}
+          </Badge>
         </div>
       </div>
       <div className="">

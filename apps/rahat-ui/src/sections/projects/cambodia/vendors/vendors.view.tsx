@@ -1,4 +1,5 @@
 import {
+  useCambodiaVendorsList,
   useCHWList,
   usePagination,
   useProjectBeneficiaries,
@@ -30,7 +31,6 @@ export default function VendorsView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-
   const {
     pagination,
     filters,
@@ -45,10 +45,16 @@ export default function VendorsView() {
   } = usePagination();
 
   const debouncedSearch = useDebounce(filters, 500);
+  const { data: vendors, isLoading } = useCambodiaVendorsList({
+    page: pagination.page,
+    perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'createdAt',
+    projectUUID: id,
+    ...(debouncedSearch as any),
+  });
 
-  const [refetch, setRefetch] = React.useState(false);
-
-  const { data: vendors } = useVendorList(pagination, refetch);
+  // const { data: vendors } = useVendorList(pagination, refetch);
   console.log(vendors);
   const handleFilterChange = (event: any) => {
     if (event && event.target) {

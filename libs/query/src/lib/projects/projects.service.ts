@@ -782,9 +782,9 @@ export const useCambodiaBeneficiaries = (payload: any) => {
               uuid: row?.uuid?.toString(),
               name: row?.piiData?.name || '',
               gender: row?.projectData?.gender?.toString() || '',
-              phone: row?.piiData?.phone || 'N/A',
-              type: row?.type?.toString() || 'N/A',
-              healthWorker: row?.extras?.meta?.Health_Worker_Name,
+              phone: row?.piiData?.phone || '-',
+              type: row?.type?.toString() || '-',
+              healthWorker: row?.healthWorker?.name || '-',
             }))
           : [],
       };
@@ -808,6 +808,58 @@ export const useCambodiaBeneficiary = (payload: any) => {
         uuid: projectUUID,
         data: {
           action: MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.GET,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return {
+    ...query,
+  };
+};
+
+export const useCambodiaVendorsList = (payload: any) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.VENDOR.LIST, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.LIST,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
+export const useCambodiaVendorGet = (payload: any) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.VENDOR.GET, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.GET,
           payload: restPayload,
         },
       });

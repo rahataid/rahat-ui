@@ -36,7 +36,7 @@ export default function ConfirmSelection({
         <HeaderWithBack
           title="Confirmation"
           subtitle="Confirm your selection before you proceed"
-          path={`/projects/el-kenya/${id}/vouchers/manage`}
+          path={`/projects/el-kenya/${id}/vouchers`}
         />
         <div className="rounded-md border p-4 grid grid-cols-2 gap-4">
           <div className="bg-secondary rounded-md p-4">

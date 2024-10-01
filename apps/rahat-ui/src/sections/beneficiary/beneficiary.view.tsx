@@ -192,7 +192,10 @@ function BeneficiaryView() {
             Beneficiary Groups
           </TabsTrigger>
         </TabsList>
-        <Button variant="outline">
+        <Button
+          variant="outline"
+          onClick={() => router.push('/beneficiary/import')}
+        >
           <CloudDownload className="mr-1" /> Import beneficiaries
         </Button>
       </div>

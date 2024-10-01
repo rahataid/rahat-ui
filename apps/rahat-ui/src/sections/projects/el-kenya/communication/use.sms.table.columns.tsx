@@ -9,9 +9,9 @@ export const useElkenyaSMSTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('to')}</div>,
     },
     {
-      accessorKey: 'date',
+      accessorKey: 'createdAt',
       header: 'Date',
-      cell: ({ row }) => <div>{row.getValue('date')}</div>,
+      cell: ({ row }) => <div>{row.getValue('createdAt')}</div>,
     },
     {
       accessorKey: 'status',

@@ -2,7 +2,12 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
-export const useElkenyaBeneficiaryTableColumns = () => {
+interface BeneficiaryTableProps {
+  handleViewClick: any;
+}
+export const useElkenyaBeneficiaryTableColumns = ({
+  handleViewClick,
+}: BeneficiaryTableProps) => {
   const { id } = useParams();
   const router = useRouter();
   const columns: ColumnDef<any>[] = [
@@ -55,11 +60,7 @@ export const useElkenyaBeneficiaryTableColumns = () => {
               className="hover:text-primary cursor-pointer"
               size={16}
               strokeWidth={1.5}
-              onClick={() =>
-                router.push(
-                  `/projects/el-kenya/${id}/beneficiary/${row.original.uuid}`,
-                )
-              }
+              onClick={() => handleViewClick(row.original)}
             />
           </div>
         );

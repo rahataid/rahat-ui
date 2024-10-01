@@ -2,7 +2,13 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
-export const useElkenyaVendorsTableColumns = () => {
+interface VendorTableProps {
+  handleViewClick: any;
+}
+
+export const useElkenyaVendorsTableColumns = ({
+  handleViewClick,
+}: VendorTableProps) => {
   const { id } = useParams();
   const router = useRouter();
   const columns: ColumnDef<any>[] = [
@@ -52,11 +58,7 @@ export const useElkenyaVendorsTableColumns = () => {
               className="hover:text-primary cursor-pointer"
               size={16}
               strokeWidth={1.5}
-              onClick={() =>
-                router.push(
-                  `/projects/el-kenya/${id}/vendors/${row.original.uuid}`,
-                )
-              }
+              onClick={() => handleViewClick(row.original)}
             />
           </div>
         );

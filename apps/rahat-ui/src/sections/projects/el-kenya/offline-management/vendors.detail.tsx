@@ -35,11 +35,11 @@ export default function VendorsDetail() {
     { name: 'Offline Beneficiaries', value: offlineVendor?.data.length },
     {
       name: 'Vouchers Assigned',
-      value: offlineVendor.extras.totalAmountAssigned,
+      value: offlineVendor?.extras.totalAmountAssigned,
     },
     {
       name: 'Voucher Numbers',
-      value: offlineVendor.extras.totalAmountAssigned,
+      value: offlineVendor?.extras.totalAmountAssigned,
     },
   ];
   React.useEffect(() => {
@@ -79,7 +79,7 @@ export default function VendorsDetail() {
       <HeaderWithBack
         title="Vendor details"
         subtitle="Here is the detailed view of selected vendor"
-        path={`/projects/el-kenya/${id}/vendors`}
+        path={`/projects/el-kenya/${id}/offline-management`}
       />
       <div className="p-4 grid grid-cols-3 gap-4 mb-5">
         {cardData?.map((d) => (

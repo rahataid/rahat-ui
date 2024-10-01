@@ -7,7 +7,7 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useElkenyaBeneficiaryTableColumns } from './use.beneficiary.table.columns';
 import React from 'react';
 import ElkenyaTable from '../table.component';
@@ -21,6 +21,7 @@ import ViewColumns from '../../components/view.columns';
 
 export default function BeneficiaryView() {
   const { id } = useParams() as { id: UUID };
+  const router = useRouter();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
@@ -46,7 +47,14 @@ export default function BeneficiaryView() {
   });
   const meta = beneficiaries.data.response?.meta;
 
-  const columns = useElkenyaBeneficiaryTableColumns();
+  const handleViewClick = (rowData: any) => {
+    console.log(rowData);
+    router.push(
+      `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${rowData.name}&&walletAddress=${rowData.walletAddress}&&gender=${rowData.gender}&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${rowData.eyeCheckupStatus}&&glassesStatus=${rowData.glassesStatus}&&voucherType=${rowData.voucherType}&&phone=${rowData.phone}&&uuid=${rowData.uuid}`,
+    );
+  };
+
+  const columns = useElkenyaBeneficiaryTableColumns({ handleViewClick });
   const table = useReactTable({
     manualPagination: true,
     data: beneficiaries.data?.data || [],

@@ -27,7 +27,6 @@ export default function OfflineManagementView() {
     React.useState<VisibilityState>({});
 
   const { data: offlineVendors, isSuccess } = useGetOfflineVendors(id as UUID);
-
   const columns = useTableColumn();
   const table = useReactTable({
     manualPagination: true,

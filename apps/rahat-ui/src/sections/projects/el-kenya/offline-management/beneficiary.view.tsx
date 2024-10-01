@@ -9,50 +9,34 @@ import {
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import { useBeneficiaryTableColumns } from './use.beneficiary.table.columns';
-import React from 'react';
+import React, { useEffect } from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 
-export default function BeneficiaryView() {
+interface BeneficiaryViewProps {
+  disbursmentList: [];
+  handleStepDataChange: (e) => void;
+}
+
+export default function BeneficiaryView({
+  disbursmentList,
+  handleStepDataChange,
+}: BeneficiaryViewProps) {
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    resetSelectedListItems,
-  } = usePagination();
-
-  const beneficiaries = useProjectBeneficiaries({
-    page: pagination.page,
-    perPage: pagination.perPage,
-    order: 'desc',
-    sort: 'createdAt',
-    projectUUID: id,
-    ...filters,
-  });
-  const meta = beneficiaries.data.response?.meta;
+  const [rowSelection, setRowSelection] = React.useState({});
 
   const columns = useBeneficiaryTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: beneficiaries?.data?.data || [
-      { uuid: '123', name: 'A1' },
-      { uuid: '456', name: 'B1' },
-    ],
+    data: disbursmentList || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setSelectedListItems,
+    onRowSelectionChange: setRowSelection,
     getFilteredRowModel: getFilteredRowModel(),
     getRowId(originalRow) {
       return originalRow.walletAddress;
@@ -60,9 +44,22 @@ export default function BeneficiaryView() {
 
     state: {
       columnVisibility,
-      rowSelection: selectedListItems,
+      rowSelection,
     },
   });
+
+  useEffect(() => {
+    const selectedRows = table
+      .getSelectedRowModel()
+      .rows.map((data) => data.original);
+    handleStepDataChange({
+      target: {
+        name: 'disbursements',
+        value: selectedRows,
+      },
+    });
+  }, [rowSelection]);
+
   return (
     <div className="p-4">
       <div className="rounded border bg-card p-4">

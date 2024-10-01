@@ -4,9 +4,9 @@ import { ColumnDef } from '@tanstack/react-table';
 export const useElkenyaSMSTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'sendTo',
+      accessorKey: 'to',
       header: 'Send To',
-      cell: ({ row }) => <div>{row.getValue('Sent To')}</div>,
+      cell: ({ row }) => <div>{row.getValue('to')}</div>,
     },
     {
       accessorKey: 'date',

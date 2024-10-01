@@ -3,49 +3,18 @@ import HeaderWithBack from '../../components/header.with.back';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import AddButton from '../../components/add.btn';
-
-const cardData = [
-  {
-    uuid: 'ab89-d8d-d9d9d-dd',
-    title: 'This is a test SMS',
-    status: 'Completed',
-    triggers: 24,
-  },
-  {
-    uuid: 'ab89-d8d-d9d9d-dd',
-    title: 'This is a test SMS',
-    status: 'Completed',
-    triggers: 24,
-  },
-  {
-    uuid: 'ab89-d8d-d9d9d-dd',
-    title: 'This is a test SMS',
-    status: 'Completed',
-    triggers: 24,
-  },
-  {
-    uuid: 'ab89-d8d-d9d9d-dd',
-    title: 'This is a test SMS',
-    status: 'Completed',
-    triggers: 24,
-  },
-  {
-    uuid: 'ab89-d8d-d9d9d-dd',
-    title: 'This is a test SMS',
-    status: 'Completed',
-    triggers: 24,
-  },
-  {
-    uuid: 'ab89-d8d-d9d9d-dd',
-    title: 'This is a test SMS',
-    status: 'Completed',
-    triggers: 24,
-  },
-];
+import { useListRpCampaign, usePagination } from '@rahat-ui/query';
 
 export default function ManageTexts() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
+  const { pagination, filters } = usePagination();
+
+  const { data: campaignData } = useListRpCampaign(id as UUID, {
+    ...pagination,
+    ...(filters as any),
+    order: 'desc',
+  });
   return (
     <div className="p-4">
       <div className="flex justify-between items-center">
@@ -60,7 +29,7 @@ export default function ManageTexts() {
         />
       </div>
       <div className="grid grid-cols-4 gap-4">
-        {cardData?.map((i, index) => {
+        {campaignData?.map((i, index) => {
           return (
             <div
               key={index}
@@ -69,15 +38,19 @@ export default function ManageTexts() {
                 router.push(`/projects/el-kenya/${id}/communication/${i.uuid}`)
               }
             >
-              <h1 className="mb-4 text-lg font-medium">{i.title}</h1>
+              <h1 className="mb-4 text-lg font-medium">{i.name}</h1>
               <div className="flex justify-between items-center">
                 <div>
                   <h1 className="text-sm text-muted-foreground">Status</h1>
-                  <Badge className="font-normal">{i.status}</Badge>
+                  <Badge className="font-normal">
+                    {i.sessionId ? 'COMPLETED' : 'ONGOING'}
+                  </Badge>
                 </div>
                 <div>
                   <h1 className="text-sm text-muted-foreground">Triggers</h1>
-                  <p className="text-primary text-base">{i.triggers}</p>
+                  <p className="text-primary text-base">
+                    {i.sessionId ? 1 : 0}
+                  </p>
                 </div>
               </div>
             </div>

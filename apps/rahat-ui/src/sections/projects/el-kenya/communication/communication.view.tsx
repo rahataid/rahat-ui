@@ -12,7 +12,6 @@ import { useElkenyaSMSTableColumns } from './use.sms.table.columns';
 import React from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
-import AddButton from '../../components/add.btn';
 import getIcon from 'apps/rahat-ui/src/utils/getIcon';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import ViewColumns from '../../components/view.columns';
@@ -105,7 +104,7 @@ export default function CommunicationView() {
 
         <div className="rounded border bg-card p-4">
           <div className="flex justify-between space-x-2 mb-2">
-            <SearchInput className="w-full" name="" onSearch={() => {}} />
+            <SearchInput className="w-full" name="" onSearch={() => { }} />
             <ViewColumns table={table} />
             <Button
               onClick={() =>

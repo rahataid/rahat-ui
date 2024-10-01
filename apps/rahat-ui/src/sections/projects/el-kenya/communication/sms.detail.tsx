@@ -1,4 +1,8 @@
-import { usePagination } from '@rahat-ui/query';
+import {
+  useGetRpCampaign,
+  useListRpCampaignLog,
+  usePagination,
+} from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -9,7 +13,7 @@ import {
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import { useElkenyaSMSTableColumns } from './use.sms.table.columns';
-import React from 'react';
+import React, { useMemo } from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import getIcon from 'apps/rahat-ui/src/utils/getIcon';
@@ -17,6 +21,7 @@ import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import ViewColumns from '../../components/view.columns';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import HeaderWithBack from '../../components/header.with.back';
+import { TriggerConfirmModal } from './confirm.modal';
 
 const cardData = [
   { title: 'Total Message Sent', icon: 'MessageSquare', total: '1439' },
@@ -30,11 +35,10 @@ const cardData = [
 ];
 
 export default function CommunicationView() {
-  const { id } = useParams() as { id: UUID };
+  const { id, cid } = useParams() as { id: UUID; cid: UUID };
   const router = useRouter();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-
   const {
     pagination,
     filters,
@@ -47,13 +51,30 @@ export default function CommunicationView() {
     resetSelectedListItems,
   } = usePagination();
 
+  // const { data: campginData } = useGetRpCampaign(id as UUID, cid);
+  const { data, isSuccess, isLoading } = useListRpCampaignLog(id as UUID, {
+    uuid: cid as string,
+    query: {
+      ...pagination,
+      ...(filters as any),
+    },
+  });
+
+  const tableData = useMemo(() => {
+    if (isSuccess && data) {
+      return data?.data?.map((item: any) => ({
+        date: new Date(item.createdAt).toLocaleString(),
+        status: item?.status,
+        to: item?.address,
+      }));
+    } else {
+      return [];
+    }
+  }, [data, isSuccess]);
   const columns = useElkenyaSMSTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: [
-      { date: '123', status: 'A1' },
-      { date: '456', status: 'B1' },
-    ],
+    data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -72,11 +93,15 @@ export default function CommunicationView() {
   return (
     <>
       <div className="p-4">
-        <HeaderWithBack
-          title="SMS Details"
-          subtitle="Here is the detailed view of the selected SMS"
-          path={`/projects/el-kenya/${id}/communication/manage`}
-        />
+        <div className="flex justify-between">
+          <HeaderWithBack
+            title="SMS Details"
+            subtitle="Here is the detailed view of the selected SMS"
+            path={`/projects/el-kenya/${id}/communication/manage`}
+          />
+          <TriggerConfirmModal campaignId={cid} />
+        </div>
+
         <div className="grid grid-cols-4 gap-2 mb-4">
           {cardData?.map((item, index) => {
             const Icon = getIcon(item.icon as any);

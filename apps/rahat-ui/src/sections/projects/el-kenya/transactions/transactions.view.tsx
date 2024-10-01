@@ -7,6 +7,7 @@ import {
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { useElkenyaTransactionsTableColumns } from './use.transactions.table.columns';
+import { useKenyaProjectTransactions } from '@rahat-ui/query';
 import React from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
@@ -15,6 +16,7 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export default function TransactionsView() {
   const { id } = useParams() as { id: UUID };
+  const {data,error} = useKenyaProjectTransactions();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 

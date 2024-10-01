@@ -11,7 +11,19 @@ import BeneficiaryView from './beneficiary.view';
 import BeneficiaryGroupsView from './beneficiary.groups.view';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 
-export default function VouchersManage() {
+interface VouchersManageProps {
+  handleStepDataChange: (e) => void;
+  handleNext: any;
+  setBeneficiaryGroupSelected: any;
+  stepData: any;
+}
+
+export default function VouchersManage({
+  handleStepDataChange,
+  handleNext,
+  setBeneficiaryGroupSelected,
+  stepData,
+}: VouchersManageProps) {
   const { id } = useParams();
   return (
     <div className="p-4">
@@ -60,12 +72,20 @@ export default function VouchersManage() {
           </TabsList>
         </div>
         <TabsContent value="beneficiary">
-          <BeneficiaryView />
-        </TabsContent>
+          <BeneficiaryView
+            handleStepDataChange={handleStepDataChange}
+            handleNext={handleNext}
+          />
+        </TabsContent >
         <TabsContent value="beneficiaryGroups">
-          <BeneficiaryGroupsView />
+          <BeneficiaryGroupsView
+            handleStepDataChange={handleStepDataChange}
+            handleNext={handleNext}
+            setBeneficiaryGroupSelected={setBeneficiaryGroupSelected}
+            stepData={stepData}
+          />
         </TabsContent>
-      </Tabs>
-    </div>
+      </Tabs >
+    </div >
   );
 }

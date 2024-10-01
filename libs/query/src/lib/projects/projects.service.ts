@@ -579,6 +579,7 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
         ...query.data,
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
+              ...row,
               uuid: row?.uuid?.toString(),
               walletAddress: row?.walletAddress?.toString(),
               voucherClaimStatus: row?.claimStatus,

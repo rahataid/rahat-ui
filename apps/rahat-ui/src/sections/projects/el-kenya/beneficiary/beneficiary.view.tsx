@@ -48,7 +48,6 @@ export default function BeneficiaryView() {
   const meta = beneficiaries.data.response?.meta;
 
   const handleViewClick = (rowData: any) => {
-    console.log(rowData);
     router.push(
       `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${rowData.name}&&walletAddress=${rowData.walletAddress}&&gender=${rowData.gender}&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${rowData.eyeCheckupStatus}&&glassesStatus=${rowData.glassesStatus}&&voucherType=${rowData.voucherType}&&phone=${rowData.phone}&&uuid=${rowData.uuid}`,
     );

@@ -1,6 +1,6 @@
 import { useRSQuery } from "@rumsan/react-query";
 import Swal from "sweetalert2";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { encodeFunctionData, formatUnits } from "viem";
 import { useReadRahatTokenDecimals } from "../generated-hooks/rahatToken";
 import {  useWriteRahatCvaKenyaMulticall,
@@ -10,8 +10,14 @@ import {  useWriteRahatCvaKenyaMulticall,
   useWriteRahatTreasuryTransferToken, 
   useWriteRedemptionsRedeemToken } from "../generated-hooks";
 import { useRouter } from "next/navigation";
+import { useProjectAction } from "../../../projects";
+import { UUID } from "crypto";
+import { MS_ACTIONS } from "@rahataid/sdk";
 
-export const useTokenCreate = () => {
+const CREATE_BULK_DISBURSEMENT = 'rpProject.disbursement.bulkCreate';
+
+
+export const useKenyaVoucherCreate = () => {
   const { queryClient } = useRSQuery();
   const treasuryCreateToken = useWriteRahatTreasuryCreateToken();
 
@@ -77,7 +83,36 @@ export const useTokenCreate = () => {
   );
 };
 
-export const useBulkAllocateTokens = (tokenAddress: any) => {
+export const useBulkCreateDisbursement = (projectUUID: UUID) => {
+  const action = useProjectAction(['createBulkDisbursement-rpProject']);
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: {
+      amount: number;
+      beneficiaries: `0x${string}`[];
+    }) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: CREATE_BULK_DISBURSEMENT,
+          payload: data,
+        },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, {}],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['disbursements', projectUUID],
+      });
+    },
+  });
+};
+
+export const useBulkAssignKenyaVoucher = (tokenAddress: any,projectId:UUID) => {
+  console.log('tokenAddress', tokenAddress);
   const multi = useWriteRahatCvaKenyaMulticall();
   const { queryClient } = useRSQuery();
   const decimals = useReadRahatTokenDecimals({
@@ -86,6 +121,9 @@ export const useBulkAllocateTokens = (tokenAddress: any) => {
       enabled: !!tokenAddress,
     },
   });
+
+  const bulkAssignDisbursement = useBulkCreateDisbursement(projectId);
+
 
   console.log('decimals', decimals);
 
@@ -106,16 +144,18 @@ export const useBulkAllocateTokens = (tokenAddress: any) => {
           text: error.message,
         });
       },
-      onSuccess: ({  }) => {
+      onSuccess:async (data,variables,context) => {
+        await bulkAssignDisbursement.mutateAsync({
+          amount:1,
+          beneficiaries:variables.beneficiaryAddresses.map(b=>b.walletAddress)
+        })
         alert.fire({
           icon: 'success',
           title: 'Tokens allocated successfully',
         });
-        // queryClient.invalidateQueries({
-        //   queryKey: ['ProjectDetails', projectAddress],
-        // });
-        // console.log('success', d);
+       
       },
+     
       mutationFn: async ({
         beneficiaryAddresses,
         tokenAddress,
@@ -161,7 +201,7 @@ export const useBulkAllocateTokens = (tokenAddress: any) => {
   );
 };
 
-export const useGetTokenAllocations = (
+export const useGetKenyaVoucherAllocations = (
   projectAddress: `0x${string}`,
   tokenAddress: `0x${string}`,
 ) => {
@@ -184,7 +224,7 @@ export const useGetTokenAllocations = (
   });
 };
 
-export const useSendFundToProject = () => {
+export const useSendFundToKenyaProject = () => {
   const sendFundProject = useWriteRahatTreasuryTransferToken();
 
   const { queryClient } = useRSQuery();

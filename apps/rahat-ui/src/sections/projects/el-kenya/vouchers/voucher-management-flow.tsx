@@ -4,10 +4,13 @@ import { useEffect, useState } from 'react';
 import VouchersManage from './vouchers.manage';
 import ConfirmSelection from './confirmation';
 import {
+  PROJECT_SETTINGS_KEYS,
+  useBulkAssignKenyaVoucher,
   useBulkCreateDisbursement,
   useCreateDisbursementPlan,
   useFindAllDisbursementPlans,
   useFindAllDisbursements,
+  useProjectSettingsStore,
   useRpSingleBeneficiaryGroupMutation,
 } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
@@ -40,6 +43,14 @@ const VouchersManagementFlow = () => {
   const { data: disbursementData } = useFindAllDisbursementPlans(id);
 
   const confirmModal = useBoolean(false);
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+  const syncDisbursementAllocation = useBulkAssignKenyaVoucher( 
+    contractSettings?.rahattoken?.address,
+    id
+   );
+
 
   const handleStepDataChange = (e) => {
     const { name, value } = e.target;
@@ -72,12 +83,24 @@ const VouchersManagementFlow = () => {
       });
       router.push(`/projects/el-kenya/${id}/vouchers`);
     } else {
-      await bulkAssignDisbursement.mutateAsync({
-        amount: 1,
-        beneficiaries: stepData.selectedBeneficiaries?.map(
-          (row) => row.walletAddress,
-        ),
-      });
+      console.log("step",stepData.selectedBeneficiaries)
+      // todo: for groups
+      await syncDisbursementAllocation.mutateAsync({
+        beneficiaryAddresses: stepData.selectedBeneficiaries.map((ben) => {
+          return {
+            walletAddress: ben?.walletAddress,
+            amount: 1,
+          };
+        }),
+        tokenAddress: contractSettings?.rahattoken?.address,
+        projectAddress: contractSettings?.rahatcvakenya?.address,
+      })
+      // await bulkAssignDisbursement.mutateAsync({
+      //   amount: 1,
+      //   beneficiaries: stepData.selectedBeneficiaries?.map(
+      //     (row) => row.walletAddress,
+      //   ),
+      // });
       router.push(`/projects/el-kenya/${id}/vouchers`);
     }
   };

@@ -30,7 +30,9 @@ export default function SelectComponent({
       <SelectContent>
         <SelectGroup>
           {options?.map((o: string) => (
-            <SelectItem value={o}>{o}</SelectItem>
+            <SelectItem value={o} key={o}>
+              {o.replace(/_/g, ' ')}
+            </SelectItem>
           ))}
         </SelectGroup>
       </SelectContent>

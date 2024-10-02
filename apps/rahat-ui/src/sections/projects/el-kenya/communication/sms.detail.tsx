@@ -13,7 +13,7 @@ import {
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import { useElkenyaSMSTableColumns } from './use.sms.table.columns';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import getIcon from 'apps/rahat-ui/src/utils/getIcon';
@@ -23,22 +23,15 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import HeaderWithBack from '../../components/header.with.back';
 import { TriggerConfirmModal } from './confirm.modal';
 
-const cardData = [
-  { title: 'Total Message Sent', icon: 'MessageSquare', total: '1439' },
-  { title: 'Beneficiaries', icon: 'Users', total: '111' },
-  { title: 'Failed Message Delivery', icon: 'MessageSquare', total: '439' },
-  {
-    title: 'Successfull Messages Delivered',
-    icon: 'CircleCheck',
-    total: '539',
-  },
-];
-
 export default function CommunicationView() {
   const { id, cid } = useParams() as { id: UUID; cid: UUID };
   const router = useRouter();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  const [stats, setStats] = React.useState({
+    succed: 0,
+    failed: 0,
+  });
   const {
     pagination,
     filters,
@@ -60,13 +53,46 @@ export default function CommunicationView() {
     },
   });
 
+  const cardData = [
+    {
+      title: 'Total Message Sent',
+      icon: 'MessageSquare',
+      total: data?.data?.length,
+    },
+    { title: 'Beneficiaries', icon: 'Users', total: data?.data?.length },
+    {
+      title: 'Failed Message Delivery',
+      icon: 'MessageSquare',
+      total: stats.failed,
+    },
+    {
+      title: 'Successfull Messages Delivered',
+      icon: 'CircleCheck',
+      total: stats.succed,
+    },
+  ];
+
   const tableData = useMemo(() => {
     if (isSuccess && data) {
-      return data?.data?.map((item: any) => ({
-        date: new Date(item.createdAt).toLocaleString(),
-        status: item?.status,
-        to: item?.address,
-      }));
+      let succed = 0;
+      let failed = 0;
+
+      return data?.data?.map((item: any) => {
+        if (item.isComplete) {
+          succed += 1;
+        } else {
+          failed += 1;
+        }
+        setStats({
+          succed: succed,
+          failed: failed,
+        });
+        return {
+          date: new Date(item.createdAt).toLocaleString(),
+          status: item?.status,
+          to: item?.address,
+        };
+      });
     } else {
       return [];
     }
@@ -127,7 +153,7 @@ export default function CommunicationView() {
         </div>
       </div>
       <CustomPagination
-        meta={{ total: 0, currentPage: 0 }}
+        meta={data?.response.meta || { total: 0, currentPage: 0 }}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}

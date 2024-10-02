@@ -1,4 +1,4 @@
-import { usePagination } from '@rahat-ui/query';
+import { useListRpCommunicationLogs, usePagination } from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -9,7 +9,7 @@ import {
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import { useElkenyaSMSTableColumns } from './use.sms.table.columns';
-import React from 'react';
+import React, { useEffect } from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import getIcon from 'apps/rahat-ui/src/utils/getIcon';
@@ -18,47 +18,55 @@ import ViewColumns from '../../components/view.columns';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Settings } from 'lucide-react';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-
-const cardData = [
-  { title: 'Total Message Sent', icon: 'MessageSquare', total: '1439' },
-  { title: 'Failed Message Delivery', icon: 'MessageSquare', total: '1439' },
-  {
-    title: 'Successfull Messages Delivered',
-    icon: 'CircleCheck',
-    total: '1439',
-  },
-];
+import Pagination from 'apps/rahat-ui/src/components/pagination';
 
 export default function CommunicationView() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  const [stats, setStats] = React.useState({
+    succed: 0,
+    failed: 0,
+  });
+  const { data } = useListRpCommunicationLogs(id);
 
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    resetSelectedListItems,
-  } = usePagination();
+  useEffect(() => {
+    setStats({
+      succed: 0,
+      failed: 0,
+    });
+    data?.map((logs: any) => {
+      setStats((prev) => {
+        return logs.status === 'SUCCESS'
+          ? { ...prev, succed: prev.succed + 1 }
+          : { ...prev, failed: prev.failed + 1 };
+      });
+    });
+  }, [data]);
+
+  const cardData = [
+    { title: 'Total Message Sent', icon: 'MessageSquare', total: data?.length },
+    {
+      title: 'Failed Message Delivery',
+      icon: 'MessageSquare',
+      total: stats.failed,
+    },
+    {
+      title: 'Successfull Messages Delivered',
+      icon: 'CircleCheck',
+      total: stats.succed,
+    },
+  ];
 
   const columns = useElkenyaSMSTableColumns();
   const table = useReactTable({
-    manualPagination: true,
-    data: [
-      { date: '123', status: 'A1' },
-      { date: '456', status: 'B1' },
-    ],
+    data: data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setSelectedListItems,
+    // onRowSelectionChange: setSelectedListItems,
     getFilteredRowModel: getFilteredRowModel(),
     getRowId(originalRow) {
       return originalRow.walletAddress;
@@ -66,7 +74,7 @@ export default function CommunicationView() {
 
     state: {
       columnVisibility,
-      rowSelection: selectedListItems,
+      // rowSelection: selectedListItems,
     },
   });
   return (
@@ -104,7 +112,7 @@ export default function CommunicationView() {
 
         <div className="rounded border bg-card p-4">
           <div className="flex justify-between space-x-2 mb-2">
-            <SearchInput className="w-full" name="" onSearch={() => { }} />
+            <SearchInput className="w-full" name="" onSearch={() => {}} />
             <ViewColumns table={table} />
             <Button
               onClick={() =>
@@ -117,14 +125,14 @@ export default function CommunicationView() {
           <ElkenyaTable table={table} tableHeight="h-[calc(100vh-415px)]" />
         </div>
       </div>
-      <CustomPagination
-        meta={{ total: 0, currentPage: 0 }}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        currentPage={pagination.page}
-        perPage={pagination.perPage}
-        total={0}
+      <Pagination
+        pageIndex={table.getState().pagination.pageIndex}
+        pageCount={table.getPageCount()}
+        setPageSize={table.setPageSize}
+        canPreviousPage={table.getCanPreviousPage()}
+        previousPage={table.previousPage}
+        canNextPage={table.getCanNextPage()}
+        nextPage={table.nextPage}
       />
     </>
   );

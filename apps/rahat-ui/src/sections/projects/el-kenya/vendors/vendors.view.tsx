@@ -1,42 +1,42 @@
-import { usePagination } from '@rahat-ui/query';
+import { usePagination, useProjectAction } from '@rahat-ui/query';
 import {
   getCoreRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useElkenyaVendorsTableColumns } from './columns/use.vendors.table.columns';
 import React from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import ViewColumns from '../../components/view.columns';
+import { MS_ACTIONS } from '@rahataid/sdk';
+import Pagination from 'apps/rahat-ui/src/components/pagination';
 
 export default function VendorsView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  const [data, setData] = React.useState([]);
 
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    resetSelectedListItems,
-  } = usePagination();
+  const tableData = React.useMemo(() => {
+    if (data) return data;
+    else return [];
+  }, [data]);
 
-  const columns = useElkenyaVendorsTableColumns();
+  const router = useRouter();
+  const getVendors = useProjectAction();
+  const handleViewClick = (rowData: any) => {
+    router.push(
+      `/projects/el-kenya/${id}/vendors/${rowData.walletAddress}?name=${rowData.name}&&walletAddress=${rowData.walletAddress} &&vendorId=${rowData.uuid}`,
+    );
+  };
+  const columns = useElkenyaVendorsTableColumns({ handleViewClick });
+
   const table = useReactTable({
-    manualPagination: true,
-    data: [
-      { phone: '123', name: 'A1' },
-      { phone: '456', name: 'B1' },
-    ],
+    data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -44,6 +44,26 @@ export default function VendorsView() {
       columnVisibility,
     },
   });
+
+  const fetchVendors = async () => {
+    const result = await getVendors.mutateAsync({
+      uuid: id,
+      data: {
+        action: MS_ACTIONS.VENDOR.LIST_BY_PROJECT,
+        payload: {},
+      },
+    });
+    console.log({ result });
+
+    const filteredData = result?.data;
+
+    console.log({ filteredData });
+    setData(filteredData);
+  };
+
+  React.useEffect(() => {
+    fetchVendors();
+  }, []);
   return (
     <>
       <div className="p-4">
@@ -61,14 +81,14 @@ export default function VendorsView() {
           <ElkenyaTable table={table} tableHeight="h-[calc(100vh-294px)]" />
         </div>
       </div>
-      <CustomPagination
-        meta={{ total: 0, currentPage: 0 }}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        currentPage={pagination.page}
-        perPage={pagination.perPage}
-        total={0}
+      <Pagination
+        pageIndex={table.getState().pagination.pageIndex}
+        pageCount={table.getPageCount()}
+        setPageSize={table.setPageSize}
+        canPreviousPage={table.getCanPreviousPage()}
+        previousPage={table.previousPage}
+        canNextPage={table.getCanNextPage()}
+        nextPage={table.nextPage}
       />
     </>
   );

@@ -10,28 +10,6 @@ export default function useTableColumn() {
   const { id } = useParams() as { id: UUID };
   const columns: ColumnDef<any>[] = [
     {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
       accessorKey: 'name',
       header: 'Vendors',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
@@ -45,17 +23,17 @@ export default function useTableColumn() {
         </div>
       ),
     },
+    // {
+    //   accessorKey: 'vouchersType',
+    //   header: 'Vouchers Type',
+    //   cell: ({ row }) => {
+    //     row.getValue('vouchersType');
+    //   },
+    // },
     {
-      accessorKey: 'vouchersType',
-      header: 'Vouchers Type',
-      cell: ({ row }) => {
-        row.getValue('vouchersType');
-      },
-    },
-    {
-      accessorKey: 'syncStatus',
+      accessorKey: 'status',
       header: 'Sync Status',
-      cell: ({ row }) => <div>{row.getValue('syncStatus')}</div>,
+      cell: ({ row }) => <div>{row.getValue('status')}</div>,
     },
     {
       id: 'actions',

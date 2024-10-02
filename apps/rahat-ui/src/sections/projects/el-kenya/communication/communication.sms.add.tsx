@@ -42,7 +42,7 @@ export default function AddSMSForm() {
   const createCampaign = useCreateCampaign(id as UUID);
   const { data: transportData } = useListRpTransport(id as UUID);
   const transportId = transportData?.find(
-    (transport) => transport.type === 'SMS' || transport.name === 'Prabhu SMS',
+    (transport) => transport.name === 'Kenya SMS',
   ).cuid;
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),

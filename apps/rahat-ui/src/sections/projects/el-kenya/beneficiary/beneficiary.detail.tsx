@@ -16,7 +16,7 @@ export default function BeneficiaryDetail() {
   const searchParams = useSearchParams();
 
   const phone = searchParams.get('phone');
-  const uuid = searchParams.get('uuid');
+  const type = searchParams.get('type');
   const name = searchParams.get('name');
   const walletAddress = searchParams.get('walletAddress') || '';
   const gender = searchParams.get('gender') || '';
@@ -76,7 +76,7 @@ export default function BeneficiaryDetail() {
         <div>
           <h1 className="text-md text-muted-foreground">Beneficiary Type</h1>
           <p className="font-medium">
-            <Badge>-</Badge>
+            <Badge>{type}</Badge>
           </p>
         </div>
         <div>

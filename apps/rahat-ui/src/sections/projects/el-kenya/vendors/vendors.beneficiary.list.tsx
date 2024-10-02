@@ -6,44 +6,39 @@ import {
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import React from 'react';
+import React, { useMemo } from 'react';
 import ElkenyaTable from '../table.component';
 import { useElkenyaVendorsBeneficiaryTableColumns } from './columns/use.vendors.beneficiary.table.columns';
 
-export default function VendorsBeneficiaryList() {
+interface VendorsBeneficiaryListProps {
+  beneficiaryList: any;
+}
+
+export default function VendorsBeneficiaryList({
+  beneficiaryList,
+}: VendorsBeneficiaryListProps) {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    resetSelectedListItems,
-  } = usePagination();
-
-  const beneficiaries = useProjectBeneficiaries({
-    page: pagination.page,
-    perPage: pagination.perPage,
-    order: 'desc',
-    sort: 'createdAt',
-    projectUUID: id,
-    ...filters,
-  });
-  const meta = beneficiaries.data.response?.meta;
+  const tableData = useMemo(() => {
+    if (beneficiaryList.length > 0) {
+      return beneficiaryList.map((beneficiary: any) => {
+        return {
+          name: beneficiary.piiData.name,
+          type: beneficiary.Disbursement.Beneficiary.type,
+          glassesStatus: beneficiary.Disbursement.Beneficiary.glassesStatus,
+          voucherStatus: beneficiary.Disbursement.Beneficiary.voucherStatus,
+        };
+      });
+    } else {
+      return [];
+    }
+  }, [beneficiaryList]);
 
   const columns = useElkenyaVendorsBeneficiaryTableColumns();
   const table = useReactTable({
-    manualPagination: true,
-    data: [
-      { walletAddress: '123', name: 'A1' },
-      { walletAddress: '456', name: 'B1' },
-    ],
+    data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,

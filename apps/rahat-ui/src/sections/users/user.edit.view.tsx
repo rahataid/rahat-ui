@@ -1,14 +1,9 @@
 'use client';
 
-// Import statements
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-
-// import { useUserCreate, useUserRoleList } from '@rumsan/react-query';
-// import { enumToObjectArray } from '@rumsan/sdk/utils';
-// import { Role } from '@rumsan/sdk/types';
 import {
   Select,
   SelectContent,
@@ -17,8 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-// import { Gender } from '@rahat-ui/types';
-import { useRoleList, useSettingsStore, useUserCreate } from '@rahat-ui/query';
+import {
+  useRoleList,
+  useSettingsStore,
+  useUserCreate,
+  useUserUpdate,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
@@ -33,7 +32,7 @@ import {
   useAddAdmin,
   useAddManager,
 } from '../../hooks/el/contracts/el-contracts';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import HeaderWithBack from '../projects/components/header.with.back';
 import { Loader2, Wallet } from 'lucide-react';
@@ -41,12 +40,11 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
-
-// Constants
-// const genderList = enumToObjectArray(Gender);
+import { UUID } from 'crypto';
+import { useUserEdit, useUserGet, useUserStore } from '@rumsan/react-query';
 
 const FormSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 4 character' }),
+  name: z.string().min(4, { message: 'Name must be at least 4 character' }),
   email: z.string().email(),
   gender: z.string(),
   roles: z.array(z.string()).length(1, { message: 'Please select role' }),
@@ -57,78 +55,58 @@ const FormSchema = z.object({
 });
 
 // Component
-export default function AddUser() {
+export default function EditUser() {
+  const { id } = useParams() as { id: UUID };
   const router = useRouter();
-  const [next, setNext] = React.useState(false);
+  const searchParam = useSearchParams();
+  const role = searchParam.get('role');
+
+  const { data } = useUserGet(id);
+  const user = data?.data;
 
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: '',
-      gender: '',
-      email: '',
-      phone: '',
-      roles: [],
-      wallet: '',
+      name: user?.name || '',
+      gender: user?.gender || '',
+      email: user?.email || '',
+      phone: user?.phone || '',
+      roles: user?.roles || [],
+      wallet: user?.wallet || '',
     },
   });
 
   const { data: roleData } = useRoleList();
-  const contractSettings = useSettingsStore((state) => state.accessManager);
-  const roleSync = useSettingsStore((state) => state.roleOnChainSync);
-  const route = useRouter();
+  const updateUser = useUserUpdate(id);
 
-  const userCreate = useUserCreate();
-  const addManager = useAddManager();
-  const addAdmin = useAddAdmin();
-
-  const handleAddUser = async (data: any) => {
-    if (roleSync === true) {
-      if (data.roles.includes('Manager')) {
-        await addManager.mutateAsync({
-          data: data,
-          walletAddress: data?.wallet,
-          contractAddress: contractSettings as `0x${string}`,
-        });
-      } else if (data.roles.includes('Admin')) {
-        await addAdmin.mutateAsync({
-          data: data,
-          walletAddress: data?.wallet,
-          contractAddress: contractSettings as `0x${string}`,
-        });
-      } else {
-        await userCreate.mutateAsync(data);
-      }
-    } else {
-      await userCreate.mutateAsync(data);
-    }
+  const handleEditUser = async (data: any) => {
+    await updateUser.mutateAsync({
+      uuid: id,
+      payload: data,
+    });
   };
 
-  useEffect(() => {
-    if (userCreate.isSuccess) {
-      form.reset({
-        name: '',
-        gender: '',
-        email: '',
-        phone: '',
-        roles: [],
-        wallet: '',
-      });
-      route.push('/users');
-    }
-  }, [form, userCreate.isSuccess]);
+  // const handleEditUser = async (data: z.infer<typeof FormSchema>) => {
+  //   const payload = { uuid: User?.uuid, data: data };
+  //   try {
+  //     await updateUser.mutateAsync(payload);
+  //   } catch (e) {
+  //     console.error('Error updating user profile:', e);
+  //     toast.error('Error updating user profile');
+  //   }
+  // };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleAddUser)}>
+      <form onSubmit={form.handleSubmit(handleEditUser)}>
         <div className="p-4 h-[calc(100vh-130px)]">
           <HeaderWithBack
-            title="Add User"
-            subtitle="Create a new user detail"
+            title="Edit User"
+            subtitle="Edit user detail"
             path="/users"
           />
           <div className="grid grid-cols-2 gap-4 border p-4 rounded-md">
-            {next ? (
+            {role ? (
               <FormField
                 control={form.control}
                 name="roles"
@@ -294,24 +272,14 @@ export default function AddUser() {
           >
             Cancel
           </Button>
-          {next ? (
-            userCreate.isPending ? (
-              <Button disabled>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Please wait
-              </Button>
-            ) : (
-              <Button type="submit" className="px-10">
-                Add
-              </Button>
-            )
+          {updateUser.isPending ? (
+            <Button disabled>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Please wait
+            </Button>
           ) : (
-            <Button
-              type="button"
-              className="px-14"
-              onClick={() => setNext(true)}
-            >
-              Next
+            <Button type="submit" className="px-10">
+              Update
             </Button>
           )}
         </div>

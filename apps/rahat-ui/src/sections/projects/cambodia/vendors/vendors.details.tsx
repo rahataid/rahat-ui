@@ -16,12 +16,15 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { DialogComponent } from '../../components/dialog';
+import { useCambodiaVendorGet } from '@rahat-ui/query';
 
 export default function VendorsDetail() {
-  const { id } = useParams();
+  const { id, vendorId } = useParams();
+  const { data } = useCambodiaVendorGet({ projectUUID: id, vendorId }) as any;
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<number>();
 
+  console.log(data);
   const clickToCopy = (walletAddress: string, id: number) => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(id);
@@ -30,11 +33,11 @@ export default function VendorsDetail() {
     <div className="h-[calc(100vh-95px)] m-4">
       <div className="flex justify-between items-center">
         <HeaderWithBack
-          title="Vision Center Name"
+          title={data?.data?.User?.name}
           subtitle="Here is the detailed view of selected vendor"
-          path={`/projects/el-kenya/${id}/vendors`}
+          path={`/projects/el-cambodia/${id}/vendors`}
         />
-        <DialogComponent
+        {/* <DialogComponent
           trigger={
             <Button
               variant="outline"
@@ -48,7 +51,7 @@ export default function VendorsDetail() {
           subtitle="This action cannot be undone once you confirm"
           onCancel={() => console.log('cancel')}
           onSubmit={() => console.log('submit')}
-        />
+        /> */}
       </div>
       <div className="flex space-x-4 mb-4">
         <DataCard
@@ -75,9 +78,11 @@ export default function VendorsDetail() {
           <h1 className="text-md text-muted-foreground">Wallet Address</h1>
           <div
             className="flex items-center space-x-2 cursor-pointer"
-            onClick={() => clickToCopy('4567876545', 4567876545)}
+            onClick={() =>
+              clickToCopy(`${data?.data?.User?.wallet}`, data?.User?.wallet)
+            }
           >
-            <p>{truncateEthAddress('4567876545')}</p>
+            <p>{truncateEthAddress(data?.data?.User?.wallet)}</p>
             {walletAddressCopied === 4567876545 ? (
               <CopyCheck size={15} strokeWidth={1.5} />
             ) : (
@@ -87,12 +92,12 @@ export default function VendorsDetail() {
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Phone Number</h1>
-          <p className="font-medium">+9779876543210</p>
+          <p className="font-medium">{data?.data?.User?.phone}</p>
         </div>
-        <div>
+        {/* <div>
           <h1 className="text-md text-muted-foreground">Status</h1>
           <Badge>Not Approved</Badge>
-        </div>
+        </div> */}
       </div>
       <Tabs defaultValue="transactionHistory">
         <TabsList className="border bg-secondary rounded mb-4">

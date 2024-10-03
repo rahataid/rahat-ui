@@ -9,7 +9,6 @@ export default function getIcon(name: keyof typeof li): IconComponent {
   try {
     const iconName = name as keyof typeof li;
     const icon = li[iconName];
-    console.log('icon', icon);
 
     if (!icon) {
       throw new Error(`Icon "${name}" not found`);

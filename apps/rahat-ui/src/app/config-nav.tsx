@@ -20,7 +20,6 @@ function sanitizeNavData(data: any) {
 
 export function useNavData() {
   const navSettings = useSettingsStore((state) => state.navSettings);
-  console.log('navSettings', navSettings);
   const navData = sanitizeNavData(navSettings?.DATA);
   const navSubData = sanitizeNavData(navSettings?.SUBDATA);
 

@@ -131,7 +131,7 @@ export default function ListView({
             type="end"
           />
 
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
                 {selectedProject ? selectedProject.name : 'Select Project'}
@@ -149,7 +149,7 @@ export default function ListView({
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

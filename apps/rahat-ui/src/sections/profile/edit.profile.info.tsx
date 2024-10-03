@@ -16,9 +16,10 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { isValidPhoneNumber } from 'react-phone-number-input';
-import { Wallet } from 'lucide-react';
+import { Loader2, Wallet } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Back from '../projects/components/back';
+import HeaderWithBack from '../projects/components/header.with.back';
 
 export default function EditUserProfile() {
   const { user, setUser } = useUserStore((state) => ({
@@ -77,13 +78,11 @@ export default function EditUserProfile() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditUserProfile)}>
         <div className="p-4">
-          <div className="flex space-x-3 mb-10">
-            <Back path="/profile" />
-            <div>
-              <h1 className="text-2xl font-semibold ">Edit User Profile</h1>
-              <p className=" text-muted-foreground">Edit user details</p>
-            </div>
-          </div>
+          <HeaderWithBack
+            title="Edit User Profile"
+            subtitle="Edit user details"
+            path="/profile"
+          />
           <div className="border shadow-md p-6 rounded-sm bg-card">
             <div className="grid grid-cols-3 gap-4">
               <FormField
@@ -156,10 +155,24 @@ export default function EditUserProfile() {
                 }}
               />
             </div>
-            <div className="flex justify-end mt-8">
-              <Button>Update User Profile</Button>
-            </div>
           </div>
+        </div>
+        <div className="flex justify-end space-x-2 py-2 px-4 border-t">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => router.push('/users')}
+          >
+            Cancel
+          </Button>
+          {editUser.isPending ? (
+            <Button disabled>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Please wait
+            </Button>
+          ) : (
+            <Button className="px-10">Save Changes</Button>
+          )}
         </div>
       </form>
     </Form>

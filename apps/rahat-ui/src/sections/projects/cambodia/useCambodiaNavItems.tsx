@@ -1,5 +1,6 @@
 import {
   ArrowLeftRight,
+  Coins,
   Hospital,
   LayoutDashboard,
   SmartphoneNfc,
@@ -38,6 +39,12 @@ export const useNavItems = () => {
           path: `/projects/el-cambodia/${id}/transactions`,
           subtitle: 20,
           icon: <ArrowLeftRight size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Commission Scheme',
+          path: `/projects/el-cambodia/${id}/commission`,
+          subtitle: 20,
+          icon: <Coins size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Health Worker',

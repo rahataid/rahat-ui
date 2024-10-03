@@ -1,4 +1,3 @@
-'use client';
 import { memo, useEffect, useState } from 'react';
 
 import {
@@ -180,12 +179,14 @@ function BeneficiaryView() {
       <div className="flex justify-between items-center p-4">
         <TabsList className="border bg-secondary rounded">
           <TabsTrigger
+            id="beneficiary"
             className="w-full data-[state=active]:bg-white"
             value="beneficiary"
           >
             Beneficiary
           </TabsTrigger>
           <TabsTrigger
+            id="beneficiaryGroups"
             className="w-full data-[state=active]:bg-white"
             value="beneficiaryGroups"
           >
@@ -226,7 +227,9 @@ function BeneficiaryView() {
         />
       </TabsContent>
       <TabsContent value="beneficiaryGroups">
-        <BeneficiaryGroupsView />
+        <div className="p-4">
+          <BeneficiaryGroupsView />
+        </div>
       </TabsContent>
     </Tabs>
   );

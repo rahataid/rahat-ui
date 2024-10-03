@@ -870,3 +870,85 @@ export const useCambodiaVendorGet = (payload: any) => {
     ...query,
   };
 };
+
+export const useCambodiaCommisionList = (payload: any) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: ['cambodia.commission_scheme.list', restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'cambodia.commission_scheme.list',
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return {
+    ...query,
+  };
+};
+
+export const useCambodiaCommisionCurrent = (payload: any) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: ['cambodia.commission_scheme.get_current', restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'cambodia.commission_scheme.get_current',
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return {
+    ...query,
+  };
+};
+
+export const useCambodiaCommisionCreate = () => {
+  const q = useProjectAction<any[]>();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['cambodia.commission_scheme.create'],
+
+    mutationFn: async (payload: any) => {
+      console.log(payload);
+      const { projectUUID, ...restPayload } = payload;
+
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'cambodia.commission_scheme.create',
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: ['cambodia.commission_scheme.get_current'],
+      });
+    },
+  });
+};

@@ -51,8 +51,10 @@ export default function UserView() {
     <>
       <div className="p-4">
         <div className="mb-4">
-          <h1 className="font-semibold text-2xl text-label">Users</h1>
-          <p className="text-sub-label">Here is the list of all the users</p>
+          <h1 className="font-semibold text-[28px]">Users</h1>
+          <p className="text-muted-foreground text-base">
+            Here is the list of all the users
+          </p>
         </div>
         <UsersTable table={table} />
       </div>

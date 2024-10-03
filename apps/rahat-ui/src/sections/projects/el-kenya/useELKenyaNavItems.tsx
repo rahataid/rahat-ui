@@ -31,16 +31,10 @@ export const useNavItems = () => {
           icon: <UsersRound size={18} strokeWidth={1.5} />,
         },
         {
-          title: 'Vendors',
-          path: `/projects/el-kenya/${id}/vendors`,
+          title: 'Communications',
           subtitle: 20,
-          icon: <HandCoins size={18} strokeWidth={1.5} />,
-        },
-        {
-          title: 'Transactions',
-          path: `/projects/el-kenya/${id}/transactions`,
-          subtitle: 20,
-          icon: <ArrowRightLeft size={18} strokeWidth={1.5} />,
+          icon: <Speech size={18} strokeWidth={1.5} />,
+          path: `/projects/el-kenya/${id}/communication`,
         },
         {
           title: 'Vouchers',
@@ -48,20 +42,31 @@ export const useNavItems = () => {
           icon: <Ticket size={18} strokeWidth={1.5} />,
         },
         {
+          title: 'Transactions',
+          path: `/projects/el-kenya/${id}/transactions`,
+          subtitle: 20,
+          icon: <ArrowRightLeft size={18} strokeWidth={1.5} />,
+          disabled: true,
+        },
+        {
+          title: 'Vendors',
+          path: `/projects/el-kenya/${id}/vendors`,
+          subtitle: 20,
+          icon: <HandCoins size={18} strokeWidth={1.5} />,
+          disabled: true,
+        },
+
+        {
           title: 'Offline Management',
           path: `/projects/el-kenya/${id}/offline-management`,
           icon: <CloudOff size={18} strokeWidth={1.5} />,
+          disabled: true,
         },
         {
           title: 'Claim',
           path: `/projects/el-kenya/${id}/claim`,
           icon: <Gift size={18} strokeWidth={1.5} />,
-        },
-        {
-          title: 'Communications',
-          subtitle: 20,
-          icon: <Speech size={18} strokeWidth={1.5} />,
-          path: `/projects/el-kenya/${id}/communication`,
+          disabled: true,
         },
       ],
     },

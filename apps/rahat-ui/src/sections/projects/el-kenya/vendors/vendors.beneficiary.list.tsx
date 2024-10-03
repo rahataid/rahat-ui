@@ -22,7 +22,7 @@ export default function VendorsBeneficiaryList({
     React.useState<VisibilityState>({});
 
   const tableData = useMemo(() => {
-    if (beneficiaryList.length > 0) {
+    if (beneficiaryList?.length > 0) {
       return beneficiaryList.map((beneficiary: any) => {
         return {
           name: beneficiary.piiData.name,

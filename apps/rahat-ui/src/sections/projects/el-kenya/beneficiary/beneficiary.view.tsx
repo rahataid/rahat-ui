@@ -37,6 +37,10 @@ export default function BeneficiaryView() {
     resetSelectedListItems,
   } = usePagination();
 
+  React.useEffect(() => {
+    setFilters('');
+  }, []);
+
   const beneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
@@ -91,7 +95,12 @@ export default function BeneficiaryView() {
             <SearchInput
               className="w-full"
               name="beneficiary"
-              onSearch={() => {}}
+              value={
+                (table.getColumn('name')?.getFilterValue() as string) ?? ''
+              }
+              onSearch={(event) =>
+                table.getColumn('name')?.setFilterValue(event.target.value)
+              }
             />
             <AddButton
               name="Beneficiary"
@@ -99,11 +108,31 @@ export default function BeneficiaryView() {
             />
           </div>
           <div className="flex justify-between gap-2 mb-4">
-            <SelectComponent name="Voucher Type" />
-            <SelectComponent name="Beneficiary Type" />
-            <SelectComponent name="Eye Checkup Status" />
-            <SelectComponent name="Glasses Status" />
-            <SelectComponent name="Voucher Status" />
+            <SelectComponent
+              onChange={(e) => setFilters({ ...filters, voucherType: e })}
+              name="Voucher Type"
+              options={['SINGLE_VISION', 'READING_GLASSES']}
+            />
+            <SelectComponent
+              onChange={(e) => setFilters({ ...filters, type: e })}
+              name="Beneficiary Type"
+              options={['PRE_DETERMINED', 'WALK_IN']}
+            />
+            <SelectComponent
+              onChange={(e) => setFilters({ ...filters, eyeCheckupStatus: e })}
+              name="Eye Checkup Status"
+              options={['CHECKED', 'NOT_CHECKED']}
+            />
+            <SelectComponent
+              onChange={(e) => setFilters({ ...filters, glassesStatus: e })}
+              name="Glasses Status"
+              options={['  REQUIRED', 'NOT_REQUIRED']}
+            />
+            <SelectComponent
+              onChange={(e) => setFilters({ ...filters, voucherStatus: e })}
+              name="Voucher Status"
+              options={['REDEEMED', 'NOT_REDEEMED']}
+            />
             <ViewColumns table={table} />
           </div>
           <ElkenyaTable table={table} tableHeight="h-[calc(100vh-360px)]" />

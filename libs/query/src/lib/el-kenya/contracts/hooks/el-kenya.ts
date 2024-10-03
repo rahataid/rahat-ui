@@ -83,7 +83,7 @@ export const useKenyaVoucherCreate = () => {
   );
 };
 
-export const useBulkCreateDisbursement = (projectUUID: UUID) => {
+export const useBulkCreateKenyaDisbursement = (projectUUID: UUID) => {
   const action = useProjectAction(['createBulkDisbursement-rpProject']);
   const queryClient = useQueryClient();
   return useMutation({
@@ -122,7 +122,7 @@ export const useBulkAssignKenyaVoucher = (tokenAddress: any,projectId:UUID) => {
     },
   });
 
-  const bulkAssignDisbursement = useBulkCreateDisbursement(projectId);
+  const bulkAssignDisbursement = useBulkCreateKenyaDisbursement(projectId);
 
 
   console.log('decimals', decimals);

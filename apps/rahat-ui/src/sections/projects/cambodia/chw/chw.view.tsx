@@ -77,10 +77,7 @@ export default function CHWView() {
   const table = useReactTable({
     manualPagination: true,
 
-    data: data?.data || [
-      { uuid: '123', name: 'A1' },
-      { uuid: '456', name: 'B1' },
-    ],
+    data: data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),

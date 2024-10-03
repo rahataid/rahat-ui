@@ -1,11 +1,6 @@
 'use client';
+import { useCambodiaBeneficiary } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import Back from '../../components/back';
-import HeaderWithBack from '../../components/header.with.back';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Check, Copy, CopyCheck, Edit2, Trash2 } from 'lucide-react';
-import { useParams } from 'next/navigation';
-import TransactionHistoryView from './transaction.history.view';
 import {
   Tooltip,
   TooltipContent,
@@ -13,9 +8,12 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { formatDT } from 'apps/rahat-ui/src/utils';
+import { Copy, CopyCheck } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import { useState } from 'react';
-import { useCambodiaBeneficiary } from '@rahat-ui/query';
-import { formatDate, formatdbDate, formatDT } from 'apps/rahat-ui/src/utils';
+import HeaderWithBack from '../../components/header.with.back';
+import TransactionHistoryView from './transaction.history.view';
 export default function BeneficiaryDetail() {
   const { id, benId } = useParams();
   const { data, isLoading } = useCambodiaBeneficiary({

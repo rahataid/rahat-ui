@@ -14,12 +14,20 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@rahat-ui/shadcn/src/components/ui/avatar';
-import { Mail, Phone, Wallet } from 'lucide-react';
+import { Copy, CopyCheck, Mail, Phone, Wallet } from 'lucide-react';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export default function ProfileView() {
   const user = useUserStore((state) => state.user);
   const userInfo = React.useMemo(() => user.data, [user]);
+
+  const [walletAddressCopied, setWalletAddressCopied] =
+    React.useState<string>();
+
+  const clickToCopy = (walletAddress: string) => {
+    navigator.clipboard.writeText(walletAddress);
+    setWalletAddressCopied(walletAddress);
+  };
 
   return (
     <div className="w-full flex justify-center mt-8">
@@ -31,7 +39,9 @@ export default function ProfileView() {
               <EditButton path="/profile/edit" />
             </div>
           </CardTitle>
-          <p>Here is the overview of the user</p>
+          <p className="text-base text-muted-foreground">
+            Here is the overview of the user
+          </p>
         </CardHeader>
         <Separator />
         <CardContent className="pb-2">
@@ -56,9 +66,21 @@ export default function ProfileView() {
                 <Wallet size={18} />
                 <p className="text-sm font-medium">Wallet Address</p>
               </div>
-              <p className="text-sub-label">
-                {truncateEthAddress(userInfo?.wallet) || 'N/A'}
-              </p>
+              <div
+                className="flex items-center space-x-2 cursor-pointer"
+                onClick={() => clickToCopy(userInfo?.wallet)}
+              >
+                <p>{truncateEthAddress(userInfo?.wallet) || 'N/A'}</p>
+                {walletAddressCopied === '4567876545' ? (
+                  <CopyCheck size={15} strokeWidth={1.5} />
+                ) : (
+                  <Copy
+                    className="text-slate-500"
+                    size={15}
+                    strokeWidth={1.5}
+                  />
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="flex items-center gap-2 text-label">

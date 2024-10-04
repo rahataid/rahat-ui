@@ -29,7 +29,7 @@ export default function ChwDetail() {
       <div className="flex space-x-3 mb-10">
         <HeaderWithBack
           title={data?.data?.name}
-          subtitle="Here is the detailed view of selected vendor"
+          subtitle="Here is the detailed view of selected health worker"
           path={`/projects/el-cambodia/${id}/chw`}
         />
       </div>
@@ -55,7 +55,7 @@ export default function ChwDetail() {
         />
       </div>
 
-      <div className="p-5 rounded-md border grid grid-cols-2 gap-5">
+      <div className="p-5 rounded-md border grid grid-cols-4 gap-5">
         <div>
           <h1 className="text-md text-muted-foreground">Wallet Address</h1>
           <TooltipProvider delayDuration={100}>
@@ -82,6 +82,14 @@ export default function ChwDetail() {
         <div>
           <h1 className="text-md text-muted-foreground">Phone Number</h1>
           <p className="font-medium">{data?.data?.phone}</p>
+        </div>
+        <div>
+          <h1 className="text-md text-muted-foreground">Gender</h1>
+          <p className="font-medium">{data?.data?.gender}</p>
+        </div>
+        <div>
+          <h1 className="text-md text-muted-foreground">Location</h1>
+          <p className="font-medium">{data?.data?.location}</p>
         </div>
         {/* <div>
           <h1 className="text-md text-muted-foreground">Beneficiary Type</h1>

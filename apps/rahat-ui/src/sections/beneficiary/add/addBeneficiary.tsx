@@ -25,7 +25,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
-import { Wallet } from 'lucide-react';
+import { Loader2, Wallet } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import {
@@ -33,6 +33,7 @@ import {
   RadioGroupItem,
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
 import Back from '../../projects/components/back';
+import HeaderWithBack from '../../projects/components/header.with.back';
 
 export default function AddBeneficiaryForm() {
   const addBeneficiary = useCreateBeneficiary();
@@ -108,16 +109,12 @@ export default function AddBeneficiaryForm() {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleCreateBeneficiary)}>
-          <div className="p-4 h-add">
-            <div className="flex space-x-3 mb-10">
-              <Back path="/beneficiary" />
-              <div>
-                <h1 className="text-2xl font-semibold">Add Beneficiary</h1>
-                <p className=" text-muted-foreground">
-                  Create a new beneficiary
-                </p>
-              </div>
-            </div>
+          <div className="p-4 h-[calc(100vh-115px)]">
+            <HeaderWithBack
+              title="Add Beneficiary"
+              subtitle="Create a new beneficiary"
+              path="/beneficiary/add"
+            />
             <div className="shadow-md p-4 rounded-sm bg-card">
               <div className="grid grid-cols-2 gap-4">
                 <FormField
@@ -380,9 +377,23 @@ export default function AddBeneficiaryForm() {
                 />
               </div>
             </div>
-            <div className="flex justify-end">
-              <Button>Create Beneficiary</Button>
-            </div>
+          </div>
+          <div className="flex justify-end space-x-2 py-2 px-4 border-t">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => router.push('/beneficiary')}
+            >
+              Cancel
+            </Button>
+            {addBeneficiary.isPending ? (
+              <Button disabled>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Please wait
+              </Button>
+            ) : (
+              <Button className="px-10">Add</Button>
+            )}
           </div>
         </form>
       </Form>

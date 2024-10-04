@@ -3,15 +3,14 @@ import { memo, useEffect } from 'react';
 
 import { useBeneficiaryGroupsList, usePagination } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { Users } from 'lucide-react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import SearchInput from '../../components/search.input';
-import AddButton from '../../components/add.btn';
 
 function BeneficiaryGroupsView() {
+  const { id } = useParams() as { id: UUID };
   const router = useRouter();
   const {
     pagination,
@@ -35,8 +34,6 @@ function BeneficiaryGroupsView() {
   });
 
   const groups = data?.data;
-
-  const groupModal = useBoolean();
 
   const handleFilterProjectSelect = (project: string | UUID) => {
     setFilters({

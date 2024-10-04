@@ -77,27 +77,28 @@ export default function DashboardView() {
             Graphs
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="overview">Overview</TabsContent>
+        <TabsContent value="overview">
+          <ScrollArea className="p-4 h-[calc(100vh-220px)]">
+            {newDatasource?.data && newDatasource?.data[0]?.data?.ui.length && (
+              <DynamicReports
+                className="grid gap-2"
+                dataSources={newDatasource?.data[0]?.data?.dataSources}
+                ui={newDatasource?.data[0]?.data?.ui}
+              />
+            )}
+            {dataForMap && (
+              <StyledMapContainer>
+                <ClusterMap
+                  {...mapboxBasicConfig}
+                  mapStyle={THEMES.light}
+                  dataForMap={dataForMap}
+                />
+              </StyledMapContainer>
+            )}
+          </ScrollArea>
+        </TabsContent>
         <TabsContent value="graphs">Graphs</TabsContent>
       </Tabs>
-      <ScrollArea className=" p-4">
-        {newDatasource?.data && newDatasource?.data[0]?.data?.ui.length && (
-          <DynamicReports
-            className="grid gap-2"
-            dataSources={newDatasource?.data[0]?.data?.dataSources}
-            ui={newDatasource?.data[0]?.data?.ui}
-          />
-        )}
-        {dataForMap && (
-          <StyledMapContainer>
-            <ClusterMap
-              {...mapboxBasicConfig}
-              mapStyle={THEMES.light}
-              dataForMap={dataForMap}
-            />
-          </StyledMapContainer>
-        )}
-      </ScrollArea>
     </div>
   );
 }

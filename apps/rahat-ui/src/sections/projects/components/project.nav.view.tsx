@@ -1,6 +1,7 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { FC, useState } from 'react';
 import { NavItem } from './nav-items.types';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 type ProjectNavViewProps = {
   title: string;
@@ -52,11 +53,7 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                       <div className="flex gap-3 items-center">
                         {item.icon}
                         <p>{item.title}</p>
-                        {item.disabled && (
-                          <small className="text-xs text-gray-500 ml-2">
-                            Coming Soon
-                          </small>
-                        )}
+                        {item.disabled && <Badge>Coming Soon</Badge>}
                       </div>
                     </>
                   )}

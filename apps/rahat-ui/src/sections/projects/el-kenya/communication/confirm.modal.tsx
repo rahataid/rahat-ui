@@ -15,8 +15,9 @@ import { useState } from 'react';
 
 type IProps = {
   campaignId: string;
+  completed: boolean;
 };
-export function TriggerConfirmModal({ campaignId }: IProps) {
+export function TriggerConfirmModal({ campaignId, completed }: IProps) {
   const { id } = useParams();
   const [open, setOpen] = useState(false);
   const triggerCampaign = useTriggerRpCampaign(id as UUID);
@@ -28,7 +29,12 @@ export function TriggerConfirmModal({ campaignId }: IProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="flex items-center gap-2 w-36 h-9">Trigger</Button>
+        <Button
+          disabled={completed}
+          className="flex items-center gap-2 w-36 h-9"
+        >
+          {completed ? 'Trigger' : 'Triggered'}
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>

@@ -60,8 +60,6 @@ export default function BeneficiaryView({
     ...filters,
   });
 
-  const bulkAssignDisbursement = useBulkCreateDisbursement(id);
-
   const [rowData, setRowData] = React.useState<Payment[]>([]);
   const [rowSelection, setRowSelection] = React.useState({});
 
@@ -130,7 +128,7 @@ export default function BeneficiaryView({
             <SearchInput
               className="w-full"
               name="beneficiary"
-              onSearch={() => {}}
+              onSearch={(e) => setFilters({ ...filters, name: e.target.value })}
             />
             <Button type="button" onClick={() => handleNext()}>
               <Plus size={18} className="mr-1" />

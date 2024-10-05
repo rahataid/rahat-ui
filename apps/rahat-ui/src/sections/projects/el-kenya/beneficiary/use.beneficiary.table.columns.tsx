@@ -24,7 +24,7 @@ export const useElkenyaBeneficiaryTableColumns = ({
     {
       accessorKey: 'voucherType',
       header: 'Voucher Type',
-      cell: ({ row }) => <div>{row.getValue('voucherType')}</div>,
+      cell: ({ row }) => <div>{row.getValue('voucherType') || 'N/A'}</div>,
     },
     {
       accessorKey: 'type',

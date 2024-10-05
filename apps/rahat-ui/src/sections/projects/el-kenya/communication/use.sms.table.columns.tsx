@@ -6,7 +6,7 @@ export const useElkenyaSMSTableColumns = () => {
     {
       accessorKey: 'to',
       header: 'Send To',
-      cell: ({ row }) => <div>{row.getValue('to')}</div>,
+      cell: ({ row }) => <div>{row.getValue('to') || 'N/A'}</div>,
     },
     {
       accessorKey: 'createdAt',

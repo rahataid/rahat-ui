@@ -18,6 +18,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { CloudDownload } from 'lucide-react';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import ViewColumns from '../../components/view.columns';
+import FiltersTags from '../../components/filtersTags';
 
 export default function BeneficiaryView() {
   const { id } = useParams() as { id: UUID };
@@ -86,7 +87,12 @@ export default function BeneficiaryView() {
               Track all the beneficiaries reports here.
             </p>
           </div>
-          <Button variant="outline">
+          <Button
+            onClick={() =>
+              router.push(`/projects/el-kenya/${id}/beneficiary/import`)
+            }
+            variant="outline"
+          >
             <CloudDownload className="mr-1" /> Import beneficiaries
           </Button>
         </div>
@@ -135,6 +141,13 @@ export default function BeneficiaryView() {
             />
             <ViewColumns table={table} />
           </div>
+          {Object.keys(filters).length != 0 && (
+            <FiltersTags
+              filters={filters}
+              setFilters={setFilters}
+              total={beneficiaries.data.data.length}
+            />
+          )}
           <ElkenyaTable table={table} tableHeight="h-[calc(100vh-360px)]" />
         </div>
       </div>

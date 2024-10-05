@@ -267,7 +267,6 @@ export const useRemoveBeneficiaryFromProject = () => {
   });
 };
 
-
 export const useRemoveBeneficiary = () => {
   const qc = useQueryClient();
   const alert = useSwal();
@@ -345,11 +344,12 @@ const uploadBeneficiary = async (
   selectedFile: File,
   doctype: string,
   client: any,
+  projectId?: UUID,
 ) => {
   const formData = new FormData();
   formData.append('file', selectedFile);
   formData.append('doctype', doctype);
-
+  if (projectId) formData.append('projectId', projectId);
   const response = await client.post('/beneficiaries/upload', formData);
   return response?.data;
 };
@@ -369,10 +369,18 @@ export const useUploadBeneficiary = () => {
       mutationFn: ({
         selectedFile,
         doctype,
+        projectId,
       }: {
         selectedFile: File;
         doctype: string;
-      }) => uploadBeneficiary(selectedFile, doctype, rumsanService.client),
+        projectId?: UUID;
+      }) =>
+        uploadBeneficiary(
+          selectedFile,
+          doctype,
+          rumsanService.client,
+          projectId,
+        ),
       onSuccess: () => {
         qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
         toast.fire({

@@ -25,6 +25,7 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/components/tabs';
 import BeneficiaryGroupView from './beneficiary.group.view';
+import FiltersTags from '../../components/filtersTags';
 
 export default function BeneficiaryView() {
   const { id } = useParams() as { id: UUID };
@@ -172,6 +173,13 @@ export default function BeneficiaryView() {
               />
               <ViewColumns table={table} />
             </div>
+            {Object.keys(filters).length != 0 && (
+              <FiltersTags
+                filters={filters}
+                setFilters={setFilters}
+                total={beneficiaries.data.data.length}
+              />
+            )}
             <ElkenyaTable table={table} tableHeight="h-[calc(100vh-398px)]" />
           </div>
         </div>

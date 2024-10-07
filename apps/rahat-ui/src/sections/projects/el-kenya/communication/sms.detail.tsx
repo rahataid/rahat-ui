@@ -44,7 +44,7 @@ export default function CommunicationView() {
     resetSelectedListItems,
   } = usePagination();
 
-  // const { data: campginData } = useGetRpCampaign(id as UUID, cid);
+  const { data: campginData } = useGetRpCampaign(id as UUID, cid);
   const { data, isSuccess, isLoading } = useListRpCampaignLog(id as UUID, {
     uuid: cid as string,
     query: {
@@ -52,14 +52,13 @@ export default function CommunicationView() {
       ...(filters as any),
     },
   });
-
   const cardData = [
     {
       title: 'Total Message Sent',
       icon: 'MessageSquare',
-      total: data?.data?.length,
+      total: data?.data?.length || 0,
     },
-    { title: 'Beneficiaries', icon: 'Users', total: data?.data?.length },
+    { title: 'Beneficiaries', icon: 'Users', total: data?.data?.length || 0 },
     {
       title: 'Failed Message Delivery',
       icon: 'MessageSquare',
@@ -88,7 +87,7 @@ export default function CommunicationView() {
           failed: failed,
         });
         return {
-          date: new Date(item.createdAt).toLocaleString(),
+          createdAt: new Date(item.createdAt).toLocaleString(),
           status: item?.status,
           to: item?.address,
         };
@@ -125,7 +124,10 @@ export default function CommunicationView() {
             subtitle="Here is the detailed view of the selected SMS"
             path={`/projects/el-kenya/${id}/communication/manage`}
           />
-          <TriggerConfirmModal campaignId={cid} />
+          <TriggerConfirmModal
+            campaignId={cid}
+            completed={campginData?.sessionId ? true : false}
+          />
         </div>
 
         <div className="grid grid-cols-4 gap-2 mb-4">
@@ -146,7 +148,13 @@ export default function CommunicationView() {
 
         <div className="rounded border bg-card p-4">
           <div className="flex justify-between space-x-2 mb-2">
-            <SearchInput className="w-full" name="" onSearch={() => {}} />
+            <SearchInput
+              className="w-full"
+              name=""
+              onSearch={(e) =>
+                setFilters({ ...filters, address: e.target.value })
+              }
+            />
             <ViewColumns table={table} />
           </div>
           <ElkenyaTable table={table} tableHeight="h-[calc(100vh-454px)]" />

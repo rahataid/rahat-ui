@@ -161,7 +161,7 @@ export const useListRpCampaignLog = (projectUUID: UUID, payload: any) => {
   const action = useProjectAction();
 
   return useQuery({
-    queryKey: ['rpCampaignLogs', projectUUID],
+    queryKey: ['rpCampaignLogs', projectUUID, payload],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,

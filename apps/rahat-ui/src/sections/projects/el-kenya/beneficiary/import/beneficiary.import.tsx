@@ -12,7 +12,6 @@ import {
   Table,
 } from '@rahat-ui/shadcn/components/table';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import HeaderWithBack from '../../projects/components/header.with.back';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
@@ -23,6 +22,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Share } from 'lucide-react';
 import { useUploadBeneficiary } from '@rahat-ui/query';
 import { toast } from 'react-toastify';
+import HeaderWithBack from '../../../components/header.with.back';
 export default function ExcelUploader() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
@@ -66,13 +66,14 @@ export default function ExcelUploader() {
     await uploadBeneficiary.mutateAsync({
       selectedFile,
       doctype,
+      projectId: id,
     });
   };
 
   useEffect(() => {
     if (uploadBeneficiary?.isSuccess) {
       // toast.success('File uploaded successfully.'); commented due to overlap
-      router.push('/beneficiary');
+      router.push('/projects/el-kenya/${id}/beneficiary/import');
     }
     // uploadBeneficiary?.isError && toast.error('File upload unsuccessful.');
   }, [uploadBeneficiary?.isSuccess, uploadBeneficiary?.isError]);

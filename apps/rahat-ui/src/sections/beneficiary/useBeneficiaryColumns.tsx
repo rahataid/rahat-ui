@@ -14,10 +14,15 @@ import {
   TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ListBeneficiary } from '@rahat-ui/types';
+import { useSearchParams } from 'next/navigation';
 
 export const useBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<string>();
+
+  const searchParam = useSearchParams();
+
+  const members = searchParam.get('member');
 
   const clickToCopy = (walletAddress: string, uuid: string) => {
     navigator.clipboard.writeText(walletAddress);
@@ -38,6 +43,7 @@ export const useBeneficiaryTableColumns = () => {
       id: 'select',
       header: ({ table }) => (
         <Checkbox
+          className={members ? '' : 'hidden'}
           checked={
             table.getIsAllPageRowsSelected() ||
             (table.getIsSomePageRowsSelected() && 'indeterminate')

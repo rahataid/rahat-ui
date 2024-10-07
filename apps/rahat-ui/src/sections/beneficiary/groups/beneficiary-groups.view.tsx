@@ -1,5 +1,5 @@
 'use client';
-import { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 
 import { TabsContent } from '@rahat-ui/shadcn/components/tabs';
 
@@ -23,8 +23,21 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import BeneficiaryGroupsListView from './listView';
 import { useBeneficiaryGroupsTableColumns } from './useBeneficiaryGroupsColumns';
+import { Banknote, Plus, Users } from 'lucide-react';
+import SearchInput from '../../projects/components/search.input';
+import AddButton from '../../projects/components/add.btn';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useRouter } from 'next/navigation';
+import AssignBeneficiaryToProjectModal from './assignToProjectModal';
+import { ListBeneficiaryGroup } from '@rahat-ui/types';
+import Link from 'next/link';
 
 function BeneficiaryGroupsView() {
+  const router = useRouter();
+  const [selectedGroup, setSelectedGroup] =
+    React.useState<ListBeneficiaryGroup>([]);
   const {
     pagination,
     selectedListItems,
@@ -46,7 +59,9 @@ function BeneficiaryGroupsView() {
     ...filters,
   });
 
-  const groupModal = useBoolean();
+  const groups = data?.data;
+
+  const projectModal = useBoolean();
 
   // const createBeneficiaryGroup = useCreateBeneficiaryGroup();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -105,28 +120,70 @@ function BeneficiaryGroupsView() {
     // });
   };
 
+  const handleAssignModalClick = (data: any) => {
+    projectModal.onTrue();
+    setSelectedGroup(data);
+  };
+
+  const isAssignedToProject = selectedGroup?.beneficiaryGroupProject?.length;
+  const assignedGroupId = selectedGroup?.beneficiaryGroupProject?.map(
+    (benProject: any) => benProject.Project.id,
+  );
+
   return (
     <>
-      <div className="p-4">
-        <BeneficiaryGroupsListView
-          table={table}
-          handleBulkAssign={handleBulkAssign}
-          isBulkAssigning={false}
-          groupModal={groupModal}
-          projects={projectsList?.data?.data || []}
-          handleFilterProjectSelect={handleFilterProjectSelect}
-          filters={filters}
-        />
-      </div>
-      <CustomPagination
-        meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        currentPage={pagination.page}
-        perPage={pagination.perPage}
-        total={data?.response?.meta.lastPage || 0}
+      <AssignBeneficiaryToProjectModal
+        beneficiaryGroupDetail={selectedGroup as ListBeneficiaryGroup}
+        projectModal={projectModal}
+        assignedGroupId={assignedGroupId}
       />
+      <div className="p-4 rounded-sm border">
+        <div className="flex justify-between space-x-2 items-center mb-4">
+          <SearchInput className="w-full" name="group" onSearch={() => {}} />
+          <AddButton name="Group" path="/beneficiary/groups/add" />
+        </div>
+        <ScrollArea className="h-[calc(100vh-300px)]">
+          <div className="grid grid-cols-4 gap-4">
+            {groups &&
+              groups?.map((i: any, index: number) => {
+                return (
+                  <div
+                    key={index}
+                    className="cursor-pointer rounded-md border shadow p-4"
+                  >
+                    <div className="flex flex-col space-y-2">
+                      <div
+                        className="rounded-md bg-secondary grid place-items-center h-28"
+                        onClick={() => {
+                          router.push(`/beneficiary/groups/${i?.uuid}`);
+                        }}
+                      >
+                        <div className="bg-[#667085] text-white p-2 rounded-full">
+                          <Users size={20} strokeWidth={2.5} />
+                        </div>
+                      </div>
+                      <Badge className="w-min">{i?.type ?? 'N/A'}</Badge>
+                      <p className="text-base mb-1">{i?.name ?? 'N/A'}</p>
+                      <div className="flex gap-2 items-center">
+                        <Users size={18} strokeWidth={2} />
+                        28
+                      </div>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => handleAssignModalClick(i)}
+                        disabled={isAssignedToProject}
+                      >
+                        <Plus className="mr-1" size={18} strokeWidth={1.5} />
+                        Assign Project
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </ScrollArea>
+      </div>
     </>
   );
 }

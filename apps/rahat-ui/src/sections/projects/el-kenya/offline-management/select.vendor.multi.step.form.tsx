@@ -38,6 +38,7 @@ import {
   useSyncOfflineBeneficiaries,
 } from '@rahat-ui/query';
 import { useRSQuery } from '@rumsan/react-query';
+import { toast } from 'react-toastify';
 
 const steps = [{ label: 'Step 1' }, { label: 'Step 2' }, { label: 'Step 3' }];
 
@@ -53,6 +54,7 @@ export default function SelectVendorMultiStepForm() {
   const [vendors, setVendors] = React.useState([]);
   const [rowData, setRowData] = React.useState([]);
   const [isOpen, setIsOpen] = React.useState(false);
+  const [isSyncing, setIsSyncing] = React.useState(false);
   const [error, setError] = React.useState('');
   const [stepData, setStepData] =
     React.useState<typeof initialStepData>(initialStepData);
@@ -212,7 +214,8 @@ export default function SelectVendorMultiStepForm() {
     (state) => state.settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
 
-  const handleSyncBen = () => {
+  const handleSyncBen = async () => {
+    setIsSyncing(true);
     const vendorId = stepData.vendor.id;
     let selectedDisbursementId = stepData.disbursements.map(
       (disbursement: any) => {
@@ -224,21 +227,24 @@ export default function SelectVendorMultiStepForm() {
       selectedDisbursementId = disBursementIds;
     }
 
-    syncBen.mutateAsync({
+    const result = await syncBen.mutateAsync({
       vendorId,
       disbursements: selectedDisbursementId,
       tokenAddress: contractSettings?.rahattoken?.address || '',
       groupIds,
     });
-    setTimeout(() => {
+    setIsSyncing(false);
+
+    if (result?.success) {
       queryClient.invalidateQueries({
         queryKey: ['rpGetOfflineVendors'],
         refetchType: 'all',
         type: 'all',
       });
-    }, 10000);
-
-    setIsOpen(true);
+      setIsOpen(true);
+    } else {
+      toast.error('Failed to sync');
+    }
   };
 
   return (
@@ -362,7 +368,9 @@ export default function SelectVendorMultiStepForm() {
           )}
           {activeStep < 2 && <Button onClick={handleNext}>Next</Button>}
           {activeStep === 2 && (
-            <Button onClick={() => handleSyncBen()}>Submit</Button>
+            <Button disabled={isSyncing} onClick={() => handleSyncBen()}>
+              {isSyncing ? 'Syncing...' : 'Submit'}
+            </Button>
           )}
         </div>
       </div>

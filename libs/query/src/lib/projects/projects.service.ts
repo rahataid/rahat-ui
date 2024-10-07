@@ -820,13 +820,13 @@ export const useCambodiaBeneficiary = (payload: any) => {
 };
 
 export const useCambodiaVendorsList = (payload: any) => {
-  const q = useProjectAction<Beneficiary[]>();
+  const q = useProjectAction<any[]>();
   const { projectUUID, ...restPayload } = payload;
 
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: [MS_CAM_ACTIONS.CAMBODIA.VENDOR.LIST, restPayloadString],
+    queryKey: ['vendor.list_by_project', restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -834,7 +834,7 @@ export const useCambodiaVendorsList = (payload: any) => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.LIST,
+          action: 'vendor.list_by_project',
           payload: restPayload,
         },
       });
@@ -851,7 +851,7 @@ export const useCambodiaVendorGet = (payload: any) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: [MS_CAM_ACTIONS.CAMBODIA.VENDOR.GET, restPayloadString],
+    queryKey: ['vendor.get_by_uuid', restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -859,7 +859,7 @@ export const useCambodiaVendorGet = (payload: any) => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.GET,
+          action: 'vendor.get_by_uuid',
           payload: restPayload,
         },
       });
@@ -869,4 +869,112 @@ export const useCambodiaVendorGet = (payload: any) => {
   return {
     ...query,
   };
+};
+
+export const useCambodiaCommisionList = (payload: any) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: ['cambodia.commission_scheme.list', restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'cambodia.commission_scheme.list',
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return {
+    ...query,
+  };
+};
+
+export const useCambodiaCommisionCurrent = (payload: any) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: ['cambodia.commission_scheme.get_current', restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'cambodia.commission_scheme.get_current',
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return {
+    ...query,
+  };
+};
+
+export const useCambodiaCommisionCreate = () => {
+  const q = useProjectAction<any[]>();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationKey: ['cambodia.commission_scheme.create'],
+
+    mutationFn: async (payload: any) => {
+      console.log(payload);
+      const { projectUUID, ...restPayload } = payload;
+
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'cambodia.commission_scheme.create',
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: ['cambodia.commission_scheme.get_current'],
+      });
+    },
+  });
+};
+
+export const useCambodiaDiscardedBeneficiaries = (payload: any) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: ['cambodia.beneficiary.list_discarded', restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'cambodia.beneficiary.list_discarded',
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return { ...query };
 };

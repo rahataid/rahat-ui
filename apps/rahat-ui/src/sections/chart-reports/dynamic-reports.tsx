@@ -168,15 +168,11 @@ const DynamicReports: FC<DynamicReportsProps> = ({
     return (
       <div key={rowIndex}>
         {row?.title && (
-          <h1
-            className={`font-bold text-lg text-primary mb-2 ${
-              rowIndex !== 0 && 'mt-5'
-            }`}
-          >
+          <h1 className={`font-bold text-lg ${rowIndex !== 0 && 'mt-5'}`}>
             {row?.title}
           </h1>
         )}
-        <div className={`grid grid-cols-${row?.fields?.length} gap-2`}>
+        <div className={`grid grid-cols-${row?.fields?.length} gap-2 mt-2`}>
           {row?.fields?.map((component, colIndex) => (
             <div
               key={colIndex}

@@ -115,6 +115,10 @@ const VouchersManagementFlow = () => {
       amount: 1,
       beneficiaries: walletAddresses,
     });
+    // await bulkAssignDisbursement.mutateAsync({
+    //   amount: 1,
+    //   beneficiaries: walletAddresses,
+    // });
   };
 
   const steps = [

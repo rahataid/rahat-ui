@@ -14,6 +14,8 @@ import { Copy, CopyCheck } from 'lucide-react';
 import HeaderWithBack from '../../components/header.with.back';
 import EditButton from '../../components/edit.btn';
 import DeleteButton from '../../components/delete.btn';
+import { useGetOfflineSingleVendor } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 export default function VendorsDetail() {
   const { id } = useParams();
@@ -24,6 +26,7 @@ export default function VendorsDetail() {
   const vendorWallet = searchParams.get('walletAddress') || '';
   const vendorId = searchParams.get('vendorId');
 
+  const { data } = useGetOfflineSingleVendor(id as UUID, Number(vendorId));
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<string>();
 
@@ -95,7 +98,7 @@ export default function VendorsDetail() {
           <VendorsTransactionsHistory />
         </TabsContent>
         <TabsContent value="beneficiaryList">
-          <VendorsBeneficiaryList />
+          <VendorsBeneficiaryList beneficiaryList={data?.data} />
         </TabsContent>
       </Tabs>
     </div>

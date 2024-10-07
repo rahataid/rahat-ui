@@ -1,6 +1,7 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { FC, useState } from 'react';
 import { NavItem } from './nav-items.types';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 type ProjectNavViewProps = {
   title: string;
@@ -13,6 +14,9 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
   const handleNav = (item: NavItem) => {
+    if (item.disabled) {
+      return;
+    }
     if (item.children) {
       setOpenSubmenu(item.title === openSubmenu ? null : item.title);
     } else if (item.path) {
@@ -32,12 +36,15 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
               <div key={item.title}>
                 <div
                   className={`flex justify-between p-2 mb-1 items-center rounded-md cursor-pointer ${
-                    pathName === item.path
+                    item.disabled
+                      ? 'cursor-not-allowed'
+                      : pathName === item.path
                       ? 'bg-sky-100 text-primary'
                       : 'hover:bg-secondary'
                   }`}
                   onClick={() => handleNav(item)}
                   {...item}
+                  title={item.disabled ? 'Coming Soon' : ''}
                 >
                   {item.component ? (
                     item.component
@@ -46,6 +53,7 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                       <div className="flex gap-3 items-center">
                         {item.icon}
                         <p>{item.title}</p>
+                        {item.disabled && <Badge>Coming Soon</Badge>}
                       </div>
                     </>
                   )}
@@ -79,22 +87,32 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                       <div
                         key={subItem.title}
                         className={`flex justify-between p-2 mb-1 items-center rounded-md cursor-pointer ${
-                          pathName === subItem.path
+                          subItem.disabled
+                            ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                            : pathName === subItem.path
                             ? 'bg-primary text-white'
                             : 'hover:bg-secondary'
                         }`}
                         onClick={() =>
-                          subItem.path && router.push(subItem.path)
+                          !subItem.disabled &&
+                          subItem.path &&
+                          router.push(subItem.path)
                         }
                         {...subItem}
+                        title={subItem.disabled ? 'Coming Soon' : ''}
                       >
-                        {item.component ? (
-                          item.component
+                        {subItem.component ? (
+                          subItem.component
                         ) : (
                           <>
                             <div className="flex gap-3 items-center">
                               {subItem.icon}
                               <p>{subItem.title}</p>
+                              {subItem.disabled && (
+                                <small className="text-xs text-gray-500 ml-2">
+                                  Coming Soon
+                                </small>
+                              )}
                             </div>
                             <p className="text-sm">{subItem.subtitle}</p>
                           </>

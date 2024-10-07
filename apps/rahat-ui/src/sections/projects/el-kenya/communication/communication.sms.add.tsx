@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   useCreateBeneficiary,
   useCreateCampaign,
+  useFindAllBeneficiaryGroups,
   useListRpTransport,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -41,9 +42,10 @@ export default function AddSMSForm() {
 
   const createCampaign = useCreateCampaign(id as UUID);
   const { data: transportData } = useListRpTransport(id as UUID);
+  const { data: benificiaryGroups } = useFindAllBeneficiaryGroups(id as UUID);
   const transportId = transportData?.find(
-    (transport) => transport.type === 'SMS' || transport.name === 'Prabhu SMS',
-  ).cuid;
+    (transport) => transport.name === 'Kenya SMS',
+  )?.cuid;
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     group: z.string().optional(),
@@ -66,6 +68,7 @@ export default function AddSMSForm() {
       name: data.name,
       message: data.message,
       transportId: transportId,
+      groupUID: data.group,
     };
     createCampaign.mutate(createCampagin);
     form.reset();
@@ -110,13 +113,22 @@ export default function AddSMSForm() {
                   <FormItem className="space-y-3">
                     <FormLabel>Group(optional)</FormLabel>
                     <FormControl>
-                      <Select>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <SelectTrigger className="text-muted-foreground">
                           <SelectValue placeholder="Select group" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectItem value="test">Test</SelectItem>
+                            {benificiaryGroups?.map((group) => {
+                              return (
+                                <SelectItem value={group.uuid}>
+                                  {group.name}
+                                </SelectItem>
+                              );
+                            })}
                           </SelectGroup>
                         </SelectContent>
                       </Select>

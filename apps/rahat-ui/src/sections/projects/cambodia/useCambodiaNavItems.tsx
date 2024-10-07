@@ -1,5 +1,6 @@
 import {
   ArrowLeftRight,
+  Coins,
   Hospital,
   LayoutDashboard,
   SmartphoneNfc,
@@ -40,17 +41,23 @@ export const useNavItems = () => {
           icon: <ArrowLeftRight size={18} strokeWidth={1.5} />,
         },
         {
+          title: 'Commission Scheme',
+          path: `/projects/el-cambodia/${id}/commission`,
+          subtitle: 20,
+          icon: <Coins size={18} strokeWidth={1.5} />,
+        },
+        {
           title: 'Health Worker',
           path: `/projects/el-cambodia/${id}/chw`,
           subtitle: 20,
           icon: <Users size={18} strokeWidth={1.5} />,
         },
-        {
-          title: 'Communication',
-          path: `/projects/el-cambodia/${id}/communication`,
-          subtitle: 20,
-          icon: <SmartphoneNfc size={18} strokeWidth={1.5} />,
-        },
+        // {
+        //   title: 'Communication',
+        //   path: `/projects/el-cambodia/${id}/communication`,
+        //   subtitle: 20,
+        //   icon: <SmartphoneNfc size={18} strokeWidth={1.5} />,
+        // },
       ],
     },
   ];

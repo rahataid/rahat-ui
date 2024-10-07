@@ -2,7 +2,7 @@
 
 // Import statements
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -25,6 +25,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -34,6 +35,12 @@ import {
 } from '../../hooks/el/contracts/el-contracts';
 import { useRouter } from 'next/navigation';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
+import HeaderWithBack from '../projects/components/header.with.back';
+import { Loader2, Wallet } from 'lucide-react';
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from '@rahat-ui/shadcn/src/components/ui/radio-group';
 
 // Constants
 // const genderList = enumToObjectArray(Gender);
@@ -51,6 +58,9 @@ const FormSchema = z.object({
 
 // Component
 export default function AddUser() {
+  const router = useRouter();
+  const [next, setNext] = React.useState(false);
+
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -111,137 +121,199 @@ export default function AddUser() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleAddUser)}>
-        <div className="p-4">
-          <h1 className="text-md font-semibold mb-6">Add User</h1>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <FormField
-              name="name"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input type="text" placeholder="Name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select gender" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="MALE">Male</SelectItem>
-                        <SelectItem value="FEMALE">Female</SelectItem>
-                        <SelectItem value="OTHER">Other</SelectItem>
-                        <SelectItem value="UNKNOWN">Unknown</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <PhoneInput placeholder="Phone" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <Input type="text" placeholder="Email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="roles"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <Select
-                      onValueChange={(value) => {
-                        field.onChange([value]);
-                      }}
-                      defaultValue={field.value[0]}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select role" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectGroup>
-                          {roleData?.data &&
-                            roleData?.data?.map((role: any) => (
-                              <SelectItem value={role.name} key={role.id}>
-                                {role.name}
-                              </SelectItem>
-                            ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="wallet"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="Wallet Address"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-          </div>
-          <div className="flex justify-end">
-            {userCreate.isPending ? (
-              <Button>
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary" />
-              </Button>
+        <div className="p-4 h-[calc(100vh-130px)]">
+          <HeaderWithBack
+            title="Add User"
+            subtitle="Create a new user detail"
+            path="/users"
+          />
+          <div className="grid grid-cols-2 gap-4 border p-4 rounded-md">
+            {next ? (
+              <FormField
+                control={form.control}
+                name="roles"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange([value]);
+                        }}
+                        defaultValue={field.value[0]}
+                      >
+                        <FormLabel>User Role</FormLabel>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select user role" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectGroup>
+                            {roleData?.data &&
+                              roleData?.data?.map((role: any) => (
+                                <SelectItem value={role.name} key={role.id}>
+                                  {role.name}
+                                </SelectItem>
+                              ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
             ) : (
-              <Button>Create User</Button>
+              <>
+                <FormField
+                  name="name"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>User Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Enter user name"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3">
+                      <FormLabel>Gender</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="flex space-x-1"
+                        >
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="male" />
+                            </FormControl>
+                            <FormLabel className="font-normal">Male</FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="female" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Female
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="other" />
+                            </FormControl>
+                            <FormLabel className="font-normal">Other</FormLabel>
+                          </FormItem>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <PhoneInput
+                            placeholder="Enter phone number"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder="Enter email address"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <div className="col-span-2">
+                  <FormField
+                    control={form.control}
+                    name="wallet"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel>Wallet Address</FormLabel>
+                          <FormControl>
+                            <div className="relative w-full">
+                              <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                type="text"
+                                placeholder="Enter wallet ddress"
+                                {...field}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </div>
+              </>
             )}
           </div>
+        </div>
+        <div className="flex justify-end space-x-2 p-4 border-t">
+          <Button
+            className="px-14"
+            type="button"
+            variant="secondary"
+            onClick={() => router.push('/users')}
+          >
+            Cancel
+          </Button>
+          {next ? (
+            userCreate.isPending ? (
+              <Button disabled>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Please wait
+              </Button>
+            ) : (
+              <Button type="submit" className="px-10">
+                Add
+              </Button>
+            )
+          ) : (
+            <Button
+              type="button"
+              className="px-14"
+              onClick={() => setNext(true)}
+            >
+              Next
+            </Button>
+          )}
         </div>
       </form>
     </Form>

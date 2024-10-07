@@ -31,7 +31,7 @@ type ProjectModalType = {
 type IProps = {
   beneficiaryGroupDetail: ListBeneficiaryGroup;
   projectModal: ProjectModalType;
-  closeSecondPanel: VoidFunction;
+  closeSecondPanel?: VoidFunction;
   assignedGroupId: string[];
 };
 
@@ -54,14 +54,15 @@ export default function AssignBeneficiaryToProjectModal({
       projectUUID: selectedProject,
       beneficiaryGroupUUID: beneficiaryGroupDetail.uuid as UUID,
     });
+    projectModal.onFalse();
   };
 
-  React.useEffect(() => {
-    if (assignBeneficiaryGroup.isSuccess) {
-      projectModal.onFalse();
-      closeSecondPanel();
-    }
-  }, [assignBeneficiaryGroup.isSuccess]);
+  // React.useEffect(() => {
+  //   if (assignBeneficiaryGroup.isSuccess) {
+  //     projectModal.onFalse();
+  //     closeSecondPanel();
+  //   }
+  // }, [assignBeneficiaryGroup.isSuccess]);
   return (
     <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
       <DialogContent>
@@ -81,7 +82,7 @@ export default function AssignBeneficiaryToProjectModal({
                 projectsList.data?.data.map((project) => {
                   return (
                     <SelectItem
-                      disabled={assignedGroupId.includes(project?.id)}
+                      // disabled={assignedGroupId.includes(project?.id)}
                       key={project.uuid}
                       value={project.uuid as UUID}
                     >

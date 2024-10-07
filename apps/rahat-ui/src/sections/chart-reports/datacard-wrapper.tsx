@@ -19,18 +19,21 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
   const relevantData = actualData?.find((d: any) => d.name === name);
 
   // Use getValueFromPath to find the value inside the relevant object
-  const cardDataValue =
-    component.type === 'dataCard' && path && relevantData
-      ? getValueFromPath(relevantData.data, path)
-      : null;
+  // const cardDataValue =
+  //   component.type === 'dataCard' && path && relevantData
+  //     ? getValueFromPath(relevantData.data, path)
+  //     : null;
 
-  console.log('Card Data Value:', cardDataValue);
+  const cardDataValue =
+    component.type === 'dataCard' && relevantData ? relevantData.data : '-';
 
   // Render DataCard with the retrieved value
   if (cardDataValue !== null) {
     const icon = getIcon(component?.icon);
     return (
       <DataCard
+        className="border-solid rounded-md"
+        iconStyle="bg-white text-black"
         title={component.title}
         number={cardDataValue?.count || cardDataValue}
         Icon={icon}

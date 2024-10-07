@@ -9,9 +9,9 @@ export const useElkenyaVendorsBeneficiaryTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-      accessorKey: 'beneficiaryType',
+      accessorKey: 'type',
       header: 'Beneficiary Type',
-      cell: ({ row }) => <Badge>{row.getValue('beneficiaryType')}</Badge>,
+      cell: ({ row }) => <Badge>{row.getValue('type')}</Badge>,
     },
     {
       accessorKey: 'voucherStatus',

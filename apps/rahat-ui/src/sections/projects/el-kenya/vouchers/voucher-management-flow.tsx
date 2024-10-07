@@ -46,11 +46,10 @@ const VouchersManagementFlow = () => {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
-  const syncDisbursementAllocation = useBulkAssignKenyaVoucher( 
+  const syncDisbursementAllocation = useBulkAssignKenyaVoucher(
     contractSettings?.rahattoken?.address,
-    id
-   );
-
+    id,
+  );
 
   const handleStepDataChange = (e) => {
     const { name, value } = e.target;
@@ -78,12 +77,13 @@ const VouchersManagementFlow = () => {
 
   const handleBulkAssign = async () => {
     if (beneficiaryGroupSelected) {
-      stepData.selectedGroups.map((selectedGroup) => {
-        handleCreateGroupDisbursement(selectedGroup.uuid);
-      });
-      router.push(`/projects/el-kenya/${id}/vouchers`);
+      handleBulkVoucherAssign(stepData.selectedGroups);
+      // stepData.selectedGroups.map((selectedGroup) => {
+      //   handleCreateGroupDisbursement(selectedGroup.uuid);
+      // });
+      // router.push(`/projects/el-kenya/${id}/vouchers`);
     } else {
-      console.log("step",stepData.selectedBeneficiaries)
+      console.log('step', stepData.selectedBeneficiaries);
       // todo: for groups
       await syncDisbursementAllocation.mutateAsync({
         beneficiaryAddresses: stepData.selectedBeneficiaries.map((ben) => {
@@ -94,7 +94,7 @@ const VouchersManagementFlow = () => {
         }),
         tokenAddress: contractSettings?.rahattoken?.address,
         projectAddress: contractSettings?.rahatcvakenya?.address,
-      })
+      });
       // await bulkAssignDisbursement.mutateAsync({
       //   amount: 1,
       //   beneficiaries: stepData.selectedBeneficiaries?.map(
@@ -105,20 +105,36 @@ const VouchersManagementFlow = () => {
     }
   };
 
-  const handleCreateGroupDisbursement = async (groupUUid: string) => {
-    const bg = await beneficiaryGroup.mutateAsync(groupUUid as UUID);
-    const walletAddresses = await bg?.groupedBeneficiaries?.map(
-      (groupedBeneficiary: any) =>
-        groupedBeneficiary?.Beneficiary?.walletAddress,
-    );
-    await bulkAssignDisbursement.mutateAsync({
-      amount: 1,
-      beneficiaries: walletAddresses,
+  const handleBulkVoucherAssign = async (selectedGroups: any[]) => {
+    const groupUUIDs = selectedGroups.map((group) => group.uuid);
+    const fetchedBenAddresses = [] as {
+      walletAddress: `0x${string}`;
+      amount: number;
+    }[];
+    // todo: refactor backend accordingly
+    const benefciaryFromGroups = groupUUIDs.map(async (groupUUID) => {
+      const ben = await beneficiaryGroup.mutateAsync(groupUUID as UUID);
+      const walletAddresses = await ben?.groupedBeneficiaries?.map(
+        (groupedBeneficiary: any) =>
+          groupedBeneficiary?.Beneficiary?.walletAddress,
+      );
+      return walletAddresses;
     });
-    // await bulkAssignDisbursement.mutateAsync({
-    //   amount: 1,
-    //   beneficiaries: walletAddresses,
-    // });
+    const beneficiaries = await Promise.all(benefciaryFromGroups);
+    beneficiaries.map((ben) => {
+      ben.map((walletAddress: `0x${string}`) => {
+        fetchedBenAddresses.push({ walletAddress, amount: 1 });
+      });
+    });
+    await syncDisbursementAllocation.mutateAsync({
+      // Todo: handle the case of a beneficiary being in multiple groups
+      beneficiaryAddresses: fetchedBenAddresses.filter(
+        (v, i, a) =>
+          a.findIndex((t) => t.walletAddress === v.walletAddress) === i,
+      ),
+      tokenAddress: contractSettings?.rahattoken?.address,
+      projectAddress: contractSettings?.rahatcvakenya?.address,
+    });
   };
 
   const steps = [

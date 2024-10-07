@@ -772,6 +772,7 @@ export const useCambodiaBeneficiaries = (payload: any) => {
       return mutate;
     },
   });
+  console.log(query.data);
   return {
     ...query,
     data: useMemo(() => {

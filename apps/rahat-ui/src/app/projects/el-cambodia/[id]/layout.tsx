@@ -8,12 +8,15 @@ import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provide
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
+  PROJECT_SETTINGS_KEYS,
   useAAProjectSettingsDatasource,
   useAAProjectSettingsHazardType,
   useProjectContractSettings,
+  useProjectSettingsStore,
   useProjectSubgraphSettings,
 } from '@rahat-ui/query';
-import GarphQlProvider from 'libs/query/src/lib/aa/graph/graphql-query-client';
+import {CambodiaSubgraphProvider} from '@rahat-ui/query';
+import { cacheExchange, Client, fetchExchange } from '@urql/core';
 
 export default function ProjectLayoutRoot({
   children,
@@ -28,6 +31,10 @@ export default function ProjectLayoutRoot({
   useAAProjectSettingsHazardType(uuid);
   useProjectSubgraphSettings(uuid);
 
+  const subgraphSettings = useProjectSettingsStore(
+    (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH]?.url,
+  );
+
   const renderChildren = () => {
     if (secondPanel) {
       return [children, secondPanel];
@@ -36,10 +43,20 @@ export default function ProjectLayoutRoot({
     return children;
   };
   return (
-    <GarphQlProvider>
+    <CambodiaSubgraphProvider
+       subgraphClient={
+        new Client({
+          url:
+            subgraphSettings ||
+            'http://localhost:8000/subgraphs/name/rahat/Cambodia/',
+          exchanges: [cacheExchange, fetchExchange],
+        })
+       }
+    
+    >
       <ProjectLayout projectType={'el-cambodia'}>
         {renderChildren()}
       </ProjectLayout>
-    </GarphQlProvider>
+    </CambodiaSubgraphProvider>
   );
 }

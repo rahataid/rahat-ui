@@ -1,7 +1,11 @@
 'use client';
 import { memo, useEffect } from 'react';
 
-import { useBeneficiaryGroupsList, usePagination } from '@rahat-ui/query';
+import {
+  useBeneficiaryGroupsList,
+  useFindAllBeneficiaryGroups,
+  usePagination,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { Users } from 'lucide-react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -28,12 +32,7 @@ function BeneficiaryGroupsView() {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
   }, []);
 
-  const data = useBeneficiaryGroupsList({
-    ...pagination,
-    ...filters,
-  });
-
-  const groups = data?.data;
+  const { data: groups } = useFindAllBeneficiaryGroups(id as UUID);
 
   const handleFilterProjectSelect = (project: string | UUID) => {
     setFilters({
@@ -47,7 +46,7 @@ function BeneficiaryGroupsView() {
     <>
       <div className="p-4 rounded-sm border">
         <div className="flex justify-between space-x-2 items-center mb-4">
-          <SearchInput className="w-full" name="group" onSearch={() => {}} />
+          <SearchInput className="w-full" name="group" onSearch={() => { }} />
           {/* <AddButton name="Group" path="/beneficiary/groups/add" /> */}
         </div>
         <ScrollArea className="h-[calc(100vh-300px)]">
@@ -59,7 +58,9 @@ function BeneficiaryGroupsView() {
                     key={index}
                     className="cursor-pointer rounded-md border shadow p-4"
                     onClick={() => {
-                      router.push(`/beneficiary/groups/${i?.uuid}`);
+                      router.push(
+                        `/projects/el-kenya/${id}/beneficiary/group/${i?.uuid}`,
+                      );
                     }}
                   >
                     <div className="flex flex-col space-y-2">
@@ -72,7 +73,7 @@ function BeneficiaryGroupsView() {
                       <p className="text-base mb-1">{i?.name ?? 'N/A'}</p>
                       <div className="flex gap-2 items-center">
                         <Users size={18} strokeWidth={2} />
-                        28
+                        {i?._count.groupedBeneficiaries || 0}
                       </div>
                     </div>
                   </div>

@@ -27,6 +27,7 @@ import { rahatTokenAbi } from './abis/rp/RahatToken';
 import { rahatTreasuryAbi } from './abis/rp/RahatTreasury';
 import { vendorAbi } from './abis/rp/Vendor';
 import { redemptionsAbi } from './abis/rp/Redemptions';
+import { rahatCVACambodiaAbi } from './abis/cambodia/RahatCVACambodia';
 import { rahatCvaKenyaProjectAbi } from './abis/el-kenya/RahatCVAKenyaProject'
 
 const ELConfig = [
@@ -317,6 +318,69 @@ const KenyaConfig = [
   },
   
 ];
+const CambodiaConfig = [
+  {
+    out: 'libs/query/src/lib/cambodia/contracts/generated-hooks/rahatToken.ts',
+    contracts: [
+      {
+        name: 'RahatToken',
+        abi: rahatTokenAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/cambodia/contracts/generated-hooks/vendor.ts',
+    contracts: [
+      {
+        name: 'Vendor',
+        abi: vendorAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/cambodia/contracts/generated-hooks/rahatAccessManager.ts',
+    contracts: [
+      {
+        name: 'RahatAccessManager',
+        abi: rahatAccessManagerAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/cambodia/contracts/generated-hooks/rahatCVACambodia.ts',
+    contracts: [
+      {
+        name: 'RahatCVACambodia',
+        abi: rahatCVACambodiaAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/cambodia/contracts/generated-hooks/rahatTreasury.ts',
+    contracts: [
+      {
+        name: 'RahatTreasury',
+        abi: rahatTreasuryAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/cambodia/contracts/generated-hooks/redemptions.ts',
+    contracts: [
+      {
+        name: 'Redemptions',
+        abi: redemptionsAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  
+];
 export default defineConfig([
   ...ELConfig,
   ...CVAConfig,
@@ -324,4 +388,5 @@ export default defineConfig([
   ...C2CConfig,
   ...RPConfig,
   ...KenyaConfig,
+  ...CambodiaConfig
 ]);

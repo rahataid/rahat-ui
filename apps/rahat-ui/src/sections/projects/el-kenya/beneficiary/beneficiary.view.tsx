@@ -26,6 +26,13 @@ import {
 } from '@rahat-ui/shadcn/components/tabs';
 import BeneficiaryGroupView from './beneficiary.group.view';
 import FiltersTags from '../../components/filtersTags';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/components/tabs';
+import BeneficiaryGroupView from './beneficiary.group.view';
 
 export default function BeneficiaryView() {
   const { id } = useParams() as { id: UUID };

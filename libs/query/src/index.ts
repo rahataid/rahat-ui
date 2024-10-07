@@ -14,6 +14,7 @@ export * from './lib/upload';
 export * from './lib/reports';
 export * from './lib/auth-apps';
 export * from './lib/el-kenya';
+export * from './lib/el-cambodia';
 // export * from './lib/aa/trigger-statements';
 // export * from './lib/aa/activities';
 

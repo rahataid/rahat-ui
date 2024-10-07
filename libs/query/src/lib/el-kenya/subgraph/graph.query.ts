@@ -1,6 +1,6 @@
 export const KenyaProjectTransactions = `
 query ProjectTransactions{
-  WalkInBeneficiaryAdded{
+  walkInBeneficiaryAddeds{
     id,
     beneficiary,
     tokenAddress,
@@ -119,7 +119,7 @@ query VendorTransactions($vendor:String!) {
     transactionHash
     eventType
   }
-  WalkInBeneficiaryAdded(where:{vendor:$vendor}){
+  walkInBeneficiaryAddeds(where:{vendor:$vendor}){
     id,
     beneficiary,
     tokenAddress,
@@ -188,7 +188,7 @@ tokensAllocateds(where:{beneficiary: $beneficiaryAddress} ) {
 
 export const KenyaWalkInBeneficiaryTransactions = `
 query walkInBeneficiary{
-  WalkInBeneficiaryAdded{
+  walkInBeneficiaryAddeds{
     id,
     beneficiary,
     tokenAddress,

@@ -36,7 +36,7 @@ export function WarningDialog({
           <DialogClose asChild>
             <Button
               className="bg-red-200 text-red-600 w-full hover:bg-red-300"
-              onClick={onCancel}
+              onClick={() => onCancel()}
               type="submit"
             >
               Cancel

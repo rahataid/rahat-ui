@@ -100,6 +100,7 @@ export default function BeneficiaryView({
       const unSyncedBeneficiaries = benData?.data?.data?.map((beneficiary) => {
         return {
           name: beneficiary?.piiData?.name,
+          phone: beneficiary?.piiData?.phone,
           disbursementAmount: beneficiary?.Disbursements[0]?.amount || '0',
           walletAddress: beneficiary?.walletAddress,
           voucherStatus: beneficiary?.voucherStatus,

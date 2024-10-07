@@ -1,3 +1,4 @@
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -10,6 +11,27 @@ export const useElkenyaBeneficiaryTableColumns = ({
 }: BeneficiaryTableProps) => {
   const { id } = useParams();
   const router = useRouter();
+
+  function getDynamicColor(status: string) {
+    if (status === 'READING_GLASSES' || status === 'WALK_IN') {
+      return 'bg-bluew-50 text-blue-500';
+    }
+
+    if (status === 'SINGLE_VISION') {
+      return 'bg-orange-50 text-orange-500';
+    }
+
+    if (status === 'PRE_DETERMINED' || status === 'REDEEMED') {
+      return 'bg-green-50 text-green-500';
+    }
+
+    if (status === 'NOT_REDEEMED') {
+      return 'bg-red-50 text-red-500';
+    }
+
+    return '';
+  }
+
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
@@ -24,12 +46,27 @@ export const useElkenyaBeneficiaryTableColumns = ({
     {
       accessorKey: 'voucherType',
       header: 'Voucher Type',
-      cell: ({ row }) => <div>{row.getValue('voucherType') || 'N/A'}</div>,
+      cell: ({ row }) => {
+        console.log('voucherType::', row.getValue('voucherType'));
+        const voucherType = row.getValue('voucherType');
+        const colors = getDynamicColor(voucherType as string);
+        return (
+          <Badge className={colors}>{(voucherType as string) || 'N/A'}</Badge>
+        );
+      },
     },
     {
       accessorKey: 'type',
       header: 'Beneficiary Type',
-      cell: ({ row }) => <div>{row.getValue('type')}</div>,
+      cell: ({ row }) => {
+        const beneficiaryType = row.getValue('type');
+        const colors = getDynamicColor(beneficiaryType as string);
+        return (
+          <Badge className={colors}>
+            {(beneficiaryType as string) || 'N/A'}
+          </Badge>
+        );
+      },
     },
     {
       accessorKey: 'eyeCheckupStatus',
@@ -45,8 +82,11 @@ export const useElkenyaBeneficiaryTableColumns = ({
       accessorKey: 'voucherStatus',
       header: 'Voucher Status',
       cell: ({ row }) => {
-        console.log('row', row);
-        return <div>{row.getValue('voucherStatus')}</div>;
+        const voucherStatus = row.getValue('voucherStatus');
+        const colors = getDynamicColor(voucherStatus as string);
+        return (
+          <Badge className={colors}>{(voucherStatus as string) || 'N/A'}</Badge>
+        );
       },
     },
     {

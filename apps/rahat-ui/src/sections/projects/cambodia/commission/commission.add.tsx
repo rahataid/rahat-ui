@@ -26,11 +26,17 @@ export default function CommisionSchemeAddView() {
   const { id } = useParams() as { id: string };
   const create = useCambodiaCommisionCreate();
   const router = useRouter();
-  const FormSchema = z.object({
-    leads: z.string().min(1, { message: 'must be at least 1' }),
-    commission: z.string().min(1, { message: 'must be at least 1' }),
-    currency: z.string().min(1, { message: 'must be at least 1' }),
-  });
+  const FormSchema = z
+    .object({
+      leads: z.string().min(1, { message: 'Leads value is required' }),
+      commission: z.string().min(1, { message: 'Commission  is required' }),
+      currency: z.string().min(1, { message: 'Currency is required' }),
+    })
+    .refine((data) => data.currency && data.commission, {
+      path: ['commission'],
+
+      message: 'Currency  value also required',
+    });
 
   const form = useForm({
     resolver: zodResolver(FormSchema),
@@ -85,13 +91,15 @@ export default function CommisionSchemeAddView() {
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <div className="min-h-[24px]">
+                          <FormMessage />
+                        </div>
                       </FormItem>
                     );
                   }}
                 />
 
-                <div className="font-semibold text-lg">=</div>
+                <div className="font-semibold text-lg self-center">=</div>
 
                 <FormField
                   control={form.control}
@@ -102,28 +110,29 @@ export default function CommisionSchemeAddView() {
                         <FormLabel>Commission Value</FormLabel>
                         <FormControl>
                           <div className="flex">
-                            {/* Currency Field */}
                             <FormField
                               control={form.control}
                               name="currency"
                               render={({ field: currencyField }) => {
                                 return (
-                                  <Select
-                                    value={currencyField.value} // bind value to form state
-                                    onValueChange={currencyField.onChange} // update form on change
-                                  >
-                                    <SelectTrigger className="w-52 border-r-0 rounded-r-none">
-                                      <SelectValue placeholder="Select currency" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="USD">USD</SelectItem>
-                                      {/* Add more currency options if needed */}
-                                    </SelectContent>
-                                  </Select>
+                                  <FormItem>
+                                    <Select
+                                      value={currencyField.value}
+                                      onValueChange={currencyField.onChange}
+                                    >
+                                      <SelectTrigger className="w-52 border-r-0 rounded-r-none">
+                                        <SelectValue placeholder="Select currency" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="USD">USD</SelectItem>
+                                        <SelectItem value="KHR">KHR</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </FormItem>
                                 );
                               }}
                             />
-                            {/* Commission Input */}
+
                             <Input
                               className="rounded-l-none"
                               placeholder="Enter commission value"
@@ -131,6 +140,9 @@ export default function CommisionSchemeAddView() {
                             />
                           </div>
                         </FormControl>
+                        <div className="min-h-[24px]">
+                          <FormMessage />
+                        </div>
                       </FormItem>
                     );
                   }}
@@ -146,7 +158,7 @@ export default function CommisionSchemeAddView() {
               className="px-14"
               type="button"
               variant="secondary"
-              onClick={() => router.push('/users')}
+              onClick={() => form.reset()}
             >
               Cancel
             </Button>

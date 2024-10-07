@@ -94,7 +94,7 @@ export default function BeneficiaryView() {
               Track all the beneficiaries here.
             </p>
           </div>
-          {/* <div className="flex space-x-3">
+          <div className="flex space-x-3">
             <Link
               href={`/projects/el-cambodia/${id}/beneficiary/discardedbenificary`}
             >
@@ -102,12 +102,12 @@ export default function BeneficiaryView() {
                 <UserRoundX className="mr-2 h-4 w-4" /> Discarded Beneficiaries
               </Button>
             </Link>
-            <Link href={`/projects/el-cambodia/${id}/beneficiary/upload`}>
+            {/* <Link href={`/projects/el-cambodia/${id}/beneficiary/upload`}>
               <Button variant="outline">
                 <CloudUpload className="mr-2 h-4 w-4" /> Upload Beneficiaries
               </Button>
-            </Link>
-          </div> */}
+            </Link> */}
+          </div>
         </div>
 
         <div className="rounded-lg border bg-card p-4 ">

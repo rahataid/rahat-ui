@@ -19,10 +19,13 @@ import {
   ScrollBar,
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Share } from 'lucide-react';
+import { ArrowDownToLine, Share } from 'lucide-react';
 import { useUploadBeneficiary } from '@rahat-ui/query';
 import { toast } from 'react-toastify';
 import HeaderWithBack from '../../../components/header.with.back';
+
+const DOWNLOAD_FILE_URL = '/files/beneficiary_sample.xlsx';
+
 export default function ExcelUploader() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
@@ -31,6 +34,22 @@ export default function ExcelUploader() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadBeneficiary = useUploadBeneficiary();
+
+  const handleDownloadClick = () => {
+    fetch(DOWNLOAD_FILE_URL)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'beneficiary_sample.xlsx');
+        document.body.appendChild(link);
+        link.click();
+      })
+      .catch((error) => {
+        toast.error('Error downloading file!' + error);
+      });
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -156,6 +175,10 @@ export default function ExcelUploader() {
           {data?.length ? <p>Total Count: {data?.length ?? 0}</p> : null}
         </div>
         <div className="flex space-x-2">
+          <Button variant="secondary" onClick={handleDownloadClick}>
+            <ArrowDownToLine className="mr-1" size={18} strokeWidth={1.5} />
+            Download Sample
+          </Button>
           <Button
             type="button"
             variant="secondary"

@@ -26,13 +26,6 @@ import {
 } from '@rahat-ui/shadcn/components/tabs';
 import BeneficiaryGroupView from './beneficiary.group.view';
 import FiltersTags from '../../components/filtersTags';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@rahat-ui/shadcn/components/tabs';
-import BeneficiaryGroupView from './beneficiary.group.view';
 
 export default function BeneficiaryView() {
   const { id } = useParams() as { id: UUID };
@@ -126,7 +119,9 @@ export default function BeneficiaryView() {
         </TabsList>
         <Button
           variant="outline"
-          onClick={() => router.push('/beneficiary/import')}
+          onClick={() =>
+            router.push(`/projects/el-kenya/${id}/beneficiary/import`)
+          }
         >
           <CloudDownload className="mr-1" /> Import beneficiaries
         </Button>

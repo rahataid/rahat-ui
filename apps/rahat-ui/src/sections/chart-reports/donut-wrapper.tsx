@@ -20,7 +20,7 @@ const DonutWrapper = ({ actualData, component, source }: DonutData) => {
 
   if (statsDonutData)
     return (
-      <div className="bg-card rounded-sm p-4 shadow-md">
+      <div className="bg-card border rounded-sm p-4 shadow-md">
         <p className="text-md font-medium mb-4">{component?.title}</p>
         <div className="flex justify-center">
           <ChartDonut

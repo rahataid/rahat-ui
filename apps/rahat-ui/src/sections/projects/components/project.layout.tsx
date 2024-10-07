@@ -56,7 +56,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
     <>
       <ProjectNav component={headerNav} />
       <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={16} minSize={16} maxSize={16}>
+        <ResizablePanel defaultSize={19} minSize={19} maxSize={19}>
           {menuItems.map((item) => (
             <ProjectNavView
               key={item.title}

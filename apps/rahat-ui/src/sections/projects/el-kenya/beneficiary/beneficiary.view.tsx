@@ -140,6 +140,16 @@ export default function BeneficiaryView() {
                   table.getColumn('name')?.setFilterValue(event.target.value)
                 }
               />
+              <SearchInput
+                className="w-full"
+                name="phone number"
+                value={
+                  (table.getColumn('phone')?.getFilterValue() as string) ?? ''
+                }
+                onSearch={(event) =>
+                  table.getColumn('phone')?.setFilterValue(event.target.value)
+                }
+              />
               <AddButton
                 name="Beneficiary"
                 path={`/projects/el-kenya/${id}/beneficiary/add`}

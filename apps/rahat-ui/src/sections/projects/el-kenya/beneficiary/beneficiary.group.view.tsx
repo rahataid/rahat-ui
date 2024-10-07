@@ -46,7 +46,7 @@ function BeneficiaryGroupsView() {
     <>
       <div className="p-4 rounded-sm border">
         <div className="flex justify-between space-x-2 items-center mb-4">
-          <SearchInput className="w-full" name="group" onSearch={() => {}} />
+          <SearchInput className="w-full" name="group" onSearch={() => { }} />
           {/* <AddButton name="Group" path="/beneficiary/groups/add" /> */}
         </div>
         <ScrollArea className="h-[calc(100vh-300px)]">

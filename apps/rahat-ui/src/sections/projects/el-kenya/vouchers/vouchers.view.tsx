@@ -4,6 +4,10 @@ import getIcon from 'apps/rahat-ui/src/utils/getIcon';
 import { Plus, Ticket } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import {
+  ChartColumnStacked,
+  ChartDonut,
+} from '@rahat-ui/shadcn/src/components/charts';
 
 const cardData = [
   { title: 'Total Voucher', icon: 'Ticket', total: '1439' },
@@ -69,8 +73,32 @@ export default function VouchersView() {
           })}
         </div>
         <div className="grid grid-cols-4 gap-2">
-          <div className="border rounded-md bg-card"></div>
-          <div className="col-span-2 border rounded-md bg-card"></div>
+          <div className="bg-card border rounded-md p-4 shadow">
+            <p className="text-md font-medium mb-4">Total Vouchers</p>
+            <div className="flex justify-center">
+              <ChartDonut
+                series={[20, 80]}
+                labels={['Redeeemed', 'Not Redeemed']}
+                donutSize="70%"
+                width={400}
+                height={320}
+              />
+            </div>
+          </div>
+          <div className="col-span-2 border rounded-md bg-card p-4 shadow">
+            <p className="text-md font-medium mb-4">Total Vouchers</p>
+            <div className="flex justify-center">
+              <ChartColumnStacked
+                series={[
+                  { name: 'Single Vision', data: [15, 19, 27, 44] },
+                  { name: 'Reading Glass', data: [7, 16, 40, 11] },
+                ]}
+                categories={['Week 1', 'Week 2', 'Week 3', 'Week 4']}
+                stacked
+                custom
+              />
+            </div>
+          </div>
           <div className="border rounded-md bg-card p-4">
             <h1 className="font-medium text-md mb-2">Recent Deposits</h1>
             <div className="flex space-x-4 items-center">

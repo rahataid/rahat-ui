@@ -18,7 +18,6 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { CloudDownload } from 'lucide-react';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import ViewColumns from '../../components/view.columns';
-import FiltersTags from '../../components/filtersTags';
 import {
   Tabs,
   TabsContent,
@@ -26,6 +25,7 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/components/tabs';
 import BeneficiaryGroupView from './beneficiary.group.view';
+import FiltersTags from '../../components/filtersTags';
 
 export default function BeneficiaryView() {
   const { id } = useParams() as { id: UUID };
@@ -119,7 +119,9 @@ export default function BeneficiaryView() {
         </TabsList>
         <Button
           variant="outline"
-          onClick={() => router.push('/beneficiary/import')}
+          onClick={() =>
+            router.push(`/projects/el-kenya/${id}/beneficiary/import`)
+          }
         >
           <CloudDownload className="mr-1" /> Import beneficiaries
         </Button>

@@ -19,12 +19,14 @@ type IProps = {
   table: Table<any>;
   groupedBeneficiaries: [];
   groupUUID: string;
+  name: string;
 };
 
 export default function MembersTable({
   table,
   groupedBeneficiaries,
   groupUUID,
+  name,
 }: IProps) {
   return (
     <>
@@ -104,7 +106,7 @@ export default function MembersTable({
                         </p>
                         <AddButton
                           name="Beneficiary"
-                          path={`/beneficiary/groups/${groupUUID}/select?member=true`}
+                          path={`/beneficiary/groups/${groupUUID}/select?member=true&name=${name}`}
                         />
                       </div>
                     </TableCell>

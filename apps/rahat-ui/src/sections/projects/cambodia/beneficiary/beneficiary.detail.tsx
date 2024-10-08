@@ -50,11 +50,11 @@ export default function BeneficiaryDetail() {
       <div className="p-5 rounded-md border grid grid-cols-4 gap-5 mb-5">
         <div>
           <h1 className="text-md text-muted-foreground">Beneficiary Name</h1>
-          <p className="font-medium">{data?.data?.piiData?.name}</p>
+          <p className="font-medium">{data?.data?.piiData?.name ?? '-'}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Gender</h1>
-          <p className="font-medium">{data?.data?.gender}</p>
+          <p className="font-medium">{data?.data?.gender ?? '-'}</p>
         </div>
 
         <div>
@@ -100,15 +100,15 @@ export default function BeneficiaryDetail() {
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Refered By</h1>
-          <p className="font-medium">Hima Tamang</p>
+          <p className="font-medium">{data?.data?.healthWorker?.name ?? '-'}</p>
         </div>
 
-        <div>
+        {/* <div>
           <h1 className="text-md text-muted-foreground">Transaction Type</h1>
           <Badge variant="secondary">
             {data?.data?.conversionType ?? 'N/A'}
           </Badge>
-        </div>
+        </div> */}
       </div>
       <div className="">
         <h1 className="text-2xl mb-5">Transactions</h1>

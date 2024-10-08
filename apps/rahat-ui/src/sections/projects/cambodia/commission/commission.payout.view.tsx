@@ -11,7 +11,7 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import React from 'react';
-import { usePagination } from '@rahat-ui/query';
+import { useCambodiaCommisionCurrent, usePagination } from '@rahat-ui/query';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useParams, useRouter } from 'next/navigation';
 
@@ -46,6 +46,10 @@ const columns: ColumnDef<any>[] = [
 export default function CommissionPayoutView() {
   const { id } = useParams() as { id: string };
   const router = useRouter();
+  const { data } = useCambodiaCommisionCurrent({
+    projectUUID: id as string,
+  }) as any;
+  console.log(data);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
@@ -83,7 +87,8 @@ export default function CommissionPayoutView() {
               Commission Payout Scheme
             </h1>
             <p className="text-muted-foreground text-base">
-              Note: 1 lead converted is equal to 1 USD
+              {data?.data?.leads} lead converted is equal to{' '}
+              {data?.data?.commission} {data?.data?.currency}
             </p>
           </div>
           <Button

@@ -28,6 +28,7 @@ export const initialStepData = {
 const VouchersManagementFlow = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [error, setError] = useState('');
+  const [openWarningModel, setOpenWarningModel] = useState(false);
   const [beneficiaryGroupSelected, setBeneficiaryGroupSelected] =
     useState(false);
 
@@ -61,6 +62,9 @@ const VouchersManagementFlow = () => {
     if (!isValid) {
       return;
     }
+    if (currentStep === 1) {
+      setOpenWarningModel(true);
+    }
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
@@ -72,6 +76,8 @@ const VouchersManagementFlow = () => {
   };
 
   const handlePrevious = () => {
+    setOpenWarningModel(false);
+
     router.push(`/projects/el-kenya/${id}/vouchers/manage`);
   };
 
@@ -89,10 +95,12 @@ const VouchersManagementFlow = () => {
         beneficiaryAddresses: stepData.selectedBeneficiaries.map((ben) => {
           return {
             walletAddress: ben?.walletAddress,
+            phone: ben?.phone,
             amount: 1,
           };
         }),
-        tokenAddress: contractSettings?.rahattoken?.address,
+        tokenAddress:
+          contractSettings?.rahattoken?.address,
         projectAddress: contractSettings?.rahatcvakenya?.address,
       });
       // await bulkAssignDisbursement.mutateAsync({
@@ -110,29 +118,48 @@ const VouchersManagementFlow = () => {
     const fetchedBenAddresses = [] as {
       walletAddress: `0x${string}`;
       amount: number;
+      phone: string;
     }[];
     // todo: refactor backend accordingly
     const benefciaryFromGroups = groupUUIDs.map(async (groupUUID) => {
       const ben = await beneficiaryGroup.mutateAsync(groupUUID as UUID);
-      const walletAddresses = await ben?.groupedBeneficiaries?.map(
-        (groupedBeneficiary: any) =>
-          groupedBeneficiary?.Beneficiary?.walletAddress,
+      const benData = await ben?.groupedBeneficiaries?.map(
+        (groupedBeneficiary: any) => ({
+          walletAddress: groupedBeneficiary?.Beneficiary?.walletAddress,
+          phone: groupedBeneficiary?.Beneficiary?.pii?.phone,
+        }),
       );
-      return walletAddresses;
+      return benData;
     });
+
     const beneficiaries = await Promise.all(benefciaryFromGroups);
     beneficiaries.map((ben) => {
-      ben.map((walletAddress: `0x${string}`) => {
-        fetchedBenAddresses.push({ walletAddress, amount: 1 });
-      });
+      ben.map(
+        ({
+          walletAddress,
+          phone,
+        }: {
+          walletAddress: `0x${string}`;
+          phone: string;
+        }) => {
+          fetchedBenAddresses.push({ walletAddress, amount: 1, phone });
+        },
+      );
     });
     await syncDisbursementAllocation.mutateAsync({
       // Todo: handle the case of a beneficiary being in multiple groups
-      beneficiaryAddresses: fetchedBenAddresses.filter(
-        (v, i, a) =>
-          a.findIndex((t) => t.walletAddress === v.walletAddress) === i,
-      ),
-      tokenAddress: contractSettings?.rahattoken?.address,
+      beneficiaryAddresses: fetchedBenAddresses
+        .filter(
+          (v, i, a) =>
+            a.findIndex((t) => t.walletAddress === v.walletAddress) === i,
+        )
+        .map((ben) => ({
+          walletAddress: ben.walletAddress,
+          phone: ben.phone,
+          amount: 1,
+        })),
+      tokenAddress:
+        contractSettings?.rahattoken?.address,
       projectAddress: contractSettings?.rahatcvakenya?.address,
     });
   };
@@ -183,7 +210,7 @@ const VouchersManagementFlow = () => {
         <WarningDialog
           onCancel={handlePrevious}
           onConfirm={handleBulkAssign}
-          open={true}
+          open={openWarningModel}
         />
       ),
     },

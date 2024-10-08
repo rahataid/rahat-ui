@@ -1,21 +1,22 @@
-import { useRSQuery } from "@rumsan/react-query";
-import Swal from "sweetalert2";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { encodeFunctionData, formatUnits } from "viem";
-import { useReadRahatTokenDecimals } from "../generated-hooks/rahatToken";
-import {  useWriteRahatCvaKenyaMulticall,
-  rahatCvaKenyaAbi, 
-  useWriteRahatTreasuryCreateToken, 
-  useReadRahatCvaKenyaTokenAllocations, 
-  useWriteRahatTreasuryTransferToken, 
-  useWriteRedemptionsRedeemToken } from "../generated-hooks";
-import { useRouter } from "next/navigation";
-import { useProjectAction } from "../../../projects";
-import { UUID } from "crypto";
-import { MS_ACTIONS } from "@rahataid/sdk";
+import { useRSQuery } from '@rumsan/react-query';
+import Swal from 'sweetalert2';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { encodeFunctionData, formatUnits } from 'viem';
+import { useReadRahatTokenDecimals } from '../generated-hooks/rahatToken';
+import {
+  useWriteRahatCvaKenyaMulticall,
+  rahatCvaKenyaAbi,
+  useWriteRahatTreasuryCreateToken,
+  useReadRahatCvaKenyaTokenAllocations,
+  useWriteRahatTreasuryTransferToken,
+  useWriteRedemptionsRedeemToken,
+} from '../generated-hooks';
+import { useRouter } from 'next/navigation';
+import { useProjectAction } from '../../../projects';
+import { UUID } from 'crypto';
+import { MS_ACTIONS } from '@rahataid/sdk';
 
 const CREATE_BULK_DISBURSEMENT = 'rpProject.disbursement.bulkCreate';
-
 
 export const useKenyaVoucherCreate = () => {
   const { queryClient } = useRSQuery();
@@ -89,7 +90,7 @@ export const useBulkCreateKenyaDisbursement = (projectUUID: UUID) => {
   return useMutation({
     mutationFn: async (data: {
       amount: number;
-      beneficiaries: `0x${string}`[];
+      beneficiaries: { walletAddress: `0x${string}`; phone: string }[];
     }) => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
@@ -111,7 +112,10 @@ export const useBulkCreateKenyaDisbursement = (projectUUID: UUID) => {
   });
 };
 
-export const useBulkAssignKenyaVoucher = (tokenAddress: any,projectId:UUID) => {
+export const useBulkAssignKenyaVoucher = (
+  tokenAddress: any,
+  projectId: UUID,
+) => {
   console.log('tokenAddress', tokenAddress);
   const multi = useWriteRahatCvaKenyaMulticall();
   const { queryClient } = useRSQuery();
@@ -123,7 +127,6 @@ export const useBulkAssignKenyaVoucher = (tokenAddress: any,projectId:UUID) => {
   });
 
   const bulkAssignDisbursement = useBulkCreateKenyaDisbursement(projectId);
-
 
   console.log('decimals', decimals);
 
@@ -137,25 +140,26 @@ export const useBulkAssignKenyaVoucher = (tokenAddress: any,projectId:UUID) => {
 
   return useMutation(
     {
-      onError: (error:any) => {
+      onError: (error: any) => {
         alert.fire({
           icon: 'error',
           title: 'Error allocating tokens',
           text: error.message,
         });
       },
-      onSuccess:async (data,variables,context) => {
+      onSuccess: async (data, variables, context) => {
         await bulkAssignDisbursement.mutateAsync({
-          amount:1,
-          beneficiaries:variables.beneficiaryAddresses.map(b=>b.walletAddress)
-        })
+          amount: 1,
+          beneficiaries: variables.beneficiaryAddresses.map((b) => {
+            return { walletAddress: b.walletAddress, phone: b.phone };
+          }),
+        });
         alert.fire({
           icon: 'success',
           title: 'Tokens allocated successfully',
         });
-       
       },
-     
+
       mutationFn: async ({
         beneficiaryAddresses,
         tokenAddress,
@@ -163,6 +167,7 @@ export const useBulkAssignKenyaVoucher = (tokenAddress: any,projectId:UUID) => {
       }: {
         beneficiaryAddresses: {
           walletAddress: `0x${string}`;
+          phone: string;
           amount: number;
         }[];
         amount?: string;
@@ -197,7 +202,7 @@ export const useBulkAssignKenyaVoucher = (tokenAddress: any,projectId:UUID) => {
         });
       },
     },
-    queryClient, 
+    queryClient,
   );
 };
 
@@ -331,4 +336,3 @@ export const useSendFundToKenyaProject = () => {
 //     },
 //   });
 // };
-

@@ -44,6 +44,11 @@ export const useElkenyaBeneficiaryTableColumns = ({
       cell: ({ row }) => <div>{row.getValue('gender')}</div>,
     },
     {
+      accessorKey: 'phone',
+      header: 'Phone Number',
+      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
+    },
+    {
       accessorKey: 'voucherType',
       header: 'Voucher Type',
       cell: ({ row }) => {
@@ -71,12 +76,12 @@ export const useElkenyaBeneficiaryTableColumns = ({
     {
       accessorKey: 'eyeCheckupStatus',
       header: 'Eye Checkup Status',
-      cell: ({ row }) => <div>{row.getValue('eyeCheckupStatus')}</div>,
+      cell: ({ row }) => <Badge>{row.getValue('eyeCheckupStatus')}</Badge>,
     },
     {
       accessorKey: 'glassesStatus',
       header: 'Glasses Status',
-      cell: ({ row }) => <div>{row.getValue('glassesStatus')}</div>,
+      cell: ({ row }) => <Badge>{row.getValue('glassesStatus')}</Badge>,
     },
     {
       accessorKey: 'voucherStatus',

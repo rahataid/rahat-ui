@@ -9,12 +9,11 @@ import EditButton from '../../components/edit.btn';
 import DeleteButton from '../../components/delete.btn';
 
 export default function BeneficiaryDetail() {
-  const { id } = useParams() as { id: UUID };
+  const { id, benId } = useParams() as { id: UUID; benId: UUID };
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<string>();
 
   const searchParams = useSearchParams();
-
   const phone = searchParams.get('phone');
   const type = searchParams.get('type');
   const name = searchParams.get('name');

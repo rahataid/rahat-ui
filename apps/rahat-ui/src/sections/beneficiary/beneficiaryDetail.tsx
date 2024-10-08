@@ -45,7 +45,7 @@ import EditBeneficiary from './editBeneficiary';
 import TooltipComponent from '../../components/tooltip';
 
 type IProps = {
-  beneficiaryDetail: ListBeneficiary;
+  beneficiaryDetail: any;
   closeSecondPanel: VoidFunction;
 };
 
@@ -256,7 +256,9 @@ export default function BeneficiaryDetail({
           />
           <div>
             <h1 className="font-semibold text-xl mb-1">
-              {beneficiaryDetail?.piiData?.name ?? 'John Doe'}
+              {beneficiaryDetail?.piiData?.name ??
+                beneficiaryDetail?.name ??
+                'John Doe'}
             </h1>
             <div className="flex space-x-4 items-center">
               <Badge>{beneficiaryDetail?.extras?.status ?? 'active'}</Badge>
@@ -279,7 +281,9 @@ export default function BeneficiaryDetail({
             <p>Address</p>
           </div>
           <p className="text-muted-foreground text-base">
-            {beneficiaryDetail?.piiData?.extras?.address || '-'}
+            {beneficiaryDetail?.piiData?.extras?.address ||
+              beneficiaryDetail?.location ||
+              '-'}
           </p>
         </div>
 
@@ -289,7 +293,9 @@ export default function BeneficiaryDetail({
             <p>Phone Number</p>
           </div>
           <p className="text-muted-foreground text-base">
-            {beneficiaryDetail?.piiData?.phone || '-'}
+            {beneficiaryDetail?.piiData?.phone ||
+              beneficiaryDetail?.phone ||
+              '-'}
           </p>
         </div>
 
@@ -299,7 +305,9 @@ export default function BeneficiaryDetail({
             <p>Email Address</p>
           </div>
           <p className="text-muted-foreground text-base">
-            {beneficiaryDetail?.piiData?.email || '-'}
+            {beneficiaryDetail?.piiData?.email ||
+              beneficiaryDetail?.email ||
+              '-'}
           </p>
         </div>
 

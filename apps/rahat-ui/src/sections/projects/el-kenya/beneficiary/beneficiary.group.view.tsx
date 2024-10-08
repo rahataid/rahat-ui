@@ -69,7 +69,7 @@ function BeneficiaryGroupsView() {
                           <Users size={20} strokeWidth={2.5} />
                         </div>
                       </div>
-                      <Badge className="w-min">{i?.type ?? 'N/A'}</Badge>
+                      {/* <Badge className="w-min">{i?.type ?? 'N/A'}</Badge> */}
                       <p className="text-base mb-1">{i?.name ?? 'N/A'}</p>
                       <div className="flex gap-2 items-center">
                         <Users size={18} strokeWidth={2} />

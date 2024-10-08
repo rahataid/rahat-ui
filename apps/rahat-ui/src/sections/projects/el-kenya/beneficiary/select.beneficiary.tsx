@@ -59,6 +59,8 @@ export default function SelectBeneficiaryView() {
     projectUUID: id,
     ...filters,
   });
+  const meta = beneficiaries.data.response?.meta;
+
   const tableData = React.useMemo(() => {
     if (beneficiaries) {
       return beneficiaries?.data?.data.filter((ben) => {
@@ -132,6 +134,14 @@ export default function SelectBeneficiaryView() {
             <ViewColumns table={table} />
           </div>
           <DemoTable table={table} tableHeight="h-[calc(100vh-307px)]" />
+          <CustomPagination
+            currentPage={pagination.page}
+            handleNextPage={setNextPage}
+            handlePageSizeChange={setPerPage}
+            handlePrevPage={setPrevPage}
+            perPage={pagination.perPage}
+            meta={meta || { total: 0, currentPage: 0 }}
+          />
         </div>
       </div>
       <div className="flex justify-between items-center py-2 px-4 border-t">

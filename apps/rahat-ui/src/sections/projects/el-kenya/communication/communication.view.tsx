@@ -1,4 +1,8 @@
-import { useListRpCommunicationLogs, usePagination } from '@rahat-ui/query';
+import {
+  useListRpCommunicationLogs,
+  usePagination,
+  useSettingsStore,
+} from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -9,7 +13,7 @@ import {
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import { useElkenyaSMSTableColumns } from './use.sms.table.columns';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import getIcon from 'apps/rahat-ui/src/utils/getIcon';
@@ -58,10 +62,22 @@ export default function CommunicationView() {
       total: stats.succed,
     },
   ];
+  const commsAppId = useSettingsStore((state) => state.commsSettings)?.APP_ID
+
+  const tableData = useMemo(()=>{
+    if(data){
+      return data.filter((log)=>log.app===commsAppId).map((log)=>({
+        ...log,
+        to:log?.details?.responses?.mobile
+      }))
+    }else{
+      return []
+    }
+  },[data])
 
   const columns = useElkenyaSMSTableColumns();
   const table = useReactTable({
-    data: data || [],
+    data: tableData ,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -77,7 +93,7 @@ export default function CommunicationView() {
       // rowSelection: selectedListItems,
     },
   });
-  return (
+  return(
     <>
       <div className="p-4">
         <div className="mb-4">
@@ -134,6 +150,6 @@ export default function CommunicationView() {
         canNextPage={table.getCanNextPage()}
         nextPage={table.nextPage}
       />
-    </>
+    </>,
   );
 }

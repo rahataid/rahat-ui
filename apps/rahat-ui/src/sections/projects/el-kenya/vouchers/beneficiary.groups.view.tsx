@@ -81,7 +81,10 @@ export default function BeneficiaryGroupsView({
             );
 
             return (
-              <div className="cursor-pointer rounded-md border shadow p-4">
+              <div
+                key={benificiaryGroup?.uuid}
+                className="cursor-pointer rounded-md border shadow p-4"
+              >
                 <div className="flex flex-col space-y-2">
                   <div className="flex justify-end">
                     <Checkbox
@@ -119,11 +122,11 @@ export default function BeneficiaryGroupsView({
                       <Users size={20} strokeWidth={2.5} />
                     </div>
                   </div>
-                  <p className="text-base mb-1">{benificiaryGroup.name}</p>
+                  <p className="text-base mb-1">{benificiaryGroup?.name}</p>
                   <div className="text-muted-foreground text-sm flex justify-between">
                     <div className="flex gap-2 items-center">
                       <Users size={18} strokeWidth={2} />
-                      {benificiaryGroup._count.groupedBeneficiaries}
+                      {benificiaryGroup?._count.groupedBeneficiaries}
                     </div>
                     <div className="flex gap-2 items-center">
                       <Banknote size={18} strokeWidth={2} />

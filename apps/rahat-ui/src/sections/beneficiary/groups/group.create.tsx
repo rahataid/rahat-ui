@@ -13,9 +13,12 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import HeaderWithBack from '../../projects/components/header.with.back';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useCreateBeneficiaryGroup } from '@rahat-ui/query';
+import { toast } from 'react-toastify';
 
 export default function GroupCreateView() {
   const router = useRouter();
+  const createBeneficiaryGroup = useCreateBeneficiaryGroup();
 
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
@@ -28,7 +31,23 @@ export default function GroupCreateView() {
     },
   });
 
-  const handleCreateGroup = async (data: z.infer<typeof FormSchema>) => {};
+  const handleCreateGroup = async (data: z.infer<typeof FormSchema>) => {
+    try {
+      const payload = {
+        name: data?.name,
+        beneficiaries: [],
+      };
+      const result = await createBeneficiaryGroup.mutateAsync(payload);
+      if (result) {
+        toast.success('Beneficiary group added successfully!');
+        router.push('/beneficiary');
+      }
+    } catch (e: any) {
+      toast.error(
+        e?.response?.data?.message || 'Failed to add beneficiary group!',
+      );
+    }
+  };
 
   return (
     <Form {...form}>

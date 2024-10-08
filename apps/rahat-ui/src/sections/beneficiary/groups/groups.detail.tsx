@@ -10,15 +10,18 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { useBeneficiaryList, usePagination } from '@rahat-ui/query';
+import {
+  useBeneficiaryList,
+  useGetBeneficiaryGroup,
+  usePagination,
+} from '@rahat-ui/query';
 import { useBeneficiaryTableColumns } from '../useBeneficiaryColumns';
 import ClientSidePagination from '../../projects/components/client.side.pagination';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
-  const [tableData, setTableData] = React.useState<any>([]);
   const projectModal = useBoolean();
   const removeModal = useBoolean();
 
@@ -45,18 +48,34 @@ export default function GroupDetailView() {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
   }, []);
 
+  const searchParams = useSearchParams();
+
+  const isAssignedToProject = searchParams.get('isAssignedToProject');
   const groupedBeneficiaries = [] as any;
-  // const { data: Beneficiaries } = useBeneficiaryList({
-  //   ...pagination,
-  //   ...filters,
-  // });
+  const { data: group } = useGetBeneficiaryGroup(Id);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const columns = useBeneficiaryTableColumns();
 
+  const tableData = React.useMemo(() => {
+    if (group) {
+      return group?.data?.groupedBeneficiaries?.map((d: any) => ({
+        name: d?.Beneficiary?.pii?.name,
+        phone: d?.Beneficiary?.pii?.phone,
+        email: d?.Beneficiary?.pii?.email,
+        location: d?.Beneficiary?.location,
+        gender: d?.Beneficiary?.gender,
+        walletAddress: d?.Beneficiary?.walletAddress,
+        internetStatus: d?.Beneficiary?.internetStatus,
+        phoneStatus: d?.Beneficiary?.phoneStatus,
+        bankedStatus: d?.Beneficiary?.bankedStatus,
+      }));
+    } else return [];
+  }, [group]);
+
   const table = useReactTable({
     manualPagination: true,
-    data: groupedBeneficiaries || [],
+    data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -81,28 +100,31 @@ export default function GroupDetailView() {
       <div className="p-4">
         <div className="flex justify-between items-center">
           <HeaderWithBack
-            title="Beneficiary Group Name Here"
+            title={group?.data?.name}
             subtitle="Here is a detailed view of the selected beneficiary group"
             path="/beneficiary"
           />
-          <CoreBtnComponent
-            className="text-primary bg-sky-50"
-            name="Assign to Project"
-            Icon={FolderPlus}
-            handleClick={() => {}}
-          />
+          {Number(isAssignedToProject) === 0 && (
+            <CoreBtnComponent
+              className="text-primary bg-sky-50"
+              name="Assign to Project"
+              Icon={FolderPlus}
+              handleClick={() => {}}
+            />
+          )}
         </div>
         <DataCard
           className="border-solid w-1/3 rounded-md"
           iconStyle="bg-white text-secondary-muted"
           title="Total Beneficiaries"
           Icon={UsersRound}
-          number="0"
+          number={group?.data?.groupedBeneficiaries?.length}
         />
         <MembersTable
           table={table}
           groupedBeneficiaries={groupedBeneficiaries}
           groupUUID={Id}
+          name={group?.data?.name}
         />
       </div>
       <ClientSidePagination table={table} />

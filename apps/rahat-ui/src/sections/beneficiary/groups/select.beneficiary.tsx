@@ -1,9 +1,13 @@
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import HeaderWithBack from '../../projects/components/header.with.back';
 import { UUID } from 'crypto';
 import { DatePicker } from 'apps/rahat-ui/src/components/datePicker';
 import SearchInput from '../../projects/components/search.input';
-import { useBeneficiaryList, usePagination } from '@rahat-ui/query';
+import {
+  useBeneficiaryList,
+  usePagination,
+  useUpdateBeneficiaryGroup,
+} from '@rahat-ui/query';
 import React from 'react';
 import {
   getCoreRowModel,
@@ -56,6 +60,34 @@ export default function SelectBeneficiaryView() {
       rowSelection: selectedListItems,
     },
   });
+
+  const searchParams = useSearchParams();
+
+  const name = searchParams.get('name');
+
+  const updateBeneficiaryGroup = useUpdateBeneficiaryGroup();
+
+  const handleUpdateBeneficiaryGroup = async () => {
+    const members = table
+      .getSelectedRowModel()
+      .rows?.map((data) => ({ uuid: data?.original?.uuid }));
+    const payload = {
+      uuid: Id,
+      name,
+      beneficiaries: members,
+    };
+    console.log(payload);
+    try {
+      await updateBeneficiaryGroup.mutateAsync(payload);
+    } catch (e) {
+      console.error('Error while updating beneficiary group::', e);
+    }
+  };
+
+  React.useEffect(() => {
+    if (updateBeneficiaryGroup.isSuccess)
+      router.push(`/beneficiary/groups/${Id}`);
+  }, [updateBeneficiaryGroup]);
   return (
     <>
       <div className="p-4">
@@ -108,7 +140,7 @@ export default function SelectBeneficiaryView() {
         </Button>
         ) : ( */}
 
-          <Button className="px-10">
+          <Button className="px-10" onClick={handleUpdateBeneficiaryGroup}>
             Add ({Object.keys(selectedListItems).length ?? 0} Beneficiaries )
           </Button>
           {/* )} */}

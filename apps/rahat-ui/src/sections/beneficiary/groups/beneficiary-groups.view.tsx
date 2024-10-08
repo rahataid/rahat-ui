@@ -125,11 +125,9 @@ function BeneficiaryGroupsView() {
     setSelectedGroup(data);
   };
 
-  const isAssignedToProject = selectedGroup?.beneficiaryGroupProject?.length;
   const assignedGroupId = selectedGroup?.beneficiaryGroupProject?.map(
     (benProject: any) => benProject.Project.id,
   );
-
   return (
     <>
       <AssignBeneficiaryToProjectModal
@@ -146,6 +144,8 @@ function BeneficiaryGroupsView() {
           <div className="grid grid-cols-4 gap-4">
             {groups &&
               groups?.map((i: any, index: number) => {
+                const isAssignedToProject = i?.beneficiaryGroupProject?.length;
+
                 return (
                   <div
                     key={index}
@@ -155,18 +155,29 @@ function BeneficiaryGroupsView() {
                       <div
                         className="rounded-md bg-secondary grid place-items-center h-28"
                         onClick={() => {
-                          router.push(`/beneficiary/groups/${i?.uuid}`);
+                          router.push(
+                            `/beneficiary/groups/${i?.uuid}?isAssignedToProject=${isAssignedToProject}`,
+                          );
                         }}
                       >
                         <div className="bg-[#667085] text-white p-2 rounded-full">
                           <Users size={20} strokeWidth={2.5} />
                         </div>
                       </div>
-                      <Badge className="w-min">{i?.type ?? 'N/A'}</Badge>
+                      <div className="flex">
+                        {i?.beneficiaryGroupProject?.map((project) => {
+                          return (
+                            <Badge className="w-min mr-2">
+                              {project?.Project?.name ?? 'N/A'}
+                            </Badge>
+                          );
+                        })}
+                      </div>
+
                       <p className="text-base mb-1">{i?.name ?? 'N/A'}</p>
                       <div className="flex gap-2 items-center">
                         <Users size={18} strokeWidth={2} />
-                        28
+                        {i?._count?.groupedBeneficiaries || 0}
                       </div>
                       <Button
                         type="button"

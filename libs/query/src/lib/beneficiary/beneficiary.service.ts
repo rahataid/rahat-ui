@@ -18,6 +18,8 @@ import { api } from '../../utils/api';
 import { useBeneficiaryGroupsStore } from './beneficiary-groups.store';
 import { useBeneficiaryStore } from './beneficiary.store';
 
+const GET_BENEFICIARY_GROUP = 'GET_BENEFICIARY_GROUP';
+
 const createNewBeneficiary = async (payload: any) => {
   const response = await api.post('/beneficiaries', payload);
   return response?.data;
@@ -37,6 +39,11 @@ const listBeneficiaryGroups = async (payload: Pagination) => {
 
 const removeBeneficiaryGroup = async (uuid: UUID) => {
   const response = await api.delete(`/beneficiaries/groups/${uuid}`);
+  return response?.data;
+};
+
+const getBeneficiaryGroup = async (uuid: UUID) => {
+  const response = await api.get(`/beneficiaries/groups/${uuid}`);
   return response?.data;
 };
 
@@ -512,4 +519,17 @@ export const useTempBeneficiaryImport = () => {
       );
     },
   });
+};
+export const useGetBeneficiaryGroup = (
+  uuid: UUID,
+): UseQueryResult<any, Error> => {
+  const { rumsanService, queryClient } = useRSQuery();
+  return useQuery(
+    {
+      queryKey: [GET_BENEFICIARY_GROUP, uuid],
+      // @ts-ignore
+      queryFn: () => getBeneficiaryGroup(uuid),
+    },
+    queryClient,
+  );
 };

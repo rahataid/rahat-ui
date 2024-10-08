@@ -196,7 +196,7 @@ export default function BeneficiaryView() {
           </div>
         </div>
         <CustomPagination
-          meta={{ total: 0, currentPage: 0 }}
+          meta={meta || { total: 0, currentPage: 0 }}
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}

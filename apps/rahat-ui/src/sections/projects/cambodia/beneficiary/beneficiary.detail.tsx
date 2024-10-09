@@ -1,5 +1,8 @@
 'use client';
-import { useCambodiaBeneficiary } from '@rahat-ui/query';
+import {
+  useCambodiaBeneficiary,
+  useCambodiaBeneficiaryTransactions,
+} from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
   Tooltip,
@@ -11,7 +14,7 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { formatDT } from 'apps/rahat-ui/src/utils';
 import { Copy, CopyCheck } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import HeaderWithBack from '../../components/header.with.back';
 import TransactionHistoryView from './transaction.history.view';
 export default function BeneficiaryDetail() {
@@ -112,7 +115,7 @@ export default function BeneficiaryDetail() {
       </div>
       <div className="">
         <h1 className="text-2xl mb-5">Transactions</h1>
-        <TransactionHistoryView />
+        <TransactionHistoryView walletAddress={data?.data?.walletAddress} />
       </div>
     </div>
   );

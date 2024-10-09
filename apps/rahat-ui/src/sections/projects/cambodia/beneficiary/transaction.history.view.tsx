@@ -1,9 +1,15 @@
 'use client';
-import { usePagination } from '@rahat-ui/query';
 import {
+  useCambodiaBeneficiaryTransactions,
+  usePagination,
+} from '@rahat-ui/query';
+import {
+  ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -13,82 +19,68 @@ import React from 'react';
 import CambodiaTable from '../table.component';
 import { useTransactionHistoryTableColumns } from './use.transaction.history.table.columns';
 
-export default function TransactionHistoryView() {
+type Props = {
+  walletAddress?: string;
+};
+export default function TransactionHistoryView({ walletAddress }: Props) {
   const { id } = useParams() as { id: UUID };
+
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    setPagination,
-    resetSelectedListItems,
-  } = usePagination();
+  const [rowSelection, setRowSelection] = React.useState({});
 
   const columns = useTransactionHistoryTableColumns();
+  // using direct beneficiary  address to search  for the testing purpose and omit the below code
+  // const { data: beneficiaryTransactions, isLoading: loading } =
+  //   useCambodiaBeneficiaryTransactions(
+  //     '0xaacbee76efd2221bc6c86d60e83ed0b2fb539b47',
+  //   );
+
+  //  it should search on the basis of the beneficiary wallet address. Below should be uncomment
+
+  const { data: beneficiaryTransactions, isLoading } =
+    useCambodiaBeneficiaryTransactions(
+      walletAddress || '0xaacbee76efd2221bc6c86d60e83ed0b2fb539b47',
+    );
+
+  const tableData: any = React.useMemo(() => {
+    if (beneficiaryTransactions) return beneficiaryTransactions;
+    else return [];
+  }, [beneficiaryTransactions]);
   const table = useReactTable({
     manualPagination: true,
-    data: [
-      {
-        id: 'a12f4a5d-4f36-4c73-8f9e-19b82a8b5403',
-        name: 'Vision Center',
-        phone: '9857023857',
-        wallet: '0014xx...7555525',
-        isVerified: 'Approved',
-      },
-      {
-        id: 'b74c9f8e-2e5a-4b5f-9949-7042e8b3b089',
-        name: 'Optical Hub',
-        phone: '9123456789',
-        wallet: '0012yy...7589634',
-        isVerified: 'Not Approved',
-      },
-      {
-        id: 'c85dfe64-995b-4c39-858b-d1e80db3e372',
-        name: 'Eye Care Plus',
-        phone: '9876543210',
-        wallet: '0023zz...2345874',
-        isVerified: 'Approved',
-      },
-      {
-        id: 'd9f875bc-488b-4f67-8b8d-75a4d2f88d5d',
-        name: 'Clear Vision Clinic',
-        phone: '9234567890',
-        wallet: '0056bb...9823415',
-        isVerified: 'Not Approved',
-      },
-      {
-        id: 'e73c3cb4-917a-4ef1-9dd4-930f2c5f8941',
-        name: 'LensPro Center',
-        phone: '9988776655',
-        wallet: '0044cc...1234567',
-        isVerified: 'Approved',
-      },
-    ],
+    data: tableData || [],
     columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setSelectedListItems,
     getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
     getRowId(originalRow) {
-      return originalRow.walletAddress;
+      return originalRow.id;
     },
 
     state: {
+      sorting,
+      columnFilters,
       columnVisibility,
-      rowSelection: selectedListItems,
+      rowSelection,
     },
   });
   return (
     <div className="rounded border bg-card p-4">
-      <CambodiaTable table={table} tableHeight="h-[calc(100vh-500px)]" />
+      <CambodiaTable
+        table={table}
+        tableHeight="h-[calc(100vh-500px)]"
+        loading={isLoading}
+      />
     </div>
   );
 }

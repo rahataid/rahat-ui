@@ -1,3 +1,4 @@
+'use client';
 import {
   useCambodiaProjectSubgraphStore,
   useCambodiaProjectTransactions,
@@ -33,11 +34,11 @@ export default function TransactionsView() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { projectTransactions } = useCambodiaProjectSubgraphStore();
+  const { data, isLoading } = useCambodiaProjectTransactions();
   const tableData: any = React.useMemo(() => {
-    if (projectTransactions) return projectTransactions;
+    if (data) return data;
     else return [];
-  }, [projectTransactions]);
+  }, [data]);
   console.log(tableData);
   const columns = useTableColumns();
   const table = useReactTable({
@@ -81,7 +82,11 @@ export default function TransactionsView() {
             />
             <ViewColumns table={table} />
           </div>
-          <CambodiaTable table={table} tableHeight="h-[calc(100vh-300px)]" />
+          <CambodiaTable
+            table={table}
+            tableHeight="h-[calc(100vh-300px)]"
+            loading={isLoading}
+          />
         </div>
 
         <Pagination

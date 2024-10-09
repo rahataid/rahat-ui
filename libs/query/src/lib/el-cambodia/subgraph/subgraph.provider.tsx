@@ -15,10 +15,9 @@ type CambodiaSubgraphProvideCambodiarops = {
   subgraphClient: Client;
 };
 
-export const CambodiaSubgraphProvider: FC<CambodiaSubgraphProvideCambodiarops> = ({
-  children,
-  subgraphClient,
-}) => {
+export const CambodiaSubgraphProvider: FC<
+  CambodiaSubgraphProvideCambodiarops
+> = ({ children, subgraphClient }) => {
   return (
     <CambodiaSubgraphContext.Provider
       value={{
@@ -33,7 +32,9 @@ export const CambodiaSubgraphProvider: FC<CambodiaSubgraphProvideCambodiarops> =
 export const useCambodiaSubgraph = (): CambodiaSubgraphContextType => {
   const context = useContext(CambodiaSubgraphContext);
   if (context === undefined) {
-    throw new Error('useCambodiaSubgraph must be used within a CambodiaSubgraphProvider');
+    throw new Error(
+      'useCambodiaSubgraph must be used within a CambodiaSubgraphProvider',
+    );
   }
   return context;
 };

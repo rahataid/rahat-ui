@@ -7,7 +7,16 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { Copy, CopyCheck } from 'lucide-react';
+import { ArrowUpDown, Copy, CopyCheck } from 'lucide-react';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+export type Transaction = {
+  id: string;
+  topic: string;
+  beneficiary: number;
+  voucherId: string;
+  timestamp: string;
+  txHash: string;
+};
 
 export const useTransactionHistoryTableColumns = () => {
   const [copyAction, setCopyAction] = useState<number>();
@@ -15,26 +24,36 @@ export const useTransactionHistoryTableColumns = () => {
     navigator.clipboard.writeText(name);
     setCopyAction(index);
   };
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<Transaction>[] = [
     {
-      accessorKey: 'name',
+      accessorKey: 'topic',
       header: 'Topic',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }) => <div>{row.getValue('topic')}</div>,
     },
 
     {
-      accessorKey: 'wallet',
-      header: 'TxHash',
+      accessorKey: 'txHash',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            TxHash
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
       cell: ({ row }) => (
-        <>
-          {row.getValue('wallet') ? (
+        <div className="lowercase">
+          {row.getValue('txHash') ? (
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger
                   className="flex gap-3 cursor-pointer"
-                  onClick={() => clickToCopy(row.getValue('wallet'), row.index)}
+                  onClick={() => clickToCopy(row.getValue('txHash'), row.index)}
                 >
-                  <p>{truncateEthAddress(row.getValue('wallet'))}</p>
+                  <p>{truncateEthAddress(row.getValue('txHash'))}</p>
                   {copyAction === row.index ? (
                     <CopyCheck size={20} strokeWidth={1.5} />
                   ) : (
@@ -49,15 +68,30 @@ export const useTransactionHistoryTableColumns = () => {
               </Tooltip>
             </TooltipProvider>
           ) : (
-            'N/A'
+            '-'
           )}
-        </>
+        </div>
       ),
     },
     {
-      accessorKey: 'timestamp',
-      header: 'Timestamp',
-      cell: ({ row }) => <div>{row.getValue('timestamp')}</div>,
+      accessorKey: 'timeStamp',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Timestamp
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => {
+        const date = new Date(row.getValue('timeStamp'));
+        const formattedDate = date.toLocaleDateString();
+
+        return <div className="lowercase ml-4">{formattedDate}</div>;
+      },
     },
   ];
   return columns;

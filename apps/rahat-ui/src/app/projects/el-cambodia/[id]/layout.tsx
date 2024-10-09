@@ -15,7 +15,7 @@ import {
   useProjectSettingsStore,
   useProjectSubgraphSettings,
 } from '@rahat-ui/query';
-import {CambodiaSubgraphProvider} from '@rahat-ui/query';
+import { CambodiaSubgraphProvider } from '@rahat-ui/query';
 import { cacheExchange, Client, fetchExchange } from '@urql/core';
 
 export default function ProjectLayoutRoot({
@@ -34,6 +34,7 @@ export default function ProjectLayoutRoot({
   const subgraphSettings = useProjectSettingsStore(
     (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH]?.url,
   );
+  console.log(subgraphSettings);
 
   const renderChildren = () => {
     if (secondPanel) {
@@ -44,15 +45,14 @@ export default function ProjectLayoutRoot({
   };
   return (
     <CambodiaSubgraphProvider
-       subgraphClient={
+      subgraphClient={
         new Client({
           url:
             subgraphSettings ||
             'http://localhost:8000/subgraphs/name/rahat/Cambodia/',
           exchanges: [cacheExchange, fetchExchange],
         })
-       }
-    
+      }
     >
       <ProjectLayout projectType={'el-cambodia'}>
         {renderChildren()}

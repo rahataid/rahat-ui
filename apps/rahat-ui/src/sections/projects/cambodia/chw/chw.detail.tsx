@@ -1,5 +1,5 @@
 'use client';
-import { useCHWGet } from '@rahat-ui/query';
+import { useCambodiaHealthWorkerByUUIDStats, useCHWGet } from '@rahat-ui/query';
 import {
   Tooltip,
   TooltipContent,
@@ -14,8 +14,12 @@ import { useState } from 'react';
 import HeaderWithBack from '../../components/header.with.back';
 export default function ChwDetail() {
   const { id, chwId } = useParams();
-  console.log(chwId);
   const { data } = useCHWGet({ projectUUID: id, uuid: chwId as string });
+  const { data: stats } = useCambodiaHealthWorkerByUUIDStats({
+    projectUUID: id,
+    chwUid: chwId as string,
+  }) as any;
+
   const [copyAction, setCopyAction] = useState<boolean>(false);
   const clickToCopy = (name: string) => {
     navigator.clipboard.writeText(name);
@@ -37,19 +41,19 @@ export default function ChwDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-7">
         <DataCard
           title="Home Visits"
-          number="1,235"
+          number={stats?.data?.home_visits}
           Icon={Home}
           className="rounded-lg border-solid "
         />
         <DataCard
           title="Sales Count"
-          number="36,598"
+          number={stats?.data?.sales}
           Icon={CoinsIcon}
           className="rounded-lg border-solid "
         />
         <DataCard
           title="Leads Provided"
-          number="325"
+          number={stats?.data?.leads}
           Icon={Users2Icon}
           className="rounded-lg border-solid"
         />

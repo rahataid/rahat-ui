@@ -5,6 +5,7 @@ import { DynamicReports } from '../../chart-reports';
 
 export default function ProjectDetail() {
   const { id } = useParams() as { id: UUID };
+  console.log(id);
   const newDatasource = useGetProjectDatasource(id);
 
   return (

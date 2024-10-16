@@ -979,3 +979,51 @@ export const useCambodiaDiscardedBeneficiaries = (payload: any) => {
 
   return { ...query };
 };
+
+export const useCambodiaVendorsStats = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: ['cambodia.vendor.stats', restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'cambodia.vendor.stats',
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return query;
+};
+
+export const useCambodiaHealthWorkerByUUIDStats = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: ['cambodia.chw.stats', restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'cambodia.chw.stats',
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return query;
+};

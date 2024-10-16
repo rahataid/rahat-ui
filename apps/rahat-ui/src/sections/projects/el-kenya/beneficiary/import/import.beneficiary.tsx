@@ -1,16 +1,13 @@
 'use client';
 
+import { useUploadBeneficiary } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { ChangeEvent, RefObject, useEffect, useState } from 'react';
-import { useRumsanService } from '../../../providers/service.provider';
-import { toast } from 'react-toastify';
-import { useRef } from 'react';
-import { useUploadBeneficiary } from '@rahat-ui/query';
-import SpinnerLoader from '../../projects/components/spinner.loader';
 import { useRouter } from 'next/navigation';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 
-const DOWNLOAD_FILE_URL = '/files/beneficiary_sample.xlsx';
+const DOWNLOAD_FILE_URL = '/files/kenya-sample.xlsx';
 
 export default function ImportBeneficiary() {
   const fileInputRef = useRef(null);

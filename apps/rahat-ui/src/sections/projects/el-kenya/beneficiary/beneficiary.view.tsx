@@ -130,7 +130,7 @@ export default function BeneficiaryView() {
         <div className="p-4">
           <div className="rounded border bg-card p-4">
             <div className="flex justify-between space-x-2 mb-2">
-              <SearchInput
+              {/* <SearchInput
                 className="w-full"
                 name="beneficiary"
                 value={
@@ -139,7 +139,7 @@ export default function BeneficiaryView() {
                 onSearch={(event) =>
                   table.getColumn('name')?.setFilterValue(event.target.value)
                 }
-              />
+              /> */}
               <SearchInput
                 className="w-full"
                 name="phone number"

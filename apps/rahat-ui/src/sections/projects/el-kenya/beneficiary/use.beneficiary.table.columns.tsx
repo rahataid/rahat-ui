@@ -33,16 +33,11 @@ export const useElkenyaBeneficiaryTableColumns = ({
   }
 
   const columns: ColumnDef<any>[] = [
-    {
-      accessorKey: 'name',
-      header: 'Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
-    },
-    {
-      accessorKey: 'gender',
-      header: 'Gender',
-      cell: ({ row }) => <div>{row.getValue('gender')}</div>,
-    },
+    // {
+    //   accessorKey: 'gender',
+    //   header: 'Gender',
+    //   cell: ({ row }) => <div>{row.getValue('gender')}</div>,
+    // },
     {
       accessorKey: 'phone',
       header: 'Phone Number',

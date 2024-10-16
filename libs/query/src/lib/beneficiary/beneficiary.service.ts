@@ -408,6 +408,87 @@ export const useUploadBeneficiary = () => {
     queryClient,
   );
 };
+
+const uploadBeneficiaryBulkQueue = async (
+  selectedFile: File,
+  doctype: string,
+  client: any,
+  projectId?: UUID,
+  automatedGroupOption?: {
+    createAutomatedGroup: boolean;
+    groupKey: string;
+  },
+) => {
+  const formData = new FormData();
+  formData.append('file', selectedFile);
+  formData.append('doctype', doctype);
+  if (projectId) formData.append('projectId', projectId);
+  if (automatedGroupOption?.createAutomatedGroup) {
+    formData.append(
+      'automatedGroupOption[createAutomatedGroup]',
+      automatedGroupOption.createAutomatedGroup.toString(),
+    );
+    formData.append(
+      'automatedGroupOption[groupKey]',
+      automatedGroupOption.groupKey,
+    );
+  }
+  const response = await client.post('/beneficiaries/upload-queue', formData);
+  return response?.data;
+};
+export const useUploadBeneficiaryBulkQueue = () => {
+  const qc = useQueryClient();
+  const { rumsanService, queryClient } = useRSQuery();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-right',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation(
+    {
+      mutationFn: ({
+        selectedFile,
+        doctype,
+        projectId,
+        automatedGroupOption,
+      }: {
+        selectedFile: File;
+        doctype: string;
+        projectId?: UUID;
+        automatedGroupOption: {
+          createAutomatedGroup: boolean;
+          groupKey: string;
+        };
+      }) =>
+        uploadBeneficiaryBulkQueue(
+          selectedFile,
+          doctype,
+          rumsanService.client,
+          projectId,
+          automatedGroupOption,
+        ),
+      onSuccess: (data) => {
+        qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+        toast.fire({
+          icon: 'success',
+          title: data?.data?.message,
+        });
+      },
+      onError: (error: any) => {
+        console.log('error', error);
+        const message = error.response?.data?.message || error.message;
+        toast.fire({
+          icon: 'error',
+          title: 'Something went wrong',
+          text: message,
+        });
+      },
+    },
+    queryClient,
+  );
+};
 type OptionalPagination = Partial<Pagination>;
 
 export const useBeneficiaryPii = (

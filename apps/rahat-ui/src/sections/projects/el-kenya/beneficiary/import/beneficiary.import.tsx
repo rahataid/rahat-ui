@@ -20,11 +20,14 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ArrowDownToLine, Share } from 'lucide-react';
-import { useUploadBeneficiary } from '@rahat-ui/query';
+import {
+  useUploadBeneficiary,
+  useUploadBeneficiaryBulkQueue,
+} from '@rahat-ui/query';
 import { toast } from 'react-toastify';
 import HeaderWithBack from '../../../components/header.with.back';
 
-const DOWNLOAD_FILE_URL = '/files/beneficiary_sample.xlsx';
+const DOWNLOAD_FILE_URL = '/files/kenya-sample.xlsx';
 
 export default function ExcelUploader() {
   const { id } = useParams() as { id: UUID };
@@ -33,7 +36,7 @@ export default function ExcelUploader() {
   const [fileName, setFileName] = useState<string>('No File Choosen');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const uploadBeneficiary = useUploadBeneficiary();
+  const uploadBeneficiary = useUploadBeneficiaryBulkQueue();
 
   const handleDownloadClick = () => {
     fetch(DOWNLOAD_FILE_URL)
@@ -42,7 +45,7 @@ export default function ExcelUploader() {
         const url = window.URL.createObjectURL(new Blob([blob]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', 'beneficiary_sample.xlsx');
+        link.setAttribute('download', 'kenya-beneficiary-upload-sample.xlsx');
         document.body.appendChild(link);
         link.click();
       })
@@ -86,16 +89,20 @@ export default function ExcelUploader() {
       selectedFile,
       doctype,
       projectId: id,
+      automatedGroupOption: {
+        createAutomatedGroup: true,
+        groupKey: 'Location',
+      },
     });
   };
 
-  useEffect(() => {
-    if (uploadBeneficiary?.isSuccess) {
-      // toast.success('File uploaded successfully.'); commented due to overlap
-      router.push('/projects/el-kenya/${id}/beneficiary/import');
-    }
-    // uploadBeneficiary?.isError && toast.error('File upload unsuccessful.');
-  }, [uploadBeneficiary?.isSuccess, uploadBeneficiary?.isError]);
+  // useEffect(() => {
+  //   if (uploadBeneficiary?.isSuccess) {
+  //     // toast.success('File uploaded successfully.'); commented due to overlap
+  //     router.push(`/projects/el-kenya/${id}/beneficiary/import`);
+  //   }
+  //   // uploadBeneficiary?.isError && toast.error('File upload unsuccessful.');
+  // }, [uploadBeneficiary?.isSuccess, uploadBeneficiary.isError, router, id]);
 
   return (
     <>

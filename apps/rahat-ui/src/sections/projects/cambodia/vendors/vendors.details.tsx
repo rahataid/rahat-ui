@@ -16,15 +16,18 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { DialogComponent } from '../../components/dialog';
-import { useCambodiaVendorGet } from '@rahat-ui/query';
+import { useCambodiaVendorGet, useCambodiaVendorsStats } from '@rahat-ui/query';
 
 export default function VendorsDetail() {
   const { id, vendorId } = useParams();
   const { data } = useCambodiaVendorGet({ projectUUID: id, vendorId }) as any;
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<number>();
+  const { data: vendorsStats } = useCambodiaVendorsStats({
+    projectUUID: id,
+    vendorId,
+  }) as any;
 
-  console.log(data);
   const clickToCopy = (walletAddress: string, id: number) => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(id);
@@ -58,20 +61,26 @@ export default function VendorsDetail() {
           className="w-full border-solid rounded-md"
           title="Leads Received"
           Icon={User}
-          number={'1235'}
+          number={vendorsStats?.data?.leadsRecieved}
         />
         <DataCard
           className="w-full border-solid rounded-md"
           title="Leads Converted"
           Icon={User}
-          number={'1235'}
+          number={vendorsStats?.data?.leadsConverted}
         />
         <DataCard
           className="w-full border-solid rounded-md"
           title="Footfall"
           Icon={User}
-          number={'1235'}
+          number={vendorsStats?.data?.footfalls}
         />
+        {/* <DataCard
+          className="w-full border-solid rounded-md"
+          title="Sales"
+          Icon={User}
+          number={vendorsStats?.data?.sales}
+        /> */}
       </div>
       <div className="p-5 rounded border grid grid-cols-3 gap-5 mb-5">
         <div>

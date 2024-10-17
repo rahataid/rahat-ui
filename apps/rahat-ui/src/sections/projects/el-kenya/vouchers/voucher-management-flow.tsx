@@ -2,16 +2,12 @@
 import {
   PROJECT_SETTINGS_KEYS,
   useBulkAssignKenyaVoucher,
-  useBulkCreateDisbursement,
-  useCreateDisbursementPlan,
-  useFindAllDisbursementPlans,
   useProjectSettingsStore,
   useRpSingleBeneficiaryGroupMutation,
 } from '@rahat-ui/query';
-import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ConfirmSelection from './confirmation';
 import VouchersManage from './vouchers.manage';
 import { WarningDialog } from './warning.modal';
@@ -74,13 +70,19 @@ const VouchersManagementFlow = () => {
     router.push(`/projects/el-kenya/${id}/vouchers/manage`);
   };
 
+  useEffect(() => {
+    if (syncDisbursementAllocation.isSuccess) {
+      router.push(`/projects/el-kenya/${id}/vouchers`);
+    }
+  }, [id, router, syncDisbursementAllocation.isSuccess]);
+
   const handleBulkAssign = async () => {
     if (beneficiaryGroupSelected) {
       handleBulkVoucherAssign(stepData.selectedGroups);
     } else {
       console.log('step', stepData.selectedBeneficiaries);
       // todo: for groups
-      await syncDisbursementAllocation.mutateAsync({
+      syncDisbursementAllocation.mutate({
         beneficiaryAddresses: stepData.selectedBeneficiaries.map((ben) => {
           return {
             walletAddress: ben?.walletAddress,
@@ -129,7 +131,7 @@ const VouchersManagementFlow = () => {
         },
       );
     });
-    await syncDisbursementAllocation.mutateAsync({
+    syncDisbursementAllocation.mutate({
       // Todo: handle the case of a beneficiary being in multiple groups
       beneficiaryAddresses: fetchedBenAddresses
         .filter(

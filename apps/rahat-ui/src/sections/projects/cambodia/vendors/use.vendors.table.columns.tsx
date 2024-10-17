@@ -22,17 +22,7 @@ export const useCambodiaVendorsTableColumns = () => {
       header: 'Wallet Address',
       cell: ({ row }) => <div>{row.original.User.wallet}</div>,
     },
-    {
-      accessorKey: 'isVerified',
-      header: 'Approved Status',
-      cell: ({ row }) => (
-        <Badge>
-          {row.original.Project.status === 'active'
-            ? 'Approved'
-            : 'Not Approved'}
-        </Badge>
-      ),
-    },
+
     {
       id: 'actions',
       header: 'Actions',

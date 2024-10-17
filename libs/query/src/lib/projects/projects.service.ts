@@ -1027,3 +1027,50 @@ export const useCambodiaHealthWorkerByUUIDStats = (payload: any) => {
 
   return query;
 };
+
+export const useCambodiaVendorHealthWorkers = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: ['cambodia.vendor.health_workers', restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'cambodia.vendor.health_workers',
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return query;
+};
+
+export const useCambodiaVendorLeadConversions = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: ['cambodia.vendor.lead_conversions', restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'cambodia.vendor.lead_conversions',
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};

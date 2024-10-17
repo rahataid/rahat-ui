@@ -15,14 +15,17 @@ import { useRouter } from 'next/navigation';
 import { useProjectAction } from '../../../projects';
 import { UUID } from 'crypto';
 import { MS_ACTIONS } from '@rahataid/sdk';
+// import { useSwal } from 'libs/query/src/swal';
+import { useSwal } from '../../../../swal/useSwal';
 
 const CREATE_BULK_DISBURSEMENT = 'rpProject.disbursement.bulkCreate';
 
 export const useKenyaVoucherCreate = () => {
   const { queryClient } = useRSQuery();
   const treasuryCreateToken = useWriteRahatTreasuryCreateToken();
+  const alertSwal = useSwal();
 
-  const alert = Swal.mixin({
+  const alert = alertSwal.mixin({
     toast: true,
     position: 'top-end',
     showConfirmButton: false,
@@ -91,6 +94,7 @@ export const useBulkCreateKenyaDisbursement = (projectUUID: UUID) => {
     mutationFn: async (data: {
       amount: number;
       beneficiaries: { walletAddress: `0x${string}`; phone: string }[];
+      tokenAddress: `0x${string}`;
     }) => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
@@ -127,15 +131,13 @@ export const useBulkAssignKenyaVoucher = (
   });
 
   const bulkAssignDisbursement = useBulkCreateKenyaDisbursement(projectId);
+  const alertSwal = useSwal();
 
-  console.log('decimals', decimals);
-
-  const alert = Swal.mixin({
-    customClass: {
-      confirmButton: 'btn btn-primary',
-      cancelButton: 'btn btn-secondary',
-    },
-    buttonsStyling: false,
+  const alert = alertSwal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
   });
 
   return useMutation(
@@ -174,32 +176,45 @@ export const useBulkAssignKenyaVoucher = (
         tokenAddress: `0x${string}`;
         projectAddress: `0x${string}`;
       }) => {
+        //  await bulkAssignDisbursement.mutateAsync({
+        //    amount: 1,
+        //    beneficiaries: variables.beneficiaryAddresses.map((b) => {
+        //      return { walletAddress: b.walletAddress, phone: b.phone };
+        //    }),
+        //  });
         console.log('first', {
           beneficiaryAddresses,
           tokenAddress,
           projectAddress,
         });
-        const encodeAllocateTokens = beneficiaryAddresses.map((beneficiary) => {
-          return encodeFunctionData({
-            abi: rahatCvaKenyaAbi,
-            functionName: 'allocateToken',
-            args: [
-              tokenAddress,
-              beneficiary.walletAddress,
-              // @ts-ignore
-              formatUnits(
-                BigInt(beneficiary.amount.toString()), // Convert to bigint using BigInt function
-                decimals.data as number,
-              ),
-              // parseEther(beneficiary.amount.toString()),
-            ],
-          });
+        await bulkAssignDisbursement.mutateAsync({
+          amount: 1,
+          beneficiaries: beneficiaryAddresses.map((b) => {
+            return { walletAddress: b.walletAddress, phone: b.phone };
+          }),
+          tokenAddress,
         });
+        // const encodeAllocateTokens = beneficiaryAddresses.map((beneficiary) => {
+        //     return encodeFunctionData({
+        //       abi: rahatCvaKenyaAbi,
+        //       functionName: 'allocateToken',
+        //       args: [
+        //         tokenAddress,
+        //         beneficiary.walletAddress,
+        //         // @ts-ignore
+        //         formatUnits(
+        //           BigInt(beneficiary.amount.toString()), // Convert to bigint using BigInt function
+        //           decimals.data as number,
+        //         ),
+        //         // parseEther(beneficiary.amount.toString()),
+        //       ],
+        //     });
+        //   });
 
-        await multi.writeContractAsync({
-          args: [encodeAllocateTokens],
-          address: projectAddress,
-        });
+        //   await multi.writeContractAsync({
+        //     args: [encodeAllocateTokens],
+        //     address: projectAddress,
+        //   });
       },
     },
     queryClient,

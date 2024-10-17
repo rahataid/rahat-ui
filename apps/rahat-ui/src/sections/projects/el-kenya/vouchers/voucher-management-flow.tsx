@@ -1,22 +1,20 @@
 'use client';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useEffect, useState } from 'react';
-import VouchersManage from './vouchers.manage';
-import ConfirmSelection from './confirmation';
 import {
   PROJECT_SETTINGS_KEYS,
   useBulkAssignKenyaVoucher,
   useBulkCreateDisbursement,
   useCreateDisbursementPlan,
   useFindAllDisbursementPlans,
-  useFindAllDisbursements,
   useProjectSettingsStore,
   useRpSingleBeneficiaryGroupMutation,
 } from '@rahat-ui/query';
-import { useParams, useRouter } from 'next/navigation';
-import { UUID } from 'crypto';
-import { WarningDialog } from './warning.modal';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import { UUID } from 'crypto';
+import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import ConfirmSelection from './confirmation';
+import VouchersManage from './vouchers.manage';
+import { WarningDialog } from './warning.modal';
 
 export const initialStepData = {
   bulkInputAmount: '',
@@ -37,13 +35,8 @@ const VouchersManagementFlow = () => {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
 
-  const createDisbursementPlan = useCreateDisbursementPlan(id);
-  const bulkAssignDisbursement = useBulkCreateDisbursement(id);
   const beneficiaryGroup = useRpSingleBeneficiaryGroupMutation(id as UUID);
 
-  const { data: disbursementData } = useFindAllDisbursementPlans(id);
-
-  const confirmModal = useBoolean(false);
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
@@ -99,8 +92,7 @@ const VouchersManagementFlow = () => {
             amount: 1,
           };
         }),
-        tokenAddress:
-          contractSettings?.rahattoken?.address,
+        tokenAddress: contractSettings?.rahattoken?.address,
         projectAddress: contractSettings?.rahatcvakenya?.address,
       });
       // await bulkAssignDisbursement.mutateAsync({
@@ -158,8 +150,7 @@ const VouchersManagementFlow = () => {
           phone: ben.phone,
           amount: 1,
         })),
-      tokenAddress:
-        contractSettings?.rahattoken?.address,
+      tokenAddress: contractSettings?.rahattoken?.address,
       projectAddress: contractSettings?.rahatcvakenya?.address,
     });
   };

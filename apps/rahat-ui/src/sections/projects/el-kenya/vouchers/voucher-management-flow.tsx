@@ -202,6 +202,7 @@ const VouchersManagementFlow = () => {
           onCancel={handlePrevious}
           onConfirm={handleBulkAssign}
           open={openWarningModel}
+          loading={syncDisbursementAllocation.isPending}
         />
       ),
     },

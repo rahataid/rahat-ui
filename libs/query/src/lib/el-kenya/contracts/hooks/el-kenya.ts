@@ -37,7 +37,7 @@ export const useKenyaVoucherCreate = () => {
       onSuccess: async () => {
         alert.fire({
           icon: 'success',
-          title: 'Token Created Successfully',
+          title: 'Voucher Assignment Processing Started',
         });
       },
 
@@ -155,10 +155,11 @@ export const useBulkAssignKenyaVoucher = (
           beneficiaries: variables.beneficiaryAddresses.map((b) => {
             return { walletAddress: b.walletAddress, phone: b.phone };
           }),
+          tokenAddress,
         });
         alert.fire({
           icon: 'success',
-          title: 'Tokens allocated successfully',
+          title: 'Voucher Assignment Processing Started',
         });
       },
 

@@ -13,12 +13,14 @@ interface WarningDialogProps {
   onConfirm: VoidFunction;
   open: boolean;
   onCancel: VoidFunction;
+  loading: boolean;
 }
 
 export function WarningDialog({
   onConfirm,
   open,
   onCancel,
+  loading,
 }: WarningDialogProps) {
   return (
     <Dialog open={open}>
@@ -42,8 +44,13 @@ export function WarningDialog({
               Cancel
             </Button>
           </DialogClose>
-          <Button className="w-full" onClick={onConfirm} type="submit">
-            Confirm
+          <Button
+            className="w-full"
+            onClick={onConfirm}
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? 'Assigning Vouchers' : 'Confirm'}
           </Button>
         </DialogFooter>
       </DialogContent>

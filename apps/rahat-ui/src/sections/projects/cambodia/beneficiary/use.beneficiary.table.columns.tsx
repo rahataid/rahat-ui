@@ -1,11 +1,13 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { formatUnderScoredString } from 'apps/rahat-ui/src/utils/string';
 import { Eye } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 
 export const useCambodiaBeneficiaryTableColumns = () => {
   const { id } = useParams();
+  const pathName = usePathname();
   const router = useRouter();
+  const isDiscardedBeneficiary = pathName.includes('discardedbenificary');
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
@@ -36,7 +38,9 @@ export const useCambodiaBeneficiaryTableColumns = () => {
         </div>
       ),
     },
-    {
+  ];
+  if (!isDiscardedBeneficiary) {
+    columns.push({
       id: 'actions',
       header: 'Actions',
       enableHiding: false,
@@ -56,7 +60,7 @@ export const useCambodiaBeneficiaryTableColumns = () => {
           </div>
         );
       },
-    },
-  ];
+    });
+  }
   return columns;
 };

@@ -77,10 +77,6 @@ const VouchersManagementFlow = () => {
   const handleBulkAssign = async () => {
     if (beneficiaryGroupSelected) {
       handleBulkVoucherAssign(stepData.selectedGroups);
-      // stepData.selectedGroups.map((selectedGroup) => {
-      //   handleCreateGroupDisbursement(selectedGroup.uuid);
-      // });
-      // router.push(`/projects/el-kenya/${id}/vouchers`);
     } else {
       console.log('step', stepData.selectedBeneficiaries);
       // todo: for groups
@@ -95,12 +91,7 @@ const VouchersManagementFlow = () => {
         tokenAddress: contractSettings?.rahattoken?.address,
         projectAddress: contractSettings?.rahatcvakenya?.address,
       });
-      // await bulkAssignDisbursement.mutateAsync({
-      //   amount: 1,
-      //   beneficiaries: stepData.selectedBeneficiaries?.map(
-      //     (row) => row.walletAddress,
-      //   ),
-      // });
+
       router.push(`/projects/el-kenya/${id}/vouchers`);
     }
   };

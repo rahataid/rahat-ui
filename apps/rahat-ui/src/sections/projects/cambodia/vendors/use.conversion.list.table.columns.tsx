@@ -6,17 +6,19 @@ export const useConversionListTableColumns = () => {
     {
       accessorKey: 'name',
       header: 'Beneficiary Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }) => <div>{row?.original?.pii?.name ?? '-'}</div>,
     },
     {
-      accessorKey: 'voucherStatus',
-      header: 'Voucher Status',
-      cell: ({ row }) => <Badge>{row.getValue('voucherStatus')}</Badge>,
+      accessorKey: 'phone',
+      header: 'Phone',
+      cell: ({ row }) => <Badge>{row?.original?.pii?.phone ?? '-'}</Badge>,
     },
     {
-      accessorKey: 'glassStatus',
-      header: 'Glass Status',
-      cell: ({ row }) => <Badge>{row.getValue('glassStatus')}</Badge>,
+      accessorKey: 'wallet',
+      header: 'Wallet',
+      cell: ({ row }) => (
+        <Badge>{row?.original?.beneficiary?.walletAddress ?? '-'}</Badge>
+      ),
     },
   ];
   return columns;

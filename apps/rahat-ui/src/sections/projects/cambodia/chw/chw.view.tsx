@@ -1,4 +1,5 @@
 import {
+  useCambodiaHealthWorkersStats,
   useCHWList,
   usePagination,
   useProjectBeneficiaries,
@@ -52,7 +53,9 @@ export default function CHWView() {
     setPagination,
     resetSelectedListItems,
   } = usePagination();
-
+  const { data: stats } = useCambodiaHealthWorkersStats({
+    projectUUID: id,
+  }) as any;
   const debouncedSearch = useDebounce(filters, 500);
   const { data } = useCHWList({
     page: pagination.page,
@@ -105,19 +108,19 @@ export default function CHWView() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-7">
           <DataCard
             title="Home Visits"
-            number="1,235"
+            number={stats?.data?.home_visits}
             Icon={Home}
             className="rounded-lg border-solid "
           />
           <DataCard
             title="Sales Count"
-            number="36,598"
+            number={stats?.data?.sales}
             Icon={Coins}
             className="rounded-lg border-solid "
           />
           <DataCard
             title="Leads Provided"
-            number="325"
+            number={stats?.data?.leads}
             Icon={Users}
             className="rounded-lg border-solid"
           />

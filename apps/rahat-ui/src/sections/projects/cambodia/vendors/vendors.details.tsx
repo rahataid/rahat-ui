@@ -32,6 +32,7 @@ export default function VendorsDetail() {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(id);
   };
+
   return (
     <div className="h-[calc(100vh-95px)] m-4">
       <div className="flex justify-between items-center">
@@ -92,7 +93,7 @@ export default function VendorsDetail() {
             }
           >
             <p>{truncateEthAddress(data?.data?.User?.wallet)}</p>
-            {walletAddressCopied === 4567876545 ? (
+            {walletAddressCopied ? (
               <CopyCheck size={15} strokeWidth={1.5} />
             ) : (
               <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
@@ -130,7 +131,7 @@ export default function VendorsDetail() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="transactionHistory">
-          <TransactionHistoryView />
+          <TransactionHistoryView vendorAddress={data?.data?.User?.wallet} />
         </TabsContent>
         <TabsContent value="conversionList">
           <ConversionListView />

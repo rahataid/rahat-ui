@@ -132,7 +132,117 @@ export default function AddUser() {
           />
 
           <div className="grid grid-cols-2 gap-4 border p-4 rounded-md">
-            {next ? (
+            <>
+              <FormField
+                name="name"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>User Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="Enter user name"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Gender</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex space-x-1"
+                      >
+                        {Object.values(Gender).map((gender) => (
+                          <FormItem
+                            key={gender}
+                            className="flex items-center space-x-3 space-y-0"
+                          >
+                            <FormControl>
+                              <RadioGroupItem value={gender} />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              {gender.charAt(0).toUpperCase() +
+                                gender.slice(1).toLowerCase()}
+                            </FormLabel>
+                          </FormItem>
+                        ))}
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl>
+                        <PhoneInput
+                          placeholder="Enter phone number"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Enter email address"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <div className="col-span-2">
+                <FormField
+                  control={form.control}
+                  name="wallet"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>Wallet Address</FormLabel>
+                        <FormControl>
+                          <div className="relative w-full">
+                            <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              type="text"
+                              placeholder="Enter wallet ddress"
+                              {...field}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              </div>
               <FormField
                 control={form.control}
                 name="roles"
@@ -167,140 +277,7 @@ export default function AddUser() {
                   );
                 }}
               />
-            ) : (
-              <>
-                <FormField
-                  name="name"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>User Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Enter user name"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="gender"
-                  render={({ field }) => (
-                    <FormItem className="space-y-3">
-                      <FormLabel>Gender</FormLabel>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          className="flex space-x-1"
-                        >
-                          {Object.values(Gender).map((gender) => (
-                            <FormItem
-                              key={gender}
-                              className="flex items-center space-x-3 space-y-0"
-                            >
-                              <FormControl>
-                                <RadioGroupItem value={gender} />
-                              </FormControl>
-                              <FormLabel className="font-normal">
-                                {gender.charAt(0).toUpperCase() +
-                                  gender.slice(1).toLowerCase()}
-                              </FormLabel>
-                            </FormItem>
-                          ))}
-                          {/* <FormItem className="flex items-center space-x-3 space-y-0">
-                            <FormControl>
-                              <RadioGroupItem value="male" />
-                            </FormControl>
-                            <FormLabel className="font-normal">Male</FormLabel>
-                          </FormItem>
-                          <FormItem className="flex items-center space-x-3 space-y-0">
-                            <FormControl>
-                              <RadioGroupItem value="female" />
-                            </FormControl>
-                            <FormLabel className="font-normal">
-                              Female
-                            </FormLabel>
-                          </FormItem>
-                          <FormItem className="flex items-center space-x-3 space-y-0">
-                            <FormControl>
-                              <RadioGroupItem value="other" />
-                            </FormControl>
-                            <FormLabel className="font-normal">Other</FormLabel>
-                          </FormItem> */}
-                        </RadioGroup>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
-                        <FormControl>
-                          <PhoneInput
-                            placeholder="Enter phone number"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="Enter email address"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <div className="col-span-2">
-                  <FormField
-                    control={form.control}
-                    name="wallet"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormLabel>Wallet Address</FormLabel>
-                          <FormControl>
-                            <div className="relative w-full">
-                              <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                type="text"
-                                placeholder="Enter wallet ddress"
-                                {...field}
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                </div>
-              </>
-            )}
+            </>
           </div>
         </div>
         <div className="flex justify-end space-x-2 p-4 border-t">
@@ -312,7 +289,7 @@ export default function AddUser() {
           >
             Cancel
           </Button>
-          {next ? (
+          {/* {next ? (
             userCreate.isPending ? (
               <Button disabled>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -331,7 +308,10 @@ export default function AddUser() {
             >
               Next
             </Button>
-          )}
+          )} */}
+          <Button type="submit" className="px-10">
+            Add
+          </Button>
         </div>
       </form>
     </Form>

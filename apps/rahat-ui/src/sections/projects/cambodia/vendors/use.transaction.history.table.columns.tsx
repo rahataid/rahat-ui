@@ -3,24 +3,24 @@ import { ColumnDef } from '@tanstack/react-table';
 export const useTransactionHistoryTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'name',
-      header: 'Beneficiary Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      accessorKey: 'topic',
+      header: 'Topic',
+      cell: ({ row }) => <div>{row?.original?.topic}</div>,
     },
     {
-      accessorKey: 'referredBy',
-      header: 'Referred By',
-      cell: ({ row }) => <div>{row.getValue('referredBy')}</div>,
+      accessorKey: 'beneficiary',
+      header: 'Beneficiary',
+      cell: ({ row }) => <div>{row?.original?.beneficiary}</div>,
     },
     {
-      accessorKey: 'wallet',
+      accessorKey: 'txHash',
       header: 'TxHash',
-      cell: ({ row }) => <div>{row.getValue('wallet')}</div>,
+      cell: ({ row }) => <div>{row?.original?.txHash}</div>,
     },
     {
-      accessorKey: 'timestamp',
-      header: 'Timestamp',
-      cell: ({ row }) => <div>{row.getValue('timestamp')}</div>,
+      accessorKey: 'timeStamp',
+      header: 'Time Stamp',
+      cell: ({ row }) => <div>{row?.original?.timeStamp}</div>,
     },
   ];
   return columns;

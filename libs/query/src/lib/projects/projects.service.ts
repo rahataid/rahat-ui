@@ -1074,3 +1074,26 @@ export const useCambodiaVendorLeadConversions = (payload: any) => {
   });
   return query;
 };
+
+export const useCambodiaHealthWorkersStats = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: ['cambodia.beneficiary.stats', restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'cambodia.beneficiary.stats',
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};

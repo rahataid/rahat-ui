@@ -1,8 +1,11 @@
-import { usePagination } from '@rahat-ui/query';
+import { useCambodiaVendorTransactions, usePagination } from '@rahat-ui/query';
 import {
+  ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -11,83 +14,64 @@ import { useParams } from 'next/navigation';
 import React from 'react';
 import CambodiaTable from '../table.component';
 import { useTransactionHistoryTableColumns } from './use.transaction.history.table.columns';
+import Pagination from 'apps/rahat-ui/src/components/pagination';
 
-export default function TransactionHistoryView() {
+type IProps = {
+  vendorAddress: string;
+};
+
+export default function TransactionHistoryView({ vendorAddress }: IProps) {
   const { id } = useParams() as { id: UUID };
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    setPagination,
-    resetSelectedListItems,
-  } = usePagination();
-
+  const [rowSelection, setRowSelection] = React.useState({});
+  // const { data: vendorTransactions, isLoading } = useCambodiaVendorTransactions(
+  //   vendorAddress || '0x9ffb7323c3f10abfe2e386bdf96de715201c1ab3',
+  // );
+  const { data: vendorTransactions, isLoading } =
+    useCambodiaVendorTransactions(vendorAddress);
   const columns = useTransactionHistoryTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: [
-      {
-        id: 'a12f4a5d-4f36-4c73-8f9e-19b82a8b5403',
-        name: 'Vision Center',
-        phone: '9857023857',
-        wallet: '0014xx...7555525',
-        isVerified: 'Approved',
-      },
-      {
-        id: 'b74c9f8e-2e5a-4b5f-9949-7042e8b3b089',
-        name: 'Optical Hub',
-        phone: '9123456789',
-        wallet: '0012yy...7589634',
-        isVerified: 'Not Approved',
-      },
-      {
-        id: 'c85dfe64-995b-4c39-858b-d1e80db3e372',
-        name: 'Eye Care Plus',
-        phone: '9876543210',
-        wallet: '0023zz...2345874',
-        isVerified: 'Approved',
-      },
-      {
-        id: 'd9f875bc-488b-4f67-8b8d-75a4d2f88d5d',
-        name: 'Clear Vision Clinic',
-        phone: '9234567890',
-        wallet: '0056bb...9823415',
-        isVerified: 'Not Approved',
-      },
-      {
-        id: 'e73c3cb4-917a-4ef1-9dd4-930f2c5f8941',
-        name: 'LensPro Center',
-        phone: '9988776655',
-        wallet: '0044cc...1234567',
-        isVerified: 'Approved',
-      },
-    ],
+    data: vendorTransactions || [],
     columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setSelectedListItems,
     getFilteredRowModel: getFilteredRowModel(),
-    getRowId(originalRow) {
-      return originalRow.walletAddress;
-    },
-
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
     state: {
+      sorting,
+      columnFilters,
       columnVisibility,
-      rowSelection: selectedListItems,
+      rowSelection,
     },
   });
   return (
-    <div className="rounded border bg-card p-4">
-      <CambodiaTable table={table} tableHeight="h-[calc(100vh-528px)]" />
-    </div>
+    <>
+      <div className="rounded border bg-card p-4 mb-0 pb-0">
+        <CambodiaTable
+          table={table}
+          tableHeight="h-[calc(100vh-570px)]"
+          loading={isLoading}
+        />
+      </div>
+      <Pagination
+        pageIndex={table.getState().pagination.pageIndex}
+        pageCount={table.getPageCount()}
+        setPageSize={table.setPageSize}
+        canPreviousPage={table.getCanPreviousPage()}
+        previousPage={table.previousPage}
+        canNextPage={table.getCanNextPage()}
+        nextPage={table.nextPage}
+      />
+    </>
   );
 }

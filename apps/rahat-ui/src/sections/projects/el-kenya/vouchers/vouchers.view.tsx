@@ -8,25 +8,40 @@ import {
   ChartColumnStacked,
   ChartDonut,
 } from '@rahat-ui/shadcn/src/components/charts';
+import { useReadRahatCvaKenyaTotalAllocated, useReadRahatTokenTotalSupply } from 'libs/query/src/lib/el-kenya/contracts/generated-hooks';
+import { useProjectSettingsStore, PROJECT_SETTINGS_KEYS } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
-const cardData = [
-  { title: 'Total Voucher', icon: 'Ticket', total: '1439' },
-  { title: 'Voucher Redeemed', icon: 'Ticket', total: '1439' },
-  {
-    title: 'Voucher Reimbursed',
-    icon: 'Ticket',
-    total: '1439',
-  },
-  {
-    title: 'Voucher Assigned',
-    icon: 'Ticket',
-    total: '1439',
-  },
-];
+
 
 export default function VouchersView() {
-  const { id } = useParams();
+  const { id } = useParams() as {id:UUID};
   const router = useRouter();
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+  const {data:tokenAllocated}= useReadRahatCvaKenyaTotalAllocated({
+    address:contractSettings?.rahatcvakenya?.address as `0x${string}`,
+  });
+
+  const {data:tokenBalance} = useReadRahatTokenTotalSupply({
+    address:contractSettings?.rahattoken?.address as `0x${string}`,
+  })
+
+  const cardData = [
+    { title: 'Total Voucher', icon: 'Ticket', total: tokenBalance?.toString() },
+    { title: 'Voucher Redeemed', icon: 'Ticket', total: '0' },
+    {
+      title: 'Voucher Reimbursed',
+      icon: 'Ticket',
+      total: '0',
+    },
+    {
+      title: 'Voucher Assigned',
+      icon: 'Ticket',
+      total: tokenAllocated?.toString(),
+    },
+  ];
   return (
     <>
       <div className="p-4">

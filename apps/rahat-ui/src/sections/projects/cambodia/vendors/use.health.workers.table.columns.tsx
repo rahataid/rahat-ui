@@ -10,17 +10,22 @@ export const useHealthWorkersTableColumns = () => {
     {
       accessorKey: 'commissionPayout',
       header: 'Commission Payout',
-      cell: ({ row }) => <div>{row.getValue('commissionPayout')}</div>,
+      cell: ({ row }) => <div>{row.getValue('commissionPayout') ?? '-'}</div>,
     },
     {
       accessorKey: 'wallet',
       header: 'TxHash',
-      cell: ({ row }) => <div>{row.getValue('wallet')}</div>,
+      cell: ({ row }) => <div>{row.original?.walletAddress}</div>,
     },
     {
       accessorKey: 'timestamp',
       header: 'Timestamp',
-      cell: ({ row }) => <div>{row.getValue('timestamp')}</div>,
+      cell: ({ row }) => {
+        const date = new Date(row?.original?.createdAt);
+        const formattedDate = date.toLocaleDateString();
+
+        return <div className="lowercase ml-4">{formattedDate}</div>;
+      },
     },
   ];
   return columns;

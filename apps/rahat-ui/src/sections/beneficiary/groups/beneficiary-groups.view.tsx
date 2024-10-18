@@ -183,7 +183,7 @@ function BeneficiaryGroupsView() {
                         type="button"
                         variant="secondary"
                         onClick={() => handleAssignModalClick(i)}
-                        disabled={isAssignedToProject}
+                        // disabled={isAssignedToProject}
                       >
                         <Plus className="mr-1" size={18} strokeWidth={1.5} />
                         Assign Project

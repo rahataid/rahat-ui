@@ -1,29 +1,17 @@
 'use client';
 
-import * as React from 'react';
-import { Table, flexRender } from '@tanstack/react-table';
-import { Plus, Settings2 } from 'lucide-react';
-import { Button } from '@rahat-ui/shadcn/components/button';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
-  Table as TableComponent,
   TableBody,
   TableCell,
+  Table as TableComponent,
   TableHead,
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { User } from '@rumsan/sdk/types';
-import Image from 'next/image';
+import { Table, flexRender } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
 import AddButton from '../projects/components/add.btn';
 import ViewColumns from '../projects/components/view.columns';

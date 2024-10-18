@@ -41,6 +41,8 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
+import { Gender } from '@rahataid/sdk/enums';
+import { Alert } from '@rahat-ui/shadcn/src/components/ui/alert';
 
 // Constants
 // const genderList = enumToObjectArray(Gender);
@@ -73,6 +75,7 @@ export default function AddUser() {
     },
   });
 
+  console.log('first', form.watch());
   const { data: roleData } = useRoleList();
   const contractSettings = useSettingsStore((state) => state.accessManager);
   const roleSync = useSettingsStore((state) => state.roleOnChainSync);
@@ -116,7 +119,7 @@ export default function AddUser() {
       });
       route.push('/users');
     }
-  }, [form, userCreate.isSuccess]);
+  }, [form, route, userCreate.isSuccess]);
 
   return (
     <Form {...form}>
@@ -127,6 +130,7 @@ export default function AddUser() {
             subtitle="Create a new user detail"
             path="/users"
           />
+
           <div className="grid grid-cols-2 gap-4 border p-4 rounded-md">
             {next ? (
               <FormField
@@ -194,7 +198,21 @@ export default function AddUser() {
                           defaultValue={field.value}
                           className="flex space-x-1"
                         >
-                          <FormItem className="flex items-center space-x-3 space-y-0">
+                          {Object.values(Gender).map((gender) => (
+                            <FormItem
+                              key={gender}
+                              className="flex items-center space-x-3 space-y-0"
+                            >
+                              <FormControl>
+                                <RadioGroupItem value={gender} />
+                              </FormControl>
+                              <FormLabel className="font-normal">
+                                {gender.charAt(0).toUpperCase() +
+                                  gender.slice(1).toLowerCase()}
+                              </FormLabel>
+                            </FormItem>
+                          ))}
+                          {/* <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
                               <RadioGroupItem value="male" />
                             </FormControl>
@@ -213,7 +231,7 @@ export default function AddUser() {
                               <RadioGroupItem value="other" />
                             </FormControl>
                             <FormLabel className="font-normal">Other</FormLabel>
-                          </FormItem>
+                          </FormItem> */}
                         </RadioGroup>
                       </FormControl>
                       <FormMessage />

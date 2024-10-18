@@ -24,7 +24,6 @@ const sections = [
   'Group',
   'FieldDefinition',
   'Role',
-  ,
   'Settings',
   'Source',
   'Target',

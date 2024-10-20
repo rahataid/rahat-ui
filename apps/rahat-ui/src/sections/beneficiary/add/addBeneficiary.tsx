@@ -113,7 +113,7 @@ export default function AddBeneficiaryForm() {
             <HeaderWithBack
               title="Add Beneficiary"
               subtitle="Create a new beneficiary"
-              path="/beneficiary/add"
+              path="/beneficiary"
             />
             <div className="shadow-md p-4 rounded-sm bg-card">
               <div className="grid grid-cols-2 gap-4">

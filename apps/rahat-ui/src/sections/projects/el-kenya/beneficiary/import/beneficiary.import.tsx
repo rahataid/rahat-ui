@@ -140,7 +140,7 @@ export default function ExcelUploader() {
 
         <>
           {data.length > 0 && (
-            <div className="border-2 border-dashed  border-black sm:w-[1500px] w-[1600px] mt-6 p-4 mx-auto">
+            <div className="border-2 border-dashed border-black mt-6 p-4 mx-auto">
               <ScrollArea className="h-[calc(100vh-430px)]">
                 <Table className="w-full table-auto">
                   <TableHeader>

@@ -102,11 +102,7 @@ export const useCambodiaVendorTransactions = (vendorAddress: string) => {
             vendor: vendorAddress,
           },
         );
-        const transactionType = [
-          'claimCreateds',
-          'claimProcesseds',
-          'offlineClaimProcesseds',
-        ];
+        const transactionType = ['claimProcesseds', 'offlineClaimProcesseds'];
 
         const formattedData = transactionType.reduce((acc, type) => {
           const transactions = data[type] || [];

@@ -102,7 +102,7 @@ export default function BeneficiaryDetail() {
           <Badge variant="secondary">{data?.data?.extras?.type}</Badge>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Refered By</h1>
+          <h1 className="text-md text-muted-foreground">Referred By</h1>
           <p className="font-medium">{data?.data?.healthWorker?.name ?? '-'}</p>
         </div>
 

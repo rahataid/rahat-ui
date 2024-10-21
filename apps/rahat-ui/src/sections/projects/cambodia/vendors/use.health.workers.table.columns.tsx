@@ -4,7 +4,7 @@ export const useHealthWorkersTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
-      header: 'Beneficiary Name',
+      header: 'Health Worker Name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
@@ -13,18 +13,25 @@ export const useHealthWorkersTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('commissionPayout') ?? '-'}</div>,
     },
     {
-      accessorKey: 'wallet',
-      header: 'TxHash',
-      cell: ({ row }) => <div>{row.original?.walletAddress}</div>,
+      accessorKey: 'koboUsername',
+      header: 'Kobo Username',
+      cell: ({ row }) => <div>{row?.original?.koboUsername}</div>,
     },
     {
-      accessorKey: 'timestamp',
-      header: 'Timestamp',
+      accessorKey: 'phone',
+      header: 'Phone Number',
+      cell: ({ row }) => <div>{row?.original?.phone}</div>,
+    },
+    {
+      accessorKey: 'wallet',
+      header: 'Wallet Address',
+      cell: ({ row }) => <div>{row?.original?.walletAddress}</div>,
+    },
+    {
+      accessorKey: 'gender',
+      header: 'Gender',
       cell: ({ row }) => {
-        const date = new Date(row?.original?.createdAt);
-        const formattedDate = date.toLocaleDateString();
-
-        return <div className="lowercase ml-4">{formattedDate}</div>;
+        return <div>{row?.original?.gender}</div>;
       },
     },
   ];

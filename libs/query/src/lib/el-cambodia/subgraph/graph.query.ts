@@ -73,19 +73,6 @@ query ProjectTransactions{
 
 export const CambodiaVendorTransactions = `
 query VendorTransactions($vendor:String!) {
-  claimCreateds (where:{claimer:$vendor}){
-    amount
-    blockNumber
-    blockTimestamp
-    claimId
-    claimee
-    claimer
-    id
-    otpServer
-    token
-    transactionHash
-    eventType
-   }
   claimProcesseds(where:{claimer:$vendor}) {
     amount
     beneficiary

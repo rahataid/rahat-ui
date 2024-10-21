@@ -32,11 +32,7 @@ export const useCambodiaBeneficiaryTableColumns = () => {
     {
       accessorKey: 'healthWorker',
       header: 'Health Worker',
-      cell: ({ row }) => (
-        <div>
-          {formatUnderScoredString(row.getValue('healthWorker') ?? '-')}
-        </div>
-      ),
+      cell: ({ row }) => <div>{row?.original?.healthWorker?.name}</div>,
     },
   ];
   if (!isDiscardedBeneficiary) {

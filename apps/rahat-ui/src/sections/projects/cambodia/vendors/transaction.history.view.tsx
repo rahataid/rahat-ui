@@ -29,11 +29,11 @@ export default function TransactionHistoryView({ vendorAddress }: IProps) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  // const { data: vendorTransactions, isLoading } = useCambodiaVendorTransactions(
-  //   vendorAddress || '0x9ffb7323c3f10abfe2e386bdf96de715201c1ab3',
-  // );
-  const { data: vendorTransactions, isLoading } =
-    useCambodiaVendorTransactions(vendorAddress);
+  const { data: vendorTransactions, isLoading } = useCambodiaVendorTransactions(
+    '0x9ffb7323c3f10abfe2e386bdf96de715201c1ab3',
+  );
+  // const { data: vendorTransactions, isLoading } =
+  //   useCambodiaVendorTransactions(vendorAddress);
   const columns = useTransactionHistoryTableColumns();
   const table = useReactTable({
     manualPagination: true,

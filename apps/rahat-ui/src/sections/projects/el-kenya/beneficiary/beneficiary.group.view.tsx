@@ -1,5 +1,5 @@
 'use client';
-import { memo, useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 
 import {
   useBeneficiaryGroupsList,
@@ -16,6 +16,7 @@ import SearchInput from '../../components/search.input';
 function BeneficiaryGroupsView() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
+  const [searchTerm, setSearchTerm] = React.useState<string>('');
   const {
     pagination,
     selectedListItems,
@@ -34,6 +35,16 @@ function BeneficiaryGroupsView() {
 
   const { data: groups } = useFindAllBeneficiaryGroups(id as UUID);
 
+  const filteredGroups = React.useMemo(() => {
+    return groups.filter((group) =>
+      group.name?.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+  }, [groups, searchTerm]);
+
+  const handleSearch = React.useCallback((value: string) => {
+    setSearchTerm(value);
+  }, []);
+
   const handleFilterProjectSelect = (project: string | UUID) => {
     setFilters({
       projectId: project,
@@ -46,13 +57,17 @@ function BeneficiaryGroupsView() {
     <>
       <div className="p-4 rounded-sm border">
         <div className="flex justify-between space-x-2 items-center mb-4">
-          <SearchInput className="w-full" name="group" onSearch={() => { }} />
+          <SearchInput
+            className="w-full"
+            name="group"
+            onSearch={(e) => handleSearch(e.target.value)}
+          />
           {/* <AddButton name="Group" path="/beneficiary/groups/add" /> */}
         </div>
         <ScrollArea className="h-[calc(100vh-300px)]">
-          <div className="grid grid-cols-4 gap-4">
-            {groups &&
-              groups?.map((i: any, index: number) => {
+          {filteredGroups.length > 0 ? (
+            <div className="grid grid-cols-4 gap-4">
+              {filteredGroups?.map((i: any, index: number) => {
                 return (
                   <div
                     key={index}
@@ -79,7 +94,12 @@ function BeneficiaryGroupsView() {
                   </div>
                 );
               })}
-          </div>
+            </div>
+          ) : (
+            <p className="text-center mt-10 text-muted-foreground">
+              No result.
+            </p>
+          )}
         </ScrollArea>
       </div>
     </>

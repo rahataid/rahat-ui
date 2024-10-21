@@ -63,6 +63,8 @@ export default function BeneficiaryView({
   const [rowData, setRowData] = React.useState<Payment[]>([]);
   const [rowSelection, setRowSelection] = React.useState({});
 
+  console.log('rowData', rowData);
+
   const meta = benData?.data?.response?.meta;
 
   const columns = useBeneficiaryTableColumns();
@@ -98,12 +100,14 @@ export default function BeneficiaryView({
   useEffect(() => {
     if (benData?.isSuccess) {
       const unSyncedBeneficiaries = benData?.data?.data?.map((beneficiary) => {
+        console.log('beneficiary', beneficiary);
         return {
           name: beneficiary?.piiData?.name,
           phone: beneficiary?.piiData?.phone,
           disbursementAmount: beneficiary?.Disbursements[0]?.amount || '0',
           walletAddress: beneficiary?.walletAddress,
           voucherStatus: beneficiary?.voucherStatus,
+          location: beneficiary?.extras?.location,
         };
       });
       if (JSON.stringify(unSyncedBeneficiaries) !== JSON.stringify(rowData)) {

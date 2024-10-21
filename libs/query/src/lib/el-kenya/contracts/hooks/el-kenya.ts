@@ -93,7 +93,11 @@ export const useBulkCreateKenyaDisbursement = (projectUUID: UUID) => {
   return useMutation({
     mutationFn: async (data: {
       amount: number;
-      beneficiaries: { walletAddress: `0x${string}`; phone: string }[];
+      beneficiaries: {
+        walletAddress: `0x${string}`;
+        phone: string;
+        location: string;
+      }[];
       tokenAddress: `0x${string}`;
     }) => {
       const res = await action.mutateAsync({
@@ -153,7 +157,11 @@ export const useBulkAssignKenyaVoucher = (
         await bulkAssignDisbursement.mutateAsync({
           amount: 1,
           beneficiaries: variables.beneficiaryAddresses.map((b) => {
-            return { walletAddress: b.walletAddress, phone: b.phone };
+            return {
+              walletAddress: b.walletAddress,
+              phone: b.phone,
+              location: b.location,
+            };
           }),
           tokenAddress,
         });
@@ -172,6 +180,7 @@ export const useBulkAssignKenyaVoucher = (
           walletAddress: `0x${string}`;
           phone: string;
           amount: number;
+          location: string;
         }[];
         amount?: string;
         tokenAddress: `0x${string}`;
@@ -191,7 +200,11 @@ export const useBulkAssignKenyaVoucher = (
         await bulkAssignDisbursement.mutateAsync({
           amount: 1,
           beneficiaries: beneficiaryAddresses.map((b) => {
-            return { walletAddress: b.walletAddress, phone: b.phone };
+            return {
+              walletAddress: b.walletAddress,
+              phone: b.phone,
+              location: b.location,
+            };
           }),
           tokenAddress,
         });

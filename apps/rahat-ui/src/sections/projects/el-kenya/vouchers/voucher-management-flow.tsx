@@ -30,6 +30,7 @@ const VouchersManagementFlow = () => {
     useState<typeof initialStepData>(initialStepData);
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
+  console.log('stepData', stepData);
 
   const beneficiaryGroup = useRpSingleBeneficiaryGroupMutation(id as UUID);
 
@@ -80,7 +81,6 @@ const VouchersManagementFlow = () => {
     if (beneficiaryGroupSelected) {
       handleBulkVoucherAssign(stepData.selectedGroups);
     } else {
-      console.log('step', stepData.selectedBeneficiaries);
       // todo: for groups
       syncDisbursementAllocation.mutate({
         beneficiaryAddresses: stepData.selectedBeneficiaries.map((ben) => {
@@ -88,6 +88,7 @@ const VouchersManagementFlow = () => {
             walletAddress: ben?.walletAddress,
             phone: ben?.phone,
             amount: 1,
+            location: ben?.extras?.location,
           };
         }),
         tokenAddress: contractSettings?.rahattoken?.address,
@@ -104,6 +105,7 @@ const VouchersManagementFlow = () => {
       walletAddress: `0x${string}`;
       amount: number;
       phone: string;
+      location: string;
     }[];
     // todo: refactor backend accordingly
     const benefciaryFromGroups = groupUUIDs.map(async (groupUUID) => {
@@ -112,6 +114,7 @@ const VouchersManagementFlow = () => {
         (groupedBeneficiary: any) => ({
           walletAddress: groupedBeneficiary?.Beneficiary?.walletAddress,
           phone: groupedBeneficiary?.Beneficiary?.pii?.phone,
+          location: groupedBeneficiary?.Beneficiary?.location,
         }),
       );
       return benData;
@@ -123,11 +126,18 @@ const VouchersManagementFlow = () => {
         ({
           walletAddress,
           phone,
+          location,
         }: {
           walletAddress: `0x${string}`;
           phone: string;
+          location: string;
         }) => {
-          fetchedBenAddresses.push({ walletAddress, amount: 1, phone });
+          fetchedBenAddresses.push({
+            walletAddress,
+            amount: 1,
+            phone,
+            location,
+          });
         },
       );
     });
@@ -142,6 +152,7 @@ const VouchersManagementFlow = () => {
           walletAddress: ben.walletAddress,
           phone: ben.phone,
           amount: 1,
+          location: ben?.location,
         })),
       tokenAddress: contractSettings?.rahattoken?.address,
       projectAddress: contractSettings?.rahatcvakenya?.address,

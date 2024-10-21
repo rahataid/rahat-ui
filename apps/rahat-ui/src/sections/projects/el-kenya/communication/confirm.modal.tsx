@@ -33,7 +33,7 @@ export function TriggerConfirmModal({ campaignId, completed }: IProps) {
           disabled={completed}
           className="flex items-center gap-2 w-36 h-9"
         >
-          {completed ? 'Trigger' : 'Triggered'}
+          {completed ? 'Triggered' : 'Trigger'}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">

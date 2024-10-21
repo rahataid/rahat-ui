@@ -34,13 +34,14 @@ export default function CommunicationView() {
     failed: 0,
   });
   const { data } = useListRpCommunicationLogs(id);
+  const commsAppId = useSettingsStore((state) => state.commsSettings)?.APP_ID
 
   useEffect(() => {
     setStats({
       succed: 0,
       failed: 0,
     });
-    data?.map((logs: any) => {
+    data?.filter((log)=>log.app===commsAppId).map((logs: any) => {
       setStats((prev) => {
         return logs.status === 'SUCCESS'
           ? { ...prev, succed: prev.succed + 1 }
@@ -50,7 +51,7 @@ export default function CommunicationView() {
   }, [data]);
 
   const cardData = [
-    { title: 'Total Message Sent', icon: 'MessageSquare', total: data?.length },
+    { title: 'Total Message Sent', icon: 'MessageSquare', total: data?.length || 0 },
     {
       title: 'Failed Message Delivery',
       icon: 'MessageSquare',
@@ -62,7 +63,6 @@ export default function CommunicationView() {
       total: stats.succed,
     },
   ];
-  const commsAppId = useSettingsStore((state) => state.commsSettings)?.APP_ID
 
   const tableData = useMemo(()=>{
     if(data){

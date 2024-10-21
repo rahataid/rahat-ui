@@ -8,25 +8,53 @@ import {
   ChartColumnStacked,
   ChartDonut,
 } from '@rahat-ui/shadcn/src/components/charts';
-
-const cardData = [
-  { title: 'Total Voucher', icon: 'Ticket', total: '1439' },
-  { title: 'Voucher Redeemed', icon: 'Ticket', total: '1439' },
-  {
-    title: 'Voucher Reimbursed',
-    icon: 'Ticket',
-    total: '1439',
-  },
-  {
-    title: 'Voucher Assigned',
-    icon: 'Ticket',
-    total: '1439',
-  },
-];
+import { useFindAllKenyaStats } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 export default function VouchersView() {
   const { id } = useParams();
   const router = useRouter();
+  const kenyaStats = useFindAllKenyaStats(id as UUID);
+
+  const REIMBURSEMENT_STATS = kenyaStats?.data?.find(
+    (i: any) => i.name === 'REIMBURSEMENT_STATS',
+  )?.data;
+
+  const REDEMPTION_STATS = kenyaStats?.data?.find(
+    (i: any) => i.name === 'REDEMPTION_STATS',
+  )?.data;
+
+  const voucherReimbursedCount = REIMBURSEMENT_STATS?.find(
+    (i: any) => i.status === 'APPROVED',
+  )?.count;
+
+  const singleVisionCount = REDEMPTION_STATS?.find(
+    (i: any) => i.voucherType === 'SINGLE_VISION',
+  )?.count;
+  const readingGlassesCount = REDEMPTION_STATS?.find(
+    (i: any) => i.voucherType === 'READING_GLASSES',
+  )?.count;
+
+  const voucherRedeemedCount = singleVisionCount + readingGlassesCount;
+
+  const cardData = [
+    { title: 'Total Voucher', icon: 'Ticket', total: '-' },
+    {
+      title: 'Voucher Redeemed',
+      icon: 'Ticket',
+      total: voucherRedeemedCount ?? '-',
+    },
+    {
+      title: 'Voucher Reimbursed',
+      icon: 'Ticket',
+      total: voucherReimbursedCount ?? '-',
+    },
+    {
+      title: 'Voucher Assigned',
+      icon: 'Ticket',
+      total: '-',
+    },
+  ];
   return (
     <>
       <div className="p-4">
@@ -50,17 +78,6 @@ export default function VouchersView() {
           {cardData?.map((item, index) => {
             const Icon = getIcon(item.icon as any);
             return (
-              // <div key={index} className="rounded-sm bg-card p-6 shadow-md">
-              //   <div className="flex justify-between items-center">
-              //     <h1 className="text-sm">{item.title}</h1>
-              //     <div className="p-1 rounded-full bg-secondary text-primary">
-              //       <Icon size={16} strokeWidth={2.5} />
-              //     </div>
-              //   </div>
-              //   <p className="text-primary font-semibold text-xl">
-              //     {item.total}
-              //   </p>
-              // </div>
               <DataCard
                 className="border-solid rounded-sm"
                 iconStyle="bg-white text-muted-foreground"
@@ -77,10 +94,10 @@ export default function VouchersView() {
             <p className="text-md font-medium mb-4">Total Vouchers</p>
             <div className="flex justify-center">
               <ChartDonut
-                series={[20, 80]}
+                series={[voucherRedeemedCount, 0]}
                 labels={['Redeeemed', 'Not Redeemed']}
                 donutSize="70%"
-                width={400}
+                width={300}
                 height={320}
               />
             </div>

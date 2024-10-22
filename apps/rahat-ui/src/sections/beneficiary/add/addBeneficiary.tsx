@@ -53,8 +53,8 @@ export default function AddBeneficiaryForm() {
     bankedStatus: z.string().toUpperCase(),
     internetStatus: z.string().toUpperCase(),
     phoneStatus: z.string().toUpperCase(),
-    address: z.string(),
-    age: z.string(),
+    address: z.string().min(3, { message: 'Please enter valid address' }),
+    age: z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -237,7 +237,7 @@ export default function AddBeneficiaryForm() {
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter beneficiaryddress"
+                            placeholder="Enter beneficiary address"
                             {...field}
                           />
                         </FormControl>

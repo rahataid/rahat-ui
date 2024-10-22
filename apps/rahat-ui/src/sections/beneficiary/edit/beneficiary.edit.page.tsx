@@ -39,6 +39,12 @@ import {
 import Back from '../../projects/components/back';
 import { UUID } from 'crypto';
 import HeaderWithBack from '../../projects/components/header.with.back';
+import {
+  Gender,
+  PhoneStatus,
+  InternetStatus,
+  BankedStatus,
+} from '@rahataid/sdk/enums';
 
 export default function AddBeneficiaryForm() {
   const updateBeneficiary = useUpdateBeneficiary();
@@ -60,23 +66,23 @@ export default function AddBeneficiaryForm() {
     bankedStatus: z.string().toUpperCase(),
     internetStatus: z.string().toUpperCase(),
     phoneStatus: z.string().toUpperCase(),
-    address: z.string(),
-    age: z.string(),
+    address: z.string().min(3, { message: 'Please enter valid address' }),
+    age: z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: beneficiary?.firstName?.concat('', beneficiary?.lastName as string),
+      name: beneficiary?.piiData?.name,
       gender: beneficiary?.gender,
       walletAddress: beneficiary?.walletAddress,
-      email: beneficiary?.email,
-      phone: beneficiary?.phone,
+      email: beneficiary?.piiData?.email ?? '',
+      phone: beneficiary?.piiData?.phone,
       bankedStatus: beneficiary?.bankedStatus,
       internetStatus: beneficiary?.internetStatus,
       phoneStatus: beneficiary?.phoneStatus,
-      age: beneficiary?.extras?.age,
-      address: beneficiary?.extras?.address,
+      age: beneficiary?.age?.toString(),
+      address: beneficiary?.location,
     },
   });
 
@@ -85,6 +91,8 @@ export default function AddBeneficiaryForm() {
       await updateBeneficiary.mutateAsync({
         id: beneficiary?.id,
         uuid: beneficiary?.uuid,
+        location: data.address,
+        age: data.age,
         gender: data.gender,
         bankedStatus: data.bankedStatus,
         internetStatus: data.internetStatus,
@@ -92,6 +100,7 @@ export default function AddBeneficiaryForm() {
         piiData: {
           name: data.name,
           phone: data.phone,
+          email: data.email,
         },
         walletAddress: data.walletAddress,
       });
@@ -146,13 +155,13 @@ export default function AddBeneficiaryForm() {
                         >
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="male" />
+                              <RadioGroupItem value={Gender.MALE} />
                             </FormControl>
                             <FormLabel className="font-normal">Male</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="female" />
+                              <RadioGroupItem value={Gender.FEMALE} />
                             </FormControl>
                             <FormLabel className="font-normal">
                               Female
@@ -160,9 +169,17 @@ export default function AddBeneficiaryForm() {
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="other" />
+                              <RadioGroupItem value={Gender.OTHER} />
                             </FormControl>
                             <FormLabel className="font-normal">Other</FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="UNKNOWN" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Unknown
+                            </FormLabel>
                           </FormItem>
                         </RadioGroup>
                       </FormControl>
@@ -259,14 +276,18 @@ export default function AddBeneficiaryForm() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="smart_phone">
+                            <SelectItem value={PhoneStatus.SMART_PHONE}>
                               Smart Phone
                             </SelectItem>
-                            <SelectItem value="no_phone">No Phone</SelectItem>
-                            <SelectItem value="feature_phone">
+                            <SelectItem value={PhoneStatus.NO_PHONE}>
+                              No Phone
+                            </SelectItem>
+                            <SelectItem value={PhoneStatus.FEATURE_PHONE}>
                               Feature Phone
                             </SelectItem>
-                            <SelectItem value="unknown">Unknown</SelectItem>
+                            <SelectItem value={PhoneStatus.UNKNOWN}>
+                              Unknown
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -292,12 +313,18 @@ export default function AddBeneficiaryForm() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="banked">Banked</SelectItem>
-                            <SelectItem value="under_banked">
+                            <SelectItem value={BankedStatus.BANKED}>
+                              Banked
+                            </SelectItem>
+                            <SelectItem value={BankedStatus.UNDER_BANKED}>
                               Under Banked
                             </SelectItem>
-                            <SelectItem value="unBanked">UnBanked</SelectItem>
-                            <SelectItem value="unknown">Unknown</SelectItem>
+                            <SelectItem value={BankedStatus.UNBANKED}>
+                              UnBanked
+                            </SelectItem>
+                            <SelectItem value={BankedStatus.UNKNOWN}>
+                              Unknown
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -323,16 +350,18 @@ export default function AddBeneficiaryForm() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="mobile_internet">
+                            <SelectItem value={InternetStatus.MOBILE_INTERNET}>
                               Mobile Internet
                             </SelectItem>
-                            <SelectItem value="no_internet">
+                            <SelectItem value={InternetStatus.NO_INTERNET}>
                               No Internet
                             </SelectItem>
-                            <SelectItem value="home_internet">
+                            <SelectItem value={InternetStatus.HOME_INTERNET}>
                               Home Internet
                             </SelectItem>
-                            <SelectItem value="unknown">Unknown</SelectItem>
+                            <SelectItem value={InternetStatus.UNKNOWN}>
+                              Unknown
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />

@@ -79,6 +79,8 @@ export default function ExcelUploader() {
   };
 
   const handleUpload = async () => {
+    if (data?.length === 1)
+      return toast.error('No beneficiary found in excel file');
     if (!selectedFile) return toast.error('Please select a file to upload');
 
     // Determine doctype based on file extension

@@ -165,7 +165,7 @@ export default function AddBeneficiaryForm() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Phone</FormLabel>
+                      <FormLabel>Phone*</FormLabel>
                       <FormControl>
                         <PhoneInput
                           placeholder="Enter phone number"
@@ -184,7 +184,7 @@ export default function AddBeneficiaryForm() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Location</FormLabel>
+                      <FormLabel>Location*</FormLabel>
                       <FormControl>
                         <Input
                           type="text"

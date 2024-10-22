@@ -96,13 +96,13 @@ export default function ExcelUploader() {
     });
   };
 
-  // useEffect(() => {
-  //   if (uploadBeneficiary?.isSuccess) {
-  //     // toast.success('File uploaded successfully.'); commented due to overlap
-  //     router.push(`/projects/el-kenya/${id}/beneficiary/import`);
-  //   }
-  //   // uploadBeneficiary?.isError && toast.error('File upload unsuccessful.');
-  // }, [uploadBeneficiary?.isSuccess, uploadBeneficiary.isError, router, id]);
+  useEffect(() => {
+    if (uploadBeneficiary?.isSuccess) {
+      // toast.success('File uploaded successfully.'); commented due to overlap
+      router.push(`/projects/el-kenya/${id}/beneficiary`);
+    }
+    // uploadBeneficiary?.isError && toast.error('File upload unsuccessful.');
+  }, [uploadBeneficiary?.isSuccess, uploadBeneficiary.isError, router, id]);
 
   return (
     <>

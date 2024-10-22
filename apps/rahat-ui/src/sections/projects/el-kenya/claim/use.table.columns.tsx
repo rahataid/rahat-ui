@@ -16,10 +16,8 @@ export default function useTableColumn() {
     },
     {
       accessorKey: 'amount',
-      header: 'Beneficiary Count',
-      cell: ({ row }) => {
-        row.getValue('amount')?.toString();
-      },
+      header: 'Voucher Amount',
+      cell: ({ row }) => <div>{row.getValue('amount')}</div>,
     },
 
     {

@@ -14,18 +14,11 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
-import { Loader2, Wallet } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Back from '../../components/back';
@@ -33,7 +26,6 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
-import { UUID } from 'crypto';
 
 export default function AddBeneficiaryForm() {
   const addBeneficiary = useCreateBeneficiary();
@@ -41,15 +33,22 @@ export default function AddBeneficiaryForm() {
   const { id } = useParams();
 
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 4 character' }),
+    name: z
+      .string()
+      .optional()
+      .refine((val) => !val || val.length > 3, {
+        message: 'Name must be at least 4 character',
+      }),
     phone: z
       .string()
       .refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
     gender: z
       .string()
       .toUpperCase()
-      .min(4, { message: 'Must select a Gender' }),
-    address: z.string(),
+      .refine((val) => !val || val.length > 0, {
+        message: 'Please select gender',
+      }),
+    location: z.string().min(3, { message: 'Please enter valid location' }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -58,17 +57,17 @@ export default function AddBeneficiaryForm() {
       name: '',
       gender: '',
       phone: '',
-      address: '',
+      location: '',
     },
   });
 
   const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
     try {
       const result = await addBeneficiary.mutateAsync({
-        gender: data.gender,
+        gender: data.gender || 'UNKNOWN',
+        location: data.location,
         piiData: {
-          email: data.address,
-          name: data.name,
+          name: data.name || 'UNKNOWN',
           phone: data.phone,
         },
         projectUUIDs: [id],
@@ -166,7 +165,7 @@ export default function AddBeneficiaryForm() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Phone</FormLabel>
+                      <FormLabel>Phone*</FormLabel>
                       <FormControl>
                         <PhoneInput
                           placeholder="Enter phone number"
@@ -181,15 +180,15 @@ export default function AddBeneficiaryForm() {
 
               <FormField
                 control={form.control}
-                name="address"
+                name="location"
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Address</FormLabel>
+                      <FormLabel>Location*</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter beneficiary address"
+                          placeholder="Enter beneficiary location"
                           {...field}
                         />
                       </FormControl>

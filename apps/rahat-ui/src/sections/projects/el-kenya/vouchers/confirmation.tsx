@@ -58,7 +58,7 @@ const BeneficiaryItem = ({ ben, beneficiaryGroupSelected }) => (
       <div className="p-2 rounded-full bg-secondary">
         <User size={18} strokeWidth={1.5} />
       </div>
-      <p>{ben.name}</p>
+      <p>{ben?.name}</p>
     </div>
     {beneficiaryGroupSelected && (
       <p>{ben?._count?.groupedBeneficiaries} beneficiaries</p>
@@ -76,6 +76,7 @@ export default function ConfirmSelection({
   const searchParam = useSearchParams();
   const benef = searchParam.get('benef');
 
+  console.log('beneficiaryGroupSelected', beneficiaryGroupSelected);
   const selectedBeneficiaries = beneficiaryGroupSelected
     ? stepData.selectedGroups.reduce(
         (acc, group) => acc + group?._count?.groupedBeneficiaries,

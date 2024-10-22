@@ -23,7 +23,7 @@ export const useNavItems = () => {
           icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
         },
         {
-          title: 'Benificiaries',
+          title: 'Beneficiaries',
           path: `/projects/el-cambodia/${id}/beneficiary`,
           subtitle: 20,
           icon: <Users size={18} strokeWidth={1.5} />,

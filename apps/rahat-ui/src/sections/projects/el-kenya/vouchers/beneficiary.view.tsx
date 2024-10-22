@@ -136,7 +136,7 @@ export default function BeneficiaryView({
               Bulk Assign
             </Button>
           </div>
-          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-640px)]" />
+          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-656px)]" />
         </div>
       </div>
       <CustomPagination

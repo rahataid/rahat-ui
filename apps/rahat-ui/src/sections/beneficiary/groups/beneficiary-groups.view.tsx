@@ -84,13 +84,10 @@ function BeneficiaryGroupsView() {
                 const isAssignedToProject = i?.beneficiaryGroupProject?.length;
 
                 return (
-                  <div
-                    key={index}
-                    className="cursor-pointer rounded-md border shadow p-4"
-                  >
+                  <div key={index} className="rounded-md border shadow p-4">
                     <div className="flex flex-col space-y-2">
                       <div
-                        className="rounded-md bg-secondary grid place-items-center h-28"
+                        className="cursor-pointer rounded-md bg-secondary grid place-items-center h-28"
                         onClick={() => {
                           router.push(
                             `/beneficiary/groups/${i?.uuid}?isAssignedToProject=${isAssignedToProject}`,

@@ -61,7 +61,7 @@ const BeneficiaryItem = ({ ben, beneficiaryGroupSelected }) => (
       <p>{ben.name}</p>
     </div>
     {beneficiaryGroupSelected && (
-      <p>{ben._count.groupedBeneficiaries} beneficiaries</p>
+      <p>{ben?._count?.groupedBeneficiaries} beneficiaries</p>
     )}
   </div>
 );
@@ -78,7 +78,7 @@ export default function ConfirmSelection({
 
   const selectedBeneficiaries = beneficiaryGroupSelected
     ? stepData.selectedGroups.reduce(
-        (acc, group) => acc + group._count.groupedBeneficiaries,
+        (acc, group) => acc + group?._count?.groupedBeneficiaries,
         0,
       )
     : stepData.selectedBeneficiaries.length;

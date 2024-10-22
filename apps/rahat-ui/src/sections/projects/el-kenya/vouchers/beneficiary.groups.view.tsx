@@ -36,7 +36,7 @@ export default function BeneficiaryGroupsView({
 
   const [disbursementData, setDisbursementData] = React.useState([]);
 
-  const [selectedGroupIds, setSelectedGroupIds] = React.useState<string[]>([]);
+  const [selectedGroup, setSelectedGroup] = React.useState<any[]>([]);
   const [isSelectAll, setIsSelectAll] = React.useState<boolean>(false);
 
   useEffect(() => {
@@ -47,12 +47,12 @@ export default function BeneficiaryGroupsView({
   console.log(beneficiaryGroups, disbursementData);
 
   // Handle individual checkbox changes
-  const handleCheckboxChange = (groupId: string, isChecked: boolean) => {
+  const handleCheckboxChange = (group: any, isChecked: boolean) => {
     const updatedSelectedGroups = isChecked
-      ? [...selectedGroupIds, groupId]
-      : selectedGroupIds.filter((id) => id !== groupId);
+      ? [...selectedGroup, group]
+      : selectedGroup.filter((sgroup) => sgroup.uuid !== group.uuid);
 
-    setSelectedGroupIds(updatedSelectedGroups);
+    setSelectedGroup(updatedSelectedGroups);
 
     // Update the step data
     handleStepDataChange({
@@ -69,15 +69,15 @@ export default function BeneficiaryGroupsView({
   // Handle "Select All" checkbox change
   const handleSelectAllChange = (isChecked: boolean) => {
     if (isChecked) {
-      const allGroupIds =
-        beneficiaryGroups?.map((group: any) => group.uuid) || [];
-      setSelectedGroupIds(allGroupIds);
+      // const allGroupIds =
+      // beneficiaryGroups?.map((group: any) => group.uuid) || [];
+      setSelectedGroup(beneficiaryGroups || []);
 
       handleStepDataChange({
-        target: { name: 'selectedGroups', value: allGroupIds },
+        target: { name: 'selectedGroups', value: beneficiaryGroups },
       });
     } else {
-      setSelectedGroupIds([]);
+      setSelectedGroup([]);
 
       handleStepDataChange({
         target: { name: 'selectedGroups', value: [] },
@@ -85,7 +85,6 @@ export default function BeneficiaryGroupsView({
     }
     setIsSelectAll(isChecked);
   };
-
   return (
     <div className="p-4">
       <div className="rounded border bg-card p-4">
@@ -170,10 +169,12 @@ export default function BeneficiaryGroupsView({
                       }}
                     /> */}
                     <Checkbox
-                      checked={selectedGroupIds.includes(beneficiaryGroup.uuid)}
+                      checked={selectedGroup.some(
+                        (sg) => sg.uuid === beneficiaryGroup.uuid,
+                      )}
                       onCheckedChange={(checked) =>
                         handleCheckboxChange(
-                          beneficiaryGroup.uuid,
+                          beneficiaryGroup,
                           checked as boolean,
                         )
                       }
@@ -189,7 +190,7 @@ export default function BeneficiaryGroupsView({
                   <div className="text-muted-foreground text-sm flex justify-between">
                     <div className="flex gap-2 items-center">
                       <Users size={18} strokeWidth={2} />
-                      {benificiaryGroup?._count?.groupedBeneficiaries}
+                      {beneficiaryGroup?._count?.groupedBeneficiaries}
                     </div>
                     <div className="flex gap-2 items-center">
                       <Banknote size={18} strokeWidth={2} />

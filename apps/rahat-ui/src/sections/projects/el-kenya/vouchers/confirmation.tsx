@@ -76,7 +76,6 @@ export default function ConfirmSelection({
   const searchParam = useSearchParams();
   const benef = searchParam.get('benef');
 
-  console.log('beneficiaryGroupSelected', beneficiaryGroupSelected);
   const selectedBeneficiaries = beneficiaryGroupSelected
     ? stepData.selectedGroups.reduce(
         (acc, group) => acc + group?._count?.groupedBeneficiaries,

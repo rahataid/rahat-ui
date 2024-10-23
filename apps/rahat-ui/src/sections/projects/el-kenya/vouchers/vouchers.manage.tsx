@@ -10,6 +10,12 @@ import HeaderWithBack from '../../components/header.with.back';
 import BeneficiaryView from './beneficiary.view';
 import BeneficiaryGroupsView from './beneficiary.groups.view';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+  useReadRahatTokenTotalSupply,
+} from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 interface VouchersManageProps {
   handleStepDataChange: (e) => void;
@@ -24,7 +30,15 @@ export default function VouchersManage({
   setBeneficiaryGroupSelected,
   stepData,
 }: VouchersManageProps) {
-  const { id } = useParams();
+  const { id } = useParams() as { id: UUID };
+
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+
+  const { data: tokenBalance } = useReadRahatTokenTotalSupply({
+    address: contractSettings?.rahattoken?.address as `0x${string}`,
+  });
   return (
     <div className="p-4">
       <HeaderWithBack
@@ -36,7 +50,7 @@ export default function VouchersManage({
         className="border-solid rounded-sm w-96 mb-10"
         title="Voucher Balance"
         Icon={Ticket}
-        number="1439"
+        number={tokenBalance?.toString() ?? '-'}
       />
       <Tabs defaultValue="beneficiary">
         <TabsContent value="beneficiary">
@@ -76,7 +90,7 @@ export default function VouchersManage({
             handleStepDataChange={handleStepDataChange}
             handleNext={handleNext}
           />
-        </TabsContent >
+        </TabsContent>
         <TabsContent value="beneficiaryGroups">
           <BeneficiaryGroupsView
             handleStepDataChange={handleStepDataChange}
@@ -85,7 +99,7 @@ export default function VouchersManage({
             stepData={stepData}
           />
         </TabsContent>
-      </Tabs >
-    </div >
+      </Tabs>
+    </div>
   );
 }

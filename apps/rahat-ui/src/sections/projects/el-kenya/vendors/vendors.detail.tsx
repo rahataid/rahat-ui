@@ -48,14 +48,14 @@ export default function VendorsDetail() {
           subtitle="Here is the detailed view of selected vendor"
           path={`/projects/el-kenya/${id}/vendors`}
         />
-        <div className="flex space-x-2">
+        {/* <div className="flex space-x-2">
           <EditButton className="border-none bg-sky-50 shadow-none" path="" />
           <DeleteButton
             className="border-none bg-red-100 shadow-none"
             name="vendor"
             handleContinueClick={() => {}}
           />
-        </div>
+        </div> */}
       </div>
       <div className="p-5 rounded border grid grid-cols-4 gap-5 mb-5">
         <div>

@@ -1,3 +1,4 @@
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
 
 export const useElkenyaTransactionsTableColumns = () => {
@@ -5,7 +6,9 @@ export const useElkenyaTransactionsTableColumns = () => {
     {
       accessorKey: 'beneficiary',
       header: 'Wallet Address',
-      cell: ({ row }) => <div>{row.getValue('beneficiary')}</div>,
+      cell: ({ row }) => (
+        <div>{truncateEthAddress(row.getValue('beneficiary'))}</div>
+      ),
     },
     {
       accessorKey: 'topic',
@@ -15,7 +18,9 @@ export const useElkenyaTransactionsTableColumns = () => {
     {
       accessorKey: 'txHash',
       header: 'TxHash',
-      cell: ({ row }) => <div>{row.getValue('txHash')}</div>,
+      cell: ({ row }) => (
+        <div>{truncateEthAddress(row.getValue('txHash'))}</div>
+      ),
     },
     {
       accessorKey: 'timeStamp',

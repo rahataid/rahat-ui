@@ -1,3 +1,4 @@
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
 
 export const useElkenyaVendorsTransactionsTableColumns = () => {
@@ -10,7 +11,9 @@ export const useElkenyaVendorsTransactionsTableColumns = () => {
     {
       accessorKey: 'txHash',
       header: 'TxHash',
-      cell: ({ row }) => <div>{row.getValue('txHash')}</div>,
+      cell: ({ row }) => (
+        <div>{truncateEthAddress(row.getValue('txHash'))}</div>
+      ),
     },
     {
       accessorKey: 'timestamp',

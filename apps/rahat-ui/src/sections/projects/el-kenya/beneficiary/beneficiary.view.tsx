@@ -192,7 +192,14 @@ export default function BeneficiaryView() {
                 total={beneficiaries.data.data.length}
               />
             )}
-            <ElkenyaTable table={table} tableHeight="h-[calc(100vh-398px)]" />
+            <ElkenyaTable
+              table={table}
+              tableHeight={
+                Object.keys(filters).length
+                  ? 'h-[calc(100vh-463px)]'
+                  : 'h-[calc(100vh-397px)]'
+              }
+            />
           </div>
         </div>
         <CustomPagination

@@ -85,7 +85,7 @@ export default function SelectVendorMultiStepForm() {
     groupIds,
   );
   const disBursementIds = beneficiariesDisbursements?.map((disBursement) => {
-    return { id: disBursement.id.toString, phone: disBursement.phone };
+    return { id: disBursement.id.toString(), phone: disBursement.phone };
   });
   const syncBen = useSyncOfflineBeneficiaries(id as UUID);
   const { queryClient, rumsanService } = useRSQuery();
@@ -213,6 +213,7 @@ export default function SelectVendorMultiStepForm() {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
+  console.log(stepData.disbursements, 'stepData.disbursements');
 
   const handleSyncBen = async () => {
     setIsSyncing(true);
@@ -226,6 +227,7 @@ export default function SelectVendorMultiStepForm() {
     if (stepData.groups.length > 0) {
       selectedDisbursementId = disBursementIds;
     }
+    console.log('selectedD', selectedDisbursementId);
 
     const result = await syncBen.mutateAsync({
       vendorId,

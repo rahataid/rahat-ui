@@ -301,7 +301,7 @@ export const useListRedemptions = (projectUUID: UUID, payload: any) => {
         return {
           uuid: item?.uuid,
           name: item?.Vendor?.name,
-          amount: item?.tokenAmount,
+          amount: item?.tokenAmount || item?.voucherAmount,
           status: item?.status,
           tokenAddress: item?.tokenAddress,
           walletAddress: item?.Vendor?.walletAddress,

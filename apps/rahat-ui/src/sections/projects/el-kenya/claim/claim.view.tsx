@@ -1,4 +1,5 @@
-import { usePagination } from '@rahat-ui/query';
+'use client'
+import { dataTagSymbol, useListRedemptions, usePagination } from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -13,6 +14,21 @@ import React from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import AddButton from '../../components/add.btn';
+
+export const redemptionType = [
+  {
+    key: 'ALL',
+    value: 'ALL',
+  },
+  {
+    key: 'REQUESTED',
+    value: 'REQUESTED',
+  },
+  {
+    key: 'APPROVED',
+    value: 'APPROVED',
+  },
+];
 
 export default function ClaimView() {
   const router = useRouter();
@@ -33,12 +49,29 @@ export default function ClaimView() {
   } = usePagination();
 
   const columns = useTableColumn();
+
+  const {data, isSuccess} = useListRedemptions(id,{
+    page:pagination.page,
+    perPage:pagination.perPage,
+    ...filters
+  });
+
+  const handleRedmpType = React.useCallback(
+    (type: string) => {
+      resetSelectedListItems();
+      if (type === 'ALL') {
+        setFilters({ ...filters, status: undefined });
+        return;
+      }
+      setFilters({ ...filters, status: type });
+    },
+    [filters, setFilters],
+  );
+
+
   const table = useReactTable({
     manualPagination: true,
-    data: [
-      { uuid: '123', name: 'A1' },
-      { uuid: '456', name: 'B1' },
-    ],
+    data: data?.redemptions || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -46,7 +79,7 @@ export default function ClaimView() {
     onRowSelectionChange: setSelectedListItems,
     getFilteredRowModel: getFilteredRowModel(),
     getRowId(originalRow) {
-      return originalRow.walletAddress;
+      return originalRow.uuid;
     },
 
     state: {

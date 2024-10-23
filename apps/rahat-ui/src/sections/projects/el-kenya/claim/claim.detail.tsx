@@ -1,4 +1,4 @@
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
+import { useContractRedeem, useGetRedemption, usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -14,41 +14,22 @@ import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import HeaderWithBack from '../../components/header.with.back';
 import AddButton from '../../components/add.btn';
+import { Button } from '@rahat-ui/shadcn/components/button';
 
-const cardData = [
-  {
-    title: 'Checkup Status',
-    label1: 'Checked',
-    label2: 'Not Checked',
-    sublabel1: 123,
-    sublabel2: 45,
-  },
-  {
-    title: 'Glassed Status',
-    label1: 'Required',
-    label2: 'Not Required',
-    sublabel1: 123,
-    sublabel2: 45,
-  },
-  {
-    title: 'Voucher Type',
-    label1: 'Single Vision',
-    label2: 'Reading Glass',
-    sublabel1: 123,
-    sublabel2: 45,
-  },
-  {
-    title: 'Voucher Status',
-    label1: 'Redeemed',
-    label2: 'Not Redeemed',
-    sublabel1: 123,
-    sublabel2: 45,
-  },
-];
+
+type CardData = {
+  title: string;
+  label1: string;
+  label2: string;
+  sublabel1: number;
+  sublabel2: number;
+};
 
 export default function ClaimDetailView() {
   const router = useRouter();
   const { id, Id } = useParams() as { id: UUID; Id: UUID };
+  const [cardData, setCardData] = React.useState<CardData[]>([]);
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
@@ -64,13 +45,72 @@ export default function ClaimDetailView() {
     resetSelectedListItems,
   } = usePagination();
 
+
+
+
+  const {data,refetch} = useGetRedemption(id,Id)
+
+
+  React.useEffect(() => {
+    if (data) {
+      updateCardData(data.stats);
+    }
+  }, [data]);
+
+  const updateCardData = (stats:any) => {
+    const updatedCardData = [
+      {
+        title: 'Checkup Status',
+        label1: 'Checked',
+        label2: 'Not Checked',
+        sublabel1: stats.eyeCheckupStatus.CHECKED || 0,
+        sublabel2: stats.eyeCheckupStatus.NOT_CHECKED || 0,
+      },
+      {
+        title: 'Glassed Status',
+        label1: 'Required',
+        label2: 'Not Required',
+        sublabel1: stats.glassesStatus.REQUIRED || 0,
+        sublabel2: stats.glassesStatus.NOT_REQUIRED || 0,
+      },
+      {
+        title: 'Voucher Type',
+        label1: 'Single Vision',
+        label2: 'Reading Glass',
+        sublabel1: stats.voucherTypes.SINGLE_VISION || 0,
+        sublabel2: stats.voucherTypes.READING_GLASS || 0,
+      },
+      {
+        title: 'Voucher Status',
+        label1: 'Redeemed',
+        label2: 'Not Redeemed',
+        sublabel1: stats.voucherStatus.REDEEMED || 0,
+        sublabel2: stats.voucherStatus.NOT_REDEEMED || 0,
+      },
+    ];
+
+    setCardData(updatedCardData);
+  };
+  const redeemToken = useContractRedeem(id);
+
+
+  const handleSubmit = () => {
+    redeemToken.mutateAsync({
+      amount: data?.voucherAmount,
+      tokenAddress: data?.tokenAddress,
+      redemptionAddress: data?.redemptionAddress,
+      senderAddress: data?.walletAddress,
+      uuid: data?.uuid,
+    }).finally(()=>{
+    refetch();
+    })
+
+  }
+
   const columns = useTableColumn();
   const table = useReactTable({
     manualPagination: true,
-    data: [
-      { uuid: '123', name: 'A1' },
-      { uuid: '456', name: 'B1' },
-    ],
+    data :data ||[],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -115,7 +155,10 @@ export default function ClaimDetailView() {
       <div className="rounded border bg-card p-4">
         <div className="flex justify-between space-x-2 mb-2">
           <SearchInput className="w-full" name="..." onSearch={() => {}} />
-          <AddButton name="SMS" path="" />
+          <Button type="submit" disabled={data?.status !="REQUESTED"} onClick={handleSubmit}>
+                  Approve
+           </Button>
+          {/* // disabled={data?.status !="REQUESTED"} */}
         </div>
         <ElkenyaTable table={table} tableHeight="h-[calc(100vh-500px)]" />
       </div>

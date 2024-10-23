@@ -46,27 +46,23 @@ export const useNavItems = () => {
           path: `/projects/el-kenya/${id}/transactions`,
           subtitle: 20,
           icon: <ArrowRightLeft size={18} strokeWidth={1.5} />,
-          disabled: true,
         },
         {
           title: 'Vendors',
           path: `/projects/el-kenya/${id}/vendors`,
           subtitle: 20,
           icon: <HandCoins size={18} strokeWidth={1.5} />,
-          disabled: true,
         },
 
         {
           title: 'Offline Management',
           path: `/projects/el-kenya/${id}/offline-management`,
           icon: <CloudOff size={18} strokeWidth={1.5} />,
-          disabled: true,
         },
         {
           title: 'Claim',
           path: `/projects/el-kenya/${id}/claim`,
           icon: <Gift size={18} strokeWidth={1.5} />,
-          disabled: true,
         },
       ],
     },

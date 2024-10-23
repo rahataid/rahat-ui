@@ -55,8 +55,12 @@ export default function VouchersView() {
     (i: any) => i.voucherType === 'READING_GLASSES',
   )?.count || 0;
 
-  const voucherRedeemedCount = singleVisionCount + readingGlassesCount;
-  const voucherNotRedeemedCount = tokenAllocated ? Number(tokenAllocated) - voucherRedeemedCount : 0;
+
+  const voucherRedeemedCount =
+    Number(singleVisionCount ?? 0) + Number(readingGlassesCount ?? 0);
+  const voucherNotRedeemedCount = tokenAllocated
+    ? Number(tokenAllocated) - voucherRedeemedCount
+    : 0;
 
 
   const cardData = [

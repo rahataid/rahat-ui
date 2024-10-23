@@ -302,6 +302,13 @@ export default function AddUser() {
             )
           ) : (
             <Button
+              disabled={
+                !!form.formState.errors.name || // Check for errors in name field
+                !!form.formState.errors.email || // Check for errors in email field
+                !!form.formState.errors.gender || // Check for errors in gender field
+                !!form.formState.errors.phone || // Check for errors in phone field
+                !!form.formState.errors.wallet // Check for errors in wallet field
+              }
               type="button"
               className="px-14"
               onClick={() => setNext(true)}

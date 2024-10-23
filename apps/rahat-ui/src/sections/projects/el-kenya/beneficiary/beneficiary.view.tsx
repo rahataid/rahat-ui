@@ -61,7 +61,7 @@ export default function BeneficiaryView() {
 
   const handleViewClick = (rowData: any) => {
     router.push(
-      `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${rowData.name}&&walletAddress=${rowData.walletAddress}&&gender=${rowData.gender}&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${rowData.eyeCheckupStatus}&&glassesStatus=${rowData.glassesStatus}&&voucherType=${rowData.voucherType}&&phone=${rowData.phone}&&type=${rowData.type}`,
+      `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${rowData.name}&&walletAddress=${rowData.walletAddress}&&gender=${rowData.gender}&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${rowData.eyeCheckupStatus}&&glassesStatus=${rowData.glassesStatus}&&voucherType=${rowData.voucherType}&&phone=${rowData.phone}&&type=${rowData.type}&&location=${rowData?.projectData?.location}`,
     );
   };
 

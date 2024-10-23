@@ -1,4 +1,3 @@
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
   getCoreRowModel,
   useReactTable,
@@ -10,30 +9,15 @@ import { useElkenyaVendorsTransactionsTableColumns } from './columns/use.vendors
 import React from 'react';
 import ElkenyaTable from '../table.component';
 
-export default function VendorsTransactionsHistory() {
+export default function VendorsTransactionsHistory(tableData: any) {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    resetSelectedListItems,
-  } = usePagination();
-
   const columns = useElkenyaVendorsTransactionsTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: [
-      { walletAddress: '123', topic: 'A1' },
-      { walletAddress: '456', topic: 'B1' },
-    ],
+    data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,

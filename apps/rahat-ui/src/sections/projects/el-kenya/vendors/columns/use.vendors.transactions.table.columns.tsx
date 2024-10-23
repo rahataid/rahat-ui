@@ -8,14 +8,14 @@ export const useElkenyaVendorsTransactionsTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('topic')}</div>,
     },
     {
-      accessorKey: 'hash',
+      accessorKey: 'txHash',
       header: 'TxHash',
-      cell: ({ row }) => <div>{row.getValue('hash')}</div>,
+      cell: ({ row }) => <div>{row.getValue('txHash')}</div>,
     },
     {
       accessorKey: 'timestamp',
       header: 'Timestamp',
-      cell: ({ row }) => <div>{row.getValue('TimeStamp')}</div>,
+      cell: ({ row }) => <div>{row.getValue('timeStamp')}</div>,
     },
   ];
   return columns;

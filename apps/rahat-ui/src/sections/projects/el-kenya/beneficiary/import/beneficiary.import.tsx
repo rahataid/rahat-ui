@@ -65,7 +65,13 @@ export default function ExcelUploader() {
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
         const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-        setData(data as any[][]);
+        const filteredData = (data as any[][]).filter((row) =>
+          row.some(
+            (cell) => cell !== null && cell !== undefined && cell !== '',
+          ),
+        );
+
+        setData(filteredData as any[][]);
       };
       reader.readAsBinaryString(file);
       setSelectedFile(file);
@@ -103,7 +109,6 @@ export default function ExcelUploader() {
   //   }
   //   // uploadBeneficiary?.isError && toast.error('File upload unsuccessful.');
   // }, [uploadBeneficiary?.isSuccess, uploadBeneficiary.isError, router, id]);
-
   return (
     <>
       <div className="p-4  h-[calc(100vh-115px)]">
@@ -179,7 +184,7 @@ export default function ExcelUploader() {
       </div>
       <div className="flex justify-between items-center py-2 px-4 border-t">
         <div>
-          {data?.length ? <p>Total Count: {data?.length ?? 0}</p> : null}
+          {data?.length ? <p>Total Count: {data?.length - 1 ?? 0}</p> : null}
         </div>
         <div className="flex space-x-2">
           <Button variant="secondary" onClick={handleDownloadClick}>
@@ -189,7 +194,10 @@ export default function ExcelUploader() {
           <Button
             type="button"
             variant="secondary"
-            onClick={() => router.push('/beneficiary')}
+            onClick={() => {
+              setData([]);
+              setFileName('No File Choosen');
+            }}
           >
             Cancel
           </Button>

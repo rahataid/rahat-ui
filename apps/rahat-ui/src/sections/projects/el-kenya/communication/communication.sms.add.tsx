@@ -41,14 +41,14 @@ export default function AddSMSForm() {
   const { id } = useParams();
 
   const createCampaign = useCreateCampaign(id as UUID);
-  const { data: transportData } = useListRpTransport(id as UUID);
+  // const { data: transportData } = useListRpTransport(id as UUID);
   const { data: benificiaryGroups } = useFindAllBeneficiaryGroups(id as UUID);
-  const transportId = transportData?.find(
-    (transport) => transport.name === 'Kenya SMS',
-  )?.cuid;
+  // const transportId = transportData?.find(
+  //   (transport) => transport.name === 'Prabhu SMS',
+  // )?.cuid;
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
-    group: z.string().optional(),
+    group: z.string().min(2, { message: 'Group is required' }),
     message: z
       .string()
       .min(5, { message: 'message must be at least 5 character' }),
@@ -67,7 +67,7 @@ export default function AddSMSForm() {
     const createCampagin = {
       name: data.name,
       message: data.message,
-      transportId: transportId,
+      // transportId: transportId,
       groupUID: data.group,
     };
     createCampaign.mutate(createCampagin);
@@ -111,7 +111,7 @@ export default function AddSMSForm() {
                 name="group"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
-                    <FormLabel>Group(optional)</FormLabel>
+                    <FormLabel>Group</FormLabel>
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}

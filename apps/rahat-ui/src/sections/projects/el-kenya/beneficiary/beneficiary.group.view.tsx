@@ -12,6 +12,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useParams, useRouter } from 'next/navigation';
 import SearchInput from '../../components/search.input';
+import AddButton from '../../components/add.btn';
 
 function BeneficiaryGroupsView() {
   const { id } = useParams() as { id: UUID };
@@ -62,7 +63,10 @@ function BeneficiaryGroupsView() {
             name="group"
             onSearch={(e) => handleSearch(e.target.value)}
           />
-          {/* <AddButton name="Group" path="/beneficiary/groups/add" /> */}
+          <AddButton
+            name="Group"
+            path={`/projects/el-kenya/${id}/beneficiary/group/add`}
+          />
         </div>
         <ScrollArea className="h-[calc(100vh-300px)]">
           {filteredGroups.length > 0 ? (

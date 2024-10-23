@@ -76,7 +76,16 @@ export default function VendorsView() {
         </div>
         <div className="rounded border bg-card p-4">
           <div className="flex justify-between space-x-2 mb-2">
-            <SearchInput className="w-full" name="" onSearch={() => {}} />
+            <SearchInput
+              className="w-full"
+              name="vendor"
+              value={
+                (table.getColumn('name')?.getFilterValue() as string) ?? ''
+              }
+              onSearch={(event) =>
+                table.getColumn('name')?.setFilterValue(event.target.value)
+              }
+            />
             <ViewColumns table={table} />
           </div>
           <ElkenyaTable table={table} tableHeight="h-[calc(100vh-310px)]" />

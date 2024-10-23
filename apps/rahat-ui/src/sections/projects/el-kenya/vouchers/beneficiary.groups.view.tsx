@@ -97,6 +97,7 @@ export default function BeneficiaryGroupsView({
 
           <Button
             type="button"
+            disabled={selectedGroup?.length === 0}
             onClick={
               () => {
                 setBeneficiaryGroupSelected(true);

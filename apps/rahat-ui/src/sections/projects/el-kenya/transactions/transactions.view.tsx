@@ -1,6 +1,6 @@
-import { usePagination } from '@rahat-ui/query';
 import {
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -12,35 +12,20 @@ import React from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import ViewColumns from '../../components/view.columns';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import ClientSidePagination from '../../components/client.side.pagination';
 
 export default function TransactionsView() {
   const { id } = useParams() as { id: UUID };
-  const {data,error} = useKenyaProjectTransactions();
+  const { data, error } = useKenyaProjectTransactions();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    resetSelectedListItems,
-  } = usePagination();
-
   const columns = useElkenyaTransactionsTableColumns();
   const table = useReactTable({
-    manualPagination: true,
-    data: [
-      { walletAddress: '123', topic: 'A1' },
-      { walletAddress: '456', topic: 'B1' },
-    ],
+    data: data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     state: {
       columnVisibility,
@@ -61,21 +46,14 @@ export default function TransactionsView() {
               className="w-full"
               name="transaction"
               onSearch={() => {}}
+              isDisabled
             />
             <ViewColumns table={table} />
           </div>
-          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-294px)]" />
+          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-300px)]" />
         </div>
       </div>
-      <CustomPagination
-        meta={{ total: 0, currentPage: 0 }}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        currentPage={pagination.page}
-        perPage={pagination.perPage}
-        total={0}
-      />
+      <ClientSidePagination table={table} />
     </>
   );
 }

@@ -14,7 +14,10 @@ import { Copy, CopyCheck } from 'lucide-react';
 import HeaderWithBack from '../../components/header.with.back';
 import EditButton from '../../components/edit.btn';
 import DeleteButton from '../../components/delete.btn';
-import { useGetOfflineSingleVendor } from '@rahat-ui/query';
+import {
+  useGetOfflineSingleVendor,
+  useKenyaVendorTransactions,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 
 export default function VendorsDetail() {
@@ -27,6 +30,9 @@ export default function VendorsDetail() {
   const vendorId = searchParams.get('vendorId');
 
   const { data } = useGetOfflineSingleVendor(id as UUID, Number(vendorId));
+  const { data: vendorTransactions } = useKenyaVendorTransactions(
+    vendorId as string,
+  );
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<string>();
 
@@ -58,11 +64,11 @@ export default function VendorsDetail() {
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Location</h1>
-          <p className="font-medium">Karnali</p>
+          <p className="font-medium">N/A</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Phone Number</h1>
-          <p className="font-medium">+9779876543210</p>
+          <p className="font-medium">{phone ?? 'N/A'}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Wallet Address</h1>
@@ -95,7 +101,7 @@ export default function VendorsDetail() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="transactionHistory">
-          <VendorsTransactionsHistory />
+          <VendorsTransactionsHistory tableData={vendorTransactions} />
         </TabsContent>
         <TabsContent value="beneficiaryList">
           <VendorsBeneficiaryList beneficiaryList={data?.data} />

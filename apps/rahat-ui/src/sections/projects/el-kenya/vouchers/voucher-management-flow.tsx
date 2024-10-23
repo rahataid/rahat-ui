@@ -66,8 +66,7 @@ const VouchersManagementFlow = () => {
 
   const handlePrevious = () => {
     setOpenWarningModel(false);
-
-    router.push(`/projects/el-kenya/${id}/vouchers/manage`);
+    setCurrentStep(currentStep - 1);
   };
 
   useEffect(() => {

@@ -91,7 +91,7 @@ export default function BeneficiaryGroupsView({
         <div className="flex justify-between space-x-2 mb-2">
           <SearchInput
             className="w-full"
-            name="beneficiary"
+            name="beneficiary group"
             onSearch={() => {}}
           />
 

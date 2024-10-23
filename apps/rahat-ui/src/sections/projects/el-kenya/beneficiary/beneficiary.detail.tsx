@@ -23,6 +23,7 @@ export default function BeneficiaryDetail() {
   const voucherStatus = searchParams.get('voucherStatus') || '';
   const glassesStatus = searchParams.get('glassesStatus') || '';
   const eyeCheckupStatus = searchParams.get('eyeCheckupStatus') || '';
+  const location = searchParams.get('location') || '-';
 
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
@@ -101,6 +102,10 @@ export default function BeneficiaryDetail() {
           <p className="font-medium">
             <Badge>{voucherStatus}</Badge>
           </p>
+        </div>
+        <div>
+          <h1 className="text-md text-muted-foreground">Location</h1>
+          <p className="font-medium">{location}</p>
         </div>
       </div>
     </div>

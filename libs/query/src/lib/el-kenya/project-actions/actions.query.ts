@@ -23,3 +23,22 @@ export const useFindAllKenyaStats = (projectUUID: UUID) => {
     },
   });
 };
+
+export const useGetRedemption = (projectUUID: UUID,redemptionId:UUID) => {
+  const action = useProjectAction(['getRedemptions-rpProject']);
+
+  return useQuery({
+    queryKey: ['getRedemptions', projectUUID],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'rpProject.getRedemption',
+          payload: {uuid:redemptionId},
+        },
+      });
+      return res.data;
+    },
+  });
+};
+

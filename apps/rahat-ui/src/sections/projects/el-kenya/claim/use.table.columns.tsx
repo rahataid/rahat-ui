@@ -15,12 +15,11 @@ export default function useTableColumn() {
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-      accessorKey: 'beneficiaryCount',
-      header: 'Beneficiary Count',
-      cell: ({ row }) => {
-        row.getValue('beneficiaryCount');
-      },
+      accessorKey: 'amount',
+      header: 'Voucher Amount',
+      cell: ({ row }) => <div>{row.getValue('amount')}</div>,
     },
+
     {
       accessorKey: 'status',
       header: 'Status',

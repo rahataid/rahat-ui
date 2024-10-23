@@ -85,6 +85,8 @@ export default function ExcelUploader() {
   };
 
   const handleUpload = async () => {
+    if (data?.length === 1)
+      return toast.error('No beneficiary found in excel file');
     if (!selectedFile) return toast.error('Please select a file to upload');
 
     // Determine doctype based on file extension
@@ -102,13 +104,14 @@ export default function ExcelUploader() {
     });
   };
 
-  // useEffect(() => {
-  //   if (uploadBeneficiary?.isSuccess) {
-  //     // toast.success('File uploaded successfully.'); commented due to overlap
-  //     router.push(`/projects/el-kenya/${id}/beneficiary/import`);
-  //   }
-  //   // uploadBeneficiary?.isError && toast.error('File upload unsuccessful.');
-  // }, [uploadBeneficiary?.isSuccess, uploadBeneficiary.isError, router, id]);
+  useEffect(() => {
+    if (uploadBeneficiary?.isSuccess) {
+      // toast.success('File uploaded successfully.'); commented due to overlap
+      router.push(`/projects/el-kenya/${id}/beneficiary`);
+    }
+    // uploadBeneficiary?.isError && toast.error('File upload unsuccessful.');
+  }, [uploadBeneficiary?.isSuccess, uploadBeneficiary.isError, router, id]);
+
   return (
     <>
       <div className="p-4  h-[calc(100vh-115px)]">

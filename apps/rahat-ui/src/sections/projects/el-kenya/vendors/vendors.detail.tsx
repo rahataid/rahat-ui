@@ -76,7 +76,7 @@ export default function VendorsDetail() {
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() => clickToCopy(vendorWallet)}
           >
-            <p>{truncateEthAddress(vendorWallet)}</p>
+            <p>{truncateEthAddress(vendorWallet.trimEnd())}</p>
             {walletAddressCopied === vendorWallet ? (
               <CopyCheck size={15} strokeWidth={1.5} />
             ) : (

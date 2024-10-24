@@ -68,12 +68,13 @@ export default function CommunicationView() {
     if(data){
       return data.filter((log)=>log.app===commsAppId).map((log)=>({
         ...log,
-        to:log?.details?.responses?.mobile
+        to:Array.isArray(log?.details?.responses) && log?.details?.responses[0]?.mobile?.mobile
       }))
     }else{
       return []
     }
   },[data])
+
 
   const columns = useElkenyaSMSTableColumns();
   const table = useReactTable({

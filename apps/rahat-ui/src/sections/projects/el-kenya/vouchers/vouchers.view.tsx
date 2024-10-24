@@ -18,6 +18,7 @@ import {
   useFindAllKenyaStats,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export default function VouchersView() {
   const { id } = useParams() as { id: UUID };
@@ -51,17 +52,15 @@ export default function VouchersView() {
     (i: any) => i.voucherType === 'SINGLE_VISION',
   )?.count;
 
-  const readingGlassesCount = REDEMPTION_STATS?.find(
-    (i: any) => i.voucherType === 'READING_GLASSES',
-  )?.count || 0;
-
+  const readingGlassesCount =
+    REDEMPTION_STATS?.find((i: any) => i.voucherType === 'READING_GLASSES')
+      ?.count || 0;
 
   const voucherRedeemedCount =
     Number(singleVisionCount ?? 0) + Number(readingGlassesCount ?? 0);
   const voucherNotRedeemedCount = tokenAllocated
     ? Number(tokenAllocated) - voucherRedeemedCount
     : 0;
-
 
   const cardData = [
     {
@@ -105,61 +104,63 @@ export default function VouchersView() {
             Manage Voucher
           </Button>
         </div>
-        <div className="grid grid-cols-4 gap-2 mb-4">
-          {cardData?.map((item, index) => {
-            const Icon = getIcon(item.icon as any);
-            return (
-              <DataCard
-                className="border-solid rounded-sm"
-                iconStyle="bg-white text-muted-foreground"
-                key={index}
-                title={item.title}
-                Icon={Icon}
-                number={item.total}
-              />
-            );
-          })}
-        </div>
-        <div className="grid grid-cols-4 gap-2">
-          <div className="bg-card border rounded-md p-4 shadow">
-            <p className="text-md font-medium mb-4">Total Vouchers</p>
-            <div className="flex justify-center">
-              <ChartDonut
-                series={[voucherRedeemedCount, voucherNotRedeemedCount]}
-                labels={['Redeeemed', 'Not Redeemed']}
-                donutSize="70%"
-                width={300}
-                height={320}
-              />
-            </div>
+        <ScrollArea className="h-[calc(100vh-170px)]">
+          <div className="grid grid-cols-4 gap-2 mb-4">
+            {cardData?.map((item, index) => {
+              const Icon = getIcon(item.icon as any);
+              return (
+                <DataCard
+                  className="border-solid rounded-sm"
+                  iconStyle="bg-white text-muted-foreground"
+                  key={index}
+                  title={item.title}
+                  Icon={Icon}
+                  number={item.total}
+                />
+              );
+            })}
           </div>
-          <div className="col-span-2 border rounded-md bg-card p-4 shadow">
-            <p className="text-md font-medium mb-4">Total Vouchers</p>
-            <div className="flex justify-center">
-              <ChartColumnStacked
-                series={[
-                  { name: 'Single Vision', data: [15, 19, 27, 44] },
-                  { name: 'Reading Glass', data: [7, 16, 40, 11] },
-                ]}
-                categories={['Week 1', 'Week 2', 'Week 3', 'Week 4']}
-                stacked
-                custom
-              />
-            </div>
-          </div>
-          <div className="border rounded-md bg-card p-4">
-            <h1 className="font-medium text-md mb-2">Recent Deposits</h1>
-            <div className="flex space-x-4 items-center">
-              <div className="p-2 rounded-full bg-secondary text-muted-foreground">
-                <Ticket size={18} strokeWidth={2} />
-              </div>
-              <div>
-                <h1 className="font-medium text-md">Voucher Redeem</h1>
-                <p className="text-muted-foreground text-sm">0x0012Bchsju</p>
+          <div className="grid grid-cols-4 gap-2">
+            <div className="bg-card border rounded-md p-4 shadow">
+              <p className="text-md font-medium mb-4">Total Vouchers</p>
+              <div className="flex justify-center">
+                <ChartDonut
+                  series={[voucherRedeemedCount, voucherNotRedeemedCount]}
+                  labels={['Redeeemed', 'Not Redeemed']}
+                  donutSize="70%"
+                  width={300}
+                  height={320}
+                />
               </div>
             </div>
+            <div className="col-span-2 border rounded-md bg-card p-4 shadow">
+              <p className="text-md font-medium mb-4">Total Vouchers</p>
+              <div className="flex justify-center">
+                <ChartColumnStacked
+                  series={[
+                    { name: 'Single Vision', data: [15, 19, 27, 44] },
+                    { name: 'Reading Glass', data: [7, 16, 40, 11] },
+                  ]}
+                  categories={['Week 1', 'Week 2', 'Week 3', 'Week 4']}
+                  stacked
+                  custom
+                />
+              </div>
+            </div>
+            <div className="border rounded-md bg-card p-4">
+              <h1 className="font-medium text-md mb-2">Recent Deposits</h1>
+              <div className="flex space-x-4 items-center">
+                <div className="p-2 rounded-full bg-secondary text-muted-foreground">
+                  <Ticket size={18} strokeWidth={2} />
+                </div>
+                <div>
+                  <h1 className="font-medium text-md">Voucher Redeem</h1>
+                  <p className="text-muted-foreground text-sm">0x0012Bchsju</p>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </ScrollArea>
       </div>
     </>
   );

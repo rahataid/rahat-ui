@@ -126,10 +126,20 @@ export default function BeneficiaryView({
       <div className="p-4">
         <div className="rounded border bg-card p-4">
           <div className="flex justify-between space-x-2 mb-2">
-            <SearchInput
+            {/* <SearchInput
               className="w-full"
               name="beneficiary"
               onSearch={(e) => setFilters({ ...filters, name: e.target.value })}
+            /> */}
+            <SearchInput
+              className="w-full"
+              name="phone number"
+              value={
+                (table.getColumn('phone')?.getFilterValue() as string) ?? ''
+              }
+              onSearch={(event) =>
+                table.getColumn('phone')?.setFilterValue(event.target.value)
+              }
             />
             <Button type="button" onClick={() => handleNext()}>
               <Plus size={18} className="mr-1" />

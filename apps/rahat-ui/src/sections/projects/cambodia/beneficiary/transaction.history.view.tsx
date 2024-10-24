@@ -34,13 +34,6 @@ export default function TransactionHistoryView({ walletAddress }: Props) {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const columns = useTransactionHistoryTableColumns();
-  // using direct beneficiary  address to search  for the testing purpose and omit the below code
-  // const { data: beneficiaryTransactions, isLoading: loading } =
-  //   useCambodiaBeneficiaryTransactions(
-  //     '0xaacbee76efd2221bc6c86d60e83ed0b2fb539b47',
-  //   );
-
-  //  it should search on the basis of the beneficiary wallet address. Below should be uncomment
 
   const { data: beneficiaryTransactions, isLoading } =
     useCambodiaBeneficiaryTransactions(

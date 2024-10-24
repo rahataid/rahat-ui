@@ -17,6 +17,7 @@ import { UUID } from 'crypto';
 import ClientSidePagination from '../../components/client.side.pagination';
 import { useBeneficiaryTableColumns } from '../../../beneficiary/useBeneficiaryColumns';
 import HeaderWithBack from '../../components/header.with.back';
+import { useKenyaGroupedBeneficiaryTableColumns } from './use.grouped.beneficiary.table.columns';
 
 export default function GroupDetailView() {
   const { groupid, id } = useParams() as { groupid: UUID; id: UUID };
@@ -26,11 +27,13 @@ export default function GroupDetailView() {
   const { data } = useRpSingleBeneficiaryGroup(id, groupid);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const columns = useBeneficiaryTableColumns();
+  // const columns = useBeneficiaryTableColumns();
 
+  const columns = useKenyaGroupedBeneficiaryTableColumns();
   const tableData = React.useMemo(() => {
     if (data) {
       return data?.groupedBeneficiaries?.map((d: any) => ({
+        uuid: d?.Beneficiary?.uuid,
         name: d?.Beneficiary?.pii?.name,
         phone: d?.Beneficiary?.pii?.phone,
         email: d?.Beneficiary?.pii?.email,

@@ -109,7 +109,7 @@ export const useProjectBeneficiaryTableColumns = () => {
     },
     {
       accessorKey: 'balance',
-      header: () => <div>Balance</div>,
+      header: () => <div>Disbursed Amount</div>,
       cell: ({ row }) => {
         const balanceValue = row.getValue('balance');
 

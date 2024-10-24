@@ -1,4 +1,4 @@
-name: Kenya Dev Pilot CI/CD
+name: Kenya Stage(WSD) CICD
 on:
   push:
     branches:
@@ -10,7 +10,7 @@ on:
 
 env:
   CI: false
-  env_dev: ${{ secrets.ENV_KENYA_DEV_PILOT }}
+  env_dev: ${{ secrets.ENV_KENYA_STAGE_WSD }}
   # env_npmrc: ${{ secrets.ENV_NPMRC }}
 
 jobs:
@@ -58,7 +58,7 @@ jobs:
           context: .
           file: Dockerfile.rahat-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-          tags: esatya/rahat-ui:dev-kenya-pilot
+          tags: esatya/rahat-ui:stage-kenya-wsd
 
   community-tool-ui:
     name: community-tool-ui
@@ -104,4 +104,4 @@ jobs:
           context: .
           file: Dockerfile.community-tool-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-          tags: esatya/community-tool-ui:dev-kenya-pilot
+          tags: esatya/community-tool-ui:stage-kenya-wsd

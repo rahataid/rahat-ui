@@ -22,6 +22,7 @@ import DemoTable from 'apps/rahat-ui/src/components/table';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useBeneficiaryTableColumns } from '../../../beneficiary/useBeneficiaryColumns';
+import { useKenyaGroupedBeneficiaryTableColumns } from './use.grouped.beneficiary.table.columns';
 
 export default function SelectBeneficiaryView() {
   const { id, groupid } = useParams() as { id: UUID; groupid: UUID };
@@ -65,14 +66,20 @@ export default function SelectBeneficiaryView() {
     if (beneficiaries) {
       return beneficiaries?.data?.data.filter((ben) => {
         if (!groupedBeneficiariesIds?.find((b) => b.uuid === ben.uuid)) {
-          return ben;
+          return {
+            uuid: ben?.uuid,
+            phone: ben?.extras?.phone,
+            walletAddress: ben?.walletAddress,
+            location: ben?.extras?.location,
+          };
         }
       });
     } else return [];
   }, [beneficiaries, data]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const columns = useBeneficiaryTableColumns();
+  // const columns = useBeneficiaryTableColumns();
+  const columns = useKenyaGroupedBeneficiaryTableColumns();
 
   const table = useReactTable({
     manualPagination: true,

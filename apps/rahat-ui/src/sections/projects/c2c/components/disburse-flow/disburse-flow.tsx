@@ -86,7 +86,10 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
 
     if (selectedBeneficiaries && selectedBeneficiaries?.length > 0) {
       if (stepData.treasurySource === 'MULTISIG') {
-        console.log("amount", +stepData.disburseAmount * selectedBeneficiaries?.length)
+        console.log(
+          'amount',
+          +stepData.disburseAmount * selectedBeneficiaries?.length,
+        );
         await disburseMultiSig.mutateAsync({
           amount: String(
             +stepData.disburseAmount * selectedBeneficiaries?.length ?? 0,
@@ -125,7 +128,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
 
   const steps = [
     {
-      id: 'step1',
+      id: 'Step 1',
       component: (
         <Step1DisburseMethod
           value={stepData.treasurySource}
@@ -142,7 +145,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       },
     },
     {
-      id: 'step2',
+      id: 'Step 2',
       component: (
         <Step2DisburseAmount
           selectedBeneficiaries={
@@ -162,7 +165,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       },
     },
     {
-      id: 'confirm_send',
+      id: 'Step 3',
       title: 'Review & Confirm',
       component: (
         <Step3DisburseSummary

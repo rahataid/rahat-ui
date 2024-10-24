@@ -27,9 +27,9 @@ export const useBeneficiaryTableColumns = () => {
       enableHiding: false,
     },
     {
-      accessorKey: 'name',
+      accessorKey: 'phone',
       header: 'sentTo',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
     },
     {
       accessorKey: 'voucherStatus',

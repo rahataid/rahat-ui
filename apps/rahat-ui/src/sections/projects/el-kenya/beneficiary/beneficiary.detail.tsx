@@ -47,10 +47,10 @@ export default function BeneficiaryDetail() {
         </div> */}
       </div>
       <div className="p-5 rounded-md shadow border grid grid-cols-4 gap-5">
-        <div>
+        {/* <div>
           <h1 className="text-md text-muted-foreground">Beneficiary Name</h1>
           <p className="font-medium">{name}</p>
-        </div>
+        </div> */}
         <div>
           <h1 className="text-md text-muted-foreground">Gender</h1>
           <p className="font-medium">{gender}</p>

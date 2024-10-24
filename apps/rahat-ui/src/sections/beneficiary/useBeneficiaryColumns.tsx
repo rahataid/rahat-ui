@@ -65,21 +65,21 @@ export const useBeneficiaryTableColumns = () => {
       enableSorting: false,
       enableHiding: false,
     },
-    // {
-    //   accessorKey: 'name',
-    //   header: 'Name',
-    //   cell: ({ row }) => {
-    //     // const piiData = row.getValue('piiData') as any;
-    //     return (
-    //       <div
-    //         className="cursor-pointer"
-    //         onClick={() => openSplitDetailView(row.original)}
-    //       >
-    //         {row.getValue('name')}
-    //       </div>
-    //     );
-    //   },
-    // },
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => {
+        // const piiData = row.getValue('piiData') as any;
+        return (
+          <div
+            className="cursor-pointer"
+            onClick={() => openSplitDetailView(row.original)}
+          >
+            {row.getValue('name')}
+          </div>
+        );
+      },
+    },
     {
       accessorKey: 'walletAddress',
       header: 'Wallet Address',

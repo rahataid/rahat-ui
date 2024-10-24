@@ -4,6 +4,11 @@ import { UUID } from 'crypto';
 import { User } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+  useReadRahatTokenTotalSupply,
+} from '@rahat-ui/query';
 
 interface ConfirmSelectionProps {
   stepData: any;
@@ -12,10 +17,16 @@ interface ConfirmSelectionProps {
   beneficiaryGroupSelected: boolean;
 }
 
-const BeneficiaryInfo = ({ selectedBeneficiaries }) => (
+const BeneficiaryInfo = ({
+  selectedBeneficiaries,
+  tokenBalance,
+}: {
+  selectedBeneficiaries: any;
+  tokenBalance: string;
+}) => (
   <div className="bg-secondary rounded-md p-4">
     <InfoRow label="Beneficiary Selected" value={selectedBeneficiaries} />
-    <InfoRow label="Project Voucher Balance" value={500} />
+    <InfoRow label="Project Voucher Balance" value={tokenBalance} />
     <InfoRow label="Distribute Vouchers to Beneficiaries" value={1} />
     <InfoRow
       label="Total Vouchers to Distribute"
@@ -90,6 +101,14 @@ export default function ConfirmSelection({
     ? stepData.selectedGroups
     : stepData.selectedBeneficiaries;
 
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+
+  const { data: tokenBalance } = useReadRahatTokenTotalSupply({
+    address: contractSettings?.rahattoken?.address as `0x${string}`,
+  });
+
   return (
     <>
       <div className="h-[calc(100vh-58px)] flex flex-col justify-between">
@@ -100,7 +119,10 @@ export default function ConfirmSelection({
             path={`/projects/el-kenya/${id}/vouchers`}
           />
           <div className="rounded-md border p-4 grid grid-cols-2 gap-4">
-            <BeneficiaryInfo selectedBeneficiaries={selectedBeneficiaries} />
+            <BeneficiaryInfo
+              selectedBeneficiaries={selectedBeneficiaries}
+              tokenBalance={tokenBalance?.toString() ?? '-'}
+            />
             <BeneficiaryList
               data={data}
               beneficiaryGroupSelected={beneficiaryGroupSelected}

@@ -1,6 +1,7 @@
 import { usePagination, useProjectAction } from '@rahat-ui/query';
 import {
   getCoreRowModel,
+  getFilteredRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -41,6 +42,7 @@ export default function VendorsView() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    getFilteredRowModel: getFilteredRowModel(),
     state: {
       columnVisibility,
     },

@@ -1,3 +1,4 @@
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, Pencil } from 'lucide-react';
@@ -27,30 +28,30 @@ export const useBeneficiaryTableColumns = () => {
       enableHiding: false,
     },
     {
-      accessorKey: 'name',
+      accessorKey: 'phone',
       header: 'sentTo',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
     },
     {
       accessorKey: 'voucherStatus',
       header: 'Voucher Status',
-      cell: ({ row }) => <div>{row.getValue('voucherStatus')}</div>,
+      cell: ({ row }) => <Badge>{row.getValue('voucherStatus')}</Badge>,
     },
-    {
-      id: 'actions',
-      header: 'Action',
-      enableHiding: false,
-      cell: ({ row }) => {
-        return (
-          <Pencil
-            size={20}
-            strokeWidth={1.5}
-            className="cursor-pointer text-primary"
-            // onClick={() => openSplitDetailView(row.original)}
-          />
-        );
-      },
-    },
+    // {
+    //   id: 'actions',
+    //   header: 'Action',
+    //   enableHiding: false,
+    //   cell: ({ row }) => {
+    //     return (
+    //       <Pencil
+    //         size={20}
+    //         strokeWidth={1.5}
+    //         className="cursor-pointer text-primary"
+    //         // onClick={() => openSplitDetailView(row.original)}
+    //       />
+    //     );
+    //   },
+    // },
   ];
   return columns;
 };

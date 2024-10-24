@@ -76,7 +76,9 @@ export default function CommunicationView() {
         .filter((log) => log.app === commsAppId)
         .map((log) => ({
           ...log,
-          to: log?.details?.responses?.mobile,
+          to:
+            Array.isArray(log?.details?.responses) &&
+            log?.details?.responses[0]?.mobile?.mobile,
         }));
     } else {
       return [];

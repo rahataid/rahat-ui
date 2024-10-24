@@ -56,7 +56,7 @@ export default function CommunicationView() {
     {
       title: 'Total Message Sent',
       icon: 'MessageSquare',
-      total: data?.length || 0,
+      total: stats.failed + stats.succed || 0,
     },
     {
       title: 'Failed Message Delivery',
@@ -76,7 +76,9 @@ export default function CommunicationView() {
         .filter((log) => log.app === commsAppId)
         .map((log) => ({
           ...log,
-          to: log?.details?.responses?.mobile,
+          to:
+            Array.isArray(log?.details?.responses) &&
+            log?.details?.responses[0]?.mobile?.mobile,
         }));
     } else {
       return [];

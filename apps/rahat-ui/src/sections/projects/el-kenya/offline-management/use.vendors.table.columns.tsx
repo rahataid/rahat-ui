@@ -4,9 +4,9 @@ import { Eye, Pencil, Trash } from 'lucide-react';
 export const useVendorsTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'name',
-      header: 'sentTo',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      accessorKey: 'phone',
+      header: 'Phone',
+      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
     },
     {
       accessorKey: 'voucherType',

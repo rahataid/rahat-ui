@@ -14,6 +14,7 @@ import {
 import { useVendorsTableColumns } from './use.vendors.table.columns';
 import { useGetOfflineSingleVendor, usePagination } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import ClientSidePagination from '../../components/client.side.pagination';
 
 const cardData = [
   'Offline Beneficiaries',
@@ -47,7 +48,7 @@ export default function VendorsDetail() {
       const benDetails = offlineVendor?.data.map((ben: any) => {
         return {
           amount: ben?.amount,
-          name: ben?.piiData?.name,
+          phone: ben?.piiData?.phone,
           status: ben?.status,
         };
       });
@@ -57,7 +58,6 @@ export default function VendorsDetail() {
     }
   }, [offlineVendor?.data, rowData]);
   const table = useReactTable({
-    manualPagination: true,
     data: rowData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -102,9 +102,17 @@ export default function VendorsDetail() {
       </div>
       <div className="rounded border bg-card p-4">
         <div className="flex justify-between space-x-2 mb-2">
-          <SearchInput className="w-full" name="vendor" onSearch={() => {}} />
+          <SearchInput
+            className="w-full"
+            name="beneficiary"
+            value={(table.getColumn('phone')?.getFilterValue() as string) ?? ''}
+            onSearch={(event) =>
+              table.getColumn('phone')?.setFilterValue(event.target.value)
+            }
+          />
         </div>
         <ElkenyaTable table={table} tableHeight="h-[calc(100vh-500px)]" />
+        <ClientSidePagination table={table} />
       </div>
     </div>
   );

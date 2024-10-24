@@ -36,7 +36,7 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
         iconStyle="bg-white text-black"
         title={component.title}
         // number={cardDataValue?.count === 0 ? 0 : cardDataValue?.count}
-        number={cardDataValue?.count.toString()}
+        number={cardDataValue?.count.toString() || cardDataValue}
         Icon={icon}
       />
     );

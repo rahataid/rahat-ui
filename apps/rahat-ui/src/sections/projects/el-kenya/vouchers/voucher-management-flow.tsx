@@ -205,7 +205,7 @@ const VouchersManagementFlow = () => {
   };
 
   return (
-    <div className="p-2">
+    <div>
       <div>{error && <p className="text-red-700 mr-8">{error}</p>}</div>
       <div>{renderComponent()}</div>
     </div>

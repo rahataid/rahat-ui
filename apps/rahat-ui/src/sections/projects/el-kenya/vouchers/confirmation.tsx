@@ -3,6 +3,7 @@ import HeaderWithBack from '../../components/header.with.back';
 import { UUID } from 'crypto';
 import { User } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 interface ConfirmSelectionProps {
   stepData: any;
@@ -32,33 +33,35 @@ const InfoRow = ({ label, value }) => (
 
 const BeneficiaryList = ({ data, beneficiaryGroupSelected }) => (
   <div className="rounded-md p-4">
-    <p className="text-base font-medium">
-      {beneficiaryGroupSelected ? 'Beneficiary Group' : 'Beneficiary'} List
-    </p>
-    <p className="text-sm text-muted-foreground">
-      {beneficiaryGroupSelected
-        ? `${data.length} Beneficiaries Groups`
-        : `${data.length} Selected`}
-    </p>
-    <div className="flex flex-col gap-4">
-      {data.map((ben) => (
-        <BeneficiaryItem
-          key={ben.walletAddress}
-          ben={ben}
-          beneficiaryGroupSelected={beneficiaryGroupSelected}
-        />
-      ))}
-    </div>
+    <ScrollArea className="h-[calc(100vh-580px)]">
+      <p className="text-base font-medium">
+        {beneficiaryGroupSelected ? 'Beneficiary Group' : 'Beneficiary'} List
+      </p>
+      <p className="text-sm text-muted-foreground mb-4">
+        {beneficiaryGroupSelected
+          ? `${data.length} Beneficiaries Groups`
+          : `${data.length} Selected`}
+      </p>
+      <div className="flex flex-col gap-2">
+        {data.map((ben) => (
+          <BeneficiaryItem
+            key={ben.walletAddress}
+            ben={ben}
+            beneficiaryGroupSelected={beneficiaryGroupSelected}
+          />
+        ))}
+      </div>
+    </ScrollArea>
   </div>
 );
 
 const BeneficiaryItem = ({ ben, beneficiaryGroupSelected }) => (
   <div className="flex justify-between">
-    <div className="flex space-x-2">
+    <div className="flex items-center space-x-2">
       <div className="p-2 rounded-full bg-secondary">
         <User size={18} strokeWidth={1.5} />
       </div>
-      <p>{ben?.name}</p>
+      <p>{ben?.phone}</p>
     </div>
     {beneficiaryGroupSelected && (
       <p>{ben?._count?.groupedBeneficiaries} beneficiaries</p>
@@ -88,27 +91,31 @@ export default function ConfirmSelection({
     : stepData.selectedBeneficiaries;
 
   return (
-    <div className="flex flex-col justify-between">
-      <div className="p-4">
-        <HeaderWithBack
-          title="Confirmation"
-          subtitle="Confirm your selection before you proceed"
-          path={`/projects/el-kenya/${id}/vouchers`}
-        />
-        <div className="rounded-md border p-4 grid grid-cols-2 gap-4">
-          <BeneficiaryInfo selectedBeneficiaries={selectedBeneficiaries} />
-          <BeneficiaryList
-            data={data}
-            beneficiaryGroupSelected={beneficiaryGroupSelected}
+    <>
+      <div className="h-[calc(100vh-58px)] flex flex-col justify-between">
+        <div className="p-4">
+          <HeaderWithBack
+            title="Confirmation"
+            subtitle="Confirm your selection before you proceed"
+            path={`/projects/el-kenya/${id}/vouchers`}
           />
+          <div className="rounded-md border p-4 grid grid-cols-2 gap-4">
+            <BeneficiaryInfo selectedBeneficiaries={selectedBeneficiaries} />
+            <BeneficiaryList
+              data={data}
+              beneficiaryGroupSelected={beneficiaryGroupSelected}
+            />
+          </div>
+        </div>
+        <div className="flex justify-end space-x-4 p-4">
+          <Button onClick={handleBack} variant="secondary" className="px-12">
+            Close
+          </Button>
+          <Button className="px-12" onClick={handleNext}>
+            Finish
+          </Button>
         </div>
       </div>
-      <div className="flex justify-end space-x-4 p-4">
-        <Button onClick={handleBack} variant="secondary">
-          Close
-        </Button>
-        <Button onClick={handleNext}>Finish</Button>
-      </div>
-    </div>
+    </>
   );
 }

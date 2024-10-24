@@ -95,7 +95,7 @@ export default function SelectVendorMultiStepForm() {
     perPage: pagination.perPage,
     // pagination.perPage,
     order: 'desc',
-    sort: 'updatedAt',
+    sort: 'createdAt',
     projectUUID: id,
     ...filters,
   });
@@ -176,10 +176,11 @@ export default function SelectVendorMultiStepForm() {
       isSuccess
     ) {
       const projectBeneficiaryDisbursements = disbursmentList
-        .filter((beneficiary) => {
+        .filter((disbursement) => {
           return projectBeneficiaries.data?.data?.some(
-            (disbursement) =>
-              disbursement.walletAddress === beneficiary.walletAddress,
+            (beneficiary) =>
+              disbursement.walletAddress === beneficiary.walletAddress &&
+              beneficiary.type !== 'WALK_IN',
           );
         })
         .map((beneficiary) => {

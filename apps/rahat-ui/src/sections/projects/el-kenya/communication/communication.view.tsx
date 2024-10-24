@@ -56,7 +56,7 @@ export default function CommunicationView() {
     {
       title: 'Total Message Sent',
       icon: 'MessageSquare',
-      total: data?.length || 0,
+      total: stats.failed + stats.succed || 0,
     },
     {
       title: 'Failed Message Delivery',

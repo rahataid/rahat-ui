@@ -129,14 +129,14 @@ export default function SelectBeneficiaryView() {
         <div className="border rounded shadow p-3">
           <div className="flex space-x-2 items-center mb-2">
             <SearchInput
-              name="beneficiary"
+              className="w-full"
+              name="phone number"
               value={
-                (table.getColumn('name')?.getFilterValue() as string) ?? ''
+                (table.getColumn('phone')?.getFilterValue() as string) ?? ''
               }
               onSearch={(event) =>
-                table.getColumn('name')?.setFilterValue(event.target.value)
+                table.getColumn('phone')?.setFilterValue(event.target.value)
               }
-              className="rounded w-full"
             />
             <ViewColumns table={table} />
           </div>

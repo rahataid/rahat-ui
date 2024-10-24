@@ -34,11 +34,11 @@ export default function MembersTable({
       <div className="p-4 border rounded-md mt-5">
         <div className="flex justify-between gap-2">
           <SearchInput
-            name="Beneficiaries"
-            className="mb-2 w-full"
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-              table.getColumn('name')?.setFilterValue(event.target.value)
+            className="w-full mb-2"
+            name="phone number"
+            value={(table.getColumn('phone')?.getFilterValue() as string) ?? ''}
+            onSearch={(event) =>
+              table.getColumn('phone')?.setFilterValue(event.target.value)
             }
           />
           <ViewColumns table={table} />

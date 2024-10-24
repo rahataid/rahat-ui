@@ -34,24 +34,30 @@ export default function CommunicationView() {
     failed: 0,
   });
   const { data } = useListRpCommunicationLogs(id);
-  const commsAppId = useSettingsStore((state) => state.commsSettings)?.APP_ID
+  const commsAppId = useSettingsStore((state) => state.commsSettings)?.APP_ID;
 
   useEffect(() => {
     setStats({
       succed: 0,
       failed: 0,
     });
-    data?.filter((log)=>log.app===commsAppId).map((logs: any) => {
-      setStats((prev) => {
-        return logs.status === 'SUCCESS'
-          ? { ...prev, succed: prev.succed + 1 }
-          : { ...prev, failed: prev.failed + 1 };
+    data
+      ?.filter((log) => log.app === commsAppId)
+      .map((logs: any) => {
+        setStats((prev) => {
+          return logs.status === 'SUCCESS'
+            ? { ...prev, succed: prev.succed + 1 }
+            : { ...prev, failed: prev.failed + 1 };
+        });
       });
-    });
   }, [data]);
 
   const cardData = [
-    { title: 'Total Message Sent', icon: 'MessageSquare', total: data?.length || 0 },
+    {
+      title: 'Total Message Sent',
+      icon: 'MessageSquare',
+      total: data?.length || 0,
+    },
     {
       title: 'Failed Message Delivery',
       icon: 'MessageSquare',
@@ -64,21 +70,24 @@ export default function CommunicationView() {
     },
   ];
 
-  const tableData = useMemo(()=>{
-    if(data){
-      return data.filter((log)=>log.app===commsAppId).map((log)=>({
-        ...log,
-        to:Array.isArray(log?.details?.responses) && log?.details?.responses[0]?.mobile?.mobile
-      }))
-    }else{
-      return []
+  const tableData = useMemo(() => {
+    if (data) {
+      return data
+        .filter((log) => log.app === commsAppId)
+        .map((log) => ({
+          ...log,
+          to:
+            Array.isArray(log?.details?.responses) &&
+            log?.details?.responses[0]?.mobile?.mobile,
+        }));
+    } else {
+      return [];
     }
-  },[data])
-
+  }, [data]);
 
   const columns = useElkenyaSMSTableColumns();
   const table = useReactTable({
-    data: tableData ,
+    data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -94,7 +103,7 @@ export default function CommunicationView() {
       // rowSelection: selectedListItems,
     },
   });
-  return(
+  return (
     <>
       <div className="p-4">
         <div className="mb-4">
@@ -139,7 +148,7 @@ export default function CommunicationView() {
               <Settings className="mr-1" size={18} /> Manage
             </Button>
           </div>
-          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-415px)]" />
+          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-438px)]" />
         </div>
       </div>
       <Pagination
@@ -151,6 +160,6 @@ export default function CommunicationView() {
         canNextPage={table.getCanNextPage()}
         nextPage={table.nextPage}
       />
-    </>,
+    </>
   );
 }

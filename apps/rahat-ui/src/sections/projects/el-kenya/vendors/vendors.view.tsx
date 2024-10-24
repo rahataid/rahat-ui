@@ -15,6 +15,7 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import ViewColumns from '../../components/view.columns';
 import { MS_ACTIONS } from '@rahataid/sdk';
 import Pagination from 'apps/rahat-ui/src/components/pagination';
+import ClientSidePagination from '../../components/client.side.pagination';
 
 export default function VendorsView() {
   const { id } = useParams() as { id: UUID };
@@ -70,7 +71,7 @@ export default function VendorsView() {
     <>
       <div className="p-4">
         <div className="mb-4">
-          <h1 className="font-semibold text-2xl mb-">Vendors</h1>
+          <h1 className="font-semibold text-[28px]">Vendors</h1>
           <p className="text-muted-foreground">
             Track all the vendor reports here
           </p>
@@ -79,7 +80,7 @@ export default function VendorsView() {
           <div className="flex justify-between space-x-2 mb-2">
             <SearchInput
               className="w-full"
-              name=""
+              name="vendor"
               value={
                 (table.getColumn('name')?.getFilterValue() as string) ?? ''
               }
@@ -89,10 +90,10 @@ export default function VendorsView() {
             />
             <ViewColumns table={table} />
           </div>
-          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-294px)]" />
+          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-310px)]" />
         </div>
       </div>
-      <Pagination
+      {/* <Pagination
         pageIndex={table.getState().pagination.pageIndex}
         pageCount={table.getPageCount()}
         setPageSize={table.setPageSize}
@@ -100,7 +101,8 @@ export default function VendorsView() {
         previousPage={table.previousPage}
         canNextPage={table.getCanNextPage()}
         nextPage={table.nextPage}
-      />
+      /> */}
+      <ClientSidePagination table={table} />
     </>
   );
 }

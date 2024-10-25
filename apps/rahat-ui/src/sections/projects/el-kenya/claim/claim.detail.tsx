@@ -1,4 +1,11 @@
-import { useContractRedeem, useGetRedemption, usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useContractRedeem,
+  useGetRedemption,
+  usePagination,
+  useProjectBeneficiaries,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -15,7 +22,6 @@ import SearchInput from '../../components/search.input';
 import HeaderWithBack from '../../components/header.with.back';
 import AddButton from '../../components/add.btn';
 import { Button } from '@rahat-ui/shadcn/components/button';
-
 
 type CardData = {
   title: string;
@@ -45,11 +51,7 @@ export default function ClaimDetailView() {
     resetSelectedListItems,
   } = usePagination();
 
-
-
-
-  const {data,refetch} = useGetRedemption(id,Id)
-
+  const { data, refetch } = useGetRedemption(id, Id);
 
   React.useEffect(() => {
     if (data) {
@@ -57,7 +59,7 @@ export default function ClaimDetailView() {
     }
   }, [data]);
 
-  const updateCardData = (stats:any) => {
+  const updateCardData = (stats: any) => {
     const updatedCardData = [
       {
         title: 'Checkup Status',
@@ -93,24 +95,28 @@ export default function ClaimDetailView() {
   };
   const redeemToken = useContractRedeem(id);
 
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
 
   const handleSubmit = () => {
-    redeemToken.mutateAsync({
-      amount: data?.voucherAmount,
-      tokenAddress: data?.tokenAddress,
-      redemptionAddress: data?.redemptionAddress,
-      senderAddress: data?.walletAddress,
-      uuid: data?.uuid,
-    }).finally(()=>{
-    refetch();
-    })
-
-  }
+    redeemToken
+      .mutateAsync({
+        amount: data?.voucherAmount,
+        tokenAddress: data?.tokenAddress,
+        redemptionAddress: contractSettings?.redemptions?.address,
+        senderAddress: data?.Vendor.walletAddress,
+        uuid: data?.uuid,
+      })
+      .finally(() => {
+        refetch();
+      });
+  };
 
   const columns = useTableColumn();
   const table = useReactTable({
     manualPagination: true,
-    data :data ||[],
+    data: data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -155,9 +161,13 @@ export default function ClaimDetailView() {
       <div className="rounded border bg-card p-4">
         <div className="flex justify-between space-x-2 mb-2">
           <SearchInput className="w-full" name="..." onSearch={() => {}} />
-          <Button type="submit" disabled={data?.status !="REQUESTED"} onClick={handleSubmit}>
-                  Approve
-           </Button>
+          <Button
+            type="submit"
+            disabled={data?.status != 'REQUESTED'}
+            onClick={handleSubmit}
+          >
+            Approve
+          </Button>
           {/* // disabled={data?.status !="REQUESTED"} */}
         </div>
         <ElkenyaTable table={table} tableHeight="h-[calc(100vh-500px)]" />

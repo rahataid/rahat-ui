@@ -43,7 +43,9 @@ export default function GroupCreateView() {
       const result = await createBeneficiaryGroup.mutateAsync(payload);
       if (result) {
         toast.success('Beneficiary group added successfully!');
-        router.push(`/projects/el-kenya/${id}/beneficiary`);
+        router.push(
+          `/projects/el-kenya/${id}/beneficiary?tab=beneficiaryGroups`,
+        );
       }
     } catch (e: any) {
       toast.error(
@@ -89,7 +91,11 @@ export default function GroupCreateView() {
           <Button
             type="button"
             variant="secondary"
-            onClick={() => router.push('/projects/el-kenya/${id}/beneficiary')}
+            onClick={() =>
+              router.push(
+                `/projects/el-kenya/${id}/beneficiary?tab=beneficiaryGroups`,
+              )
+            }
           >
             Cancel
           </Button>

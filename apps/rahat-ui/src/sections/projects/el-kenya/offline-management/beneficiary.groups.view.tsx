@@ -70,11 +70,11 @@ export default function BeneficiaryGroupsView({
                   <div className="text-muted-foreground text-sm flex justify-between">
                     <div className="flex gap-2 items-center">
                       <Users size={18} strokeWidth={2} />
-                      {benificiaryGroup._count.groupedBeneficiaries}
+                      {benificiaryGroup?.groupedBeneficiaries?.length}
                     </div>
                     <div className="flex gap-2 items-center">
                       <Banknote size={18} strokeWidth={2} />
-                      {benificiaryGroup._count.groupedBeneficiaries}
+                      {benificiaryGroup?.groupedBeneficiaries?.length}
                     </div>
                   </div>
                 </div>

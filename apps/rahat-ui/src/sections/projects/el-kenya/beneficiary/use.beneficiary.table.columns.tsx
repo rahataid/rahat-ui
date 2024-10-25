@@ -71,12 +71,16 @@ export const useElkenyaBeneficiaryTableColumns = ({
     {
       accessorKey: 'eyeCheckupStatus',
       header: 'Eye Checkup Status',
-      cell: ({ row }) => <Badge>{row.getValue('eyeCheckupStatus')}</Badge>,
+      cell: ({ row }) => (
+        <Badge>{row.getValue('eyeCheckupStatus') || 'N/A'}</Badge>
+      ),
     },
     {
       accessorKey: 'glassesStatus',
       header: 'Glasses Status',
-      cell: ({ row }) => <Badge>{row.getValue('glassesStatus')}</Badge>,
+      cell: ({ row }) => (
+        <Badge>{row.getValue('glassesStatus') || 'N/A'}</Badge>
+      ),
     },
     {
       accessorKey: 'voucherStatus',

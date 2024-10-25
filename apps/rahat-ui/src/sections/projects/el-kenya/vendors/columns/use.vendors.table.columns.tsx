@@ -20,32 +20,36 @@ export const useElkenyaVendorsTableColumns = ({
     {
       accessorKey: 'phone',
       header: 'Phone Number',
-      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
+      cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
     },
     {
       accessorKey: 'location',
       header: 'Location',
-      cell: ({ row }) => <div>{row.getValue('Location')}</div>,
+      cell: ({ row }) => <div>{row.getValue('Location') || 'N/A'}</div>,
     },
     {
       accessorKey: 'beneficiaryAssigned',
       header: 'Beneficiary Assigned',
-      cell: ({ row }) => <div>{row.getValue('beneficiaryAssigned')}</div>,
+      cell: ({ row }) => (
+        <div>{row.getValue('beneficiaryAssigned') || 'N/A'}</div>
+      ),
     },
     {
       accessorKey: 'voucherAssigned',
       header: 'Voucher Assigned',
-      cell: ({ row }) => <div>{row.getValue('voucherAssigned')}</div>,
+      cell: ({ row }) => <div>{row.getValue('voucherAssigned') || 'N/A'}</div>,
     },
     {
       accessorKey: 'voucherRedeemed',
       header: 'Voucher Redeemed',
-      cell: ({ row }) => <div>{row.getValue('voucherRedeemed')}</div>,
+      cell: ({ row }) => <div>{row.getValue('voucherRedeemed') || 'N/A'}</div>,
     },
     {
       accessorKey: 'voucherReimbursed',
       header: 'Voucher Reimbursed',
-      cell: ({ row }) => <div>{row.getValue('voucherReimbursed')}</div>,
+      cell: ({ row }) => (
+        <div>{row.getValue('voucherReimbursed') || 'N/A'}</div>
+      ),
     },
     {
       id: 'actions',

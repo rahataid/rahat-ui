@@ -30,6 +30,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useFindAllBeneficiaryGroups,
   useFindAllDisbursements,
+  useFindUnSyncedBeneficaryGroup,
   useGetBeneficiariesDisbursements,
   usePagination,
   useProjectAction,
@@ -76,7 +77,11 @@ export default function SelectVendorMultiStepForm() {
       hideAssignedBeneficiaries: true,
     },
   );
-  const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID, {
+  // const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID, {
+  //   disableSync: true,
+  // });
+
+  const { data: benGroups } = useFindUnSyncedBeneficaryGroup(id as UUID, {
     disableSync: true,
   });
 

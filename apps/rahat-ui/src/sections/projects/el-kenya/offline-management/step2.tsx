@@ -20,7 +20,7 @@ export default function Confirmation({
   if (stepData.groups.length > 0) {
     data = beneficiariesDisbursements;
     stepData.groups.map((group) => {
-      noOfBeneficiarySelected += group._count.groupedBeneficiaries;
+      noOfBeneficiarySelected += group?.groupedBeneficiaries?.length;
     });
   }
 

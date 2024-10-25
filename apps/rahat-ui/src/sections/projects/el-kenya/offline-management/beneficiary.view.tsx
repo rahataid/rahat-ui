@@ -70,7 +70,7 @@ export default function BeneficiaryView({
             onSearch={() => {}}
           />
         </div>
-        <ElkenyaTable table={table} tableHeight="h-[calc(100vh-700px)]" />
+        <ElkenyaTable table={table} tableHeight="h-[calc(100vh-560px)]" />
       </div>
     </div>
   );

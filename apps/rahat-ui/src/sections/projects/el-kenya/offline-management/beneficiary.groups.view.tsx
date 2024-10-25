@@ -5,6 +5,7 @@ import SearchInput from '../../components/search.input';
 import { Banknote, Users } from 'lucide-react';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { initialStepData } from './select.vendor.multi.step.form';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 interface BeneficiaryGroupsViewProps {
   benificiaryGroups: [];
@@ -19,70 +20,84 @@ export default function BeneficiaryGroupsView({
 }: BeneficiaryGroupsViewProps) {
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
+  const [searchTerm, setSearchTerm] = React.useState<string>('');
+
+  const filteredGroups = React.useMemo(() => {
+    return benificiaryGroups.filter((group: any) =>
+      group?.name?.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+  }, [benificiaryGroups, searchTerm]);
+
+  const handleSearch = React.useCallback((value: string) => {
+    setSearchTerm(value);
+  }, []);
 
   return (
-    <div className="p-4">
-      <div className="rounded border bg-card p-4">
-        <div className="flex justify-between space-x-2 mb-2">
-          <SearchInput
-            className="w-full"
-            name="beneficiary"
-            onSearch={() => {}}
-          />
-        </div>
-        <div className="grid grid-cols-4 gap-4">
-          <div className="cursor-pointer rounded-md border shadow p-4">
-            {benificiaryGroups.map((benificiaryGroup) => {
-              console.log(benificiaryGroup);
+    <div className="rounded border bg-card p-4 mx-4 mb-4">
+      <div className="flex justify-between space-x-2 mb-2">
+        <SearchInput
+          className="w-full"
+          name="beneficiary group"
+          onSearch={(e) => handleSearch(e.target.value)}
+        />
+      </div>
+      <ScrollArea className="h-[calc(100vh-500px)]">
+        {filteredGroups?.length > 0 ? (
+          <div className="grid grid-cols-4 gap-4">
+            {filteredGroups?.map((benificiaryGroup) => {
               return (
-                <div className="flex flex-col space-y-2">
-                  <div className="flex justify-end">
-                    <Checkbox
-                      onCheckedChange={(e: boolean) => {
-                        if (e) {
-                          const currentData = stepData.groups;
-                          handleStepDataChange({
-                            target: {
-                              name: 'groups',
-                              value: [...currentData, benificiaryGroup],
-                            },
-                          });
-                        } else {
-                          const currentData = stepData.groups.filter(
-                            (group) => group.uuid !== benificiaryGroup.uuid,
-                          );
-                          handleStepDataChange({
-                            target: {
-                              name: 'selectedGroups',
-                              value: currentData,
-                            },
-                          });
-                        }
-                      }}
-                    />
-                  </div>
-                  <div className="rounded-md bg-secondary grid place-items-center h-28">
-                    <div className="bg-[#667085] text-white p-2 rounded-full">
-                      <Users size={20} strokeWidth={2.5} />
+                <div className="cursor-pointer rounded-md border shadow p-4">
+                  <div className="flex flex-col space-y-2">
+                    <div className="flex justify-end">
+                      <Checkbox
+                        onCheckedChange={(e: boolean) => {
+                          if (e) {
+                            const currentData = stepData.groups;
+                            handleStepDataChange({
+                              target: {
+                                name: 'groups',
+                                value: [...currentData, benificiaryGroup],
+                              },
+                            });
+                          } else {
+                            const currentData = stepData.groups.filter(
+                              (group) => group.uuid !== benificiaryGroup.uuid,
+                            );
+                            handleStepDataChange({
+                              target: {
+                                name: 'selectedGroups',
+                                value: currentData,
+                              },
+                            });
+                          }
+                        }}
+                      />
                     </div>
-                  </div>
-                  <p className="text-base mb-1">{benificiaryGroup.name}</p>
-                  <div className="text-muted-foreground text-sm flex justify-between">
-                    <div className="flex gap-2 items-center">
-                      <Users size={18} strokeWidth={2} />
-                      {benificiaryGroup._count.groupedBeneficiaries}
+                    <div className="rounded-md bg-secondary grid place-items-center h-28">
+                      <div className="bg-[#667085] text-white p-2 rounded-full">
+                        <Users size={20} strokeWidth={2.5} />
+                      </div>
                     </div>
-                    <div className="flex gap-2 items-center">
-                      <Banknote size={18} strokeWidth={2} />
-                      {benificiaryGroup._count.groupedBeneficiaries}
+                    <p className="text-base mb-1">{benificiaryGroup?.name}</p>
+                    <div className="text-muted-foreground text-sm flex justify-between">
+                      <div className="flex gap-2 items-center">
+                        <Users size={18} strokeWidth={2} />
+                        {benificiaryGroup?._count?.groupedBeneficiaries}
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <Banknote size={18} strokeWidth={2} />
+                        {benificiaryGroup?._count?.groupedBeneficiaries}
+                      </div>
                     </div>
                   </div>
                 </div>
               );
             })}
           </div>
-        </div>
-      </div>
+        ) : (
+          <p className="text-center mt-10 text-muted-foreground">No result.</p>
+        )}
+      </ScrollArea>
     </div>
   );
 }

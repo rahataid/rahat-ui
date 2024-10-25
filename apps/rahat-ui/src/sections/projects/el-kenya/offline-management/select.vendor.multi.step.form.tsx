@@ -77,6 +77,8 @@ export default function SelectVendorMultiStepForm() {
     },
   );
   const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID, {
+    page: 1,
+    perPage: 100,
     disableSync: true,
     order: 'desc',
     sort: 'createdAt',

@@ -31,7 +31,7 @@ function BeneficiaryGroupsView() {
   } = usePagination();
 
   useEffect(() => {
-    setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
+    setPagination({ page: 1, perPage: 100, order: 'desc', sort: 'createdAt' });
   }, []);
 
   const { data: groups } = useFindAllBeneficiaryGroups(id as UUID);

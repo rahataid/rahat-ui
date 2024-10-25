@@ -160,11 +160,13 @@ export default function BeneficiaryView() {
                 onChange={(e) => setFilters({ ...filters, voucherType: e })}
                 name="Voucher Type"
                 options={['SINGLE_VISION', 'READING_GLASSES']}
+                value={filters?.voucherType || ''}
               />
               <SelectComponent
                 onChange={(e) => setFilters({ ...filters, type: e })}
                 name="Beneficiary Type"
                 options={['PRE_DETERMINED', 'WALK_IN']}
+                value={filters?.type || ''}
               />
               <SelectComponent
                 onChange={(e) =>
@@ -172,16 +174,19 @@ export default function BeneficiaryView() {
                 }
                 name="Eye Checkup Status"
                 options={['CHECKED', 'NOT_CHECKED']}
+                value={filters?.eyeCheckupStatus || ''}
               />
               <SelectComponent
                 onChange={(e) => setFilters({ ...filters, glassesStatus: e })}
                 name="Glasses Status"
                 options={['  REQUIRED', 'NOT_REQUIRED']}
+                value={filters?.glassesStatus || ''}
               />
               <SelectComponent
                 onChange={(e) => setFilters({ ...filters, voucherStatus: e })}
                 name="Voucher Status"
                 options={['REDEEMED', 'NOT_REDEEMED']}
+                value={filters?.voucherStatus || ''}
               />
               <ViewColumns table={table} />
             </div>
@@ -192,7 +197,14 @@ export default function BeneficiaryView() {
                 total={beneficiaries.data.data.length}
               />
             )}
-            <ElkenyaTable table={table} tableHeight="h-[calc(100vh-398px)]" />
+            <ElkenyaTable
+              table={table}
+              tableHeight={
+                Object.keys(filters).length
+                  ? 'h-[calc(100vh-463px)]'
+                  : 'h-[calc(100vh-397px)]'
+              }
+            />
           </div>
         </div>
         <CustomPagination

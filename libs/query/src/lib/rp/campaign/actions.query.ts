@@ -87,6 +87,9 @@ export const useTriggerRpCampaign = (projectUUID: UUID) => {
       queryClient.invalidateQueries({
         queryKey: ['rpCampaignLogs'],
       });
+      queryClient.invalidateQueries({
+        queryKey: ['rpCampaign'],
+      });
     },
     onError: () => {
       toast.fire({

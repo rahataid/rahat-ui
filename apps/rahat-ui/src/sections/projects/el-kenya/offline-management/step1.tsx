@@ -25,48 +25,46 @@ export default function SelectBeneficiary({
   pagination,
 }: SelectBeneficiaryProps) {
   return (
-    <div className="p-4">
-      <Tabs defaultValue="beneficiary">
-        <div className="flex justify-between items-center p-4">
-          <TabsList className="border bg-secondary rounded">
-            <TabsTrigger
-              className="w-full data-[state=active]:bg-white"
-              value="beneficiary"
-            >
-              Beneficiary
-            </TabsTrigger>
-            <TabsTrigger
-              className="w-full data-[state=active]:bg-white"
-              value="beneficiaryGroups"
-            >
-              Beneficiary Groups
-            </TabsTrigger>
-          </TabsList>
-        </div>
-        <TabsContent value="beneficiary">
-          <div>
-            <BeneficiaryView
-              disbursmentList={disbursmentList}
-              handleStepDataChange={handleStepDataChange}
-            />
-            <CustomPagination
-              currentPage={pagination?.pagination?.page}
-              handleNextPage={pagination?.setNextPage}
-              handlePageSizeChange={pagination?.setPerPage}
-              handlePrevPage={pagination?.setPrevPage}
-              perPage={pagination?.pagination?.perPage}
-              meta={pagination?.meta || { total: 0, currentPage: 0 }}
-            />
-          </div>
-        </TabsContent>
-        <TabsContent value="beneficiaryGroups">
-          <BeneficiaryGroupsView
-            benificiaryGroups={benificiaryGroups}
+    <Tabs defaultValue="beneficiary">
+      <div className="flex justify-between items-center p-4">
+        <TabsList className="border bg-secondary rounded">
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="beneficiary"
+          >
+            Beneficiary
+          </TabsTrigger>
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="beneficiaryGroups"
+          >
+            Beneficiary Groups
+          </TabsTrigger>
+        </TabsList>
+      </div>
+      <TabsContent value="beneficiary">
+        <div>
+          <BeneficiaryView
+            disbursmentList={disbursmentList}
             handleStepDataChange={handleStepDataChange}
-            stepData={stepData}
           />
-        </TabsContent>
-      </Tabs>
-    </div>
+          <CustomPagination
+            currentPage={pagination?.pagination?.page}
+            handleNextPage={pagination?.setNextPage}
+            handlePageSizeChange={pagination?.setPerPage}
+            handlePrevPage={pagination?.setPrevPage}
+            perPage={pagination?.pagination?.perPage}
+            meta={pagination?.meta || { total: 0, currentPage: 0 }}
+          />
+        </div>
+      </TabsContent>
+      <TabsContent value="beneficiaryGroups">
+        <BeneficiaryGroupsView
+          benificiaryGroups={benificiaryGroups}
+          handleStepDataChange={handleStepDataChange}
+          stepData={stepData}
+        />
+      </TabsContent>
+    </Tabs>
   );
 }

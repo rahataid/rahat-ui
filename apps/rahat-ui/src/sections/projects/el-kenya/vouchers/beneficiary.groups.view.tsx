@@ -25,8 +25,14 @@ export default function BeneficiaryGroupsView({
 }: BeneficiaryGroupsView) {
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
+  const [searchTerm, setSearchTerm] = React.useState<string>('');
 
   const { data: beneficiaryGroups } = useFindAllBeneficiaryGroups(id as UUID);
+  const filteredGroups = React.useMemo(() => {
+    return beneficiaryGroups.filter((group) =>
+      group.name?.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+  }, [beneficiaryGroups, searchTerm]);
   const groupId = beneficiaryGroups?.map(
     (beneficiaryGroup: any) => beneficiaryGroup?.uuid,
   );
@@ -45,6 +51,10 @@ export default function BeneficiaryGroupsView({
     }
   }, [benificiaryDisbursement]);
   console.log(beneficiaryGroups, disbursementData);
+
+  const handleSearch = React.useCallback((value: string) => {
+    setSearchTerm(value);
+  }, []);
 
   // Handle individual checkbox changes
   const handleCheckboxChange = (group: any, isChecked: boolean) => {
@@ -91,12 +101,13 @@ export default function BeneficiaryGroupsView({
         <div className="flex justify-between space-x-2 mb-2">
           <SearchInput
             className="w-full"
-            name="beneficiary"
-            onSearch={() => {}}
+            name="beneficiary group"
+            onSearch={(e) => handleSearch(e.target.value)}
           />
 
           <Button
             type="button"
+            disabled={selectedGroup?.length === 0}
             onClick={
               () => {
                 setBeneficiaryGroupSelected(true);
@@ -122,25 +133,27 @@ export default function BeneficiaryGroupsView({
             <p>Select all</p>
           </div>
         ) : null}
-        <div className="grid grid-cols-4 gap-4">
-          {beneficiaryGroups?.map((beneficiaryGroup) => {
-            const disbursements = disbursementData?.filter(
-              (disbursement) =>
-                disbursement.beneficiaryGroupId === beneficiaryGroup.uuid,
-            );
-            let totalAmount = 0;
-            disbursements?.map(
-              (disbursement) => (totalAmount += disbursement.amount),
-            );
 
-            return (
-              <div
-                key={beneficiaryGroup?.uuid}
-                className="cursor-pointer rounded-md border shadow p-4"
-              >
-                <div className="flex flex-col space-y-2">
-                  <div className="flex justify-end">
-                    {/* <Checkbox
+        {filteredGroups.length > 0 ? (
+          <div className="grid grid-cols-4 gap-4">
+            {filteredGroups?.map((beneficiaryGroup) => {
+              const disbursements = disbursementData?.filter(
+                (disbursement) =>
+                  disbursement.beneficiaryGroupId === beneficiaryGroup.uuid,
+              );
+              let totalAmount = 0;
+              disbursements?.map(
+                (disbursement) => (totalAmount += disbursement.amount),
+              );
+
+              return (
+                <div
+                  key={beneficiaryGroup?.uuid}
+                  className="cursor-pointer rounded-md border shadow p-4"
+                >
+                  <div className="flex flex-col space-y-2">
+                    <div className="flex justify-end">
+                      {/* <Checkbox
                       onCheckedChange={(e: boolean) => {
                         if (e) {
                           const currentData = stepData.selectedGroups;
@@ -168,40 +181,43 @@ export default function BeneficiaryGroupsView({
                         }
                       }}
                     /> */}
-                    <Checkbox
-                      checked={selectedGroup.some(
-                        (sg) => sg.uuid === beneficiaryGroup.uuid,
-                      )}
-                      onCheckedChange={(checked) =>
-                        handleCheckboxChange(
-                          beneficiaryGroup,
-                          checked as boolean,
-                        )
-                      }
-                    />
-                  </div>
+                      <Checkbox
+                        checked={selectedGroup.some(
+                          (sg) => sg.uuid === beneficiaryGroup.uuid,
+                        )}
+                        onCheckedChange={(checked) =>
+                          handleCheckboxChange(
+                            beneficiaryGroup,
+                            checked as boolean,
+                          )
+                        }
+                      />
+                    </div>
 
-                  <div className="rounded-md bg-secondary grid place-items-center h-28">
-                    <div className="bg-[#667085] text-white p-2 rounded-full">
-                      <Users size={20} strokeWidth={2.5} />
+                    <div className="rounded-md bg-secondary grid place-items-center h-28">
+                      <div className="bg-[#667085] text-white p-2 rounded-full">
+                        <Users size={20} strokeWidth={2.5} />
+                      </div>
                     </div>
-                  </div>
-                  <p className="text-base mb-1">{beneficiaryGroup?.name}</p>
-                  <div className="text-muted-foreground text-sm flex justify-between">
-                    <div className="flex gap-2 items-center">
-                      <Users size={18} strokeWidth={2} />
-                      {beneficiaryGroup?._count?.groupedBeneficiaries}
-                    </div>
-                    <div className="flex gap-2 items-center">
-                      <Banknote size={18} strokeWidth={2} />
-                      {totalAmount}
+                    <p className="text-base mb-1">{beneficiaryGroup?.name}</p>
+                    <div className="text-muted-foreground text-sm flex justify-between">
+                      <div className="flex gap-2 items-center">
+                        <Users size={18} strokeWidth={2} />
+                        {beneficiaryGroup?._count?.groupedBeneficiaries}
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <Banknote size={18} strokeWidth={2} />
+                        {totalAmount}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-center mt-10 text-muted-foreground">No result.</p>
+        )}
       </div>
     </div>
   );

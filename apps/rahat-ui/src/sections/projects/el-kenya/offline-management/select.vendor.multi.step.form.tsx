@@ -85,7 +85,7 @@ export default function SelectVendorMultiStepForm() {
     groupIds,
   );
   const disBursementIds = beneficiariesDisbursements?.map((disBursement) => {
-    return { id: disBursement.id.toString, phone: disBursement.phone };
+    return { id: disBursement.id.toString(), phone: disBursement.phone };
   });
   const syncBen = useSyncOfflineBeneficiaries(id as UUID);
   const { queryClient, rumsanService } = useRSQuery();
@@ -95,7 +95,7 @@ export default function SelectVendorMultiStepForm() {
     perPage: pagination.perPage,
     // pagination.perPage,
     order: 'desc',
-    sort: 'updatedAt',
+    sort: 'createdAt',
     projectUUID: id,
     ...filters,
   });
@@ -134,7 +134,7 @@ export default function SelectVendorMultiStepForm() {
           stepData.groups.length === 0 &&
           stepData.disbursements.length === 0
         ) {
-          setError('Please select beneficiries');
+          setError('Please select beneficiaries');
           return;
         }
         break;
@@ -176,10 +176,11 @@ export default function SelectVendorMultiStepForm() {
       isSuccess
     ) {
       const projectBeneficiaryDisbursements = disbursmentList
-        .filter((beneficiary) => {
+        .filter((disbursement) => {
           return projectBeneficiaries.data?.data?.some(
-            (disbursement) =>
-              disbursement.walletAddress === beneficiary.walletAddress,
+            (beneficiary) =>
+              disbursement.walletAddress === beneficiary.walletAddress &&
+              beneficiary.type !== 'WALK_IN',
           );
         })
         .map((beneficiary) => {
@@ -213,6 +214,7 @@ export default function SelectVendorMultiStepForm() {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
+  console.log(stepData.disbursements, 'stepData.disbursements');
 
   const handleSyncBen = async () => {
     setIsSyncing(true);
@@ -226,6 +228,7 @@ export default function SelectVendorMultiStepForm() {
     if (stepData.groups.length > 0) {
       selectedDisbursementId = disBursementIds;
     }
+    console.log('selectedD', selectedDisbursementId);
 
     const result = await syncBen.mutateAsync({
       vendorId,
@@ -248,7 +251,7 @@ export default function SelectVendorMultiStepForm() {
   };
 
   return (
-    <div className="p-4 h-[calc(100vh-65px)]">
+    <div className="p-4">
       {activeStep === 0 && (
         <HeaderWithBack
           title="Select Vendor"
@@ -273,8 +276,8 @@ export default function SelectVendorMultiStepForm() {
         />
       )}
 
-      <div className="flex flex-col justify-between">
-        <div className="border rounded-md p-4">
+      <div className="flex flex-col justify-between h-[calc(100vh-175px)]">
+        <div className="border rounded-md">
           <Stepper
             activeStep={activeStep}
             styleConfig={{
@@ -301,7 +304,7 @@ export default function SelectVendorMultiStepForm() {
                   name="name"
                   render={({ field }) => {
                     return (
-                      <FormItem className="w-full">
+                      <FormItem className="m-4">
                         <Select
                           onValueChange={(e) => {
                             const vendor = vendors.find(
@@ -360,13 +363,17 @@ export default function SelectVendorMultiStepForm() {
         </div>
         <div>{error && <p className="text-red-700 mr-8">{error}</p>}</div>
 
-        <div className="flex justify-end space-x-2 border-t p-4">
+        <div className="flex justify-end space-x-2">
           {activeStep > 0 && (
-            <Button variant="secondary" onClick={handlePrev}>
+            <Button variant="secondary" onClick={handlePrev} className="px-12">
               Previous
             </Button>
           )}
-          {activeStep < 2 && <Button onClick={handleNext}>Next</Button>}
+          {activeStep < 2 && (
+            <Button onClick={handleNext} className="px-12">
+              Next
+            </Button>
+          )}
           {activeStep === 2 && (
             <Button disabled={isSyncing} onClick={() => handleSyncBen()}>
               {isSyncing ? 'Syncing...' : 'Submit'}

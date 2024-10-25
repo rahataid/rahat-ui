@@ -1,21 +1,21 @@
 import {
+  useGetOfflineSingleVendor,
+  useKenyaVendorTransactions,
+} from '@rahat-ui/query';
+import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import Back from '../../components/back';
-import VendorsTransactionsHistory from './vendors.transactions.history';
-import VendorsBeneficiaryList from './vendors.beneficiary.list';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { UUID } from 'crypto';
+import { Copy, CopyCheck } from 'lucide-react';
 import { useParams, useSearchParams } from 'next/navigation';
 import React from 'react';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { Copy, CopyCheck } from 'lucide-react';
 import HeaderWithBack from '../../components/header.with.back';
-import EditButton from '../../components/edit.btn';
-import DeleteButton from '../../components/delete.btn';
-import { useGetOfflineSingleVendor } from '@rahat-ui/query';
-import { UUID } from 'crypto';
+import VendorsBeneficiaryList from './vendors.beneficiary.list';
+import VendorsTransactionsHistory from './vendors.transactions.history';
 
 export default function VendorsDetail() {
   const { id } = useParams();
@@ -27,6 +27,9 @@ export default function VendorsDetail() {
   const vendorId = searchParams.get('vendorId');
 
   const { data } = useGetOfflineSingleVendor(id as UUID, Number(vendorId));
+  const { data: vendorTransactions } = useKenyaVendorTransactions(
+    vendorId as string,
+  );
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<string>();
 
@@ -42,14 +45,14 @@ export default function VendorsDetail() {
           subtitle="Here is the detailed view of selected vendor"
           path={`/projects/el-kenya/${id}/vendors`}
         />
-        <div className="flex space-x-2">
+        {/* <div className="flex space-x-2">
           <EditButton className="border-none bg-sky-50 shadow-none" path="" />
           <DeleteButton
             className="border-none bg-red-100 shadow-none"
             name="vendor"
             handleContinueClick={() => {}}
           />
-        </div>
+        </div> */}
       </div>
       <div className="p-5 rounded border grid grid-cols-4 gap-5 mb-5">
         <div>
@@ -58,11 +61,11 @@ export default function VendorsDetail() {
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Location</h1>
-          <p className="font-medium">Karnali</p>
+          <p className="font-medium">N/A</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Phone Number</h1>
-          <p className="font-medium">+9779876543210</p>
+          <p className="font-medium">{phone ?? 'N/A'}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Wallet Address</h1>
@@ -70,7 +73,7 @@ export default function VendorsDetail() {
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() => clickToCopy(vendorWallet)}
           >
-            <p>{truncateEthAddress(vendorWallet)}</p>
+            <p>{truncateEthAddress(vendorWallet.trimEnd())}</p>
             {walletAddressCopied === vendorWallet ? (
               <CopyCheck size={15} strokeWidth={1.5} />
             ) : (
@@ -95,7 +98,7 @@ export default function VendorsDetail() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="transactionHistory">
-          <VendorsTransactionsHistory />
+          <VendorsTransactionsHistory tableData={vendorTransactions} />
         </TabsContent>
         <TabsContent value="beneficiaryList">
           <VendorsBeneficiaryList beneficiaryList={data?.data} />

@@ -147,6 +147,7 @@ export default function CommunicationView() {
         </div>
 
         <div className="rounded border bg-card p-4">
+          <p className="text-end">Message:{campginData?.message}</p>
           <div className="flex justify-between space-x-2 mb-2">
             <SearchInput
               className="w-full"

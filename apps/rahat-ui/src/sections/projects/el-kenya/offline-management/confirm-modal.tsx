@@ -43,11 +43,11 @@ export function ConfirmModal({
         <DialogHeader>
           <DialogTitle className="flex items-center justify-center">
             {' '}
-            <CheckCircleIcon className="h-8 w-8 text-green-600" />
+            <CheckCircleIcon className="h-8 w-8 text-blue-600" />
           </DialogTitle>
           <DialogDescription>
             <h2 className="text-lg font-semibold text-green-700 mb-4 text-center">
-              Transaction Successful
+              Transaction Added to Queue
             </h2>
             <div className="flex items-center justify-between">
               <div className="flex flex-col gap-2">
@@ -66,6 +66,11 @@ export function ConfirmModal({
                 <span className="text-gray-800">{beneficiaries}</span>
                 <span className="text-gray-800">{tokens}</span>
               </div>
+
+              <span className="text-sm font-medium text-gray-500">
+                Data will be processed in the background. You can check the
+                status in the offline management page.
+              </span>
             </div>
           </DialogDescription>
         </DialogHeader>

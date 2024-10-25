@@ -66,8 +66,7 @@ const VouchersManagementFlow = () => {
 
   const handlePrevious = () => {
     setOpenWarningModel(false);
-
-    router.push(`/projects/el-kenya/${id}/vouchers/manage`);
+    setCurrentStep(currentStep - 1);
   };
 
   useEffect(() => {
@@ -206,7 +205,7 @@ const VouchersManagementFlow = () => {
   };
 
   return (
-    <div className="p-2">
+    <div>
       <div>{error && <p className="text-red-700 mr-8">{error}</p>}</div>
       <div>{renderComponent()}</div>
     </div>

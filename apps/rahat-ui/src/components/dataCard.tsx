@@ -7,6 +7,12 @@ import {
 import { cn } from '@rahat-ui/shadcn/src/utils';
 import { LucideIcon, RefreshCcw } from 'lucide-react';
 import TableLoader from './table.loader';
+import {
+  TooltipContent,
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 type CardProps = {
   title: string;
@@ -75,9 +81,23 @@ export default function DataCard({
             <TableLoader />
           ) : (
             <>
-              <div className="text-4xl font-semibold text-primary">
-                {number}
-              </div>
+              {number && number?.length > 6 ? (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="text-4xl font-semibold text-primary truncate w-52">
+                        {number}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>{number}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
+                <div className="text-4xl font-semibold text-primary truncate w-52">
+                  {number}
+                </div>
+              )}
+
               <div className="text-xl font-normal text-primary">
                 {smallNumber}
               </div>

@@ -27,7 +27,10 @@ export default function BeneficiaryGroupsView({
   const { id } = useParams() as { id: UUID };
   const [searchTerm, setSearchTerm] = React.useState<string>('');
 
-  const { data: beneficiaryGroups } = useFindAllBeneficiaryGroups(id as UUID);
+  const { data: beneficiaryGroups } = useFindAllBeneficiaryGroups(id as UUID, {
+    order: 'desc',
+    sort: 'createdAt',
+  });
   const filteredGroups = React.useMemo(() => {
     return beneficiaryGroups.filter((group) =>
       group.name?.toLowerCase().includes(searchTerm.toLowerCase()),

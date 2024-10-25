@@ -66,8 +66,11 @@ export default function BeneficiaryView({
         <div className="flex justify-between space-x-2 mb-2">
           <SearchInput
             className="w-full"
-            name="beneficiary"
-            onSearch={() => {}}
+            name="phone number"
+            value={(table.getColumn('phone')?.getFilterValue() as string) ?? ''}
+            onSearch={(event) =>
+              table.getColumn('phone')?.setFilterValue(event.target.value)
+            }
           />
         </div>
         <ElkenyaTable table={table} tableHeight="h-[calc(100vh-560px)]" />

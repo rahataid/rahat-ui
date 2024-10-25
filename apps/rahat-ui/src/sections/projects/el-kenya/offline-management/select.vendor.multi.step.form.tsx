@@ -78,6 +78,8 @@ export default function SelectVendorMultiStepForm() {
   );
   const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID, {
     disableSync: true,
+    order: 'desc',
+    sort: 'createdAt',
   });
 
   const { data: beneficiariesDisbursements } = useGetBeneficiariesDisbursements(

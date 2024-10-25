@@ -61,7 +61,7 @@ export default function GroupCreateView() {
           <HeaderWithBack
             title="Create Beneficiary Group"
             subtitle="Create a new beneficiary group"
-            path={`/projects/el-kenya/${id}/beneficiary`}
+            path={`/projects/el-kenya/${id}/beneficiary?tab=beneficiaryGroups`}
           />
           <div className="shadow-md p-4 rounded-sm bg-card">
             <div className="grid grid-cols-2 gap-4">

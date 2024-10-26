@@ -57,10 +57,16 @@ export default function OfflineManagementView() {
         </div>
         <div className="rounded border bg-card p-4">
           <div className="flex justify-between space-x-2 mb-2">
+            {/* To do server side filtering */}
             <SearchInput
               className="w-full"
               name="vendors"
-              onSearch={() => {}}
+              value={
+                (table.getColumn('name')?.getFilterValue() as string) ?? ''
+              }
+              onSearch={(event) =>
+                table.getColumn('name')?.setFilterValue(event.target.value)
+              }
             />
             <Button
               type="button"

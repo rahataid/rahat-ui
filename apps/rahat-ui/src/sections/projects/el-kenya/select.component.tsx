@@ -8,6 +8,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 
 type Iprops = {
+  className?: string;
   name: string;
   options?: Array<string>;
   value?: string;
@@ -15,6 +16,7 @@ type Iprops = {
 };
 
 export default function SelectComponent({
+  className = 'w-full',
   name,
   options,
   value,
@@ -22,7 +24,7 @@ export default function SelectComponent({
 }: Iprops) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger>
+      <SelectTrigger className={className}>
         <SelectValue placeholder={`Select ${name}`} />
       </SelectTrigger>
       <SelectContent>

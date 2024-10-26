@@ -20,6 +20,7 @@ import SearchInput from '../../components/search.input';
 import AddButton from '../../components/add.btn';
 import SelectComponent from '../select.component';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import FiltersTags from '../../components/filtersTags';
 
 export const redemptionType = [
   {
@@ -53,6 +54,10 @@ export default function ClaimView() {
     setSelectedListItems,
     resetSelectedListItems,
   } = usePagination();
+
+  React.useEffect(() => {
+    setFilters('');
+  }, []);
 
   const debouncedFilters = useDebounce(filters, 500);
 
@@ -121,7 +126,17 @@ export default function ClaimView() {
               value={filters?.status || ''}
             />
           </div>
-          <ElkenyaTable table={table} />
+          {Object.keys(filters).length != 0 && (
+            <FiltersTags filters={filters} setFilters={setFilters} />
+          )}
+          <ElkenyaTable
+            table={table}
+            tableHeight={
+              Object.keys(filters).length
+                ? 'h-[calc(100vh-318px)]'
+                : 'h-[calc(100vh-252px)]'
+            }
+          />
         </div>
       </div>
     </>

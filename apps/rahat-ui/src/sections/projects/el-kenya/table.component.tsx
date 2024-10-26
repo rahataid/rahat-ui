@@ -18,7 +18,7 @@ export default function ElkenyaTable({ table, tableHeight }: IProps) {
   return (
     <TableComponent>
       <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
-        <TableHeader>
+        <TableHeader className="sticky top-0 bg-card">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {

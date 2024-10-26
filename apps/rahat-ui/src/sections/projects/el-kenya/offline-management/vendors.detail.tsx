@@ -100,7 +100,7 @@ export default function VendorsDetail() {
           List of offline beneficiaries
         </p>
       </div>
-      <div className="rounded border bg-card p-4">
+      <div className="rounded border bg-card p-4 pb-0">
         <div className="flex justify-between space-x-2 mb-2">
           <SearchInput
             className="w-full"
@@ -111,7 +111,7 @@ export default function VendorsDetail() {
             }
           />
         </div>
-        <ElkenyaTable table={table} tableHeight="h-[calc(100vh-500px)]" />
+        <ElkenyaTable table={table} tableHeight="h-[calc(100vh-505px)]" />
         <ClientSidePagination table={table} />
       </div>
     </div>

@@ -1,5 +1,9 @@
-'use client'
-import { dataTagSymbol, useListRedemptions, usePagination } from '@rahat-ui/query';
+'use client';
+import {
+  dataTagSymbol,
+  useListRedemptions,
+  usePagination,
+} from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -14,6 +18,8 @@ import React from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import AddButton from '../../components/add.btn';
+import SelectComponent from '../select.component';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 export const redemptionType = [
   {
@@ -48,12 +54,14 @@ export default function ClaimView() {
     resetSelectedListItems,
   } = usePagination();
 
+  const debouncedFilters = useDebounce(filters, 500);
+
   const columns = useTableColumn();
 
-  const {data, isSuccess} = useListRedemptions(id,{
-    page:pagination.page,
-    perPage:pagination.perPage,
-    ...filters
+  const { data, isSuccess } = useListRedemptions(id, {
+    page: pagination.page,
+    perPage: pagination.perPage,
+    ...debouncedFilters,
   });
 
   const handleRedmpType = React.useCallback(
@@ -67,7 +75,6 @@ export default function ClaimView() {
     },
     [filters, setFilters],
   );
-
 
   const table = useReactTable({
     manualPagination: true,
@@ -101,7 +108,17 @@ export default function ClaimView() {
             <SearchInput
               className="w-full"
               name="vendors"
-              onSearch={() => {}}
+              onSearch={(e) => {
+                setFilters({ ...filters, vendor: e.target.value });
+              }}
+              value={filters?.vendor || ''}
+            />
+            <SelectComponent
+              className="w-1/4"
+              onChange={(value) => handleRedmpType(value)}
+              name="Status"
+              options={['ALL', 'REQUESTED', 'APPROVED']}
+              value={filters?.status || ''}
             />
           </div>
           <ElkenyaTable table={table} />

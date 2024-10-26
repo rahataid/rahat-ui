@@ -13,21 +13,6 @@ export const useVendorsTableColumns = () => {
       header: 'Voucher Type',
       cell: ({ row }) => <div>{row.getValue('voucherType')}</div>,
     },
-    {
-      id: 'actions',
-      header: 'Action',
-      enableHiding: false,
-      cell: ({ row }) => {
-        return (
-          <Trash
-            size={20}
-            strokeWidth={1.5}
-            className="cursor-pointer text-red-500"
-            // onClick={() => openSplitDetailView(row.original)}
-          />
-        );
-      },
-    },
   ];
   return columns;
 };

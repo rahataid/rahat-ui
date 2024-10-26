@@ -69,7 +69,7 @@ export default function GroupDetailView() {
           <HeaderWithBack
             title={data?.name || 'N/A'}
             subtitle="Here is a detailed view of the selected beneficiary group"
-            path={`/projects/el-kenya/${id}/beneficiary`}
+            path={`/projects/el-kenya/${id}/beneficiary?tab=beneficiaryGroups`}
           />
           {/* <CoreBtnComponent
             className="text-primary bg-sky-50"

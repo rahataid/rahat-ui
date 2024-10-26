@@ -7,9 +7,9 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useElkenyaBeneficiaryTableColumns } from './use.beneficiary.table.columns';
-import React from 'react';
+import React, { useEffect } from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import AddButton from '../../components/add.btn';
@@ -33,6 +33,14 @@ export default function BeneficiaryView() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
+  const [defaultValue, setDefaultValue] = React.useState<string>('beneficiary');
+
+  const searchParams = useSearchParams();
+  const tab = searchParams.get('tab') || 'beneficiary';
+
+  useEffect(() => {
+    setDefaultValue(tab);
+  }, [tab]);
   const {
     pagination,
     filters,
@@ -84,9 +92,13 @@ export default function BeneficiaryView() {
       rowSelection: selectedListItems,
     },
   });
+  const onTabChange = (value) => {
+    setDefaultValue(value);
+  };
+
   return (
-    <Tabs defaultValue="beneficiary">
-      <TabsContent value="beneficiary">
+    <Tabs value={defaultValue} onValueChange={onTabChange}>
+      {/* <TabsContent value="beneficiary">
         <div>
           <h1 className="font-semibold text-2xl text-label pl-4">
             Beneficiary
@@ -99,7 +111,7 @@ export default function BeneficiaryView() {
             Beneficiary Groups
           </h1>
         </div>
-      </TabsContent>
+      </TabsContent> */}
       <div className="flex justify-between items-center p-4">
         <TabsList className="border bg-secondary rounded">
           <TabsTrigger

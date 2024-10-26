@@ -20,7 +20,7 @@ export const useElkenyaVendorsTableColumns = ({
     {
       accessorKey: 'phone',
       header: 'Phone Number',
-      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
+      cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
     },
     {
       accessorKey: 'TokenRedemption',

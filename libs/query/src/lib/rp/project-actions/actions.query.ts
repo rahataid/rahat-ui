@@ -14,6 +14,8 @@ const GET_ALL_DISBURSEMENT_PLANS = 'rpProject.disbursementPlan.get';
 const UPDATE_DISBURSEMENT_PLAN = 'rpProject.disbursementPlan.update';
 const CREATE_BULK_DISBURSEMENT = 'rpProject.disbursement.bulkCreate';
 const GET_UNSYNCED_BENEFICIARIES = 'rpProject.beneficiaries.getUnsynced';
+const GET_UNSYNCED_BENEFICIARY_GROUP =
+  'rpProject.beneficiary.group.get_unsynced';
 
 const GET_ALL_BENEFICIARY_GROUPS = 'rpProject.beneficiary.getAllGroups';
 
@@ -177,6 +179,27 @@ export const useFindUnSyncedBenefiicaries = (
         },
       });
       return res;
+    },
+  });
+};
+
+export const useFindUnSyncedBeneficaryGroup = (
+  projectUUID: UUID,
+  payload: any,
+) => {
+  const action = useProjectAction(['findUnSyncedBeneficiaryGroup-rpProject']);
+
+  return useQuery({
+    queryKey: ['unsyncedBeneficiaryGroup', projectUUID, payload],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: GET_UNSYNCED_BENEFICIARY_GROUP,
+          payload,
+        },
+      });
+      return res.data;
     },
   });
 };

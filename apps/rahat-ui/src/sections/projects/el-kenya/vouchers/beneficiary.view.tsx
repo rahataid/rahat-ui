@@ -141,7 +141,11 @@ export default function BeneficiaryView({
                 table.getColumn('phone')?.setFilterValue(event.target.value)
               }
             />
-            <Button type="button" onClick={() => handleNext()}>
+            <Button
+              type="button"
+              onClick={() => handleNext()}
+              disabled={table.getSelectedRowModel().rows.length === 0}
+            >
               <Plus size={18} className="mr-1" />
               Bulk Assign
             </Button>

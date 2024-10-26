@@ -34,7 +34,9 @@ export const useKenyaVoucherCreate = () => {
 
   return useMutation(
     {
-      onSuccess: async () => {
+      onSuccess: async (data) => {
+        console.log('data', data);
+
         alert.fire({
           icon: 'success',
           title: 'Voucher Assignment Processing Started',
@@ -159,7 +161,9 @@ export const useBulkAssignKenyaVoucher = (
         });
         alert.fire({
           icon: 'success',
-          title: 'Voucher Assignment Processing Started',
+          title:
+            data?.message ||
+            'Assigment Process started. Will be completed in background',
         });
       },
 
@@ -188,7 +192,7 @@ export const useBulkAssignKenyaVoucher = (
           tokenAddress,
           projectAddress,
         });
-        await bulkAssignDisbursement.mutateAsync({
+        return bulkAssignDisbursement.mutateAsync({
           amount: 1,
           beneficiaries: beneficiaryAddresses.map((b) => {
             return { walletAddress: b.walletAddress, phone: b.phone };

@@ -49,29 +49,28 @@ export function ConfirmModal({
             <h2 className="text-lg font-semibold text-green-700 mb-4 text-center">
               Transaction Added to Queue
             </h2>
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col gap-2">
-                <span className="text-sm font-medium text-gray-500">
-                  Vendor Name:
+            <div className="flex flex-col gap-2">
+              <p className="text-sm font-medium text-gray-500">
+                Vendor Name:
+                <span className="ml-1 text-gray-800 font-normal">
+                  {vendorName}
                 </span>
-                <span className="text-sm font-medium text-gray-500">
-                  Beneficiaries:
+              </p>
+              <p className="text-sm font-medium text-gray-500 ">
+                Beneficiaries:
+                <span className="ml-1 text-gray-800 font-normal">
+                  {beneficiaries}
                 </span>
-                <span className="text-sm font-medium text-gray-500">
-                  No of vouchers:
-                </span>
-              </div>
-              <div className="flex flex-col gap-2 text-left">
-                <span className="text-gray-800">{vendorName}</span>
-                <span className="text-gray-800">{beneficiaries}</span>
-                <span className="text-gray-800">{tokens}</span>
-              </div>
-
-              <span className="text-sm font-medium text-gray-500">
-                Data will be processed in the background. You can check the
-                status in the offline management page.
-              </span>
+              </p>
+              <p className="text-sm font-medium text-gray-500">
+                No of vouchers:
+                <span className="ml-1 text-gray-800 font-normal">{tokens}</span>
+              </p>
             </div>
+            <p className="mt-2 text-gray-500">
+              Data will be processed in the background. You can check the status
+              in the offline management page.
+            </p>
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

@@ -123,7 +123,7 @@ export default function BeneficiaryView({
 
   return (
     <>
-      <div className="p-4">
+      <div className="p-4 pt-2">
         <div className="rounded border bg-card p-4">
           <div className="flex justify-between space-x-2 mb-2">
             {/* <SearchInput
@@ -150,7 +150,7 @@ export default function BeneficiaryView({
               Bulk Assign
             </Button>
           </div>
-          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-656px)]" />
+          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-571px)]" />
         </div>
       </div>
       <CustomPagination

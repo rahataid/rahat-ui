@@ -26,7 +26,7 @@ export default function SelectBeneficiary({
 }: SelectBeneficiaryProps) {
   return (
     <Tabs defaultValue="beneficiary">
-      <div className="flex justify-between items-center p-4">
+      <div className="flex justify-between items-center px-4">
         <TabsList className="border bg-secondary rounded">
           <TabsTrigger
             className="w-full data-[state=active]:bg-white"

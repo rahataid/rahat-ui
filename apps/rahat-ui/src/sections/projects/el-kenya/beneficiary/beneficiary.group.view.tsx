@@ -57,7 +57,7 @@ function BeneficiaryGroupsView() {
   return (
     <>
       <div className="p-4 rounded-sm border">
-        <div className="flex justify-between space-x-2 items-center mb-4">
+        <div className="flex justify-between space-x-2 items-center mb-2">
           <SearchInput
             className="w-full"
             name="group"
@@ -68,7 +68,7 @@ function BeneficiaryGroupsView() {
             path={`/projects/el-kenya/${id}/beneficiary/group/add`}
           />
         </div>
-        <ScrollArea className="h-[calc(100vh-300px)]">
+        <ScrollArea className="h-[calc(100vh-226px)]">
           {filteredGroups.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">
               {filteredGroups?.map((i: any, index: number) => {

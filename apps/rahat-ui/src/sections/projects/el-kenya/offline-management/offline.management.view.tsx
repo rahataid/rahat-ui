@@ -19,6 +19,7 @@ import SearchInput from '../../components/search.input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Plus } from 'lucide-react';
 import Pagination from 'apps/rahat-ui/src/components/pagination';
+import ClientSidePagination from '../../components/client.side.pagination';
 
 export default function OfflineManagementView() {
   const router = useRouter();
@@ -55,7 +56,7 @@ export default function OfflineManagementView() {
             Here is the list of all the vendors
           </p>
         </div>
-        <div className="rounded border bg-card p-4">
+        <div className="rounded border bg-card p-4 pb-0">
           <div className="flex justify-between space-x-2 mb-2">
             {/* To do server side filtering */}
             <SearchInput
@@ -78,8 +79,8 @@ export default function OfflineManagementView() {
               Setup offline beneficiary
             </Button>
           </div>
-          <ElkenyaTable table={table} />
-          <Pagination
+          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-293px)]" />
+          {/* <Pagination
             pageIndex={table.getState().pagination.pageIndex}
             pageCount={table.getPageCount()}
             setPageSize={table.setPageSize}
@@ -87,7 +88,8 @@ export default function OfflineManagementView() {
             previousPage={table.previousPage}
             canNextPage={table.getCanNextPage()}
             nextPage={table.nextPage}
-          />
+          /> */}
+          <ClientSidePagination table={table} />
         </div>
       </div>
     </>

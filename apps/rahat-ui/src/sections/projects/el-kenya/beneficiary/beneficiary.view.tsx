@@ -112,7 +112,7 @@ export default function BeneficiaryView() {
           </h1>
         </div>
       </TabsContent> */}
-      <div className="flex justify-between items-center p-4">
+      <div className="flex justify-between items-center p-4 pb-0">
         <TabsList className="border bg-secondary rounded">
           <TabsTrigger
             id="beneficiary"
@@ -139,7 +139,7 @@ export default function BeneficiaryView() {
         </Button>
       </div>
       <TabsContent value="beneficiary">
-        <div className="p-4">
+        <div className="p-4 pt-2">
           <div className="rounded border bg-card p-4">
             <div className="flex justify-between space-x-2 mb-2">
               {/* <SearchInput
@@ -167,7 +167,7 @@ export default function BeneficiaryView() {
                 path={`/projects/el-kenya/${id}/beneficiary/add`}
               />
             </div>
-            <div className="flex justify-between gap-2 mb-4">
+            <div className="flex justify-between gap-2 mb-2">
               <SelectComponent
                 onChange={(e) => setFilters({ ...filters, voucherType: e })}
                 name="Voucher Type"
@@ -213,8 +213,8 @@ export default function BeneficiaryView() {
               table={table}
               tableHeight={
                 Object.keys(filters).length
-                  ? 'h-[calc(100vh-463px)]'
-                  : 'h-[calc(100vh-397px)]'
+                  ? 'h-[calc(100vh-389px)]'
+                  : 'h-[calc(100vh-323px)]'
               }
             />
           </div>
@@ -230,7 +230,7 @@ export default function BeneficiaryView() {
         />
       </TabsContent>
       <TabsContent value="beneficiaryGroups">
-        <div className="p-4">
+        <div className="p-4 pt-2">
           <BeneficiaryGroupView />
         </div>
       </TabsContent>

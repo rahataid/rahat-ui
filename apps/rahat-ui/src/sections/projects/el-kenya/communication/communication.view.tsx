@@ -34,7 +34,7 @@ export default function CommunicationView() {
     failed: 0,
   });
   const { data } = useListRpCommunicationLogs(id);
-  const commsAppId = seSettingsStore((state) => state.commsSettings)?.APP_ID;
+  const commsAppId = useSettingsStore((state) => state.commsSettings)?.APP_ID;
   useEffect(() => {
     setStats({
       succed: 0,

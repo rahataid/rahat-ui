@@ -62,14 +62,7 @@ export default function SelectVendorMultiStepForm() {
   const [groupIds, setGroupIds] = React.useState([]);
 
   const getVendors = useProjectAction();
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-  } = usePagination();
+  const pagination = usePagination();
 
   const { data: disbursmentList, isSuccess } = useFindAllDisbursements(
     id as UUID,
@@ -100,13 +93,13 @@ export default function SelectVendorMultiStepForm() {
   const { queryClient, rumsanService } = useRSQuery();
 
   const projectBeneficiaries = useProjectBeneficiaries({
-    page: pagination.page,
-    perPage: pagination.perPage,
+    page: pagination.pagination.page,
+    perPage: pagination.pagination.perPage,
     // pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...filters,
+    ...pagination.filters,
   });
 
   const formSchema = z.object({
@@ -204,7 +197,6 @@ export default function SelectVendorMultiStepForm() {
             voucherType: beneficiary.status,
           };
         });
-
       if (
         JSON.stringify(projectBeneficiaryDisbursements) !==
         JSON.stringify(rowData)
@@ -257,7 +249,7 @@ export default function SelectVendorMultiStepForm() {
       toast.error('Failed to sync');
     }
   };
-
+  pagination.meta = projectBeneficiaries.data.response?.meta;
   return (
     <div className="p-4">
       {activeStep === 0 && (

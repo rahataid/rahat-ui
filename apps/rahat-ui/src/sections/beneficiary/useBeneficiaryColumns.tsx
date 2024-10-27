@@ -28,7 +28,6 @@ export const useBeneficiaryTableColumns = () => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(uuid);
   };
-
   const openSplitDetailView = (rowDetail: ListBeneficiary) => {
     setSecondPanelComponent(
       <BeneficiaryDetail
@@ -93,7 +92,8 @@ export const useBeneficiaryTableColumns = () => {
               }
             >
               <p>{truncateEthAddress(row.getValue('walletAddress'))}</p>
-              {walletAddressCopied === row?.original?.uuid ? (
+              {walletAddressCopied &&
+              walletAddressCopied === row?.original?.uuid ? (
                 <CopyCheck size={15} strokeWidth={1.5} />
               ) : (
                 <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
@@ -101,7 +101,8 @@ export const useBeneficiaryTableColumns = () => {
             </TooltipTrigger>
             <TooltipContent className="bg-secondary" side="bottom">
               <p className="text-xs font-medium">
-                {walletAddressCopied === row?.original?.uuid
+                {walletAddressCopied &&
+                walletAddressCopied === row?.original?.uuid
                   ? 'copied'
                   : 'click to copy'}
               </p>

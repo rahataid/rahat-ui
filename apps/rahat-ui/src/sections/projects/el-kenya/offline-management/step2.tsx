@@ -2,6 +2,7 @@ import { UUID } from 'crypto';
 import { User } from 'lucide-react';
 import { ConfirmModal } from './confirm-modal';
 import { initialStepData } from './select.vendor.multi.step.form';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 interface ConfirmationProps {
   stepData: typeof initialStepData;
@@ -76,14 +77,16 @@ export default function Confirmation({
               {noOfBeneficiarySelected} Beneficiaries Selected
             </p>
             <div className="flex flex-col">
-              {data.map((beneficiary) => (
-                <div className="flex space-x-2">
-                  <div className="p-2 rounded-full bg-secondary">
-                    <User size={18} strokeWidth={1.5} />
+              <ScrollArea className="h-[calc(100vh-580px)]">
+                {data.map((beneficiary) => (
+                  <div className="flex space-x-2 mt-2">
+                    <div className="p-2 rounded-full bg-secondary">
+                      <User size={18} strokeWidth={1.5} />
+                    </div>
+                    <p>{beneficiary.phone}</p>
                   </div>
-                  <p>{beneficiary.phone}</p>
-                </div>
-              ))}
+                ))}
+              </ScrollArea>
             </div>
           </div>
         </div>

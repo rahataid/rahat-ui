@@ -169,6 +169,12 @@ const QueueList: React.FC = () => {
                         Job Name
                       </TableCell>
                       <TableCell className="p-4 font-semibold text-gray-700 dark:text-gray-300 text-left whitespace-nowrap">
+                        Processed On
+                      </TableCell>
+                      <TableCell className="p-4 font-semibold text-gray-700 dark:text-gray-300 text-left whitespace-nowrap">
+                        Finished On
+                      </TableCell>
+                      <TableCell className="p-4 font-semibold text-gray-700 dark:text-gray-300 text-left whitespace-nowrap">
                         Status
                       </TableCell>
                       <TableCell className="p-4 font-semibold text-gray-700 dark:text-gray-300 text-left whitespace-nowrap">
@@ -188,6 +194,12 @@ const QueueList: React.FC = () => {
                           </TableCell>
                           <TableCell className="p-4 text-gray-800 dark:text-gray-300 text-left whitespace-nowrap">
                             {job.name}
+                          </TableCell>
+                          <TableCell className="p-4 text-gray-800 dark:text-gray-300 text-left whitespace-nowrap">
+                            {new Date(job.processedOn).toLocaleString()}
+                          </TableCell>
+                          <TableCell className="p-4 text-gray-800 dark:text-gray-300 text-left whitespace-nowrap">
+                            {new Date(job.finishedOn).toLocaleString()}
                           </TableCell>
                           <TableCell className="p-4 text-gray-800 dark:text-gray-300 text-left whitespace-nowrap">
                             {/* {job.status} */}
@@ -235,6 +247,14 @@ const QueueList: React.FC = () => {
               </p>
               <p>
                 <strong>Status:</strong> {selectedJob.status}
+              </p>
+              <p>
+                <strong>Processed On:</strong>{' '}
+                {new Date(selectedJob.processedOn).toLocaleString()}
+              </p>
+              <p>
+                <strong>Finished On:</strong>{' '}
+                {new Date(selectedJob.finishedOn).toLocaleString()}
               </p>
               <p>
                 <strong>Attempts Made:</strong> {selectedJob.attemptsMade}

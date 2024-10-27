@@ -104,18 +104,25 @@ export const useElkenyaBeneficiaryTableColumns = ({
       accessorKey: 'tokenAssigned',
       header: 'Voucher Status',
       cell: ({ row }) => {
+        const assignmentStatus =
+          row?.original?.graphData?.tokensAllocateds?.length ||
+          row?.original?.graphData?.walkInBeneficiaryAddeds?.length
+            ? 'Assigned'
+            : 'Not Assigned';
         const timestamp =
-          row?.original?.graphData?.tokensAllocateds?.[0]?.blockTimestamp;
+          row?.original?.graphData?.tokensAllocateds?.[0]?.blockTimestamp ||
+          row?.original?.graphData?.walkInBeneficiaryAddeds?.[0]
+            ?.blockTimestamp;
         const tokenAssignedDate = timestamp
           ? new Date(timestamp * 1000).toLocaleString()
-          : 'N/A';
+          : '';
+
         return (
           <div>
-            {row?.original?.graphData?.tokensAllocateds?.length ? (
-              <span>Assigned - {tokenAssignedDate}</span>
-            ) : (
-              'Not Assigned'
-            )}
+            {assignmentStatus} <br />
+            <span className="text-sm text-muted-foreground">
+              {tokenAssignedDate}
+            </span>
           </div>
         );
       },

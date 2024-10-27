@@ -18,7 +18,7 @@ const DonutWrapper = ({ actualData, component, source }: DonutData) => {
   }));
   console.log('statsDonutData', statsDonutData);
 
-  if (statsDonutData)
+  if (statsDonutData?.length > 0)
     return (
       <div className="bg-card border rounded-sm p-4 shadow-md">
         <p className="text-md font-medium mb-4">{component?.title}</p>

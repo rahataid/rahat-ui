@@ -114,7 +114,7 @@ export const useElkenyaBeneficiaryTableColumns = ({
             {row?.original?.graphData?.tokensAllocateds?.length ? (
               <span>Assigned - {tokenAssignedDate}</span>
             ) : (
-              'N/A'
+              'Not Assigned'
             )}
           </div>
         );

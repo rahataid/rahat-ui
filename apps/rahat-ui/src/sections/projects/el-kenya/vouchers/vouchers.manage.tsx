@@ -40,14 +40,14 @@ export default function VouchersManage({
     address: contractSettings?.rahattoken?.address as `0x${string}`,
   });
   return (
-    <div className="p-4">
+    <div className="p-4 pb-0">
       <HeaderWithBack
         title="Create Voucher Disbursement"
         path={`/projects/el-kenya/${id}/vouchers`}
         subtitle="Create a disbursement plan"
       />
       <DataCard
-        className="border-solid rounded-sm w-96 mb-10"
+        className="border-solid rounded-sm w-96 mb-4"
         title="Voucher Balance"
         Icon={Ticket}
         number={tokenBalance?.toString() ?? '-'}
@@ -69,7 +69,7 @@ export default function VouchersManage({
             </p>
           </div>
         </TabsContent>
-        <div className="flex justify-between items-center p-4">
+        <div className="flex justify-between items-center p-4 pt-3 pb-0">
           <TabsList className="border bg-secondary rounded">
             <TabsTrigger
               className="w-full data-[state=active]:bg-white"

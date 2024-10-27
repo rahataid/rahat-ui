@@ -33,7 +33,7 @@ export default function BeneficiaryGroupsView({
   }, []);
 
   return (
-    <div className="rounded border bg-card p-4 mx-4 mb-4">
+    <div className="rounded border bg-card p-4 m-4">
       <div className="flex justify-between space-x-2 mb-2">
         <SearchInput
           className="w-full"
@@ -41,7 +41,7 @@ export default function BeneficiaryGroupsView({
           onSearch={(e) => handleSearch(e.target.value)}
         />
       </div>
-      <ScrollArea className="h-[calc(100vh-500px)]">
+      <ScrollArea className="h-[calc(100vh-475px)]">
         {filteredGroups?.length > 0 ? (
           <div className="grid grid-cols-4 gap-4">
             {filteredGroups?.map((benificiaryGroup) => {

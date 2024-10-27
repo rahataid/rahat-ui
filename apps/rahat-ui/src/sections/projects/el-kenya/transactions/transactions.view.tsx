@@ -41,15 +41,15 @@ export default function TransactionsView() {
           </p>
         </div>
         <div className="rounded border bg-card p-4">
-          <div className="flex justify-between space-x-2 mb-2">
+          {/* <div className="flex justify-between space-x-2 mb-2">
             <SearchInput
               className="w-full"
               name="transaction"
-              onSearch={() => {}}
+              onSearch={() => { }}
               isDisabled
             />
             <ViewColumns table={table} />
-          </div>
+          </div> */}
           <ElkenyaTable table={table} tableHeight="h-[calc(100vh-300px)]" />
         </div>
       </div>

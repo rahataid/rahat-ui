@@ -13,6 +13,7 @@ import {
 import React from 'react';
 import {
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
   VisibilityState,
@@ -85,6 +86,7 @@ export default function SelectBeneficiaryView() {
     manualPagination: true,
     data: tableData,
     columns,
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,

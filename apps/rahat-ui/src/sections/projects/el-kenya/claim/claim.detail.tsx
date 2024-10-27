@@ -170,7 +170,7 @@ export default function ClaimDetailView() {
           </Button>
           {/* // disabled={data?.status !="REQUESTED"} */}
         </div>
-        <ElkenyaTable table={table} tableHeight="h-[calc(100vh-500px)]" />
+        <ElkenyaTable table={table} tableHeight="h-[calc(100vh-390px)]" />
       </div>
     </div>
   );

@@ -4,9 +4,9 @@ import { ColumnDef } from '@tanstack/react-table';
 export const useElkenyaVendorsBeneficiaryTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'name',
-      header: 'Beneficiary Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      accessorKey: 'phone',
+      header: 'Beneficiary Phone',
+      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
     },
     {
       accessorKey: 'type',

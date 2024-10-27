@@ -1,7 +1,6 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye, Pencil } from 'lucide-react';
 
 export const useBeneficiaryTableColumns = () => {
   const columns: ColumnDef<any>[] = [

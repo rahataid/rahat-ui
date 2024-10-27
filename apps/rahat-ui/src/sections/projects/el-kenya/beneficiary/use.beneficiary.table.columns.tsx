@@ -94,6 +94,33 @@ export const useElkenyaBeneficiaryTableColumns = ({
       },
     },
     {
+      accessorKey: 'location',
+      header: 'Location',
+      cell: ({ row }) => {
+        return <div>{row?.original?.extras?.location || 'N/A'}</div>;
+      },
+    },
+    {
+      accessorKey: 'tokenAssigned',
+      header: 'Voucher Status',
+      cell: ({ row }) => {
+        const timestamp =
+          row?.original?.graphData?.tokensAllocateds?.[0]?.blockTimestamp;
+        const tokenAssignedDate = timestamp
+          ? new Date(timestamp * 1000).toLocaleString()
+          : 'N/A';
+        return (
+          <div>
+            {row?.original?.graphData?.tokensAllocateds?.length ? (
+              <span>Assigned - {tokenAssignedDate}</span>
+            ) : (
+              'N/A'
+            )}
+          </div>
+        );
+      },
+    },
+    {
       id: 'actions',
       header: 'Actions',
       enableHiding: false,

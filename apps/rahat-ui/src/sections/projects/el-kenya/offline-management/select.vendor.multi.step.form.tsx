@@ -223,7 +223,6 @@ export default function SelectVendorMultiStepForm() {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
-  console.log(stepData.disbursements, 'stepData.disbursements');
 
   const handleSyncBen = async () => {
     setIsSyncing(true);
@@ -379,7 +378,16 @@ export default function SelectVendorMultiStepForm() {
             </Button>
           )}
           {activeStep < 2 && (
-            <Button onClick={handleNext} className="px-12">
+            <Button
+              onClick={handleNext}
+              disabled={
+                activeStep === 0
+                  ? Object.keys(stepData.vendor).length === 0
+                  : stepData.disbursements.length === 0 &&
+                    stepData.groups.length === 0
+              }
+              className="px-12"
+            >
               Next
             </Button>
           )}

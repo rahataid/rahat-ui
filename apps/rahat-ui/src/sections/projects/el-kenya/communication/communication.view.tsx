@@ -34,8 +34,7 @@ export default function CommunicationView() {
     failed: 0,
   });
   const { data } = useListRpCommunicationLogs(id);
-  const commsAppId = useSettingsStore((state) => state.commsSettings)?.APP_ID;
-
+  const commsAppId = seSettingsStore((state) => state.commsSettings)?.APP_ID;
   useEffect(() => {
     setStats({
       succed: 0,
@@ -138,7 +137,14 @@ export default function CommunicationView() {
 
         <div className="rounded border bg-card p-4">
           <div className="flex justify-between space-x-2 mb-2">
-            <SearchInput className="w-full" name="" onSearch={() => {}} />
+            <SearchInput
+              className="w-full"
+              name=""
+              value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
+              onSearch={(event) =>
+                table.getColumn('to')?.setFilterValue(event.target.value)
+              }
+            />
             <ViewColumns table={table} />
             <Button
               onClick={() =>

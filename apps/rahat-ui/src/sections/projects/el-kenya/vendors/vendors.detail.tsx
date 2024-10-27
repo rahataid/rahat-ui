@@ -59,10 +59,10 @@ export default function VendorsDetail() {
           <h1 className="text-md text-muted-foreground">Vendor Name</h1>
           <p className="font-medium">{name}</p>
         </div>
-        <div>
+        {/* <div>
           <h1 className="text-md text-muted-foreground">Location</h1>
           <p className="font-medium">N/A</p>
-        </div>
+        </div> */}
         <div>
           <h1 className="text-md text-muted-foreground">Phone Number</h1>
           <p className="font-medium">{phone ?? 'N/A'}</p>

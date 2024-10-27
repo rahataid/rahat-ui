@@ -81,7 +81,7 @@ export default function Confirmation({
                   <div className="p-2 rounded-full bg-secondary">
                     <User size={18} strokeWidth={1.5} />
                   </div>
-                  <p>{beneficiary.name}</p>
+                  <p>{beneficiary.phone}</p>
                 </div>
               ))}
             </div>

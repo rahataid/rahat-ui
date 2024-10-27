@@ -6,15 +6,17 @@ import HeaderWithBack from '../projects/components/header.with.back';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import CoreBtnComponent from '../../components/core.btn';
+import { useGetVendor } from '@rahat-ui/query';
 
 export default function VendorDetail() {
   const { id } = useParams() as { id: UUID };
+  const vendor = useGetVendor(id);
   const [walletAddressCopied, setWalletAddressCopied] =
-    React.useState<number>();
+    React.useState<string>();
 
-  const clickToCopy = (walletAddress: string, id: number) => {
+  const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(id);
+    setWalletAddressCopied(walletAddress);
   };
   return (
     <div className="p-4">
@@ -42,25 +44,28 @@ export default function VendorDetail() {
       </div>
       <div className="p-5 rounded-md shadow border grid grid-cols-4 gap-5">
         <div>
-          <h1 className="text-md text-muted-foreground">Beneficiary Name</h1>
-          <p className="font-medium">N/A</p>
+          <h1 className="text-md text-muted-foreground">Vendor Name</h1>
+          <p className="font-medium">{vendor.data?.data?.name || 'N/A'}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Gender</h1>
-          <p className="font-medium">N/A</p>
+          <p className="font-medium">{vendor.data?.data?.gender || 'N/A'}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Project Name</h1>
-          <p className="font-medium">N/A</p>
+          {vendor.data?.data?.projects?.map((project) => {
+            return <p className="font-medium">{project?.name}</p>;
+          })}
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Wallet Address</h1>
           <div
             className="flex items-center space-x-2 cursor-pointer"
-            onClick={() => clickToCopy('4567876545', 4567876545)}
+            onClick={() => clickToCopy(vendor.data?.data?.wallet)}
           >
-            <p>{truncateEthAddress('4567876545')}</p>
-            {walletAddressCopied === 4567876545 ? (
+            <p>{truncateEthAddress(vendor.data?.data?.wallet)}</p>
+
+            {walletAddressCopied === vendor.data?.data?.wallet ? (
               <CopyCheck size={15} strokeWidth={1.5} />
             ) : (
               <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
@@ -69,11 +74,11 @@ export default function VendorDetail() {
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Phone Number</h1>
-          <p className="font-medium">N/A</p>
+          <p className="font-medium">{vendor.data?.data?.phone || 'N/A'}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Email Address</h1>
-          <p className="font-medium">N/A</p>
+          <p className="font-medium">{vendor.data?.data?.email || 'N/A'}</p>
         </div>
       </div>
     </div>

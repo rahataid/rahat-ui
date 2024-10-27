@@ -10,9 +10,12 @@ import { useVendorStore } from './vendors.store';
 import { TAGS } from '../../config';
 import { useEffect, useMemo } from 'react';
 import { api } from '../../utils/api';
+import { UUID } from 'crypto';
 
-
-export const useVendorList = (payload: any, refetch: boolean): UseQueryResult<any, Error> => {
+export const useVendorList = (
+  payload: any,
+  refetch: boolean,
+): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   const vendorClient = getVendorClient(rumsanService.client);
   const { setVendors, setMeta } = useVendorStore((state) => ({
@@ -61,14 +64,31 @@ export const useVendorList = (payload: any, refetch: boolean): UseQueryResult<an
   return vendor;
 };
 
-const listBeneficiaryStats = async() =>{
+const listBeneficiaryStats = async () => {
   const response = await api.get('/vendors/stats');
-  return response?.data
-}
+  return response?.data;
+};
 
-export const useGetVendorStats =(): UseQueryResult<any,Error> =>{
+const getVendor = async (uuid: UUID) => {
+  const response = await api.get(`/vendors/${uuid}`);
+  return response?.data;
+};
+
+export const useGetVendor = (uuid: UUID): UseQueryResult<any, Error> => {
+  const { queryClient } = useRSQuery();
+  return useQuery(
+    {
+      queryKey: [TAGS.GET_VENDOR_DETAILS, uuid],
+      // @ts-ignore
+      queryFn: () => getVendor(uuid),
+    },
+    queryClient,
+  );
+};
+
+export const useGetVendorStats = (): UseQueryResult<any, Error> => {
   return useQuery({
-    queryKey:[TAGS.GET_VENDOr_STATS],
-    queryFn: () => listBeneficiaryStats()
-  })
-}
+    queryKey: [TAGS.GET_VENDOr_STATS],
+    queryFn: () => listBeneficiaryStats(),
+  });
+};

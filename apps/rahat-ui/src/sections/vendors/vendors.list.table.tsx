@@ -44,6 +44,7 @@ import { UUID } from 'crypto';
 import TableLoader from '../../components/table.loader';
 import Image from 'next/image';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import SelectComponent from '../projects/el-kenya/select.component';
 
 export type IVendor = {
   id: string;
@@ -77,6 +78,10 @@ export default function VendorsTable({
 }: IProps) {
   const projectList = useProjectList({});
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
+  const projectNames =
+    (projectList?.data?.data?.length > 0 &&
+      projectList?.data?.data?.map((project: any) => project?.name)) ||
+    [];
 
   return (
     <div className="border rounded shadow p-3">
@@ -89,18 +94,30 @@ export default function VendorsTable({
           }
           className="rounded w-full"
         />
-        <Select>
-          <SelectTrigger className="w-80">Select Status</SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select>
-          <SelectTrigger className="w-96">Select Project Name</SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-          </SelectContent>
-        </Select>
+
+        <SelectComponent
+          onChange={(event) => {
+            table
+              .getColumn('status')
+              ?.setFilterValue(event === 'All' ? '' : event);
+          }}
+          name="Status"
+          options={['All', 'Assigned', 'Not Assigned']}
+          value={(table.getColumn('status')?.getFilterValue() as string) || ''}
+        />
+
+        <SelectComponent
+          onChange={(event) => {
+            table
+              .getColumn('projectName')
+              ?.setFilterValue(event === 'All' ? '' : event);
+          }}
+          name="Project Name"
+          options={['All', ...projectNames]}
+          value={
+            (table.getColumn('projectName')?.getFilterValue() as string) || ''
+          }
+        />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

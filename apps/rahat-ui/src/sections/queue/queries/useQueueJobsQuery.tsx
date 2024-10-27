@@ -19,7 +19,7 @@ export const useQueueJobsQuery = (queueType: string, filters: any) => {
     queryKey: ['jobs', queueType, filters],
     queryFn: () => fetchJobs(queueType, filters),
     refetchInterval(query) {
-      return 2000;
+      return 4000;
     },
   });
 };

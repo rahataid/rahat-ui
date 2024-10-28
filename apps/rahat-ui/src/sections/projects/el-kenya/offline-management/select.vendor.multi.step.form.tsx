@@ -77,7 +77,8 @@ export default function SelectVendorMultiStepForm() {
   const { data: benGroups } = useFindUnSyncedBeneficaryGroup(id as UUID, {
     page: 1,
     perPage: 100,
-    disableSync: true,
+    disableSync: false,
+    hasDisbursement: true,
     order: 'desc',
     sort: 'createdAt',
   });

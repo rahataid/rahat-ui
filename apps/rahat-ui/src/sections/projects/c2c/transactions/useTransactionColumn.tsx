@@ -1,23 +1,21 @@
-import { ColumnDef } from '@tanstack/react-table';
-import React, { useState } from 'react';
-import { Transaction } from './types';
 import {
   Tooltip,
   TooltipProvider,
   TooltipTrigger,
 } from '@radix-ui/react-tooltip';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { TooltipContent } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
-import { Copy, CopyCheck, ArrowUpDown } from 'lucide-react';
-import Link from 'next/link';
-import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
-import { formatEther } from 'viem';
+import { ColumnDef } from '@tanstack/react-table';
 import { formatdbDate } from 'apps/rahat-ui/src/utils';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-
+import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
+import { ArrowUpDown, Copy, CopyCheck } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+import { formatEther } from 'viem';
+import { Transaction } from './types';
 const useTransactionColumn = () => {
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
-
   const clickToCopy = (walletAddress: string, index: number) => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(index);
@@ -111,13 +109,14 @@ const useTransactionColumn = () => {
       cell: ({ row }) => {
         const amount = parseFloat(formatEther(BigInt(row.getValue('amount'))));
 
-        // Format the amount as a dollar amount
+        // Format the amount in USD without the currency symbol
         const formatted = new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
+          style: 'decimal', // Use 'decimal' to remove currency symbol
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
         }).format(amount);
 
-        return <div className="text-right font-medium">{formatted}</div>;
+        return <div className="text-right font-medium">{formatted} USDC</div>;
       },
     },
   ];

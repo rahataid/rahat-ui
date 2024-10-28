@@ -47,13 +47,11 @@ const BeneficiaryDetailTableView = () => {
   const {
     pagination,
     filters,
-    setFilters,
     setNextPage,
     setPrevPage,
     setPerPage,
     selectedListItems,
     setSelectedListItems,
-    resetSelectedListItems,
   } = usePagination();
   const selectedRowAddresses = Object.keys(selectedListItems);
   const queryString = selectedRowAddresses.join(',');

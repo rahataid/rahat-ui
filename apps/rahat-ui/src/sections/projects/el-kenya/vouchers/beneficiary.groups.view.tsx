@@ -154,7 +154,7 @@ export default function BeneficiaryGroupsView({
             <p>Select all</p>
           </div>
         ) : null}
-        <ScrollArea className="h-[calc(100vh-625px)]">
+        <ScrollArea className="h-[calc(100vh-554px)]">
           {filteredGroups?.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">
               {filteredGroups?.map((beneficiaryGroup) => {

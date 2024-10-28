@@ -108,7 +108,6 @@ export default function ConfirmSelection({
   const { data: tokenBalance } = useReadRahatTokenTotalSupply({
     address: contractSettings?.rahattoken?.address as `0x${string}`,
   });
-  console.log(data);
   return (
     <>
       <div className="h-[calc(100vh-58px)] flex flex-col justify-between">

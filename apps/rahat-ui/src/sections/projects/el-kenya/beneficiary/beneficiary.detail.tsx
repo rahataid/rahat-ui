@@ -24,6 +24,7 @@ export default function BeneficiaryDetail() {
   const glassesStatus = searchParams.get('glassesStatus') || '';
   const eyeCheckupStatus = searchParams.get('eyeCheckupStatus') || '';
   const location = searchParams.get('location') || '-';
+  const serialNumber = searchParams.get('serialNumber') || '-';
 
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
@@ -107,6 +108,12 @@ export default function BeneficiaryDetail() {
           <h1 className="text-md text-muted-foreground">Location</h1>
           <p className="font-medium">{location}</p>
         </div>
+        {type === 'WALK_IN' && (
+          <div>
+            <h1 className="text-md text-muted-foreground">Serial Number</h1>
+            <p className="font-medium">{serialNumber}</p>
+          </div>
+        )}
       </div>
     </div>
   );

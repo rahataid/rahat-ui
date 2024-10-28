@@ -6,12 +6,12 @@ export const useVendorsTableColumns = () => {
     {
       accessorKey: 'phone',
       header: 'Phone',
-      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
+      cell: ({ row }) => <div>{row.getValue('phone') ?? '-'}</div>,
     },
     {
       accessorKey: 'voucherType',
       header: 'Voucher Type',
-      cell: ({ row }) => <div>{row.getValue('voucherType')}</div>,
+      cell: ({ row }) => <div>{row.getValue('voucherType') ?? '-'}</div>,
     },
   ];
   return columns;

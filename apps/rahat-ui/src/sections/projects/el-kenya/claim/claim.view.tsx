@@ -64,7 +64,7 @@ export default function ClaimView() {
 
   const columns = useTableColumn();
 
-  const { data, isSuccess } = useListRedemptions(id, {
+  const { data, isSuccess, isLoading } = useListRedemptions(id, {
     page: pagination.page,
     perPage: pagination.perPage,
     ...debouncedFilters,
@@ -128,7 +128,11 @@ export default function ClaimView() {
             />
           </div>
           {Object.keys(filters).length != 0 && (
-            <FiltersTags filters={filters} setFilters={setFilters} total={data?.redemptions?.length} />
+            <FiltersTags
+              filters={filters}
+              setFilters={setFilters}
+              total={data?.redemptions?.length}
+            />
           )}
           <ElkenyaTable
             table={table}
@@ -137,6 +141,7 @@ export default function ClaimView() {
                 ? 'h-[calc(100vh-351px)]'
                 : 'h-[calc(100vh-285px)]'
             }
+            loading={isLoading}
           />
           <CustomPagination
             meta={data?.meta || { total: 0, currentPage: 0 }}

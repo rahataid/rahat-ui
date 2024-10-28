@@ -174,7 +174,11 @@ export default function CommunicationView() {
             />
             <ViewColumns table={table} />
           </div>
-          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-454px)]" />
+          <ElkenyaTable
+            table={table}
+            tableHeight="h-[calc(100vh-573px)]"
+            loading={isLoading}
+          />
         </div>
       </div>
       <CustomPagination

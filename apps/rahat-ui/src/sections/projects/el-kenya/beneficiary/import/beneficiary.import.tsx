@@ -200,6 +200,7 @@ export default function ExcelUploader() {
             onClick={() => {
               setData([]);
               setFileName('No File Choosen');
+              router.push(`/projects/el-kenya/${id}/beneficiary`);
             }}
           >
             Cancel

@@ -75,7 +75,7 @@ const BeneficiaryItem = ({ ben, beneficiaryGroupSelected }) => (
       <p>{beneficiaryGroupSelected ? ben?.name : ben?.phone}</p>
     </div>
     {beneficiaryGroupSelected && (
-      <p>{ben?._count?.groupedBeneficiaries} beneficiaries</p>
+      <p>{ben?.groupedBeneficiaries?.length} beneficiaries</p>
     )}
   </div>
 );
@@ -92,7 +92,7 @@ export default function ConfirmSelection({
 
   const selectedBeneficiaries = beneficiaryGroupSelected
     ? stepData.selectedGroups.reduce(
-        (acc, group) => acc + group?._count?.groupedBeneficiaries,
+        (acc, group) => acc + group?.groupedBeneficiaries?.length,
         0,
       )
     : stepData.selectedBeneficiaries.length;
@@ -108,7 +108,7 @@ export default function ConfirmSelection({
   const { data: tokenBalance } = useReadRahatTokenTotalSupply({
     address: contractSettings?.rahattoken?.address as `0x${string}`,
   });
-
+  console.log(data);
   return (
     <>
       <div className="h-[calc(100vh-58px)] flex flex-col justify-between">

@@ -50,7 +50,7 @@ export default function TransactionsView() {
             />
             <ViewColumns table={table} />
           </div> */}
-          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-300px)]" />
+          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-251px)]" />
         </div>
       </div>
       <ClientSidePagination table={table} />

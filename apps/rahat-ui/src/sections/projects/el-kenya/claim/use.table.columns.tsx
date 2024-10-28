@@ -12,18 +12,18 @@ export default function useTableColumn() {
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }) => <div>{row.getValue('name') ?? '-'}</div>,
     },
     {
       accessorKey: 'amount',
       header: 'Voucher Amount',
-      cell: ({ row }) => <div>{row.getValue('amount')}</div>,
+      cell: ({ row }) => <div>{row.getValue('amount') ?? '-'}</div>,
     },
 
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <Badge>{row.getValue('status')} </Badge>,
+      cell: ({ row }) => <Badge>{row.getValue('status')}</Badge>,
     },
     {
       id: 'actions',

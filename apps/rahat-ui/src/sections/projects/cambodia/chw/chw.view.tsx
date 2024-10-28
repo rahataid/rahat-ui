@@ -22,7 +22,7 @@ import CambodiaTable from '../table.component';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { filter } from 'lodash';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Coins, Home, Search, Settings2, Users } from 'lucide-react';
+import { Coins, Download, Home, Search, Settings2, Users } from 'lucide-react';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import {
@@ -144,6 +144,9 @@ export default function CHWView() {
             />
 
             <ViewColumns table={table} />
+            <Button variant="outline" className="text-muted-foreground">
+              <Download className="w-4 h-4 mr-1" /> Download
+            </Button>
           </div>
 
           <CambodiaTable table={table} tableHeight="h-[calc(100vh-460px)] " />

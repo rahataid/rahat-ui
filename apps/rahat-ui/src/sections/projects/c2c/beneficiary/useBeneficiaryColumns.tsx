@@ -116,9 +116,11 @@ export const useProjectBeneficiaryTableColumns = () => {
         if (balanceValue && !isNaN(balanceValue)) {
           const balance = parseFloat(formatEther(BigInt(balanceValue)));
 
+          // Format as a decimal with two decimal places
           const formatted = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
+            style: 'decimal', // Use 'decimal' instead of 'currency'
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
           }).format(balance);
 
           return <div className="font-medium">{formatted}</div>;

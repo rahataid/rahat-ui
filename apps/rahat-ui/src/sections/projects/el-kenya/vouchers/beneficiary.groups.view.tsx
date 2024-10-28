@@ -27,12 +27,19 @@ export default function BeneficiaryGroupsView({
   const { id } = useParams() as { id: UUID };
   const [searchTerm, setSearchTerm] = React.useState<string>('');
 
-  const { data: beneficiaryGroups } = useFindAllBeneficiaryGroups(id as UUID, {
+  const { data: benefGroups } = useFindAllBeneficiaryGroups(id as UUID, {
     page: 1,
     perPage: 100,
     order: 'desc',
     sort: 'createdAt',
   });
+
+  const beneficiaryGroups = React.useMemo(() => {
+    return benefGroups?.filter(
+      (group: any) => group?._count?.groupedBeneficiaries > 0,
+    );
+  }, [benefGroups]);
+
   const filteredGroups = React.useMemo(() => {
     return beneficiaryGroups.filter((group) =>
       group.name?.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -55,7 +62,6 @@ export default function BeneficiaryGroupsView({
       setDisbursementData(benificiaryDisbursement);
     }
   }, [benificiaryDisbursement]);
-  console.log(beneficiaryGroups, disbursementData);
 
   const handleSearch = React.useCallback((value: string) => {
     setSearchTerm(value);

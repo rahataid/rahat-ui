@@ -97,7 +97,13 @@ export const useElkenyaBeneficiaryTableColumns = ({
       accessorKey: 'location',
       header: 'Location',
       cell: ({ row }) => {
-        return <div>{row?.original?.extras?.location || 'N/A'}</div>;
+        return (
+          <div>
+            {row?.original?.extras?.location ||
+              row?.original?.projectData?.location ||
+              'N/A'}
+          </div>
+        );
       },
     },
     {

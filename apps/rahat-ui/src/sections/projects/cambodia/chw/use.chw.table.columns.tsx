@@ -12,14 +12,40 @@ export const useCambodiaChwTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-      accessorKey: 'phone',
-      header: 'Phone',
-      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
+      accessorKey: '_count',
+      header: 'Home Visit',
+      cell: ({ row }) => <div> {row?.original?._count?.HOME_VISIT} </div>,
     },
     {
-      accessorKey: 'koboUsername',
-      header: 'User Name',
-      cell: ({ row }) => <div>{row.getValue('koboUsername')}</div>,
+      accessorKey: '_count',
+      header: 'Sales Count',
+      cell: ({ row }) => <div> {row?.original?._count?.SALE} </div>,
+    },
+    {
+      accessorKey: '_count',
+      header: 'Leads Provided',
+      cell: ({ row }) => <div> {row?.original?._count?.LEAD} </div>,
+    },
+    {
+      accessorKey: '_count',
+      header: 'Leads Converted',
+      cell: ({ row }) => <div> {row?.original?._count?.LeadConversions} </div>,
+    },
+    // {
+    //   accessorKey: 'phone',
+    //   header: 'Phone',
+    //   cell: ({ row }) => <div>{row.getValue('phone')}</div>,
+    // },
+    // {
+    //   accessorKey: 'koboUsername',
+    //   header: 'User Name',
+    //   cell: ({ row }) => <div>{row.getValue('koboUsername')}</div>,
+    // },
+
+    {
+      accessorKey: 'vendor',
+      header: 'Vision Center',
+      cell: ({ row }) => <div> {row?.original?.vendor?.name} </div>,
     },
 
     {

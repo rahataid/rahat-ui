@@ -105,7 +105,7 @@ export default function CHWView() {
             Track all the health workers here.
           </p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-7">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-7">
           <DataCard
             title="Home Visits"
             number={stats?.data?.home_visits}
@@ -121,6 +121,12 @@ export default function CHWView() {
           <DataCard
             title="Leads Provided"
             number={stats?.data?.leads}
+            Icon={Users}
+            className="rounded-lg border-solid"
+          />
+          <DataCard
+            title="Leads Converted"
+            number={stats?.data?.leads_converted}
             Icon={Users}
             className="rounded-lg border-solid"
           />

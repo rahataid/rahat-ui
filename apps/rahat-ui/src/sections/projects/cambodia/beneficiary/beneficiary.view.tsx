@@ -83,13 +83,12 @@ export default function BeneficiaryView() {
       rowSelection: selectedListItems,
     },
   });
-  console.log(filters);
   return (
     <>
       <div className="p-4 bg-white ">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="font-semibold text-2xl mb-">Benificiaries</h1>
+            <h1 className="font-semibold text-2xl mb-">Beneficiaries</h1>
             <p className="text-muted-foreground">
               Track all the beneficiaries here.
             </p>

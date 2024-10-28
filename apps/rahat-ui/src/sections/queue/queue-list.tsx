@@ -184,7 +184,16 @@ const QueueList: React.FC = () => {
                   </TableHeader>
                   <TableBody>
                     {data?.map(
-                      (job: { id: string; name: string; status: string }) => (
+                      (job: {
+                        id: string;
+                        name: string;
+                        status: string;
+                        processedOn: string;
+                        finishedOn: string;
+                        attemptsMade: number;
+                        failedReason: string;
+                        data: any;
+                      }) => (
                         <TableRow
                           key={job.id}
                           className="hover:bg-gray-50 dark:hover:bg-gray-800 border-b border-gray-200 dark:border-gray-700 cursor-pointer"
@@ -202,8 +211,7 @@ const QueueList: React.FC = () => {
                             {new Date(job.finishedOn).toLocaleString()}
                           </TableCell>
                           <TableCell className="p-4 text-gray-800 dark:text-gray-300 text-left whitespace-nowrap">
-                            {/* {job.status} */}
-                            ssss
+                            {job.status}
                           </TableCell>
 
                           <TableCell className="p-4 text-gray-800 dark:text-gray-300 text-left whitespace-nowrap">

@@ -13,6 +13,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useParams, useRouter } from 'next/navigation';
 import SearchInput from '../../components/search.input';
 import AddButton from '../../components/add.btn';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 function BeneficiaryGroupsView() {
   const { id } = useParams() as { id: UUID };
@@ -31,10 +32,10 @@ function BeneficiaryGroupsView() {
   } = usePagination();
 
   useEffect(() => {
-    setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
+    setPagination({ page: 1, perPage: 100, order: 'desc', sort: 'createdAt' });
   }, []);
 
-  const { data: groups } = useFindAllBeneficiaryGroups(id as UUID);
+  const { data: groups, isLoading } = useFindAllBeneficiaryGroups(id as UUID);
 
   const filteredGroups = React.useMemo(() => {
     return groups.filter((group) =>
@@ -57,7 +58,7 @@ function BeneficiaryGroupsView() {
   return (
     <>
       <div className="p-4 rounded-sm border">
-        <div className="flex justify-between space-x-2 items-center mb-4">
+        <div className="flex justify-between space-x-2 items-center mb-2">
           <SearchInput
             className="w-full"
             name="group"
@@ -68,8 +69,10 @@ function BeneficiaryGroupsView() {
             path={`/projects/el-kenya/${id}/beneficiary/group/add`}
           />
         </div>
-        <ScrollArea className="h-[calc(100vh-300px)]">
-          {filteredGroups.length > 0 ? (
+        <ScrollArea className="h-[calc(100vh-226px)]">
+          {isLoading ? (
+            <TableLoader />
+          ) : filteredGroups.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">
               {filteredGroups?.map((i: any, index: number) => {
                 return (

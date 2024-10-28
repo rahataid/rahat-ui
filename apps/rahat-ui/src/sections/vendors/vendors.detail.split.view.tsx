@@ -139,7 +139,7 @@ export default function VendorsDetailSplitView({
             <p>Project Name</p>
           </div>
           <p className="text-muted-foreground text-base">
-            {vendorsDetail?.name || '-'}
+            {vendorsDetail?.projectName || '-'}
           </p>
         </div>
 

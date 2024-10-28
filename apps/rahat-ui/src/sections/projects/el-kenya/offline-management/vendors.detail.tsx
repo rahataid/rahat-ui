@@ -28,10 +28,11 @@ export default function VendorsDetail() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowData, setRowData] = React.useState([]);
-  const { data: offlineVendor, isSuccess } = useGetOfflineSingleVendor(
-    id as UUID,
-    Number(vid),
-  );
+  const {
+    data: offlineVendor,
+    isSuccess,
+    isLoading,
+  } = useGetOfflineSingleVendor(id as UUID, Number(vid));
   const cardData = [
     { name: 'Offline Beneficiaries', value: offlineVendor?.data.length },
     {
@@ -81,11 +82,11 @@ export default function VendorsDetail() {
         subtitle="Here is the detailed view of selected vendor"
         path={`/projects/el-kenya/${id}/offline-management`}
       />
-      <div className="p-4 grid grid-cols-3 gap-4 mb-5">
+      <div className="p-4 pt-0 grid grid-cols-3 gap-4">
         {cardData?.map((d) => (
-          <div className="rounded-sm bg-card p-4 shadow-md">
+          <div className="rounded-sm bg-card p-4 shadow-md border">
             <div className="flex justify-between items-center">
-              <h1 className="text-sm">{d.name}</h1>
+              <h1 className="text-base font-medium">{d.name}</h1>
               <div className="p-1 rounded-full bg-secondary">
                 <UsersRound size={16} strokeWidth={2.5} />
               </div>
@@ -94,13 +95,13 @@ export default function VendorsDetail() {
           </div>
         ))}
       </div>
-      <div className="mb-5">
+      <div className="mb-4">
         <h1 className=" font-semibold text-xl ">Offline Beneficiary</h1>
         <p className="text-muted-foreground text-base">
           List of offline beneficiaries
         </p>
       </div>
-      <div className="rounded border bg-card p-4">
+      <div className="rounded border bg-card p-4 pb-0">
         <div className="flex justify-between space-x-2 mb-2">
           <SearchInput
             className="w-full"
@@ -111,7 +112,11 @@ export default function VendorsDetail() {
             }
           />
         </div>
-        <ElkenyaTable table={table} tableHeight="h-[calc(100vh-500px)]" />
+        <ElkenyaTable
+          table={table}
+          tableHeight="h-[calc(100vh-467px)]"
+          loading={isLoading}
+        />
         <ClientSidePagination table={table} />
       </div>
     </div>

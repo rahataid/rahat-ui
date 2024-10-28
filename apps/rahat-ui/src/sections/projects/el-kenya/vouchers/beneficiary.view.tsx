@@ -123,7 +123,7 @@ export default function BeneficiaryView({
 
   return (
     <>
-      <div className="p-4">
+      <div className="p-4 pt-2">
         <div className="rounded border bg-card p-4">
           <div className="flex justify-between space-x-2 mb-2">
             {/* <SearchInput
@@ -141,12 +141,16 @@ export default function BeneficiaryView({
                 table.getColumn('phone')?.setFilterValue(event.target.value)
               }
             />
-            <Button type="button" onClick={() => handleNext()}>
+            <Button
+              type="button"
+              onClick={() => handleNext()}
+              disabled={table.getSelectedRowModel().rows.length === 0}
+            >
               <Plus size={18} className="mr-1" />
               Bulk Assign
             </Button>
           </div>
-          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-656px)]" />
+          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-571px)]" />
         </div>
       </div>
       <CustomPagination

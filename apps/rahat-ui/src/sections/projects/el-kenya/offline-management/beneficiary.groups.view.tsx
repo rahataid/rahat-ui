@@ -33,7 +33,7 @@ export default function BeneficiaryGroupsView({
   }, []);
 
   return (
-    <div className="rounded border bg-card p-4 mx-4 mb-4">
+    <div className="rounded border bg-card p-4 m-4">
       <div className="flex justify-between space-x-2 mb-2">
         <SearchInput
           className="w-full"
@@ -41,7 +41,7 @@ export default function BeneficiaryGroupsView({
           onSearch={(e) => handleSearch(e.target.value)}
         />
       </div>
-      <ScrollArea className="h-[calc(100vh-500px)]">
+      <ScrollArea className="h-[calc(100vh-475px)]">
         {filteredGroups?.length > 0 ? (
           <div className="grid grid-cols-4 gap-4">
             {filteredGroups?.map((benificiaryGroup) => {
@@ -65,7 +65,7 @@ export default function BeneficiaryGroupsView({
                             );
                             handleStepDataChange({
                               target: {
-                                name: 'selectedGroups',
+                                name: 'groups',
                                 value: currentData,
                               },
                             });
@@ -82,11 +82,11 @@ export default function BeneficiaryGroupsView({
                     <div className="text-muted-foreground text-sm flex justify-between">
                       <div className="flex gap-2 items-center">
                         <Users size={18} strokeWidth={2} />
-                        {benificiaryGroup?._count?.groupedBeneficiaries}
+                        {benificiaryGroup?.groupedBeneficiaries?.length}
                       </div>
                       <div className="flex gap-2 items-center">
                         <Banknote size={18} strokeWidth={2} />
-                        {benificiaryGroup?._count?.groupedBeneficiaries}
+                        {benificiaryGroup?.groupedBeneficiaries?.length}
                       </div>
                     </div>
                   </div>

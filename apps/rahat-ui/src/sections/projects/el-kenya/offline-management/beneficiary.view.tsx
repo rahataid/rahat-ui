@@ -61,7 +61,7 @@ export default function BeneficiaryView({
   }, [rowSelection]);
 
   return (
-    <div className="p-4">
+    <div className="p-4 pt-2">
       <div className="rounded border bg-card p-4">
         <div className="flex justify-between space-x-2 mb-2">
           <SearchInput
@@ -73,7 +73,7 @@ export default function BeneficiaryView({
             }
           />
         </div>
-        <ElkenyaTable table={table} tableHeight="h-[calc(100vh-560px)]" />
+        <ElkenyaTable table={table} tableHeight="h-[calc(100vh-520px)]" />
       </div>
     </div>
   );

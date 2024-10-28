@@ -7,9 +7,9 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useElkenyaBeneficiaryTableColumns } from './use.beneficiary.table.columns';
-import React from 'react';
+import React, { useEffect } from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import AddButton from '../../components/add.btn';
@@ -33,6 +33,14 @@ export default function BeneficiaryView() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
+  const [defaultValue, setDefaultValue] = React.useState<string>('beneficiary');
+
+  const searchParams = useSearchParams();
+  const tab = searchParams.get('tab') || 'beneficiary';
+
+  useEffect(() => {
+    setDefaultValue(tab);
+  }, [tab]);
   const {
     pagination,
     filters,
@@ -49,7 +57,7 @@ export default function BeneficiaryView() {
     setFilters('');
   }, []);
 
-  const beneficiaries = useProjectBeneficiaries({
+  const { data: beneficiaries, isLoading } = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
@@ -57,18 +65,19 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...filters,
   });
-  const meta = beneficiaries.data.response?.meta;
+
+  const meta = beneficiaries?.response?.meta;
 
   const handleViewClick = (rowData: any) => {
     router.push(
-      `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${rowData.name}&&walletAddress=${rowData.walletAddress}&&gender=${rowData.gender}&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${rowData.eyeCheckupStatus}&&glassesStatus=${rowData.glassesStatus}&&voucherType=${rowData.voucherType}&&phone=${rowData.phone}&&type=${rowData.type}&&location=${rowData?.projectData?.location}`,
+      `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${rowData.name}&&walletAddress=${rowData.walletAddress}&&gender=${rowData.gender}&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${rowData.eyeCheckupStatus}&&glassesStatus=${rowData.glassesStatus}&&voucherType=${rowData.voucherType}&&phone=${rowData.phone}&&type=${rowData.type}&&location=${rowData?.projectData?.location}&&serialNumber=${rowData?.extras?.serialNumber}`,
     );
   };
 
   const columns = useElkenyaBeneficiaryTableColumns({ handleViewClick });
   const table = useReactTable({
     manualPagination: true,
-    data: beneficiaries.data?.data || [],
+    data: beneficiaries?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -84,23 +93,13 @@ export default function BeneficiaryView() {
       rowSelection: selectedListItems,
     },
   });
+  const onTabChange = (value) => {
+    setDefaultValue(value);
+  };
+
   return (
-    <Tabs defaultValue="beneficiary">
-      <TabsContent value="beneficiary">
-        <div>
-          <h1 className="font-semibold text-2xl text-label pl-4">
-            Beneficiary
-          </h1>
-        </div>
-      </TabsContent>
-      <TabsContent value="beneficiaryGroups">
-        <div>
-          <h1 className="font-semibold text-2xl text-label pl-4">
-            Beneficiary Groups
-          </h1>
-        </div>
-      </TabsContent>
-      <div className="flex justify-between items-center p-4">
+    <Tabs value={defaultValue} onValueChange={onTabChange}>
+      <div className="flex justify-between items-center p-4 pb-0">
         <TabsList className="border bg-secondary rounded">
           <TabsTrigger
             id="beneficiary"
@@ -127,19 +126,9 @@ export default function BeneficiaryView() {
         </Button>
       </div>
       <TabsContent value="beneficiary">
-        <div className="p-4">
+        <div className="p-4 pt-2">
           <div className="rounded border bg-card p-4">
             <div className="flex justify-between space-x-2 mb-2">
-              {/* <SearchInput
-                className="w-full"
-                name="beneficiary"
-                value={
-                  (table.getColumn('name')?.getFilterValue() as string) ?? ''
-                }
-                onSearch={(event) =>
-                  table.getColumn('name')?.setFilterValue(event.target.value)
-                }
-              /> */}
               <SearchInput
                 className="w-full"
                 name="phone number"
@@ -155,7 +144,7 @@ export default function BeneficiaryView() {
                 path={`/projects/el-kenya/${id}/beneficiary/add`}
               />
             </div>
-            <div className="flex justify-between gap-2 mb-4">
+            <div className="flex justify-between gap-2 mb-2">
               <SelectComponent
                 onChange={(e) => setFilters({ ...filters, voucherType: e })}
                 name="Voucher Type"
@@ -194,16 +183,17 @@ export default function BeneficiaryView() {
               <FiltersTags
                 filters={filters}
                 setFilters={setFilters}
-                total={beneficiaries.data.data.length}
+                total={beneficiaries?.data?.length}
               />
             )}
             <ElkenyaTable
               table={table}
               tableHeight={
                 Object.keys(filters).length
-                  ? 'h-[calc(100vh-463px)]'
-                  : 'h-[calc(100vh-397px)]'
+                  ? 'h-[calc(100vh-389px)]'
+                  : 'h-[calc(100vh-323px)]'
               }
+              loading={isLoading}
             />
           </div>
         </div>
@@ -218,7 +208,7 @@ export default function BeneficiaryView() {
         />
       </TabsContent>
       <TabsContent value="beneficiaryGroups">
-        <div className="p-4">
+        <div className="p-4 pt-2">
           <BeneficiaryGroupView />
         </div>
       </TabsContent>

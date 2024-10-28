@@ -1,5 +1,9 @@
-'use client'
-import { dataTagSymbol, useListRedemptions, usePagination } from '@rahat-ui/query';
+'use client';
+import {
+  dataTagSymbol,
+  useListRedemptions,
+  usePagination,
+} from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -14,6 +18,10 @@ import React from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import AddButton from '../../components/add.btn';
+import SelectComponent from '../select.component';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import FiltersTags from '../../components/filtersTags';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export const redemptionType = [
   {
@@ -48,12 +56,18 @@ export default function ClaimView() {
     resetSelectedListItems,
   } = usePagination();
 
+  React.useEffect(() => {
+    setFilters('');
+  }, []);
+
+  const debouncedFilters = useDebounce(filters, 500);
+
   const columns = useTableColumn();
 
-  const {data, isSuccess} = useListRedemptions(id,{
-    page:pagination.page,
-    perPage:pagination.perPage,
-    ...filters
+  const { data, isSuccess, isLoading } = useListRedemptions(id, {
+    page: pagination.page,
+    perPage: pagination.perPage,
+    ...debouncedFilters,
   });
 
   const handleRedmpType = React.useCallback(
@@ -67,7 +81,6 @@ export default function ClaimView() {
     },
     [filters, setFilters],
   );
-
 
   const table = useReactTable({
     manualPagination: true,
@@ -96,15 +109,49 @@ export default function ClaimView() {
             Track all the claim reports here
           </p>
         </div>
-        <div className="rounded border bg-card p-4">
+        <div className="rounded border bg-card p-4 pb-0">
           <div className="flex justify-between space-x-2 mb-2">
             <SearchInput
               className="w-full"
               name="vendors"
-              onSearch={() => {}}
+              onSearch={(e) => {
+                setFilters({ ...filters, vendor: e.target.value });
+              }}
+              value={filters?.vendor || ''}
+            />
+            <SelectComponent
+              className="w-1/4"
+              onChange={(value) => handleRedmpType(value)}
+              name="Status"
+              options={['ALL', 'REQUESTED', 'APPROVED']}
+              value={filters?.status || ''}
             />
           </div>
-          <ElkenyaTable table={table} />
+          {Object.keys(filters).length != 0 && (
+            <FiltersTags
+              filters={filters}
+              setFilters={setFilters}
+              total={data?.redemptions?.length}
+            />
+          )}
+          <ElkenyaTable
+            table={table}
+            tableHeight={
+              Object.keys(filters).length
+                ? 'h-[calc(100vh-351px)]'
+                : 'h-[calc(100vh-285px)]'
+            }
+            loading={isLoading}
+          />
+          <CustomPagination
+            meta={data?.meta || { total: 0, currentPage: 0 }}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            currentPage={pagination.page}
+            perPage={pagination.perPage}
+            total={data?.meta?.lastPage || 0}
+          />
         </div>
       </div>
     </>

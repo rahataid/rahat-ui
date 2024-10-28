@@ -71,12 +71,16 @@ export const useElkenyaBeneficiaryTableColumns = ({
     {
       accessorKey: 'eyeCheckupStatus',
       header: 'Eye Checkup Status',
-      cell: ({ row }) => <Badge>{row.getValue('eyeCheckupStatus')}</Badge>,
+      cell: ({ row }) => (
+        <Badge>{row.getValue('eyeCheckupStatus') || 'N/A'}</Badge>
+      ),
     },
     {
       accessorKey: 'glassesStatus',
       header: 'Glasses Status',
-      cell: ({ row }) => <Badge>{row.getValue('glassesStatus')}</Badge>,
+      cell: ({ row }) => (
+        <Badge>{row.getValue('glassesStatus') || 'N/A'}</Badge>
+      ),
     },
     {
       accessorKey: 'voucherStatus',
@@ -86,6 +90,46 @@ export const useElkenyaBeneficiaryTableColumns = ({
         const colors = getDynamicColor(voucherStatus as string);
         return (
           <Badge className={colors}>{(voucherStatus as string) || 'N/A'}</Badge>
+        );
+      },
+    },
+    {
+      accessorKey: 'location',
+      header: 'Location',
+      cell: ({ row }) => {
+        return (
+          <div>
+            {row?.original?.extras?.location ||
+              row?.original?.projectData?.location ||
+              'N/A'}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'tokenAssigned',
+      header: 'Voucher Status',
+      cell: ({ row }) => {
+        const assignmentStatus =
+          row?.original?.graphData?.tokensAllocateds?.length ||
+          row?.original?.graphData?.walkInBeneficiaryAddeds?.length
+            ? 'Assigned'
+            : 'Not Assigned';
+        const timestamp =
+          row?.original?.graphData?.tokensAllocateds?.[0]?.blockTimestamp ||
+          row?.original?.graphData?.walkInBeneficiaryAddeds?.[0]
+            ?.blockTimestamp;
+        const tokenAssignedDate = timestamp
+          ? new Date(timestamp * 1000).toLocaleString()
+          : '';
+
+        return (
+          <div>
+            {assignmentStatus} <br />
+            <span className="text-sm text-muted-foreground">
+              {tokenAssignedDate}
+            </span>
+          </div>
         );
       },
     },

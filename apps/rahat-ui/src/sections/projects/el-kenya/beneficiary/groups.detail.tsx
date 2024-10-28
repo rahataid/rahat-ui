@@ -24,7 +24,7 @@ export default function GroupDetailView() {
   const projectModal = useBoolean();
   const removeModal = useBoolean();
 
-  const { data } = useRpSingleBeneficiaryGroup(id, groupid);
+  const { data, isLoading } = useRpSingleBeneficiaryGroup(id, groupid);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   // const columns = useBeneficiaryTableColumns();
@@ -69,7 +69,7 @@ export default function GroupDetailView() {
           <HeaderWithBack
             title={data?.name || 'N/A'}
             subtitle="Here is a detailed view of the selected beneficiary group"
-            path={`/projects/el-kenya/${id}/beneficiary`}
+            path={`/projects/el-kenya/${id}/beneficiary?tab=beneficiaryGroups`}
           />
           {/* <CoreBtnComponent
             className="text-primary bg-sky-50"
@@ -90,6 +90,7 @@ export default function GroupDetailView() {
           groupedBeneficiaries={data?.groupedBeneficiaries}
           groupUUID={groupid}
           name={data?.name}
+          loading={isLoading}
         />
       </div>
       <ClientSidePagination table={table} />

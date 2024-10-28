@@ -30,6 +30,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useFindAllBeneficiaryGroups,
   useFindAllDisbursements,
+  useFindUnSyncedBeneficaryGroup,
   useGetBeneficiariesDisbursements,
   usePagination,
   useProjectAction,
@@ -61,14 +62,7 @@ export default function SelectVendorMultiStepForm() {
   const [groupIds, setGroupIds] = React.useState([]);
 
   const getVendors = useProjectAction();
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-  } = usePagination();
+  const pagination = usePagination();
 
   const { data: disbursmentList, isSuccess } = useFindAllDisbursements(
     id as UUID,
@@ -76,8 +70,15 @@ export default function SelectVendorMultiStepForm() {
       hideAssignedBeneficiaries: true,
     },
   );
-  const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID, {
-    disableSync: true,
+  // const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID, {
+  //   disableSync: true,
+  // });
+
+  const { data: benGroups } = useFindUnSyncedBeneficaryGroup(id as UUID, {
+    page: 1,
+    perPage: 100,
+    disableSync: false,
+    hasDisbursement: true,
     order: 'desc',
     sort: 'createdAt',
   });
@@ -93,13 +94,13 @@ export default function SelectVendorMultiStepForm() {
   const { queryClient, rumsanService } = useRSQuery();
 
   const projectBeneficiaries = useProjectBeneficiaries({
-    page: pagination.page,
-    perPage: pagination.perPage,
+    page: pagination.pagination.page,
+    perPage: pagination.pagination.perPage,
     // pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...filters,
+    ...pagination.filters,
   });
 
   const formSchema = z.object({
@@ -197,7 +198,6 @@ export default function SelectVendorMultiStepForm() {
             voucherType: beneficiary.status,
           };
         });
-
       if (
         JSON.stringify(projectBeneficiaryDisbursements) !==
         JSON.stringify(rowData)
@@ -216,7 +216,6 @@ export default function SelectVendorMultiStepForm() {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
-  console.log(stepData.disbursements, 'stepData.disbursements');
 
   const handleSyncBen = async () => {
     setIsSyncing(true);
@@ -251,7 +250,7 @@ export default function SelectVendorMultiStepForm() {
       toast.error('Failed to sync');
     }
   };
-
+  pagination.meta = projectBeneficiaries.data.response?.meta;
   return (
     <div className="p-4">
       {activeStep === 0 && (
@@ -372,7 +371,16 @@ export default function SelectVendorMultiStepForm() {
             </Button>
           )}
           {activeStep < 2 && (
-            <Button onClick={handleNext} className="px-12">
+            <Button
+              onClick={handleNext}
+              disabled={
+                activeStep === 0
+                  ? Object.keys(stepData.vendor).length === 0
+                  : stepData.disbursements.length === 0 &&
+                    stepData.groups.length === 0
+              }
+              className="px-12"
+            >
               Next
             </Button>
           )}

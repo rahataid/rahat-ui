@@ -1,8 +1,5 @@
-import {
-  useListRpCommunicationLogs,
-  usePagination,
-  useSettingsStore,
-} from '@rahat-ui/query';
+import { useListRpCommunicationLogs, useSettingsStore } from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -10,19 +7,17 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { UUID } from 'crypto';
-import { useParams, useRouter } from 'next/navigation';
-import { useElkenyaSMSTableColumns } from './use.sms.table.columns';
-import React, { useEffect, useMemo } from 'react';
-import ElkenyaTable from '../table.component';
-import SearchInput from '../../components/search.input';
-import getIcon from 'apps/rahat-ui/src/utils/getIcon';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import ViewColumns from '../../components/view.columns';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Settings } from 'lucide-react';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import Pagination from 'apps/rahat-ui/src/components/pagination';
+import getIcon from 'apps/rahat-ui/src/utils/getIcon';
+import { UUID } from 'crypto';
+import { Settings } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import React, { useEffect, useMemo } from 'react';
+import SearchInput from '../../components/search.input';
+import ViewColumns from '../../components/view.columns';
+import ElkenyaTable from '../table.component';
+import { useElkenyaSMSTableColumns } from './use.sms.table.columns';
 
 export default function CommunicationView() {
   const { id } = useParams() as { id: UUID };
@@ -33,9 +28,8 @@ export default function CommunicationView() {
     succed: 0,
     failed: 0,
   });
-  const { data } = useListRpCommunicationLogs(id);
+  const { data, isLoading } = useListRpCommunicationLogs(id);
   const commsAppId = useSettingsStore((state) => state.commsSettings)?.APP_ID;
-
   useEffect(() => {
     setStats({
       succed: 0,
@@ -138,7 +132,14 @@ export default function CommunicationView() {
 
         <div className="rounded border bg-card p-4">
           <div className="flex justify-between space-x-2 mb-2">
-            <SearchInput className="w-full" name="" onSearch={() => {}} />
+            <SearchInput
+              className="w-full"
+              name=""
+              value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
+              onSearch={(event) =>
+                table.getColumn('to')?.setFilterValue(event.target.value)
+              }
+            />
             <ViewColumns table={table} />
             <Button
               onClick={() =>
@@ -148,7 +149,11 @@ export default function CommunicationView() {
               <Settings className="mr-1" size={18} /> Manage
             </Button>
           </div>
-          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-438px)]" />
+          <ElkenyaTable
+            table={table}
+            tableHeight="h-[calc(100vh-438px)]"
+            loading={isLoading}
+          />
         </div>
       </div>
       <Pagination

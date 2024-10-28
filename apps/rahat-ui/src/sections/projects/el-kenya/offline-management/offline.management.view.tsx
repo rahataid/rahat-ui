@@ -27,7 +27,11 @@ export default function OfflineManagementView() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
-  const { data: offlineVendors, isSuccess } = useGetOfflineVendors(id as UUID);
+  const {
+    data: offlineVendors,
+    isSuccess,
+    isLoading,
+  } = useGetOfflineVendors(id as UUID);
   const columns = useTableColumn();
   const table = useReactTable({
     manualPagination: true,
@@ -79,7 +83,11 @@ export default function OfflineManagementView() {
               Setup offline beneficiary
             </Button>
           </div>
-          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-293px)]" />
+          <ElkenyaTable
+            table={table}
+            tableHeight="h-[calc(100vh-293px)]"
+            loading={isLoading}
+          />
           {/* <Pagination
             pageIndex={table.getState().pagination.pageIndex}
             pageCount={table.getPageCount()}

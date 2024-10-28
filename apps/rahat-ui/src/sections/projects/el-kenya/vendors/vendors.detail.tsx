@@ -26,8 +26,11 @@ export default function VendorsDetail() {
   const vendorWallet = searchParams.get('walletAddress') || '';
   const vendorId = searchParams.get('vendorId');
 
-  const { data } = useGetOfflineSingleVendor(id as UUID, Number(vendorId));
-  const { data: vendorTransactions } = useKenyaVendorTransactions(
+  const { data, isLoading: isVendorLoading } = useGetOfflineSingleVendor(
+    id as UUID,
+    Number(vendorId),
+  );
+  const { data: vendorTransactions, isLoading } = useKenyaVendorTransactions(
     vendorId as string,
   );
   const [walletAddressCopied, setWalletAddressCopied] =
@@ -98,10 +101,16 @@ export default function VendorsDetail() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="transactionHistory">
-          <VendorsTransactionsHistory tableData={vendorTransactions} />
+          <VendorsTransactionsHistory
+            tableData={vendorTransactions}
+            loading={isLoading}
+          />
         </TabsContent>
         <TabsContent value="beneficiaryList">
-          <VendorsBeneficiaryList beneficiaryList={data?.data} />
+          <VendorsBeneficiaryList
+            beneficiaryList={data?.data}
+            loading={isVendorLoading}
+          />
         </TabsContent>
       </Tabs>
     </div>

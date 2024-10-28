@@ -9,7 +9,10 @@ import { useElkenyaVendorsTransactionsTableColumns } from './columns/use.vendors
 import React from 'react';
 import ElkenyaTable from '../table.component';
 
-export default function VendorsTransactionsHistory(tableData: any) {
+export default function VendorsTransactionsHistory(
+  tableData: any,
+  loading?: boolean,
+) {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -27,7 +30,11 @@ export default function VendorsTransactionsHistory(tableData: any) {
   });
   return (
     <div className="p-4 border rounded-sm">
-      <ElkenyaTable table={table} tableHeight="h-[calc(100vh-380px)]" />
+      <ElkenyaTable
+        table={table}
+        tableHeight="h-[calc(100vh-380px)]"
+        loading={loading}
+      />
     </div>
   );
 }

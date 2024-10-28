@@ -28,7 +28,7 @@ export default function CommunicationView() {
     succed: 0,
     failed: 0,
   });
-  const { data } = useListRpCommunicationLogs(id);
+  const { data, isLoading } = useListRpCommunicationLogs(id);
   const commsAppId = useSettingsStore((state) => state.commsSettings)?.APP_ID;
   useEffect(() => {
     setStats({
@@ -149,7 +149,11 @@ export default function CommunicationView() {
               <Settings className="mr-1" size={18} /> Manage
             </Button>
           </div>
-          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-438px)]" />
+          <ElkenyaTable
+            table={table}
+            tableHeight="h-[calc(100vh-438px)]"
+            loading={isLoading}
+          />
         </div>
       </div>
       <Pagination

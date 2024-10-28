@@ -33,7 +33,7 @@ export default function useTableColumn() {
     {
       accessorKey: 'status',
       header: 'Sync Status',
-      cell: ({ row }) => <div>{row.getValue('status')}</div>,
+      cell: ({ row }) => <div>{row.getValue('status') ?? '-'}</div>,
     },
     {
       id: 'actions',

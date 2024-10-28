@@ -128,7 +128,7 @@ export default function ClaimView() {
             />
           </div>
           {Object.keys(filters).length != 0 && (
-            <FiltersTags filters={filters} setFilters={setFilters} />
+            <FiltersTags filters={filters} setFilters={setFilters} total={data?.redemptions?.length} />
           )}
           <ElkenyaTable
             table={table}

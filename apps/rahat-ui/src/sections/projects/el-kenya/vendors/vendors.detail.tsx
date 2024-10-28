@@ -68,7 +68,7 @@ export default function VendorsDetail() {
         </div> */}
         <div>
           <h1 className="text-md text-muted-foreground">Phone Number</h1>
-          <p className="font-medium">{phone ?? 'N/A'}</p>
+          <p className="font-medium">{phone || 'N/A'}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Wallet Address</h1>

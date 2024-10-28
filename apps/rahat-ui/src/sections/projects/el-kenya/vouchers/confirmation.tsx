@@ -72,7 +72,7 @@ const BeneficiaryItem = ({ ben, beneficiaryGroupSelected }) => (
       <div className="p-2 rounded-full bg-secondary">
         <User size={18} strokeWidth={1.5} />
       </div>
-      <p>{ben?.phone}</p>
+      <p>{beneficiaryGroupSelected ? ben?.name : ben?.phone}</p>
     </div>
     {beneficiaryGroupSelected && (
       <p>{ben?._count?.groupedBeneficiaries} beneficiaries</p>

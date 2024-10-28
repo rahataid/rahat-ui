@@ -57,7 +57,7 @@ export default function BeneficiaryView() {
     setFilters('');
   }, []);
 
-  const beneficiaries = useProjectBeneficiaries({
+  const { data: beneficiaries, isLoading } = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
@@ -65,18 +65,19 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...filters,
   });
-  const meta = beneficiaries.data.response?.meta;
+
+  const meta = beneficiaries?.response?.meta;
 
   const handleViewClick = (rowData: any) => {
     router.push(
-      `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${rowData.name}&&walletAddress=${rowData.walletAddress}&&gender=${rowData.gender}&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${rowData.eyeCheckupStatus}&&glassesStatus=${rowData.glassesStatus}&&voucherType=${rowData.voucherType}&&phone=${rowData.phone}&&type=${rowData.type}&&location=${rowData?.projectData?.location}`,
+      `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${rowData.name}&&walletAddress=${rowData.walletAddress}&&gender=${rowData.gender}&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${rowData.eyeCheckupStatus}&&glassesStatus=${rowData.glassesStatus}&&voucherType=${rowData.voucherType}&&phone=${rowData.phone}&&type=${rowData.type}&&location=${rowData?.projectData?.location}&&serialNumber=${rowData?.extras?.serialNumber}`,
     );
   };
 
   const columns = useElkenyaBeneficiaryTableColumns({ handleViewClick });
   const table = useReactTable({
     manualPagination: true,
-    data: beneficiaries.data?.data || [],
+    data: beneficiaries?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -98,20 +99,6 @@ export default function BeneficiaryView() {
 
   return (
     <Tabs value={defaultValue} onValueChange={onTabChange}>
-      {/* <TabsContent value="beneficiary">
-        <div>
-          <h1 className="font-semibold text-2xl text-label pl-4">
-            Beneficiary
-          </h1>
-        </div>
-      </TabsContent>
-      <TabsContent value="beneficiaryGroups">
-        <div>
-          <h1 className="font-semibold text-2xl text-label pl-4">
-            Beneficiary Groups
-          </h1>
-        </div>
-      </TabsContent> */}
       <div className="flex justify-between items-center p-4 pb-0">
         <TabsList className="border bg-secondary rounded">
           <TabsTrigger
@@ -142,16 +129,6 @@ export default function BeneficiaryView() {
         <div className="p-4 pt-2">
           <div className="rounded border bg-card p-4">
             <div className="flex justify-between space-x-2 mb-2">
-              {/* <SearchInput
-                className="w-full"
-                name="beneficiary"
-                value={
-                  (table.getColumn('name')?.getFilterValue() as string) ?? ''
-                }
-                onSearch={(event) =>
-                  table.getColumn('name')?.setFilterValue(event.target.value)
-                }
-              /> */}
               <SearchInput
                 className="w-full"
                 name="phone number"
@@ -206,7 +183,7 @@ export default function BeneficiaryView() {
               <FiltersTags
                 filters={filters}
                 setFilters={setFilters}
-                total={beneficiaries.data.data.length}
+                total={beneficiaries?.data?.length}
               />
             )}
             <ElkenyaTable
@@ -216,6 +193,7 @@ export default function BeneficiaryView() {
                   ? 'h-[calc(100vh-389px)]'
                   : 'h-[calc(100vh-323px)]'
               }
+              loading={isLoading}
             />
           </div>
         </div>

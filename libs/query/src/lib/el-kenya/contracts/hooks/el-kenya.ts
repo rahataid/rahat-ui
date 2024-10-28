@@ -152,13 +152,13 @@ export const useBulkAssignKenyaVoucher = (
         });
       },
       onSuccess: async (data, variables, context) => {
-        await bulkAssignDisbursement.mutateAsync({
-          amount: 1,
-          beneficiaries: variables.beneficiaryAddresses.map((b) => {
-            return { walletAddress: b.walletAddress, phone: b.phone };
-          }),
-          tokenAddress,
-        });
+        // await bulkAssignDisbursement.mutateAsync({
+        //   amount: 1,
+        //   beneficiaries: variables.beneficiaryAddresses.map((b) => {
+        //     return { walletAddress: b.walletAddress, phone: b.phone };
+        //   }),
+        //   tokenAddress,
+        // });
         alert.fire({
           icon: 'success',
           title:

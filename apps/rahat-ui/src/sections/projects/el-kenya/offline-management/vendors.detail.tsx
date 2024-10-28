@@ -28,10 +28,11 @@ export default function VendorsDetail() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowData, setRowData] = React.useState([]);
-  const { data: offlineVendor, isSuccess } = useGetOfflineSingleVendor(
-    id as UUID,
-    Number(vid),
-  );
+  const {
+    data: offlineVendor,
+    isSuccess,
+    isLoading,
+  } = useGetOfflineSingleVendor(id as UUID, Number(vid));
   const cardData = [
     { name: 'Offline Beneficiaries', value: offlineVendor?.data.length },
     {
@@ -111,7 +112,11 @@ export default function VendorsDetail() {
             }
           />
         </div>
-        <ElkenyaTable table={table} tableHeight="h-[calc(100vh-467px)]" />
+        <ElkenyaTable
+          table={table}
+          tableHeight="h-[calc(100vh-467px)]"
+          loading={isLoading}
+        />
         <ClientSidePagination table={table} />
       </div>
     </div>

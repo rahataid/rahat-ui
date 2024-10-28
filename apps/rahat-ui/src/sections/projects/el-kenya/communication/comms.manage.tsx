@@ -4,6 +4,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import AddButton from '../../components/add.btn';
 import { useListRpCampaign, usePagination } from '@rahat-ui/query';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+import { Pencil } from 'lucide-react';
 
 export default function ManageTexts() {
   const { id } = useParams() as { id: UUID };
@@ -38,7 +40,19 @@ export default function ManageTexts() {
                 router.push(`/projects/el-kenya/${id}/communication/${i.uuid}`)
               }
             >
-              <h1 className="mb-4 text-lg font-medium">{i.name}</h1>
+              <div className="flex justify-between items-center z-100">
+                <h1 className="mb-4 text-lg font-medium">{i.name}</h1>
+                <TooltipComponent
+                  handleOnClick={(event) => {
+                    event.stopPropagation(); // Prevent triggering the main div's onClick
+                    router.push(
+                      `/projects/el-kenya/${id}/communication/edit/${i.uuid}`,
+                    );
+                  }}
+                  Icon={Pencil}
+                  tip="Edit"
+                />
+              </div>
               <div className="flex justify-between items-center">
                 <div>
                   <h1 className="text-sm text-muted-foreground">Status</h1>

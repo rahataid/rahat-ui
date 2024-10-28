@@ -68,7 +68,10 @@ const QueueList: React.FC = () => {
     startDate: '',
     endDate: '',
   });
-  const { data, isLoading } = useQueueJobsQuery(queueType, filters);
+  const { data, isLoading } = useQueueJobsQuery(queueType, {
+    ...filters,
+    status: filters.status ? [filters.status] : undefined,
+  });
   const [selectedJob, setSelectedJob] = useState(null);
 
   const handleChange = (
@@ -88,7 +91,6 @@ const QueueList: React.FC = () => {
   const closeJobDetails = () => {
     setSelectedJob(null);
   };
-  console.log('selectedJob', selectedJob);
 
   return (
     <div className="p-6 space-y-6 rounded-lg bg-white text-gray-800 shadow-lg dark:bg-gray-900 dark:text-gray-200 transition-colors">

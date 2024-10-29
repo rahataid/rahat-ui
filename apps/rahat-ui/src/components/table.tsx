@@ -16,9 +16,9 @@ type IProps = {
 
 export default function DemoTable({ table, tableHeight }: IProps) {
   return (
-    <TableComponent>
-      <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
-        <TableHeader>
+    <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
+      <TableComponent>
+        <TableHeader className="sticky top-0 bg-card">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -61,7 +61,7 @@ export default function DemoTable({ table, tableHeight }: IProps) {
             </TableRow>
           )}
         </TableBody>
-      </ScrollArea>
-    </TableComponent>
+      </TableComponent>
+    </ScrollArea>
   );
 }

@@ -151,9 +151,9 @@ export default function VendorsTable({
       <div>
         {table.getRowModel().rows?.length ? (
           <>
-            <TableComponent>
-              <ScrollArea className="h-[calc(100vh-285px)]">
-                <TableHeader>
+            <ScrollArea className="h-[calc(100vh-285px)]">
+              <TableComponent>
+                <TableHeader className="sticky top-0 bg-card">
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
                       {headerGroup.headers.map((header) => {
@@ -188,8 +188,8 @@ export default function VendorsTable({
                     </TableRow>
                   ))}
                 </TableBody>
-              </ScrollArea>
-            </TableComponent>
+              </TableComponent>
+            </ScrollArea>
           </>
         ) : (
           <div className="w-full h-[calc(100vh-290px)]">

@@ -18,12 +18,12 @@ type IProps = {
 
 export default function ElkenyaTable({ table, tableHeight, loading }: IProps) {
   return (
-    <TableComponent>
-      <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
-        {loading ? (
-          <TableLoader />
-        ) : (
-          <>
+    <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
+      {loading ? (
+        <TableLoader />
+      ) : (
+        <>
+          <TableComponent>
             <TableHeader className="sticky top-0 bg-card">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -70,9 +70,9 @@ export default function ElkenyaTable({ table, tableHeight, loading }: IProps) {
                 </TableRow>
               )}
             </TableBody>
-          </>
-        )}
-      </ScrollArea>
-    </TableComponent>
+          </TableComponent>
+        </>
+      )}
+    </ScrollArea>
   );
 }

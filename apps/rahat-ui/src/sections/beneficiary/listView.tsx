@@ -215,8 +215,8 @@ export default function ListView({
             total={table.getRowModel().rows?.length}
           />
         )}
-        <TableComponent>
-          <ScrollArea className="h-[calc(100vh-340px)]">
+        <ScrollArea className="h-[calc(100vh-340px)]">
+          <TableComponent>
             <TableHeader className="sticky top-0 bg-card">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -276,8 +276,8 @@ export default function ListView({
                 </TableRow>
               )}
             </TableBody>
-          </ScrollArea>
-        </TableComponent>
+          </TableComponent>
+        </ScrollArea>
       </div>
     </>
   );

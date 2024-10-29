@@ -51,7 +51,11 @@ export default function BeneficiaryView({
     resetSelectedListItems,
   } = usePagination();
 
-  const benData = useFindUnSyncedBenefiicaries(id, {
+  const {
+    data: benData,
+    isLoading,
+    isSuccess,
+  } = useFindUnSyncedBenefiicaries(id, {
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
@@ -63,7 +67,7 @@ export default function BeneficiaryView({
   const [rowData, setRowData] = React.useState<Payment[]>([]);
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const meta = benData?.data?.response?.meta;
+  const meta = benData?.response?.meta;
 
   const columns = useBeneficiaryTableColumns();
   const table = useReactTable({
@@ -96,8 +100,8 @@ export default function BeneficiaryView({
   }, [rowSelection]);
 
   useEffect(() => {
-    if (benData?.isSuccess) {
-      const unSyncedBeneficiaries = benData?.data?.data?.map((beneficiary) => {
+    if (isSuccess) {
+      const unSyncedBeneficiaries = benData?.data?.map((beneficiary) => {
         return {
           name: beneficiary?.piiData?.name,
           phone: beneficiary?.piiData?.phone,
@@ -110,7 +114,7 @@ export default function BeneficiaryView({
         setRowData(unSyncedBeneficiaries);
       }
     }
-  }, [benData?.data, benData?.isSuccess, rowData]);
+  }, [benData, isSuccess, rowData]);
 
   // const handleBulkAssign = async () => {
   //   await bulkAssignDisbursement.mutateAsync({
@@ -150,7 +154,11 @@ export default function BeneficiaryView({
               Bulk Assign
             </Button>
           </div>
-          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-571px)]" />
+          <ElkenyaTable
+            table={table}
+            tableHeight="h-[calc(100vh-571px)]"
+            loading={isLoading}
+          />
         </div>
       </div>
       <CustomPagination

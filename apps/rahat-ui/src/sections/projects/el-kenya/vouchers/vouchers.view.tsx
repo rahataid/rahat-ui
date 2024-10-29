@@ -97,6 +97,8 @@ export default function VouchersView() {
   }
 
   const stackedColumnData = React.useMemo(() => {
+    if (!weeklyRedemptionsStats)
+      return { categories: ['demo'], series: [{ name: 'demo', data: [0] }] };
     if (weeklyRedemptionsStats?.length > 0)
       return transformData(weeklyRedemptionsStats);
   }, [weeklyRedemptionsStats]);

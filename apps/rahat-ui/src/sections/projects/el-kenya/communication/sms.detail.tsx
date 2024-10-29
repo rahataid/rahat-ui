@@ -169,8 +169,9 @@ export default function CommunicationView() {
             <SearchInput
               className="w-full"
               name=""
-              onSearch={(e) =>
-                setFilters({ ...filters, address: e.target.value })
+              value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
+              onSearch={(event) =>
+                table.getColumn('to')?.setFilterValue(event.target.value)
               }
             />
             <ViewColumns table={table} />

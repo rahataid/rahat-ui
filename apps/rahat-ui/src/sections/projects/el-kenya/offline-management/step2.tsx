@@ -36,12 +36,12 @@ export default function Confirmation({
 
   const isGroupSelected = stepData.groups.length > 0;
 
-  // if (stepData.groups.length > 0) {
-  //   data = beneficiariesDisbursements;
-  //   stepData.groups.map((group) => {
-  //     noOfBeneficiarySelected += group?.groupedBeneficiaries?.length;
-  //   });
-  // }
+  if (isGroupSelected) {
+    data = beneficiariesDisbursements;
+    stepData.groups.map((group) => {
+      noOfBeneficiarySelected += group?.groupedBeneficiaries?.length;
+    });
+  }
 
   let totalVouchersAssigned = 0;
   data?.map((disbursment: any) => {

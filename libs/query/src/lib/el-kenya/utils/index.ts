@@ -1,5 +1,6 @@
 export const formatTransaction = (trans: any) => ({
-  beneficiary: trans.beneficiary || trans.referrerBeneficiaries || '-',
+  beneficiary:
+    trans.beneficiary || trans.referrerBeneficiaries || trans.claimee || '-',
   vendor: trans.vendor || '',
   processedBy:
     trans.beneficiary ||

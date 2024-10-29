@@ -39,7 +39,7 @@ function BeneficiaryGroupsView() {
 
   const filteredGroups = React.useMemo(() => {
     return groups.filter((group) =>
-      group.name?.toLowerCase().includes(searchTerm.toLowerCase()),
+      group?.name?.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [groups, searchTerm]);
 

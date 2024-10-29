@@ -13,6 +13,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useParams, useRouter } from 'next/navigation';
 import SearchInput from '../../components/search.input';
 import AddButton from '../../components/add.btn';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 function BeneficiaryGroupsView() {
   const { id } = useParams() as { id: UUID };
@@ -34,7 +35,7 @@ function BeneficiaryGroupsView() {
     setPagination({ page: 1, perPage: 100, order: 'desc', sort: 'createdAt' });
   }, []);
 
-  const { data: groups } = useFindAllBeneficiaryGroups(id as UUID);
+  const { data: groups, isLoading } = useFindAllBeneficiaryGroups(id as UUID);
 
   const filteredGroups = React.useMemo(() => {
     return groups.filter((group) =>
@@ -69,7 +70,9 @@ function BeneficiaryGroupsView() {
           />
         </div>
         <ScrollArea className="h-[calc(100vh-226px)]">
-          {filteredGroups.length > 0 ? (
+          {isLoading ? (
+            <TableLoader />
+          ) : filteredGroups.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">
               {filteredGroups?.map((i: any, index: number) => {
                 return (

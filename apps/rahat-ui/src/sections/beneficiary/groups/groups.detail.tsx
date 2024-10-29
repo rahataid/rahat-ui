@@ -69,6 +69,7 @@ export default function GroupDetailView() {
         internetStatus: d?.Beneficiary?.internetStatus,
         phoneStatus: d?.Beneficiary?.phoneStatus,
         bankedStatus: d?.Beneficiary?.bankedStatus,
+        uuid: d?.Beneficiary?.uuid,
       }));
     } else return [];
   }, [group]);

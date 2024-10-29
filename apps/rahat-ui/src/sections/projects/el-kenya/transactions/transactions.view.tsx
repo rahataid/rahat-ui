@@ -10,13 +10,11 @@ import { useElkenyaTransactionsTableColumns } from './use.transactions.table.col
 import { useKenyaProjectTransactions } from '@rahat-ui/query';
 import React from 'react';
 import ElkenyaTable from '../table.component';
-import SearchInput from '../../components/search.input';
-import ViewColumns from '../../components/view.columns';
 import ClientSidePagination from '../../components/client.side.pagination';
 
 export default function TransactionsView() {
   const { id } = useParams() as { id: UUID };
-  const { data, error } = useKenyaProjectTransactions();
+  const { data, error, isLoading } = useKenyaProjectTransactions();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
@@ -41,16 +39,11 @@ export default function TransactionsView() {
           </p>
         </div>
         <div className="rounded border bg-card p-4">
-          {/* <div className="flex justify-between space-x-2 mb-2">
-            <SearchInput
-              className="w-full"
-              name="transaction"
-              onSearch={() => { }}
-              isDisabled
-            />
-            <ViewColumns table={table} />
-          </div> */}
-          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-300px)]" />
+          <ElkenyaTable
+            table={table}
+            tableHeight="h-[calc(100vh-251px)]"
+            loading={isLoading}
+          />
         </div>
       </div>
       <ClientSidePagination table={table} />

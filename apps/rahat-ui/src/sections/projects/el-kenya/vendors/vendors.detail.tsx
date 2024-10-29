@@ -26,8 +26,11 @@ export default function VendorsDetail() {
   const vendorWallet = searchParams.get('walletAddress') || '';
   const vendorId = searchParams.get('vendorId');
 
-  const { data } = useGetOfflineSingleVendor(id as UUID, Number(vendorId));
-  const { data: vendorTransactions } = useKenyaVendorTransactions(
+  const { data, isLoading: isVendorLoading } = useGetOfflineSingleVendor(
+    id as UUID,
+    Number(vendorId),
+  );
+  const { data: vendorTransactions, isLoading } = useKenyaVendorTransactions(
     vendorId as string,
   );
   const [walletAddressCopied, setWalletAddressCopied] =
@@ -59,13 +62,13 @@ export default function VendorsDetail() {
           <h1 className="text-md text-muted-foreground">Vendor Name</h1>
           <p className="font-medium">{name}</p>
         </div>
-        <div>
+        {/* <div>
           <h1 className="text-md text-muted-foreground">Location</h1>
           <p className="font-medium">N/A</p>
-        </div>
+        </div> */}
         <div>
           <h1 className="text-md text-muted-foreground">Phone Number</h1>
-          <p className="font-medium">{phone ?? 'N/A'}</p>
+          <p className="font-medium">{phone || 'N/A'}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Wallet Address</h1>
@@ -98,10 +101,16 @@ export default function VendorsDetail() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="transactionHistory">
-          <VendorsTransactionsHistory tableData={vendorTransactions} />
+          <VendorsTransactionsHistory
+            tableData={vendorTransactions}
+            loading={isLoading}
+          />
         </TabsContent>
         <TabsContent value="beneficiaryList">
-          <VendorsBeneficiaryList beneficiaryList={data?.data} />
+          <VendorsBeneficiaryList
+            beneficiaryList={data?.data}
+            loading={isVendorLoading}
+          />
         </TabsContent>
       </Tabs>
     </div>

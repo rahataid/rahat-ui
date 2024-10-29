@@ -62,14 +62,7 @@ export default function SelectVendorMultiStepForm() {
   const [groupIds, setGroupIds] = React.useState([]);
 
   const getVendors = useProjectAction();
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-  } = usePagination();
+  const pagination = usePagination();
 
   const { data: disbursmentList, isSuccess } = useFindAllDisbursements(
     id as UUID,
@@ -84,7 +77,8 @@ export default function SelectVendorMultiStepForm() {
   const { data: benGroups } = useFindUnSyncedBeneficaryGroup(id as UUID, {
     page: 1,
     perPage: 100,
-    disableSync: true,
+    disableSync: false,
+    hasDisbursement: true,
     order: 'desc',
     sort: 'createdAt',
   });
@@ -99,16 +93,15 @@ export default function SelectVendorMultiStepForm() {
   const syncBen = useSyncOfflineBeneficiaries(id as UUID);
   const { queryClient, rumsanService } = useRSQuery();
 
-  const projectBeneficiaries = useProjectBeneficiaries({
-    page: pagination.page,
-    perPage: pagination.perPage,
-    // pagination.perPage,
+  const benData = useFindUnSyncedBenefiicaries(id, {
+    page: pagination.pagination.page,
+    perPage: pagination.pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...filters,
+    hasDisbursement: true,
+    ...pagination.filters,
   });
-
   const formSchema = z.object({
     name: z.string().min(2, { message: 'Please enter valid name' }),
   });
@@ -179,51 +172,26 @@ export default function SelectVendorMultiStepForm() {
   }, [stepData.groups]);
 
   useEffect(() => {
-    if (
-      projectBeneficiaries.isSuccess &&
-      projectBeneficiaries.data?.data &&
-      isSuccess
-    ) {
-      const projectBeneficiaryDisbursements = disbursmentList
-        .filter((disbursement) => {
-          return projectBeneficiaries.data?.data?.some(
-            (beneficiary) =>
-              disbursement.walletAddress === beneficiary.walletAddress &&
-              beneficiary.type !== 'WALK_IN',
-          );
-        })
-        .map((beneficiary) => {
-          const beneficiaryDisbursement = projectBeneficiaries.data?.data?.find(
-            (disbursement) =>
-              disbursement.walletAddress === beneficiary.walletAddress,
-          );
-          return {
-            ...beneficiaryDisbursement,
-            disbursementAmount: beneficiary?.amount || '0',
-            disbursmentId: beneficiary?.id,
-            voucherType: beneficiary.status,
-          };
-        });
-
-      if (
-        JSON.stringify(projectBeneficiaryDisbursements) !==
-        JSON.stringify(rowData)
-      ) {
-        setRowData(projectBeneficiaryDisbursements);
+    if (benData?.isSuccess) {
+      const unSyncedBeneficiaries = benData?.data?.data?.map((beneficiary) => {
+        return {
+          name: beneficiary?.piiData?.name,
+          phone: beneficiary?.piiData?.phone,
+          disbursementAmount: beneficiary?.Disbursements[0]?.amount || '0',
+          disbursmentId: beneficiary?.Disbursements[0]?.id,
+          walletAddress: beneficiary?.walletAddress,
+          voucherType: beneficiary?.voucherType || 'N/A',
+        };
+      });
+      if (JSON.stringify(unSyncedBeneficiaries) !== JSON.stringify(rowData)) {
+        setRowData(unSyncedBeneficiaries);
       }
     }
-  }, [
-    disbursmentList,
-    isSuccess,
-    projectBeneficiaries.data?.data,
-    projectBeneficiaries.isSuccess,
-    rowData,
-  ]);
+  }, [benData?.data, benData?.isSuccess, rowData]);
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
-  console.log(stepData.disbursements, 'stepData.disbursements');
 
   const handleSyncBen = async () => {
     setIsSyncing(true);
@@ -258,7 +226,7 @@ export default function SelectVendorMultiStepForm() {
       toast.error('Failed to sync');
     }
   };
-
+  pagination.meta = benData?.data?.response?.meta;
   return (
     <div className="p-4">
       {activeStep === 0 && (
@@ -379,7 +347,16 @@ export default function SelectVendorMultiStepForm() {
             </Button>
           )}
           {activeStep < 2 && (
-            <Button onClick={handleNext} className="px-12">
+            <Button
+              onClick={handleNext}
+              disabled={
+                activeStep === 0
+                  ? Object.keys(stepData.vendor).length === 0
+                  : stepData.disbursements.length === 0 &&
+                    stepData.groups.length === 0
+              }
+              className="px-12"
+            >
               Next
             </Button>
           )}

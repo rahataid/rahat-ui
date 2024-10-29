@@ -22,7 +22,7 @@ import CambodiaTable from '../table.component';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { filter } from 'lodash';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Coins, Home, Search, Settings2, Users } from 'lucide-react';
+import { Coins, Download, Home, Search, Settings2, Users } from 'lucide-react';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import {
@@ -105,7 +105,7 @@ export default function CHWView() {
             Track all the health workers here.
           </p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-7">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-7">
           <DataCard
             title="Home Visits"
             number={stats?.data?.home_visits}
@@ -124,6 +124,12 @@ export default function CHWView() {
             Icon={Users}
             className="rounded-lg border-solid"
           />
+          <DataCard
+            title="Leads Converted"
+            number={stats?.data?.leads_converted}
+            Icon={Users}
+            className="rounded-lg border-solid"
+          />
         </div>
         <div className="rounded-lg border bg-card p-4 ">
           <div className="flex justify-between space-x-2 mb-2">
@@ -138,6 +144,9 @@ export default function CHWView() {
             />
 
             <ViewColumns table={table} />
+            <Button variant="outline" className="text-muted-foreground">
+              <Download className="w-4 h-4 mr-1" /> Download
+            </Button>
           </div>
 
           <CambodiaTable table={table} tableHeight="h-[calc(100vh-460px)] " />

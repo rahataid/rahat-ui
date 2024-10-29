@@ -32,7 +32,7 @@ export default function VendorsView() {
   const getVendors = useProjectAction();
   const handleViewClick = (rowData: any) => {
     router.push(
-      `/projects/el-kenya/${id}/vendors/${rowData.walletAddress}?name=${rowData.name}&&walletAddress=${rowData.walletAddress} &&vendorId=${rowData.id}`,
+      `/projects/el-kenya/${id}/vendors/${rowData.walletAddress}?name=${rowData.name}&&phone=${rowData.phone}&&walletAddress=${rowData.walletAddress} &&vendorId=${rowData.id}`,
     );
   };
   const columns = useElkenyaVendorsTableColumns({ handleViewClick });
@@ -90,7 +90,11 @@ export default function VendorsView() {
             />
             <ViewColumns table={table} />
           </div>
-          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-310px)]" />
+          <ElkenyaTable
+            table={table}
+            tableHeight="h-[calc(100vh-310px)]"
+            loading={getVendors?.isPending}
+          />
         </div>
       </div>
       {/* <Pagination

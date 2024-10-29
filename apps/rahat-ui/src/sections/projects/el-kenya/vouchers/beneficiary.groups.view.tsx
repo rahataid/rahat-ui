@@ -6,6 +6,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Banknote, Plus, Users } from 'lucide-react';
 import {
   useFindAllBeneficiaryGroups,
+  useFindUnSyncedBeneficaryGroup,
   useGetBeneficiariesDisbursements,
 } from '@rahat-ui/query';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
@@ -27,14 +28,30 @@ export default function BeneficiaryGroupsView({
   const { id } = useParams() as { id: UUID };
   const [searchTerm, setSearchTerm] = React.useState<string>('');
 
-  const { data: beneficiaryGroups } = useFindAllBeneficiaryGroups(id as UUID, {
+  const { data: benefGroups } = useFindUnSyncedBeneficaryGroup(id as UUID, {
     page: 1,
     perPage: 100,
+    disableSync: false,
+    hasDisbursement: false,
     order: 'desc',
     sort: 'createdAt',
   });
+
+  const beneficiaryGroups = React.useMemo(() => {
+    return benefGroups?.filter(
+      (group: any) => group?.groupedBeneficiaries?.length > 0,
+    );
+  }, [benefGroups]);
+
+  // const { data: beneficiaryGroups } = useFindAllBeneficiaryGroups(id as UUID, {
+  //   page: 1,
+  //   perPage: 100,
+  //   order: 'desc',
+  //   sort: 'createdAt',
+  // });
+
   const filteredGroups = React.useMemo(() => {
-    return beneficiaryGroups.filter((group) =>
+    return beneficiaryGroups?.filter((group) =>
       group.name?.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [beneficiaryGroups, searchTerm]);
@@ -55,7 +72,6 @@ export default function BeneficiaryGroupsView({
       setDisbursementData(benificiaryDisbursement);
     }
   }, [benificiaryDisbursement]);
-  console.log(beneficiaryGroups, disbursementData);
 
   const handleSearch = React.useCallback((value: string) => {
     setSearchTerm(value);
@@ -139,7 +155,7 @@ export default function BeneficiaryGroupsView({
           </div>
         ) : null}
         <ScrollArea className="h-[calc(100vh-554px)]">
-          {filteredGroups.length > 0 ? (
+          {filteredGroups?.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">
               {filteredGroups?.map((beneficiaryGroup) => {
                 const disbursements = disbursementData?.filter(
@@ -208,7 +224,7 @@ export default function BeneficiaryGroupsView({
                       <div className="text-muted-foreground text-sm flex justify-between">
                         <div className="flex gap-2 items-center">
                           <Users size={18} strokeWidth={2} />
-                          {beneficiaryGroup?._count?.groupedBeneficiaries}
+                          {beneficiaryGroup?.groupedBeneficiaries?.length}
                         </div>
                         <div className="flex gap-2 items-center">
                           <Banknote size={18} strokeWidth={2} />

@@ -16,12 +16,12 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useParams, useRouter } from 'next/navigation';
 
 const cardData = [
-  { title: 'Leads Converted', icon: Home, total: '235' },
-  { title: 'Total Commission Ramed', icon: Coins, total: '1235' },
+  { title: 'Leads Converted', icon: Home, total: '0' },
+  { title: 'Total Commission Earned', icon: Coins, total: '0' },
   {
     title: 'Total Commission Paid',
     icon: Users,
-    total: '344',
+    total: '0',
   },
 ];
 

@@ -14,7 +14,7 @@ export const useElkenyaBeneficiaryTableColumns = ({
 
   function getDynamicColor(status: string) {
     if (status === 'READING_GLASSES' || status === 'WALK_IN') {
-      return 'bg-bluew-50 text-blue-500';
+      return 'bg-blue-50 text-blue-500';
     }
 
     if (status === 'SINGLE_VISION') {
@@ -62,9 +62,17 @@ export const useElkenyaBeneficiaryTableColumns = ({
         const beneficiaryType = row.getValue('type');
         const colors = getDynamicColor(beneficiaryType as string);
         return (
-          <Badge className={colors}>
-            {(beneficiaryType as string) || 'N/A'}
-          </Badge>
+          <div>
+            <Badge className={colors}>
+              {(beneficiaryType as string) || 'N/A'}
+            </Badge>
+            {row?.original?.extras?.serialNumber && (
+              <p className="text-gray-400">Physical Voucher</p>
+            )}
+            {!!row?.original?.graphData?.otpAddeds?.length && (
+              <p className="text-gray-400">Offline</p>
+            )}
+          </div>
         );
       },
     },
@@ -90,6 +98,46 @@ export const useElkenyaBeneficiaryTableColumns = ({
         const colors = getDynamicColor(voucherStatus as string);
         return (
           <Badge className={colors}>{(voucherStatus as string) || 'N/A'}</Badge>
+        );
+      },
+    },
+    {
+      accessorKey: 'location',
+      header: 'Location',
+      cell: ({ row }) => {
+        return (
+          <div>
+            {row?.original?.extras?.location ||
+              row?.original?.projectData?.location ||
+              'N/A'}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'tokenAssigned',
+      header: 'Voucher Assignment Status',
+      cell: ({ row }) => {
+        const assignmentStatus =
+          row?.original?.graphData?.tokensAllocateds?.length ||
+          row?.original?.graphData?.walkInBeneficiaryAddeds?.length
+            ? 'Assigned'
+            : 'Not Assigned';
+        const timestamp =
+          row?.original?.graphData?.tokensAllocateds?.[0]?.blockTimestamp ||
+          row?.original?.graphData?.walkInBeneficiaryAddeds?.[0]
+            ?.blockTimestamp;
+        const tokenAssignedDate = timestamp
+          ? new Date(timestamp * 1000).toLocaleString()
+          : '';
+
+        return (
+          <div>
+            {assignmentStatus} <br />
+            <span className="text-sm text-muted-foreground">
+              {tokenAssignedDate}
+            </span>
+          </div>
         );
       },
     },

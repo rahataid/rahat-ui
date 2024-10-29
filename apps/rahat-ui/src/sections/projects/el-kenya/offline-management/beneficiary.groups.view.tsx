@@ -65,7 +65,7 @@ export default function BeneficiaryGroupsView({
                             );
                             handleStepDataChange({
                               target: {
-                                name: 'selectedGroups',
+                                name: 'groups',
                                 value: currentData,
                               },
                             });

@@ -12,10 +12,12 @@ import { useElkenyaVendorsBeneficiaryTableColumns } from './columns/use.vendors.
 
 interface VendorsBeneficiaryListProps {
   beneficiaryList: any;
+  loading?: boolean;
 }
 
 export default function VendorsBeneficiaryList({
   beneficiaryList,
+  loading,
 }: VendorsBeneficiaryListProps) {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
@@ -25,7 +27,7 @@ export default function VendorsBeneficiaryList({
     if (beneficiaryList?.length > 0) {
       return beneficiaryList.map((beneficiary: any) => {
         return {
-          name: beneficiary.piiData.name,
+          phone: beneficiary.piiData.phone,
           type: beneficiary.Disbursement.Beneficiary.type,
           glassesStatus: beneficiary.Disbursement.Beneficiary.glassesStatus,
           voucherStatus: beneficiary.Disbursement.Beneficiary.voucherStatus,
@@ -48,7 +50,11 @@ export default function VendorsBeneficiaryList({
   });
   return (
     <div className="p-4 border rounded-sm">
-      <ElkenyaTable table={table} tableHeight="h-[calc(100vh-380px)]" />
+      <ElkenyaTable
+        table={table}
+        tableHeight="h-[calc(100vh-380px)]"
+        loading={loading}
+      />
     </div>
   );
 }

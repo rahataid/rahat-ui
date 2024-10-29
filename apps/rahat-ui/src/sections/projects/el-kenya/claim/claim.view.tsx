@@ -21,6 +21,7 @@ import AddButton from '../../components/add.btn';
 import SelectComponent from '../select.component';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import FiltersTags from '../../components/filtersTags';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export const redemptionType = [
   {
@@ -63,7 +64,7 @@ export default function ClaimView() {
 
   const columns = useTableColumn();
 
-  const { data, isSuccess } = useListRedemptions(id, {
+  const { data, isSuccess, isLoading } = useListRedemptions(id, {
     page: pagination.page,
     perPage: pagination.perPage,
     ...debouncedFilters,
@@ -108,7 +109,7 @@ export default function ClaimView() {
             Track all the claim reports here
           </p>
         </div>
-        <div className="rounded border bg-card p-4">
+        <div className="rounded border bg-card p-4 pb-0">
           <div className="flex justify-between space-x-2 mb-2">
             <SearchInput
               className="w-full"
@@ -127,15 +128,29 @@ export default function ClaimView() {
             />
           </div>
           {Object.keys(filters).length != 0 && (
-            <FiltersTags filters={filters} setFilters={setFilters} />
+            <FiltersTags
+              filters={filters}
+              setFilters={setFilters}
+              total={data?.redemptions?.length}
+            />
           )}
           <ElkenyaTable
             table={table}
             tableHeight={
               Object.keys(filters).length
-                ? 'h-[calc(100vh-318px)]'
-                : 'h-[calc(100vh-252px)]'
+                ? 'h-[calc(100vh-351px)]'
+                : 'h-[calc(100vh-285px)]'
             }
+            loading={isLoading}
+          />
+          <CustomPagination
+            meta={data?.meta || { total: 0, currentPage: 0 }}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            currentPage={pagination.page}
+            perPage={pagination.perPage}
+            total={data?.meta?.lastPage || 0}
           />
         </div>
       </div>

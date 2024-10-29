@@ -22,6 +22,12 @@ import ViewColumns from '../../components/view.columns';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import HeaderWithBack from '../../components/header.with.back';
 import { TriggerConfirmModal } from './confirm.modal';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@rahat-ui/shadcn/src/components/ui/card';
 
 export default function CommunicationView() {
   const { id, cid } = useParams() as { id: UUID; cid: UUID };
@@ -48,7 +54,8 @@ export default function CommunicationView() {
   const { data, isSuccess, isLoading } = useListRpCampaignLog(id as UUID, {
     uuid: cid as string,
     query: {
-      ...pagination,
+      page: 1,
+      perPage: 1000,
       ...(filters as any),
     },
   });
@@ -146,8 +153,18 @@ export default function CommunicationView() {
           })}
         </div>
 
+        <div>
+          <Card className="shadow-md">
+            <CardHeader>
+              <CardTitle>Content</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-start">{campginData?.message}</p>
+            </CardContent>
+          </Card>
+        </div>
+
         <div className="rounded border bg-card p-4">
-          <p className="text-end">Message:{campginData?.message}</p>
           <div className="flex justify-between space-x-2 mb-2">
             <SearchInput
               className="w-full"
@@ -158,7 +175,11 @@ export default function CommunicationView() {
             />
             <ViewColumns table={table} />
           </div>
-          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-454px)]" />
+          <ElkenyaTable
+            table={table}
+            tableHeight="h-[calc(100vh-573px)]"
+            loading={isLoading}
+          />
         </div>
       </div>
       <CustomPagination

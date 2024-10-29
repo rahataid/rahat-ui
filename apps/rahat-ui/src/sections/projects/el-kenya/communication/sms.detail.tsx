@@ -54,7 +54,8 @@ export default function CommunicationView() {
   const { data, isSuccess, isLoading } = useListRpCampaignLog(id as UUID, {
     uuid: cid as string,
     query: {
-      ...pagination,
+      page: 1,
+      perPage: 1000,
       ...(filters as any),
     },
   });

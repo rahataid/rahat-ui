@@ -17,7 +17,9 @@ export const useCambodiaBeneficiaryTableColumns = () => {
     {
       accessorKey: 'type',
       header: 'Type',
-      cell: ({ row }) => <div>{row.getValue('type')}</div>,
+      cell: ({ row }) => {
+        return <div>{row?.original?.extras?.type || 'UNKNOWN'}</div>;
+      },
     },
     {
       accessorKey: 'phone',
@@ -32,7 +34,9 @@ export const useCambodiaBeneficiaryTableColumns = () => {
     {
       accessorKey: 'healthWorker',
       header: 'Health Worker',
-      cell: ({ row }) => <div>{row?.original?.healthWorker}</div>,
+      cell: ({ row }) => {
+        return <div>{row?.original?.healthWorker?.name || '-'}</div>;
+      },
     },
   ];
   if (!isDiscardedBeneficiary) {

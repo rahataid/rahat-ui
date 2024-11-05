@@ -590,6 +590,7 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
               bankedStatus: row?.projectData?.bankedStatus || '',
               internetStatus: row?.projectData?.internetStatus || '',
               benTokens: row?.benTokens || 'N/A',
+              bankAccountNumber: row?.projectData?.extras?.bank_ac_number || '',
             }))
           : [],
       };

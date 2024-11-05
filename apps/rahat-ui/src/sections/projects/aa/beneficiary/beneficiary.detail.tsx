@@ -2,7 +2,10 @@
 
 import React from 'react';
 
-import { BeneficiaryAssignedToken } from '@rahat-ui/query';
+import {
+  BeneficiaryAssignedToken,
+  useAABenefBankTransfer,
+} from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
@@ -28,6 +31,9 @@ import Image from 'next/image';
 import TransactionTable from './beneficiary.transaction.table';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { useQuery } from 'urql';
+import BankTransfersTable from './bank.transfers.table';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useBankTransfersTableColumns } from './use.bank.transfers.table.column';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -47,6 +53,17 @@ export default function BeneficiaryDetail({
     variables: {
       beneficiary: walletAddress,
     },
+  });
+
+  const { data: bankTransfers, isLoading: scbDataIsLoading } =
+    useAABenefBankTransfer(beneficiaryDetails?.bankAccountNumber);
+
+  const columns = useBankTransfersTableColumns();
+
+  const table = useReactTable({
+    data: bankTransfers || [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
   });
 
   const [walletAddressCopied, setWalletAddressCopied] =
@@ -126,9 +143,10 @@ export default function BeneficiaryDetail({
 
           <Tabs defaultValue="details">
             <div className="p-2">
-              <TabsList className="w-full grid grid-cols-2 border h-auto">
+              <TabsList className="w-full grid grid-cols-3 border h-auto">
                 <TabsTrigger value="details">Details</TabsTrigger>
                 <TabsTrigger value="transaction">Transaction</TabsTrigger>
+                <TabsTrigger value="bankTransfers">Bank Transfers</TabsTrigger>
               </TabsList>
             </div>
             <TabsContent value="details">
@@ -201,6 +219,9 @@ export default function BeneficiaryDetail({
                   isFetching={result?.fetching}
                 />
               </div>
+            </TabsContent>
+            <TabsContent value="bankTransfers">
+              <BankTransfersTable table={table} loading={scbDataIsLoading} />
             </TabsContent>
           </Tabs>
         </>

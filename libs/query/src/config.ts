@@ -36,8 +36,8 @@ export const TAGS = {
   IMPORT_TEMP_BENEFICIARIES: 'import_temp_beneficiaries',
   NEW_COMMS: {
     LIST_TRANSPORTS: 'new_comms.list_transports',
-    RETRY_FAILED: 'new_comms.retry_failed'
-  }
+    RETRY_FAILED: 'new_comms.retry_failed',
+  },
 };
 export const PROJECT_SETTINGS_KEYS = {
   CONTRACT: 'CONTRACT',
@@ -46,6 +46,7 @@ export const PROJECT_SETTINGS_KEYS = {
   DATASOURCE: 'DATASOURCE',
   HAZARD_TYPE: 'HAZARD_TYPE',
   SAFE_WALLET: 'SAFE_WALLET',
+  SCB: 'SCB',
 };
 
 export const TREASURY_SOURCES = [

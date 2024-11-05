@@ -53,7 +53,7 @@ const parseTransactionDetails = (
   };
 };
 
-export const useAABenefBankTransfer = (accountNumber: string) => {
+export const useScbBankTransactions = (accountNumber: string) => {
   return useQuery({
     queryKey: ['scbTransactions', accountNumber],
     queryFn: async () => {

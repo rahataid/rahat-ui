@@ -4,7 +4,7 @@ import React from 'react';
 
 import {
   BeneficiaryAssignedToken,
-  useAABenefBankTransfer,
+  useScbBankTransactions,
 } from '@rahat-ui/query';
 import {
   Tabs,
@@ -56,7 +56,7 @@ export default function BeneficiaryDetail({
   });
 
   const { data: bankTransfers, isLoading: scbDataIsLoading } =
-    useAABenefBankTransfer(beneficiaryDetails?.bankAccountNumber);
+    useScbBankTransactions(beneficiaryDetails?.bankAccountNumber);
 
   const columns = useBankTransfersTableColumns();
 

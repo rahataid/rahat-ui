@@ -12,22 +12,27 @@ export const useCambodiaChwTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-      accessorKey: '_count',
+      accessorKey: 'koboUsername',
+      header: 'Kobo Username',
+      cell: ({ row }) => <div>{row.getValue('koboUsername')}</div>,
+    },
+    {
+      accessorKey: 'home visit',
       header: 'Home Visit',
       cell: ({ row }) => <div> {row?.original?._count?.HOME_VISIT} </div>,
     },
     {
-      accessorKey: '_count',
+      accessorKey: 'Sales',
       header: 'Sales Count',
       cell: ({ row }) => <div> {row?.original?._count?.SALE} </div>,
     },
     {
-      accessorKey: '_count',
+      accessorKey: 'leads Provided',
       header: 'Leads Provided',
       cell: ({ row }) => <div> {row?.original?._count?.LEAD} </div>,
     },
     {
-      accessorKey: '_count',
+      accessorKey: 'lead Conversion',
       header: 'Leads Converted',
       cell: ({ row }) => <div> {row?.original?._count?.LeadConversions} </div>,
     },
@@ -35,11 +40,6 @@ export const useCambodiaChwTableColumns = () => {
     //   accessorKey: 'phone',
     //   header: 'Phone',
     //   cell: ({ row }) => <div>{row.getValue('phone')}</div>,
-    // },
-    // {
-    //   accessorKey: 'koboUsername',
-    //   header: 'User Name',
-    //   cell: ({ row }) => <div>{row.getValue('koboUsername')}</div>,
     // },
 
     {

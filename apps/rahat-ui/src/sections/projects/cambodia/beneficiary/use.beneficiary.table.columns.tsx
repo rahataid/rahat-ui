@@ -9,7 +9,7 @@ export const useCambodiaBeneficiaryTableColumns = () => {
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }) => <div>{row?.original?.piiData?.name}</div>,
     },
     {
       accessorKey: 'type',
@@ -21,18 +21,18 @@ export const useCambodiaBeneficiaryTableColumns = () => {
     {
       accessorKey: 'phone',
       header: 'Phone',
-      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
+      cell: ({ row }) => <div>{row?.original?.piiData?.phone}</div>,
     },
     {
       accessorKey: 'gender',
       header: 'Gender',
-      cell: ({ row }) => <div>{row.getValue('gender')}</div>,
+      cell: ({ row }) => <div>{row?.original?.projectData?.gender}</div>,
     },
     {
       accessorKey: 'healthWorker',
       header: 'Health Worker',
       cell: ({ row }) => {
-        return <div>{row?.original?.healthWorker || '-'}</div>;
+        return <div>{row?.original?.healthWorker?.name || '-'}</div>;
       },
     },
 

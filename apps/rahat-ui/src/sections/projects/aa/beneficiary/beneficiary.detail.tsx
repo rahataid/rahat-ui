@@ -4,6 +4,8 @@ import React from 'react';
 
 import {
   BeneficiaryAssignedToken,
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
   useScbBankTransactions,
 } from '@rahat-ui/query';
 import {
@@ -34,6 +36,8 @@ import { useQuery } from 'urql';
 import BankTransfersTable from './bank.transfers.table';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useBankTransfersTableColumns } from './use.bank.transfers.table.column';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -44,6 +48,7 @@ export default function BeneficiaryDetail({
   beneficiaryDetails,
   closeSecondPanel,
 }: IProps) {
+  const { id } = useParams() as { id: UUID };
   const walletAddress = beneficiaryDetails.walletAddress;
 
   const isLoading = false;
@@ -55,8 +60,12 @@ export default function BeneficiaryDetail({
     },
   });
 
+  const scbConfig = useProjectSettingsStore(
+    (s) => s.settings?.[id]?.[PROJECT_SETTINGS_KEYS.SCB],
+  );
+
   const { data: bankTransfers, isLoading: scbDataIsLoading } =
-    useScbBankTransactions(beneficiaryDetails?.bankAccountNumber);
+    useScbBankTransactions(scbConfig, beneficiaryDetails?.bankAccountNumber);
 
   const columns = useBankTransfersTableColumns();
 

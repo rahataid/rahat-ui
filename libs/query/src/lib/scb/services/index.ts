@@ -1,9 +1,6 @@
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 
-const baseUrl = process.env['NEXT_PUBLIC_SCB_BASE_URL'];
-const access_token = process.env['NEXT_PUBLIC_SCB_ACCESS_TOKEN'];
-
 interface SCBTransactionData {
   txnDetails: string;
   txnAmount: string;
@@ -20,18 +17,6 @@ interface ParsedTransaction {
   amount: string;
   date: string;
 }
-
-const fetchScbData = async (accountNumber: string) => {
-  const response = await axios.get(
-    `${baseUrl}/webhooks/query?accountNumber=${accountNumber}`,
-    {
-      headers: {
-        access_token: `${access_token}`,
-      },
-    },
-  );
-  return response.data;
-};
 
 const parseTransactionDetails = (
   transaction: SCBTransactionData,
@@ -53,17 +38,32 @@ const parseTransactionDetails = (
   };
 };
 
-export const useScbBankTransactions = (accountNumber: string) => {
-  return useQuery({
+export const useScbBankTransactions = (
+  scbConfig: { baseurl: string; accesstoken: string },
+  accountNumber: string,
+) => {
+  const fetchTransactions = async () => {
+    const { baseurl, accesstoken } = scbConfig;
+
+    const response = await axios.get(
+      `${baseurl}/webhooks/query?accountNumber=${accountNumber}`,
+      {
+        headers: {
+          access_token: accesstoken,
+        },
+      },
+    );
+
+    return response.data;
+  };
+
+  return useQuery<ParsedTransaction[]>({
     queryKey: ['scbTransactions', accountNumber],
     queryFn: async () => {
-      const scbData = await fetchScbData(accountNumber);
-      const parsedTransactions: ParsedTransaction[] = scbData.data.map(
-        (transaction: SCBTransactionData) =>
-          parseTransactionDetails(transaction),
-      );
-      return parsedTransactions;
+      const transactions = await fetchTransactions();
+
+      return transactions.data.map(parseTransactionDetails);
     },
-    enabled: !!accountNumber, // ensures the query only runs if accountNumber is provided
+    enabled: !!accountNumber,
   });
 };

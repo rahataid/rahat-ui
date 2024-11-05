@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 
-const baseUrl = process.env['NEXT_PUBLIC_SCB_API_HOST_URL'];
+const baseUrl = process.env['NEXT_PUBLIC_SCB_BASE_URL'];
 const access_token = process.env['NEXT_PUBLIC_SCB_ACCESS_TOKEN'];
 
 interface SCBTransactionData {

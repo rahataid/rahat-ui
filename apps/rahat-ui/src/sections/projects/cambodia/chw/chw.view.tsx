@@ -35,7 +35,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import ViewColumns from '../../components/view.columns';
-
+import * as XLSX from 'xlsx';
 export default function CHWView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
@@ -66,6 +66,13 @@ export default function CHWView() {
     ...(debouncedSearch as any),
   });
 
+  const { data: allData } = useCHWList({
+    page: pagination.page,
+    perPage: 0,
+    order: 'desc',
+    sort: 'createdAt',
+    projectUUID: id,
+  });
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
@@ -79,7 +86,6 @@ export default function CHWView() {
   const columns = useCambodiaChwTableColumns();
   const table = useReactTable({
     manualPagination: true,
-
     data: data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -96,6 +102,25 @@ export default function CHWView() {
       rowSelection: selectedListItems,
     },
   });
+  const handleDownload = async () => {
+    const rowsToDownload = allData?.data || [];
+    const workbook = XLSX.utils.book_new();
+    const worksheetData = rowsToDownload?.map((item: any) => ({
+      uuid: item.uuid,
+      healthWorkerName: item.name,
+      koboUserName: item.koboUsername,
+      sales: item._count.SALE,
+      leads: item._count.LEAD,
+      leadsConverted: item._count.LeadConversions,
+      homeVisit: item._count.HOME_VISIT,
+      vendor: item.vendor.name,
+      vendorAdddress: item.vendor.walletAddress,
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'HealthWorkers');
+
+    XLSX.writeFile(workbook, 'HealthWorkers.xlsx');
+  };
   return (
     <>
       <div className="p-4 bg-white ">
@@ -144,7 +169,11 @@ export default function CHWView() {
             />
 
             <ViewColumns table={table} />
-            <Button variant="outline" className="text-muted-foreground">
+            <Button
+              variant="outline"
+              className="text-muted-foreground"
+              onClick={handleDownload}
+            >
               <Download className="w-4 h-4 mr-1" /> Download
             </Button>
           </div>

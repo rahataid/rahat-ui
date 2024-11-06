@@ -1,13 +1,68 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { formatUnderScoredString } from 'apps/rahat-ui/src/utils/string';
 import { Eye } from 'lucide-react';
-import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 export const useCambodiaBeneficiaryTableColumns = () => {
   const { id } = useParams();
-  const pathName = usePathname();
   const router = useRouter();
-  const isDiscardedBeneficiary = pathName.includes('discardedbenificary');
+  const columns: ColumnDef<any>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => <div>{row?.original?.piiData?.name}</div>,
+    },
+    {
+      accessorKey: 'type',
+      header: 'Type',
+      cell: ({ row }) => {
+        return <div>{row?.original?.extras?.type || 'UNKNOWN'}</div>;
+      },
+    },
+    {
+      accessorKey: 'phone',
+      header: 'Phone',
+      cell: ({ row }) => <div>{row?.original?.piiData?.phone}</div>,
+    },
+    {
+      accessorKey: 'gender',
+      header: 'Gender',
+      cell: ({ row }) => <div>{row?.original?.projectData?.gender}</div>,
+    },
+    {
+      accessorKey: 'healthWorker',
+      header: 'Health Worker',
+      cell: ({ row }) => {
+        return <div>{row?.original?.healthWorker?.name || '-'}</div>;
+      },
+    },
+
+    {
+      id: 'actions',
+      header: 'Actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center gap-2">
+            <Eye
+              className="hover:text-primary cursor-pointer"
+              size={16}
+              strokeWidth={1.5}
+              onClick={() =>
+                router.push(
+                  `/projects/el-cambodia/${id}/beneficiary/${row.original.uuid}`,
+                )
+              }
+            />
+          </div>
+        );
+      },
+    },
+  ];
+
+  return columns;
+};
+
+export const useDiscardedCambodiaBeneficiaryTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
@@ -34,33 +89,9 @@ export const useCambodiaBeneficiaryTableColumns = () => {
     {
       accessorKey: 'healthWorker',
       header: 'Health Worker',
-      cell: ({ row }) => {
-        return <div>{row?.original?.healthWorker?.name || '-'}</div>;
-      },
+      cell: ({ row }) => <div>{row?.original?.healthWorker?.name || ''}</div>,
     },
   ];
-  if (!isDiscardedBeneficiary) {
-    columns.push({
-      id: 'actions',
-      header: 'Actions',
-      enableHiding: false,
-      cell: ({ row }) => {
-        return (
-          <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() =>
-                router.push(
-                  `/projects/el-cambodia/${id}/beneficiary/${row.original.uuid}`,
-                )
-              }
-            />
-          </div>
-        );
-      },
-    });
-  }
+
   return columns;
 };

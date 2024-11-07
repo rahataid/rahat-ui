@@ -16,9 +16,15 @@ export const useElkenyaVendorsTransactionsTableColumns = () => {
       ),
     },
     {
-      accessorKey: 'timestamp',
+      accessorKey: 'timeStamp',
       header: 'Timestamp',
-      cell: ({ row }) => <div>{row.getValue('timeStamp')}</div>,
+      cell: ({ row }) => (
+        <div>
+          {row.original?.timeStamp
+            ? new Date(row.original.timeStamp).toLocaleString()
+            : ''}
+        </div>
+      ),
     },
   ];
   return columns;

@@ -108,7 +108,10 @@ export default function VendorsDetail() {
         </TabsContent>
         <TabsContent value="beneficiaryList">
           <VendorsBeneficiaryList
-            beneficiaryList={data?.data}
+            beneficiaryList={[
+              ...(data?.data || []),
+              ...(data?.extras?.BeneficiaryRedemption || []),
+            ]}
             loading={isVendorLoading}
           />
         </TabsContent>

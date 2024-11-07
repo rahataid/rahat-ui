@@ -20,8 +20,8 @@ export const useElkenyaVendorsTransactionsTableColumns = () => {
       header: 'Timestamp',
       cell: ({ row }) => (
         <div>
-          {row.original?.timeStamp
-            ? new Date(row.original.timeStamp).toLocaleString()
+          {row?.original?.timeStamp
+            ? new Date(row?.original?.timeStamp).toLocaleString()
             : ''}
         </div>
       ),

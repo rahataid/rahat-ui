@@ -236,7 +236,7 @@ const FundManagementFlow = () => {
     if (fileToUpload) {
       formData.append('file', fileToUpload);
     }
-    console.log('formDatayouInd', formData);
+
     formData.append('email', 'owner@sandab.stellar.rahat.io');
     formData.append('password', 'Password123!');
     formData.append('tenant_name', 'sandab');
@@ -249,7 +249,7 @@ const FundManagementFlow = () => {
       //@ts-ignore
       await requestToStellar({ formData, projectUUID: randomUUID });
     } catch (error) {
-      console.error('Error uploading CSV file:', error);
+      
     } finally {
       setLoading(false);
 

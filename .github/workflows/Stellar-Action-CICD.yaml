@@ -1,0 +1,106 @@
+name: Stellar Action CI/CD
+on:
+  push:
+    branches:
+      - 'stellar-action'
+  pull_request:
+    branches:
+      - 'stellar-action'
+  workflow_dispatch:
+
+env:
+  CI: false
+  env_stellar: ${{ secrets.ENV_STELLAR_ACTION }}
+
+jobs:
+  rahat-ui:
+    name: rahat-ui
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'action') || contains(github.event.pull_request.title, 'action') || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: import env file
+        run: |
+          touch ./.env && echo "$env_stellar" >> ./.env 
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20.10.0
+    
+      - name: Install pnpm
+        run: |
+          npm install -g pnpm@8.14.1 
+
+      - name: Install dependencies
+        run: pnpm install     
+
+      - name: install dependencies and build apps
+        run: |
+          pnpm build:all
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: docker login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Rahat-UI Image
+      - name: build && push rahat-ui
+        id: build-push-rahat-ui
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.rahat-ui
+          push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+          tags: esatya/rahat-ui:stellar-action
+  
+  community-tool-ui:
+    name: community-tool-ui
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'action') || contains(github.event.pull_request.title, 'action') || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: import env file
+        run: |
+          touch ./.env && echo "$env_stellar" >> ./.env 
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20.10.0
+    
+      - name: Install pnpm
+        run: |
+          npm install -g pnpm@8.14.1 
+
+      - name: Install dependencies
+        run: pnpm install     
+
+      - name: install dependencies and build apps
+        run: |
+          pnpm build:all
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: docker login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      # Community-Tool-UI Image
+      - name: build && push community-tool-ui
+        id: build-push-community-tool-ui
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.community-tool-ui
+          push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+          tags: esatya/community-tool-ui:stellar-action

@@ -34,6 +34,7 @@ import {
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import Image from 'next/image';
+import { DataTablePagination } from '../transactions/dataTablePagination';
 
 const BeneficiaryDetailTableView = () => {
   const uuid = useParams().id as UUID;
@@ -194,14 +195,7 @@ const BeneficiaryDetailTableView = () => {
           </Table>
         </div>
       </div>
-      <CustomPagination
-        currentPage={pagination.page}
-        handleNextPage={setNextPage}
-        handlePageSizeChange={setPerPage}
-        handlePrevPage={setPrevPage}
-        meta={projectBeneficiaries?.data?.response?.meta || {}}
-        perPage={pagination.perPage}
-      />
+      <DataTablePagination table={table} />
     </>
   );
 };

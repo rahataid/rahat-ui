@@ -30,6 +30,7 @@ import Image from 'next/image';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useRouter, useParams } from 'next/navigation';
 import { Plus } from 'lucide-react';
+import { DataTablePagination } from '../transactions/dataTablePagination';
 
 const GrievanceTable = () => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -176,13 +177,15 @@ const GrievanceTable = () => {
           </Table>
         </div>
       </div>
-      <CustomPagination
+      <DataTablePagination table={table} />
+
+      {/* <CustomPagination
         currentPage={pagination.page}
         handleNextPage={setNextPage}
         handlePageSizeChange={setPerPage}
         handlePrevPage={setPrevPage}
         perPage={pagination.perPage}
-      />
+      /> */}
     </>
   );
 };

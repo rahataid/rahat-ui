@@ -174,7 +174,7 @@ export default function VouchersView() {
                 />
               </div>
             </div>
-            <div className="col-span-2 border rounded-md bg-card p-4 shadow">
+            <div className="col-span-3 border rounded-md bg-card p-4 shadow">
               <p className="text-md font-medium mb-4">Total Vouchers</p>
               <div className="flex justify-center">
                 <ChartColumnStacked
@@ -185,7 +185,7 @@ export default function VouchersView() {
                 />
               </div>
             </div>
-            <div className="border rounded-md bg-card p-4">
+            {/* <div className="border rounded-md bg-card p-4">
               <h1 className="font-medium text-md mb-2">Recent Deposits</h1>
               <div className="flex space-x-4 items-center">
                 <div className="p-2 rounded-full bg-secondary text-muted-foreground">
@@ -196,7 +196,7 @@ export default function VouchersView() {
                   <p className="text-muted-foreground text-sm">0x0012Bchsju</p>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </ScrollArea>
       </div>

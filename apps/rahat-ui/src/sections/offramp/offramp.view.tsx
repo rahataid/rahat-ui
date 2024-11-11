@@ -1,6 +1,7 @@
 import React from 'react';
 import CommonCard from './offramp.card';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import CommingSoonCard from './coming.soon';
 
 const OfframpView = () => {
   return (
@@ -21,6 +22,11 @@ const OfframpView = () => {
             address="kotaniPay"
           />
           <CommonCard title={'Paypal'} image="/paypal.png" address="paypal" />
+          <CommingSoonCard
+            title={'Stripe'}
+            image="/stripe.png"
+            address="paypal"
+          />
         </div>
       </ScrollArea>
     </div>

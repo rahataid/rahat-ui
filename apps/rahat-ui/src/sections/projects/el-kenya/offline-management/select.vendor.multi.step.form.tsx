@@ -31,6 +31,7 @@ import {
   useFindAllBeneficiaryGroups,
   useFindAllDisbursements,
   useFindUnSyncedBeneficaryGroup,
+  useFindUnSyncedBenefiicaries,
   useGetBeneficiariesDisbursements,
   usePagination,
   useProjectAction,

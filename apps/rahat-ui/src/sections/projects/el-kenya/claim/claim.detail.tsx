@@ -3,7 +3,6 @@ import {
   useContractRedeem,
   useGetRedemption,
   usePagination,
-  useProjectBeneficiaries,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import {
@@ -15,13 +14,12 @@ import {
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
-import useTableColumn from './use.table.columns';
 import React from 'react';
 import ElkenyaTable from '../table.component';
-import SearchInput from '../../components/search.input';
 import HeaderWithBack from '../../components/header.with.back';
-import AddButton from '../../components/add.btn';
 import { Button } from '@rahat-ui/shadcn/components/button';
+import useClaimDetailTableColumn from './use.claim.detail.table.columns';
+import ClientSidePagination from '../../components/client.side.pagination';
 
 type CardData = {
   title: string;
@@ -113,10 +111,10 @@ export default function ClaimDetailView() {
       });
   };
 
-  const columns = useTableColumn();
+  const columns = useClaimDetailTableColumn();
   const table = useReactTable({
     manualPagination: true,
-    data: data || [],
+    data: data?.beneficiaries || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -133,34 +131,16 @@ export default function ClaimDetailView() {
     },
   });
   return (
-    <div className="p-4">
-      <HeaderWithBack
-        title="Claim Details"
-        subtitle="Here is the detailed view of the selected claim"
-        path={`/projects/el-kenya/${id}/claim`}
-      />
-      <div className="grid grid-cols-4 gap-4 mb-5">
-        {cardData?.map((item, index) => {
-          return (
-            <div key={index} className="p-4 rounded-md border bg-card">
-              <h1 className="text-lg font-medium mb-2">{item.title}</h1>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <p className="text-muted-foreground text-sm">{item.label1}</p>
-                  <p className="text-primary text-base">{item.sublabel1}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground text-sm">{item.label2}</p>
-                  <p className="text-primary text-base">{item.sublabel2}</p>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      <div className="rounded border bg-card p-4">
-        <div className="flex justify-between space-x-2 mb-2">
-          <SearchInput className="w-full" name="..." onSearch={() => {}} />
+    <>
+      <div className="p-4">
+        <div className="flex justify-between space-x-4 items-center">
+          <HeaderWithBack
+            title="Claim Details"
+            subtitle={`Here is the detailed view of claim from ${
+              data?.Vendor?.name ?? '.....'
+            }`}
+            path={`/projects/el-kenya/${id}/claim`}
+          />
           <Button
             type="submit"
             disabled={data?.status != 'REQUESTED'}
@@ -168,14 +148,39 @@ export default function ClaimDetailView() {
           >
             Approve
           </Button>
-          {/* // disabled={data?.status !="REQUESTED"} */}
         </div>
-        <ElkenyaTable
-          table={table}
-          tableHeight="h-[calc(100vh-390px)]"
-          loading={isLoading}
-        />
+        <div className="grid grid-cols-4 gap-4 mb-5">
+          {cardData?.map((item, index) => {
+            return (
+              <div key={index} className="p-4 rounded-md border bg-card">
+                <h1 className="text-lg font-medium mb-2">{item.title}</h1>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <p className="text-muted-foreground text-sm">
+                      {item.label1}
+                    </p>
+                    <p className="text-primary text-base">{item.sublabel1}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground text-sm">
+                      {item.label2}
+                    </p>
+                    <p className="text-primary text-base">{item.sublabel2}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div className="rounded border bg-card p-4">
+          <ElkenyaTable
+            table={table}
+            tableHeight="h-[calc(100vh-399px)]"
+            loading={isLoading}
+          />
+        </div>
       </div>
-    </div>
+      <ClientSidePagination table={table} />
+    </>
   );
 }

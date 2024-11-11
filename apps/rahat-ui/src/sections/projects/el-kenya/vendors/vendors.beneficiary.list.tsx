@@ -22,15 +22,20 @@ export default function VendorsBeneficiaryList({
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-
   const tableData = useMemo(() => {
     if (beneficiaryList?.length > 0) {
       return beneficiaryList.map((beneficiary: any) => {
         return {
           phone: beneficiary.piiData.phone,
-          type: beneficiary.Disbursement.Beneficiary.type,
-          glassesStatus: beneficiary.Disbursement.Beneficiary.glassesStatus,
-          voucherStatus: beneficiary.Disbursement.Beneficiary.voucherStatus,
+          type:
+            beneficiary?.Disbursement?.Beneficiary?.type ||
+            beneficiary.Beneficiary.type,
+          glassesStatus:
+            beneficiary?.Disbursement?.Beneficiary?.glassesStatus ||
+            beneficiary.Beneficiary.glassesStatus,
+          voucherStatus:
+            beneficiary?.Disbursement?.Beneficiary?.voucherStatus ||
+            beneficiary.Beneficiary.voucherStatus,
         };
       });
     } else {

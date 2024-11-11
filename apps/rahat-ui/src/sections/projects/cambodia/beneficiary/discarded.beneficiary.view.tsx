@@ -17,7 +17,10 @@ import HeaderWithBack from '../../components/header.with.back';
 import SearchInput from '../../components/search.input';
 import SelectComponent from '../select.component';
 import CambodiaTable from '../table.component';
-import { useCambodiaBeneficiaryTableColumns } from './use.beneficiary.table.columns';
+import {
+  useCambodiaBeneficiaryTableColumns,
+  useDiscardedCambodiaBeneficiaryTableColumns,
+} from './use.beneficiary.table.columns';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
@@ -58,7 +61,7 @@ export default function DiscardedBeneficiaryView() {
       });
     }
   };
-  const columns = useCambodiaBeneficiaryTableColumns();
+  const columns = useDiscardedCambodiaBeneficiaryTableColumns();
   const table = useReactTable({
     manualPagination: true,
     data: data?.data || [],

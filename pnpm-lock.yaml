@@ -10946,6 +10946,9 @@ packages:
   tailwind-merge@2.5.2:
     resolution: {integrity: sha512-kjEBm+pvD+6eAwzJL2Bi+02/9LFLal1Gs61+QB7HvTfQQ0aXwC5LGT8PEt1gS0CWKktKe6ysPTAy3cBC5MeiIg==}
 
+  tailwind-merge@2.5.4:
+    resolution: {integrity: sha512-0q8cfZHMu9nuYP/b5Shb7Y7Sh1B7Nnl5GqNr1U+n2p6+mybvRtayrQ+0042Z5byvTA8ihjlP8Odo8/VnHbZu4Q==}
+
   tailwind@4.0.0:
     resolution: {integrity: sha512-LlUNoD/5maFG1h5kQ6/hXfFPdcnYw+1Z7z+kUD/W/E71CUMwcnrskxiBM8c3G8wmPsD1VvCuqGYMHviI8+yrmg==}
 
@@ -20416,7 +20419,7 @@ snapshots:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-easy-sort: 1.6.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      tailwind-merge: 2.5.2
+      tailwind-merge: 2.5.4
       tsup: 6.7.0(@swc/core@1.4.17(@swc/helpers@0.5.13))(postcss@8.4.45)(ts-node@10.9.2(@swc/core@1.4.17(@swc/helpers@0.5.13))(@types/node@20.16.5)(typescript@5.4.5))(typescript@5.4.5)
     transitivePeerDependencies:
       - '@swc/core'
@@ -26154,6 +26157,8 @@ snapshots:
   system-architecture@0.1.0: {}
 
   tailwind-merge@2.5.2: {}
+
+  tailwind-merge@2.5.4: {}
 
   tailwind@4.0.0(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     dependencies:

@@ -12,12 +12,7 @@ type CardProps = {
   status: string;
 };
 
-export default function CommingSoonCard({
-  address,
-  title,
-  image,
-  badge,
-}: CardProps) {
+export default function CommingSoonCard({ title, image }: CardProps) {
   const router = useRouter();
 
   const handleClick = () => {

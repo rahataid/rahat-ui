@@ -6,12 +6,17 @@ export const useTableColumns = () => {
     {
       accessorKey: 'sendTo',
       header: 'Send To',
-      cell: ({ row }) => <div>{row.getValue('Sent To')}</div>,
+      cell: ({ row }) => <div>{row.original.address}</div>,
     },
     {
       accessorKey: 'date',
       header: 'Date',
-      cell: ({ row }) => <div>{row.getValue('date')}</div>,
+      cell: ({ row }) => {
+        const date = new Date(row.original.createdAt);
+        const formattedDate = date.toLocaleDateString();
+
+        return <div>{formattedDate}</div>;
+      },
     },
     {
       accessorKey: 'status',

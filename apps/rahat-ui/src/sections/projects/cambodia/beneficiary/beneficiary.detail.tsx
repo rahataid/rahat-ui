@@ -72,7 +72,7 @@ export default function BeneficiaryDetail() {
           </h1>
           <p className="font-medium">
             {/* {data?.data?.createdAt.toLocaleString()} */}
-            {/* {formatDT(data?.data?.createdAt)} */}
+            {data?.data?.createdAt ? formatDT(data?.data?.createdAt) : '-'}
           </p>
         </div>
         <div>

@@ -16,7 +16,7 @@ import { Copy, CopyCheck } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
 import HeaderWithBack from '../../components/header.with.back';
-// import TransactionHistoryView from './transaction.history.view';
+import TransactionHistoryView from './transaction.history.view';
 export default function BeneficiaryDetail() {
   const { id, benId } = useParams();
   const { data, isLoading } = useCambodiaBeneficiary({
@@ -112,7 +112,7 @@ export default function BeneficiaryDetail() {
       </div>
       <div className="">
         <h1 className="text-2xl mb-5">Transactions</h1>
-        {/* <TransactionHistoryView walletAddress={data?.data?.walletAddress} /> */}
+        <TransactionHistoryView walletAddress={data?.data?.walletAddress} />
       </div>
     </div>
   );

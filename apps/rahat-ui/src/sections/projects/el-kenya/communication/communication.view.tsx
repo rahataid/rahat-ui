@@ -3,6 +3,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
   VisibilityState,
@@ -18,6 +19,7 @@ import SearchInput from '../../components/search.input';
 import ViewColumns from '../../components/view.columns';
 import ElkenyaTable from '../table.component';
 import { useElkenyaSMSTableColumns } from './use.sms.table.columns';
+import ClientSidePagination from '../../components/client.side.pagination';
 
 export default function CommunicationView() {
   const { id } = useParams() as { id: UUID };
@@ -84,6 +86,7 @@ export default function CommunicationView() {
     data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     // onRowSelectionChange: setSelectedListItems,
@@ -151,12 +154,12 @@ export default function CommunicationView() {
           </div>
           <ElkenyaTable
             table={table}
-            tableHeight="h-[calc(100vh-438px)]"
+            tableHeight="h-[calc(100vh-421px)]"
             loading={isLoading}
           />
         </div>
       </div>
-      <Pagination
+      {/* <Pagination
         pageIndex={table.getState().pagination.pageIndex}
         pageCount={table.getPageCount()}
         setPageSize={table.setPageSize}
@@ -164,7 +167,8 @@ export default function CommunicationView() {
         previousPage={table.previousPage}
         canNextPage={table.getCanNextPage()}
         nextPage={table.nextPage}
-      />
+      /> */}
+      <ClientSidePagination table={table} />
     </>
   );
 }

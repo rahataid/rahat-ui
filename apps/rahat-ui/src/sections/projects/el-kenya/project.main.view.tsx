@@ -13,7 +13,7 @@ const ProjectMainView = () => {
           Welcome to CVA Dashboard
         </h1>
         <p className="text-muted-foreground text-base">
-          Your Hub for Real-Time Analytics and Data VIsualization of the system
+          Your Hub for Real-Time Analytics and Data Visualization of the system
         </p>
       </div>
       <ScrollArea className="mt-5 h-[calc(100vh-185px)]">

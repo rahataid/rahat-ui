@@ -12,6 +12,7 @@ export default function UsersRolesTabSplitView({ userDetail }: IProps) {
   console.log({ userDetail });
   const columns = useUsersRolesTableColumns();
   const table = useReactTable({
+    manualPagination: true,
     data: [],
     columns,
     getCoreRowModel: getCoreRowModel(),

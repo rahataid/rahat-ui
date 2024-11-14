@@ -162,9 +162,9 @@ export default function UsersDetailSplitView({
           <div>
             <h1 className="font-semibold text-xl mb-1">{userDetail?.name}</h1>
             <div className="flex space-x-4 items-center">
-              <Badge>{userDetail?.extras?.status ?? 'status'}</Badge>
+              <Badge>{userDetail?.extras?.status ?? 'N/A'}</Badge>
               <p className="text-base text-muted-foreground">
-                {userDetail?.gender ?? 'gender'}
+                {userDetail?.gender ?? 'N/A'}
               </p>
             </div>
           </div>

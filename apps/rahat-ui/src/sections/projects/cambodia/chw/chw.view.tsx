@@ -106,15 +106,13 @@ export default function CHWView() {
     const rowsToDownload = allData?.data || [];
     const workbook = XLSX.utils.book_new();
     const worksheetData = rowsToDownload?.map((item: any) => ({
-      uuid: item.uuid,
       healthWorkerName: item.name,
       koboUserName: item.koboUsername,
       sales: item._count.SALE,
       leads: item._count.LEAD,
       leadsConverted: item._count.LeadConversions,
       homeVisit: item._count.HOME_VISIT,
-      vendor: item.vendor.name,
-      vendorAdddress: item.vendor.walletAddress,
+      visionCenter: item.vendor.name,
     }));
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'HealthWorkers');

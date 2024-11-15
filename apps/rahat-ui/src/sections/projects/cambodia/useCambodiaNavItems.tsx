@@ -52,12 +52,12 @@ export const useNavItems = () => {
           subtitle: 20,
           icon: <Users size={18} strokeWidth={1.5} />,
         },
-        // {
-        //   title: 'Communication',
-        //   path: `/projects/el-cambodia/${id}/communication`,
-        //   subtitle: 20,
-        //   icon: <SmartphoneNfc size={18} strokeWidth={1.5} />,
-        // },
+        {
+          title: 'Communication',
+          path: `/projects/el-cambodia/${id}/communication`,
+          subtitle: 20,
+          icon: <SmartphoneNfc size={18} strokeWidth={1.5} />,
+        },
       ],
     },
   ];

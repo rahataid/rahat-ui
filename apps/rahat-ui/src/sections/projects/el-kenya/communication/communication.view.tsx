@@ -31,6 +31,7 @@ export default function CommunicationView() {
     failed: 0,
   });
   const { data, isLoading } = useListRpCommunicationLogs(id);
+  console.log({ data });
   const commsAppId = useSettingsStore((state) => state.commsSettings)?.APP_ID;
   useEffect(() => {
     setStats({
@@ -73,8 +74,11 @@ export default function CommunicationView() {
         .map((log) => ({
           ...log,
           to:
-            Array.isArray(log?.details?.responses) &&
-            log?.details?.responses[0]?.mobile?.mobile,
+            (Array.isArray(log?.details?.responses) &&
+              (log?.details?.responses[0]?.mobile?.mobile ||
+                log?.details?.responses[0]?.mobile)) ||
+            (Array.isArray(log?.details?.bulkResponse) &&
+              log?.details?.bulkResponse[0]?.mobileNumber),
         }));
     } else {
       return [];

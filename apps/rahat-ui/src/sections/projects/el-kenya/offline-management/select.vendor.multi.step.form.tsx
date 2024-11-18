@@ -41,6 +41,7 @@ import {
 } from '@rahat-ui/query';
 import { useRSQuery } from '@rumsan/react-query';
 import { toast } from 'react-toastify';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 const steps = [{ label: 'Step 1' }, { label: 'Step 2' }, { label: 'Step 3' }];
 
@@ -304,14 +305,18 @@ export default function SelectVendorMultiStepForm() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {vendors.map((vendor) => (
-                              <SelectItem
-                                key={vendor?.id}
-                                value={vendor?.id.toString()}
-                              >
-                                {vendor.name}
-                              </SelectItem>
-                            ))}
+                            {getVendors?.isPending ? (
+                              <TableLoader />
+                            ) : (
+                              vendors.map((vendor) => (
+                                <SelectItem
+                                  key={vendor?.id}
+                                  value={vendor?.id.toString()}
+                                >
+                                  {vendor?.name}
+                                </SelectItem>
+                              ))
+                            )}
                           </SelectContent>
                         </Select>
                         <FormMessage />

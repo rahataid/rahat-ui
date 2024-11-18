@@ -26,16 +26,16 @@ export default function VendorsBeneficiaryList({
     if (beneficiaryList?.length > 0) {
       return beneficiaryList.map((beneficiary: any) => {
         return {
-          phone: beneficiary.piiData.phone,
+          phone: beneficiary?.piiData?.phone,
           type:
             beneficiary?.Disbursement?.Beneficiary?.type ||
-            beneficiary.Beneficiary.type,
+            beneficiary?.Beneficiary?.type,
           glassesStatus:
             beneficiary?.Disbursement?.Beneficiary?.glassesStatus ||
-            beneficiary.Beneficiary.glassesStatus,
+            beneficiary?.Beneficiary?.glassesStatus,
           voucherStatus:
             beneficiary?.Disbursement?.Beneficiary?.voucherStatus ||
-            beneficiary.Beneficiary.voucherStatus,
+            beneficiary?.Beneficiary?.voucherStatus,
         };
       });
     } else {

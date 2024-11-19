@@ -71,7 +71,7 @@ export default function SelectBeneficiaryView() {
             uuid: ben?.uuid,
             phone: ben?.extras?.phone,
             walletAddress: ben?.walletAddress,
-            location: ben?.extras?.location,
+            location: ben?.projectData?.location || ben?.extras?.location,
           };
         }
       });

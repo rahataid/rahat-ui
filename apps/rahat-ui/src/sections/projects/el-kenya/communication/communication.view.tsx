@@ -3,6 +3,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
   VisibilityState,
@@ -18,6 +19,7 @@ import SearchInput from '../../components/search.input';
 import ViewColumns from '../../components/view.columns';
 import ElkenyaTable from '../table.component';
 import { useElkenyaSMSTableColumns } from './use.sms.table.columns';
+import ClientSidePagination from '../../components/client.side.pagination';
 
 export default function CommunicationView() {
   const { id } = useParams() as { id: UUID };
@@ -29,6 +31,7 @@ export default function CommunicationView() {
     failed: 0,
   });
   const { data, isLoading } = useListRpCommunicationLogs(id);
+  console.log({ data });
   const commsAppId = useSettingsStore((state) => state.commsSettings)?.APP_ID;
   useEffect(() => {
     setStats({
@@ -71,8 +74,11 @@ export default function CommunicationView() {
         .map((log) => ({
           ...log,
           to:
-            Array.isArray(log?.details?.responses) &&
-            log?.details?.responses[0]?.mobile?.mobile,
+            (Array.isArray(log?.details?.responses) &&
+              (log?.details?.responses[0]?.mobile?.mobile ||
+                log?.details?.responses[0]?.mobile)) ||
+            (Array.isArray(log?.details?.bulkResponse) &&
+              log?.details?.bulkResponse[0]?.mobileNumber),
         }));
     } else {
       return [];
@@ -84,6 +90,7 @@ export default function CommunicationView() {
     data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     // onRowSelectionChange: setSelectedListItems,
@@ -151,12 +158,12 @@ export default function CommunicationView() {
           </div>
           <ElkenyaTable
             table={table}
-            tableHeight="h-[calc(100vh-438px)]"
+            tableHeight="h-[calc(100vh-421px)]"
             loading={isLoading}
           />
         </div>
       </div>
-      <Pagination
+      {/* <Pagination
         pageIndex={table.getState().pagination.pageIndex}
         pageCount={table.getPageCount()}
         setPageSize={table.setPageSize}
@@ -164,7 +171,8 @@ export default function CommunicationView() {
         previousPage={table.previousPage}
         canNextPage={table.getCanNextPage()}
         nextPage={table.nextPage}
-      />
+      /> */}
+      <ClientSidePagination table={table} />
     </>
   );
 }

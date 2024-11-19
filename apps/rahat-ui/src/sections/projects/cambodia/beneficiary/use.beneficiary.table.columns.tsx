@@ -15,7 +15,7 @@ export const useCambodiaBeneficiaryTableColumns = () => {
       accessorKey: 'type',
       header: 'Type',
       cell: ({ row }) => {
-        return <div>{row?.original?.extras?.type || 'UNKNOWN'}</div>;
+        return <div>{row?.original?.type || 'UNKNOWN'}</div>;
       },
     },
     {

@@ -47,7 +47,6 @@ export const useElkenyaBeneficiaryTableColumns = ({
       accessorKey: 'voucherType',
       header: 'Voucher Type',
       cell: ({ row }) => {
-        console.log('voucherType::', row.getValue('voucherType'));
         const voucherType = row.getValue('voucherType');
         const colors = getDynamicColor(voucherType as string);
         return (

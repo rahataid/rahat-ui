@@ -101,9 +101,7 @@ export default function BeneficiaryDetail() {
         <div>
           <h1 className="text-md text-muted-foreground">Beneficiary Type</h1>
 
-          <Badge variant="secondary">
-            {data?.data?.extras?.type ?? 'UNKNOWN'}
-          </Badge>
+          <Badge variant="secondary">{data?.data?.type ?? 'UNKNOWN'}</Badge>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Referred By</h1>

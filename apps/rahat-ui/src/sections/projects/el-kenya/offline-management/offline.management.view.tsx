@@ -6,6 +6,7 @@ import {
 import {
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
   VisibilityState,
@@ -34,10 +35,11 @@ export default function OfflineManagementView() {
   } = useGetOfflineVendors(id as UUID);
   const columns = useTableColumn();
   const table = useReactTable({
-    manualPagination: true,
+    // manualPagination: true,
     data: offlineVendors || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     // onRowSelectionChange: setSelectedListItems,

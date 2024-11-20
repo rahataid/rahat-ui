@@ -16,11 +16,11 @@ export const useCambodiaChwTableColumns = () => {
       header: 'Kobo Username',
       cell: ({ row }) => <div>{row.getValue('koboUsername')}</div>,
     },
-    {
-      accessorKey: 'home visit',
-      header: 'Home Visit',
-      cell: ({ row }) => <div> {row?.original?._count?.HOME_VISIT} </div>,
-    },
+    // {
+    //   accessorKey: 'home visit',
+    //   header: 'Home Visit',
+    //   cell: ({ row }) => <div> {row?.original?._count?.HOME_VISIT} </div>,
+    // },
     {
       accessorKey: 'Sales',
       header: 'Sales Count',

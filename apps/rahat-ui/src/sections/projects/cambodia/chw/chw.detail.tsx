@@ -8,7 +8,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { CoinsIcon, Copy, CopyCheck, Home, Users2Icon } from 'lucide-react';
+import { CoinsIcon, Copy, CopyCheck, Ticket, Users2Icon } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import HeaderWithBack from '../../components/header.with.back';
@@ -40,12 +40,6 @@ export default function ChwDetail() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-7">
         <DataCard
-          title="Home Visits"
-          number={stats?.data?.home_visits}
-          Icon={Home}
-          className="rounded-lg border-solid "
-        />
-        <DataCard
           title="Sales Count"
           number={stats?.data?.sales}
           Icon={CoinsIcon}
@@ -56,6 +50,12 @@ export default function ChwDetail() {
           number={stats?.data?.leads}
           Icon={Users2Icon}
           className="rounded-lg border-solid"
+        />
+        <DataCard
+          title="Lead Converted"
+          number={stats?.data?.leads_converted}
+          Icon={Ticket}
+          className="rounded-lg border-solid "
         />
       </div>
 

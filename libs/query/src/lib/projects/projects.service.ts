@@ -717,7 +717,6 @@ export const useCHWList = (payload: any) => {
 // cambodia.chw.get
 
 export const useCHWGet = (payload: any) => {
-  console.log(payload);
   const action = useProjectAction();
   const { projectUUID, ...restPayload } = payload;
 
@@ -925,7 +924,6 @@ export const useCambodiaCommisionCreate = () => {
     mutationKey: [MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.CREATE],
 
     mutationFn: async (payload: any) => {
-      console.log(payload);
       const { projectUUID, ...restPayload } = payload;
 
       const mutate = await q.mutateAsync({
@@ -1116,6 +1114,29 @@ export const useCambodiaCommsList = (payload: any) => {
         data: {
           action: MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.LIST,
           payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
+export const useCambodiaLineChartsReports = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.LINE_STATS, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.LINE_STATS,
+          payload: restPayload?.filters,
         },
       });
       return mutate;

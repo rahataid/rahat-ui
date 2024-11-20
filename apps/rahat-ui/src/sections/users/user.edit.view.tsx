@@ -67,14 +67,28 @@ export default function EditUser() {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: user?.name || '',
-      gender: user?.gender || '',
-      email: user?.email || '',
-      phone: user?.phone || '',
-      roles: user?.roles || [],
-      wallet: user?.wallet || '',
+      name: '',
+      gender: '',
+      email: '',
+      phone: '',
+      roles: [],
+      wallet: '',
     },
   });
+
+  const { reset } = form;
+  React.useEffect(() => {
+    if (user) {
+      reset({
+        name: user?.name?.toString(),
+        gender: user?.gender?.toString(),
+        email: user?.email?.toString(),
+        phone: user?.phone?.toString(),
+        roles: user?.roles,
+        wallet: user?.wallet?.toString(),
+      });
+    }
+  }, [user, reset]);
 
   const { data: roleData } = useRoleList();
   const updateUser = useUserUpdate(id);
@@ -169,18 +183,18 @@ export default function EditUser() {
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                           className="flex space-x-1"
                         >
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="male" />
+                              <RadioGroupItem value="MALE" />
                             </FormControl>
                             <FormLabel className="font-normal">Male</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="female" />
+                              <RadioGroupItem value="FEMALE" />
                             </FormControl>
                             <FormLabel className="font-normal">
                               Female
@@ -188,9 +202,17 @@ export default function EditUser() {
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="other" />
+                              <RadioGroupItem value="OTHER" />
                             </FormControl>
                             <FormLabel className="font-normal">Other</FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="UNKNOWN" />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              Unknown
+                            </FormLabel>
                           </FormItem>
                         </RadioGroup>
                       </FormControl>

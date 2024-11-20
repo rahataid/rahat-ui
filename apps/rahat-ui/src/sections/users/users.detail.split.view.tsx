@@ -121,7 +121,7 @@ export default function UsersDetailSplitView({
   };
 
   return (
-    <>
+    <div className="h-full border-l">
       <div className="flex justify-between items-center p-4 border-b">
         <div className="flex space-x-4">
           <TooltipComponent
@@ -242,6 +242,6 @@ export default function UsersDetailSplitView({
           <UsersRolesTabSplitView userDetail={userDetail} />
         </TabsContent>
       </Tabs>
-    </>
+    </div>
   );
 }

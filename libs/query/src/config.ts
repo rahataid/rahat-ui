@@ -142,5 +142,6 @@ export const MS_CAM_ACTIONS = {
     COMMUNICATION: {
       LIST: 'cambodia.communication.list',
     },
+    LINE_STATS: 'cambodia.app.line_stats',
   },
 };

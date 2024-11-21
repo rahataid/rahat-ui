@@ -11,7 +11,7 @@ type IProps = {
   name: string;
 };
 
-export default function ConfirmDialog({ name }: IProps) {
+export default function ConfirmDeleteDialog({ name }: IProps) {
   return (
     <DialogContent className="sm:max-w-[400px]">
       <DialogHeader>

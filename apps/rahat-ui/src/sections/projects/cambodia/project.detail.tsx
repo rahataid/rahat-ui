@@ -8,7 +8,7 @@ import React from 'react';
 import MONTHS from '../../../utils/months.json';
 import { DynamicReports } from '../../chart-reports';
 import CambodiaLineCharts from '../../chart-reports/cambodia-line-chart';
-import SearchDropdownComponent from '../components/searchDropdownComponent';
+import DropdownComponent from '../components/dropdownComponent';
 
 export default function ProjectDetail() {
   const currentYear = new Date().getFullYear();
@@ -68,15 +68,15 @@ export default function ProjectDetail() {
             </div>
 
             <div>
-              <SearchDropdownComponent
+              <DropdownComponent
                 transformedData={transformedMonthData}
                 title={'Months'}
                 handleSelect={handleSelect}
                 current={currentMonthName?.label}
               />
-              <SearchDropdownComponent
+              <DropdownComponent
                 transformedData={transformedYearData}
-                title={'Year'}
+                title={'Years'}
                 handleSelect={handleSelect}
                 current={currentYear}
               />

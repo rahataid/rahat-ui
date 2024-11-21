@@ -5,8 +5,8 @@ import { Copy, CopyCheck } from 'lucide-react';
 import HeaderWithBack from '../../components/header.with.back';
 import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import EditButton from '../../components/edit.btn';
-import DeleteButton from '../../components/delete.btn';
+import EditButton from '../../../../components/edit.btn';
+import DeleteButton from '../../../../components/delete.btn';
 
 export default function BeneficiaryDetail() {
   const { id, benId } = useParams() as { id: UUID; benId: UUID };

@@ -3,17 +3,29 @@ import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import DemoTable from '../../components/table';
 import { useUsersRolesTableColumns } from './use.users.roles.table.columns';
 import { User } from '@rumsan/sdk/types';
+import { useUserRoleList } from '@rumsan/react-query';
+import { UUID } from 'crypto';
+import React from 'react';
 
 type IProps = {
   userDetail: User;
 };
 
 export default function UsersRolesTabSplitView({ userDetail }: IProps) {
-  console.log({ userDetail });
+  const { data: roleList, isLoading } = useUserRoleList(
+    userDetail?.uuid as UUID,
+  );
+  const updatedRoleList = React.useMemo(() => {
+    return roleList?.data?.map((role) => ({
+      ...role,
+      userUUID: userDetail?.uuid as UUID,
+    }));
+  }, [roleList?.data, userDetail?.uuid]);
+
   const columns = useUsersRolesTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: [],
+    data: updatedRoleList || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -29,7 +41,11 @@ export default function UsersRolesTabSplitView({ userDetail }: IProps) {
           path=""
         />
       </div>
-      <DemoTable table={table} tableHeight="h-[calc(100vh-400px)]" />
+      <DemoTable
+        table={table}
+        tableHeight="h-[calc(100vh-400px)]"
+        loading={isLoading}
+      />
     </div>
   );
 }

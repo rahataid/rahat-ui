@@ -1,23 +1,21 @@
 'use client';
 
-import * as React from 'react';
-import { Check, ChevronsUpDown } from 'lucide-react';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/popover';
+import { cn } from '@rahat-ui/shadcn/src';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
 } from '@rahat-ui/shadcn/src/components/ui/command';
-import { cn } from '@rahat-ui/shadcn/src';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/popover';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import * as React from 'react';
 
 type IProps = {
   transformedData:
@@ -29,7 +27,7 @@ type IProps = {
   handleSelect: (key: string, value: string) => void;
   current?: number | string;
 };
-export default function SearchDropdownComponent({
+export default function DropdownComponent({
   transformedData,
   title,
   handleSelect,
@@ -58,31 +56,27 @@ export default function SearchDropdownComponent({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] h-[200px] ">
+      <PopoverContent className="w-[200px] h-[200px] ">
         <Command>
           {/* <CommandInput placeholder="--Select Field--" /> */}
-          <ScrollArea>
-            <CommandEmpty>No field found.</CommandEmpty>
-            <CommandList>
-              <CommandGroup>
-                {transformedData.map((d) => (
-                  <CommandItem
-                    key={d.value}
-                    value={d.value}
-                    onSelect={onSelect}
-                  >
-                    <Check
-                      className={cn(
-                        'mr-2 h-4 w-4',
-                        value === d.value ? 'opacity-100' : 'opacity-0',
-                      )}
-                    />
-                    {d.label}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </ScrollArea>
+          {/* <ScrollArea> */}
+          <CommandEmpty>No field found.</CommandEmpty>
+          <CommandList>
+            <CommandGroup>
+              {transformedData.map((d) => (
+                <CommandItem key={d.value} value={d.value} onSelect={onSelect}>
+                  <Check
+                    className={cn(
+                      'mr-2 h-4 w-4',
+                      value === d.value ? 'opacity-100' : 'opacity-0',
+                    )}
+                  />
+                  {d.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+          {/* </ScrollArea> */}
         </Command>
       </PopoverContent>
     </Popover>

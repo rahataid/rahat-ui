@@ -1144,3 +1144,41 @@ export const useCambodiaLineChartsReports = (payload: any) => {
   });
   return query;
 };
+
+export const useCambodiaCommisionStats = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.STATS,
+      restPayloadString,
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.STATS,
+          payload: restPayload,
+        },
+      });
+
+      return mutate?.data
+        ?.filter((item) =>
+          ['TOTAL_LEAD_CONVERTED', 'TOTAL_COMMISSION_EARNED'].includes(
+            item.name,
+          ),
+        )
+        ?.sort((a, b) => {
+          if (a.name === 'TOTAL_LEAD_CONVERTED') return -1;
+          if (b.name === 'TOTAL_LEAD_CONVERTED') return 1;
+          return 0;
+        });
+    },
+  });
+  return query;
+};

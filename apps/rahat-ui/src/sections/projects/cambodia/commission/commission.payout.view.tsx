@@ -1,6 +1,14 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { Coins, Home, Users } from 'lucide-react';
+import {
+  Coins,
+  CoinsIcon,
+  DollarSignIcon,
+  Home,
+  LucideIcon,
+  Users,
+  UsersIcon,
+} from 'lucide-react';
 import SearchInput from '../../components/search.input';
 import ViewColumns from '../../components/view.columns';
 import CambodiaTable from '../table.component';
@@ -11,19 +19,13 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import React from 'react';
-import { useCambodiaCommisionCurrent, usePagination } from '@rahat-ui/query';
+import {
+  useCambodiaCommisionCurrent,
+  useCambodiaCommisionStats,
+  usePagination,
+} from '@rahat-ui/query';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useParams, useRouter } from 'next/navigation';
-
-const cardData = [
-  { title: 'Leads Converted', icon: Home, total: '0' },
-  { title: 'Total Commission Earned', icon: Coins, total: '0' },
-  {
-    title: 'Total Commission Paid',
-    icon: Users,
-    total: '0',
-  },
-];
 
 const columns: ColumnDef<any>[] = [
   {
@@ -49,10 +51,18 @@ export default function CommissionPayoutView() {
   const { data } = useCambodiaCommisionCurrent({
     projectUUID: id as string,
   }) as any;
-  console.log(data);
+
+  const { data: commisionStats } = useCambodiaCommisionStats({
+    projectUUID: id as string,
+  });
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
+  const iconMap = {
+    TOTAL_COMMISSION_EARNED: DollarSignIcon as LucideIcon,
+    TOTAL_LEAD_CONVERTED: UsersIcon as LucideIcon,
+  };
   const {
     pagination,
     filters,
@@ -102,16 +112,39 @@ export default function CommissionPayoutView() {
           </Button>
         </div>
         <div className="grid grid-cols-3 gap-4 mb-4">
-          {cardData.map((item, index) => (
+          <>
+            {commisionStats?.map((item, index) => {
+              const Icon: LucideIcon =
+                iconMap[item.name as keyof typeof iconMap];
+              const toTitleCase = (str: string) =>
+                str
+                  .toLowerCase()
+                  .split('_')
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(' ');
+              return (
+                <DataCard
+                  key={index}
+                  className="border-solid rounded-md"
+                  iconStyle="bg-white text-black"
+                  title={toTitleCase(item?.name)}
+                  number={
+                    typeof item?.data?.count === 'string'
+                      ? item?.data?.count
+                      : item?.data?.count.toLocaleString()
+                  }
+                  Icon={Icon}
+                />
+              );
+            })}
             <DataCard
-              key={index}
               className="border-solid rounded-md"
               iconStyle="bg-white text-black"
-              title={item.title}
-              number={item.total}
-              Icon={item.icon}
+              title={'Total Commission Paid'}
+              number={'0'}
+              Icon={CoinsIcon}
             />
-          ))}
+          </>
         </div>
         {/* <div>
           <div className="mb-4">

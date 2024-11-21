@@ -229,7 +229,7 @@ export default function EditUser() {
                 name="roles"
                 render={({ field }) => {
                   return (
-                    <FormItem>
+                    <FormItem className={field.value[0] ? 'block' : 'hidden'}>
                       <Select
                         onValueChange={(value) => {
                           field.onChange([value]);

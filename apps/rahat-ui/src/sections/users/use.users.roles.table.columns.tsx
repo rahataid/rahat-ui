@@ -4,22 +4,27 @@ import { ColumnDef } from '@tanstack/react-table';
 import { UserRole } from '@rumsan/sdk/types';
 import { Trash2 } from 'lucide-react';
 import { useUserRolesRemove } from '@rumsan/react-query';
-import { useUserStore } from '@rumsan/react-query';
 import { UUID } from 'crypto';
 import Swal from 'sweetalert2';
 import React from 'react';
 
-export const useUsersRolesTableColumns = () => {
-  const removeUserRole = useUserRolesRemove();
-  const user = useUserStore((state) => state.user);
-  const loggedUserRoles = React.useMemo(() => user?.data?.roles, [user]);
+type IProps = {
+  loggedUserRoles: string[];
+  userUUID: UUID;
+};
 
-  const deleteUserRole = async (id: UUID, roles: string[]) => {
+export const useUsersRolesTableColumns = ({
+  loggedUserRoles,
+  userUUID,
+}: IProps) => {
+  const removeUserRole = useUserRolesRemove();
+
+  const deleteUserRole = async (roles: string[]) => {
     if (
       loggedUserRoles.includes('Admin') ||
       loggedUserRoles.includes('Manager')
     ) {
-      await removeUserRole.mutateAsync({ uuid: id, roles: roles });
+      await removeUserRole.mutateAsync({ uuid: userUUID, roles: roles });
       Swal.fire('Role Removed Successfully', '', 'success');
     } else {
       return Swal.fire(
@@ -47,9 +52,7 @@ export const useUsersRolesTableColumns = () => {
         return (
           <div className="flex justify-end">
             <Trash2
-              onClick={() =>
-                deleteUserRole(row?.original?.userUUID, [row?.original?.name])
-              }
+              onClick={() => deleteUserRole([row?.original?.name])}
               size={20}
               strokeWidth={1.5}
               className="cursor-pointer"

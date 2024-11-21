@@ -40,7 +40,8 @@ const FormSchema = z.object({
   name: z.string().min(4, { message: 'Name must be at least 4 character' }),
   email: z.string().email(),
   gender: z.string(),
-  roles: z.array(z.string()).length(1, { message: 'Please select role' }),
+  // roles: z.array(z.string()).length(1, { message: 'Please select role' }),
+  roles: z.array(z.string()).optional(),
   phone: z.string(),
   wallet: z
     .string()

@@ -7,6 +7,7 @@ type IProps = {
   handleClick: VoidFunction;
   className?: string;
   variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost';
+  disabled?: boolean;
 };
 export default function CoreBtnComponent({
   Icon,
@@ -14,9 +15,15 @@ export default function CoreBtnComponent({
   handleClick,
   className = '',
   variant = 'secondary',
+  disabled = false,
 }: IProps) {
   return (
-    <Button className={className} variant={variant} onClick={handleClick}>
+    <Button
+      className={className}
+      variant={variant}
+      onClick={handleClick}
+      disabled={disabled}
+    >
       <Icon className="mr-1" size={18} strokeWidth={1.5} />
       {name}
     </Button>

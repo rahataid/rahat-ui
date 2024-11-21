@@ -237,9 +237,11 @@ const FundManagementFlow = () => {
       formData.append('file', fileToUpload);
     }
 
-    formData.append('email', 'owner@sandab.stellar.rahat.io');
+    // formData.append('email', 'owner@sandab.stellar.rahat.io');
+    formData.append('email', 'owner@bluecorp.local');
     formData.append('password', 'Password123!');
-    formData.append('tenant_name', 'sandab');
+    // formData.append('tenant_name', 'sandab');
+    formData.append('tenant_name', 'bluecorp');
     formData.append('disbursement_name', disbursementName);
     formData.append('action', 'rpProject.stellar.createDisbursement');
 
@@ -249,7 +251,6 @@ const FundManagementFlow = () => {
       //@ts-ignore
       await requestToStellar({ formData, projectUUID: randomUUID });
     } catch (error) {
-      
     } finally {
       setLoading(false);
 

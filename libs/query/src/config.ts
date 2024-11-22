@@ -138,9 +138,11 @@ export const MS_CAM_ACTIONS = {
       CREATE: 'cambodia.commission_scheme.create',
       LIST: 'cambodia.commission_scheme.list',
       GET_CURRENT: 'cambodia.commission_scheme.get_current',
+      STATS: 'cambodia.app.stats',
     },
     COMMUNICATION: {
       LIST: 'cambodia.communication.list',
     },
+    LINE_STATS: 'cambodia.app.line_stats',
   },
 };

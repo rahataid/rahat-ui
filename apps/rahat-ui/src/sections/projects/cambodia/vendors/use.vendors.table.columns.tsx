@@ -22,28 +22,26 @@ export const useCambodiaVendorsTableColumns = () => {
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <div>{row.original.User.name}</div>,
+      cell: ({ row }) => <div>{row?.original?.name}</div>,
     },
     {
       accessorKey: 'phone',
       header: 'Phone Number',
-      cell: ({ row }) => <div>{row.original.User.phone}</div>,
+      cell: ({ row }) => <div>{row?.original?.phone}</div>,
     },
     {
       accessorKey: 'wallet',
       header: 'Wallet Address',
       cell: ({ row }) => (
         <>
-          {row.original.User.wallet ? (
+          {row?.original?.wallet ? (
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger
                   className="flex gap-3 cursor-pointer"
-                  onClick={() =>
-                    clickToCopy(row.original.User.wallet, row.index)
-                  }
+                  onClick={() => clickToCopy(row.original.wallet, row.index)}
                 >
-                  <p className="truncate w-16">{row.original.User.wallet}</p>
+                  <p className="truncate w-16">{row.original.wallet}</p>
                   {walletAddressCopied === row.index ? (
                     <CopyCheck size={20} strokeWidth={1.5} />
                   ) : (

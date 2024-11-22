@@ -96,7 +96,6 @@ export default function CHWView() {
     getRowId(originalRow) {
       return originalRow.walletAddress;
     },
-
     state: {
       columnVisibility,
       rowSelection: selectedListItems,

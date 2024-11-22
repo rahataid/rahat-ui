@@ -19,11 +19,24 @@ export type Transaction = {
   txHash: string;
 };
 export const useTableColumns = () => {
-  const [copyAction, setCopyAction] = useState<number>();
-  const clickToCopy = (name: string, index: number) => {
-    navigator.clipboard.writeText(name);
-    setCopyAction(index);
+  const [copiedRows, setCopiedRows] = useState<Set<number>>(new Set());
+
+  const clickToCopy = (value: string, index: number) => {
+    navigator.clipboard.writeText(value);
+
+    // Add the row index to the Set of copied rows
+    setCopiedRows((prev) => new Set(prev).add(index));
+
+    // Remove the copied status after 3 seconds
+    setTimeout(() => {
+      setCopiedRows((prev) => {
+        const updatedSet = new Set(prev);
+        updatedSet.delete(index);
+        return updatedSet;
+      });
+    }, 3000);
   };
+
   const columns: ColumnDef<Transaction>[] = [
     {
       accessorKey: 'topic',
@@ -33,19 +46,8 @@ export const useTableColumns = () => {
       ),
     },
     {
-      accessorKey: 'processedBy',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Wallet Address
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-
+      accessorKey: 'walletAddress',
+      header: 'Wallet Address',
       cell: ({ row }) => (
         <div className="lowercase ml-3">
           {row.getValue('processedBy') ? (
@@ -61,7 +63,7 @@ export const useTableColumns = () => {
                     {truncateEthAddress(row.getValue('processedBy'))}
                   </p>
                   <span className="ml-1">
-                    {copyAction === row.index ? (
+                    {copiedRows.has(row.index) ? (
                       <CopyCheck size={20} strokeWidth={1.5} />
                     ) : (
                       <Copy size={20} strokeWidth={1.5} />
@@ -70,7 +72,7 @@ export const useTableColumns = () => {
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary" side="bottom">
                   <p className="text-xs font-medium">
-                    {copyAction === row.index ? 'copied' : 'click to copy'}
+                    {copiedRows.has(row.index) ? 'Copied' : 'Click to copy'}
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -81,25 +83,6 @@ export const useTableColumns = () => {
         </div>
       ),
     },
-    // {
-    //   accessorKey: 'voucherId',
-    //   header: ({ column }) => {
-    //     return (
-    //       <Button
-    //         variant="ghost"
-    //         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-    //       >
-    //         VoucherId
-    //         <ArrowUpDown className="ml-2 h-4 w-4" />
-    //       </Button>
-    //     );
-    //   },
-    //   cell: ({ row }) => (
-    //     <div className="lowercase">
-    //       {truncateEthAddress(row.getValue('voucherId'))}
-    //     </div>
-    //   ),
-    // },
     {
       accessorKey: 'timeStamp',
       header: ({ column }) => {
@@ -122,17 +105,7 @@ export const useTableColumns = () => {
     },
     {
       accessorKey: 'txHash',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            TxHash
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
+      header: 'TxHash',
       cell: ({ row }) => (
         <div className="lowercase">
           {row.getValue('txHash') ? (
@@ -143,7 +116,7 @@ export const useTableColumns = () => {
                   onClick={() => clickToCopy(row.getValue('txHash'), row.index)}
                 >
                   <p>{truncateEthAddress(row.getValue('txHash'))}</p>
-                  {copyAction === row.index ? (
+                  {copiedRows.has(row.index) ? (
                     <CopyCheck size={20} strokeWidth={1.5} />
                   ) : (
                     <Copy size={20} strokeWidth={1.5} />
@@ -151,7 +124,7 @@ export const useTableColumns = () => {
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary" side="bottom">
                   <p className="text-xs font-medium">
-                    {copyAction === row.index ? 'copied' : 'click to copy'}
+                    {copiedRows.has(row.index) ? 'Copied' : 'Click to copy'}
                   </p>
                 </TooltipContent>
               </Tooltip>

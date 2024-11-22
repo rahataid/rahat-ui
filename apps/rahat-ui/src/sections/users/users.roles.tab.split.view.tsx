@@ -36,7 +36,7 @@ export default function UsersRolesTabSplitView({ userDetail }: IProps) {
         <h1 className="font-medium">User Roles</h1>
         {(loggedUserRoles?.includes('Admin') ||
           loggedUserRoles?.includes('Manager')) && (
-          <AssignRoleDialog userUUID={userDetail?.uuid as UUID} />
+          <AssignRoleDialog userDetails={userDetail} />
         )}
       </div>
       <DemoTable

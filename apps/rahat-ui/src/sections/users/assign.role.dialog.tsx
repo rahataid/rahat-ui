@@ -1,6 +1,6 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import {
   Dialog,
   DialogClose,
@@ -20,24 +20,42 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 
-import { useRoleList, useUserAddRoles } from "@rumsan/react-query";
-import { Button } from "@rahat-ui/shadcn/src/components/ui/button";
-import CoreBtnComponent from "../../components/core.btn";
-import { Plus } from "lucide-react";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@rahat-ui/shadcn/src/components/ui/form";
-import { UUID } from "crypto";
-import Swal from "sweetalert2";
+import { useRoleList, useUserAddRoles } from '@rumsan/react-query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import CoreBtnComponent from '../../components/core.btn';
+import { Plus } from 'lucide-react';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@rahat-ui/shadcn/src/components/ui/form';
+import { UUID } from 'crypto';
+import Swal from 'sweetalert2';
+import { useSettingsStore } from '@rahat-ui/query';
+import {
+  useAddAdmin,
+  useAddManager,
+} from '../../hooks/el/contracts/el-contracts';
+import { Role, User } from '@rumsan/sdk/types';
 
 type IProps = {
-  userUUID: UUID;
-}
-export default function AssignRoleDialog({ userUUID }: IProps) {
+  userDetails: User;
+};
+export default function AssignRoleDialog({ userDetails }: IProps) {
+  const contractSettings = useSettingsStore((state) => state.accessManager);
+  const roleSync = useSettingsStore((state) => state.roleOnChainSync);
+
   const { data: roleList } = useRoleList({ page: 1, perPage: 100 });
+
+  const addManager = useAddManager();
+  const addAdmin = useAddAdmin();
   const addUserRole = useUserAddRoles();
 
   const FormSchema = z.object({
     roles: z.array(z.string()).length(1, { message: 'Please select role' }),
-  })
+  });
 
   const form = useForm({
     resolver: zodResolver(FormSchema),
@@ -47,12 +65,43 @@ export default function AssignRoleDialog({ userUUID }: IProps) {
   });
 
   const onSubmit = async (data: any) => {
-    await addUserRole.mutateAsync({
-      uuid: userUUID,
-      roles: data.roles,
-    })
-    form.reset();
-    Swal.fire('Role Assigned Successfully', '', 'success');
+    try {
+      if (roleSync === true) {
+        if (data.roles.includes('Manager')) {
+          await addManager.mutateAsync({
+            data: userDetails,
+            walletAddress: userDetails?.wallet as `0x${string}`,
+            contractAddress: contractSettings as `0x${string}`,
+          });
+        } else if (data.roles.includes('Admin')) {
+          await addAdmin.mutateAsync({
+            data: data,
+            walletAddress: userDetails?.wallet as `0x${string}`,
+            contractAddress: contractSettings as `0x${string}`,
+          });
+        } else {
+          await addUserRole.mutateAsync({
+            uuid: userDetails?.uuid as UUID,
+            roles: data.roles,
+          });
+          Swal.fire('Role Assigned Successfully', '', 'success');
+        }
+      } else {
+        await addUserRole.mutateAsync({
+          uuid: userDetails?.uuid as UUID,
+          roles: data.roles,
+        });
+        Swal.fire('Role Assigned Successfully', '', 'success');
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'An unexpected error occurred.';
+      Swal.fire('Error Assigning Role', errorMessage, 'error');
+    } finally {
+      form.reset();
+    }
   };
 
   return (
@@ -63,7 +112,7 @@ export default function AssignRoleDialog({ userUUID }: IProps) {
           variant="ghost"
           name="Assign Role"
           Icon={Plus}
-          handleClick={() => { }}
+          handleClick={() => {}}
         />
       </DialogTrigger>
       <DialogContent>
@@ -92,8 +141,8 @@ export default function AssignRoleDialog({ userUUID }: IProps) {
                         </FormControl>
                         <SelectContent>
                           <SelectGroup>
-                            {roleList?.data &&
-                              roleList?.data?.map((role: any) => (
+                            {Array.isArray(roleList?.data) &&
+                              roleList.data.map((role: Role) => (
                                 <SelectItem value={role.name} key={role.id}>
                                   {role.name}
                                 </SelectItem>
@@ -110,12 +159,16 @@ export default function AssignRoleDialog({ userUUID }: IProps) {
             <DialogFooter>
               <div className="flex items-center justify-center mt-10 gap-4">
                 <DialogClose asChild>
-                  <Button type="button" variant='secondary' onClick={() => form.reset()}>Cancel</Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => form.reset()}
+                  >
+                    Cancel
+                  </Button>
                 </DialogClose>
                 <DialogClose asChild>
-                  <Button type="submit">
-                    Submit
-                  </Button>
+                  <Button type="submit">Submit</Button>
                 </DialogClose>
               </div>
             </DialogFooter>

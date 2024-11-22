@@ -29,6 +29,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import Swal from 'sweetalert2';
+import { User } from '@rumsan/sdk/types';
 
 export default function UsersDetailPage() {
   const { id } = useParams() as { id: UUID };
@@ -178,7 +179,7 @@ export default function UsersDetailPage() {
               />
               {(loggedUserRoles?.includes('Admin') ||
                 loggedUserRoles?.includes('Manager')) && (
-                <AssignRoleDialog userUUID={id} />
+                <AssignRoleDialog userDetails={User as User} />
               )}
             </div>
             <DemoTable

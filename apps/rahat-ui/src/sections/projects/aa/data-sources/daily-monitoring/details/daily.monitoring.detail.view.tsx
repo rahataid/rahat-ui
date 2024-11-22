@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Back from '../../../../components/back';
-import EditButton from '../../../../components/edit.btn';
-import DeleteButton from '../../../../components/delete.btn';
+import EditButton from '../../../../../../components/edit.btn';
+import DeleteButton from '../../../../../../components/delete.btn';
 import DetailsHeadCard from '../../../../components/details.head.card';
 import { User, Waves } from 'lucide-react';
 import { UUID } from 'crypto';

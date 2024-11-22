@@ -5,10 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-
-// import { useUserCreate, useUserRoleList } from '@rumsan/react-query';
-// import { enumToObjectArray } from '@rumsan/sdk/utils';
-// import { Role } from '@rumsan/sdk/types';
 import {
   Select,
   SelectContent,
@@ -17,8 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-// import { Gender } from '@rahat-ui/types';
-import { useRoleList, useSettingsStore, useUserCreate } from '@rahat-ui/query';
+import { useRoleList, useSettingsStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
@@ -36,16 +31,14 @@ import {
 import { useRouter } from 'next/navigation';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import HeaderWithBack from '../projects/components/header.with.back';
-import { Loader2, Wallet } from 'lucide-react';
+import { Wallet } from 'lucide-react';
 import {
   RadioGroup,
   RadioGroupItem,
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
 import { Gender } from '@rahataid/sdk/enums';
-import { Alert } from '@rahat-ui/shadcn/src/components/ui/alert';
-
-// Constants
-// const genderList = enumToObjectArray(Gender);
+import { useUserCreate } from '@rumsan/react-query';
+import Swal from 'sweetalert2';
 
 const FormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 4 character' }),
@@ -61,7 +54,6 @@ const FormSchema = z.object({
 // Component
 export default function AddUser() {
   const router = useRouter();
-  const [next, setNext] = React.useState(false);
 
   const form = useForm({
     resolver: zodResolver(FormSchema),
@@ -75,7 +67,6 @@ export default function AddUser() {
     },
   });
 
-  console.log('first', form.watch());
   const { data: roleData } = useRoleList();
   const contractSettings = useSettingsStore((state) => state.accessManager);
   const roleSync = useSettingsStore((state) => state.roleOnChainSync);
@@ -86,29 +77,38 @@ export default function AddUser() {
   const addAdmin = useAddAdmin();
 
   const handleAddUser = async (data: any) => {
-    if (roleSync === true) {
-      if (data.roles.includes('Manager')) {
-        await addManager.mutateAsync({
-          data: data,
-          walletAddress: data?.wallet,
-          contractAddress: contractSettings as `0x${string}`,
-        });
-      } else if (data.roles.includes('Admin')) {
-        await addAdmin.mutateAsync({
-          data: data,
-          walletAddress: data?.wallet,
-          contractAddress: contractSettings as `0x${string}`,
-        });
+    try {
+      if (roleSync === true) {
+        if (data.roles.includes('Manager')) {
+          await addManager.mutateAsync({
+            data: data,
+            walletAddress: data?.wallet,
+            contractAddress: contractSettings as `0x${string}`,
+          });
+        } else if (data.roles.includes('Admin')) {
+          await addAdmin.mutateAsync({
+            data: data,
+            walletAddress: data?.wallet,
+            contractAddress: contractSettings as `0x${string}`,
+          });
+        } else {
+          await userCreate.mutateAsync(data);
+        }
       } else {
         await userCreate.mutateAsync(data);
       }
-    } else {
-      await userCreate.mutateAsync(data);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'An unexpected error occurred.';
+      Swal.fire('User Creation Failed', errorMessage, 'error');
     }
   };
 
   useEffect(() => {
     if (userCreate.isSuccess) {
+      Swal.fire('User Created Successfully', '', 'success');
       form.reset({
         name: '',
         gender: '',
@@ -289,33 +289,6 @@ export default function AddUser() {
           >
             Cancel
           </Button>
-          {/* {next ? (
-            userCreate.isPending ? (
-              <Button disabled>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Please wait
-              </Button>
-            ) : (
-              <Button type="submit" className="px-10">
-                Add
-              </Button>
-            )
-          ) : (
-            <Button
-              disabled={
-                !!form.formState.errors.name || // Check for errors in name field
-                !!form.formState.errors.email || // Check for errors in email field
-                !!form.formState.errors.gender || // Check for errors in gender field
-                !!form.formState.errors.phone || // Check for errors in phone field
-                !!form.formState.errors.wallet // Check for errors in wallet field
-              }
-              type="button"
-              className="px-14"
-              onClick={() => setNext(true)}
-            >
-              Next
-            </Button>
-          )} */}
           <Button type="submit" className="px-10">
             Add
           </Button>

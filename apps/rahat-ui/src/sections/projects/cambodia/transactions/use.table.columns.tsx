@@ -50,17 +50,17 @@ export const useTableColumns = () => {
       header: 'Wallet Address',
       cell: ({ row }) => (
         <div className="lowercase ml-3">
-          {row.getValue('processedBy') ? (
+          {row.getValue('claimer') ? (
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger
                   className="flex gap-3 cursor-pointer"
                   onClick={() =>
-                    clickToCopy(row.getValue('processedBy'), row.index)
+                    clickToCopy(row.getValue('claimer'), row.index)
                   }
                 >
                   <p className="text-sm">
-                    {truncateEthAddress(row.getValue('processedBy'))}
+                    {truncateEthAddress(row.getValue('claimer'))}
                   </p>
                   <span className="ml-1">
                     {copiedRows.has(row.index) ? (

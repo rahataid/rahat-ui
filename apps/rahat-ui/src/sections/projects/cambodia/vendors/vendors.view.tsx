@@ -35,26 +35,19 @@ export default function VendorsView() {
     ...(debouncedSearch as any),
   });
 
-  const handleFilterChange = (event: any) => {
-    if (event && event.target) {
-      const { name, value } = event.target;
-      table.getColumn(name)?.setFilterValue(value);
-      setFilters({
-        ...filters,
-        [name]: value,
-      });
-    }
-  };
-  const processedData = vendors?.data.map((vendor) => ({
-    ...vendor,
-    name: vendor.User?.name,
-    phone: vendor.User?.phone,
-    wallet: vendor.User?.wallet,
-  }));
+  const tableData: any = React.useMemo(() => {
+    if (vendors?.data)
+      return vendors?.data.map((vendor) => ({
+        ...vendor,
+        name: vendor.User?.name,
+        phone: vendor.User?.phone,
+        wallet: vendor.User?.wallet,
+      }));
+    else return [];
+  }, [vendors?.data]);
   const columns = useCambodiaVendorsTableColumns();
   const table = useReactTable({
-    manualPagination: true,
-    data: processedData || [],
+    data: tableData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -71,6 +64,16 @@ export default function VendorsView() {
       rowSelection,
     },
   });
+  const handleFilterChange = (event: any) => {
+    if (event && event.target) {
+      const { name, value } = event.target;
+      table.getColumn(name)?.setFilterValue(value);
+      setFilters({
+        ...filters,
+        [name]: value,
+      });
+    }
+  };
 
   return (
     <>

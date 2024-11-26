@@ -1,8 +1,11 @@
 import { useCambodiaVendorsList, usePagination } from '@rahat-ui/query';
 import {
+  ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -10,39 +13,57 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import React from 'react';
 import SearchInput from '../../components/search.input';
-// import { useCambodiaChwTableColumns } from './use.chw.table.columns';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import Pagination from 'apps/rahat-ui/src/components/pagination';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import CambodiaTable from '../table.component';
 import { useCambodiaVendorsTableColumns } from './use.vendors.table.columns';
 
 export default function VendorsView() {
   const { id } = useParams() as { id: UUID };
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    setPagination,
-    resetSelectedListItems,
-  } = usePagination();
+  const [rowSelection, setRowSelection] = React.useState({});
+  const { filters, setFilters } = usePagination();
 
   const debouncedSearch = useDebounce(filters, 500);
   const { data: vendors, isLoading } = useCambodiaVendorsList({
-    page: pagination.page,
-    perPage: pagination.perPage,
-    order: 'desc',
-    sort: 'createdAt',
     projectUUID: id,
     ...(debouncedSearch as any),
   });
 
+  const tableData: any = React.useMemo(() => {
+    if (vendors?.data)
+      return vendors?.data.map((vendor) => ({
+        ...vendor,
+        name: vendor.User?.name,
+        phone: vendor.User?.phone,
+        wallet: vendor.User?.wallet,
+      }));
+    else return [];
+  }, [vendors?.data]);
+  const columns = useCambodiaVendorsTableColumns();
+  const table = useReactTable({
+    data: tableData || [],
+    columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  });
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
@@ -53,26 +74,7 @@ export default function VendorsView() {
       });
     }
   };
-  const columns = useCambodiaVendorsTableColumns();
-  const table = useReactTable({
-    manualPagination: true,
 
-    data: vendors?.data || [],
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setSelectedListItems,
-    getFilteredRowModel: getFilteredRowModel(),
-    getRowId(originalRow) {
-      return originalRow.walletAddress;
-    },
-
-    state: {
-      columnVisibility,
-      rowSelection: selectedListItems,
-    },
-  });
   return (
     <>
       <div className="p-4">
@@ -91,18 +93,23 @@ export default function VendorsView() {
               onSearch={(event) => handleFilterChange(event)}
             />
           </div>
-          <CambodiaTable table={table} tableHeight="h-[calc(100vh-294px)]" />
+          <CambodiaTable
+            table={table}
+            tableHeight="h-[calc(100vh-300px)]"
+            loading={isLoading}
+          />
         </div>
+
+        <Pagination
+          pageIndex={table.getState().pagination.pageIndex}
+          pageCount={table.getPageCount()}
+          setPageSize={table.setPageSize}
+          canPreviousPage={table.getCanPreviousPage()}
+          previousPage={table.previousPage}
+          canNextPage={table.getCanNextPage()}
+          nextPage={table.nextPage}
+        />
       </div>
-      <CustomPagination
-        currentPage={pagination.page}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        meta={(vendors?.response?.meta as any) || { total: 0, currentPage: 0 }}
-        perPage={pagination?.perPage}
-        total={vendors?.response?.meta?.total || 0}
-      />
     </>
   );
 }

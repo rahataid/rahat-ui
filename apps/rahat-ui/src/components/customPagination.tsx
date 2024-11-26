@@ -18,7 +18,7 @@ type IProps = {
   currentPage: number;
 };
 
-const pageSizes = ['5', '10', '20', '30', '40', '50','100'];
+const pageSizes = ['5', '10', '20', '30', '40', '50', '100'];
 
 export default function CustomPagination({
   handleNextPage,
@@ -57,7 +57,7 @@ export default function CustomPagination({
           </Select>
         </div>
       )}
-      <div>
+      <div className="text-sm">
         Page {currentPage} of {lastPage}
       </div>
       <div className="space-x-2">

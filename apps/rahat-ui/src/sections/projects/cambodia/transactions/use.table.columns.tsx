@@ -17,6 +17,7 @@ export type Transaction = {
   voucherId: string;
   timestamp: string;
   txHash: string;
+  processedBy: string;
 };
 export const useTableColumns = () => {
   const [copiedRows, setCopiedRows] = useState<Set<number>>(new Set());
@@ -48,19 +49,20 @@ export const useTableColumns = () => {
     {
       accessorKey: 'walletAddress',
       header: 'Wallet Address',
+      accessorFn: (row) => row.processedBy,
       cell: ({ row }) => (
         <div className="lowercase ml-3">
-          {row.getValue('processedBy') ? (
+          {row.getValue('walletAddress') ? (
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger
                   className="flex gap-3 cursor-pointer"
                   onClick={() =>
-                    clickToCopy(row.getValue('processedBy'), row.index)
+                    clickToCopy(row.getValue('walletAddress'), row.index)
                   }
                 >
                   <p className="text-sm">
-                    {truncateEthAddress(row.getValue('processedBy'))}
+                    {truncateEthAddress(row.getValue('walletAddress'))}
                   </p>
                   <span className="ml-1">
                     {copiedRows.has(row.index) ? (

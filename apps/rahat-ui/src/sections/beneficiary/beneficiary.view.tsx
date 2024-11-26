@@ -49,11 +49,13 @@ function BeneficiaryView() {
     setPagination,
     setFilters,
     filters,
+    resetFilters,
   } = usePagination();
 
   useEffect(() => {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
-  }, []);
+    resetFilters();
+  }, [resetFilters, setPagination]);
 
   useBeneficiaryGroupsList({ ...pagination });
 

@@ -59,7 +59,7 @@ export const useTableColumns = () => {
                       clickToCopy(
                         row.getValue('walletAddress'),
                         row.index,
-                        cellKey,
+                        columnKey,
                       )
                     }
                   >

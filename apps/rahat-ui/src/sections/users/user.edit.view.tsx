@@ -214,7 +214,7 @@ export default function EditUser() {
                             <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                               type="text"
-                              placeholder="Enter wallet ddress"
+                              placeholder="Enter wallet address"
                               {...field}
                             />
                           </div>

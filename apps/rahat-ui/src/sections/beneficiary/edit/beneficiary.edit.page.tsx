@@ -59,14 +59,11 @@ export default function AddBeneficiaryForm() {
       .string()
       .refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
     email: z.string().optional(),
-    gender: z
-      .string()
-      .toUpperCase()
-      .min(4, { message: 'Must select a Gender' }),
+    gender: z.string().optional(),
     bankedStatus: z.string().toUpperCase(),
     internetStatus: z.string().toUpperCase(),
     phoneStatus: z.string().toUpperCase(),
-    address: z.string().min(3, { message: 'Please enter valid address' }),
+    address: z.string().optional(),
     age: z.string().optional(),
   });
 

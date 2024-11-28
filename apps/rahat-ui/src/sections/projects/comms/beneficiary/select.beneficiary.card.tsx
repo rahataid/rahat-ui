@@ -2,19 +2,18 @@ import {
   Avatar,
   AvatarFallback,
 } from '@rahat-ui/shadcn/src/components/ui/avatar';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 import { Users, ArrowRight } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+
 
 type BeneficiaryCardProps = {
   name: string;

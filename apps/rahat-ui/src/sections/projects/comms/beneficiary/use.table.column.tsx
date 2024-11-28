@@ -4,19 +4,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@radix-ui/react-tooltip';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { ColumnDef } from '@tanstack/react-table';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
-import { Copy, CopyCheck, EllipsisVertical, Eye } from 'lucide-react';
+
 import { useState } from 'react';
+import { ColumnDef } from '@tanstack/react-table';
 import BeneficiaryDetail from './beneficiary.detail';
+import { Copy, CopyCheck,  Eye } from 'lucide-react';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 
 export type Beneficiary = {
   walletAddress: string;

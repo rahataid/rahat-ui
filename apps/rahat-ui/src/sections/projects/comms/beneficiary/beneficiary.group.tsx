@@ -1,9 +1,9 @@
 import React from 'react';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { useFindAllBeneficiaryGroups } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import BeneficiaryCard from './select.beneficiary.card';
+import { useFindAllBeneficiaryGroups } from '@rahat-ui/query';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 const BeneficiaryGroup = () => {

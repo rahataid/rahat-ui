@@ -1,4 +1,3 @@
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -7,11 +6,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { useState } from 'react';
+import { BadgePlus } from 'lucide-react';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
-import { BadgePlus } from 'lucide-react';
-import { useState } from 'react';
+
 
 type IProps = {
   beneficiaries: number;

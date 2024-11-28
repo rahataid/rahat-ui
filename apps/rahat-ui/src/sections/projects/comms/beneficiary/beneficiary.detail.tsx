@@ -5,7 +5,6 @@ import {
   useAssignClaimsToBeneficiary,
   useFindOneDisbursement,
   useProjectSettingsStore,
-  useReadCvaProjectBeneficiaryClaims,
 } from '@rahat-ui/query';
 import {
   Tabs,
@@ -24,37 +23,31 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
-import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { UUID } from 'crypto';
+
 import {
   Copy,
   CopyCheck,
   Home,
   Minus,
-  MoreVertical,
   Trash2,
 } from 'lucide-react';
+
+import { UUID } from 'crypto';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
 import { useState } from 'react';
-import { formatEther } from 'viem';
-import AssignToken from './assign-token.modal';
+import { useParams } from 'next/navigation';
 import { TransactionTable } from './transaction.table';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useReadRahatPayrollProjectTokenAllocations } from 'libs/query/src/lib/rp/contracts/generated-hooks';
 
 type IProps = {

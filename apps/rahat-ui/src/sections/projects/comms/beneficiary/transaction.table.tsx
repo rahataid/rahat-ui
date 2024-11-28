@@ -1,7 +1,5 @@
 'use client';
 
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Table,
   TableBody,
@@ -22,140 +20,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown } from 'lucide-react';
-import * as React from 'react';
-import { useRPBeneficiaryTransactions } from '@rahat-ui/query';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
-import Pagination from 'apps/rahat-ui/src/components/pagination';
 
-const data = [
-  {
-    id: '1',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '2',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '3',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '4',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '5',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '6',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '7',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '8',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '9',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '10',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '11',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '12',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '13',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '14',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '15',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '16',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '17',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-  {
-    id: '18',
-    topic: 'ClaimCreated',
-    amount: '1,23,122',
-    timestamp: '21 June, 2020 12:13 AM',
-    txHash: '-',
-  },
-];
+import * as React from 'react';
+import { ArrowUpDown } from 'lucide-react';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { useRPBeneficiaryTransactions } from '@rahat-ui/query';
+import Pagination from 'apps/rahat-ui/src/components/pagination';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export type Payment = {
   id: string;

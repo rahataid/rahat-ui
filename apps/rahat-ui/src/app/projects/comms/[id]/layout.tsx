@@ -1,11 +1,11 @@
 'use client';
 
-import { ProjectTypes } from '@rahataid/sdk/enums';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
 import * as React from 'react';
+import { useParams } from 'next/navigation';
+import { ProjectTypes } from '@rahataid/sdk/enums';
 import { ProjectLayout } from '../../../../sections/projects/components';
+import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 
 export default function ProjectLayoutRoot({
   children,

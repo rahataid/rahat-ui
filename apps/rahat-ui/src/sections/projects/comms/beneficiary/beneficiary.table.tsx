@@ -1,6 +1,9 @@
 'use client';
 
 import {
+  genderOptions,
+} from 'apps/rahat-ui/src/constants/selectOptionsRpBeneficiary';
+import {
   PROJECT_SETTINGS_KEYS,
   useBeneficiaryStore,
   useBulkAssignClaimsToBeneficiaries,
@@ -8,47 +11,11 @@ import {
   useProjectBeneficiaries,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
-import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import { Input } from '@rahat-ui/shadcn/components/input';
-import {
-  TableBody,
-  TableCell,
-  Table as TableComponent,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@rahat-ui/shadcn/components/table';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import {
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
-  getFilteredRowModel,
-} from '@tanstack/react-table';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { UUID } from 'crypto';
-import { ChevronDown, Plus } from 'lucide-react';
-import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
-import BulkAssignToken from './bulk-assign-token.modal';
-import { useCvaBeneficiaryTableColumns } from './use.table.column';
-import SelectSection from 'apps/rahat-ui/src/utils/select';
-import {
-  bankedOptions,
-  genderOptions,
-  internetOptions,
-  phoneOptions,
-} from 'apps/rahat-ui/src/constants/selectOptionsRpBeneficiary';
-import FiltersTags from '../../components/filtersTags';
-import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import {
   Select,
   SelectContent,
@@ -57,6 +24,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import {
+  TableBody,
+  TableCell,
+  Table as TableComponent,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@rahat-ui/shadcn/components/table';
+import {
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+  getFilteredRowModel,
+} from '@tanstack/react-table';
+
+import { UUID } from 'crypto';
+import Image from 'next/image';
+import { useState } from 'react';
+import { ChevronDown, Plus } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import FiltersTags from '../../components/filtersTags';
+import BulkAssignToken from './bulk-assign-token.modal';
+import { Input } from '@rahat-ui/shadcn/components/input';
+import { Button } from '@rahat-ui/shadcn/components/button';
+import { useCvaBeneficiaryTableColumns } from './use.table.column';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export default function BeneficiaryTable() {
   const bulkAssignTokens = useBulkAssignClaimsToBeneficiaries();
@@ -65,9 +62,6 @@ export default function BeneficiaryTable() {
   const contractSettings = useProjectSettingsStore(
     (state) => state?.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] as any,
   );
-
-  // const beneficiaries = useBeneficiaryStore((state) => state.beneficiaries);
-  // console.log({ beneficiaries });
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const {
@@ -150,13 +144,7 @@ export default function BeneficiaryTable() {
           )}
         </div>
         <div className="grid grid-cols-6 gap-x-2 mb-3">
-          {/* <SelectSection
-            filters={filters}
-            setFilters={setFilters}
-            options={genderOptions}
-            placeholder={'Gender'}
-            keys="gender"
-          /> */}
+        
           <Select
             onValueChange={(value) => {
               table.getColumn('gender')?.setFilterValue(value);

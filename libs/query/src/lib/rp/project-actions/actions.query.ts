@@ -342,7 +342,7 @@ export const useFindAllBeneficiaryGroups = (
   const action = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['beneficiary_groups', projectUUID],
+    queryKey: ['beneficiary_groups', projectUUID,payload],
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {
@@ -353,7 +353,7 @@ export const useFindAllBeneficiaryGroups = (
           payload: payload || {},
         },
       });
-      return res.data;
+      return {data:res.data,meta:res.response.meta};
     },
   });
 
@@ -361,7 +361,8 @@ export const useFindAllBeneficiaryGroups = (
 
   return {
     ...query,
-    data,
+    data: query?.data?.data||[], 
+    meta: query?.data?.meta, 
   };
 };
 

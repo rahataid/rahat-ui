@@ -89,7 +89,7 @@ export const useDiscardedCambodiaBeneficiaryTableColumns = () => {
     {
       accessorKey: 'healthWorker',
       header: 'Health Worker',
-      cell: ({ row }) => <div>{row?.original?.healthWorker?.name || ''}</div>,
+      cell: ({ row }) => <div>{row?.original?.healthWorker?.name || '-'}</div>,
     },
   ];
 

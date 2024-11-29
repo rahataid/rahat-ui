@@ -14,6 +14,7 @@ import { useParams, useRouter } from 'next/navigation';
 import SearchInput from '../../components/search.input';
 import AddButton from '../../components/add.btn';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 function BeneficiaryGroupsView() {
   const { id } = useParams() as { id: UUID };
@@ -31,21 +32,14 @@ function BeneficiaryGroupsView() {
     filters,
   } = usePagination();
 
-  useEffect(() => {
-    setPagination({ page: 1, perPage: 100, order: 'desc', sort: 'createdAt' });
-  }, []);
-
-  const { data: groups, isLoading } = useFindAllBeneficiaryGroups(id as UUID);
-
-  const filteredGroups = React.useMemo(() => {
-    return groups.filter((group) =>
-      group.name?.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-  }, [groups, searchTerm]);
-
-  const handleSearch = React.useCallback((value: string) => {
-    setSearchTerm(value);
-  }, []);
+  const { data: groups,meta, isLoading, } = useFindAllBeneficiaryGroups(id as UUID,{    
+    page: pagination.page,
+    perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'createdAt',
+    projectUUID: id,
+    ...filters,
+  });
 
   const handleFilterProjectSelect = (project: string | UUID) => {
     setFilters({
@@ -62,19 +56,23 @@ function BeneficiaryGroupsView() {
           <SearchInput
             className="w-full"
             name="group"
-            onSearch={(e) => handleSearch(e.target.value)}
+            onSearch={(e) => setFilters({
+              name: e.target.value,
+            })}
           />
           <AddButton
             name="Group"
             path={`/projects/el-kenya/${id}/beneficiary/group/add`}
           />
         </div>
-        <ScrollArea className="h-[calc(100vh-226px)]">
+        <ScrollArea 
+        className="h-[calc(100vh-230px)]"
+        >
           {isLoading ? (
             <TableLoader />
-          ) : filteredGroups.length > 0 ? (
-            <div className="grid grid-cols-4 gap-4">
-              {filteredGroups?.map((i: any, index: number) => {
+          ) : groups?.length > 0 ? (
+          <div className="grid grid-cols-4 gap-4">
+              {groups?.map((i: any, index: number) => {
                 return (
                   <div
                     key={index}
@@ -108,6 +106,16 @@ function BeneficiaryGroupsView() {
             </p>
           )}
         </ScrollArea>
+         {/* pagination  */}
+         <CustomPagination
+          meta={meta || { total: 0, currentPage: 0 }}
+          handleNextPage={setNextPage}
+          handlePrevPage={setPrevPage}
+          handlePageSizeChange={setPerPage}
+          currentPage={pagination.page}
+          perPage={pagination.perPage}
+          total={0}
+        />
       </div>
     </>
   );

@@ -41,7 +41,7 @@ export function Nav({ hasDefaultHeader = true }) {
   return (
     hasDefaultHeader && (
       <div className="h-14 fixed w-[calc(100vw-56px)] flex justify-between gap-4 items-center p-2 border-b">
-        <SearchInput className="w-1/4" name="" onSearch={() => { }} />
+        <SearchInput className="w-1/4" name="" onSearch={() => {}} isDisabled />
         <div className="flex space-x-2 items-center">
           <ConnectWallet />
           <DropdownMenu>

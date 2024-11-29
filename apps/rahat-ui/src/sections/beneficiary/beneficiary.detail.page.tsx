@@ -73,12 +73,7 @@ export default function BeneficiaryDetail() {
       <div className="p-5 rounded-md shadow border grid grid-cols-4 gap-5">
         <div>
           <h1 className="text-md text-muted-foreground">Beneficiary Name</h1>
-          <p className="font-medium">
-            {beneficiary?.firstName?.concat(
-              ' ',
-              beneficiary?.lastName as string,
-            ) ?? 'N/A'}
-          </p>
+          <p className="font-medium">{beneficiary?.piiData?.name || 'N/A'}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Gender</h1>
@@ -86,7 +81,7 @@ export default function BeneficiaryDetail() {
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Estimated Age</h1>
-          <p className="font-medium">{beneficiary?.extras?.age ?? 'N/A'}</p>
+          <p className="font-medium">{beneficiary?.age ?? 'N/A'}</p>
         </div>
         {/* <div>
           <h1 className="text-md text-muted-foreground">Wallet Address</h1>
@@ -104,15 +99,15 @@ export default function BeneficiaryDetail() {
         </div> */}
         <div>
           <h1 className="text-md text-muted-foreground">Address</h1>
-          <p className="font-medium">{beneficiary?.extras?.address ?? 'N/A'}</p>
+          <p className="font-medium">{beneficiary?.location ?? 'N/A'}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Phone Number</h1>
-          <p className="font-medium">{beneficiary?.phone ?? 'N/A'}</p>
+          <p className="font-medium">{beneficiary?.piiData?.phone ?? 'N/A'}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Email Address</h1>
-          <p className="font-medium">{beneficiary?.email ?? 'N/A'}</p>
+          <p className="font-medium">{beneficiary?.piiData?.email ?? 'N/A'}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Phone Status</h1>

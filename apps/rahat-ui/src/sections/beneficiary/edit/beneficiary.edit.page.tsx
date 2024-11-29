@@ -53,18 +53,33 @@ export default function AddBeneficiaryForm() {
   const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
 
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 4 character' }),
+    name: z
+      .string()
+      .min(4, { message: 'Name must be at least 4 characters' })
+      .regex(/^[a-zA-Z\s]+$/, {
+        message: 'Name can only contain letters and spaces',
+      }),
     walletAddress: z.string(),
     phone: z
       .string()
       .refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
-    email: z.string().optional(),
+    email: z
+      .string()
+      .optional()
+      .refine((email) => !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), {
+        message: 'Invalid email address',
+      }),
     gender: z.string().optional(),
     bankedStatus: z.string().toUpperCase(),
     internetStatus: z.string().toUpperCase(),
     phoneStatus: z.string().toUpperCase(),
     address: z.string().optional(),
-    age: z.string().optional(),
+    age: z
+      .string()
+      .optional()
+      .refine((age) => !age || /^[1-9]\d*$/.test(age), {
+        message: 'Age must be a positive integer',
+      }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({

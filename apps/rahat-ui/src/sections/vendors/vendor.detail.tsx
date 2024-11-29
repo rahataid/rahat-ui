@@ -1,16 +1,31 @@
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import React from 'react';
 import { Copy, CopyCheck, FolderPlus, Pencil, Trash2 } from 'lucide-react';
 import HeaderWithBack from '../projects/components/header.with.back';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import CoreBtnComponent from '../../components/core.btn';
-import { useGetVendor } from '@rahat-ui/query';
+import { useGetVendor, useRemoveVendor } from '@rahat-ui/query';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { toast } from 'react-toastify';
 
 export default function VendorDetail() {
   const { id } = useParams() as { id: UUID };
-  const vendor = useGetVendor(id);
+  const router = useRouter();
+  const { data: vendorDetail, isLoading } = useGetVendor(id);
+  const vendor = React.useMemo(() => vendorDetail?.data, [vendorDetail]);
+  const removeVendor = useRemoveVendor();
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<string>();
 
@@ -18,6 +33,37 @@ export default function VendorDetail() {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(walletAddress);
   };
+
+  const deleteVendor = async () => {
+    if (vendor?.status === 'Assigned')
+      return toast.warning('Assigned vendor cannot be deleted.');
+    await removeVendor.mutateAsync(id);
+    router.push('/vendors');
+  };
+
+  const renderAlertContent = ({
+    handleContinueClick,
+  }: {
+    handleContinueClick: () => void;
+  }) => {
+    return (
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleContinueClick}>
+            Continue
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    );
+  };
+
   return (
     <div className="p-4">
       <div className="flex justify-between items-center">
@@ -33,39 +79,52 @@ export default function VendorDetail() {
             Icon={FolderPlus}
             handleClick={() => {}}
           />
-          <CoreBtnComponent name="Edit" Icon={Pencil} handleClick={() => {}} />
           <CoreBtnComponent
-            className="bg-red-100 text-red-600"
-            name="Delete"
-            Icon={Trash2}
-            handleClick={() => {}}
+            name="Edit"
+            Icon={Pencil}
+            handleClick={() => router.push(`/vendors/${id}/edit`)}
           />
+          <AlertDialog>
+            <AlertDialogTrigger className="flex items-center">
+              <Button variant="secondary" className="text-red-500 bg-red-100">
+                <Trash2 className="mr-1" size={18} strokeWidth={1.5} />
+                Delete
+              </Button>
+            </AlertDialogTrigger>
+            {renderAlertContent({ handleContinueClick: deleteVendor })}
+          </AlertDialog>
         </div>
       </div>
       <div className="p-5 rounded-md shadow border grid grid-cols-4 gap-5">
         <div>
           <h1 className="text-md text-muted-foreground">Vendor Name</h1>
-          <p className="font-medium">{vendor.data?.data?.name || 'N/A'}</p>
+          <p className="font-medium">{vendor?.name || 'N/A'}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Gender</h1>
-          <p className="font-medium">{vendor.data?.data?.gender || 'N/A'}</p>
+          <p className="font-medium">{vendor?.gender || 'N/A'}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Project Name</h1>
-          {vendor.data?.data?.projects?.map((project) => {
-            return <p className="font-medium">{project?.name}</p>;
-          })}
+          {vendor?.projects?.length ? (
+            <div className="flex gap-2 flex-wrap">
+              {vendor?.projects?.map((project: any) => {
+                return <p className="font-medium">{project?.name}</p>;
+              })}
+            </div>
+          ) : (
+            <p className="font-medium">N/A</p>
+          )}
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Wallet Address</h1>
           <div
             className="flex items-center space-x-2 cursor-pointer"
-            onClick={() => clickToCopy(vendor.data?.data?.wallet)}
+            onClick={() => clickToCopy(vendor?.wallet)}
           >
-            <p>{truncateEthAddress(vendor.data?.data?.wallet)}</p>
+            <p>{truncateEthAddress(vendor?.wallet)}</p>
 
-            {walletAddressCopied === vendor.data?.data?.wallet ? (
+            {walletAddressCopied === vendor?.wallet ? (
               <CopyCheck size={15} strokeWidth={1.5} />
             ) : (
               <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
@@ -74,11 +133,11 @@ export default function VendorDetail() {
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Phone Number</h1>
-          <p className="font-medium">{vendor.data?.data?.phone || 'N/A'}</p>
+          <p className="font-medium">{vendor?.phone || 'N/A'}</p>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Email Address</h1>
-          <p className="font-medium">{vendor.data?.data?.email || 'N/A'}</p>
+          <p className="font-medium">{vendor?.email || 'N/A'}</p>
         </div>
       </div>
     </div>

@@ -45,6 +45,11 @@ export const useNavItems = () => {
               path: `/projects/comms/${id}/campaigns/voice`,
               icon: <Voicemail size={18} strokeWidth={1.5} />,
             },
+            {
+              title: 'Ivr',
+              path: `/projects/comms/${id}/campaigns/ivr`,
+              icon: <Voicemail size={18} strokeWidth={1.5} />,
+            },
           ],
         },
       ],

@@ -29,7 +29,7 @@ const VendorsLayout: FC<VendorsLayoutProps> = ({ children, menuItems }) => {
       return children.map((child, index) => {
         return (
           <>
-            <ResizableHandle withHandle />
+            {/* <ResizableHandle withHandle /> */}
             {renderResizablePanel(child, index)}
           </>
         );
@@ -37,7 +37,7 @@ const VendorsLayout: FC<VendorsLayoutProps> = ({ children, menuItems }) => {
     }
     return (
       <>
-        <ResizableHandle />
+        {/* <ResizableHandle /> */}
         {renderResizablePanel(children)}
       </>
     );

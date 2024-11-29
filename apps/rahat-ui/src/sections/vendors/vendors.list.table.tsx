@@ -221,7 +221,7 @@ export default function VendorsTable({
                 <SelectValue placeholder="Select Project Name" />
               </SelectTrigger>
               <SelectContent>
-                {projectList.data?.data.length &&
+                {projectList.data?.data.length ? (
                   projectList.data?.data.map((project: any) => {
                     return (
                       <SelectItem
@@ -232,7 +232,10 @@ export default function VendorsTable({
                         {project.name}
                       </SelectItem>
                     );
-                  })}
+                  })
+                ) : (
+                  <p className="text-xs">No project found</p>
+                )}
               </SelectContent>
             </Select>
           </div>

@@ -129,7 +129,7 @@ export default function BeneficiaryView() {
             <div className="flex justify-between space-x-2 w-[40%]">
               <SelectComponent
                 name="Type"
-                options={['ALL', 'Sale', 'Lead', 'Home_Visit']}
+                options={['ALL', 'Sale', 'Lead']}
                 onChange={(value) =>
                   handleFilterChange({
                     target: { name: 'type', value },

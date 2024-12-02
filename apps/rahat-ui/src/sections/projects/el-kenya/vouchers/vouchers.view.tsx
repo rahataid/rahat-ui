@@ -45,7 +45,7 @@ export default function VouchersView() {
   )?.data;
 
   const voucherReimbursedCount = REIMBURSEMENT_STATS?.find(
-    (i: any) => i.status === 'APPROVED',
+    (i: any) => i.id === 'APPROVED',
   )?.count;
 
   const singleVisionCount = REDEMPTION_STATS?.find(
@@ -61,6 +61,47 @@ export default function VouchersView() {
   const voucherNotRedeemedCount = tokenAllocated
     ? Number(tokenAllocated) - voucherRedeemedCount
     : 0;
+
+  const weeklyRedemptionsStats = kenyaStats?.data
+    ?.find((i: any) => i.name === 'WEEKLY_REDEMPTION_STATS')
+    ?.data?.filter(
+      (i: any) =>
+        i.voucherType === 'SINGLE_VISION' ||
+        i.voucherType === 'READING_GLASSES',
+    );
+
+  function transformData(data: any) {
+    const categories = [...new Set(data?.map((item) => item.week))];
+
+    const series = data.reduce((acc, item) => {
+      const { voucherType, count, week } = item;
+
+      // Find or create a series entry for the current voucher type
+      let seriesEntry = acc.find((s) => s.name === voucherType);
+      if (!seriesEntry) {
+        seriesEntry = {
+          name: voucherType,
+          data: Array(categories.length).fill(0),
+        };
+        acc.push(seriesEntry);
+      }
+
+      // Populate the count at the correct index matching the week
+      const weekIndex = categories.indexOf(week);
+      seriesEntry.data[weekIndex] = parseInt(count);
+
+      return acc;
+    }, []);
+
+    return { categories, series };
+  }
+
+  const stackedColumnData = React.useMemo(() => {
+    if (!weeklyRedemptionsStats)
+      return { categories: ['demo'], series: [{ name: 'demo', data: [0] }] };
+    if (weeklyRedemptionsStats?.length > 0)
+      return transformData(weeklyRedemptionsStats);
+  }, [weeklyRedemptionsStats]);
 
   const cardData = [
     {
@@ -133,21 +174,18 @@ export default function VouchersView() {
                 />
               </div>
             </div>
-            <div className="col-span-2 border rounded-md bg-card p-4 shadow">
+            <div className="col-span-3 border rounded-md bg-card p-4 shadow">
               <p className="text-md font-medium mb-4">Total Vouchers</p>
               <div className="flex justify-center">
                 <ChartColumnStacked
-                  series={[
-                    { name: 'Single Vision', data: [15, 19, 27, 44] },
-                    { name: 'Reading Glass', data: [7, 16, 40, 11] },
-                  ]}
-                  categories={['Week 1', 'Week 2', 'Week 3', 'Week 4']}
+                  series={stackedColumnData?.series}
+                  categories={stackedColumnData?.categories as string[]}
                   stacked
                   custom
                 />
               </div>
             </div>
-            <div className="border rounded-md bg-card p-4">
+            {/* <div className="border rounded-md bg-card p-4">
               <h1 className="font-medium text-md mb-2">Recent Deposits</h1>
               <div className="flex space-x-4 items-center">
                 <div className="p-2 rounded-full bg-secondary text-muted-foreground">
@@ -158,7 +196,7 @@ export default function VouchersView() {
                   <p className="text-muted-foreground text-sm">0x0012Bchsju</p>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </ScrollArea>
       </div>

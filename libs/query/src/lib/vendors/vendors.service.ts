@@ -2,7 +2,9 @@
 import {
   UseQueryResult,
   keepPreviousData,
+  useMutation,
   useQuery,
+  useQueryClient,
 } from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';
 import { getVendorClient } from '@rahataid/sdk/clients';
@@ -11,6 +13,7 @@ import { TAGS } from '../../config';
 import { useEffect, useMemo } from 'react';
 import { api } from '../../utils/api';
 import { UUID } from 'crypto';
+import { useSwal } from '../../swal';
 
 export const useVendorList = (
   payload: any,
@@ -90,5 +93,76 @@ export const useGetVendorStats = (): UseQueryResult<any, Error> => {
   return useQuery({
     queryKey: [TAGS.GET_VENDOr_STATS],
     queryFn: () => listBeneficiaryStats(),
+  });
+};
+
+const updateVendor = async (uuid: UUID, payload: any) => {
+  const response = await api.patch(`/vendors/update/${uuid}`, payload);
+  return response?.data;
+};
+
+export const useUpdateVendor = () => {
+  const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: ({ uuid, payload }: { uuid: UUID; payload: any }) =>
+      updateVendor(uuid, payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
+      qc.invalidateQueries({ queryKey: [TAGS.GET_VENDOR_DETAILS] });
+      toast.fire({
+        title: 'Vendor updated successfully.',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      toast.fire({
+        title: 'Error while updating vendor.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+const removeVendor = async (uuid: UUID) => {
+  const response = await api.patch(`/vendors/remove/${uuid}`);
+  return response?.data;
+};
+
+export const useRemoveVendor = () => {
+  const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: (uuid: UUID) => removeVendor(uuid),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
+      qc.invalidateQueries({ queryKey: [TAGS.GET_VENDOR_DETAILS] });
+      toast.fire({
+        title: 'Vendor removed successfully.',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      toast.fire({
+        title: 'Error while removing vendor.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
   });
 };

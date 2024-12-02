@@ -116,7 +116,7 @@ export default function ExcelUploader() {
             <div className="border-2 border-dashed  border-black sm:w-[1500px] w-[1600px] mt-6 p-4 mx-auto">
               <ScrollArea className="h-[calc(100vh-430px)]">
                 <Table className="w-full table-auto">
-                  <TableHeader>
+                  <TableHeader className="sticky top-0 bg-card">
                     <TableRow>
                       {data[0].map((header, index) => (
                         <TableHead

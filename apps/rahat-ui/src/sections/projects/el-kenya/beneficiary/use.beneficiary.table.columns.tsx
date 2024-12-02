@@ -14,7 +14,7 @@ export const useElkenyaBeneficiaryTableColumns = ({
 
   function getDynamicColor(status: string) {
     if (status === 'READING_GLASSES' || status === 'WALK_IN') {
-      return 'bg-bluew-50 text-blue-500';
+      return 'bg-blue-50 text-blue-500';
     }
 
     if (status === 'SINGLE_VISION') {
@@ -47,7 +47,6 @@ export const useElkenyaBeneficiaryTableColumns = ({
       accessorKey: 'voucherType',
       header: 'Voucher Type',
       cell: ({ row }) => {
-        console.log('voucherType::', row.getValue('voucherType'));
         const voucherType = row.getValue('voucherType');
         const colors = getDynamicColor(voucherType as string);
         return (
@@ -62,9 +61,17 @@ export const useElkenyaBeneficiaryTableColumns = ({
         const beneficiaryType = row.getValue('type');
         const colors = getDynamicColor(beneficiaryType as string);
         return (
-          <Badge className={colors}>
-            {(beneficiaryType as string) || 'N/A'}
-          </Badge>
+          <div>
+            <Badge className={colors}>
+              {(beneficiaryType as string) || 'N/A'}
+            </Badge>
+            {row?.original?.extras?.serialNumber && (
+              <p className="text-gray-400">Physical Voucher</p>
+            )}
+            {!!row?.original?.graphData?.otpAddeds?.length && (
+              <p className="text-gray-400">Offline</p>
+            )}
+          </div>
         );
       },
     },
@@ -108,7 +115,7 @@ export const useElkenyaBeneficiaryTableColumns = ({
     },
     {
       accessorKey: 'tokenAssigned',
-      header: 'Voucher Status',
+      header: 'Voucher Assignment Status',
       cell: ({ row }) => {
         const assignmentStatus =
           row?.original?.graphData?.tokensAllocateds?.length ||

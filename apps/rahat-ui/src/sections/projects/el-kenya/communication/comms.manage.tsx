@@ -42,16 +42,18 @@ export default function ManageTexts() {
             >
               <div className="flex justify-between items-center z-100">
                 <h1 className="mb-4 text-lg font-medium">{i.name}</h1>
-                <TooltipComponent
-                  handleOnClick={(event) => {
-                    event.stopPropagation(); // Prevent triggering the main div's onClick
-                    router.push(
-                      `/projects/el-kenya/${id}/communication/edit/${i.uuid}`,
-                    );
-                  }}
-                  Icon={Pencil}
-                  tip="Edit"
-                />
+                {!i.sessionId && (
+                  <TooltipComponent
+                    handleOnClick={(event) => {
+                      event.stopPropagation(); // Prevent triggering the main div's onClick
+                      router.push(
+                        `/projects/el-kenya/${id}/communication/edit/${i.uuid}`,
+                      );
+                    }}
+                    Icon={Pencil}
+                    tip="Edit"
+                  />
+                )}
               </div>
               <div className="flex justify-between items-center">
                 <div>

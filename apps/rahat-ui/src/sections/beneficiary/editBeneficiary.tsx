@@ -30,6 +30,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { isValidPhoneNumber } from 'react-phone-number-input';
+import { Wallet } from 'lucide-react';
 
 export default function EditBeneficiary({ beneficiary }: any) {
   const { closeSecondPanel } = useSecondPanel();
@@ -341,7 +342,7 @@ export default function EditBeneficiary({ beneficiary }: any) {
                           <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input
                             type="text"
-                            placeholder="Enter wallet ddress"
+                            placeholder="Enter wallet address"
                             {...field}
                           />
                           {/* {!field.value ? ( */}

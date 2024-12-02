@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { useUserStore } from '@rumsan/react-query';
-import EditButton from '../projects/components/edit.btn';
+import EditButton from '../../components/edit.btn';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import {
   Avatar,

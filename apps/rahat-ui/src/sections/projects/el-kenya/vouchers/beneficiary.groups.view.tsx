@@ -11,6 +11,7 @@ import {
 } from '@rahat-ui/query';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 interface BeneficiaryGroupsView {
   handleStepDataChange: (e) => void;
   handleNext: any;
@@ -28,14 +29,17 @@ export default function BeneficiaryGroupsView({
   const { id } = useParams() as { id: UUID };
   const [searchTerm, setSearchTerm] = React.useState<string>('');
 
-  const { data: benefGroups } = useFindUnSyncedBeneficaryGroup(id as UUID, {
-    page: 1,
-    perPage: 100,
-    disableSync: false,
-    hasDisbursement: false,
-    order: 'desc',
-    sort: 'createdAt',
-  });
+  const { data: benefGroups, isLoading } = useFindUnSyncedBeneficaryGroup(
+    id as UUID,
+    {
+      page: 1,
+      perPage: 100,
+      disableSync: false,
+      hasDisbursement: false,
+      order: 'desc',
+      sort: 'createdAt',
+    },
+  );
 
   const beneficiaryGroups = React.useMemo(() => {
     return benefGroups?.filter(
@@ -155,7 +159,9 @@ export default function BeneficiaryGroupsView({
           </div>
         ) : null}
         <ScrollArea className="h-[calc(100vh-554px)]">
-          {filteredGroups?.length > 0 ? (
+          {isLoading ? (
+            <TableLoader />
+          ) : filteredGroups?.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">
               {filteredGroups?.map((beneficiaryGroup) => {
                 const disbursements = disbursementData?.filter(
@@ -175,33 +181,33 @@ export default function BeneficiaryGroupsView({
                     <div className="flex flex-col space-y-2">
                       <div className="flex justify-end">
                         {/* <Checkbox
-                      onCheckedChange={(e: boolean) => {
-                        if (e) {
-                          const currentData = stepData.selectedGroups;
-                          handleStepDataChange({
-                            target: {
-                              name: 'selectedGroups',
-                              value: [...currentData, beneficiaryGroup],
-                            },
-                          });
-                        } else {
-                          const currentData = stepData.selectedGroups.filter(
-                            (group) => group.uuid !== beneficiaryGroup.uuid,
-                          );
-                          handleStepDataChange({
-                            target: {
-                              name: 'selectedGroups',
-                              value: currentData,
-                              beneficiaryGroup,
-                            },
-                          });
-                          // const filteredSelected = selectedGroupId.filter(
-                          //   (id) => id !== uuid,
-                          // );
-                          // setSelectedGroupId(filteredSelected);
-                        }
-                      }}
-                    /> */}
+                        onCheckedChange={(e: boolean) => {
+                          if (e) {
+                            const currentData = stepData.selectedGroups;
+                            handleStepDataChange({
+                              target: {
+                                name: 'selectedGroups',
+                                value: [...currentData, beneficiaryGroup],
+                              },
+                            });
+                          } else {
+                            const currentData = stepData.selectedGroups.filter(
+                              (group) => group.uuid !== beneficiaryGroup.uuid,
+                            );
+                            handleStepDataChange({
+                              target: {
+                                name: 'selectedGroups',
+                                value: currentData,
+                                beneficiaryGroup,
+                              },
+                            });
+                            // const filteredSelected = selectedGroupId.filter(
+                            //   (id) => id !== uuid,
+                            // );
+                            // setSelectedGroupId(filteredSelected);
+                          }
+                        }}
+                      /> */}
                         <Checkbox
                           checked={selectedGroup.some(
                             (sg) => sg.uuid === beneficiaryGroup.uuid,

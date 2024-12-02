@@ -2,38 +2,12 @@
 
 import { UUID } from 'crypto';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-import {
-  Trash2,
-  Copy,
-  CopyCheck,
-  X,
-  Pencil,
-  FolderPlus,
-  Expand,
-  FolderDot,
-  Wallet,
-  Phone,
-  Mail,
-  Users,
-} from 'lucide-react';
+import { Copy, CopyCheck, X, Expand, Wallet, Phone, Mail } from 'lucide-react';
 import Image from 'next/image';
 import TooltipComponent from '../../components/tooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { useRoleList, useSettingsStore } from '@rahat-ui/query';
-import { Gender } from '@rahataid/sdk/enums';
-import {
-  useUserAddRoles,
-  useUserCurrentUser,
-  useUserRemove,
-} from '@rumsan/react-query';
+import { useUserRemove } from '@rumsan/react-query';
 import { User } from '@rumsan/sdk/types';
-import { enumToObjectArray } from '@rumsan/sdk/utils';
-import {
-  useAddAdminRole,
-  useAddManagerRole,
-} from '../../hooks/el/contracts/el-contracts';
-import EditUser from './editUser';
-import { ROLE_TYPE } from './role/const';
 import { useRouter } from 'next/navigation';
 import {
   Tabs,
@@ -42,8 +16,10 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/components/tabs';
 import React from 'react';
-import AddButton from '../projects/components/add.btn';
 import UsersRolesTabSplitView from './users.roles.tab.split.view';
+import Swal from 'sweetalert2';
+import DeleteButton from '../../components/delete.btn';
+import EditButton from '../../components/edit.btn';
 
 type IProps = {
   userDetail: User;
@@ -54,65 +30,16 @@ export default function UsersDetailSplitView({
   userDetail,
   closeSecondPanel,
 }: IProps) {
-  console.log({ userDetail });
   const router = useRouter();
-  const { data } = useUserCurrentUser();
   const removeUser = useUserRemove();
-  const { data: roleData } = useRoleList(); //TODO:fetch from store
-  const addUserRole = useUserAddRoles();
-  const addManagerRole = useAddManagerRole();
-  const addAdminRole = useAddAdminRole();
-
-  const accessContract = useSettingsStore((state) => state.accessManager);
-
-  const isAdmin = data?.data?.roles.includes(ROLE_TYPE.ADMIN);
-  const [activeTab, setActiveTab] = React.useState<'details' | 'edit' | null>(
-    'details',
-  );
-  const [activeUser, setActiveUser] = React.useState<boolean>(true);
-  const [selectedRole, setSelectedRole] = React.useState<string>('');
 
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<boolean>(false);
 
-  const genderList = enumToObjectArray(Gender);
-  const handleTabChange = (tab: 'details' | 'edit') => {
-    setActiveTab(tab);
-  };
-  const toggleActiveUser = () => {
-    setActiveUser(!activeUser);
-  };
-
-  const handleDeleteUser = () => {
-    // if (userDetail.roles?.some((role) => role.))
-    removeUser.mutateAsync(userDetail.uuid as UUID);
+  const handleDeleteUser = async () => {
+    await removeUser.mutateAsync(userDetail.uuid as UUID);
     closeSecondPanel();
-  };
-
-  const handleRoleAssign = () => {
-    if (selectedRole === 'Manager') {
-      addManagerRole.mutateAsync({
-        data: {
-          role: selectedRole,
-          uuid: userDetail.uuid as UUID,
-          wallet: userDetail.wallet,
-        },
-        contractAddress: accessContract,
-      });
-    } else if (selectedRole === 'Admin') {
-      addAdminRole.mutateAsync({
-        data: {
-          role: selectedRole,
-          uuid: userDetail.uuid as UUID,
-          wallet: userDetail.wallet,
-        },
-        contractAddress: accessContract,
-      });
-    } else
-      addUserRole.mutateAsync({
-        uuid: userDetail.uuid as UUID,
-        roles: [selectedRole],
-      });
+    Swal.fire('User Deleted Successfully', '', 'success');
   };
 
   const clickToCopy = (walletAddress: string) => {
@@ -121,23 +48,18 @@ export default function UsersDetailSplitView({
   };
 
   return (
-    <>
+    <div className="h-full border-l">
       <div className="flex justify-between items-center p-4 border-b">
         <div className="flex space-x-4">
-          <TooltipComponent
-            handleOnClick={() => {}}
-            Icon={Trash2}
-            tip="Delete"
-            iconStyle="text-red-600"
+          <DeleteButton
+            className="border-none p-0 shadow-none"
+            name="user"
+            handleContinueClick={handleDeleteUser}
           />
-          <TooltipComponent
-            handleOnClick={() => {
-              router.push(`/users/${userDetail?.uuid}/edit`);
-            }}
-            Icon={Pencil}
-            tip="Edit"
+          <EditButton
+            path={`/users/${userDetail?.uuid}/edit`}
+            className="border-none p-0 shadow-none"
           />
-          <TooltipComponent handleOnClick={() => {}} Icon={FolderPlus} tip="" />
           <TooltipComponent
             handleOnClick={() => router.push(`/users/${userDetail?.uuid}`)}
             Icon={Expand}
@@ -162,9 +84,9 @@ export default function UsersDetailSplitView({
           <div>
             <h1 className="font-semibold text-xl mb-1">{userDetail?.name}</h1>
             <div className="flex space-x-4 items-center">
-              <Badge>{userDetail?.extras?.status ?? 'status'}</Badge>
+              <Badge>{userDetail?.extras?.status ?? 'N/A'}</Badge>
               <p className="text-base text-muted-foreground">
-                {userDetail?.gender ?? 'gender'}
+                {userDetail?.gender ?? 'N/A'}
               </p>
             </div>
           </div>
@@ -242,6 +164,6 @@ export default function UsersDetailSplitView({
           <UsersRolesTabSplitView userDetail={userDetail} />
         </TabsContent>
       </Tabs>
-    </>
+    </div>
   );
 }

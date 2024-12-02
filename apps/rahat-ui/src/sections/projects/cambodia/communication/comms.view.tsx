@@ -1,4 +1,4 @@
-import { usePagination } from '@rahat-ui/query';
+import { useCambodiaCommsList, usePagination } from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -44,13 +44,13 @@ export default function CommunicationView() {
     resetSelectedListItems,
   } = usePagination();
 
+  const { data, isLoading } = useCambodiaCommsList({
+    projectUUID: id,
+  });
   const columns = useTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: [
-      { date: '123', status: 'A1' },
-      { date: '456', status: 'B1' },
-    ],
+    data: data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -61,6 +61,7 @@ export default function CommunicationView() {
       columnVisibility,
     },
   });
+
   return (
     <>
       <div className="p-4">
@@ -88,12 +89,16 @@ export default function CommunicationView() {
           <div className="flex justify-between space-x-2 mb-2">
             <SearchInput className="w-full" name="" onSearch={() => {}} />
             <ViewColumns table={table} />
-            <AddButton
+            {/* <AddButton
               path={`/projects/el-cambodia/${id}/communication/add`}
               name="SMS"
-            />
+            /> */}
           </div>
-          <CambodiaTable table={table} tableHeight="h-[calc(100vh-376px)]" />
+          <CambodiaTable
+            table={table}
+            tableHeight="h-[calc(100vh-376px)]"
+            loading={isLoading}
+          />
         </div>
       </div>
       <CustomPagination
@@ -101,7 +106,7 @@ export default function CommunicationView() {
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}
-        meta={{ total: 0, currentPage: 0 }}
+        meta={(data?.response?.meta as any) || { total: 0, currentPage: 0 }}
         perPage={pagination?.perPage}
         total={0}
       />

@@ -31,6 +31,7 @@ import {
   useFindAllBeneficiaryGroups,
   useFindAllDisbursements,
   useFindUnSyncedBeneficaryGroup,
+  useFindUnSyncedBenefiicaries,
   useGetBeneficiariesDisbursements,
   usePagination,
   useProjectAction,
@@ -40,6 +41,7 @@ import {
 } from '@rahat-ui/query';
 import { useRSQuery } from '@rumsan/react-query';
 import { toast } from 'react-toastify';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 const steps = [{ label: 'Step 1' }, { label: 'Step 2' }, { label: 'Step 3' }];
 
@@ -93,16 +95,15 @@ export default function SelectVendorMultiStepForm() {
   const syncBen = useSyncOfflineBeneficiaries(id as UUID);
   const { queryClient, rumsanService } = useRSQuery();
 
-  const projectBeneficiaries = useProjectBeneficiaries({
+  const benData = useFindUnSyncedBenefiicaries(id, {
     page: pagination.pagination.page,
     perPage: pagination.pagination.perPage,
-    // pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
+    hasDisbursement: true,
     ...pagination.filters,
   });
-
   const formSchema = z.object({
     name: z.string().min(2, { message: 'Please enter valid name' }),
   });
@@ -173,45 +174,22 @@ export default function SelectVendorMultiStepForm() {
   }, [stepData.groups]);
 
   useEffect(() => {
-    if (
-      projectBeneficiaries.isSuccess &&
-      projectBeneficiaries.data?.data &&
-      isSuccess
-    ) {
-      const projectBeneficiaryDisbursements = disbursmentList
-        .filter((disbursement) => {
-          return projectBeneficiaries.data?.data?.some(
-            (beneficiary) =>
-              disbursement.walletAddress === beneficiary.walletAddress &&
-              beneficiary.type !== 'WALK_IN',
-          );
-        })
-        .map((beneficiary) => {
-          const beneficiaryDisbursement = projectBeneficiaries.data?.data?.find(
-            (disbursement) =>
-              disbursement.walletAddress === beneficiary.walletAddress,
-          );
-          return {
-            ...beneficiaryDisbursement,
-            disbursementAmount: beneficiary?.amount || '0',
-            disbursmentId: beneficiary?.id,
-            voucherType: beneficiary.status,
-          };
-        });
-      if (
-        JSON.stringify(projectBeneficiaryDisbursements) !==
-        JSON.stringify(rowData)
-      ) {
-        setRowData(projectBeneficiaryDisbursements);
+    if (benData?.isSuccess) {
+      const unSyncedBeneficiaries = benData?.data?.data?.map((beneficiary) => {
+        return {
+          name: beneficiary?.piiData?.name,
+          phone: beneficiary?.piiData?.phone,
+          disbursementAmount: beneficiary?.Disbursements[0]?.amount || '0',
+          disbursmentId: beneficiary?.Disbursements[0]?.id,
+          walletAddress: beneficiary?.walletAddress,
+          voucherType: beneficiary?.voucherType || 'N/A',
+        };
+      });
+      if (JSON.stringify(unSyncedBeneficiaries) !== JSON.stringify(rowData)) {
+        setRowData(unSyncedBeneficiaries);
       }
     }
-  }, [
-    disbursmentList,
-    isSuccess,
-    projectBeneficiaries.data?.data,
-    projectBeneficiaries.isSuccess,
-    rowData,
-  ]);
+  }, [benData?.data, benData?.isSuccess, rowData]);
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
@@ -250,7 +228,7 @@ export default function SelectVendorMultiStepForm() {
       toast.error('Failed to sync');
     }
   };
-  pagination.meta = projectBeneficiaries.data.response?.meta;
+  pagination.meta = benData?.data?.response?.meta;
   return (
     <div className="p-4">
       {activeStep === 0 && (
@@ -327,14 +305,18 @@ export default function SelectVendorMultiStepForm() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {vendors.map((vendor) => (
-                              <SelectItem
-                                key={vendor?.id}
-                                value={vendor?.id.toString()}
-                              >
-                                {vendor.name}
-                              </SelectItem>
-                            ))}
+                            {getVendors?.isPending ? (
+                              <TableLoader />
+                            ) : (
+                              vendors.map((vendor) => (
+                                <SelectItem
+                                  key={vendor?.id}
+                                  value={vendor?.id.toString()}
+                                >
+                                  {vendor?.name}
+                                </SelectItem>
+                              ))
+                            )}
                           </SelectContent>
                         </Select>
                         <FormMessage />

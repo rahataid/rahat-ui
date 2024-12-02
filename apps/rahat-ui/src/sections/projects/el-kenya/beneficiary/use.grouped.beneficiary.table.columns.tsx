@@ -12,7 +12,8 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { Copy, CopyCheck } from 'lucide-react';
 
 export const useKenyaGroupedBeneficiaryTableColumns = () => {
-  const [walletAddressCopied, setWalletAddressCopied] = React.useState<string>();
+  const [walletAddressCopied, setWalletAddressCopied] =
+    React.useState<string>();
   const searchParam = useSearchParams();
 
   const clickToCopy = (walletAddress: string, uuid: string) => {
@@ -58,7 +59,13 @@ export const useKenyaGroupedBeneficiaryTableColumns = () => {
     {
       accessorKey: 'location',
       header: 'Location',
-      cell: ({ row }) => <div>{row.getValue('location') ?? 'N/A'}</div>,
+      cell: ({ row }) => (
+        <div>
+          {row.getValue('location') ??
+            row?.original?.projectData?.location ??
+            'N/A'}
+        </div>
+      ),
     },
     {
       accessorKey: 'gender',

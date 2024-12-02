@@ -31,7 +31,7 @@ const UserLayout: FC<UserLayoutProps> = ({ children, menuItems }) => {
       return children.map((child, index) => {
         return (
           <>
-            <ResizableHandle withHandle />
+            {/* <ResizableHandle withHandle /> */}
             {renderResizablePanel(child, index)}
           </>
         );

@@ -51,8 +51,14 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...(debouncedSearch as any),
   });
-  console.log(data);
 
+  const processedData = {
+    ...data,
+    data: data?.data.map((benef) => ({
+      ...benef,
+      name: benef?.piiData?.name,
+    })),
+  };
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
@@ -67,7 +73,7 @@ export default function BeneficiaryView() {
   const columns = useCambodiaBeneficiaryTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: data?.data || [],
+    data: processedData?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -83,13 +89,12 @@ export default function BeneficiaryView() {
       rowSelection: selectedListItems,
     },
   });
-  console.log(filters);
   return (
     <>
       <div className="p-4 bg-white ">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="font-semibold text-2xl mb-">Benificiaries</h1>
+            <h1 className="font-semibold text-2xl mb-">Beneficiaries</h1>
             <p className="text-muted-foreground">
               Track all the beneficiaries here.
             </p>
@@ -147,9 +152,11 @@ export default function BeneficiaryView() {
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}
-        meta={(data?.response?.meta as any) || { total: 0, currentPage: 0 }}
+        meta={
+          (processedData?.response?.meta as any) || { total: 0, currentPage: 0 }
+        }
         perPage={pagination?.perPage}
-        total={data?.response?.meta?.total || 0}
+        total={processedData?.response?.meta?.total || 0}
       />
     </>
   );

@@ -54,7 +54,8 @@ export default function CommunicationView() {
   const { data, isSuccess, isLoading } = useListRpCampaignLog(id as UUID, {
     uuid: cid as string,
     query: {
-      ...pagination,
+      page: 1,
+      perPage: 1000,
       ...(filters as any),
     },
   });
@@ -168,8 +169,9 @@ export default function CommunicationView() {
             <SearchInput
               className="w-full"
               name=""
-              onSearch={(e) =>
-                setFilters({ ...filters, address: e.target.value })
+              value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
+              onSearch={(event) =>
+                table.getColumn('to')?.setFilterValue(event.target.value)
               }
             />
             <ViewColumns table={table} />

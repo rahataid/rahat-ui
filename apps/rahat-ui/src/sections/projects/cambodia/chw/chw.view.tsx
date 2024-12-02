@@ -22,7 +22,7 @@ import CambodiaTable from '../table.component';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { filter } from 'lodash';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Coins, Home, Search, Settings2, Users } from 'lucide-react';
+import { Coins, Download, Home, Search, Settings2, Users } from 'lucide-react';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import {
@@ -35,7 +35,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import ViewColumns from '../../components/view.columns';
-
+import * as XLSX from 'xlsx';
 export default function CHWView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
@@ -66,6 +66,13 @@ export default function CHWView() {
     ...(debouncedSearch as any),
   });
 
+  const { data: allData } = useCHWList({
+    page: pagination.page,
+    perPage: 0,
+    order: 'desc',
+    sort: 'createdAt',
+    projectUUID: id,
+  });
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
@@ -79,7 +86,6 @@ export default function CHWView() {
   const columns = useCambodiaChwTableColumns();
   const table = useReactTable({
     manualPagination: true,
-
     data: data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -90,12 +96,27 @@ export default function CHWView() {
     getRowId(originalRow) {
       return originalRow.walletAddress;
     },
-
     state: {
       columnVisibility,
       rowSelection: selectedListItems,
     },
   });
+  const handleDownload = async () => {
+    const rowsToDownload = allData?.data || [];
+    const workbook = XLSX.utils.book_new();
+    const worksheetData = rowsToDownload?.map((item: any) => ({
+      healthWorkerName: item.name,
+      koboUserName: item.koboUsername,
+      sales: item._count.SALE,
+      leads: item._count.LEAD,
+      leadsConverted: item._count.LeadConversions,
+      visionCenter: item.vendor.name,
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'HealthWorkers');
+
+    XLSX.writeFile(workbook, 'HealthWorkers.xlsx');
+  };
   return (
     <>
       <div className="p-4 bg-white ">
@@ -107,12 +128,6 @@ export default function CHWView() {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-7">
           <DataCard
-            title="Home Visits"
-            number={stats?.data?.home_visits}
-            Icon={Home}
-            className="rounded-lg border-solid "
-          />
-          <DataCard
             title="Sales Count"
             number={stats?.data?.sales}
             Icon={Coins}
@@ -121,6 +136,12 @@ export default function CHWView() {
           <DataCard
             title="Leads Provided"
             number={stats?.data?.leads}
+            Icon={Users}
+            className="rounded-lg border-solid"
+          />
+          <DataCard
+            title="Leads Converted"
+            number={stats?.data?.leads_converted}
             Icon={Users}
             className="rounded-lg border-solid"
           />
@@ -138,6 +159,13 @@ export default function CHWView() {
             />
 
             <ViewColumns table={table} />
+            <Button
+              variant="outline"
+              className="text-muted-foreground"
+              onClick={handleDownload}
+            >
+              <Download className="w-4 h-4 mr-1" /> Download
+            </Button>
           </div>
 
           <CambodiaTable table={table} tableHeight="h-[calc(100vh-460px)] " />

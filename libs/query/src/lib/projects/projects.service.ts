@@ -717,7 +717,6 @@ export const useCHWList = (payload: any) => {
 // cambodia.chw.get
 
 export const useCHWGet = (payload: any) => {
-  console.log(payload);
   const action = useProjectAction();
   const { projectUUID, ...restPayload } = payload;
 
@@ -772,25 +771,7 @@ export const useCambodiaBeneficiaries = (payload: any) => {
       return mutate;
     },
   });
-  console.log(query.data);
-  return {
-    ...query,
-    data: useMemo(() => {
-      return {
-        ...query.data,
-        data: query.data?.data?.length
-          ? query.data.data.map((row: any) => ({
-              uuid: row?.uuid?.toString(),
-              name: row?.piiData?.name || '',
-              gender: row?.projectData?.gender?.toString() || '',
-              phone: row?.piiData?.phone || '-',
-              type: row?.type?.toString() || '-',
-              healthWorker: row?.healthWorker?.name || '-',
-            }))
-          : [],
-      };
-    }, [query.data]),
-  };
+  return { ...query };
 };
 
 export const useCambodiaBeneficiary = (payload: any) => {
@@ -827,7 +808,10 @@ export const useCambodiaVendorsList = (payload: any) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: ['vendor.list_by_project', restPayloadString],
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.VENDOR.LIST_BY_PROJECT,
+      restPayloadString,
+    ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -835,7 +819,7 @@ export const useCambodiaVendorsList = (payload: any) => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'vendor.list_by_project',
+          action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.LIST_BY_PROJECT,
           payload: restPayload,
         },
       });
@@ -852,7 +836,7 @@ export const useCambodiaVendorGet = (payload: any) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: ['vendor.get_by_uuid', restPayloadString],
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.VENDOR.GET_BY_UUID, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -860,7 +844,7 @@ export const useCambodiaVendorGet = (payload: any) => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'vendor.get_by_uuid',
+          action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.GET_BY_UUID,
           payload: restPayload,
         },
       });
@@ -879,7 +863,10 @@ export const useCambodiaCommisionList = (payload: any) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: ['cambodia.commission_scheme.list', restPayloadString],
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.LIST,
+      restPayloadString,
+    ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -887,7 +874,7 @@ export const useCambodiaCommisionList = (payload: any) => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'cambodia.commission_scheme.list',
+          action: MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.LIST,
           payload: restPayload,
         },
       });
@@ -906,7 +893,10 @@ export const useCambodiaCommisionCurrent = (payload: any) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: ['cambodia.commission_scheme.get_current', restPayloadString],
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.GET_CURRENT,
+      restPayloadString,
+    ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -914,7 +904,7 @@ export const useCambodiaCommisionCurrent = (payload: any) => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'cambodia.commission_scheme.get_current',
+          action: MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.GET_CURRENT,
           payload: restPayload,
         },
       });
@@ -931,16 +921,15 @@ export const useCambodiaCommisionCreate = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationKey: ['cambodia.commission_scheme.create'],
+    mutationKey: [MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.CREATE],
 
     mutationFn: async (payload: any) => {
-      console.log(payload);
       const { projectUUID, ...restPayload } = payload;
 
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'cambodia.commission_scheme.create',
+          action: MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.CREATE,
           payload: restPayload,
         },
       });
@@ -948,7 +937,7 @@ export const useCambodiaCommisionCreate = () => {
     },
     onSuccess: () => {
       qc.invalidateQueries({
-        queryKey: ['cambodia.commission_scheme.get_current'],
+        queryKey: [MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.GET_CURRENT],
       });
     },
   });
@@ -961,7 +950,10 @@ export const useCambodiaDiscardedBeneficiaries = (payload: any) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: ['cambodia.beneficiary.list_discarded', restPayloadString],
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.DISCARDED_LIST,
+      restPayloadString,
+    ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -969,7 +961,7 @@ export const useCambodiaDiscardedBeneficiaries = (payload: any) => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'cambodia.beneficiary.list_discarded',
+          action: MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.DISCARDED_LIST,
           payload: restPayload,
         },
       });
@@ -985,7 +977,7 @@ export const useCambodiaVendorsStats = (payload: any) => {
   const { projectUUID, ...restPayload } = payload;
   const restPayloadString = JSON.stringify(restPayload);
   const query = useQuery({
-    queryKey: ['cambodia.vendor.stats', restPayloadString],
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -993,7 +985,7 @@ export const useCambodiaVendorsStats = (payload: any) => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'cambodia.vendor.stats',
+          action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS,
           payload: restPayload,
         },
       });
@@ -1009,7 +1001,7 @@ export const useCambodiaHealthWorkerByUUIDStats = (payload: any) => {
   const { projectUUID, ...restPayload } = payload;
   const restPayloadString = JSON.stringify(restPayload);
   const query = useQuery({
-    queryKey: ['cambodia.chw.stats', restPayloadString],
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.STATS, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -1017,7 +1009,7 @@ export const useCambodiaHealthWorkerByUUIDStats = (payload: any) => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'cambodia.chw.stats',
+          action: MS_CAM_ACTIONS.CAMBODIA.CHW.STATS,
           payload: restPayload,
         },
       });
@@ -1033,7 +1025,10 @@ export const useCambodiaVendorHealthWorkers = (payload: any) => {
   const { projectUUID, ...restPayload } = payload;
   const restPayloadString = JSON.stringify(restPayload);
   const query = useQuery({
-    queryKey: ['cambodia.vendor.health_workers', restPayloadString],
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.VENDOR.HEALTH_WORKERS,
+      restPayloadString,
+    ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -1041,7 +1036,7 @@ export const useCambodiaVendorHealthWorkers = (payload: any) => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'cambodia.vendor.health_workers',
+          action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.HEALTH_WORKERS,
           payload: restPayload,
         },
       });
@@ -1057,7 +1052,10 @@ export const useCambodiaVendorLeadConversions = (payload: any) => {
   const { projectUUID, ...restPayload } = payload;
   const restPayloadString = JSON.stringify(restPayload);
   const query = useQuery({
-    queryKey: ['cambodia.vendor.lead_conversions', restPayloadString],
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.VENDOR.LEAD_CONVERSIONS,
+      restPayloadString,
+    ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -1065,7 +1063,7 @@ export const useCambodiaVendorLeadConversions = (payload: any) => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'cambodia.vendor.lead_conversions',
+          action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.LEAD_CONVERSIONS,
           payload: restPayload,
         },
       });
@@ -1080,7 +1078,10 @@ export const useCambodiaHealthWorkersStats = (payload: any) => {
   const { projectUUID, ...restPayload } = payload;
   const restPayloadString = JSON.stringify(restPayload);
   const query = useQuery({
-    queryKey: ['cambodia.beneficiary.stats', restPayloadString],
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.CHW.BENEFICIARIES_STATS,
+      restPayloadString,
+    ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -1088,11 +1089,95 @@ export const useCambodiaHealthWorkersStats = (payload: any) => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'cambodia.beneficiary.stats',
+          action: MS_CAM_ACTIONS.CAMBODIA.CHW.BENEFICIARIES_STATS,
           payload: restPayload,
         },
       });
       return mutate;
+    },
+  });
+  return query;
+};
+
+export const useCambodiaCommsList = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.LIST, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.LIST,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
+export const useCambodiaLineChartsReports = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.LINE_STATS, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.LINE_STATS,
+          payload: restPayload?.filters,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
+export const useCambodiaCommisionStats = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.STATS,
+      restPayloadString,
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.STATS,
+          payload: restPayload,
+        },
+      });
+
+      return mutate?.data
+        ?.filter((item) =>
+          ['TOTAL_LEAD_CONVERTED', 'TOTAL_COMMISSION_EARNED'].includes(
+            item.name,
+          ),
+        )
+        ?.sort((a, b) => {
+          if (a.name === 'TOTAL_LEAD_CONVERTED') return -1;
+          if (b.name === 'TOTAL_LEAD_CONVERTED') return 1;
+          return 0;
+        });
     },
   });
   return query;

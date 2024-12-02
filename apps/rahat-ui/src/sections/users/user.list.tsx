@@ -39,8 +39,8 @@ export default function UsersTable({ table }: IProps) {
           <AddButton name="User" path="/users/add" />
         </div>
         <div>
-          <TableComponent>
-            <ScrollArea className="h-[calc(100vh-303px)]">
+          <ScrollArea className="h-[calc(100vh-303px)]">
+            <TableComponent>
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
@@ -87,8 +87,8 @@ export default function UsersTable({ table }: IProps) {
                   </TableRow>
                 )}
               </TableBody>
-            </ScrollArea>
-          </TableComponent>
+            </TableComponent>
+          </ScrollArea>
         </div>
       </div>
     </>

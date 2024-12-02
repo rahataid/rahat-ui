@@ -1,42 +1,42 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { formatUnderScoredString } from 'apps/rahat-ui/src/utils/string';
 import { Eye } from 'lucide-react';
-import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 export const useCambodiaBeneficiaryTableColumns = () => {
   const { id } = useParams();
-  const pathName = usePathname();
   const router = useRouter();
-  const isDiscardedBeneficiary = pathName.includes('discardedbenificary');
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }) => <div>{row?.original?.piiData?.name}</div>,
     },
     {
       accessorKey: 'type',
       header: 'Type',
-      cell: ({ row }) => <div>{row.getValue('type')}</div>,
+      cell: ({ row }) => {
+        return <div>{row?.original?.type || 'UNKNOWN'}</div>;
+      },
     },
     {
       accessorKey: 'phone',
       header: 'Phone',
-      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
+      cell: ({ row }) => <div>{row?.original?.piiData?.phone}</div>,
     },
     {
       accessorKey: 'gender',
       header: 'Gender',
-      cell: ({ row }) => <div>{row.getValue('gender')}</div>,
+      cell: ({ row }) => <div>{row?.original?.projectData?.gender}</div>,
     },
     {
       accessorKey: 'healthWorker',
       header: 'Health Worker',
-      cell: ({ row }) => <div>{row?.original?.healthWorker}</div>,
+      cell: ({ row }) => {
+        return <div>{row?.original?.healthWorker?.name || '-'}</div>;
+      },
     },
-  ];
-  if (!isDiscardedBeneficiary) {
-    columns.push({
+
+    {
       id: 'actions',
       header: 'Actions',
       enableHiding: false,
@@ -56,7 +56,42 @@ export const useCambodiaBeneficiaryTableColumns = () => {
           </div>
         );
       },
-    });
-  }
+    },
+  ];
+
+  return columns;
+};
+
+export const useDiscardedCambodiaBeneficiaryTableColumns = () => {
+  const columns: ColumnDef<any>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+    },
+    {
+      accessorKey: 'type',
+      header: 'Type',
+      cell: ({ row }) => {
+        return <div>{row?.original?.extras?.type || 'UNKNOWN'}</div>;
+      },
+    },
+    {
+      accessorKey: 'phone',
+      header: 'Phone',
+      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
+    },
+    {
+      accessorKey: 'gender',
+      header: 'Gender',
+      cell: ({ row }) => <div>{row.getValue('gender')}</div>,
+    },
+    {
+      accessorKey: 'healthWorker',
+      header: 'Health Worker',
+      cell: ({ row }) => <div>{row?.original?.healthWorker?.name || '-'}</div>,
+    },
+  ];
+
   return columns;
 };

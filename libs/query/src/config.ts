@@ -109,6 +109,7 @@ export const MS_CAM_ACTIONS = {
     BENEFICIARY: {
       CREATE: 'cambodia.beneficiary.create',
       LIST: 'cambodia.beneficiary.list',
+      DISCARDED_LIST: 'cambodia.beneficiary.list_discarded',
       GET: 'cambodia.beneficiary.get',
       DELETE: 'cambodia.beneficiary.delete',
       ADD_TO_PROJECT: 'cambodia.beneficiary.add_to_project',
@@ -119,12 +120,29 @@ export const MS_CAM_ACTIONS = {
       GET: 'cambodia.chw.get',
       UPDATE: 'cambodia.chw.update',
       DELETE: 'cambodia.chw.delete',
+      STATS: 'cambodia.chw.stats',
+      BENEFICIARIES_STATS: 'cambodia.beneficiary.stats',
     },
     VENDOR: {
       LIST: 'cambodia.vendor.list',
       GET: 'cambodia.vendor.get',
       UPDATE_IS_VERIFIED: 'cambodia.vendor.update_is_verified',
       ASSIGN_TO_PROJECT: 'cambodia.vendor.assign_to_project',
+      LIST_BY_PROJECT: 'vendor.list_by_project',
+      GET_BY_UUID: 'vendor.get_by_uuid',
+      STATS: 'cambodia.vendor.stats',
+      HEALTH_WORKERS: 'cambodia.vendor.health_workers',
+      LEAD_CONVERSIONS: 'cambodia.vendor.lead_conversions',
     },
+    COMMISION_SCHEME: {
+      CREATE: 'cambodia.commission_scheme.create',
+      LIST: 'cambodia.commission_scheme.list',
+      GET_CURRENT: 'cambodia.commission_scheme.get_current',
+      STATS: 'cambodia.app.stats',
+    },
+    COMMUNICATION: {
+      LIST: 'cambodia.communication.list',
+    },
+    LINE_STATS: 'cambodia.app.line_stats',
   },
 };

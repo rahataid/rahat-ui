@@ -32,6 +32,8 @@ export default function BeneficiaryDetail() {
     }, 2000);
   };
 
+  console.log('Benef===>', data);
+
   return (
     <div className="h-[calc(100vh-95px)] m-4">
       <div className="flex justify-between items-center">
@@ -70,7 +72,7 @@ export default function BeneficiaryDetail() {
           </h1>
           <p className="font-medium">
             {/* {data?.data?.createdAt.toLocaleString()} */}
-            {formatDT(data?.data?.createdAt)}
+            {data?.data?.createdAt ? formatDT(data?.data?.createdAt) : '-'}
           </p>
         </div>
         <div>
@@ -99,19 +101,12 @@ export default function BeneficiaryDetail() {
         <div>
           <h1 className="text-md text-muted-foreground">Beneficiary Type</h1>
 
-          <Badge variant="secondary">{data?.data?.extras?.type}s</Badge>
+          <Badge variant="secondary">{data?.data?.type ?? 'UNKNOWN'}</Badge>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Referred By</h1>
-          <p className="font-medium">{data?.data?.healthWorker ?? '-'}</p>
+          <p className="font-medium">{data?.data?.healthWorker?.name ?? '-'}</p>
         </div>
-
-        {/* <div>
-          <h1 className="text-md text-muted-foreground">Transaction Type</h1>
-          <Badge variant="secondary">
-            {data?.data?.conversionType ?? 'N/A'}
-          </Badge>
-        </div> */}
       </div>
       <div className="">
         <h1 className="text-2xl mb-5">Transactions</h1>

@@ -1,12 +1,9 @@
 {
   // TypeScript settings
   "typescript.tsdk": "node_modules/typescript/lib",
-
   // Customize the appearance of the workbench
-
   // Peacock extension settings for color theming
   "peacock.color": "#000000",
-
   // Editor settings
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
@@ -15,7 +12,6 @@
     "source.fixAll.eslint": "explicit"
   },
   "editor.minimap.enabled": false,
-
   // ESLint settings
   "eslint.validate": [
     "javascript",
@@ -23,29 +19,22 @@
     "typescript",
     "typescriptreact"
   ],
-
   // Prettier settings
   "prettier.singleQuote": true,
   "prettier.trailingComma": "all",
   "prettier.arrowParens": "always",
-
   // Files settings
   "files.exclude": {
     "**/.git": true,
     "**/.DS_Store": true,
-    "**/node_modules": true,
     "**/dist": true
   },
   "files.autoSave": "onFocusChange",
-
   // Terminal settings
-
   // Extensions settings
   "extensions.ignoreRecommendations": false,
-
   // Git settings
   "git.autofetch": true,
-
   // Emmet settings
   "emmet.includeLanguages": {
     "javascript": "javascriptreact",

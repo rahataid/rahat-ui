@@ -30,9 +30,8 @@ export default function VendorsDetail() {
     id as UUID,
     Number(vendorId),
   );
-  const { data: vendorTransactions, isLoading } = useKenyaVendorTransactions(
-    vendorId as string,
-  );
+  const { data: vendorTransactions, isFetching: isLoading } =
+    useKenyaVendorTransactions(vendorWallet);
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<string>();
 

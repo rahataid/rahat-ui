@@ -110,7 +110,7 @@ export default function CommunicationView() {
         <div className="mb-4">
           <h1 className="font-semibold text-2xl mb-">Communication</h1>
         </div>
-        <div className="grid grid-cols-3 gap-2 mb-4">
+        {/* <div className="grid grid-cols-3 gap-2 mb-4">
           {cardData?.map((item, index) => {
             const Icon = getIcon(item.icon as any);
             return (
@@ -135,7 +135,7 @@ export default function CommunicationView() {
               />
             );
           })}
-        </div>
+        </div> */}
 
         <div className="rounded border bg-card p-4">
           <div className="flex justify-between space-x-2 mb-2">

@@ -49,18 +49,26 @@ export default function VouchersView() {
   )?.count;
 
   const singleVisionCount = REDEMPTION_STATS?.find(
-    (i: any) => i.voucherType === 'SINGLE_VISION',
+    (i: any) => i.id === 'SINGLE_VISION',
   )?.count;
 
+  console.log('REDEMPTION_STATS', REDEMPTION_STATS);
+
   const readingGlassesCount =
-    REDEMPTION_STATS?.find((i: any) => i.voucherType === 'READING_GLASSES')
-      ?.count || 0;
+    REDEMPTION_STATS?.find((i: any) => i.id === 'READING_GLASSES')?.count || 0;
 
   const voucherRedeemedCount =
     Number(singleVisionCount ?? 0) + Number(readingGlassesCount ?? 0);
   const voucherNotRedeemedCount = tokenAllocated
     ? Number(tokenAllocated) - voucherRedeemedCount
     : 0;
+
+  console.log('voucherRedeemedCount', {
+    voucherRedeemedCount,
+    singleVisionCount,
+    readingGlassesCount,
+    tokenAllocated,
+  });
 
   const weeklyRedemptionsStats = kenyaStats?.data
     ?.find((i: any) => i.name === 'WEEKLY_REDEMPTION_STATS')

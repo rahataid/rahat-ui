@@ -12,59 +12,74 @@ import { useState } from 'react';
 export const useCambodiaVendorsTableColumns = () => {
   const { id } = useParams();
   const router = useRouter();
-  const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
 
-  const clickToCopy = (walletAddress: string, index: number) => {
-    navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(index);
+  const [copiedCells, setCopiedCells] = useState<string | null>(null);
+
+  const clickToCopy = (value: string, rowIndex: number, columnKey: string) => {
+    navigator.clipboard.writeText(value);
+
+    const cellKey = `${rowIndex}-${columnKey}`;
+
+    setCopiedCells(cellKey);
+    setTimeout(() => {
+      setCopiedCells(null);
+    }, 3000);
   };
+
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <div>{row.original.User.name}</div>,
+      cell: ({ row }) => <div>{row?.original?.name}</div>,
     },
     {
       accessorKey: 'phone',
       header: 'Phone Number',
-      cell: ({ row }) => <div>{row.original.User.phone}</div>,
+      cell: ({ row }) => <div>{row?.original?.phone}</div>,
     },
+
     {
       accessorKey: 'wallet',
       header: 'Wallet Address',
-      cell: ({ row }) => (
-        <>
-          {row.original.User.wallet ? (
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger
-                  className="flex gap-3 cursor-pointer"
-                  onClick={() =>
-                    clickToCopy(row.original.User.wallet, row.index)
-                  }
-                >
-                  <p className="truncate w-16">{row.original.User.wallet}</p>
-                  {walletAddressCopied === row.index ? (
-                    <CopyCheck size={20} strokeWidth={1.5} />
-                  ) : (
-                    <Copy size={20} strokeWidth={1.5} />
-                  )}
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary" side="bottom">
-                  <p className="text-xs font-medium">
-                    {walletAddressCopied === row.index
-                      ? 'copied'
-                      : 'click to copy'}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : (
-            'N/A'
-          )}
-        </>
-        // <div>{row.original.User.wallet}</div>
-      ),
+
+      cell: ({ row }) => {
+        const columnKey = 'wallet';
+        const cellKey = `${row.index}-${columnKey}`;
+        return (
+          <div className="lowercase ml-3">
+            {row?.original?.wallet ? (
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger
+                    className="flex gap-3 cursor-pointer"
+                    onClick={() =>
+                      clickToCopy(row?.original?.wallet, row.index, columnKey)
+                    }
+                  >
+                    <p className="text-sm truncate w-16">
+                      {row?.original?.wallet}
+                    </p>
+                    <span className="ml-1">
+                      {copiedCells === cellKey ? (
+                        <CopyCheck size={20} strokeWidth={1.5} />
+                      ) : (
+                        <Copy size={20} strokeWidth={1.5} />
+                      )}
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-secondary" side="bottom">
+                    <p className="text-xs font-medium">
+                      {copiedCells === cellKey ? 'Copied' : 'Click to copy'}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              '-'
+            )}
+          </div>
+        );
+      },
     },
 
     {

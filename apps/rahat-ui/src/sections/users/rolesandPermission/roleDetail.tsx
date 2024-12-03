@@ -11,20 +11,15 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useUserCurrentUser } from '@rumsan/react-query';
 import { Role } from '@rumsan/sdk/types';
-// import { ROLE_TYPE } from 'apps/community-tool-ui/src/constants/user.const';
-import { Minus } from 'lucide-react';
+import { X } from 'lucide-react';
 import EditRole from './editRole';
 import ViewPermissions from './ViewPermissions';
 import { ROLE_TYPE } from '../role/const';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import DeleteButton from 'apps/rahat-ui/src/components/delete.btn';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+import Swal from 'sweetalert2';
 
 type IProps = {
   roleData: Role;
@@ -52,6 +47,8 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
   });
 
   const handleDeleteRole = async () => {
+    if (roleDetail?.data?.role?.isSystem)
+      return Swal.fire('System roles cannot be deleted', '', 'warning');
     await deleteRole.mutateAsync({
       name: roleDetail?.data?.role?.name as string,
     });
@@ -66,33 +63,39 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
   const permissions = roleDetail?.data?.permissions || null;
 
   return (
-    <>
-      <div className="flex justify-between items-center p-4 pt-5">
-        {/* Minimize  */}
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger onClick={closeSecondPanel}>
-              <Minus size={20} strokeWidth={1.5} />
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary ">
-              <p className="text-xs font-medium">Close</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+    <div className="border-l h-full">
+      <div className="flex justify-between items-center p-4 border-b">
+        <div className="flex space-x-4">
+          <TooltipComponent
+            handleOnClick={closeSecondPanel}
+            Icon={X}
+            tip="Close"
+          />
+          <DeleteButton
+            className="border-none p-0 shadow-none"
+            name="role"
+            handleContinueClick={handleDeleteRole}
+          />
+        </div>
         <div className="flex gap-3">
-          <TabsList className="w-full grid grid-cols-2 bg-transparent">
-            <TabsTrigger
-              onClick={() => handleTabChange('details')}
-              value="details"
-            >
-              Details
-            </TabsTrigger>
-            {isAdmin && (
-              <TabsTrigger onClick={() => handleTabChange('edit')} value="edit">
-                Edit
+          <Tabs defaultValue="details">
+            <TabsList className="w-full grid grid-cols-2 bg-transparent">
+              <TabsTrigger
+                onClick={() => handleTabChange('details')}
+                value="details"
+              >
+                Details
               </TabsTrigger>
-            )}
-          </TabsList>
+              {isAdmin && (
+                <TabsTrigger
+                  onClick={() => handleTabChange('edit')}
+                  value="edit"
+                >
+                  Edit
+                </TabsTrigger>
+              )}
+            </TabsList>
+          </Tabs>
         </div>
       </div>
       {/* Details View */}
@@ -100,12 +103,14 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
         <>
           {/* Role Details */}
           <Card className="shadow rounded m-2">
-            <CardHeader className="mb-0 pb-0">Role Details</CardHeader>
+            <CardHeader className="mb-0 pb-0 font-semibold">
+              Role Details
+            </CardHeader>
 
             <CardContent className="pt-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="font-light text-base">
+                  <p className="font-medium text-base">
                     {roleDetail?.data?.role?.name}
                   </p>
                   <p className="text-sm font-normal text-muted-foreground">
@@ -114,14 +119,14 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
                 </div>
 
                 <div className="text-right">
-                  <p className="font-light text-base">{formattedDate}</p>
+                  <p className="font-medium text-base">{formattedDate}</p>
                   <p className="text-sm font-normal text-muted-foreground ">
                     CreatedAt
                   </p>
                 </div>
 
                 <div>
-                  <p className="font-light text-base">
+                  <p className="font-medium text-base">
                     {roleDetail?.data?.role?.createdBy ?? 'N/A'}
                   </p>
                   <p className="text-sm font-normal text-muted-foreground">
@@ -130,7 +135,7 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
                 </div>
 
                 <div className="text-right">
-                  <p className="font-light text-base">
+                  <p className="font-medium text-base">
                     {roleDetail?.data?.role?.isSystem ? 'Yes' : 'No'}
                   </p>
                   <p className="text-sm font-normal text-muted-foreground ">
@@ -142,7 +147,9 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
           </Card>
 
           <Card className="shadow rounded m-2">
-            <CardHeader className="mb-0 pb-0">Assigned Permissions</CardHeader>
+            <CardHeader className="mb-0 pb-0 font-semibold">
+              Assigned Permissions
+            </CardHeader>
             <CardContent className="pt-1">
               {permissions &&
                 Object.keys(permissions).map((subject) => (
@@ -163,15 +170,13 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
       {/* Edit View */}
       {activeTab === 'edit' && permissions && (
         <>
-          <ScrollArea className="h-[calc(100vh-150px)]">
-            <div className="flex flex-col justify-between  ">
-              <div className="p-4 border-t ">
-                <EditRole currentPerms={permissions} roleDetail={roleDetail} />
-              </div>
+          <div className="flex flex-col justify-between  ">
+            <div className="p-4">
+              <EditRole currentPerms={permissions} roleDetail={roleDetail} />
             </div>
-          </ScrollArea>
+          </div>
         </>
       )}
-    </>
+    </div>
   );
 }

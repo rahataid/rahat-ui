@@ -43,7 +43,8 @@ export const useCambodiaChwTableColumns = () => {
     // },
 
     {
-      accessorKey: 'vendor',
+      accessorKey: 'vision center',
+      accessorFn: (row) => row.vendor,
       header: 'Vision Center',
       cell: ({ row }) => <div> {row?.original?.vendor?.name} </div>,
     },

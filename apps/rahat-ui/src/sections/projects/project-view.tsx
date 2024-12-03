@@ -64,6 +64,7 @@ export default function ProjectListView() {
           <Button
             onClick={() => openAddProjectModal()}
             className="flex items-center justify-center gap-1"
+            disabled
           >
             <CirclePlus size={16} strokeWidth={1.5} />
             Add Project

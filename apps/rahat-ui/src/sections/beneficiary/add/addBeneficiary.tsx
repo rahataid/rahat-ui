@@ -40,21 +40,33 @@ export default function AddBeneficiaryForm() {
   const router = useRouter();
 
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 4 character' }),
+    name: z
+      .string()
+      .min(4, { message: 'Name must be at least 4 characters' })
+      .regex(/^[a-zA-Z\s]+$/, {
+        message: 'Name can only contain letters and spaces',
+      }),
     walletAddress: z.string(),
     phone: z
       .string()
       .refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
-    email: z.string().optional(),
-    gender: z
+    email: z
       .string()
-      .toUpperCase()
-      .min(4, { message: 'Must select a Gender' }),
+      .optional()
+      .refine((email) => !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), {
+        message: 'Invalid email address',
+      }),
+    gender: z.string().optional(),
     bankedStatus: z.string().toUpperCase(),
     internetStatus: z.string().toUpperCase(),
     phoneStatus: z.string().toUpperCase(),
-    address: z.string().min(3, { message: 'Please enter valid address' }),
-    age: z.string().optional(),
+    address: z.string().optional(),
+    age: z
+      .string()
+      .optional()
+      .refine((age) => !age || /^[1-9]\d*$/.test(age), {
+        message: 'Age must be a positive integer',
+      }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -357,7 +369,7 @@ export default function AddBeneficiaryForm() {
                             <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                               type="text"
-                              placeholder="Enter wallet ddress"
+                              placeholder="Enter wallet address"
                               {...field}
                             />
                             {/* {!field.value ? ( */}

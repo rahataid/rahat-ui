@@ -96,7 +96,6 @@ export default function CHWView() {
     getRowId(originalRow) {
       return originalRow.walletAddress;
     },
-
     state: {
       columnVisibility,
       rowSelection: selectedListItems,
@@ -111,7 +110,6 @@ export default function CHWView() {
       sales: item._count.SALE,
       leads: item._count.LEAD,
       leadsConverted: item._count.LeadConversions,
-      homeVisit: item._count.HOME_VISIT,
       visionCenter: item.vendor.name,
     }));
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);

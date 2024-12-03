@@ -17,13 +17,22 @@ export type Transaction = {
   voucherId: string;
   timestamp: string;
   txHash: string;
+  processedBy: string;
 };
 export const useTableColumns = () => {
-  const [copyAction, setCopyAction] = useState<number>();
-  const clickToCopy = (name: string, index: number) => {
-    navigator.clipboard.writeText(name);
-    setCopyAction(index);
+  const [copiedCells, setCopiedCells] = useState<string | null>(null);
+
+  const clickToCopy = (value: string, rowIndex: number, columnKey: string) => {
+    navigator.clipboard.writeText(value);
+
+    const cellKey = `${rowIndex}-${columnKey}`;
+
+    setCopiedCells(cellKey);
+    setTimeout(() => {
+      setCopiedCells(null);
+    }, 3000);
   };
+
   const columns: ColumnDef<Transaction>[] = [
     {
       accessorKey: 'topic',
@@ -33,73 +42,52 @@ export const useTableColumns = () => {
       ),
     },
     {
-      accessorKey: 'processedBy',
-      header: ({ column }) => {
+      accessorKey: 'walletAddress',
+      header: 'Wallet Address',
+      accessorFn: (row) => row.processedBy,
+      cell: ({ row }) => {
+        const columnKey = 'walletAddress';
+        const cellKey = `${row.index}-${columnKey}`;
         return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Wallet Address
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
+          <div className="lowercase ml-3">
+            {row.getValue('walletAddress') ? (
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger
+                    className="flex gap-3 cursor-pointer"
+                    onClick={() =>
+                      clickToCopy(
+                        row.getValue('walletAddress'),
+                        row.index,
+                        columnKey,
+                      )
+                    }
+                  >
+                    <p className="text-sm">
+                      {truncateEthAddress(row.getValue('walletAddress'))}
+                    </p>
+                    <span className="ml-1">
+                      {copiedCells === cellKey ? (
+                        <CopyCheck size={20} strokeWidth={1.5} />
+                      ) : (
+                        <Copy size={20} strokeWidth={1.5} />
+                      )}
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-secondary" side="bottom">
+                    <p className="text-xs font-medium">
+                      {copiedCells === cellKey ? 'Copied' : 'Click to copy'}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              '-'
+            )}
+          </div>
         );
       },
-
-      cell: ({ row }) => (
-        <div className="lowercase ml-3">
-          {row.getValue('processedBy') ? (
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger
-                  className="flex gap-3 cursor-pointer"
-                  onClick={() =>
-                    clickToCopy(row.getValue('processedBy'), row.index)
-                  }
-                >
-                  <p className="text-sm">
-                    {truncateEthAddress(row.getValue('processedBy'))}
-                  </p>
-                  <span className="ml-1">
-                    {copyAction === row.index ? (
-                      <CopyCheck size={20} strokeWidth={1.5} />
-                    ) : (
-                      <Copy size={20} strokeWidth={1.5} />
-                    )}
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary" side="bottom">
-                  <p className="text-xs font-medium">
-                    {copyAction === row.index ? 'copied' : 'click to copy'}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : (
-            '-'
-          )}
-        </div>
-      ),
     },
-    // {
-    //   accessorKey: 'voucherId',
-    //   header: ({ column }) => {
-    //     return (
-    //       <Button
-    //         variant="ghost"
-    //         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-    //       >
-    //         VoucherId
-    //         <ArrowUpDown className="ml-2 h-4 w-4" />
-    //       </Button>
-    //     );
-    //   },
-    //   cell: ({ row }) => (
-    //     <div className="lowercase">
-    //       {truncateEthAddress(row.getValue('voucherId'))}
-    //     </div>
-    //   ),
-    // },
     {
       accessorKey: 'timeStamp',
       header: ({ column }) => {
@@ -122,45 +110,41 @@ export const useTableColumns = () => {
     },
     {
       accessorKey: 'txHash',
-      header: ({ column }) => {
+      header: 'TxHash',
+      cell: ({ row }) => {
+        const columnKey = 'txHash';
+        const cellKey = `${row.index}-${columnKey}`;
         return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            TxHash
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
+          <div className="lowercase">
+            {row.getValue('txHash') ? (
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger
+                    className="flex gap-3 cursor-pointer"
+                    onClick={() =>
+                      clickToCopy(row.getValue('txHash'), row.index, columnKey)
+                    }
+                  >
+                    <p>{truncateEthAddress(row.getValue('txHash'))}</p>
+                    {copiedCells === cellKey ? (
+                      <CopyCheck size={20} strokeWidth={1.5} />
+                    ) : (
+                      <Copy size={20} strokeWidth={1.5} />
+                    )}
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-secondary" side="bottom">
+                    <p className="text-xs font-medium">
+                      {copiedCells === cellKey ? 'Copied' : 'Click to copy'}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              '-'
+            )}
+          </div>
         );
       },
-      cell: ({ row }) => (
-        <div className="lowercase">
-          {row.getValue('txHash') ? (
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger
-                  className="flex gap-3 cursor-pointer"
-                  onClick={() => clickToCopy(row.getValue('txHash'), row.index)}
-                >
-                  <p>{truncateEthAddress(row.getValue('txHash'))}</p>
-                  {copyAction === row.index ? (
-                    <CopyCheck size={20} strokeWidth={1.5} />
-                  ) : (
-                    <Copy size={20} strokeWidth={1.5} />
-                  )}
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary" side="bottom">
-                  <p className="text-xs font-medium">
-                    {copyAction === row.index ? 'copied' : 'click to copy'}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : (
-            '-'
-          )}
-        </div>
-      ),
     },
   ];
   return columns;

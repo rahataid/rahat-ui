@@ -21,7 +21,7 @@ export default function CambodiaTable({ table, tableHeight, loading }: IProps) {
   return (
     <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
       <TableComponent>
-        <TableHeader>
+        <TableHeader className="sticky top-0 bg-card">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {

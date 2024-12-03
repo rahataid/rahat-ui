@@ -36,10 +36,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { useAssignVendorToProject, useProjectList } from '@rahat-ui/query';
+import {
+  useAssignVendorToProject,
+  useProjectList,
+  useRemoveVendor,
+} from '@rahat-ui/query';
 import TooltipComponent from '../../components/tooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useRouter } from 'next/navigation';
+import DeleteButton from '../../components/delete.btn';
+import { toast } from 'react-toastify';
 
 type IProps = {
   vendorsDetail: any;
@@ -61,6 +67,8 @@ export default function VendorsDetailSplitView({
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
   const projectModal = useBoolean();
 
+  const removeVendor = useRemoveVendor();
+
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(true);
@@ -79,17 +87,31 @@ export default function VendorsDetailSplitView({
     projectModal.onTrue();
   };
 
+  const deleteVendor = async () => {
+    if (vendorsDetail?.status === 'Assigned')
+      return toast.warning('Assigned vendor cannot be deleted.');
+
+    await removeVendor.mutateAsync(vendorsDetail.id);
+    closeSecondPanel();
+  };
+
   return (
-    <>
+    <div className="h-full border-l">
       <div className="flex justify-between items-center p-4 border-b">
         <div className="flex space-x-4">
-          <TooltipComponent
-            handleOnClick={() => {}}
-            Icon={Trash2}
-            tip="Delete"
-            iconStyle="text-red-600"
+          <DeleteButton
+            className="border-none p-0 shadow-none"
+            name="vendor"
+            handleContinueClick={deleteVendor}
           />
-          <TooltipComponent handleOnClick={() => {}} Icon={Pencil} tip="Edit" />
+
+          <TooltipComponent
+            handleOnClick={() =>
+              router.push(`/vendors/${vendorsDetail?.id}/edit`)
+            }
+            Icon={Pencil}
+            tip="Edit"
+          />
           {vendorsDetail?.projectName === 'N/A' && (
             <TooltipComponent
               handleOnClick={assignVoucher}
@@ -123,9 +145,9 @@ export default function VendorsDetailSplitView({
               {vendorsDetail?.name}
             </h1>
             <div className="flex space-x-4 items-center">
-              <Badge>{vendorsDetail?.status ?? 'status'}</Badge>
+              <Badge>{vendorsDetail?.status ?? 'N/A'}</Badge>
               <p className="text-base text-muted-foreground">
-                {vendorsDetail?.gender ?? 'gender'}
+                {vendorsDetail?.gender ?? 'N/A'}
               </p>
             </div>
           </div>
@@ -205,14 +227,17 @@ export default function VendorsDetailSplitView({
                 <SelectValue placeholder="--Select--" />
               </SelectTrigger>
               <SelectContent>
-                {projectList.data?.data.length &&
+                {projectList.data?.data.length ? (
                   projectList.data?.data.map((project: any) => {
                     return (
                       <SelectItem key={project.id} value={project.uuid}>
-                        {project.name}
+                        {project?.name}
                       </SelectItem>
                     );
-                  })}
+                  })
+                ) : (
+                  <p className="text-xs">No project found</p>
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -235,6 +260,6 @@ export default function VendorsDetailSplitView({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }

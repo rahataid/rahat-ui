@@ -39,7 +39,7 @@ export default function TransactionsView() {
     if (data) return data;
     else return [];
   }, [data]);
-  console.log(tableData);
+
   const columns = useTableColumns();
   const table = useReactTable({
     data: tableData || [],

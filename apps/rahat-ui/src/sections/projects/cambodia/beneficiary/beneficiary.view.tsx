@@ -51,8 +51,14 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...(debouncedSearch as any),
   });
-  console.log(data);
 
+  const processedData = {
+    ...data,
+    data: data?.data.map((benef) => ({
+      ...benef,
+      name: benef?.piiData?.name,
+    })),
+  };
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
@@ -67,7 +73,7 @@ export default function BeneficiaryView() {
   const columns = useCambodiaBeneficiaryTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: data?.data || [],
+    data: processedData?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -123,7 +129,7 @@ export default function BeneficiaryView() {
             <div className="flex justify-between space-x-2 w-[40%]">
               <SelectComponent
                 name="Type"
-                options={['ALL', 'Sale', 'Lead', 'Home_Visit']}
+                options={['ALL', 'Sale', 'Lead']}
                 onChange={(value) =>
                   handleFilterChange({
                     target: { name: 'type', value },
@@ -146,9 +152,11 @@ export default function BeneficiaryView() {
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}
-        meta={(data?.response?.meta as any) || { total: 0, currentPage: 0 }}
+        meta={
+          (processedData?.response?.meta as any) || { total: 0, currentPage: 0 }
+        }
         perPage={pagination?.perPage}
-        total={data?.response?.meta?.total || 0}
+        total={processedData?.response?.meta?.total || 0}
       />
     </>
   );

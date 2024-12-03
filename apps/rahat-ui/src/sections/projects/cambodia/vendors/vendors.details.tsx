@@ -15,7 +15,7 @@ import React from 'react';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { DialogComponent } from '../../components/dialog';
+import { DialogComponent } from '../../../../components/dialog';
 import { useCambodiaVendorGet, useCambodiaVendorsStats } from '@rahat-ui/query';
 
 export default function VendorsDetail() {

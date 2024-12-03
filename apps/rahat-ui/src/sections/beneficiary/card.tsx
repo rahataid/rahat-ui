@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import ConfirmDialog from '../../components/dialog';
+import ConfirmDeleteDialog from '../../components/confirm.delete.dialog';
 import { FilePenLine, Trash2 } from 'lucide-react';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { IBeneficiaryItem } from '../../types/beneficiary';
@@ -60,7 +60,7 @@ export default function Card({
                   <DialogTrigger asChild className="my-2 ml-4">
                     <Trash2 size={20} stroke-width={1.5} />
                   </DialogTrigger>
-                  <ConfirmDialog name="user" />
+                  <ConfirmDeleteDialog name="user" />
                 </Dialog>
               </TooltipTrigger>
               <TooltipContent className="bg-secondary ">

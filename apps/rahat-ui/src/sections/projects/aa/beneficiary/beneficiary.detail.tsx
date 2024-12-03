@@ -70,6 +70,7 @@ export default function BeneficiaryDetail({
   const columns = useBankTransfersTableColumns();
 
   const table = useReactTable({
+    manualPagination: true,
     data: bankTransfers || [],
     columns,
     getCoreRowModel: getCoreRowModel(),

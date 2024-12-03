@@ -25,6 +25,10 @@ export default function VendorDetail() {
   const router = useRouter();
   const { data: vendorDetail, isLoading } = useGetVendor(id);
   const vendor = React.useMemo(() => vendorDetail?.data, [vendorDetail]);
+  const isVendorAssigned = React.useMemo(
+    () => vendor?.projects?.length,
+    [vendor],
+  );
   const removeVendor = useRemoveVendor();
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<string>();
@@ -35,7 +39,7 @@ export default function VendorDetail() {
   };
 
   const deleteVendor = async () => {
-    if (vendor?.status === 'Assigned')
+    if (isVendorAssigned)
       return toast.warning('Assigned vendor cannot be deleted.');
     await removeVendor.mutateAsync(id);
     router.push('/vendors');
@@ -73,12 +77,12 @@ export default function VendorDetail() {
           path="/vendors"
         />
         <div className="flex space-x-2">
-          <CoreBtnComponent
+          {/* <CoreBtnComponent
             className="text-primary bg-sky-50"
             name="Assign to Project"
             Icon={FolderPlus}
-            handleClick={() => {}}
-          />
+            handleClick={() => { }}
+          /> */}
           <CoreBtnComponent
             name="Edit"
             Icon={Pencil}
@@ -86,7 +90,11 @@ export default function VendorDetail() {
           />
           <AlertDialog>
             <AlertDialogTrigger className="flex items-center">
-              <Button variant="secondary" className="text-red-500 bg-red-100">
+              <Button
+                variant="secondary"
+                className="text-red-500 bg-red-100"
+                disabled={isVendorAssigned}
+              >
                 <Trash2 className="mr-1" size={18} strokeWidth={1.5} />
                 Delete
               </Button>

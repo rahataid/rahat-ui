@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { UUID } from 'crypto';
 import {
@@ -59,6 +59,10 @@ export default function VendorsDetailSplitView({
   const router = useRouter();
   const [walletAddressCopied, setWalletAddressCopied] =
     useState<boolean>(false);
+  const isVendorAssigned = React.useMemo(
+    () => vendorsDetail?.status === 'Assigned',
+    [vendorsDetail],
+  );
 
   const projectList = useProjectList({});
 
@@ -88,7 +92,7 @@ export default function VendorsDetailSplitView({
   };
 
   const deleteVendor = async () => {
-    if (vendorsDetail?.status === 'Assigned')
+    if (isVendorAssigned)
       return toast.warning('Assigned vendor cannot be deleted.');
 
     await removeVendor.mutateAsync(vendorsDetail.id);
@@ -100,7 +104,9 @@ export default function VendorsDetailSplitView({
       <div className="flex justify-between items-center p-4 border-b">
         <div className="flex space-x-4">
           <DeleteButton
-            className="border-none p-0 shadow-none"
+            className={`border-none p-0 shadow-none ${
+              isVendorAssigned ? 'hidden' : ''
+            }`}
             name="vendor"
             handleContinueClick={deleteVendor}
           />

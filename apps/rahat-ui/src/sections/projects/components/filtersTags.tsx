@@ -1,5 +1,5 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { RxCrossCircled } from 'react-icons/rx';
 import { format } from 'date-fns';
 import {
@@ -25,7 +25,7 @@ const FiltersTags = ({ filters, setFilters, total }: any) => {
           <div className="flex gap-4 items-center">
             {filterArray.map((filter) => (
               <div className="flex items-center gap-2">
-                {filter.key}:{' '}
+                {filter?.key.charAt(0).toUpperCase() + filter?.key.slice(1)}:{' '}
                 <span
                   onClick={() =>
                     handleFilterArrayChange(filter.key, filter.value)

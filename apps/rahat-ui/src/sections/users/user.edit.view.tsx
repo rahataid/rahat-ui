@@ -90,7 +90,7 @@ export default function EditUser() {
       uuid: id,
       data,
     });
-    Swal.fire('Users Updated Successfully', '', 'success');
+    Swal.fire('User Updated Successfully', '', 'success');
     router.push('/users');
   };
 

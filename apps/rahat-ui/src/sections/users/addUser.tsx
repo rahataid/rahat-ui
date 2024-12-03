@@ -43,7 +43,7 @@ import Swal from 'sweetalert2';
 const FormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 4 character' }),
   email: z.string().email(),
-  gender: z.string(),
+  gender: z.string().min(1, { message: 'Please select gender' }),
   roles: z.array(z.string()).length(1, { message: 'Please select role' }),
   phone: z.string(),
   wallet: z

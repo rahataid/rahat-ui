@@ -9,13 +9,17 @@ import { useElkenyaVendorsTransactionsTableColumns } from './columns/use.vendors
 import React from 'react';
 import ElkenyaTable from '../table.component';
 
-export default function VendorsTransactionsHistory(
-  tableData: any,
-  loading?: boolean,
-) {
-  const { id } = useParams() as { id: UUID };
+export default function VendorsTransactionsHistory({
+  tableData,
+  loading,
+}: {
+  tableData: any;
+  loading?: boolean;
+}) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+
+  console.log('loading', tableData);
 
   const columns = useElkenyaVendorsTransactionsTableColumns();
   const table = useReactTable({

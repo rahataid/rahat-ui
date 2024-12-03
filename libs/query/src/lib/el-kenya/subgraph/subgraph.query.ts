@@ -5,7 +5,7 @@ import { useRSQuery } from '@rumsan/react-query';
 import {
   KenyaBeneficiaryTransactions,
   KenyaVendorTransactions,
-  KenyaProjectTransactions
+  KenyaProjectTransactions,
 } from './graph.query';
 import { useEffect } from 'react';
 import { useKenyaProjectSubgraphStore } from './stores/kenya-project.store';
@@ -22,7 +22,10 @@ export const useKenyaProjectTransactions = () => {
     {
       queryKey: ['ProjectTransactions'],
       queryFn: async () => {
-        const { data } = await subgraphClient.query(KenyaProjectTransactions, {});
+        const { data } = await subgraphClient.query(
+          KenyaProjectTransactions,
+          {},
+        );
         const transactionsType = [
           'claimCreateds',
           'claimProcesseds',
@@ -30,7 +33,7 @@ export const useKenyaProjectTransactions = () => {
           'offlineClaimProcesseds',
           'otpAddeds',
           'otpVerifieds',
-          'walkInBeneficiaryAddeds'
+          'walkInBeneficiaryAddeds',
         ];
         const newData = transactionsType.reduce((acc, type) => {
           const transactions = data[type] || [];
@@ -63,10 +66,18 @@ export const useKenyaBeneficiaryTransactions = (beneficiaryAddress: string) => {
     {
       queryKey: ['beneficiaryTxn', beneficiaryAddress],
       queryFn: async () => {
-        const { data } = await subgraphClient.query(KenyaBeneficiaryTransactions, {
-          beneficiaryAddress,
-        });
-        const transactionsType = ['tokensAllocateds', 'claimCreateds',"otpAddeds","claimProcesseds"];
+        const { data } = await subgraphClient.query(
+          KenyaBeneficiaryTransactions,
+          {
+            beneficiaryAddress,
+          },
+        );
+        const transactionsType = [
+          'tokensAllocateds',
+          'claimCreateds',
+          'otpAddeds',
+          'claimProcesseds',
+        ];
         const newData = transactionsType.reduce((acc, type) => {
           const transactions = data[type] || [];
           return acc.concat(transactions.map(formatTransaction));
@@ -83,16 +94,20 @@ export const useKenyaBeneficiaryTransactions = (beneficiaryAddress: string) => {
 export const useKenyaVendorTransactions = (vendorAddress: string) => {
   const { subgraphClient } = useKenyaSubgraph();
   const { queryClient } = useRSQuery();
-  
 
   const query = useQuery(
     {
       queryKey: ['VendorTxn', vendorAddress],
       queryFn: async () => {
         const { data } = await subgraphClient.query(KenyaVendorTransactions, {
-          vendor: vendorAddress,
+          vendor: vendorAddress.trim(),
         });
-        const transactionType = ['claimCreateds', 'claimProcesseds','offlineClaimProcesseds','walkInBeneficiaryAddeds'];
+        const transactionType = [
+          'claimCreateds',
+          'claimProcesseds',
+          'offlineClaimProcesseds',
+          'walkInBeneficiaryAddeds',
+        ];
 
         const formattedData = transactionType.reduce((acc, type) => {
           const transactions = data[type] || [];
@@ -107,5 +122,3 @@ export const useKenyaVendorTransactions = (vendorAddress: string) => {
 
   return query;
 };
-
-

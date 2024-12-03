@@ -35,11 +35,11 @@ export default function VendorsDetail() {
     id as UUID,
     Number(vendorId),
   );
-  const { data: vendorTransactions, isLoading } = useKenyaVendorTransactions(
-    vendorId as string,
-  );
 
   const removeVendor = useRemoveVendor();
+
+  const { data: vendorTransactions, isFetching: isLoading } =
+    useKenyaVendorTransactions(vendorWallet);
 
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<string>();

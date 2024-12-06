@@ -21,7 +21,7 @@ import EditButton from 'apps/rahat-ui/src/components/edit.btn';
 import DeleteButton from 'apps/rahat-ui/src/components/delete.btn';
 
 export default function VendorsDetail() {
-  const { id } = useParams();
+  const { id } = useParams() as { id: UUID };
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -29,10 +29,10 @@ export default function VendorsDetail() {
   const name = searchParams.get('name');
   const vendorWallet = searchParams.get('walletAddress') || '';
   const vendorId = searchParams.get('vendorId');
-  const vendorUUID = searchParams.get('vendorUUID');
+  const vendorUUID = searchParams.get('vendorUUID') as UUID;
 
   const { data, isLoading: isVendorLoading } = useGetOfflineSingleVendor(
-    id as UUID,
+    id,
     Number(vendorId),
   );
 
@@ -50,7 +50,7 @@ export default function VendorsDetail() {
   };
 
   const deleteVendor = async () => {
-    await removeVendor.mutateAsync(vendorUUID as UUID);
+    await removeVendor.mutateAsync({ vendorId: vendorUUID, projectId: id });
     router.push(`/projects/el-kenya/${id}/vendors`);
   };
   return (

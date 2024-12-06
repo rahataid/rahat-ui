@@ -95,7 +95,7 @@ export default function VendorsDetailSplitView({
     if (isVendorAssigned)
       return toast.warning('Assigned vendor cannot be deleted.');
 
-    await removeVendor.mutateAsync(vendorsDetail.id);
+    await removeVendor.mutateAsync({ vendorId: vendorsDetail.id });
     closeSecondPanel();
   };
 

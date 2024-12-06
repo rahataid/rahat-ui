@@ -90,7 +90,7 @@ export function ProjectNav({
               >
                 Home
               </Link>
-              <ThemeSwitch />
+              {/* <ThemeSwitch /> */}
               <Badge
                 className="mt-2 rounded bg-primary  text-white hover:border hover:cursor-pointer w-full p-1 flex justify-center"
                 onClick={handleLogout}

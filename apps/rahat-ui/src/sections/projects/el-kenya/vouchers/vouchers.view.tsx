@@ -40,6 +40,18 @@ export default function VouchersView() {
     (i: any) => i.name === 'REIMBURSEMENT_STATS',
   )?.data;
 
+  const REDEMPTION_RATE = kenyaStats?.data?.find(
+    (i: any) => i.name === 'REDEMPTION_RATE',
+  )?.data;
+
+  const glassRequired = kenyaStats?.data?.find(
+    (i: any) => i.name === 'NOT_REDEEM_STATS',
+  )?.data?.glassesRequired||0;
+
+  const glassNotRequired = kenyaStats?.data?.find(
+    (i: any) => i.name === 'NOT_REDEEM_STATS',
+  )?.data?.glassesNotRequired||0;
+
   const REDEMPTION_STATS = kenyaStats?.data?.find(
     (i: any) => i.name === 'REDEMPTION_STATS',
   )?.data;
@@ -112,25 +124,30 @@ export default function VouchersView() {
   }, [weeklyRedemptionsStats]);
 
   const cardData = [
-    {
-      title: 'Total Voucher',
-      icon: 'Ticket',
-      total: tokenBalance?.toString() ?? '-',
-    },
-    {
-      title: 'Voucher Redeemed',
-      icon: 'Ticket',
-      total: voucherRedeemedCount ?? '-',
-    },
-    {
-      title: 'Voucher Reimbursed',
-      icon: 'Ticket',
-      total: voucherReimbursedCount ?? '-',
-    },
+    // {
+    //   title: 'Total Voucher',
+    //   icon: 'Ticket',
+    //   total: tokenBalance?.toString() ?? '-',
+    // },
     {
       title: 'Voucher Assigned',
       icon: 'Ticket',
       total: tokenAllocated?.toString() ?? '-',
+    },
+    {
+      title: 'Beneficiary Voucher Redeemed',
+      icon: 'Ticket',
+      total: voucherRedeemedCount ?? '-',
+    },
+    {
+      title: 'Vendor Voucher Claimed',
+      icon: 'Ticket',
+      total: voucherReimbursedCount ?? '-',
+    },
+    {
+      title: 'Voucher Redeemption Rate',
+      icon: 'Ticket',
+      total: REDEMPTION_RATE ?? '-',
     },
   ];
 
@@ -169,7 +186,7 @@ export default function VouchersView() {
               );
             })}
           </div>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 gap-2 mb-4">
             <div className="bg-card border rounded-md p-4 shadow">
               <p className="text-md font-medium mb-4">Total Vouchers</p>
               <div className="flex justify-center">
@@ -182,14 +199,15 @@ export default function VouchersView() {
                 />
               </div>
             </div>
-            <div className="col-span-3 border rounded-md bg-card p-4 shadow">
-              <p className="text-md font-medium mb-4">Total Vouchers</p>
+            <div className="bg-card border rounded-md p-4 shadow">
+              <p className="text-md font-medium mb-4">Not Reedemed Vouchers</p>
               <div className="flex justify-center">
-                <ChartColumnStacked
-                  series={stackedColumnData?.series}
-                  categories={stackedColumnData?.categories as string[]}
-                  stacked
-                  custom
+                <ChartDonut
+                  series={[glassRequired, glassNotRequired]}
+                  labels={['Glasses Required', 'Glasses Not Required']}
+                  donutSize="70%"
+                  width={300}
+                  height={320}
                 />
               </div>
             </div>
@@ -205,6 +223,19 @@ export default function VouchersView() {
                 </div>
               </div>
             </div> */}
+          </div>
+          <div>
+          <div className="col-span-3 border rounded-md bg-card p-4 shadow">
+              <p className="text-md font-medium mb-4">Total Vouchers</p>
+              <div className="flex justify-center">
+                <ChartColumnStacked
+                  series={stackedColumnData?.series}
+                  categories={stackedColumnData?.categories as string[]}
+                  stacked
+                  custom
+                />
+              </div>
+            </div>
           </div>
         </ScrollArea>
       </div>

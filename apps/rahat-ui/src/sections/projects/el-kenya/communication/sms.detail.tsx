@@ -65,7 +65,11 @@ export default function CommunicationView() {
       icon: 'MessageSquare',
       total: data?.data?.length || 0,
     },
-    { title: 'Beneficiaries', icon: 'Users', total: data?.data?.length || 0 },
+    {
+      title: 'Beneficiaries',
+      icon: 'Users',
+      total: campginData?.beneficiaryCount || 0,
+    },
     {
       title: 'Failed Message Delivery',
       icon: 'MessageSquare',

@@ -42,7 +42,7 @@ export default function AddSMSForm() {
 
   const createCampaign = useCreateCampaign(id as UUID);
   // const { data: transportData } = useListRpTransport(id as UUID);
-  const { data: benificiaryGroups } = useFindAllBeneficiaryGroups(id as UUID);
+  const { data: benificiaryGroups } = useFindAllBeneficiaryGroups(id as UUID, { page: 1, perPage: 100 });
   // const transportId = transportData?.find(
   //   (transport) => transport.name === 'Prabhu SMS',
   // )?.cuid;

@@ -134,13 +134,13 @@ export default function CHWView() {
             className="rounded-lg border-solid "
           />
           <DataCard
-            title="Leads Provided"
+            title="Villagers Referred"
             number={stats?.data?.leads}
             Icon={Users}
             className="rounded-lg border-solid"
           />
           <DataCard
-            title="Leads Converted"
+            title="Eye Checkup in VC"
             number={stats?.data?.leads_converted}
             Icon={Users}
             className="rounded-lg border-solid"

@@ -18,12 +18,12 @@ import { useTableColumns } from './use.table.columns';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 const cardData = [
-  { title: 'Total Message Sent', icon: 'MessageSquareText', total: 1439 },
-  { title: 'Failed Message Delivery', icon: 'MessageSquareText', total: 1439 },
+  { title: 'Total Message Sent', icon: 'MessageSquareText', total: 0 },
+  { title: 'Failed Message Delivery', icon: 'MessageSquareText', total: 0 },
   {
     title: 'Successfull Messages Delivered',
     icon: 'CircleCheck',
-    total: 1439,
+    total: 0,
   },
 ];
 

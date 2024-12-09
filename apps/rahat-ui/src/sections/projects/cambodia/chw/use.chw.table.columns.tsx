@@ -8,7 +8,7 @@ export const useCambodiaChwTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
+      header: 'Health Worker Name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
@@ -16,24 +16,20 @@ export const useCambodiaChwTableColumns = () => {
       header: 'Kobo Username',
       cell: ({ row }) => <div>{row.getValue('koboUsername')}</div>,
     },
-    // {
-    //   accessorKey: 'home visit',
-    //   header: 'Home Visit',
-    //   cell: ({ row }) => <div> {row?.original?._count?.HOME_VISIT} </div>,
-    // },
+
     {
       accessorKey: 'Sales',
-      header: 'Sales Count',
+      header: 'Sales',
       cell: ({ row }) => <div> {row?.original?._count?.SALE} </div>,
     },
     {
-      accessorKey: 'leads Provided',
-      header: 'Leads Provided',
+      accessorKey: 'villagers referred',
+      header: 'Villagers Referred',
       cell: ({ row }) => <div> {row?.original?._count?.LEAD} </div>,
     },
     {
-      accessorKey: 'lead Conversion',
-      header: 'Leads Converted',
+      accessorKey: 'eye checkup',
+      header: 'Eye Checkup',
       cell: ({ row }) => <div> {row?.original?._count?.LeadConversions} </div>,
     },
     // {

@@ -40,7 +40,7 @@ export default function ChwDetail() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-7">
         <DataCard
-          title="Sales Count"
+          title="Sales by CHW"
           number={stats?.data?.sales}
           Icon={CoinsIcon}
           className="rounded-lg border-solid "
@@ -90,10 +90,6 @@ export default function ChwDetail() {
         <div>
           <h1 className="text-md text-muted-foreground">UserName</h1>
           <p className="font-medium">{data?.data?.koboUsername}</p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Gender</h1>
-          <p className="font-medium">{data?.data?.gender}</p>
         </div>
 
         {/* <div>

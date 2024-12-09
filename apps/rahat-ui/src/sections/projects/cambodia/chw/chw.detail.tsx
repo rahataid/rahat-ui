@@ -46,13 +46,13 @@ export default function ChwDetail() {
           className="rounded-lg border-solid "
         />
         <DataCard
-          title="Leads Provided"
+          title="Villagers Referred"
           number={stats?.data?.leads}
           Icon={Users2Icon}
           className="rounded-lg border-solid"
         />
         <DataCard
-          title="Lead Converted"
+          title="Eye Checkup in VC"
           number={stats?.data?.leads_converted}
           Icon={Ticket}
           className="rounded-lg border-solid "
@@ -88,13 +88,14 @@ export default function ChwDetail() {
           <p className="font-medium">{data?.data?.phone}</p>
         </div>
         <div>
+          <h1 className="text-md text-muted-foreground">UserName</h1>
+          <p className="font-medium">{data?.data?.koboUsername}</p>
+        </div>
+        <div>
           <h1 className="text-md text-muted-foreground">Gender</h1>
           <p className="font-medium">{data?.data?.gender}</p>
         </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Location</h1>
-          <p className="font-medium">{data?.data?.location}</p>
-        </div>
+
         {/* <div>
           <h1 className="text-md text-muted-foreground">Beneficiary Type</h1>
           <p className="font-medium">

@@ -11,7 +11,7 @@ on:
 env:
   CI: false
   env_dev: ${{ secrets.ENV_DEV }}
-  env_npmrc: ${{ secrets.ENV_NPMRC }}
+  # env_npmrc: ${{ secrets.ENV_NPMRC }}
 
 jobs:
   rahat-ui:
@@ -25,7 +25,6 @@ jobs:
       - name: import env file
         run: |
           touch ./.env && echo "$env_dev" >> ./.env && \
-          touch ./.npmrc && echo "$env_npmrc" >> ./.npmrc
 
       - uses: actions/setup-node@v3
         with:
@@ -71,9 +70,8 @@ jobs:
 
       - name: import env file
         run: |
-          touch ./.env && echo "$env_dev" >> ./.env && \
-          touch ./.npmrc && echo "$env_npmrc" >> ./.npmrc
-
+          touch ./.env && echo "$env_dev" >> ./.env
+          
       - uses: actions/setup-node@v3
         with:
           node-version: 20.10.0

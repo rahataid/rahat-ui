@@ -129,7 +129,7 @@ export default function CommissionPayoutView() {
                   iconStyle="bg-white text-black"
                   title={
                     item?.name == 'TOTAL_LEAD_CONVERTED'
-                      ? 'Eye Checkup In VC'
+                      ? 'Total Eye Checkup In VC'
                       : toTitleCase(item?.name)
                   }
                   number={

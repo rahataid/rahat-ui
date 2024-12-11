@@ -74,13 +74,6 @@ export const useHealthWorkersTableColumns = () => {
         </>
       ),
     },
-    {
-      accessorKey: 'gender',
-      header: 'Gender',
-      cell: ({ row }) => {
-        return <div>{row?.original?.gender}</div>;
-      },
-    },
   ];
   return columns;
 };

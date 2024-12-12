@@ -108,8 +108,8 @@ export default function CHWView() {
       healthWorkerName: item.name,
       koboUserName: item.koboUsername,
       sales: item._count.SALE,
-      leads: item._count.LEAD,
-      leadsConverted: item._count.LeadConversions,
+      villagersReferred: item._count.LEAD,
+      eyeCheckup: item._count.LeadConversions,
       visionCenter: item.vendor.name,
     }));
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);

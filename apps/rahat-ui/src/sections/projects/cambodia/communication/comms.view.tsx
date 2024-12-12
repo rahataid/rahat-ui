@@ -48,19 +48,12 @@ export default function CommunicationView() {
   });
   const tableData = useMemo(() => {
     if (data?.data) {
-      return data?.data.map((log) => ({
-        ...log,
-        to:
-          (Array.isArray(log?.details?.responses) &&
-            (log?.details?.responses[0]?.mobile?.mobile ||
-              log?.details?.responses[0]?.mobile)) ||
-          (Array.isArray(log?.details?.bulkResponse) &&
-            log?.details?.bulkResponse[0]?.mobileNumber),
-      }));
+      return data?.data;
     } else {
       return [];
     }
   }, [data?.data]);
+
   const columns = useTableColumns();
   const table = useReactTable({
     manualPagination: true,

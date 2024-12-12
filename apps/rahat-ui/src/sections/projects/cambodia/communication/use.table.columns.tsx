@@ -4,9 +4,9 @@ import { ColumnDef } from '@tanstack/react-table';
 export const useTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'to',
+      accessorKey: 'address',
       header: 'Send To',
-      cell: ({ row }) => <div>{row.original.to}</div>,
+      cell: ({ row }) => <div>{row.original.address}</div>,
     },
     {
       accessorKey: 'date',

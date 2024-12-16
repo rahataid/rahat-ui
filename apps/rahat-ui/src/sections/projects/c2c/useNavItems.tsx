@@ -67,44 +67,44 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
         },
       ],
     },
-    {
-      title: 'Actions',
-      children: [
-        {
-          component: (
-            <>
-              <DepositTokenModal handleModal={depositTokenModal} />
-            </>
-          ),
-          title: 'Deposit Token',
-        },
-        {
-          icon: <PencilRuler size={18} strokeWidth={1.5} />,
-          title: 'Edit Project',
-          path: `/projects/c2c/${id}/edit`,
-        },
-        ...(pathname.includes('/projects/c2c/') &&
-        pathname.includes('/campaigns')
-          ? [
-              {
-                title: 'Add Communication',
-                path: `/projects/c2c/${id}/campaigns/add`,
-                icon: <Plus size={18} strokeWidth={1.5} />,
-              },
-            ]
-          : []),
-        ...(pathname.includes('/projects/c2c/') &&
-        pathname.includes('/grievance')
-          ? [
-              {
-                title: 'Add grievance',
-                path: `/projects/c2c/${id}/grievance/add`,
-                icon: <FilePlus2 size={18} strokeWidth={1.5} />,
-              },
-            ]
-          : []),
-      ],
-    },
+    // {
+    //   title: 'Actions',
+    //   children: [
+    //     {
+    //       component: (
+    //         <>
+    //           <DepositTokenModal handleModal={depositTokenModal} />
+    //         </>
+    //       ),
+    //       title: 'Deposit Token',
+    //     },
+    //     {
+    //       icon: <PencilRuler size={18} strokeWidth={1.5} />,
+    //       title: 'Edit Project',
+    //       path: `/projects/c2c/${id}/edit`,
+    //     },
+    //     ...(pathname.includes('/projects/c2c/') &&
+    //     pathname.includes('/campaigns')
+    //       ? [
+    //           {
+    //             title: 'Add Communication',
+    //             path: `/projects/c2c/${id}/campaigns/add`,
+    //             icon: <Plus size={18} strokeWidth={1.5} />,
+    //           },
+    //         ]
+    //       : []),
+    //     ...(pathname.includes('/projects/c2c/') &&
+    //     pathname.includes('/grievance')
+    //       ? [
+    //           {
+    //             title: 'Add grievance',
+    //             path: `/projects/c2c/${id}/grievance/add`,
+    //             icon: <FilePlus2 size={18} strokeWidth={1.5} />,
+    //           },
+    //         ]
+    //       : []),
+    //   ],
+    // },
   ];
 
   return {

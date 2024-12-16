@@ -38,8 +38,8 @@ export default function RootLayout({
                       <ThemeProvider
                         attribute="class"
                         defaultTheme="light"
-                      // enableSystem
-                      // disableTransitionOnChange
+                        // enableSystem
+                        // disableTransitionOnChange
                       >
                         <main className={GeistSans.className}>{children}</main>
                         <ToastContainer />
@@ -48,7 +48,7 @@ export default function RootLayout({
                     </SecondPanelProvider>
                   </ServiceProvider>
                 </CommunicationQueryProvider>
-              </ NewCommunicationQueryProvider>
+              </NewCommunicationQueryProvider>
             </RSQueryProvider>
           </QueryProvider>
         </Wagmi>

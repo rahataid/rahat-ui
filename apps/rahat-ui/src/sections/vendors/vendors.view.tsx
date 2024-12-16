@@ -14,7 +14,7 @@ import {
 import {
   useVendorList,
   usePagination,
-  useAssignVendorToProject
+  useAssignVendorToProject,
 } from '@rahat-ui/query';
 import { useBoolean } from '../../hooks/use-boolean';
 import { UUID } from 'crypto';
@@ -23,16 +23,10 @@ import VendorsTable from './vendors.list.table';
 import CustomPagination from '../../components/customPagination';
 
 function VendorsView() {
-
-  const {
-    pagination,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-  } = usePagination();
+  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
 
   const projectModal = useBoolean();
-  const [refetch, setRefetch] = React.useState(false)
+  const [refetch, setRefetch] = React.useState(false);
 
   const addVendor = useAssignVendorToProject();
   const { data: vendorData } = useVendorList(pagination, refetch);
@@ -43,8 +37,8 @@ function VendorsView() {
     setSelectedRow(row);
     projectModal.onTrue();
   };
- 
-  console.log(refetch)
+
+  console.log(refetch);
 
   const handleAssignProject = async () => {
     if (!selectedProject) return alert('Please select a project');
@@ -53,7 +47,7 @@ function VendorsView() {
       projectUUID: selectedProject,
     });
     projectModal.onFalse();
-    setRefetch(!refetch)
+    setRefetch(!refetch);
   };
   const columns = useTableColumns(handleAssignModalClick);
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -87,14 +81,20 @@ function VendorsView() {
 
   return (
     <>
-      <VendorsTable
-        table={table}
-        selectedProject={selectedProject}
-        setSelectedProject={setSelectedProject}
-        handleAssignProject={handleAssignProject}
-        projectModal={projectModal}
-        selectedRow={selectedRow}
-      />
+      <div className="p-4">
+        <div className="mb-4">
+          <h1 className="font-semibold text-2xl text-label">Vendors</h1>
+          <p className="text-sub-label">Here is the list of all the vendors</p>
+        </div>
+        <VendorsTable
+          table={table}
+          selectedProject={selectedProject}
+          setSelectedProject={setSelectedProject}
+          handleAssignProject={handleAssignProject}
+          projectModal={projectModal}
+          selectedRow={selectedRow}
+        />
+      </div>
       <CustomPagination
         currentPage={pagination.page}
         handleNextPage={setNextPage}

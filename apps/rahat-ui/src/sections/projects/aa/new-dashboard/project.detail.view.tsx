@@ -13,8 +13,8 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { CloudDownload } from 'lucide-react';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import AddFundsModal from '../addFundsModal';
-import EditButton from '../../components/edit.btn';
-import DeleteButton from '../../components/delete.btn';
+import EditButton from '../../../../components/edit.btn';
+import DeleteButton from '../../../../components/delete.btn';
 import ProjectInfoCard from './project.info.card';
 import { CarouselDemo } from '../../components/carousel.demo';
 import SimplePhaseCardContainer from './simple.phase.cards.container';
@@ -32,8 +32,8 @@ export default function ProjectDetails() {
   const { phasesStats } = useStatsStore();
   const { data: allStats, isLoading } = useAllStats(projectId);
 
-
-  const {data: commsStats, isLoading: isLoadingCommsStats} = useCommsStats(projectId)
+  const { data: commsStats, isLoading: isLoadingCommsStats } =
+    useCommsStats(projectId);
 
   const fundsModal = useBoolean();
   const onDelete = () => {};

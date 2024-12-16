@@ -50,7 +50,7 @@ const Pagination = ({
           </SelectContent>
         </Select>
       </div>
-      <div className="text-sm text-muted-foreground">
+      <div className="text-sm ">
         Page {pageIndex + 1} of {pageCount}
       </div>
       <div className="space-x-2">

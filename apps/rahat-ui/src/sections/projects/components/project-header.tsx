@@ -9,11 +9,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuPortal,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -53,7 +50,7 @@ export function ProjectNav({
   };
 
   return (
-    <div className="flex justify-between pl-2 pr-6 py-2 sticky top-0 z-50 bg-blur backdrop-blur border-b">
+    <div className="h-14 flex justify-between pl-2 pr-6 py-2 z-50 bg-card border-b">
       {component}
       <div className="flex gap-4 items-center">
         <ConnectWallet />
@@ -93,7 +90,7 @@ export function ProjectNav({
               >
                 Home
               </Link>
-              <ThemeSwitch />
+              {/* <ThemeSwitch /> */}
               <Badge
                 className="mt-2 rounded bg-primary  text-white hover:border hover:cursor-pointer w-full p-1 flex justify-center"
                 onClick={handleLogout}

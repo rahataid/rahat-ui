@@ -44,13 +44,13 @@ export default function VouchersView() {
     (i: any) => i.name === 'REDEMPTION_RATE',
   )?.data;
 
-  const glassRequired = kenyaStats?.data?.find(
-    (i: any) => i.name === 'NOT_REDEEM_STATS',
-  )?.data?.glassesRequired||0;
+  const glassRequired =
+    kenyaStats?.data?.find((i: any) => i.name === 'NOT_REDEEM_STATS')?.data
+      ?.glassesRequired || 0;
 
-  const glassNotRequired = kenyaStats?.data?.find(
-    (i: any) => i.name === 'NOT_REDEEM_STATS',
-  )?.data?.glassesNotRequired||0;
+  const glassNotRequired =
+    kenyaStats?.data?.find((i: any) => i.name === 'NOT_REDEEM_STATS')?.data
+      ?.glassesNotRequired || 0;
 
   const REDEMPTION_STATS = kenyaStats?.data?.find(
     (i: any) => i.name === 'REDEMPTION_STATS',
@@ -112,7 +112,6 @@ export default function VouchersView() {
 
       return acc;
     }, []);
-
     return { categories, series };
   }
 
@@ -225,7 +224,7 @@ export default function VouchersView() {
             </div> */}
           </div>
           <div>
-          <div className="col-span-3 border rounded-md bg-card p-4 shadow">
+            <div className="col-span-3 border rounded-md bg-card p-4 shadow">
               <p className="text-md font-medium mb-4">Total Vouchers</p>
               <div className="flex justify-center">
                 <ChartColumnStacked

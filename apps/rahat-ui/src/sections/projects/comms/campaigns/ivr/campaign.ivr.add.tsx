@@ -72,6 +72,7 @@ const IvrCampaignAddDrawer = () => {
   const uploadFile = useUploadFile();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [fileName, setFileName] = useState('');
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -91,27 +92,26 @@ const IvrCampaignAddDrawer = () => {
   const createCampaign = useCreateCommsCampaign(id as UUID);
 
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
-    const transportId = transportData?.find(
-      (t) => t?.name?.toLowerCase() === 'ivr',
-    )?.cuid;
+    const transportId = transportData?.find((t) => t?.type === 'VOICE')?.cuid;
 
     const createCampagin = {
       name: data.campaignName,
       message: data.file.mediaURL,
-      transportId: 'abcd',
+      transportId: transportId,
       groupUID: data.group,
     };
     createCampaign.mutate(createCampagin);
     setIsOpen(false);
   };
-  const handleFileChange = async (event) => {
+  const handleFileChange = async (event: any) => {
     const file = event.target.files[0];
-
+    if (!file) return;
     const formData = new FormData();
     formData.append('file', file);
     const { data: afterUpload } = await uploadFile.mutateAsync(formData);
     console.log(afterUpload);
     form.setValue('file', afterUpload);
+    setFileName(file.name);
   };
 
   const DOWNLOAD_FILE_URL = '/files/twiml-sample.json';
@@ -123,7 +123,7 @@ const IvrCampaignAddDrawer = () => {
         const url = window.URL.createObjectURL(new Blob([blob]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', 'kenya-beneficiary-upload-sample.xlsx');
+        link.setAttribute('download', 'ivr-sample.xlsx');
         document.body.appendChild(link);
         link.click();
       })
@@ -186,7 +186,7 @@ const IvrCampaignAddDrawer = () => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            {benificiaryGroups?.length ? (
+                            {benificiaryGroups?.length > 0 ? (
                               benificiaryGroups.map((group) => (
                                 <SelectItem key={group.uuid} value={group.uuid}>
                                   {group.name}
@@ -208,7 +208,6 @@ const IvrCampaignAddDrawer = () => {
               <Tabs defaultValue="upload" className="w-full mt-6">
                 <TabsList className="grid grid-cols-2 gap-2">
                   <TabsTrigger value="upload">Upload</TabsTrigger>
-                  {/* <TabsTrigger value="upload">Download Sample</TabsTrigger> */}
                   <Button variant="secondary" onClick={handleDownloadClick}>
                     <ArrowDownToLine
                       className="mr-1"
@@ -234,11 +233,16 @@ const IvrCampaignAddDrawer = () => {
                           className="hidden"
                           onChange={handleFileChange}
                         />
+                        {fileName && (
+                          <p className="mt-2 text-gray-600">
+                            Selected file: {fileName}
+                          </p>
+                        )}
                         <label
                           htmlFor="configuration"
                           className="text-sm text-blue-600 cursor-pointer"
                         >
-                          Drag and drop your file or click here to browse
+                          Click here to browse
                         </label>
                       </div>
                     </CardContent>
@@ -253,6 +257,7 @@ const IvrCampaignAddDrawer = () => {
                 </Button>
               </DrawerClose>
               <Button
+                disabled={fileName === ''}
                 onClick={form.handleSubmit(handleCreateCampaign)}
                 className="w-full bg-blue-600 text-white hover:bg-blue-700"
               >

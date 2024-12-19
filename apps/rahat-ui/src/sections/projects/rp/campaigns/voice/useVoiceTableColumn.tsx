@@ -30,13 +30,13 @@ export default function useVoiceTableColumn() {
         <div className="capitalize">{row.getValue('date')}</div>
       ),
     },
-    {
-      accessorKey: 'duration',
-      header: 'Duration',
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('duration')}</div>
-      ),
-    },
+    // {
+    //   accessorKey: 'duration',
+    //   header: 'Duration',
+    //   cell: ({ row }) => (
+    //     <div className="capitalize">{row.getValue('duration')}</div>
+    //   ),
+    // },
     {
       accessorKey: 'status',
       header: 'Status',

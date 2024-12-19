@@ -77,9 +77,9 @@ export function TransactionsTable() {
         />
       </div>
       <div className="rounded-md border bg-card">
-        <Table>
-          <ScrollArea className="h-[calc(100vh-198px)]">
-            <TableHeader>
+        <ScrollArea className="h-[calc(100vh-198px)]">
+          <Table>
+            <TableHeader className="sticky top-0 bg-card">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
@@ -125,8 +125,8 @@ export function TransactionsTable() {
                 </TableRow>
               )}
             </TableBody>
-          </ScrollArea>
-        </Table>
+          </Table>
+        </ScrollArea>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4 bg-card rounded-sm p-2 mt-2">
         <div className="flex-1 text-sm text-muted-foreground">

@@ -1,11 +1,8 @@
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ConnectKitButton } from 'connectkit';
 
 function ConnectWallet() {
-  return (
-    <div>
-      <ConnectKitButton showAvatar={true} showBalance={false} />
-    </div>
-  );
+  return <ConnectKitButton showAvatar={true} showBalance={false} />;
 }
 
 export default ConnectWallet;

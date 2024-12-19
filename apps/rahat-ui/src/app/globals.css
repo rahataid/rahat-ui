@@ -11,6 +11,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
     --primary: 212, 68%, 50%;
+    --primary-label: 240, 14%, 28%;
+    --primary-sub-label: 221, 13%, 46%;
     --primary-foreground: 208 70% 37%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;

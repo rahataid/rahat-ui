@@ -2,6 +2,7 @@ import {
   useBeneficiaryStore,
   useBulkCreateDisbursement,
   useFindAllDisbursements,
+  useFindUnSyncedBenefiicaries,
   usePagination,
   useProjectBeneficiaries,
 } from '@rahat-ui/query';
@@ -48,20 +49,22 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
 }) => {
   const { id } = useParams() as { id: UUID };
   const { pagination, filters, setNextPage, setPrevPage, setPerPage } =
-    usePagination();
-  const projectBeneficiaries = useProjectBeneficiaries({
+    usePagination();  
+
+  const disbursements = useFindAllDisbursements(id, {
+    hideAssignedBeneficiaries: false,
+  });
+
+  const benData = useFindUnSyncedBenefiicaries(id,
+    {  
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
     sort: 'updatedAt',
     projectUUID: id,
-    ...filters,
+    ...filters
   });
-  const meta = projectBeneficiaries?.data.response?.meta;
-
-  const disbursements = useFindAllDisbursements(id, {
-    hideAssignedBeneficiaries: false,
-  });
+  const meta = benData?.data?.response?.meta
   const bulkAssignDisbursement = useBulkCreateDisbursement(id);
 
   const [rowData, setRowData] = React.useState<Payment[]>([]);
@@ -110,27 +113,14 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   });
 
   useEffect(() => {
-    //TO DO :Need to fix data flow process
-    if (
-      projectBeneficiaries.isSuccess &&
-      projectBeneficiaries.data?.data &&
-      disbursements?.isSuccess
-    ) {
-      const projectBeneficiaryDisbursements =
-        projectBeneficiaries.data?.data.map((beneficiary) => {
-          const beneficiaryDisbursement = disbursements?.data?.find(
-            (disbursement: any) =>
-              disbursement.walletAddress === beneficiary.walletAddress ,
-          );
-          return {
-            ...beneficiary,
-            disbursementAmount: beneficiaryDisbursement?.amount || '0',
-            status: beneficiaryDisbursement?.status || 'NOT_SYNCED',
-          };
-        });
-        const unSyncedBeneficiaries = projectBeneficiaryDisbursements?.filter(
-          (ben:any)=> ben?.status !=='SYNCED_OFFLINE'
-        )
+    if(benData?.isSuccess){
+      const unSyncedBeneficiaries = benData?.data?.data?.map((beneficiary) => {
+        return {
+          name:beneficiary?.piiData?.name,
+          disbursementAmount: beneficiary?.Disbursements[0]?.amount || '0',
+          walletAddress: beneficiary?.walletAddress,
+        };
+      });
       if (
         JSON.stringify(unSyncedBeneficiaries) !==
         JSON.stringify(rowData)
@@ -139,11 +129,8 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
       }
     }
   }, [
-    disbursements?.data,
-    disbursements?.data?.data,
-    disbursements?.isSuccess,
-    projectBeneficiaries.data?.data,
-    projectBeneficiaries.isSuccess,
+    benData?.data,
+    benData?.isSuccess,
     rowData,
   ]);
   return (

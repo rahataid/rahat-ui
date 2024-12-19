@@ -104,8 +104,8 @@ export default function ListView({ users, loading }: IProps) {
           </DropdownMenu>
         </div>
         <div className="rounded border bg-card">
-          <Table>
-            <ScrollArea className="h-[calc(100vh-180px)]">
+          <ScrollArea className="h-[calc(100vh-180px)]">
+            <Table>
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
@@ -164,8 +164,8 @@ export default function ListView({ users, loading }: IProps) {
                   </TableRow>
                 )}
               </TableBody>
-            </ScrollArea>
-          </Table>
+            </Table>
+          </ScrollArea>
         </div>
       </div>
     </>

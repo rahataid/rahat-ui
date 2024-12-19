@@ -80,6 +80,8 @@ type CountrySelectProps = {
   options: CountrySelectOption[];
 };
 
+const allowedCountries = ['NP', 'KE', 'MW', 'PK', 'KH', 'SG'];
+
 const CountrySelect = ({
   disabled,
   value,
@@ -91,6 +93,10 @@ const CountrySelect = ({
       onChange(country);
     },
     [onChange],
+  );
+
+  const filteredOptions = options.filter((option) =>
+    allowedCountries.includes(option.value),
   );
 
   return (
@@ -119,34 +125,32 @@ const CountrySelect = ({
             <CommandInput placeholder="Search country..." />
             <CommandEmpty>No country found.</CommandEmpty>
             <CommandGroup>
-              {options
-                .filter((x) => x.value)
-                .map((option) => {
-                  return (
-                    <CommandItem
-                      className="gap-2"
-                      key={option.value}
-                      onSelect={() => handleSelect(option.value)}
-                    >
-                      <FlagComponent
-                        country={option.value}
-                        countryName={option.label}
-                      />
-                      <span className="text-sm flex-1">{option.label}</span>
-                      {option.value && (
-                        <span className="text-sm text-foreground/50">
-                          {`+${RPNInput.getCountryCallingCode(option.value)}`}
-                        </span>
+              {filteredOptions.map((option) => {
+                return (
+                  <CommandItem
+                    className="gap-2"
+                    key={option.value}
+                    onSelect={() => handleSelect(option.value)}
+                  >
+                    <FlagComponent
+                      country={option.value}
+                      countryName={option.label}
+                    />
+                    <span className="text-sm flex-1">{option.label}</span>
+                    {option.value && (
+                      <span className="text-sm text-foreground/50">
+                        {`+${RPNInput.getCountryCallingCode(option.value)}`}
+                      </span>
+                    )}
+                    <CheckIcon
+                      className={cn(
+                        'ml-auto h-4 w-4',
+                        option.value === value ? 'opacity-100' : 'opacity-0',
                       )}
-                      <CheckIcon
-                        className={cn(
-                          'ml-auto h-4 w-4',
-                          option.value === value ? 'opacity-100' : 'opacity-0',
-                        )}
-                      />
-                    </CommandItem>
-                  );
-                })}
+                    />
+                  </CommandItem>
+                );
+              })}
             </CommandGroup>
           </CommandList>
         </Command>

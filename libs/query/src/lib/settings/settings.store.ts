@@ -54,7 +54,7 @@ export const initialAppSettings: AppSettingsState = {
     data: [],
     subData: [],
   },
-  roleOnChainSync: process.env['NEXT_PUBLIC_ADD_ROLE_ON_CHAIN'] || true,
+  roleOnChainSync: process.env['NEXT_PUBLIC_ADD_ROLE_ON_CHAIN'] || false,
   commsSettings: {},
 };
 

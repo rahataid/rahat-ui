@@ -7,6 +7,7 @@ import { useProjectAction } from '../../projects';
 
 // Constants for actions
 const CREATE_CAMPAIGN = 'rpProject.campaign.create';
+const UPDATE_CAMPAIGN = 'rpProject.campaign.update';
 const CREATE_AUDIENCE = 'rpProject.campaign.create_audience';
 const CREATE_BULK_AUDIENCE = 'rpProject.campaign.create_bulk_audience';
 const GET_ALL_CAMPAIGN = 'rpProject.campaign.get';
@@ -58,6 +59,45 @@ export const useCreateCampaign = (projectUUID: UUID) => {
   });
 };
 
+export const useUpdateCampaign = (projectUUID: UUID) => {
+  const action = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async (data: any) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: UPDATE_CAMPAIGN,
+          payload: data,
+        },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.fire({
+        title: 'Campaign updated successfully',
+        icon: 'success',
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['rpCampaignList'],
+      });
+    },
+    onError: () => {
+      toast.fire({
+        title: 'Error while updating campaign.',
+        icon: 'error',
+      });
+    },
+  });
+};
+
 export const useTriggerRpCampaign = (projectUUID: UUID) => {
   const action = useProjectAction();
   const queryClient = useQueryClient();
@@ -87,6 +127,9 @@ export const useTriggerRpCampaign = (projectUUID: UUID) => {
       queryClient.invalidateQueries({
         queryKey: ['rpCampaignLogs'],
       });
+      queryClient.invalidateQueries({
+        queryKey: ['rpCampaign'],
+      });
     },
     onError: () => {
       toast.fire({
@@ -106,8 +149,8 @@ export const useListRpCampaign = (
 ) => {
   const action = useProjectAction();
 
-  return useQuery({
-    queryKey: ['rpCampaignList', projectUUID],
+  const query = useQuery({
+    queryKey: ['rpCampaignList', projectUUID, payload],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
@@ -116,9 +159,14 @@ export const useListRpCampaign = (
           payload: payload,
         },
       });
-      return res.data;
+      return { data: res.data, meta: res.response.meta };
     },
   });
+  return {
+    ...query,
+    data: query?.data?.data || [],
+    meta: query?.data?.meta,
+  };
 };
 
 export const useListRpCommunicationStats = (projectUUID: UUID) => {
@@ -161,7 +209,7 @@ export const useListRpCampaignLog = (projectUUID: UUID, payload: any) => {
   const action = useProjectAction();
 
   return useQuery({
-    queryKey: ['rpCampaignLogs', projectUUID],
+    queryKey: ['rpCampaignLogs', projectUUID, payload],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,

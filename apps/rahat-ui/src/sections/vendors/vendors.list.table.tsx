@@ -36,12 +36,15 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { UUID } from 'crypto';
 import TableLoader from '../../components/table.loader';
 import Image from 'next/image';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import SelectComponent from '../projects/el-kenya/select.component';
 
 export type IVendor = {
   id: string;
@@ -75,109 +78,130 @@ export default function VendorsTable({
 }: IProps) {
   const projectList = useProjectList({});
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
+  const projectNames =
+    (projectList?.data?.data?.length > 0 &&
+      projectList?.data?.data?.map((project: any) => project?.name)) ||
+    [];
 
   return (
-    <>
-      <div className="p-2 bg-secondary">
-        <div className="flex items-center mb-2">
-          <Input
-            placeholder="Search User..."
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-            onChange={(event) =>
-              table.getColumn('name')?.setFilterValue(event.target.value)
-            }
-            className="rounded mr-2"
-          />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                <Settings2 className="mr-2 h-4 w-5" />
-                View
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        <div className="rounded border h-[calc(100vh-180px)] bg-card">
-          {table.getRowModel().rows?.length ? (
-            <>
+    <div className="border rounded shadow p-3">
+      <div className="flex items-center mb-2 space-x-2">
+        <Input
+          placeholder="Search Vendors"
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          onChange={(event) =>
+            table.getColumn('name')?.setFilterValue(event.target.value)
+          }
+          className="rounded w-full"
+        />
+
+        <SelectComponent
+          onChange={(event) => {
+            table
+              .getColumn('status')
+              ?.setFilterValue(event === 'All' ? '' : event);
+          }}
+          name="Status"
+          options={['All', 'Assigned', 'Not Assigned']}
+          value={(table.getColumn('status')?.getFilterValue() as string) || ''}
+        />
+
+        <SelectComponent
+          onChange={(event) => {
+            table
+              .getColumn('projectName')
+              ?.setFilterValue(event === 'All' ? '' : event);
+          }}
+          name="Project Name"
+          options={['All', ...projectNames]}
+          value={
+            (table.getColumn('projectName')?.getFilterValue() as string) || ''
+          }
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              <Settings2 className="mr-2 h-4 w-5" />
+              View
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => {
+                return (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                );
+              })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      <div>
+        {table.getRowModel().rows?.length ? (
+          <>
+            <ScrollArea className="h-[calc(100vh-285px)]">
               <TableComponent>
-                <ScrollArea className="h-table1">
-                  <TableHeader>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                      <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => {
-                          return (
-                            <TableHead key={header.id}>
-                              {header.isPlaceholder
-                                ? null
-                                : flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext(),
-                                  )}
-                            </TableHead>
-                          );
-                        })}
-                      </TableRow>
-                    ))}
-                  </TableHeader>
-                  <TableBody>
-                    {table.getRowModel().rows.map((row) => (
-                      <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && 'selected'}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </ScrollArea>
+                <TableHeader className="sticky top-0 bg-card">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => {
+                        return (
+                          <TableHead key={header.id}>
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
+                          </TableHead>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+                <TableBody>
+                  {table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && 'selected'}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
               </TableComponent>
-            </>
-          ) : (
-            <div className="w-full h-[calc(100vh-140px)]">
-              <div className="flex flex-col items-center justify-center">
-                <Image
-                  src="/noData.png"
-                  height={250}
-                  width={250}
-                  alt="no data"
-                />
-                <p className="text-medium text-base mb-1">No Data Available</p>
-                <p className="text-sm mb-4 text-gray-500">
-                  There are no vendors to display at the moment
-                </p>
-              </div>
+            </ScrollArea>
+          </>
+        ) : (
+          <div className="w-full h-[calc(100vh-290px)]">
+            <div className="flex flex-col items-center justify-center">
+              <Image src="/noData.png" height={250} width={250} alt="no data" />
+              <p className="text-medium text-base mb-1">No Data Available</p>
+              <p className="text-sm mb-4 text-gray-500">
+                There are no vendors to display at the moment
+              </p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
@@ -186,50 +210,53 @@ export default function VendorsTable({
             <DialogTitle>Assign Project</DialogTitle>
             <DialogDescription>
               {!selectedProject && (
-                <p className="text-orange-500">Select a project to assign</p>
+                <p>Select a project to assign the selected vendor</p>
               )}
             </DialogDescription>
           </DialogHeader>
           <div>
+            <Label>Project</Label>
             <Select onValueChange={handleProjectChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="--Select--" />
+              <SelectTrigger className="mt-2">
+                <SelectValue placeholder="Select Project Name" />
               </SelectTrigger>
               <SelectContent>
-                {projectList.data?.data.length &&
+                {projectList.data?.data.length ? (
                   projectList.data?.data.map((project: any) => {
                     return (
                       <SelectItem
-                        disabled={selectedRow?.projectName === project.name}
+                        disabled={selectedRow?.projectName === project.name} //TODO FROM ID
                         key={project.id}
                         value={project.uuid}
                       >
                         {project.name}
                       </SelectItem>
                     );
-                  })}
+                  })
+                ) : (
+                  <p className="text-xs">No project found</p>
+                )}
               </SelectContent>
             </Select>
           </div>
-          <DialogFooter className="sm:justify-end">
+          <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="ghost">
+              <Button className="w-full" type="button" variant="secondary">
                 Close
               </Button>
             </DialogClose>
             <DialogClose asChild>
               <Button
+                className="w-full"
                 onClick={handleAssignProject}
                 type="button"
-                variant="ghost"
-                className="text-primary"
               >
-                Assign
+                Confirm
               </Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }

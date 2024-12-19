@@ -17,6 +17,7 @@
       "@rahat-ui/community": ["libs/community/src/index.ts"],
       "@rahat-ui/community-query": ["libs/community-query/src/index.ts"],
       "@rahat-ui/query": ["libs/query/src/index.ts"],
+      "@rahat-ui/query/*": ["libs/query/src/*"],
       "@rahat-ui/shadcn/*": ["libs/shadcn/*"],
       "@rahat-ui/shadcn/charts": ["libs/shadcn/src/components/charts/index.ts"],
       "@rahat-ui/shadcn/components/*": ["libs/shadcn/src/components/ui/*"],

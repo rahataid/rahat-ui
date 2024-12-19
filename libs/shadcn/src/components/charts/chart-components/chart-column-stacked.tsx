@@ -15,6 +15,7 @@ type Props = {
   stacked?: boolean;
   categories?: string[];
   communityTool?: boolean;
+  custom?: boolean;
 };
 
 export default function ChartColumnStacked({
@@ -24,6 +25,7 @@ export default function ChartColumnStacked({
   stacked = false,
   categories = ['Enrolled', 'Referred'],
   communityTool = false,
+  custom = false,
 }: Props) {
   const chartOptions = useChart({
     chart: {
@@ -33,6 +35,9 @@ export default function ChartColumnStacked({
       zoom: {
         enabled: true,
       },
+    },
+    dataLabels: {
+      enabled: false,
     },
     legend: {
       itemMargin: {
@@ -59,7 +64,9 @@ export default function ChartColumnStacked({
   return (
     <div
       className={`${
-        !communityTool && 'bg-white shadow-md rounded-lg overflow-hidden p-4'
+        !communityTool &&
+        !custom &&
+        'bg-white shadow-md rounded-lg overflow-hidden p-4'
       }`}
     >
       <Chart

@@ -32,27 +32,27 @@ export default function CommonCard({
   return (
     <Card
       onClick={handleClick}
-      className={`cursor-pointer rounded border shadow`}
+      className={`cursor-pointer rounded-md border shadow`}
     >
-      <div className="rounded">
-        <Image
-          className="object-contain h-72 w-full rounded-t"
-          src={image}
-          alt="project"
-          height={200}
-          width={200}
-        />
-      </div>
-      <CardContent className="pt-4 pb-4 border-t">
-        <div className="flex justify-between">
-          <p className="font-bold text-md text-primary">{title} </p>
-          <Badge
-            variant="outline"
-            className="border-primary text-primary cursor-auto bg-secondary"
-          >
-            {badge}
-          </Badge>
+      <div className="p-4">
+        <div className="rounded-md bg-secondary flex justify-center">
+          <Image
+            className="object-contain"
+            src={image}
+            alt="project"
+            height={200}
+            width={200}
+          />
         </div>
+      </div>
+      <CardContent>
+        <p className="font-bold text-md text-primary mb-1">{title} </p>
+        <Badge
+          variant="outline"
+          className="border-primary text-primary cursor-auto bg-secondary mb-2"
+        >
+          {badge}
+        </Badge>
         <p className="text-sm text-gray-500">{subTitle}</p>
       </CardContent>
     </Card>

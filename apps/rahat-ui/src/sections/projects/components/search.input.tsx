@@ -28,6 +28,7 @@ export default function SearchInput({
         className="absolute left-2 top-3 text-muted-foreground"
       />
       <Input
+        name={name}
         placeholder={`Search ${name}...`}
         className="pl-8"
         value={value}

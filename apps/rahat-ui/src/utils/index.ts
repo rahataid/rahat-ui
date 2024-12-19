@@ -56,7 +56,7 @@ export const humanizeString = (inputString: string) => {
   // Replace underscore with space
   inputString = inputString?.replace(/_/g, ' ');
 
-  let words = inputString?.toLowerCase().split(' ');
+  const words = inputString?.toLowerCase().split(' ');
   // Capitalize the first letter of each word
   for (let i = 0; i < words?.length; i++) {
     words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
@@ -99,3 +99,13 @@ export const exportDataToExcel = (data: any[]) => {
 
   saveAs(blob, fileName);
 };
+
+export function formatDT(date: Date) {
+  const changedDate = new Date(date);
+  const year = changedDate.getFullYear();
+  const month = (changedDate.getMonth() + 1).toString().padStart(2, '0');
+  const day = changedDate.getDate().toString().padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day}`;
+
+  return formattedDate;
+}

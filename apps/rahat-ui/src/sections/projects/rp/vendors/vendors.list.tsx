@@ -33,7 +33,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import Pagination from 'apps/rahat-ui/src/components/pagination';
 
 const VendorList = () => {
   const uuid = useParams().id;
@@ -55,20 +55,6 @@ const VendorList = () => {
     );
   };
 
-  const meta = useBeneficiaryStore((state) => state.meta);
-
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    resetSelectedListItems,
-  } = usePagination();
-
   const columns = useVendorTable({ handleViewClick });
 
   const tableData = React.useMemo(() => {
@@ -80,12 +66,12 @@ const VendorList = () => {
   const table = useReactTable({
     data: tableData,
     columns,
-    manualPagination: true,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    getPaginationRowModel: getPaginationRowModel(),
     onRowSelectionChange: setRowSelection,
     state: {
       sorting,
@@ -99,10 +85,7 @@ const VendorList = () => {
       uuid,
       data: {
         action: MS_ACTIONS.VENDOR.LIST_BY_PROJECT,
-        payload: {
-          page: pagination.page,
-          perPage: pagination.perPage,
-        },
+        payload: {},
       },
     });
     console.log({ result });
@@ -110,13 +93,12 @@ const VendorList = () => {
     const filteredData = result?.data;
 
     console.log({ filteredData });
-
     setData(filteredData);
   };
 
   React.useEffect(() => {
     fetchVendors();
-  }, [pagination]);
+  }, []);
 
   return (
     <div className="w-full h-full p-2 bg-secondary">
@@ -187,13 +169,14 @@ const VendorList = () => {
             </TableBody>
           </ScrollArea>
         </Table>
-        <CustomPagination
-          currentPage={pagination.page}
-          handleNextPage={setNextPage}
-          handlePageSizeChange={setPerPage}
-          handlePrevPage={setPrevPage}
-          perPage={pagination.perPage}
-          meta={meta || { total: 0, currentPage: 0 }}
+        <Pagination
+          pageIndex={table.getState().pagination.pageIndex}
+          pageCount={table.getPageCount()}
+          setPageSize={table.setPageSize}
+          canPreviousPage={table.getCanPreviousPage()}
+          previousPage={table.previousPage}
+          canNextPage={table.getCanNextPage()}
+          nextPage={table.nextPage}
         />
       </div>
     </div>

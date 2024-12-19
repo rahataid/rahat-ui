@@ -14,16 +14,20 @@ import {
   TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ListBeneficiary } from '@rahat-ui/types';
+import { useSearchParams } from 'next/navigation';
 
 export const useBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<string>();
 
+  const searchParam = useSearchParams();
+
+  const members = searchParam.get('member');
+
   const clickToCopy = (walletAddress: string, uuid: string) => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(uuid);
   };
-
   const openSplitDetailView = (rowDetail: ListBeneficiary) => {
     setSecondPanelComponent(
       <BeneficiaryDetail
@@ -38,6 +42,7 @@ export const useBeneficiaryTableColumns = () => {
       id: 'select',
       header: ({ table }) => (
         <Checkbox
+          // className={members ? '' : 'hidden'}
           checked={
             table.getIsAllPageRowsSelected() ||
             (table.getIsSomePageRowsSelected() && 'indeterminate')
@@ -87,7 +92,8 @@ export const useBeneficiaryTableColumns = () => {
               }
             >
               <p>{truncateEthAddress(row.getValue('walletAddress'))}</p>
-              {walletAddressCopied === row?.original?.uuid ? (
+              {walletAddressCopied &&
+              walletAddressCopied === row?.original?.uuid ? (
                 <CopyCheck size={15} strokeWidth={1.5} />
               ) : (
                 <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
@@ -95,7 +101,8 @@ export const useBeneficiaryTableColumns = () => {
             </TooltipTrigger>
             <TooltipContent className="bg-secondary" side="bottom">
               <p className="text-xs font-medium">
-                {walletAddressCopied === row?.original?.uuid
+                {walletAddressCopied &&
+                walletAddressCopied === row?.original?.uuid
                   ? 'copied'
                   : 'click to copy'}
               </p>

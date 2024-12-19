@@ -2,13 +2,9 @@
 
 // Import statements
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-
-// import { useUserCreate, useUserRoleList } from '@rumsan/react-query';
-// import { enumToObjectArray } from '@rumsan/sdk/utils';
-// import { Role } from '@rumsan/sdk/types';
 import {
   Select,
   SelectContent,
@@ -17,14 +13,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-// import { Gender } from '@rahat-ui/types';
-import { useRoleList, useSettingsStore, useUserCreate } from '@rahat-ui/query';
+import { useRoleList, useSettingsStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -34,14 +30,20 @@ import {
 } from '../../hooks/el/contracts/el-contracts';
 import { useRouter } from 'next/navigation';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
-
-// Constants
-// const genderList = enumToObjectArray(Gender);
+import HeaderWithBack from '../projects/components/header.with.back';
+import { Wallet } from 'lucide-react';
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from '@rahat-ui/shadcn/src/components/ui/radio-group';
+import { Gender } from '@rahataid/sdk/enums';
+import { useUserCreate } from '@rumsan/react-query';
+import Swal from 'sweetalert2';
 
 const FormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 4 character' }),
   email: z.string().email(),
-  gender: z.string(),
+  gender: z.string().min(1, { message: 'Please select gender' }),
   roles: z.array(z.string()).length(1, { message: 'Please select role' }),
   phone: z.string(),
   wallet: z
@@ -51,6 +53,8 @@ const FormSchema = z.object({
 
 // Component
 export default function AddUser() {
+  const router = useRouter();
+
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -73,29 +77,38 @@ export default function AddUser() {
   const addAdmin = useAddAdmin();
 
   const handleAddUser = async (data: any) => {
-    if (roleSync === true) {
-      if (data.roles.includes('Manager')) {
-        await addManager.mutateAsync({
-          data: data,
-          walletAddress: data?.wallet,
-          contractAddress: contractSettings as `0x${string}`,
-        });
-      } else if (data.roles.includes('Admin')) {
-        await addAdmin.mutateAsync({
-          data: data,
-          walletAddress: data?.wallet,
-          contractAddress: contractSettings as `0x${string}`,
-        });
+    try {
+      if (roleSync === true) {
+        if (data.roles.includes('Manager')) {
+          await addManager.mutateAsync({
+            data: data,
+            walletAddress: data?.wallet,
+            contractAddress: contractSettings as `0x${string}`,
+          });
+        } else if (data.roles.includes('Admin')) {
+          await addAdmin.mutateAsync({
+            data: data,
+            walletAddress: data?.wallet,
+            contractAddress: contractSettings as `0x${string}`,
+          });
+        } else {
+          await userCreate.mutateAsync(data);
+        }
       } else {
         await userCreate.mutateAsync(data);
       }
-    } else {
-      await userCreate.mutateAsync(data);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'An unexpected error occurred.';
+      Swal.fire('User Creation Failed', errorMessage, 'error');
     }
   };
 
   useEffect(() => {
     if (userCreate.isSuccess) {
+      Swal.fire('User Created Successfully', '', 'success');
       form.reset({
         name: '',
         gender: '',
@@ -106,142 +119,179 @@ export default function AddUser() {
       });
       route.push('/users');
     }
-  }, [form, userCreate.isSuccess]);
+  }, [form, route, userCreate.isSuccess]);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleAddUser)}>
-        <div className="p-4">
-          <h1 className="text-md font-semibold mb-6">Add User</h1>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <FormField
-              name="name"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input type="text" placeholder="Name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => {
-                return (
+        <div className="p-4 h-[calc(100vh-130px)]">
+          <HeaderWithBack
+            title="Add User"
+            subtitle="Create a new user detail"
+            path="/users"
+          />
+
+          <div className="grid grid-cols-2 gap-4 border p-4 rounded-md">
+            <>
+              <FormField
+                name="name"
+                control={form.control}
+                render={({ field }) => (
                   <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select gender" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="MALE">Male</SelectItem>
-                        <SelectItem value="FEMALE">Female</SelectItem>
-                        <SelectItem value="OTHER">Other</SelectItem>
-                        <SelectItem value="UNKNOWN">Unknown</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <PhoneInput placeholder="Phone" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <Input type="text" placeholder="Email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="roles"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <Select
-                      onValueChange={(value) => {
-                        field.onChange([value]);
-                      }}
-                      defaultValue={field.value[0]}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select role" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectGroup>
-                          {roleData?.data &&
-                            roleData?.data?.map((role: any) => (
-                              <SelectItem value={role.name} key={role.id}>
-                                {role.name}
-                              </SelectItem>
-                            ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="wallet"
-              render={({ field }) => {
-                return (
-                  <FormItem>
+                    <FormLabel>User Name</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="Wallet Address"
+                        placeholder="Enter user name"
                         {...field}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
-                );
-              }}
-            />
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Gender</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex space-x-1"
+                      >
+                        {Object.values(Gender).map((gender) => (
+                          <FormItem
+                            key={gender}
+                            className="flex items-center space-x-3 space-y-0"
+                          >
+                            <FormControl>
+                              <RadioGroupItem value={gender} />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              {gender.charAt(0).toUpperCase() +
+                                gender.slice(1).toLowerCase()}
+                            </FormLabel>
+                          </FormItem>
+                        ))}
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl>
+                        <PhoneInput
+                          placeholder="Enter phone number"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Enter email address"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <div className="col-span-2">
+                <FormField
+                  control={form.control}
+                  name="wallet"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>Wallet Address</FormLabel>
+                        <FormControl>
+                          <div className="relative w-full">
+                            <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              type="text"
+                              placeholder="Enter wallet address"
+                              {...field}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="roles"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange([value]);
+                        }}
+                        defaultValue={field.value[0]}
+                      >
+                        <FormLabel>User Role</FormLabel>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select user role" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectGroup>
+                            {roleData?.data &&
+                              roleData?.data?.map((role: any) => (
+                                <SelectItem value={role.name} key={role.id}>
+                                  {role.name}
+                                </SelectItem>
+                              ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            </>
           </div>
-          <div className="flex justify-end">
-            {userCreate.isPending ? (
-              <Button>
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary" />
-              </Button>
-            ) : (
-              <Button>Create User</Button>
-            )}
-          </div>
+        </div>
+        <div className="flex justify-end space-x-2 p-4 border-t">
+          <Button
+            className="px-14"
+            type="button"
+            variant="secondary"
+            onClick={() => router.push('/users')}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" className="px-10">
+            Add
+          </Button>
         </div>
       </form>
     </Form>

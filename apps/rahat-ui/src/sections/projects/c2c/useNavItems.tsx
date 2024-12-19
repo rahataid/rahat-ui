@@ -65,11 +65,6 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
           icon: <Expand size={18} strokeWidth={1.5} />,
           path: `/projects/c2c/${id}/disbursement`,
         },
-      ],
-    },
-    {
-      title: 'Actions',
-      children: [
         {
           component: (
             <>

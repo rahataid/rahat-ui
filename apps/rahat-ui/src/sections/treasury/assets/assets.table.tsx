@@ -176,9 +176,9 @@ export default function AssetsTable() {
         />
       </div>
       <div className="rounded border bg-card">
-        <Table>
-          <ScrollArea className="h-[calc(100vh-184px)]">
-            <TableHeader>
+        <ScrollArea className="h-[calc(100vh-184px)]">
+          <Table>
+            <TableHeader className="bg-card sticky top-0">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
@@ -224,8 +224,8 @@ export default function AssetsTable() {
                 </TableRow>
               )}
             </TableBody>
-          </ScrollArea>
-        </Table>
+          </Table>
+        </ScrollArea>
       </div>
       <div className="flex items-center justify-end space-x-2 py-2">
         <div className="flex-1 text-sm text-muted-foreground">

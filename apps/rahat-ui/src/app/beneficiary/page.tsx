@@ -1,11 +1,6 @@
-import { Metadata } from 'next';
-import BeneficiaryView from '../../sections/beneficiary/beneficiary.view';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Beneficiaries',
-  keywords: ['rahat-beneficiaries'],
-  authors: [{ name: 'Rahat' }],
-};
+import BeneficiaryView from '../../sections/beneficiary/beneficiary.view';
 
 export default function BeneficiaryPage() {
   return <BeneficiaryView />;

@@ -10,6 +10,7 @@ export type NavItem = {
   style?: React.CSSProperties;
   className?: string;
   component?: React.ReactNode;
+  disabled?: boolean;
 };
 
 export type ProjectNavItemsReturnType = {
@@ -17,7 +18,12 @@ export type ProjectNavItemsReturnType = {
   [key: string]: any;
 };
 
-export type ProjectType = ProjectTypes | 'ALL' | 'C2C';
+export type ProjectType =
+  | ProjectTypes
+  | 'ALL'
+  | 'C2C'
+  | 'el-kenya'
+  | 'el-cambodia';
 
 export type useProjectNavItemsType = (
   projectType: ProjectType,

@@ -1,6 +1,7 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { FC, useState } from 'react';
 import { NavItem } from './nav-items.types';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 type ProjectNavViewProps = {
   title: string;
@@ -13,6 +14,9 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
   const handleNav = (item: NavItem) => {
+    if (item.disabled) {
+      return;
+    }
     if (item.children) {
       setOpenSubmenu(item.title === openSubmenu ? null : item.title);
     } else if (item.path) {
@@ -22,31 +26,34 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
 
   return (
     <>
-      <div className="pb-2">
-        <div className="flex items-center justify-between p-4">
+      <aside className="pb-2 pt-4 bg-card border-r h-[calc(100vh-58px)] flex flex-col justify-between">
+        {/* <div className="flex items-center justify-between p-4">
           <h1 className="font-semibold text-xl text-primary">{title}</h1>
-        </div>
+        </div> */}
         <div className="px-2">
           <nav>
             {items?.map((item) => (
               <div key={item.title}>
                 <div
                   className={`flex justify-between p-2 mb-1 items-center rounded-md cursor-pointer ${
-                    pathName === item.path
-                      ? 'bg-primary text-white'
+                    item.disabled
+                      ? 'cursor-not-allowed'
+                      : pathName === item.path
+                      ? 'bg-sky-100 text-primary'
                       : 'hover:bg-secondary'
                   }`}
                   onClick={() => handleNav(item)}
                   {...item}
+                  title={item.disabled ? 'Coming Soon' : ''}
                 >
                   {item.component ? (
                     item.component
                   ) : (
                     <>
-                      {' '}
                       <div className="flex gap-3 items-center">
                         {item.icon}
                         <p>{item.title}</p>
+                        {item.disabled && <Badge>Coming Soon</Badge>}
                       </div>
                     </>
                   )}
@@ -80,23 +87,32 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                       <div
                         key={subItem.title}
                         className={`flex justify-between p-2 mb-1 items-center rounded-md cursor-pointer ${
-                          pathName === subItem.path
+                          subItem.disabled
+                            ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                            : pathName === subItem.path
                             ? 'bg-primary text-white'
                             : 'hover:bg-secondary'
                         }`}
                         onClick={() =>
-                          subItem.path && router.push(subItem.path)
+                          !subItem.disabled &&
+                          subItem.path &&
+                          router.push(subItem.path)
                         }
                         {...subItem}
+                        title={subItem.disabled ? 'Coming Soon' : ''}
                       >
-                        {item.component ? (
-                          item.component
+                        {subItem.component ? (
+                          subItem.component
                         ) : (
                           <>
-                            {' '}
                             <div className="flex gap-3 items-center">
                               {subItem.icon}
                               <p>{subItem.title}</p>
+                              {subItem.disabled && (
+                                <small className="text-xs text-gray-500 ml-2">
+                                  Coming Soon
+                                </small>
+                              )}
                             </div>
                             <p className="text-sm">{subItem.subtitle}</p>
                           </>
@@ -109,7 +125,29 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
             ))}
           </nav>
         </div>
-      </div>
+        <nav className="mt-auto flex flex-col  gap-4 px-2 sm:py-5">
+          <div
+            className="flex items-center gap-3 p-2 hover:bg-secondary cursor-pointer rounded-md"
+            onClick={() => router.push('/projects')}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="h-6 w-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-2v-5m0-1V4"
+              />
+            </svg>
+            <p>Exit Project</p>
+          </div>
+        </nav>
+      </aside>
     </>
   );
 };

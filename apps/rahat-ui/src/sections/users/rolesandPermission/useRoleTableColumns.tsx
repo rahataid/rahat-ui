@@ -5,6 +5,7 @@ import { Eye } from 'lucide-react';
 import { Role } from '@rumsan/sdk/types';
 import RoleDetail from './roleDetail';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 export const useRoleTableColumns = () => {
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
@@ -18,7 +19,7 @@ export const useRoleTableColumns = () => {
     {
       accessorKey: 'isSystem',
       header: 'Is System',
-      cell: ({ row }) => <div>{row.original.isSystem ? 'Yes' : 'No'}</div>,
+      cell: ({ row }) => <Badge>{row.original.isSystem ? 'Yes' : 'No'}</Badge>,
     },
     {
       accessorKey: 'createdAt',
@@ -35,6 +36,7 @@ export const useRoleTableColumns = () => {
     },
     {
       id: 'actions',
+      header: 'Action',
       enableHiding: false,
       cell: ({ row }) => {
         return (

@@ -16,6 +16,7 @@ import Pagination from 'apps/rahat-ui/src/components/pagination';
 import { Payment } from './1-disbursement-plan';
 import { initialStepData } from './fund-management-flow';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import BenBulkDisbursementAssignModel from './ben-bulk-assign-disbursement-amount.modal';
 
 interface DisburseTableProps {
   table: Table<Payment>;
@@ -26,7 +27,7 @@ interface DisburseTableProps {
   setNextPage: () => void;
   setPrevPage: () => void;
   setPerPage: (value: string | number) => void;
-  meta:any
+  meta: any;
 }
 
 export function DisburseTable({
@@ -38,8 +39,17 @@ export function DisburseTable({
   setNextPage,
   setPrevPage,
   setPerPage,
-  meta
+  meta,
 }: DisburseTableProps) {
+  const handleBulkAssign = async (amount: string) => {
+    await bulkAssignDisbursement.mutateAsync({
+      amount,
+      beneficiaries: table
+        .getSelectedRowModel()
+        .rows.map((row) => row.original.walletAddress),
+    });
+  };
+
   return (
     <div className="mt-3 bg-secondary">
       <div className="flex justify-between items-center mb-2">
@@ -51,8 +61,9 @@ export function DisburseTable({
           }
           className="max-w-full"
         />
+        <BenBulkDisbursementAssignModel handleSubmit={handleBulkAssign} />
       </div>
-      {table.getSelectedRowModel().rows.length ? (
+      {/* {table.getSelectedRowModel().rows.length ? (
         <div
           className="flex items-end justify-end mb-2"
           style={{ maxWidth: '300px' }}
@@ -82,7 +93,7 @@ export function DisburseTable({
             Bulk Assign
           </Button>
         </div>
-      ) : null}
+      ) : null} */}
       <div className="rounded border bg-card">
         <TableComponent>
           <ScrollArea className="h-[calc(100vh-582px)]">
@@ -132,12 +143,12 @@ export function DisburseTable({
             </TableBody>
           </ScrollArea>
           <CustomPagination
-           currentPage={pagination.page}
-           handleNextPage={setNextPage}
-           handlePageSizeChange={setPerPage}
-           handlePrevPage={setPrevPage}
-           perPage={pagination.perPage}
-           meta={meta || { total: 0, currentPage: 0 }}
+            currentPage={pagination.page}
+            handleNextPage={setNextPage}
+            handlePageSizeChange={setPerPage}
+            handlePrevPage={setPrevPage}
+            perPage={pagination.perPage}
+            meta={meta || { total: 0, currentPage: 0 }}
           />
         </TableComponent>
       </div>

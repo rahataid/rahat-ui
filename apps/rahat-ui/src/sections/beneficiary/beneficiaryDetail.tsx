@@ -17,7 +17,23 @@ import {
 import { ListBeneficiary } from '@rahat-ui/types';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { UUID } from 'crypto';
-import { Copy, CopyCheck, Minus, MoreVertical, Trash2 } from 'lucide-react';
+import {
+  Copy,
+  CopyCheck,
+  Expand,
+  FolderDot,
+  FolderPlus,
+  Landmark,
+  Mail,
+  MapPin,
+  Minus,
+  MoreVertical,
+  Pencil,
+  Phone,
+  Trash2,
+  Wifi,
+  X,
+} from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -26,9 +42,10 @@ import AssignToProjectModal from './components/assignToProjectModal';
 import DeleteBeneficiaryModal from './components/deleteBenfModal';
 import SplitViewDetailCards from './components/split.view.detail.cards';
 import EditBeneficiary from './editBeneficiary';
+import TooltipComponent from '../../components/tooltip';
 
 type IProps = {
-  beneficiaryDetail: ListBeneficiary;
+  beneficiaryDetail: any;
   closeSecondPanel: VoidFunction;
 };
 
@@ -81,7 +98,7 @@ export default function BeneficiaryDetail({
         deleteModal={deleteModal}
         closeSecondPanel={closeSecondPanel}
       />
-      <div className="flex justify-between p-4 pt-5 bg-card border-b">
+      {/* <div className="flex justify-between p-4 pt-5 bg-card border-b">
         <div className="flex gap-3">
           <TooltipProvider delayDuration={100}>
             <Tooltip>
@@ -192,7 +209,138 @@ export default function BeneficiaryDetail({
       )}
       {activeTab === 'edit' && (beneficiaryDetail || beneficiary) && (
         <EditBeneficiary beneficiary={beneficiaryDetail || beneficiary} />
-      )}
+      )} */}
+      <div className="flex justify-between items-center p-4 border-b">
+        <div className="flex space-x-4">
+          <TooltipComponent
+            disable={benfAssignedToProject}
+            handleOnClick={handleDeleteClick}
+            Icon={Trash2}
+            tip="Delete"
+            iconStyle="text-red-600"
+          />
+          <TooltipComponent
+            handleOnClick={() =>
+              router.push(`/beneficiary/${beneficiaryDetail.uuid}/edit`)
+            }
+            Icon={Pencil}
+            tip="Edit"
+          />
+          <TooltipComponent
+            handleOnClick={handleAssignModalClick}
+            Icon={FolderPlus}
+            tip="Assign Project"
+          />
+          <TooltipComponent
+            handleOnClick={() =>
+              router.push(`/beneficiary/${beneficiaryDetail.uuid}`)
+            }
+            Icon={Expand}
+            tip="Expand"
+          />
+        </div>
+        <TooltipComponent
+          handleOnClick={closeSecondPanel}
+          Icon={X}
+          tip="Close"
+        />
+      </div>
+      <div className="p-4 flex justify-between items-center border-b">
+        <div className="flex items-center gap-2">
+          <Image
+            className="rounded-full"
+            src="/profile.png"
+            alt="profile"
+            height={80}
+            width={80}
+          />
+          <div>
+            <h1 className="font-semibold text-xl mb-1">
+              {beneficiaryDetail?.piiData?.name ??
+                beneficiaryDetail?.name ??
+                'John Doe'}
+            </h1>
+            <div className="flex space-x-4 items-center">
+              <Badge>{beneficiaryDetail?.extras?.status ?? 'active'}</Badge>
+              <p className="text-base text-muted-foreground">
+                {beneficiaryDetail?.extras?.age ?? 'N/A'}
+              </p>
+              <p className="text-base text-muted-foreground">
+                {beneficiaryDetail?.gender ?? 'unknown'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="p-4 flex flex-col space-y-4">
+        <h1 className="font-medium">General</h1>
+
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <MapPin size={20} strokeWidth={1.5} />
+            <p>Address</p>
+          </div>
+          <p className="text-muted-foreground text-base">
+            {beneficiaryDetail?.piiData?.extras?.address ||
+              beneficiaryDetail?.location ||
+              '-'}
+          </p>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <Phone size={20} strokeWidth={1.5} />
+            <p>Phone Number</p>
+          </div>
+          <p className="text-muted-foreground text-base">
+            {beneficiaryDetail?.piiData?.phone ||
+              beneficiaryDetail?.phone ||
+              '-'}
+          </p>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <Mail size={20} strokeWidth={1.5} />
+            <p>Email Address</p>
+          </div>
+          <p className="text-muted-foreground text-base">
+            {beneficiaryDetail?.piiData?.email ||
+              beneficiaryDetail?.email ||
+              '-'}
+          </p>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <Phone size={20} strokeWidth={1.5} />
+            <p>Phone Status</p>
+          </div>
+          <p className="text-muted-foreground text-base">
+            {beneficiaryDetail?.phoneStatus || '-'}
+          </p>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <Landmark size={20} strokeWidth={1.5} />
+            <p>Bank Status</p>
+          </div>
+          <p className="text-muted-foreground text-base">
+            {beneficiaryDetail?.bankedStatus || '-'}
+          </p>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <Wifi size={20} strokeWidth={1.5} />
+            <p>Internet Status</p>
+          </div>
+          <p className="text-muted-foreground text-base">
+            {beneficiaryDetail?.internetStatus || '-'}
+          </p>
+        </div>
+      </div>
     </>
   );
 }

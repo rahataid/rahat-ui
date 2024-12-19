@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import UsersDetailSplitView from './users.detail.split.view';
 
 export const useUserTableColumns = () => {
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
@@ -25,7 +26,10 @@ export const useUserTableColumns = () => {
 
   const openSplitDetailView = (rowDetail: User) => {
     setSecondPanelComponent(
-      <UserDetail userDetail={rowDetail} closeSecondPanel={closeSecondPanel} />,
+      <UsersDetailSplitView
+        userDetail={rowDetail}
+        closeSecondPanel={closeSecondPanel}
+      />,
     );
   };
 
@@ -38,40 +42,53 @@ export const useUserTableColumns = () => {
           className="cursor-pointer"
           onClick={() => openSplitDetailView(row.original)}
         >
-          {row.getValue('name')}
+          {row.getValue('name') ?? 'N/A'}
         </div>
       ),
     },
     {
       accessorKey: 'email',
       header: 'Email',
-      cell: ({ row }) => <div>{row.getValue('email')}</div>,
+      cell: ({ row }) => <div>{row.getValue('email') ?? 'N/A'}</div>,
     },
     {
       accessorKey: 'wallet',
       header: 'Wallet',
-      cell: ({ row }) => (
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger
-              className="flex items-center gap-3 cursor-pointer"
-              onClick={() => clickToCopy(row.getValue('wallet'), row.index)}
-            >
-              <p>{truncateEthAddress(row.getValue('wallet'))}</p>
-              {walletAddressCopied === row.index ? (
-                <CopyCheck size={15} strokeWidth={1.5} />
-              ) : (
-                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
-              )}
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary" side="bottom">
-              <p className="text-xs font-medium">
-                {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ),
+      cell: ({ row }) => {
+        const walletAddress = row.getValue('wallet') as string;
+        return (
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger
+                className="flex items-center gap-3 cursor-pointer"
+                onClick={() => clickToCopy(walletAddress, row.index)}
+              >
+                <p>{truncateEthAddress(walletAddress)}</p>
+                {walletAddress ? (
+                  walletAddressCopied === row.index ? (
+                    <CopyCheck size={15} strokeWidth={1.5} />
+                  ) : (
+                    <Copy
+                      className="text-slate-500"
+                      size={15}
+                      strokeWidth={1.5}
+                    />
+                  )
+                ) : (
+                  'N/A'
+                )}
+              </TooltipTrigger>
+              <TooltipContent className="bg-secondary" side="bottom">
+                <p className="text-xs font-medium">
+                  {walletAddressCopied === row.index
+                    ? 'copied'
+                    : 'click to copy'}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      },
     },
     {
       id: 'actions',

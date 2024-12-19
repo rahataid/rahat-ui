@@ -58,9 +58,17 @@ type CampaignFormProps = {
   data?: any;
   isSubmitting?: boolean;
   handleSubmit: () => void;
-
+  transport: Transport;
   // Add more props here
 };
+
+export type Transport = ITransport[];
+
+export interface ITransport {
+  cuid: string;
+  name: string;
+  type: string;
+}
 
 const CampaignForm: FC<CampaignFormProps> = ({
   audios,
@@ -72,6 +80,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
   handleSubmit,
   data,
   isSubmitting,
+  transport,
 }) => {
   const router = useRouter();
   const { data: messageTemplate } = useGetApprovedTemplate();
@@ -172,10 +181,10 @@ const CampaignForm: FC<CampaignFormProps> = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {Object.keys(CAMPAIGN_TYPES).map((key) => {
+                      {transport?.map((data) => {
                         return (
-                          <SelectItem key={key} value={key}>
-                            {key}
+                          <SelectItem key={data.cuid} value={data.cuid}>
+                            {data.name}
                           </SelectItem>
                         );
                       })}
@@ -277,30 +286,30 @@ const CampaignForm: FC<CampaignFormProps> = ({
               />
             )}
             {/* show only if selected is sms */}
-            {includeMessage && (
-              <FormField
-                control={form.control}
-                name="message"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        value={
-                          templatemessage.length > 0
-                            ? templatemessage
-                            : field.value
-                        }
-                        placeholder="Type your message here."
-                        className="rounded"
-                      />
-                    </FormControl>
+            {/* {includeMessage && ( */}
+            <FormField
+              control={form.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      value={
+                        templatemessage.length > 0
+                          ? templatemessage
+                          : field.value
+                      }
+                      placeholder="Type your message here."
+                      className="rounded"
+                    />
+                  </FormControl>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* )} */}
             {includeAudio && (
               <FormField
                 control={form.control}

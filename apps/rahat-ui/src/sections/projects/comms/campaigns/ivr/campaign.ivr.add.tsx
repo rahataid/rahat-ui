@@ -99,6 +99,7 @@ const IvrCampaignAddDrawer = () => {
       message: data.file.mediaURL,
       transportId: transportId,
       groupUID: data.group,
+      isIvr: true,
     };
     createCampaign.mutate(createCampagin);
     setIsOpen(false);

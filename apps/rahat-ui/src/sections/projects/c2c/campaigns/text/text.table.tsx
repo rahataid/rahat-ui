@@ -83,7 +83,7 @@ export default function TextTable() {
         })
         .map((campaign: any) => ({
           name: campaign.name,
-          id: campaign.id,
+          uuid: campaign.uuid,
           message: campaign.message,
           type: campaign.type,
           status: campaign.sessionId ? 'COMPLETED' : 'NOT_COMPLETED',
@@ -92,6 +92,7 @@ export default function TextTable() {
             (transport: any) => transport.cuid === campaign.transportId,
           )?.name,
         })) || [];
+
     campaignStore.setTotalTextCampaign(data?.response?.meta?.total || 0);
     return result;
   }, [isSuccess, data]);

@@ -84,14 +84,15 @@ const CampaignForm: FC<CampaignFormProps> = ({
 }) => {
   const router = useRouter();
   const { data: messageTemplate } = useGetApprovedTemplate();
-  const includeMessage = ['sms', 'whatsapp', 'email'].includes(
-    form.getValues().campaignType?.toLowerCase(),
-  );
-  const isWhatsappMessage =
-    form.getValues().campaignType?.toLowerCase() === 'whatsapp';
-  const includeAudio = ['phone'].includes(
-    form.getValues().campaignType?.toLowerCase(),
-  );
+  // const includeMessage = ['sms', 'whatsapp', 'email'].includes(
+  //   form.getValues().campaignType?.toLowerCase(),
+  // );
+  // const isWhatsappMessage =
+  //   form.getValues().campaignType?.toLowerCase() === 'whatsapp';
+  // const includeAudio = ['phone'].includes(
+  //   form.getValues().campaignType?.toLowerCase(),
+  // );
+  const [voiceSelected, setVoiceSelected] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [checkTemplate, setCheckTemplate] = React.useState(false);
   const [templatemessage, setTemplatemessage] = React.useState('');
@@ -106,6 +107,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
   const handleCampaignAssignModalClose = () => {
     campaignConfirmModal.onFalse();
   };
+
   return (
     <>
       <div className="w-full p-2">
@@ -172,7 +174,14 @@ const CampaignForm: FC<CampaignFormProps> = ({
               render={({ field, fieldState }) => (
                 <FormItem>
                   <Select
-                    onValueChange={field.onChange}
+                    onValueChange={(value) => {
+                      const transportType = transport.find(
+                        (t) => t.cuid === value,
+                      )?.type;
+                      if (transportType === 'VOICE') setVoiceSelected(true);
+                      else setVoiceSelected(false);
+                      field.onChange(value);
+                    }}
                     defaultValue={field.value || data?.type}
                   >
                     <FormControl>
@@ -195,7 +204,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
                 </FormItem>
               )}
             />
-            {includeMessage && isWhatsappMessage && (
+            {/* {includeMessage && isWhatsappMessage && (
               <FormField
                 control={form.control}
                 name="messageSid"
@@ -284,33 +293,12 @@ const CampaignForm: FC<CampaignFormProps> = ({
                   </FormItem>
                 )}
               />
-            )}
+            )} */}
             {/* show only if selected is sms */}
             {/* {includeMessage && ( */}
-            <FormField
-              control={form.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      value={
-                        templatemessage.length > 0
-                          ? templatemessage
-                          : field.value
-                      }
-                      placeholder="Type your message here."
-                      className="rounded"
-                    />
-                  </FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             {/* )} */}
-            {includeAudio && (
+            {voiceSelected ? (
               <FormField
                 control={form.control}
                 name="file"
@@ -332,6 +320,29 @@ const CampaignForm: FC<CampaignFormProps> = ({
                         })}
                       </SelectContent>
                     </Select>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : (
+              <FormField
+                control={form.control}
+                name="message"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        value={
+                          templatemessage.length > 0
+                            ? templatemessage
+                            : field.value
+                        }
+                        placeholder="Type your message here."
+                        className="rounded"
+                      />
+                    </FormControl>
 
                     <FormMessage />
                   </FormItem>

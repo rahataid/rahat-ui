@@ -14,7 +14,6 @@ import {
 import { Expand, Minus, Trash2, FilePenLine } from 'lucide-react';
 import { ICampaign } from '@rahat-ui/types';
 import InfoCard from '../infoCard';
-import { paths } from 'apps/rahat-ui/src/routes/paths';
 
 type IProps = {
   details: any;
@@ -88,7 +87,7 @@ export default function TextDetailSplitView({
       </div>
       <div className="mt-5 flex flex-col gap-5">
         <InfoCard
-          campaignId={details?.id}
+          campaignUuid={details?.uuid}
           name={details?.name}
           // startTime={
           // details?.startTime && new Date(details?.startTime).toLocaleString()

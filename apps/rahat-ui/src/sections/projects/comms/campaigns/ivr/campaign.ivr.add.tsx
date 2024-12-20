@@ -72,6 +72,7 @@ const IvrCampaignAddDrawer = () => {
   const uploadFile = useUploadFile();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [fileName, setFileName] = useState('');
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -107,9 +108,11 @@ const IvrCampaignAddDrawer = () => {
   const handleFileChange = async (event: any) => {
     const file = event.target.files[0];
     if (!file) return;
+    setUploading(true);
     const formData = new FormData();
     formData.append('file', file);
     const { data: afterUpload } = await uploadFile.mutateAsync(formData);
+    setUploading(false);
     console.log(afterUpload);
     form.setValue('file', afterUpload);
     setFileName(file.name);
@@ -239,12 +242,16 @@ const IvrCampaignAddDrawer = () => {
                             Selected file: {fileName}
                           </p>
                         )}
-                        <label
-                          htmlFor="configuration"
-                          className="text-sm text-blue-600 cursor-pointer"
-                        >
-                          Click here to browse
-                        </label>
+                        {uploading ? (
+                          <div className="mt-2 text-gray-600">Uploading...</div>
+                        ) : (
+                          <label
+                            htmlFor="configuration"
+                            className="text-sm text-blue-600 cursor-pointer"
+                          >
+                            Click here to browse
+                          </label>
+                        )}
                       </div>
                     </CardContent>
                   </Card>

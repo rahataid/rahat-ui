@@ -1,4 +1,5 @@
 import { useProjectStore } from '@rahat-ui/query';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   DropdownMenu,
@@ -21,20 +22,13 @@ export const useProjectHeaderItems = (projectType: string) => {
   const { data, subData } = useNavData();
   const currentPath = usePathname();
 
-  const projectName = project?.name || projectType;
+  const projectName = project?.name || '';
   const projectHeader = (
     <div className="flex items-center">
-      <Button
-        onClick={() => router.push('/projects')}
-        className="p-2 rounded mr-2"
-        variant="outline"
-      >
-        <X size={24} strokeWidth={1.5} className="mr-1" /> Exit Project
-      </Button>
-
-      <p className="text-xl ml-2 font-sans font-bold text-gray-800">
-        {projectName}
-      </p>
+      <Badge className="bg-blue-500 text-white rounded-full px-3 py-1">
+        {projectType}
+      </Badge>
+      <span className="ml-2 text-gray-700">{projectName}</span>
     </div>
   );
 

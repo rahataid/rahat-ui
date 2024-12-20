@@ -14,8 +14,8 @@ import {
 import StakeholdersTable from '../../../stakeholders/stakeholders.table';
 import useDetailsStakeholdersTableColumn from './table/useDetailsStakeholdersTableColumns';
 import ClientSidePagination from '../../../../components/client.side.pagination';
-import EditButton from '../../../../components/edit.btn';
-import DeleteButton from '../../../../components/delete.btn';
+import EditButton from '../../../../../../components/edit.btn';
+import DeleteButton from '../../../../../../components/delete.btn';
 import Back from '../../../../components/back';
 import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';

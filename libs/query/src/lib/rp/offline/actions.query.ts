@@ -80,14 +80,18 @@ export const useGetOfflineSingleVendor = (
   return useQuery({
     queryKey: ['rpSingleOfflineVendor'],
     queryFn: async () => {
-      const res = await action.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: GET_OFFLINE_SINGLE_VENDOR,
-          payload: { vendorId },
-        },
-      });
-      return res.data;
+      try {
+        const res = await action.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: GET_OFFLINE_SINGLE_VENDOR,
+            payload: { vendorId },
+          },
+        });
+        return res?.data;
+      } catch (e) {
+        return e;
+      }
     },
   });
 };
@@ -97,14 +101,18 @@ export const useSyncOfflineBeneficiaries = (projectUUID: UUID) => {
 
   return useMutation({
     mutationFn: async (data: any) => {
-      const res = await action.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: SYNC_OFFLINE_BENEFICIARIES,
-          payload: data,
-        },
-      });
-      return res.data;
+      try {
+        const res = await action?.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: SYNC_OFFLINE_BENEFICIARIES,
+            payload: data,
+          },
+        });
+        return res?.data;
+      } catch (e) {
+        return e;
+      }
     },
   });
 };

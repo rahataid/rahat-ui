@@ -15,13 +15,14 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/components/form';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-// import { SUBJECT_ACTIONS } from 'apps/community-tool-ui/src/constants/app.const';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { useEffect, useState } from 'react';
 import swal from 'sweetalert2';
 import PermissionsCard from './PermissionsCard';
-import { useEditRole } from '@rahat-ui/query';
 import { SUBJECT_ACTIONS } from 'apps/rahat-ui/src/constants/user.const';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useUserRoleEdit } from '@rumsan/react-query';
+import Swal from 'sweetalert2';
 
 type Iprops = {
   roleDetail: any;
@@ -30,7 +31,7 @@ type Iprops = {
 
 export default function EditRole({ roleDetail, currentPerms }: Iprops) {
   const { closeSecondPanel } = useSecondPanel();
-  const edit = useEditRole();
+  const edit = useUserRoleEdit();
 
   const [selectedSubjectActions, setSeletedSubjectActions] =
     useState<any>(null);
@@ -51,23 +52,32 @@ export default function EditRole({ roleDetail, currentPerms }: Iprops) {
   });
 
   const handleEditRole = (data: any) => {
-    const validateData = FormSchema.parse(data);
-    const sanitizedPerms = filterNonEmptyArrays(selectedSubjectActions);
-    const hasPerms = Object.keys(sanitizedPerms).length > 0;
-    console.log({ hasPerms });
-    if (!hasPerms)
-      return swal.fire(
-        'Error',
-        'Please select at least one permission',
-        'error',
-      );
-    const k = {
-      name: validateData.roleName,
-      isSystem: validateData.isSystem,
-      permissions: sanitizedPerms,
-    };
-    edit.mutateAsync({ name: roleDetail?.data?.role?.name, data: k });
-    closeSecondPanel();
+    try {
+      const validateData = FormSchema.parse(data);
+      const sanitizedPerms = filterNonEmptyArrays(selectedSubjectActions);
+      const hasPerms = Object.keys(sanitizedPerms).length > 0;
+      if (!hasPerms)
+        return swal.fire(
+          'Error',
+          'Please select at least one permission',
+          'error',
+        );
+      const k = {
+        name: validateData.roleName,
+        isSystem: validateData.isSystem,
+        permissions: sanitizedPerms,
+      };
+      edit.mutateAsync({ name: roleDetail?.data?.role?.name, data: k });
+      Swal.fire('Role Updated Successfully', '', 'success');
+    } catch (err) {
+      const errMsg =
+        err instanceof Error ? err.message : 'Something went wrong';
+      Swal.fire('Error Updating Role', errMsg, 'error');
+    } finally {
+      form.reset();
+      setSeletedSubjectActions(null);
+      closeSecondPanel();
+    }
   };
 
   const filterNonEmptyArrays = (obj: any) => {
@@ -137,24 +147,25 @@ export default function EditRole({ roleDetail, currentPerms }: Iprops) {
           />
 
           <div className="mt-3 mb-5">
-            <h2>Permissions</h2>
-            {Object.keys(SUBJECT_ACTIONS).map((subject) => (
-              <PermissionsCard
-                key={subject}
-                subject={subject}
-                existingActions={
-                  selectedSubjectActions && selectedSubjectActions[subject]
-                    ? selectedSubjectActions[subject]
-                    : []
-                }
-                onUpdate={handlePermissionUpdate}
-              />
-            ))}
+            <h2 className="mb-2 font-semibold">Permissions</h2>
+            <ScrollArea className="h-[calc(100vh-495px)]">
+              {Object.keys(SUBJECT_ACTIONS).map((subject) => (
+                <PermissionsCard
+                  key={subject}
+                  subject={subject}
+                  existingActions={
+                    selectedSubjectActions && selectedSubjectActions[subject]
+                      ? selectedSubjectActions[subject]
+                      : []
+                  }
+                  onUpdate={handlePermissionUpdate}
+                />
+              ))}
+            </ScrollArea>
           </div>
-
-          <div className="flex justify-end mt-3">
-            <Button type="submit">Update Role</Button>
-          </div>
+        </div>
+        <div className="flex justify-end mt-3">
+          <Button type="submit">Update Role</Button>
         </div>
       </form>
     </Form>

@@ -60,19 +60,19 @@ export default function VendorsDetail() {
       <div className="flex space-x-4 mb-4">
         <DataCard
           className="w-full border-solid rounded-md"
-          title="Leads Received"
+          title="Villagers Referred"
           Icon={User}
           number={vendorsStats?.data?.leadsRecieved}
         />
         <DataCard
           className="w-full border-solid rounded-md"
-          title="Leads Converted"
+          title="Eye Checkup in VC"
           Icon={User}
           number={vendorsStats?.data?.leadsConverted}
         />
         <DataCard
           className="w-full border-solid rounded-md"
-          title="Footfall"
+          title="Eyewear dispensed in VC"
           Icon={User}
           number={vendorsStats?.data?.footfalls}
         />

@@ -162,13 +162,13 @@ export default function AddBeneficiaryForm() {
                         >
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="male" />
+                              <RadioGroupItem value="MALE" />
                             </FormControl>
                             <FormLabel className="font-normal">Male</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="female" />
+                              <RadioGroupItem value="FEMALE" />
                             </FormControl>
                             <FormLabel className="font-normal">
                               Female
@@ -176,7 +176,7 @@ export default function AddBeneficiaryForm() {
                           </FormItem>
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
-                              <RadioGroupItem value="other" />
+                              <RadioGroupItem value="OTHER" />
                             </FormControl>
                             <FormLabel className="font-normal">Other</FormLabel>
                           </FormItem>

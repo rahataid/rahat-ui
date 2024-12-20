@@ -23,7 +23,7 @@ export const useTransactionHistoryTableColumns = () => {
     },
     {
       accessorKey: 'beneficiary',
-      header: 'Beneficiary',
+      header: 'Wallet',
       cell: ({ row }) => (
         <p className="truncate w-16">{row?.original?.beneficiary}</p>
       ),

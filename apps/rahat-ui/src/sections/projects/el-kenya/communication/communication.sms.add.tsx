@@ -42,17 +42,7 @@ export default function AddSMSForm() {
   const { id } = useParams();
 
   const createCampaign = useCreateCampaign(id as UUID);
-  const {
-    pagination,
-    selectedListItems,
-    setSelectedListItems,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    setPagination,
-    setFilters,
-    filters,
-  } = usePagination();
+  const { pagination, filters } = usePagination();
 
   const { data: benificiaryGroups } = useFindAllBeneficiaryGroups(id as UUID, {
     page: pagination.page,

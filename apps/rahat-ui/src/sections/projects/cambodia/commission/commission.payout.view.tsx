@@ -127,7 +127,11 @@ export default function CommissionPayoutView() {
                   key={index}
                   className="border-solid rounded-md"
                   iconStyle="bg-white text-black"
-                  title={toTitleCase(item?.name)}
+                  title={
+                    item?.name == 'TOTAL_LEAD_CONVERTED'
+                      ? 'Total Eye Checkup In VC'
+                      : toTitleCase(item?.name)
+                  }
                   number={
                     typeof item?.data?.count === 'string'
                       ? item?.data?.count

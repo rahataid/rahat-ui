@@ -1,6 +1,7 @@
 import {
   useGetOfflineSingleVendor,
   useKenyaVendorTransactions,
+  useRemoveVendor,
 } from '@rahat-ui/query';
 import {
   Tabs,
@@ -11,33 +12,46 @@ import {
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { UUID } from 'crypto';
 import { Copy, CopyCheck } from 'lucide-react';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 import HeaderWithBack from '../../components/header.with.back';
 import VendorsBeneficiaryList from './vendors.beneficiary.list';
 import VendorsTransactionsHistory from './vendors.transactions.history';
+import EditButton from 'apps/rahat-ui/src/components/edit.btn';
+import DeleteButton from 'apps/rahat-ui/src/components/delete.btn';
 
 export default function VendorsDetail() {
-  const { id } = useParams();
+  const { id } = useParams() as { id: UUID };
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const phone = searchParams.get('phone');
   const name = searchParams.get('name');
   const vendorWallet = searchParams.get('walletAddress') || '';
   const vendorId = searchParams.get('vendorId');
+  const vendorUUID = searchParams.get('vendorUUID') as UUID;
 
   const { data, isLoading: isVendorLoading } = useGetOfflineSingleVendor(
-    id as UUID,
+    id,
     Number(vendorId),
   );
+
+  const removeVendor = useRemoveVendor();
+
   const { data: vendorTransactions, isFetching: isLoading } =
     useKenyaVendorTransactions(vendorWallet);
+
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<string>();
 
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(walletAddress);
+  };
+
+  const deleteVendor = async () => {
+    await removeVendor.mutateAsync({ vendorId: vendorUUID, projectId: id });
+    router.push(`/projects/el-kenya/${id}/vendors`);
   };
   return (
     <div className="h-[calc(100vh-95px)] m-4">
@@ -47,14 +61,17 @@ export default function VendorsDetail() {
           subtitle="Here is the detailed view of selected vendor"
           path={`/projects/el-kenya/${id}/vendors`}
         />
-        {/* <div className="flex space-x-2">
-          <EditButton className="border-none bg-sky-50 shadow-none" path="" />
+        <div className="flex space-x-2">
+          <EditButton
+            className="border-none bg-sky-50 shadow-none"
+            path={`/projects/el-kenya/${id}/vendors/${vendorUUID}/edit`}
+          />
           <DeleteButton
             className="border-none bg-red-100 shadow-none"
             name="vendor"
-            handleContinueClick={() => {}}
+            handleContinueClick={deleteVendor}
           />
-        </div> */}
+        </div>
       </div>
       <div className="p-5 rounded border grid grid-cols-4 gap-5 mb-5">
         <div>

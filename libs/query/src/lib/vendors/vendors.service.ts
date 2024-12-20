@@ -132,8 +132,16 @@ export const useUpdateVendor = () => {
   });
 };
 
-const removeVendor = async (uuid: UUID) => {
-  const response = await api.patch(`/vendors/remove/${uuid}`);
+const removeVendor = async ({
+  vendorId,
+  projectId,
+}: {
+  vendorId: UUID;
+  projectId?: UUID;
+}) => {
+  const response = await api.patch(`/vendors/remove/${vendorId}`, {
+    projectId,
+  });
   return response?.data;
 };
 
@@ -146,8 +154,15 @@ export const useRemoveVendor = () => {
     showConfirmButton: false,
     timer: 3000,
   });
+
   return useMutation({
-    mutationFn: (uuid: UUID) => removeVendor(uuid),
+    mutationFn: ({
+      vendorId,
+      projectId,
+    }: {
+      vendorId: UUID;
+      projectId?: UUID;
+    }) => removeVendor({ vendorId, projectId }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
       qc.invalidateQueries({ queryKey: [TAGS.GET_VENDOR_DETAILS] });

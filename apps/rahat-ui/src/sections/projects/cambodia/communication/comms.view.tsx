@@ -1,4 +1,8 @@
-import { useCambodiaCommsList, usePagination } from '@rahat-ui/query';
+import {
+  useCambodiaBroadCastCounts,
+  useCambodiaCommsList,
+  usePagination,
+} from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -8,7 +12,7 @@ import {
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import React from 'react';
+import React, { useMemo } from 'react';
 import SearchInput from '../../components/search.input';
 import AddButton from '../../components/add.btn';
 import getIcon from 'apps/rahat-ui/src/utils/getIcon';
@@ -16,16 +20,7 @@ import ViewColumns from '../../components/view.columns';
 import CambodiaTable from '../table.component';
 import { useTableColumns } from './use.table.columns';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-
-const cardData = [
-  { title: 'Total Message Sent', icon: 'MessageSquareText', total: 1439 },
-  { title: 'Failed Message Delivery', icon: 'MessageSquareText', total: 1439 },
-  {
-    title: 'Successfull Messages Delivered',
-    icon: 'CircleCheck',
-    total: 1439,
-  },
-];
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 export default function CommunicationView() {
   const { id } = useParams() as { id: UUID };
@@ -44,24 +39,53 @@ export default function CommunicationView() {
     resetSelectedListItems,
   } = usePagination();
 
+  const { data: broadStatusCount } = useCambodiaBroadCastCounts({
+    projectUUID: id,
+  }) as any;
   const { data, isLoading } = useCambodiaCommsList({
     projectUUID: id,
+    ...pagination,
   });
+  const tableData = useMemo(() => {
+    if (data?.data) {
+      return data?.data;
+    } else {
+      return [];
+    }
+  }, [data?.data]);
+
   const columns = useTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: data?.data || [],
+    data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setSelectedListItems,
+    // onRowSelectionChange: setSelectedListItems,
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       columnVisibility,
     },
   });
 
+  const cardData = [
+    {
+      title: 'Total Message Sent',
+      icon: 'MessageSquareText',
+      total: broadStatusCount?.data?.total || 0,
+    },
+    {
+      title: 'Message Delivery Successful',
+      icon: 'CircleCheck',
+      total: broadStatusCount?.data?.success || 0,
+    },
+    {
+      title: 'Message Delivery Failed',
+      icon: 'MessageSquareText',
+      total: broadStatusCount?.data?.fail || 0,
+    },
+  ];
   return (
     <>
       <div className="p-4">
@@ -87,7 +111,14 @@ export default function CommunicationView() {
 
         <div className="rounded border bg-card p-4">
           <div className="flex justify-between space-x-2 mb-2">
-            <SearchInput className="w-full" name="" onSearch={() => {}} />
+            <SearchInput
+              className="w-full"
+              name="to"
+              value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
+              onSearch={(event) =>
+                table.getColumn('to')?.setFilterValue(event.target.value)
+              }
+            />
             <ViewColumns table={table} />
             {/* <AddButton
               path={`/projects/el-cambodia/${id}/communication/add`}

@@ -1122,6 +1122,32 @@ export const useCambodiaCommsList = (payload: any) => {
   return query;
 };
 
+export const useCambodiaBroadCastCounts = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.BROAD_CAST_STATUS_COUNT,
+      restPayloadString,
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.BROAD_CAST_STATUS_COUNT,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
 export const useCambodiaLineChartsReports = (payload: any) => {
   const q = useProjectAction<any[]>();
   const { projectUUID, ...restPayload } = payload;
@@ -1178,6 +1204,29 @@ export const useCambodiaCommisionStats = (payload: any) => {
           if (b.name === 'TOTAL_LEAD_CONVERTED') return 1;
           return 0;
         });
+    },
+  });
+  return query;
+};
+
+export const useCambodiaProjectSettings = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.PROJECT_SETTINGS, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.PROJECT_SETTINGS,
+          payload: restPayload,
+        },
+      });
+      return mutate;
     },
   });
   return query;

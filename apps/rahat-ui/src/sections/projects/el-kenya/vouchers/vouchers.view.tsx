@@ -1,24 +1,24 @@
-import React from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import getIcon from 'apps/rahat-ui/src/utils/getIcon';
-import { Plus, Ticket } from 'lucide-react';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useFindAllKenyaStats,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import {
   ChartColumnStacked,
   ChartDonut,
 } from '@rahat-ui/shadcn/src/components/charts';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import getIcon from 'apps/rahat-ui/src/utils/getIcon';
+import { UUID } from 'crypto';
 import {
-  useReadRahatCvaKenyaTotalAllocated,
+  useReadRahatCvaKenyaBeneficiaryCount,
   useReadRahatTokenTotalSupply,
 } from 'libs/query/src/lib/el-kenya/contracts/generated-hooks';
-import {
-  useProjectSettingsStore,
-  PROJECT_SETTINGS_KEYS,
-  useFindAllKenyaStats,
-} from '@rahat-ui/query';
-import { UUID } from 'crypto';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { Plus } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import React from 'react';
 
 export default function VouchersView() {
   const { id } = useParams() as { id: UUID };
@@ -28,13 +28,17 @@ export default function VouchersView() {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
-  const { data: tokenAllocated } = useReadRahatCvaKenyaTotalAllocated({
-    address: contractSettings?.rahatcvakenya?.address as `0x${string}`,
-  });
+  // const { data: tokenAllocated } = useReadRahatCvaKenyaBeneficiaryCount({
+  //   address: contractSettings?.rahatcvakenya?.address as `0x${string}`,
+  // });
 
   const { data: tokenBalance } = useReadRahatTokenTotalSupply({
     address: contractSettings?.rahattoken?.address as `0x${string}`,
   });
+
+  const tokenAllocated = kenyaStats?.data?.find(
+    (i: any) => i.name === 'BENEFICIARY_TOTAL',
+  )?.data;
 
   const REIMBURSEMENT_STATS = kenyaStats?.data?.find(
     (i: any) => i.name === 'REIMBURSEMENT_STATS',
@@ -132,21 +136,25 @@ export default function VouchersView() {
       title: 'Voucher Assigned',
       icon: 'Ticket',
       total: tokenAllocated?.toString() ?? '-',
+      subtitle: 'Total vouchers to all beneficiaries (Walk-in + Predetermined)',
     },
     {
       title: 'Beneficiary Voucher Redeemed',
       icon: 'Ticket',
+      subtitle: 'Total vouchers redeemed by beneficiaries',
       total: voucherRedeemedCount ?? '-',
     },
     {
       title: 'Vendor Voucher Claimed',
       icon: 'Ticket',
+      subtitle: 'Total vouchers claimed by beneficiaries',
       total: voucherReimbursedCount ?? '-',
     },
     {
       title: 'Voucher Redeemption Rate',
       icon: 'Ticket',
       total: REDEMPTION_RATE ?? '-',
+      // subtitle: 'Per 100 vouchers',
     },
   ];
 
@@ -181,6 +189,7 @@ export default function VouchersView() {
                   title={item.title}
                   Icon={Icon}
                   number={item.total}
+                  subtitle={item.subtitle}
                 />
               );
             })}

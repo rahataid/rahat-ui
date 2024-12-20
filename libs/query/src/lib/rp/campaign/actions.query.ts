@@ -149,8 +149,8 @@ export const useListRpCampaign = (
 ) => {
   const action = useProjectAction();
 
-  return useQuery({
-    queryKey: ['rpCampaignList', projectUUID],
+  const query = useQuery({
+    queryKey: ['rpCampaignList', projectUUID, payload],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
@@ -159,9 +159,14 @@ export const useListRpCampaign = (
           payload: payload,
         },
       });
-      return res.data;
+      return { data: res.data, meta: res.response.meta };
     },
   });
+  return {
+    ...query,
+    data: query?.data?.data || [],
+    meta: query?.data?.meta,
+  };
 };
 
 export const useListRpCommunicationStats = (projectUUID: UUID) => {

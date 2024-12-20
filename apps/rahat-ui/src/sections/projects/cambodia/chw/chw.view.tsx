@@ -108,8 +108,8 @@ export default function CHWView() {
       healthWorkerName: item.name,
       koboUserName: item.koboUsername,
       sales: item._count.SALE,
-      leads: item._count.LEAD,
-      leadsConverted: item._count.LeadConversions,
+      villagersReferred: item._count.LEAD,
+      eyeCheckup: item._count.LeadConversions,
       visionCenter: item.vendor.name,
     }));
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);
@@ -128,19 +128,19 @@ export default function CHWView() {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-7">
           <DataCard
-            title="Sales Count"
+            title="Sales by CHW"
             number={stats?.data?.sales}
             Icon={Coins}
             className="rounded-lg border-solid "
           />
           <DataCard
-            title="Leads Provided"
+            title="Villagers Referred"
             number={stats?.data?.leads}
             Icon={Users}
             className="rounded-lg border-solid"
           />
           <DataCard
-            title="Leads Converted"
+            title="Eye Checkup in VC"
             number={stats?.data?.leads_converted}
             Icon={Users}
             className="rounded-lg border-solid"

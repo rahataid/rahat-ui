@@ -190,17 +190,12 @@ const IvrCampaignAddDrawer = () => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            {benificiaryGroups?.length > 0 ? (
+                            {benificiaryGroups?.length > 0 &&
                               benificiaryGroups.map((group) => (
                                 <SelectItem key={group.uuid} value={group.uuid}>
                                   {group.name}
                                 </SelectItem>
-                              ))
-                            ) : (
-                              <SelectItem value="" disabled>
-                                No groups available
-                              </SelectItem>
-                            )}
+                              ))}
                           </SelectGroup>
                         </SelectContent>
                       </Select>

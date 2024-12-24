@@ -116,7 +116,6 @@ export default function VouchersView() {
 
       return acc;
     }, []);
-
     return { categories, series };
   }
 

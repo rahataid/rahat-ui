@@ -183,7 +183,7 @@ export default function BeneficiaryView() {
               <FiltersTags
                 filters={filters}
                 setFilters={setFilters}
-                total={beneficiaries?.data?.length}
+                total={meta?.total || 0}
               />
             )}
             <ElkenyaTable

@@ -143,6 +143,7 @@ export const MS_CAM_ACTIONS = {
     COMMUNICATION: {
       LIST: 'cambodia.communication.list',
       BROAD_CAST_STATUS_COUNT: 'cambodia.app.broadcast_status_count',
+      TRIGGER_COMMUNICATION: 'cambodia.app.trigger_communication',
     },
     LINE_STATS: 'cambodia.app.line_stats',
     PROJECT_SETTINGS: 'cambodia.app.project_settings',

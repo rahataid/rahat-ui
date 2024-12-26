@@ -211,7 +211,7 @@ export default function GrievanceAdd() {
 
     router.back();
     await addGrievance.mutateAsync(grievance);
-
+    form.reset();
     if (addGrievance.isSuccess) {
       router.push(`/projects/c2c/${id}/grievance`);
     }

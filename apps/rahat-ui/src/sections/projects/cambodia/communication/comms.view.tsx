@@ -12,15 +12,20 @@ import {
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import SearchInput from '../../components/search.input';
-import AddButton from '../../components/add.btn';
 import getIcon from 'apps/rahat-ui/src/utils/getIcon';
 import ViewColumns from '../../components/view.columns';
 import CambodiaTable from '../table.component';
 import { useTableColumns } from './use.table.columns';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Download } from 'lucide-react';
+import { DatePicker } from 'apps/rahat-ui/src/components/datePicker';
+import SelectComponent from '../select.component';
+
+import AddSMSView from './add.sms.view';
+import * as XLSX from 'xlsx';
 
 export default function CommunicationView() {
   const { id } = useParams() as { id: UUID };
@@ -37,6 +42,7 @@ export default function CommunicationView() {
     selectedListItems,
     setSelectedListItems,
     resetSelectedListItems,
+    resetFilters,
   } = usePagination();
 
   const { data: broadStatusCount } = useCambodiaBroadCastCounts({
@@ -44,7 +50,9 @@ export default function CommunicationView() {
   }) as any;
   const { data, isLoading } = useCambodiaCommsList({
     projectUUID: id,
-    ...pagination,
+    page: pagination.page,
+    perPage: pagination.perPage,
+    ...filters,
   });
   const tableData = useMemo(() => {
     if (data?.data) {
@@ -57,15 +65,17 @@ export default function CommunicationView() {
   const columns = useTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: tableData || [],
+    data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    // onRowSelectionChange: setSelectedListItems,
+    onRowSelectionChange: setSelectedListItems,
     getFilteredRowModel: getFilteredRowModel(),
+    getRowId: (row) => row.cuid,
     state: {
       columnVisibility,
+      rowSelection: selectedListItems,
     },
   });
 
@@ -86,6 +96,52 @@ export default function CommunicationView() {
       total: broadStatusCount?.data?.fail || 0,
     },
   ];
+
+  const handleFilterChange = (event: any) => {
+    if (event && event.target) {
+      const { name, value } = event.target;
+      console.log('value', value);
+      const filterValue = value === 'ALL' ? setFilters({}) : value;
+      table.getColumn(name)?.setFilterValue(filterValue);
+      setFilters({
+        ...filters,
+        [name]: filterValue,
+      });
+    }
+  };
+
+  const handleDateChange = (date: Date, type: string) => {
+    if (type === 'start') {
+      setFilters({
+        ...filters,
+        startDate: date,
+      });
+    } else {
+      setFilters({
+        ...filters,
+        endDate: date,
+      });
+    }
+  };
+
+  const address = tableData
+    ?.filter((item: any) => item.status === 'FAIL')
+    .map((add) => add.address);
+
+  const handleDownload = async () => {
+    const rowsToDownload = tableData || [];
+    const workbook = XLSX.utils.book_new();
+    const worksheetData = rowsToDownload?.map((item: any) => ({
+      address: item.address,
+      status: item.status,
+      createdAt: new Date(item.createdAt).toLocaleDateString(),
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Communication Failed');
+
+    XLSX.writeFile(workbook, 'Communication Failed.xlsx');
+  };
+
   return (
     <>
       <div className="p-4">
@@ -110,20 +166,49 @@ export default function CommunicationView() {
         </div>
 
         <div className="rounded border bg-card p-4">
-          <div className="flex justify-between space-x-2 mb-2">
-            <SearchInput
+          <div className="flex justify-end items-center space-x-2 mb-2">
+            {/* <SearchInput
               className="w-full"
               name="to"
               value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
               onSearch={(event) =>
                 table.getColumn('to')?.setFilterValue(event.target.value)
               }
-            />
-            <ViewColumns table={table} />
-            {/* <AddButton
-              path={`/projects/el-cambodia/${id}/communication/add`}
-              name="SMS"
             /> */}
+            <DatePicker
+              placeholder="Pick Start Date"
+              handleDateChange={handleDateChange}
+              type="start"
+              className="w-96"
+            />
+            <DatePicker
+              placeholder="Pick End Date"
+              handleDateChange={handleDateChange}
+              type="end"
+              className="w-96"
+            />
+            <SelectComponent
+              className="w-96"
+              name="Status"
+              options={['ALL', 'SUCCESS', 'FAIL']}
+              onChange={(value) =>
+                handleFilterChange({
+                  target: { name: 'status', value },
+                })
+              }
+              value={table.getColumn('name')?.getFilterValue() as string}
+            />
+            {/* <ViewColumns table={table} /> */}
+            <Button
+              variant="outline"
+              className="text-muted-foreground w-48"
+              onClick={handleDownload}
+              disabled={!address?.length}
+            >
+              <Download className="w-4 h-4 mr-3" /> Download Report
+            </Button>
+
+            <AddSMSView address={address} />
           </div>
           <CambodiaTable
             table={table}

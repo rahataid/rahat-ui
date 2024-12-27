@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useGrievanceAdd } from '@rahat-ui/query';
+import { useEffect } from 'react';
 
 const FormSchema = z.object({
   reportedBy: z
@@ -212,10 +213,13 @@ export default function GrievanceAdd() {
     router.back();
     await addGrievance.mutateAsync(grievance);
     form.reset();
+  };
+
+  useEffect(() => {
     if (addGrievance.isSuccess) {
       router.push(`/projects/c2c/${id}/grievance`);
     }
-  };
+  }, [addGrievance.isSuccess]);
 
   return (
     <GrievanceForm

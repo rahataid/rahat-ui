@@ -663,14 +663,29 @@ export const useUpdateElRedemption = () => {
 export const useProjectEdit = () => {
   const { queryClient, rumsanService } = useRSQuery();
   // const projectClient = getProjectClient(rumsanService.client);
-
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
   return useMutation(
     {
-      onError(error, variables, context) {
-        console.error('Error', error, variables, context);
+      onSuccess: () => {
+        toast.fire({
+          title: 'Project edited successfully',
+          icon: 'success',
+        });
+        queryClient.invalidateQueries({
+          queryKey: [TAGS.GET_PROJECT_DETAILS],
+        });
       },
-      onSuccess(data, variables, context) {
-        console.log('Success', data, variables, context);
+      onError: () => {
+        toast.fire({
+          title: 'Error while editing project.',
+          icon: 'error',
+        });
       },
       mutationKey: ['projectEdit'],
       mutationFn: async ({ uuid, data }: { uuid: UUID; data: any }) => {

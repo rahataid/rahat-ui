@@ -40,3 +40,21 @@ export const useGrievanceAdd: any = () => {
     queryClient,
   );
 };
+
+export const useGrievanceChangeStatus: any = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const grievanceClient = getGrievanceClient(rumsanService.client);
+
+  return useMutation(
+    {
+      mutationKey: ['grievance_change_status'],
+      mutationFn: grievanceClient.changeStatus,
+      onSuccess(data, variables, context) {
+        queryClient.invalidateQueries({
+          queryKey: ['get_grievances'],
+        });
+      },
+    },
+    queryClient,
+  );
+};

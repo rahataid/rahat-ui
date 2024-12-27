@@ -64,13 +64,12 @@ export default function AddSMSView({ address }: IProps) {
 
   const handleAddSMS = async (data: z.infer<typeof FormSchema>) => {
     if (!data) setOpen(true);
-    triggerComms.mutate({
+    await triggerComms.mutateAsync({
       projectUUID: id,
       campaignName: data.name,
       message: data.message,
       addresses: address,
     });
-    console.log(data);
     form.reset();
     setOpen(false);
   };
@@ -81,7 +80,7 @@ export default function AddSMSView({ address }: IProps) {
           <Button
             // variant={variant}
             type="button"
-            className="w-48"
+            className="w-1/4"
             disabled={!address.length}
             onClick={() => setOpen(true)}
           >

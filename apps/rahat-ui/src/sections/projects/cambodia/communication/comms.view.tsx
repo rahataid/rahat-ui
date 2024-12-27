@@ -26,12 +26,13 @@ import SelectComponent from '../select.component';
 
 import AddSMSView from './add.sms.view';
 import * as XLSX from 'xlsx';
+import { DateRange } from 'react-day-picker';
+import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
 
 export default function CommunicationView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-
   const {
     pagination,
     filters,
@@ -44,7 +45,6 @@ export default function CommunicationView() {
     resetSelectedListItems,
     resetFilters,
   } = usePagination();
-
   const { data: broadStatusCount } = useCambodiaBroadCastCounts({
     projectUUID: id,
   }) as any;
@@ -52,6 +52,12 @@ export default function CommunicationView() {
     projectUUID: id,
     page: pagination.page,
     perPage: pagination.perPage,
+    ...filters,
+  });
+  const { data: filteredData } = useCambodiaCommsList({
+    projectUUID: id,
+    page: 1,
+    perPage: data?.response?.meta?.total,
     ...filters,
   });
   const tableData = useMemo(() => {
@@ -110,37 +116,38 @@ export default function CommunicationView() {
     }
   };
 
-  const handleDateChange = (date: Date, type: string) => {
-    if (type === 'start') {
+  const handleDateChange = (date: DateRange | undefined) => {
+    if (date?.from && date?.to) {
       setFilters({
         ...filters,
-        startDate: date,
+        startDate: date.from,
+        endDate: date.to,
       });
     } else {
-      setFilters({
-        ...filters,
-        endDate: date,
-      });
+      setFilters({});
     }
   };
-
   const address = tableData
     ?.filter((item: any) => item.status === 'FAIL')
     .map((add) => add.address);
 
   const handleDownload = async () => {
-    const rowsToDownload = tableData || [];
+    const rowsToDownload = filteredData?.data || [];
     const workbook = XLSX.utils.book_new();
     const worksheetData = rowsToDownload?.map((item: any) => ({
-      address: item.address,
-      status: item.status,
-      createdAt: new Date(item.createdAt).toLocaleDateString(),
+      Phone: item.address,
+      Status: item.status,
+      CreatedAt: new Date(item.createdAt).toLocaleDateString(),
     }));
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Communication Failed');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Communication Report');
 
-    XLSX.writeFile(workbook, 'Communication Failed.xlsx');
+    XLSX.writeFile(workbook, 'Communication Report.xlsx');
   };
+
+  useEffect(() => {
+    setFilters({});
+  }, []);
 
   return (
     <>
@@ -175,20 +182,15 @@ export default function CommunicationView() {
                 table.getColumn('to')?.setFilterValue(event.target.value)
               }
             /> */}
-            <DatePicker
-              placeholder="Pick Start Date"
+            <DateRangePicker
+              placeholder="Pick a date range"
               handleDateChange={handleDateChange}
-              type="start"
-              className="w-96"
+              type="range"
+              className="w-full"
             />
-            <DatePicker
-              placeholder="Pick End Date"
-              handleDateChange={handleDateChange}
-              type="end"
-              className="w-96"
-            />
+
             <SelectComponent
-              className="w-96"
+              className="w-1/2"
               name="Status"
               options={['ALL', 'SUCCESS', 'FAIL']}
               onChange={(value) =>
@@ -201,9 +203,12 @@ export default function CommunicationView() {
             {/* <ViewColumns table={table} /> */}
             <Button
               variant="outline"
-              className="text-muted-foreground w-48"
+              className="text-muted-foreground w-1/4"
               onClick={handleDownload}
-              disabled={!address?.length}
+              disabled={
+                Object.keys(filters).length === 0 ||
+                filters.status === undefined
+              }
             >
               <Download className="w-4 h-4 mr-3" /> Download Report
             </Button>

@@ -25,3 +25,5 @@ export * from './lib/cva';
 export * from './lib/grievance';
 export * from './lib/rp';
 export * from './lib/new-comms';
+
+export * from './lib/scb';

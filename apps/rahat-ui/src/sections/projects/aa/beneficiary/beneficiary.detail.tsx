@@ -2,7 +2,12 @@
 
 import React from 'react';
 
-import { BeneficiaryAssignedToken } from '@rahat-ui/query';
+import {
+  BeneficiaryAssignedToken,
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+  useScbBankTransactions,
+} from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
@@ -28,6 +33,11 @@ import Image from 'next/image';
 import TransactionTable from './beneficiary.transaction.table';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { useQuery } from 'urql';
+import BankTransfersTable from './bank.transfers.table';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useBankTransfersTableColumns } from './use.bank.transfers.table.column';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -38,6 +48,7 @@ export default function BeneficiaryDetail({
   beneficiaryDetails,
   closeSecondPanel,
 }: IProps) {
+  const { id } = useParams() as { id: UUID };
   const walletAddress = beneficiaryDetails.walletAddress;
 
   const isLoading = false;
@@ -47,6 +58,22 @@ export default function BeneficiaryDetail({
     variables: {
       beneficiary: walletAddress,
     },
+  });
+
+  const scbConfig = useProjectSettingsStore(
+    (s) => s.settings?.[id]?.[PROJECT_SETTINGS_KEYS.SCB],
+  );
+
+  const { data: bankTransfers, isLoading: scbDataIsLoading } =
+    useScbBankTransactions(scbConfig, beneficiaryDetails?.bankAccountNumber);
+
+  const columns = useBankTransfersTableColumns();
+
+  const table = useReactTable({
+    manualPagination: true,
+    data: bankTransfers || [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
   });
 
   const [walletAddressCopied, setWalletAddressCopied] =
@@ -126,9 +153,10 @@ export default function BeneficiaryDetail({
 
           <Tabs defaultValue="details">
             <div className="p-2">
-              <TabsList className="w-full grid grid-cols-2 border h-auto">
+              <TabsList className="w-full grid grid-cols-3 border h-auto">
                 <TabsTrigger value="details">Details</TabsTrigger>
                 <TabsTrigger value="transaction">Transaction</TabsTrigger>
+                <TabsTrigger value="bankTransfers">Bank Transfers</TabsTrigger>
               </TabsList>
             </div>
             <TabsContent value="details">
@@ -201,6 +229,9 @@ export default function BeneficiaryDetail({
                   isFetching={result?.fetching}
                 />
               </div>
+            </TabsContent>
+            <TabsContent value="bankTransfers">
+              <BankTransfersTable table={table} loading={scbDataIsLoading} />
             </TabsContent>
           </Tabs>
         </>

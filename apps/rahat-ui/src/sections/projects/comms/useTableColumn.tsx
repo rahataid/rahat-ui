@@ -4,22 +4,22 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { ICampaignItemApiResponse } from '@rahat-ui/types';
 
-export default function useTextTableColumn() {
+export default function useLogsTableColumn() {
   const columns: ColumnDef<ICampaignItemApiResponse>[] = [
     {
-      accessorKey: 'to',
+      accessorKey: 'address',
       header: 'To',
       cell: ({ row }) => (
-        <div className="cursor-pointer">{row.getValue('to')}</div>
+        <div className="cursor-pointer">{row.getValue('address')}</div>
       ),
       filterFn: 'includesString',
     },
 
     {
-      accessorKey: 'date',
+      accessorKey: 'createdAt',
       header: 'Date',
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('date')}</div>
+        <div className="capitalize">{row.getValue('createdAt')}</div>
       ),
     },
     {

@@ -182,20 +182,23 @@ export const useListCommsCommunicationStats = (projectUUID: UUID) => {
   });
 };
 
-export const useListCommsCommunicationLogs = (projectUUID: UUID) => {
+export const useListCommsCommunicationLogs = (
+  projectUUID: UUID,
+  payload: Pagination & { [key: string]: string | number },
+) => {
   const action = useProjectAction();
 
   return useQuery({
-    queryKey: ['commsCommunicationLogs', projectUUID],
+    queryKey: ['commsCommunicationLogs', projectUUID, payload],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
           action: GET_ALL_COMMUNICATION_LOGS,
-          payload: {},
+          payload: payload,
         },
       });
-      return res.data;
+      return res;
     },
   });
 };

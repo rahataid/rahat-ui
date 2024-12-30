@@ -39,12 +39,14 @@ import {
 import Image from 'next/image';
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import useIvrTableColumn from './useIvrTableColumn';
+import useIvrTableColumn from '../../useTableColumn';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import ElkenyaTable from '../../../el-kenya/table.component';
 import CommsTable from '../../table.component';
+import { useListCommsCommunicationLogs, usePagination } from '@rahat-ui/query';
+import { UUID } from 'crypto';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export type Ivr = {
   id: number;
@@ -66,20 +68,20 @@ export default function IvrTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const dataArray = [
-    { to: '9842349411', date: '2023-06-01', status: 'Rejected' },
-    { to: '9852227472', date: '2023-06-02', status: 'Approved' },
-    { to: '9866180303', date: '2023-06-03', status: 'Pending' },
-    { to: '9865079182', date: '2023-06-04', status: 'Pending' },
-    { to: '9852711445', date: '2023-06-05', status: 'Approved' },
-    { to: '9866587402', date: '2023-06-06', status: 'Rejected' },
-    { to: '9853257921', date: '2023-06-07', status: 'Approved' },
-    { to: '9860855697', date: '2023-06-08', status: 'Approved' },
-    { to: '9854869214', date: '2023-06-09', status: 'Pending' },
-    { to: '9857289679', date: '2023-06-10', status: 'Rejected' },
-  ] as any;
+  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
+
+  const logs = useListCommsCommunicationLogs(id as UUID, {
+    page: pagination.page,
+    perPage: pagination.perPage,
+    limit: pagination.perPage,
+    order: 'desc',
+    sort: 'createdAt',
+  });
+  const meta = logs.data?.response.meta;
+
   const table = useReactTable({
-    data: dataArray,
+    data: logs?.data?.data || [],
+    manualPagination: true,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -172,7 +174,16 @@ export default function IvrTable() {
           </Button>
         ) : null}
       </div>
-      <CommsTable table={table} tableHeight="h-[calc(100vh-421px)]" />
+      <CommsTable table={table} tableHeight="h-[calc(100vh-321px)]" />
+      <CustomPagination
+        meta={meta || { total: 0, currentPage: 0 }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={0}
+      />
     </div>
   );
 }

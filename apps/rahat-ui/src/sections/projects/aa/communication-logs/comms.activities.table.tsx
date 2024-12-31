@@ -34,7 +34,7 @@ export default function CommsActivitiesTable() {
 
   const { activitiesData, activitiesMeta } = useActivitiesHavingComms(
     projectId as UUID,
-    {...pagination},
+    { ...pagination },
   );
 
   const columns = useCommsActivitiesTableColumns();
@@ -62,7 +62,7 @@ export default function CommsActivitiesTable() {
         <div className="mt-1 bg-card border rounded">
           <Table>
             <ScrollArea className="h-[calc(100vh-374px)]">
-              <TableHeader className="sticky top-0">
+              <TableHeader className="sticky top-0 bg-card">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {

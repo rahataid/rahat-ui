@@ -1,7 +1,4 @@
-import {
-  Table,
-  flexRender,
-} from '@tanstack/react-table';
+import { Table, flexRender } from '@tanstack/react-table';
 import {
   Table as TableComponent,
   TableBody,
@@ -14,13 +11,14 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 type IProps = {
   table: Table<any>;
-}
+};
 
 export default function ActivitiesTable({ table }: IProps) {
   return (
-    <TableComponent>
-      <ScrollArea className="h-[calc(100vh-179px)]">
-        <TableHeader>
+    <div className="h-[calc(100vh-185px)] relative overflow-auto">
+      <TableComponent>
+        {/* <ScrollArea className="h-[calc(100vh-179px)]"> */}
+        <TableHeader className="sticky top-0 bg-card">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -29,9 +27,9 @@ export default function ActivitiesTable({ table }: IProps) {
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                   </TableHead>
                 );
               })}
@@ -47,10 +45,7 @@ export default function ActivitiesTable({ table }: IProps) {
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext(),
-                    )}
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>
@@ -66,7 +61,8 @@ export default function ActivitiesTable({ table }: IProps) {
             </TableRow>
           )}
         </TableBody>
-      </ScrollArea>
-    </TableComponent>
+        {/* </ScrollArea> */}
+      </TableComponent>
+    </div>
   );
 }

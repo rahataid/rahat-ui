@@ -20,6 +20,10 @@ export default function Step1DisburseMethod({
   projectSubgraphDetails,
   treasurySources,
 }: Step1DisburseMethodProps) {
+  const filteredTreasurySources = TREASURY_SOURCES?.filter((source) =>
+    treasurySources?.includes(source?.value),
+  );
+
   return (
     <>
       <div className="m-4 p-6">
@@ -32,7 +36,7 @@ export default function Step1DisburseMethod({
           </p>
         </div>
         <div className="flex gap-5 bg-zinc-50">
-          {TREASURY_SOURCES.map((method) => {
+          {filteredTreasurySources?.map((method) => {
             const IconComponent = iconMap[method.value];
 
             return (

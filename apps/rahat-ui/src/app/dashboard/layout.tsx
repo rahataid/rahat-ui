@@ -3,28 +3,25 @@
 import * as React from 'react';
 import { Nav } from '../../components/nav';
 import AuthGuard from '../../guards/auth-guard';
-import {
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/src/components/ui/resizable';
+import SideNav from '../../components/side-nav';
 
 export default function DashboardLayout({
+  margin = 'mt-14',
   children,
   hasDefaultHeader = true,
 }: {
+  margin?: string;
   children: React.ReactNode;
   hasDefaultHeader?: boolean;
 }) {
   return (
     <AuthGuard>
-      <title>Dashboard</title>
-      {hasDefaultHeader && <Nav />}
-      <div className="mx-2">
-        <ResizablePanelGroup direction="horizontal" className="border">
-          <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-            {children}
-          </ResizablePanel>
-        </ResizablePanelGroup>
+      <div className="flex">
+        <SideNav />
+        <div className="w-full h-screen">
+          <Nav hasDefaultHeader={hasDefaultHeader} />
+          <div className={margin}>{children}</div>
+        </div>
       </div>
     </AuthGuard>
   );

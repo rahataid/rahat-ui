@@ -8,9 +8,7 @@ export const useGetDataSource = () => {
   return useQuery({
     queryKey: ['datasource'],
     queryFn: async () => {
-      const res = await rumsanService.client.get(
-        `/beneficiaries/statsSource`,
-      );
+      const res = await rumsanService.client.get(`/beneficiaries/statsSource`);
       return res.data.data;
     },
   });

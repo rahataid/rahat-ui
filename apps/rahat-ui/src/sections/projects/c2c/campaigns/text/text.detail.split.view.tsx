@@ -12,12 +12,11 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Expand, Minus, Trash2, FilePenLine } from 'lucide-react';
-import { ICampaignItemApiResponse } from '@rahat-ui/types';
+import { ICampaign } from '@rahat-ui/types';
 import InfoCard from '../infoCard';
-import { paths } from 'apps/rahat-ui/src/routes/paths';
 
 type IProps = {
-  details: ICampaignItemApiResponse;
+  details: any;
   closeSecondPanel: VoidFunction;
 };
 
@@ -45,11 +44,11 @@ export default function TextDetailSplitView({
               <Expand
                 size={20}
                 strokeWidth={1.5}
-                onClick={() =>
-                  router.push(
-                    paths.dashboard.communication.textDetail(details.id),
-                  )
-                }
+                // onClick={() =>
+                // router.push(
+                //   `/projects/el-kenya/${id}/communication`,
+                // )
+                // }
               />
             </TooltipTrigger>
             <TooltipContent className="bg-secondary">
@@ -63,11 +62,11 @@ export default function TextDetailSplitView({
               <FilePenLine
                 size={20}
                 strokeWidth={1.5}
-                onClick={() =>
-                  router.push(
-                    paths.dashboard.communication.editTextCampaign(details.id),
-                  )
-                }
+                // onClick={() =>
+                // router.push(
+                //     `/projects/el-kenya/${id}/communication`,
+                //   )
+                // }
               />
             </TooltipTrigger>
             <TooltipContent className="bg-secondary ">
@@ -88,11 +87,11 @@ export default function TextDetailSplitView({
       </div>
       <div className="mt-5 flex flex-col gap-5">
         <InfoCard
-          campaignId={details?.id}
+          campaignUuid={details?.uuid}
           name={details?.name}
-          startTime={
-            details?.startTime && new Date(details?.startTime).toLocaleString()
-          }
+          // startTime={
+          // details?.startTime && new Date(details?.startTime).toLocaleString()
+          // }
           status={details?.status}
           totalAudience={details?.totalAudiences ?? 0}
           type={details?.type}
@@ -103,13 +102,7 @@ export default function TextDetailSplitView({
             <CardTitle>Message</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>
-              {details?.details?.body
-                ? details?.details?.body
-                : details?.details?.message
-                ? details?.details?.message
-                : 'No message'}
-            </p>
+            <p>{details?.message || 'No message'}</p>
           </CardContent>
         </Card>
       </div>

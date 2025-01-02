@@ -16,7 +16,7 @@ import {
 import { UUID } from 'crypto';
 import { isEmpty } from 'lodash';
 import { useEffect, useMemo } from 'react';
-import { PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
+import { MS_CAM_ACTIONS, PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
 import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
@@ -619,6 +619,7 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
         ...query.data,
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
+              ...row,
               uuid: row?.uuid?.toString(),
               walletAddress: row?.walletAddress?.toString(),
               voucherClaimStatus: row?.claimStatus,
@@ -704,14 +705,29 @@ export const useUpdateElRedemption = () => {
 export const useProjectEdit = () => {
   const { queryClient, rumsanService } = useRSQuery();
   // const projectClient = getProjectClient(rumsanService.client);
-
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
   return useMutation(
     {
-      onError(error, variables, context) {
-        console.error('Error', error, variables, context);
+      onSuccess: () => {
+        toast.fire({
+          title: 'Project edited successfully',
+          icon: 'success',
+        });
+        queryClient.invalidateQueries({
+          queryKey: [TAGS.GET_PROJECT_DETAILS],
+        });
       },
-      onSuccess(data, variables, context) {
-        console.log('Success', data, variables, context);
+      onError: () => {
+        toast.fire({
+          title: 'Error while editing project.',
+          icon: 'error',
+        });
       },
       mutationKey: ['projectEdit'],
       mutationFn: async ({ uuid, data }: { uuid: UUID; data: any }) => {
@@ -721,4 +737,530 @@ export const useProjectEdit = () => {
     },
     queryClient,
   );
+};
+
+export const useCHWList = (payload: any) => {
+  const action = useProjectAction();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.LIST, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.CHW.LIST,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return {
+    ...query,
+    data: useMemo(() => {
+      return {
+        ...query.data,
+      };
+    }, [query.data]),
+  };
+};
+// cambodia.chw.get
+
+export const useCHWGet = (payload: any) => {
+  const action = useProjectAction();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.GET, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.CHW.GET,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return {
+    ...query,
+    data: useMemo(() => {
+      return {
+        ...query.data,
+      };
+    }, [query.data]),
+  };
+};
+
+export const useCambodiaBeneficiaries = (payload: any) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return { ...query };
+};
+
+export const useCambodiaBeneficiary = (payload: any) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.GET, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.GET,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return {
+    ...query,
+  };
+};
+
+export const useCambodiaVendorsList = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.VENDOR.LIST_BY_PROJECT,
+      restPayloadString,
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.LIST_BY_PROJECT,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
+export const useCambodiaVendorGet = (payload: any) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.VENDOR.GET_BY_UUID, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.GET_BY_UUID,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return {
+    ...query,
+  };
+};
+
+export const useCambodiaCommisionList = (payload: any) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.LIST,
+      restPayloadString,
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.LIST,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return {
+    ...query,
+  };
+};
+
+export const useCambodiaCommisionCurrent = (payload: any) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.GET_CURRENT,
+      restPayloadString,
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.GET_CURRENT,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return {
+    ...query,
+  };
+};
+
+export const useCambodiaCommisionCreate = () => {
+  const q = useProjectAction<any[]>();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationKey: [MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.CREATE],
+
+    mutationFn: async (payload: any) => {
+      const { projectUUID, ...restPayload } = payload;
+
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.CREATE,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: [MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.GET_CURRENT],
+      });
+    },
+  });
+};
+
+export const useCambodiaDiscardedBeneficiaries = (payload: any) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.DISCARDED_LIST,
+      restPayloadString,
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.DISCARDED_LIST,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return { ...query };
+};
+
+export const useCambodiaVendorsStats = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return query;
+};
+
+export const useCambodiaHealthWorkerByUUIDStats = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.STATS, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.CHW.STATS,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return query;
+};
+
+export const useCambodiaVendorHealthWorkers = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.VENDOR.HEALTH_WORKERS,
+      restPayloadString,
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.HEALTH_WORKERS,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return query;
+};
+
+export const useCambodiaVendorLeadConversions = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.VENDOR.LEAD_CONVERSIONS,
+      restPayloadString,
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.VENDOR.LEAD_CONVERSIONS,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
+export const useCambodiaHealthWorkersStats = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.CHW.BENEFICIARIES_STATS,
+      restPayloadString,
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.CHW.BENEFICIARIES_STATS,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
+export const useCambodiaCommsList = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.LIST, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.LIST,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
+export const useCambodiaBroadCastCounts = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.BROAD_CAST_STATUS_COUNT,
+      restPayloadString,
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.BROAD_CAST_STATUS_COUNT,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
+export const useCambodiaLineChartsReports = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.LINE_STATS, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.LINE_STATS,
+          payload: restPayload?.filters,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
+export const useCambodiaCommisionStats = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [
+      MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.STATS,
+      restPayloadString,
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.STATS,
+          payload: restPayload,
+        },
+      });
+
+      return mutate?.data
+        ?.filter((item) =>
+          ['TOTAL_LEAD_CONVERTED', 'TOTAL_COMMISSION_EARNED'].includes(
+            item.name,
+          ),
+        )
+        ?.sort((a, b) => {
+          if (a.name === 'TOTAL_LEAD_CONVERTED') return -1;
+          if (b.name === 'TOTAL_LEAD_CONVERTED') return 1;
+          return 0;
+        });
+    },
+  });
+  return query;
 };

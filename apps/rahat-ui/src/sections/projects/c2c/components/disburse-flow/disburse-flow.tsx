@@ -58,8 +58,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     setStepData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const pending =
+  const pendingMultiSignTransactions =
     stepData?.treasurySource === 'MULTISIG' && pendingTransactions?.length > 0;
+  console.log('pendingMultiSignTransactions', pendingMultiSignTransactions);
 
   const handleNext = () => {
     const currentStepValidations = steps[currentStep].validation;
@@ -85,6 +86,10 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
 
     if (selectedBeneficiaries && selectedBeneficiaries?.length > 0) {
       if (stepData.treasurySource === 'MULTISIG') {
+        console.log(
+          'amount',
+          +stepData.disburseAmount * selectedBeneficiaries?.length,
+        );
         await disburseMultiSig.mutateAsync({
           amount: String(
             +stepData.disburseAmount * selectedBeneficiaries?.length ?? 0,
@@ -214,6 +219,8 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     return steps[currentStep].component;
   };
 
+  console.log('pendingTransactions', pendingTransactions);
+
   return (
     <div className="p-2 mx-2 flex flex-col justify-evenly">
       <div className="bg-card rounded-lg">
@@ -238,7 +245,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
         </Stepper>
         <div>{renderComponent()}</div>
         <div className="flex items-center justify-end gap-4">
-          {pending && (
+          {pendingMultiSignTransactions && (
             <p className="text-red-500 text-sm">
               Pending transactions. Can't proceed right now.
             </p>
@@ -251,8 +258,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
               <Button
                 onClick={handleNext}
                 disabled={
-                  (stepData?.treasurySource === 'MULTISIG' && isLoading) ||
-                  pending ||
+                  pendingMultiSignTransactions ||
                   disburseMultiSig.isPending ||
                   disburseToken.isPending
                 }

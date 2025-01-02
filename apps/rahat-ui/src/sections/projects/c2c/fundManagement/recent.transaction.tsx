@@ -17,15 +17,6 @@ export default function RecentTransaction({
 }: {
   transactions: Transaction[];
 }) {
-  const amount =
-    transactions.length > 0
-      ? parseFloat(formatEther(BigInt(transactions[0].value)))
-      : 0;
-  const formatted = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount);
-  console.log('amount', amount);
   return (
     <div className="mb-2 mr-2">
       <Card className="rounded h-full">
@@ -57,7 +48,9 @@ export default function RecentTransaction({
                       </a>
                     </p>
                   </div>
-                  <div className="ml-auto font-medium">{formatted}</div>
+                  <div className="ml-auto font-medium">
+                    {parseFloat(formatEther(BigInt(transaction.value)))}
+                  </div>
                 </div>
               ))}
           </CardContent>

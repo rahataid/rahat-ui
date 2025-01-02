@@ -11,7 +11,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { secondPanel } = useSecondPanel();
   return (
     <DashboardLayout>
-      <UserLayout menuItems={menuItems}>
+      <UserLayout>
         {secondPanel ? [children, secondPanel] : children}
       </UserLayout>
     </DashboardLayout>

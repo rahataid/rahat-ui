@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/components/select';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { UUID } from 'crypto';
 import * as React from 'react';
 
@@ -36,8 +37,6 @@ export default function AssignToProjectModal({
   beneficiaryDetail,
   projectModal,
 }: IProps) {
-
-
   // console.log("beneficiary detail", beneficiaryDetail)
 
   const assignBeneficiary = useAssignBenToProject();
@@ -67,9 +66,11 @@ export default function AssignToProjectModal({
   };
 
   const checkProjectAlreadyAssigned = (projectUUID: string): boolean => {
-    const isAssigned = beneficiaryDetail?.BeneficiaryProject?.some((p: any) => p?.projectId === projectUUID);
-    return isAssigned ?? false
-  }
+    const isAssigned = beneficiaryDetail?.BeneficiaryProject?.some(
+      (p: any) => p?.projectId === projectUUID,
+    );
+    return isAssigned ?? false;
+  };
 
   React.useEffect(() => {
     assignBeneficiary.isSuccess && projectModal.onFalse();
@@ -81,19 +82,26 @@ export default function AssignToProjectModal({
         <DialogHeader>
           <DialogTitle>Assign Project</DialogTitle>
           <DialogDescription>
-            Select the project to be assigned to the beneficiary
+            Select a project to assign the selected beneficiary
           </DialogDescription>
         </DialogHeader>
         <div>
+          <Label>Project</Label>
           <Select onValueChange={handleProjectChange}>
-            <SelectTrigger>
+            <SelectTrigger className="mt-2">
               <SelectValue placeholder="Projects" />
             </SelectTrigger>
             <SelectContent>
               {projectsList.data?.data.length &&
                 projectsList.data?.data.map((project) => {
                   return (
-                    <SelectItem key={project.uuid} value={project.uuid as string} disabled={checkProjectAlreadyAssigned(project?.uuid as string)}>
+                    <SelectItem
+                      key={project.uuid}
+                      value={project.uuid as string}
+                      disabled={checkProjectAlreadyAssigned(
+                        project?.uuid as string,
+                      )}
+                    >
                       {project.name}
                     </SelectItem>
                   );
@@ -101,19 +109,18 @@ export default function AssignToProjectModal({
             </SelectContent>
           </Select>
         </div>
-        <DialogFooter className="sm:justify-end">
+        <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="ghost">
+            <Button className="w-full" type="button" variant="secondary">
               Close
             </Button>
           </DialogClose>
           <Button
             onClick={handleAssignProject}
             type="button"
-            variant="ghost"
-            className="text-primary"
+            className="w-full"
           >
-            Assign
+            Confirm
           </Button>
         </DialogFooter>
       </DialogContent>

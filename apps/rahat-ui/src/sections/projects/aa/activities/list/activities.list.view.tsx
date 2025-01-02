@@ -106,7 +106,7 @@ export default function ActivitiesList() {
         Title: item.title || 'N/A',
         'Early Action': item.category || 'N/A',
         Phase: item.phase || 'N/A',
-        Type: item.isAutomated ? 'Automated' : 'Manual' || 'N/A',
+        Type: item.isAutomated ? 'Automated' : 'Manual',
         Responsibility: item.responsibility,
         'Responsible Station': item.source || 'N/A',
         Status: item.status || 'N/A',
@@ -124,7 +124,7 @@ export default function ActivitiesList() {
     return <TableLoader />;
   }
   return (
-    <div className="p-2 bg-secondary h-[calc(100vh-65px)]">
+    <div className="p-2 bg-secondary">
       <ActivitiesTableFilters
         projectID={projectID as UUID}
         handleFilter={handleFilter}

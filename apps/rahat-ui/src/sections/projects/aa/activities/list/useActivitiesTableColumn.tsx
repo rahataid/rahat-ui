@@ -55,7 +55,7 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: ({ row }) => <div className="w-80">{row.getValue('title')}</div>,
+      cell: ({ row }) => <div className="w-max">{row.getValue('title')}</div>,
     },
     {
       accessorKey: 'category',

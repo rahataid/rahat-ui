@@ -123,6 +123,7 @@ export const useDisburseTokenToBeneficiaries = () => {
           transactionHash: d,
           type: disburseMethod as DisbursementType,
           timestamp: new Date().toISOString(),
+          status: DisbursementStatus.COMPLETED,
           projectUUID,
         });
 

@@ -249,6 +249,7 @@ export const useAddDisbursement = () => {
       transactionHash: string;
       from: string;
       timestamp: string;
+      status?: DisbursementStatus;
     }) => {
       const { projectUUID, ...restData } = data;
       const response = await projectActions.mutateAsync({

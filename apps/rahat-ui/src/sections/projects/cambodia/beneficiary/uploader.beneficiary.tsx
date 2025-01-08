@@ -21,8 +21,8 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ArrowDownToLine, Share } from 'lucide-react';
 import {
-  useUploadBeneficiary,
   useUploadBeneficiaryBulkQueue,
+  useValidateHealthWorker,
 } from '@rahat-ui/query';
 import { toast } from 'react-toastify';
 import HeaderWithBack from '../../components/header.with.back';
@@ -36,7 +36,7 @@ export default function ExcelUploader() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadBeneficiary = useUploadBeneficiaryBulkQueue();
-
+  const validateHealthWorker = useValidateHealthWorker();
   const handleDownloadClick = () => {
     fetch(DOWNLOAD_FILE_URL)
       .then((response) => response.blob())
@@ -74,6 +74,10 @@ export default function ExcelUploader() {
           return toast.error(
             'Maximum 100 beneficiaries can be uploaded at a time',
           );
+        validateHealthWorker.mutateAsync({
+          filteredData,
+          projectUUID: id,
+        });
         setData(filteredData as any[][]);
       };
       reader.readAsBinaryString(file);
@@ -116,9 +120,18 @@ export default function ExcelUploader() {
     // uploadBeneficiary?.isError && toast.error('File upload unsuccessful.');
   }, [uploadBeneficiary?.isSuccess, uploadBeneficiary.isError, router, id]);
 
+  const isAnyHealthWorkerInvalid = data.slice(1).some((row) => {
+    const healthWorkerUsernameIndex = data[0].indexOf('Health Worker Username');
+    const healthWorkerUsername = row[healthWorkerUsernameIndex];
+    const invalidUsernames =
+      validateHealthWorker?.data?.data?.map((b) => b.koboUsername) || [];
+    console.log(invalidUsernames);
+    return !invalidUsernames.includes(healthWorkerUsername);
+  });
+
   return (
     <>
-      <div className="p-4  h-[calc(100vh-115px)]">
+      <div className="p-4  h-[calc(100vh-120px)]">
         <div className="flex justify-between items-center mb-4">
           <HeaderWithBack
             title="Import Beneficiaries"
@@ -136,6 +149,7 @@ export default function ExcelUploader() {
                 onChange={handleFileUpload}
                 className="sr-only"
               />
+
               <div
                 className="flex items-center border rounded-md  cursor-pointer w-full"
                 onClick={() => inputRef.current?.click()}
@@ -150,17 +164,23 @@ export default function ExcelUploader() {
           </div>
         </div>
 
+        {isAnyHealthWorkerInvalid && (
+          <p className="text-red-300 mt-3 mx-auto">
+            ** Health Worker User Name did not match. Check the Health Worker
+            User Name **
+          </p>
+        )}
         <>
           {data.length > 0 && (
-            <div className="border-2 border-dashed border-black mt-6 p-4 mx-auto">
-              <ScrollArea className="h-[calc(100vh-430px)]">
-                <Table className="w-full table-auto">
+            <div className="border-2 border-dashed border-black mt-6 mx-auto sm:w-[1500px] w-[1600px]">
+              <ScrollArea className="h-[calc(100vh-450px)] ">
+                <Table className=" table-auto">
                   <TableHeader>
                     <TableRow>
                       {data[0].map((header, index) => (
                         <TableHead
                           key={index}
-                          className="truncate max-w-[150px] overflow-hidden"
+                          className="truncate max-w-[150px] "
                         >
                           {header}
                         </TableHead>
@@ -168,18 +188,35 @@ export default function ExcelUploader() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {data.slice(1).map((row, rowIndex) => (
-                      <TableRow key={rowIndex}>
-                        {row.map((cell, cellIndex) => (
-                          <TableCell
-                            key={cellIndex}
-                            className="truncate max-w-[150px] overflow-hidden"
-                          >
-                            {cell}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
+                    {data.slice(1).map((row, rowIndex) => {
+                      const healthWorkerUsernameIndex = data[0].indexOf(
+                        'Health Worker Username',
+                      );
+                      const invalidUsernames =
+                        validateHealthWorker?.data?.data?.map(
+                          (b) => b.koboUsername,
+                        ) || [];
+                      return (
+                        <TableRow key={rowIndex}>
+                          {row.map((cell, cellIndex) => {
+                            const isInvalid =
+                              cellIndex === healthWorkerUsernameIndex &&
+                              !invalidUsernames.includes(cell);
+
+                            return (
+                              <TableCell
+                                key={cellIndex}
+                                className={`truncate max-w-[150px]  ${
+                                  isInvalid ? 'bg-red-500' : ''
+                                }`}
+                              >
+                                {cell}
+                              </TableCell>
+                            );
+                          })}
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
 
@@ -214,7 +251,10 @@ export default function ExcelUploader() {
             className="w-40 bg-primary hover:ring-2 ring-primary"
             onClick={handleUpload}
             disabled={
-              uploadBeneficiary?.isPending || !data.length || data?.length > 100
+              uploadBeneficiary?.isPending ||
+              !data.length ||
+              data?.length > 100 ||
+              isAnyHealthWorkerInvalid
             }
           >
             {uploadBeneficiary?.isPending ? <>Uploading...</> : 'Add'}

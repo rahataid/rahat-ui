@@ -28,6 +28,7 @@ import AddSMSView from './add.sms.view';
 import * as XLSX from 'xlsx';
 import { DateRange } from 'react-day-picker';
 import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 export default function CommunicationView() {
   const { id } = useParams() as { id: UUID };
@@ -118,11 +119,23 @@ export default function CommunicationView() {
 
   const handleDateChange = (date: DateRange | undefined) => {
     if (date?.from && date?.to) {
-      setFilters({
-        ...filters,
-        startDate: date.from,
-        endDate: date.to,
-      });
+      if (date.from.getTime() === date.to.getTime()) {
+        // If the dates are the same, adjust the end date to cover the full day
+        const startOfDay = new Date(date.from.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(date.to.setHours(23, 59, 59, 999));
+
+        setFilters({
+          ...filters,
+          startDate: startOfDay.toISOString(),
+          endDate: endOfDay.toISOString(),
+        });
+      } else {
+        setFilters({
+          ...filters,
+          startDate: date.from,
+          endDate: date.to,
+        });
+      }
     } else {
       setFilters({});
     }
@@ -174,14 +187,6 @@ export default function CommunicationView() {
 
         <div className="rounded border bg-card p-4">
           <div className="flex justify-end items-center space-x-2 mb-2">
-            {/* <SearchInput
-              className="w-full"
-              name="to"
-              value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
-              onSearch={(event) =>
-                table.getColumn('to')?.setFilterValue(event.target.value)
-              }
-            /> */}
             <DateRangePicker
               placeholder="Pick a date range"
               handleDateChange={handleDateChange}
@@ -214,6 +219,15 @@ export default function CommunicationView() {
             </Button>
 
             <AddSMSView address={address} />
+
+            {filters.startDate && filters.endDate && (
+              <Badge
+                onClick={() => setFilters({})}
+                className="w-44 flex hover:cursor-pointer"
+              >
+                <p>Clear Date</p>
+              </Badge>
+            )}
           </div>
           <CambodiaTable
             table={table}

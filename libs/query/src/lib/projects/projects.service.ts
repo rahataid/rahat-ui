@@ -1264,3 +1264,29 @@ export const useCambodiaTriggerComms = () => {
     },
   });
 };
+export const useValidateHealthWorker = () => {
+  const q = useProjectAction<any[]>();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.VALIDATE_HEALTH_WORKER],
+
+    mutationFn: async (payload: any) => {
+      const { projectUUID, ...restPayload } = payload;
+
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.CHW.VALIDATE_HEALTH_WORKER,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.VALIDATE_HEALTH_WORKER],
+      });
+    },
+  });
+};

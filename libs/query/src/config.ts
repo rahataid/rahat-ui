@@ -122,6 +122,7 @@ export const MS_CAM_ACTIONS = {
       DELETE: 'cambodia.chw.delete',
       STATS: 'cambodia.chw.stats',
       BENEFICIARIES_STATS: 'cambodia.beneficiary.stats',
+      VALIDATE_HEALTH_WORKER: 'cambodia.chw.validate_health_worker',
     },
     VENDOR: {
       LIST: 'cambodia.vendor.list',

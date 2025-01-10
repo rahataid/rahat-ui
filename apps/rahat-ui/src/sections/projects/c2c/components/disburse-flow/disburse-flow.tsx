@@ -145,7 +145,8 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
 
   const steps = [
     {
-      id: 'step1',
+      id: 'Step 1',
+      title: 'Disburment Method',
       component: (
         <Step1DisburseMethod
           value={stepData.treasurySource}
@@ -162,7 +163,8 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       },
     },
     {
-      id: 'step2',
+      id: 'Step 2',
+      title: 'Disbursement Details',
       component: (
         <Step2DisburseAmount
           selectedBeneficiaries={
@@ -182,7 +184,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       },
     },
     {
-      id: 'confirm_send',
+      id: 'Step 3',
       title: 'Review & Confirm',
       component: (
         <Step3DisburseSummary
@@ -258,7 +260,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
           }}
         >
           {steps.map((step, index) => (
-            <Step key={index} label={step.id} />
+            <Step key={index} label={step.title} />
           ))}
         </Stepper>
         <div>{renderComponent()}</div>

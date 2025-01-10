@@ -6,8 +6,8 @@ import ActivityCommunicationListCard from './activity.communication.list.card';
 import { useDeleteActivities, useSingleActivity } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
-import EditButton from '../../../components/edit.btn';
-import DeleteButton from '../../../components/delete.btn';
+import EditButton from '../../../../../components/edit.btn';
+import DeleteButton from '../../../../../components/delete.btn';
 import Back from '../../../components/back';
 
 export default function ActivitiesDetailView() {

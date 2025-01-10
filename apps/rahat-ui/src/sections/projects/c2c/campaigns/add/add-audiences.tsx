@@ -29,7 +29,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { useCreateC2cAudience } from '@rahat-ui/query';
 
 import { flexRender } from '@tanstack/react-table';
 import React, { FC } from 'react';
@@ -46,7 +45,6 @@ type AddAudienceProps = {
   globalFilter: any;
   setGlobalFilter: any;
   selectedRows: Array<any>;
-  audienceData: any;
   setSelectedRows: any;
 };
 
@@ -55,7 +53,6 @@ const AddAudience: FC<AddAudienceProps> = ({
   globalFilter,
   setGlobalFilter,
   selectedRows,
-  audienceData,
   setSelectedRows,
 }) => {
   const [columnVisibility, setColumnVisibility] = React.useState({});
@@ -73,13 +70,10 @@ const AddAudience: FC<AddAudienceProps> = ({
   const { data: beneficiaryData } = useBeneficiaryPii({
     projectId: id,
   });
-  const createAudience = useCreateC2cAudience(id);
 
   const columns = useAudienceColumns(
     beneficiaryData,
     selectedRows,
-    audienceData,
-    createAudience,
     setSelectedRows,
   );
 

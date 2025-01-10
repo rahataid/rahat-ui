@@ -1,30 +1,20 @@
 'use client';
 
-import * as React from 'react';
-import { Table, flexRender } from '@tanstack/react-table';
-import { Plus, Settings2 } from 'lucide-react';
-import { Button } from '@rahat-ui/shadcn/components/button';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
-  Table as TableComponent,
   TableBody,
   TableCell,
+  Table as TableComponent,
   TableHead,
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { User } from '@rumsan/sdk/types';
-import Image from 'next/image';
+import { Table, flexRender } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
+import AddButton from '../projects/components/add.btn';
+import ViewColumns from '../projects/components/view.columns';
 
 type IProps = {
   table: Table<User>;
@@ -35,49 +25,22 @@ export default function UsersTable({ table }: IProps) {
 
   return (
     <>
-      <div className="p-2 bg-secondary">
-        <div className="flex items-center mb-2">
+      <div className="p-4 border rounded-sm ">
+        <div className="flex items-center space-x-2 mb-2">
           <Input
             placeholder="Search User..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
             }
-            className="rounded mr-2"
+            className="rounded"
           />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                <Settings2 className="mr-2 h-4 w-5" />
-                View
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <ViewColumns table={table} />
+          <AddButton name="User" path="/users/add" />
         </div>
-        <div className="rounded border h-[calc(100vh-180px)] bg-card">
-          <TableComponent>
-            <ScrollArea className="h-table1">
+        <div>
+          <ScrollArea className="h-[calc(100vh-303px)]">
+            <TableComponent>
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
@@ -124,8 +87,8 @@ export default function UsersTable({ table }: IProps) {
                   </TableRow>
                 )}
               </TableBody>
-            </ScrollArea>
-          </TableComponent>
+            </TableComponent>
+          </ScrollArea>
         </div>
       </div>
     </>

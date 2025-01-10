@@ -1,0 +1,55 @@
+{
+  "datacards": [
+    [
+      {
+        "name": "BENEFICIARIES",
+        "type": "datacard",
+        "title": "Beneficiaries",
+        "icon": "Users"
+      },
+      {
+        "name": "BALANCE",
+        "type": "datacard",
+        "title": "Balance",
+        "icon": "DollarSign"
+      },
+      {
+        "name": "DISTRIBUTED",
+        "type": "datacard",
+        "title": "Distributed",
+        "icon": "DollarSign"
+      },
+      {
+        "name": "CAMPAIGNS",
+        "type": "datacard",
+        "title": "Campaigns",
+        "icon": "SmartphoneNfc"
+      }
+    ]
+  ],
+  "charts": [
+    [
+      {
+        "name": "BENEFICIARIES.BENEFICIARY_GENDER",
+        "type": "pie",
+        "title": "Banked Gender"
+      },
+
+      {
+        "name": "BENEFICIARIES.BENEFICIARY_PHONESTATUS",
+        "type": "pie",
+        "title": "Beneficiary Phone Status"
+      },
+      {
+        "name": "BENEFICIARIES.BENEFICIARY_BANKEDSTATUS",
+        "type": "pie",
+        "title": "Banked Status"
+      },
+      {
+        "name": "BENEFICIARIES.BENEFICIARY_AGE_RANGE",
+        "type": "pie",
+        "title": "BENEFICIARY_AGE_RANGE"
+      }
+    ]
+  ]
+}

@@ -18,6 +18,8 @@ import { api } from '../../utils/api';
 import { useBeneficiaryGroupsStore } from './beneficiary-groups.store';
 import { useBeneficiaryStore } from './beneficiary.store';
 
+const GET_BENEFICIARY_GROUP = 'GET_BENEFICIARY_GROUP';
+
 const createNewBeneficiary = async (payload: any) => {
   const response = await api.post('/beneficiaries', payload);
   return response?.data;
@@ -37,6 +39,11 @@ const listBeneficiaryGroups = async (payload: Pagination) => {
 
 const removeBeneficiaryGroup = async (uuid: UUID) => {
   const response = await api.delete(`/beneficiaries/groups/${uuid}`);
+  return response?.data;
+};
+
+const getBeneficiaryGroup = async (uuid: UUID) => {
+  const response = await api.get(`/beneficiaries/groups/${uuid}`);
   return response?.data;
 };
 
@@ -266,7 +273,6 @@ export const useRemoveBeneficiaryFromProject = () => {
   });
 };
 
-
 export const useRemoveBeneficiary = () => {
   const qc = useQueryClient();
   const alert = useSwal();
@@ -344,11 +350,12 @@ const uploadBeneficiary = async (
   selectedFile: File,
   doctype: string,
   client: any,
+  projectId?: UUID,
 ) => {
   const formData = new FormData();
   formData.append('file', selectedFile);
   formData.append('doctype', doctype);
-
+  if (projectId) formData.append('projectId', projectId);
   const response = await client.post('/beneficiaries/upload', formData);
   return response?.data;
 };
@@ -368,15 +375,104 @@ export const useUploadBeneficiary = () => {
       mutationFn: ({
         selectedFile,
         doctype,
+        projectId,
       }: {
         selectedFile: File;
         doctype: string;
-      }) => uploadBeneficiary(selectedFile, doctype, rumsanService.client),
+        projectId?: UUID;
+      }) =>
+        uploadBeneficiary(
+          selectedFile,
+          doctype,
+          rumsanService.client,
+          projectId,
+        ),
       onSuccess: () => {
         qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
         toast.fire({
           icon: 'success',
           title: 'Beneficiary uploaded successfully',
+        });
+      },
+      onError: (error: any) => {
+        console.log('error', error);
+        const message = error.response?.data?.message || error.message;
+        toast.fire({
+          icon: 'error',
+          title: 'Something went wrong',
+          text: message,
+        });
+      },
+    },
+    queryClient,
+  );
+};
+
+const uploadBeneficiaryBulkQueue = async (
+  selectedFile: File,
+  doctype: string,
+  client: any,
+  projectId?: UUID,
+  automatedGroupOption?: {
+    createAutomatedGroup: boolean;
+    groupKey: string;
+  },
+) => {
+  const formData = new FormData();
+  formData.append('file', selectedFile);
+  formData.append('doctype', doctype);
+  if (projectId) formData.append('projectId', projectId);
+  if (automatedGroupOption?.createAutomatedGroup) {
+    formData.append(
+      'automatedGroupOption[createAutomatedGroup]',
+      automatedGroupOption.createAutomatedGroup.toString(),
+    );
+    formData.append(
+      'automatedGroupOption[groupKey]',
+      automatedGroupOption.groupKey,
+    );
+  }
+  const response = await client.post('/beneficiaries/upload-queue', formData);
+  return response?.data;
+};
+export const useUploadBeneficiaryBulkQueue = () => {
+  const qc = useQueryClient();
+  const { rumsanService, queryClient } = useRSQuery();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-right',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation(
+    {
+      mutationFn: ({
+        selectedFile,
+        doctype,
+        projectId,
+        automatedGroupOption,
+      }: {
+        selectedFile: File;
+        doctype: string;
+        projectId?: UUID;
+        automatedGroupOption: {
+          createAutomatedGroup: boolean;
+          groupKey: string;
+        };
+      }) =>
+        uploadBeneficiaryBulkQueue(
+          selectedFile,
+          doctype,
+          rumsanService.client,
+          projectId,
+          automatedGroupOption,
+        ),
+      onSuccess: (data) => {
+        qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+        toast.fire({
+          icon: 'success',
+          title: data?.data?.message,
         });
       },
       onError: (error: any) => {
@@ -398,7 +494,7 @@ export const useBeneficiaryPii = (
   // TODO: UPDATE WITH OPTIONALPAGINATION
   payload: {
     projectId: UUID;
-  } & Pagination,
+  } & Partial<Pagination>,
 ): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
@@ -503,4 +599,17 @@ export const useTempBeneficiaryImport = () => {
       );
     },
   });
+};
+export const useGetBeneficiaryGroup = (
+  uuid: UUID,
+): UseQueryResult<any, Error> => {
+  const { rumsanService, queryClient } = useRSQuery();
+  return useQuery(
+    {
+      queryKey: [GET_BENEFICIARY_GROUP, uuid],
+      // @ts-ignore
+      queryFn: () => getBeneficiaryGroup(uuid),
+    },
+    queryClient,
+  );
 };

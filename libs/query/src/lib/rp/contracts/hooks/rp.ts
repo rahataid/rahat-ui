@@ -1,3 +1,4 @@
+'use client';
 import { useRSQuery } from '@rumsan/react-query';
 import { useMutation } from '@tanstack/react-query';
 import Swal from 'sweetalert2';

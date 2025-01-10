@@ -9,17 +9,21 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-// import { useUserStore } from '@rumsan/react-query';
 import UsersTable from './user.list';
 import { usePagination } from '@rahat-ui/query';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useUserTableColumns } from './useUsersColumns';
-import { useUserList } from '@rumsan/react-query';
+import { useUserList, useUserStore } from '@rumsan/react-query';
+import CoreBtnComponent from '../../components/core.btn';
+import { UserCog } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function UserView() {
+  const router = useRouter();
+  const user = useUserStore((state) => state.user);
+  const loggedUserRoles = React.useMemo(() => user?.data?.roles, [user]);
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const columns = useUserTableColumns();
-  // const users = useUserStore((state) => state.users);
   const { data: users, isSuccess } = useUserList(pagination);
 
   const [rowSelection, setRowSelection] = React.useState({});
@@ -49,7 +53,26 @@ export default function UserView() {
 
   return (
     <>
-      <UsersTable table={table} />
+      <div className="p-4">
+        <div className="flex justify-between items-center space-x-8 mb-4">
+          <div>
+            <h1 className="font-semibold text-[28px]">Users</h1>
+            <p className="text-muted-foreground text-base">
+              Here is the list of all the users
+            </p>
+          </div>
+          {(loggedUserRoles?.includes('Admin') ||
+            loggedUserRoles?.includes('Manager')) && (
+            <CoreBtnComponent
+              className="hover:text-primary"
+              Icon={UserCog}
+              name="Manage Roles"
+              handleClick={() => router.push('/users/roles')}
+            />
+          )}
+        </div>
+        <UsersTable table={table} />
+      </div>
       <CustomPagination
         currentPage={pagination.page}
         handleNextPage={setNextPage}

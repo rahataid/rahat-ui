@@ -1,4 +1,5 @@
 import { ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
+import { humanizeString } from '../../utils';
 
 type DonutData = {
   component: any;
@@ -18,14 +19,14 @@ const DonutWrapper = ({ actualData, component, source }: DonutData) => {
   }));
   console.log('statsDonutData', statsDonutData);
 
-  if (statsDonutData)
+  if (statsDonutData?.length > 0)
     return (
-      <div className="bg-card rounded-sm p-4 shadow-md">
+      <div className="bg-card border rounded-sm p-4 shadow-md">
         <p className="text-md font-medium mb-4">{component?.title}</p>
         <div className="flex justify-center">
           <ChartDonut
             series={statsDonutData.map((i: any) => i.count)}
-            labels={statsDonutData.map((l: any) => l.label)}
+            labels={statsDonutData.map((l: any) => humanizeString(l.label))}
             donutSize="70%"
             width={400}
             height={320}

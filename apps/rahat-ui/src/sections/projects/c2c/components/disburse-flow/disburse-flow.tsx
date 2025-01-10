@@ -129,6 +129,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const steps = [
     {
       id: 'Step 1',
+      title: 'Disburment Method',
       component: (
         <Step1DisburseMethod
           value={stepData.treasurySource}
@@ -146,6 +147,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     },
     {
       id: 'Step 2',
+      title: 'Disbursement Details',
       component: (
         <Step2DisburseAmount
           selectedBeneficiaries={
@@ -240,7 +242,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
           }}
         >
           {steps.map((step, index) => (
-            <Step key={index} label={step.id} />
+            <Step key={index} label={step.title} />
           ))}
         </Stepper>
         <div>{renderComponent()}</div>
@@ -260,7 +262,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
                 disabled={
                   pendingMultiSignTransactions ||
                   disburseMultiSig.isPending ||
-                  disburseToken.isPending
+                  disburseToken.isPending ||
+                  (currentStep === 0 && !stepData.treasurySource) ||
+                  (currentStep === 1 && !stepData.disburseAmount)
                 }
               >
                 {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}

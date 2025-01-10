@@ -1,7 +1,8 @@
-import AddRoles from 'apps/rahat-ui/src/sections/users/rolesandPermission/addRoles';
+'use client';
+import { UsersAddRoleView } from 'apps/rahat-ui/src/sections/users';
 
 const AddUserPage = () => {
-  return <AddRoles />;
+  return <UsersAddRoleView />;
 };
 
 export default AddUserPage;

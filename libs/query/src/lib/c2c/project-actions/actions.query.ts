@@ -249,6 +249,7 @@ export const useAddDisbursement = () => {
       transactionHash: string;
       from: string;
       timestamp: string;
+      status?: DisbursementStatus;
     }) => {
       const { projectUUID, ...restData } = data;
       const response = await projectActions.mutateAsync({
@@ -358,5 +359,60 @@ export const useGetSafePendingTransactions = (projectUUID: UUID) => {
     },
   });
 
+  return query;
+};
+
+export const useFindC2CBeneficiaryGroups = (
+  projectUUID: UUID,
+  payload?: any,
+) => {
+  const action = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['beneficiary_groups', projectUUID, payload],
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'c2cProject.beneficiary.getAllGroups',
+          payload: payload || {},
+        },
+      });
+      return { data: res.data, meta: res.response.meta };
+    },
+  });
+
+  const data = query?.data || [];
+
+  return {
+    ...query,
+    data: query?.data?.data || [],
+    meta: query?.data?.meta,
+  };
+};
+
+export const useC2CSingleBeneficiaryGroup = (
+  uuid: UUID,
+  beneficiariesGroupID: UUID,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['beneficiaryGroup', uuid, beneficiariesGroupID],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'c2cProject.beneficiary.getOneGroup',
+          payload: {
+            uuid: beneficiariesGroupID,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
   return query;
 };

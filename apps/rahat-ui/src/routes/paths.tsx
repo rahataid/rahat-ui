@@ -58,22 +58,29 @@ export const defaultNavigations = [
   {
     title: 'Dashboard',
     path: paths.dashboard.root,
+    icon: 'LayoutDashboard',
   },
   {
     title: 'Project',
     path: paths.dashboard.project.root,
+    icon: 'FolderDot',
   },
   {
     title: 'Beneficiaries',
     path: paths.dashboard.beneficiary.root,
+    icon: 'UsersRound',
   },
-
-]
+  {
+    title: 'Vendors',
+    path: paths.dashboard.vendor,
+    icon: 'Landmark',
+  },
+];
 
 export const defaultSubNavigations = [
   {
     title: 'Users',
     path: paths.user.root,
+    icon: 'Users',
   },
-
-]
+];

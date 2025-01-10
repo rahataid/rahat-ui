@@ -9,13 +9,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import AddAudience from './add-audiences';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
-import { toast } from 'react-toastify';
-import {
-  useListC2cTransport,
-  useListC2cAudience,
-  useCreateC2cCampaign,
-} from '@rahat-ui/query';
+import { CAMPAIGN_TYPES } from '@rahat-ui/types';
+import { useListC2cTransport, useCreateC2cCampaign } from '@rahat-ui/query';
 
 import { useParams, useRouter } from 'next/navigation';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
@@ -47,17 +42,14 @@ const FormSchema = z.object({
 });
 
 export type SelectedRowType = {
-  name: string;
   phone: string;
-  id?: number;
-  beneficiaryId?: number;
+  email: string;
 };
 
 const AddCampaignView = () => {
   const { id } = useParams() as { id: UUID };
 
   const { data: transportData } = useListC2cTransport(id);
-  const { data: audienceData } = useListC2cAudience(id);
 
   const { data: audioData } = useGetAudio();
   const createCampaign = useCreateC2cCampaign(id);
@@ -78,56 +70,17 @@ const AddCampaignView = () => {
   });
 
   const debouncedHandleSubmit = debounce(async (data) => {
-    const transportId = transportData?.find(
-      (t) => t?.name?.toLowerCase() === data?.campaignType?.toLowerCase(),
-    )?.id;
-    const uniquePhoneNumbers = new Set();
-    const uniqueAudienceData: any = audienceData?.filter((data) => {
-      if (!uniquePhoneNumbers.has(data.details?.phone)) {
-        uniquePhoneNumbers.add(data.details?.phone);
-        return true;
-      }
-    });
-    const audiences = uniqueAudienceData
-      .filter((audienceObject: Audience) =>
-        selectedRows?.some(
-          (selectedObject) =>
-            selectedObject.phone === audienceObject?.details?.phone,
-        ),
-      )
-      .map((filteredObject: Audience) => filteredObject.id);
-    type AdditionalData = {
-      audio?: any;
-      message?: string;
-      body?: string;
-      messageSid?: string;
-    };
-    const additionalData: AdditionalData = {};
-    if (data?.campaignType === CAMPAIGN_TYPES.PHONE && data?.file) {
-      additionalData.audio = data.file;
-    } else if (
-      data?.campaignType === CAMPAIGN_TYPES.WHATSAPP &&
-      data?.message
-    ) {
-      additionalData.body = data?.message;
-    } else if (
-      data?.campaignType === CAMPAIGN_TYPES.WHATSAPP &&
-      data?.messageSid
-    ) {
-      additionalData.messageSid = data?.messageSid;
-      additionalData.body = data?.message;
-    } else {
-      additionalData.message = data?.message;
-    }
+    console.log(selectedRows, transportData);
+
+    const addresses = selectedRows?.map((row) =>
+      data?.campaignType === CAMPAIGN_TYPES.EMAIL ? row?.email : row?.phone,
+    );
+
     await createCampaign.mutateAsync({
-      audienceIds: audiences || [],
+      addresses: addresses || [],
       name: data.campaignName,
-      startTime: null,
-      transportId: Number(transportId),
-      type: data.campaignType,
-      details: additionalData,
-      status: 'ONGOING',
-      projectId: id,
+      transportId: data.campaignType,
+      message: data.message,
     });
 
     setIsSubmitting(false);
@@ -153,6 +106,7 @@ const AddCampaignView = () => {
           form={form}
           isSubmitting={isSubmitting}
           handleSubmit={form.handleSubmit(handleCreateCampaign)}
+          transport={transportData}
         />
 
         {showAddAudienceView.value ? (
@@ -163,7 +117,6 @@ const AddCampaignView = () => {
               setGlobalFilter={setGlobalFilter}
               selectedRows={selectedRows}
               setSelectedRows={setSelectedRows}
-              audienceData={audienceData}
             />
           </div>
         ) : null}

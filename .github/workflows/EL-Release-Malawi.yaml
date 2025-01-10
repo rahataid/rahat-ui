@@ -1,10 +1,10 @@
-name: EL Release CI/CD
+name: EL Release Malawi CI/CD
 on:
   workflow_dispatch:
 
 env:
   CI: false
-  env_stage: ${{ secrets.ENV_EL_RELEASE }}
+  env_release: ${{ secrets.ENV_EL_RELEASE_MALAWI }}
 
 jobs:
   rahat-ui:
@@ -17,7 +17,7 @@ jobs:
 
       - name: import env file
         run: |
-          touch ./.env && echo "$env_stage" >> ./.env 
+          touch ./.env && echo "$env_release" >> ./.env 
 
       - uses: actions/setup-node@v3
         with:
@@ -43,12 +43,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract Branch Version
-        id: extract-version
-        run: |
-          FULL_BRANCH_NAME="${{ github.ref_name }}"
-          VERSION=$(echo "$FULL_BRANCH_NAME" | sed -E 's/^release\/(v[0-9]{1,9}(\.[0-9]{1,9}){0,2})-?.*$/\1/')
-          echo "branch_version=$VERSION" >> $GITHUB_ENV
+      - name: Extract version from package.json
+        id: extract_version
+        run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_ENV
 
       - name: Extract Timestamp
         id: extract-timestamp
@@ -65,9 +62,9 @@ jobs:
           file: Dockerfile.rahat-ui
           push: ${{ github.event_name == 'workflow_dispatch' }}
           tags: |
-            esatya/rahat-ui:el-release
-            esatya/rahat-ui:el-release-${{ env.branch_version }}
-            esatya/rahat-ui:el-release-${{ env.branch_version }}-${{ env.timestamp }}
+            esatya/rahat-ui:el-release-malawi
+            esatya/rahat-ui:el-release-malawi-${{ env.VERSION  }}
+            esatya/rahat-ui:el-release-malawi-${{ env.VERSION  }}-${{ env.timestamp }}
 
   community-tool-ui:
     name: community-tool-ui
@@ -79,7 +76,7 @@ jobs:
 
       - name: import env file
         run: |
-          touch ./.env && echo "$env_stage" >> ./.env 
+          touch ./.env && echo "$env_release" >> ./.env 
 
       - uses: actions/setup-node@v3
         with:
@@ -105,12 +102,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           
-      - name: Extract Branch Version
-        id: extract-version
+      - name: Extract version from package.json
+        id: extract_version
+        run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_ENV
+
+      - name: Extract Timestamp
+        id: extract-timestamp
         run: |
-          FULL_BRANCH_NAME="${{ github.ref_name }}"
-          VERSION=$(echo "$FULL_BRANCH_NAME" | sed -E 's/^release\/(v[0-9]{1,9}(\.[0-9]{1,9}){0,2})-?.*$/\1/')
-          echo "branch_version=$VERSION" >> $GITHUB_ENV
+          TIMESTAMP=$(date "+%Y-%m-%d_%H-%M-%S")
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_ENV
 
       # Community-Tool-UI Image
       - name: build && push community-tool-ui`
@@ -121,6 +121,6 @@ jobs:
           file: Dockerfile.community-tool-ui
           push: ${{ github.event_name == 'workflow_dispatch' }}
           tags: |
-            esatya/community-tool-ui:el-release
-            esatya/community-tool-ui:el-release-${{ env.branch_version }}
-            esatya/community-tool-ui:el-release-${{ env.branch_version }}-${{ env.timestamp }}
+            esatya/community-tool-ui:el-release-malawi
+            esatya/community-tool-ui:el-release-malawi-${{ env.VERSION  }}
+            esatya/community-tool-ui:el-release-malawi-${{ env.VERSION  }}-${{ env.timestamp }}

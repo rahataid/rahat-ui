@@ -19,6 +19,8 @@ import Step2DisburseAmount from './2-disburse-amount';
 import Step3DisburseSummary from './3-disburse-summary';
 import { WarningModal } from './warning';
 import { Step, Stepper } from 'react-form-stepper';
+import { useAccount } from 'wagmi';
+import { toast } from 'react-toastify';
 
 type DisburseFlowProps = {
   selectedBeneficiaries?: string[];
@@ -46,7 +48,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const { data: safePendingTransactions, isLoading } =
     useGetSafePendingTransactions(id);
   const pendingTransactions = safePendingTransactions?.results || [];
-
+  const { isConnected } = useAccount();
   const disburseToken = useDisburseTokenToBeneficiaries();
   const disburseMultiSig = useDisburseTokenUsingMultisig();
   const { data: projectData } = useProject(id);
@@ -84,37 +86,49 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const handleDisburseToken = async () => {
     setIsWarningModalOpen(false);
 
-    if (selectedBeneficiaries && selectedBeneficiaries?.length > 0) {
-      if (stepData.treasurySource === 'MULTISIG') {
-        console.log(
-          'amount',
-          +stepData.disburseAmount * selectedBeneficiaries?.length,
-        );
-        await disburseMultiSig.mutateAsync({
-          amount: String(
-            +stepData.disburseAmount * selectedBeneficiaries?.length ?? 0,
-          ),
-          projectUUID: id,
-          beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
-          disburseMethod: stepData.treasurySource,
-          rahatTokenAddress: contractSettings?.rahattoken?.address,
-          c2cProjectAddress: contractSettings?.c2cproject?.address,
-        });
-        return;
-      }
+    if (!isConnected) {
+      toast.error('Please connect to wallet!');
+      return;
+    }
+
+    if (!selectedBeneficiaries || selectedBeneficiaries.length === 0) {
+      toast.error('No beneficiaries selected!');
+      return;
+    }
+
+    const disburseAmount = parseEther(stepData.disburseAmount);
+    const beneficiaryAddresses = selectedBeneficiaries as `0x${string}`[];
+    const { rahattoken, c2cproject } = contractSettings || {};
+
+    if (stepData.treasurySource === 'MULTISIG') {
+      const totalAmount = String(
+        +stepData.disburseAmount * selectedBeneficiaries.length,
+      );
+      const data = await disburseMultiSig.mutateAsync({
+        amount: totalAmount,
+        projectUUID: id,
+        beneficiaryAddresses,
+        disburseMethod: stepData.treasurySource,
+        rahatTokenAddress: rahattoken?.address,
+        c2cProjectAddress: c2cproject?.address,
+      });
+      route.push(
+        `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&from=${data[0]?.from}`,
+      );
+      return;
     }
 
     await disburseToken.mutateAsync({
-      amount: parseEther(stepData.disburseAmount),
-      beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
-      rahatTokenAddress: contractSettings?.rahattoken?.address,
-      c2cProjectAddress: contractSettings?.c2cproject?.address,
+      amount: disburseAmount,
+      beneficiaryAddresses,
+      rahatTokenAddress: rahattoken?.address,
+      c2cProjectAddress: c2cproject?.address,
       disburseMethod: stepData.treasurySource,
       projectUUID: id,
     });
 
     route.push(
-      `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm`,
+      `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}`,
     );
   };
 
@@ -122,6 +136,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     if (currentStep === 0) {
       route.push(`/projects/c2c/${id}/beneficiary`);
     } else if (currentStep > 0) {
+      if (currentStep === 2) {
+        stepData.disburseAmount = '';
+      }
       setCurrentStep(currentStep - 1);
     }
   };
@@ -172,6 +189,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
           selectedBeneficiaries={selectedBeneficiaries}
           token="USDC"
           value={stepData.disburseAmount}
+          treasurySource={stepData.treasurySource}
           projectSubgraphDetails={projectSubgraphDetails}
         />
       ),

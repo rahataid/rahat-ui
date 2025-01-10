@@ -260,13 +260,13 @@ export default function BeneficiaryDetail({
                           <div>
                             <p className="font-light text-base">{'N/A'}</p>
                             <p className="text-sm font-normal text-muted-foreground">
-                              Balance
+                              Disbursed Amount
                             </p>
                           </div>
                           <div>
                             <p className="font-light text-base">Verified </p>
                             <p className="text-sm font-normal text-muted-foreground">
-                              Verificatoin Status
+                              Verification Status
                             </p>
                           </div>
                         </div>

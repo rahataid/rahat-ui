@@ -2,7 +2,7 @@
 
 import { UUID } from 'crypto';
 import { Users } from 'lucide-react';
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import AddButton from '../../components/add.btn';
 import { useParams, useRouter } from 'next/navigation';
 import SearchInput from '../../components/search.input';
@@ -10,10 +10,13 @@ import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import {
+  useC2CSingleBeneficiaryGroupMutation,
   useFindAllBeneficiaryGroups,
   useFindC2CBeneficiaryGroups,
   usePagination,
 } from '@rahat-ui/query';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 function BeneficiaryGroupsView() {
   const { id } = useParams() as { id: UUID };
@@ -40,6 +43,40 @@ function BeneficiaryGroupsView() {
     projectUUID: id,
     ...filters,
   });
+  const [selectedGroup, setSelectedGroup] = useState([]);
+  const beneficiaryGroup = useC2CSingleBeneficiaryGroupMutation(id as UUID);
+
+  const handleCheckboxChange = (uuid: any, isChecked: boolean) => {
+    const updatedSelectedGroups: any = isChecked
+      ? [...selectedGroup, uuid]
+      : selectedGroup.filter((groupUuid) => groupUuid !== uuid);
+
+    setSelectedGroup(updatedSelectedGroups);
+  };
+
+  const handleDisburse = () => {
+    const fetchBeneficiaries = async () => {
+      const beneficiaries = await Promise.all(
+        selectedGroup.map(async (groupUUID) => {
+          const ben = await beneficiaryGroup.mutateAsync(groupUUID as UUID);
+          return ben?.groupedBeneficiaries?.map(
+            (groupedBeneficiary: any) =>
+              groupedBeneficiary?.Beneficiary?.walletAddress,
+          );
+        }),
+      );
+      return beneficiaries.flat();
+    };
+
+    fetchBeneficiaries().then((beneficiaries) => {
+      const queryString = beneficiaries.join(',');
+      router.push(
+        `/projects/c2c/${id}/beneficiary/disburse-flow?selectedBeneficiaries=${encodeURIComponent(
+          queryString,
+        )}`,
+      );
+    });
+  };
 
   return (
     <>
@@ -58,6 +95,9 @@ function BeneficiaryGroupsView() {
             name="Group"
             path={`/projects/c2c/${id}/beneficiary/group/add`}
           />
+          {selectedGroup.length > 0 ? (
+            <Button onClick={handleDisburse}>Disburse USDC</Button>
+          ) : null}
         </div>
         <ScrollArea className="h-[calc(100vh-230px)]">
           {isLoading ? (
@@ -77,6 +117,16 @@ function BeneficiaryGroupsView() {
                   >
                     <div className="flex flex-col space-y-2">
                       <div className="rounded-md bg-secondary grid place-items-center h-28">
+                        <div className="flex w-full justify-end">
+                          <Checkbox
+                            onClick={(event) => {
+                              event.stopPropagation();
+                            }}
+                            onCheckedChange={(checked) =>
+                              handleCheckboxChange(i?.uuid, checked as boolean)
+                            }
+                          />
+                        </div>
                         <div className="bg-[#667085] text-white p-2 rounded-full">
                           <Users size={20} strokeWidth={2.5} />
                         </div>

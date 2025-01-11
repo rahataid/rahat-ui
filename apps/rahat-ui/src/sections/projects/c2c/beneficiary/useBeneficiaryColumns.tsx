@@ -105,32 +105,26 @@ export const useProjectBeneficiaryTableColumns = () => {
     {
       accessorKey: 'verificationStatus',
       header: 'Verification Status',
-      cell: () => <Badge>Verified</Badge>,
+      cell: () => <Badge>true</Badge>,
     },
     {
       accessorKey: 'balance',
       header: () => <div>Disbursed Amount</div>,
       cell: ({ row }) => {
         const balanceValue = row.getValue('balance');
-
-        if (balanceValue && !isNaN(balanceValue)) {
-          const balance = parseFloat(formatEther(BigInt(balanceValue)));
-
-          // Format as a decimal with two decimal places
-          const formatted = new Intl.NumberFormat('en-US', {
-            style: 'decimal', // Use 'decimal' instead of 'currency'
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }).format(balance);
-
-          return <div className="font-medium">{formatted}</div>;
-        } else {
-          return <div className="font-medium">N/A</div>;
+        const disbursementBeneficiary = row.original?.DisbursementBeneficiary;
+        let amount = 0;
+        if (disbursementBeneficiary.length > 0) {
+          disbursementBeneficiary.forEach((beneficiary: any) => {
+            amount += beneficiary.amount;
+          });
         }
+        return <div className="font-medium">{amount}</div>;
       },
     },
     {
       id: 'actions',
+      header: () => <div>Actions</div>,
       enableHiding: false,
       cell: ({ row }) => {
         return (

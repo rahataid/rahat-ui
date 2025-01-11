@@ -302,24 +302,13 @@ export const useDisburseTokenUsingMultisig = () => {
 
   return useMutation({
     mutationKey: ['disburse-token-using-multisig'],
-    async onSuccess(data, variables, context) {
-      console.log('variables', variables);
-      await addDisbursement.mutateAsync({
-        amount: String(
-          +variables.amount / variables.beneficiaryAddresses.length,
-        ),
-        projectUUID: variables.projectUUID,
-        type: DisbursementType.MULTISIG,
-        beneficiaries: variables.beneficiaryAddresses,
-        transactionHash: data.safeTxHash,
-        from: variables.c2cProjectAddress,
-        timestamp: String(Math.floor(Date.now() / 1000)), // Convert to seconds timestamp
-      });
-      console.log('onSuccess', data, variables, context);
-    },
     mutationFn: async ({
       amount,
       projectUUID,
+      beneficiaryAddresses,
+      disburseMethod,
+      rahatTokenAddress,
+      c2cProjectAddress,
     }: {
       amount: string;
       projectUUID: UUID;
@@ -328,6 +317,7 @@ export const useDisburseTokenUsingMultisig = () => {
       rahatTokenAddress: string;
       c2cProjectAddress: string;
     }) => {
+      // Step 1: Create Safe Transaction
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
@@ -337,7 +327,21 @@ export const useDisburseTokenUsingMultisig = () => {
           },
         },
       });
-      return response.data;
+
+      const safeTxHash = response.data.safeTxHash;
+
+      // Step 2: Add Disbursement
+      const disbursementResult = await addDisbursement.mutateAsync({
+        amount: String(+amount / beneficiaryAddresses.length),
+        projectUUID,
+        type: DisbursementType.MULTISIG,
+        beneficiaries: beneficiaryAddresses,
+        transactionHash: safeTxHash,
+        from: c2cProjectAddress,
+        timestamp: String(Math.floor(Date.now() / 1000)), // Convert to seconds timestamp
+      });
+
+      return disbursementResult;
     },
   });
 };
@@ -415,4 +419,23 @@ export const useC2CSingleBeneficiaryGroup = (
     },
   });
   return query;
+};
+
+export const useC2CSingleBeneficiaryGroupMutation = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  return useMutation({
+    mutationFn: async (beneficiariesGroupID: UUID) => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'c2cProject.beneficiary.getOneGroup',
+          payload: {
+            uuid: beneficiariesGroupID,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
 };

@@ -439,3 +439,23 @@ export const useC2CSingleBeneficiaryGroupMutation = (projectUUID: UUID) => {
     },
   });
 };
+
+const GET_ALL_C2C_STATS = 'c2cProject.reporting.list';
+
+export const useFindAllC2cStats = (projectUUID: UUID) => {
+  const action = useProjectAction(['findAllc2cStats-rpProject']);
+
+  return useQuery({
+    queryKey: ['c2cStats', projectUUID],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: GET_ALL_C2C_STATS,
+          payload: {},
+        },
+      });
+      return res.data;
+    },
+  });
+};

@@ -105,13 +105,12 @@ export const useProjectBeneficiaryTableColumns = () => {
     {
       accessorKey: 'verificationStatus',
       header: 'Verification Status',
-      cell: () => <Badge>true</Badge>,
+      cell: () => <Badge>Verified</Badge>,
     },
     {
       accessorKey: 'balance',
       header: () => <div>Disbursed Amount</div>,
       cell: ({ row }) => {
-        const balanceValue = row.getValue('balance');
         const disbursementBeneficiary = row.original?.DisbursementBeneficiary;
         let amount = 0;
         if (disbursementBeneficiary.length > 0) {

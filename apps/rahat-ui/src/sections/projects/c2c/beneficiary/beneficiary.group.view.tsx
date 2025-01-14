@@ -65,7 +65,7 @@ function BeneficiaryGroupsView() {
           );
         }),
       );
-      return beneficiaries.flat();
+      return Array.from(new Set(beneficiaries.flat()));
     };
 
     fetchBeneficiaries().then((beneficiaries) => {

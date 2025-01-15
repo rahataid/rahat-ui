@@ -30,6 +30,7 @@ type Iprops = {
 };
 export default function EditProfile({ userDetail }: Iprops) {
   const updateUser = useUpdateMe();
+  console.log(userDetail);
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     email: z.string(),

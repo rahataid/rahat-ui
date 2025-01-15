@@ -16,6 +16,5 @@ export default function ProfileView() {
       </div>
     );
   }
-  console.log('data', data);
   return <EditProfile userDetail={data?.data} />;
 }

@@ -48,7 +48,7 @@ export default function EditProfile({ userDetail }: Iprops) {
       email: userDetail?.email || '',
       phone: userDetail?.phone || '',
       walletAddress: userDetail?.wallet || '',
-      gender: userDetail?.gender,
+      gender: userDetail?.gender || Gender.UKNOWN,
     },
   });
 
@@ -58,7 +58,7 @@ export default function EditProfile({ userDetail }: Iprops) {
       email: userDetail?.email || '',
       phone: userDetail?.phone || '',
       walletAddress: userDetail?.wallet || '',
-      gender: userDetail?.gender,
+      gender: userDetail?.gender || Gender.UKNOWN,
     });
   }, [form, userDetail]);
   const handleEditUser = async (data: any) => {

@@ -86,18 +86,20 @@ export default function DisburseDetails() {
                 )}
               </TabsList>
               {/* //TODO get safe wallet from backend */}
-              <div className="mr-2">
-                <Button asChild>
-                  <Link
-                    className="flex items-center gap-2"
-                    href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
-                    target="_blank"
-                  >
-                    <WalletCards strokeWidth={1.5} size={18} />
-                    SafeWallet
-                  </Link>
-                </Button>
-              </div>
+              {data?.type === 'MULTISIG' && (
+                <div className="mr-2">
+                  <Button asChild>
+                    <Link
+                      className="flex items-center gap-2"
+                      href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
+                      target="_blank"
+                    >
+                      <WalletCards strokeWidth={1.5} size={18} />
+                      SafeWallet
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </Card>
           </div>
           <TabsContent value="transactions">

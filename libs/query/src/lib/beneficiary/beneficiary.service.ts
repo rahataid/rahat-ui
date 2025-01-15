@@ -61,7 +61,6 @@ export const useBeneficiaryGroupsList = (payload: any): any => {
     {
       queryKey: [TAGS.GET_BENEFICIARIES_GROUPS, payload],
       queryFn: () => listBeneficiaryGroups(payload),
-      placeholderData: keepPreviousData,
     },
     queryClient,
   );
@@ -495,7 +494,7 @@ export const useBeneficiaryPii = (
   // TODO: UPDATE WITH OPTIONALPAGINATION
   payload: {
     projectId: UUID;
-  } & Pagination,
+  } & Partial<Pagination>,
 ): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);

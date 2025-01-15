@@ -11,6 +11,7 @@ import useBeneficiaryGroupsTableColumn from './useBeneficiaryGroupsTableColumn';
 import CustomPagination from '../../../../../components/customPagination';
 import { UUID } from 'crypto';
 import { getPaginationFromLocalStorage } from '../../prev.pagination.storage';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export default function BeneficiariesGroupsListView() {
   const { id } = useParams();
@@ -25,13 +26,15 @@ export default function BeneficiariesGroupsListView() {
     setPagination(prevPagination);
   }, []);
 
-  useBeneficiariesGroups(id as UUID, { ...pagination });
+  const { isLoading } = useBeneficiariesGroups(id as UUID, { ...pagination });
 
   const { beneficiariesGroups, beneficiariesGroupsMeta } =
     useBeneficiariesGroupStore((state) => ({
       beneficiariesGroups: state.beneficiariesGroups,
       beneficiariesGroupsMeta: state.beneficiariesGroupsMeta,
     }));
+
+  console.log(beneficiariesGroups)
 
   const columns = useBeneficiaryGroupsTableColumn();
 
@@ -41,6 +44,14 @@ export default function BeneficiariesGroupsListView() {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  if (isLoading) {
+    return (
+      <div className='flex items-center justify-center mt-60'>
+        <TableLoader />
+      </div>
+    )
+  }
 
   return (
     <div className="rounded border bg-card">

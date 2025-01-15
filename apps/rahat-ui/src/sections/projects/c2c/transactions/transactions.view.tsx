@@ -27,27 +27,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { useQuery } from 'urql';
+import { DataTablePagination } from './dataTablePagination';
 import { Transaction, TransactionsObject } from './types';
 import useTransactionColumn from './useTransactionColumn';
 import { mergeTransactions } from './utils';
-
-// export type Transaction = {
-//   id: string;
-//   topic: string;
-//   beneficiaryId: string;
-//   from: string;
-//   to: string;
-//   timestamp: string;
-//   txnHash: string;
-//   amount: string;
-//   txnFee: string;
-// };
 
 export default function TransactionView() {
   const { id } = useParams();
@@ -58,9 +46,11 @@ export default function TransactionView() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+  const [rowsPerPage, setRowsPerPage] = React.useState(10); // State for rows per page
   const columns = useTransactionColumn();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+
   const {
     pagination,
     filters,
@@ -72,6 +62,7 @@ export default function TransactionView() {
     setSelectedListItems,
     resetSelectedListItems,
   } = usePagination();
+
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
@@ -113,6 +104,11 @@ export default function TransactionView() {
       setTransactionList(transactionLists);
     })();
   }, [result.data]);
+
+  // Update rows per page whenever `rowsPerPage` changes
+  React.useEffect(() => {
+    setPerPage(rowsPerPage);
+  }, [rowsPerPage, setPerPage]);
 
   return (
     <>
@@ -203,15 +199,8 @@ export default function TransactionView() {
             </ScrollArea>
           </Table>
         </div>
+        <DataTablePagination table={table} />
       </div>
-      <CustomPagination
-        currentPage={pagination.page}
-        handleNextPage={setNextPage}
-        handlePageSizeChange={setPerPage}
-        handlePrevPage={setPrevPage}
-        // meta={{}}
-        perPage={pagination.perPage}
-      />
     </>
   );
 }

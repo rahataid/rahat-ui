@@ -88,6 +88,14 @@ export default function BeneficiaryDetail({
     }
   };
 
+  const disbursementBeneficiary = beneficiaryDetails?.DisbursementBeneficiary;
+  let amount = 0;
+  if (disbursementBeneficiary.length > 0) {
+    disbursementBeneficiary.forEach((beneficiary: any) => {
+      amount += beneficiary.amount;
+    });
+  }
+
   return (
     <>
       {isLoading ? (
@@ -258,15 +266,17 @@ export default function BeneficiaryDetail({
                         </div>
                         <div className="grid grid-cols-3 gap-3 mt-3">
                           <div>
-                            <p className="font-light text-base">{'N/A'}</p>
+                            <p className="font-light text-base">
+                              {amount || 'N/A'}
+                            </p>
                             <p className="text-sm font-normal text-muted-foreground">
-                              Balance
+                              Disbursed Amount
                             </p>
                           </div>
                           <div>
                             <p className="font-light text-base">Verified </p>
                             <p className="text-sm font-normal text-muted-foreground">
-                              Verificatoin Status
+                              Verification Status
                             </p>
                           </div>
                         </div>

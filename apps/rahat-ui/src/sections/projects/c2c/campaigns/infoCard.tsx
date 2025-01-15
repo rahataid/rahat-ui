@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Card,
   CardContent,
@@ -21,16 +22,13 @@ import {
   DialogClose,
 } from '@rahat-ui/shadcn/components/dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-
-import React from 'react';
-
 import { useTriggerC2cCampaign } from '@rahat-ui/query';
 import { useCommunicationQuery } from '@rumsan/communication-query/providers';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 
 type IProps = {
-  campaignId?: number;
+  campaignUuid?: string;
   name?: string;
   type?: string;
   startTime?: string;
@@ -40,7 +38,7 @@ type IProps = {
 };
 
 const InfoCard: React.FC<IProps> = ({
-  campaignId,
+  campaignUuid,
   name,
   type,
   startTime,
@@ -51,19 +49,25 @@ const InfoCard: React.FC<IProps> = ({
   const { queryClient } = useCommunicationQuery();
   const { id } = useParams();
   const [open, setOpen] = React.useState(false);
-  const [trigger, setTrigger] = React.useState(false);
+  const [isTriggering, setIsTriggering] = React.useState(false);
 
   const triggerCampaign = useTriggerC2cCampaign(id as UUID);
-  const handleChange = async (e: string) => {
-    setTrigger(true);
-    if (e === 'trigger') {
-      await triggerCampaign.mutateAsync({ id: Number(campaignId) });
-      setOpen(false);
-      setTrigger(false);
 
+  const handleTrigger = async () => {
+    setIsTriggering(true);
+    try {
+      console.log(campaignUuid);
+
+      await triggerCampaign.mutateAsync({ uuid: campaignUuid });
+      setOpen(false);
       closeSecondPanel();
+    } catch (error) {
+      console.error('Error triggering campaign:', error);
+    } finally {
+      setIsTriggering(false);
     }
   };
+
   return (
     <Card className="shadow-md">
       <CardHeader className="flex flex-row justify-between">
@@ -85,7 +89,11 @@ const InfoCard: React.FC<IProps> = ({
                   </DialogHeader>
                   <DialogFooter className="sm:justify-end">
                     <DialogClose asChild>
-                      <Button type="button" variant="ghost">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        disabled={isTriggering}
+                      >
                         Close
                       </Button>
                     </DialogClose>
@@ -93,10 +101,10 @@ const InfoCard: React.FC<IProps> = ({
                       type="button"
                       variant="ghost"
                       className="text-primary"
-                      onClick={() => handleChange('trigger')}
-                      disabled={trigger}
+                      onClick={handleTrigger}
+                      disabled={isTriggering}
                     >
-                      {trigger ? 'Triggering' : 'Trigger'}
+                      {isTriggering ? 'Triggering...' : 'Trigger'}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -111,10 +119,6 @@ const InfoCard: React.FC<IProps> = ({
             <p>{type}</p>
             <p className="text-sm font-light">Type</p>
           </div>
-          {/* <div>
-            <p>{startTime}</p>
-            <p className="text-sm font-light">Start Time</p>
-          </div> */}
           <div>
             <p>{status}</p>
             <p className="text-sm font-light">Status</p>

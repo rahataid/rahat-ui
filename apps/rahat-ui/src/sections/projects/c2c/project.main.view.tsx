@@ -1,6 +1,5 @@
 'use client';
 
-import { ScrollArea } from '@radix-ui/react-scroll-area';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
@@ -10,6 +9,7 @@ import { useBalance } from 'wagmi';
 import ProjectInfo from './project.info';
 import { useParams } from 'next/navigation';
 import ProjectCharts from './project.charts';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 const ProjectView = () => {
   const project = useProjectStore((state) => state.singleProject);
@@ -23,7 +23,7 @@ const ProjectView = () => {
 
   return (
     <div className="p-2 bg-secondary">
-      <ScrollArea className="">
+      <ScrollArea className="h-[calc(100vh-120px)]">
         <ProjectInfo project={project} />
         <ProjectCharts />
       </ScrollArea>

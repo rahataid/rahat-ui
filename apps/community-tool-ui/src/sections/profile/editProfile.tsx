@@ -23,7 +23,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Gender } from '@rahataid/community-tool-sdk/enums';
 import { User } from '@rumsan/sdk/types';
-import { use, useEffect } from 'react';
+import { use, useEffect, useMemo } from 'react';
 
 type Iprops = {
   userDetail: User;
@@ -40,29 +40,32 @@ export default function EditProfile({ userDetail }: Iprops) {
       .enum([Gender.MALE, Gender.FEMALE, Gender.OTHER, Gender.UKNOWN])
       .optional(),
   });
-  console.log(updateUser);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      name: userDetail?.name || '',
-      email: userDetail?.email || '',
-      phone: userDetail?.phone || '',
-      walletAddress: userDetail?.wallet || '',
-      gender: userDetail?.gender || Gender.UKNOWN,
-    },
-  });
-
-  useEffect(() => {
-    if (userDetail) {
-      form.reset({
+    defaultValues: useMemo(
+      () => ({
         name: userDetail?.name || '',
         email: userDetail?.email || '',
         phone: userDetail?.phone || '',
         walletAddress: userDetail?.wallet || '',
         gender: userDetail?.gender || Gender.UKNOWN,
-      });
-    }
-  }, [form, userDetail]);
+      }),
+      [userDetail],
+    ),
+  });
+
+  // useEffect(() => {
+  //   console.log('Effect running', userDetail);
+  //   if (userDetail) {
+  //     form.reset({
+  //       name: userDetail?.name || '',
+  //       email: userDetail?.email || '',
+  //       phone: userDetail?.phone || '',
+  //       walletAddress: userDetail?.wallet || '',
+  //       gender: userDetail?.gender || Gender.UKNOWN,
+  //     });
+  //   }
+  // }, [userDetail]);
   const handleEditUser = async (data: any) => {
     console.log(data);
     await updateUser.mutateAsync({

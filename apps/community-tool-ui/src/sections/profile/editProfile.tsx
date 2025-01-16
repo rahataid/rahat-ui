@@ -23,13 +23,14 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Gender } from '@rahataid/community-tool-sdk/enums';
 import { User } from '@rumsan/sdk/types';
-import { useEffect } from 'react';
+import { use, useEffect, useMemo } from 'react';
 
 type Iprops = {
-  userDetail: User | undefined;
+  userDetail: User;
 };
 export default function EditProfile({ userDetail }: Iprops) {
   const updateUser = useUpdateMe();
+  console.log('user', userDetail);
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     email: z.string(),
@@ -39,27 +40,32 @@ export default function EditProfile({ userDetail }: Iprops) {
       .enum([Gender.MALE, Gender.FEMALE, Gender.OTHER, Gender.UKNOWN])
       .optional(),
   });
-
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      name: userDetail?.name || '',
-      email: userDetail?.email || '',
-      phone: userDetail?.phone || '',
-      walletAddress: userDetail?.wallet || '',
-      gender: userDetail?.gender,
-    },
+    defaultValues: useMemo(
+      () => ({
+        name: userDetail?.name || '',
+        email: userDetail?.email || '',
+        phone: userDetail?.phone || '',
+        walletAddress: userDetail?.wallet || '',
+        gender: userDetail?.gender || Gender.UKNOWN,
+      }),
+      [userDetail],
+    ),
   });
 
-  useEffect(() => {
-    form.reset({
-      name: userDetail?.name || '',
-      email: userDetail?.email || '',
-      phone: userDetail?.phone || '',
-      walletAddress: userDetail?.wallet || '',
-      gender: userDetail?.gender,
-    });
-  }, [form, userDetail]);
+  // useEffect(() => {
+  //   console.log('Effect running', userDetail);
+  //   if (userDetail) {
+  //     form.reset({
+  //       name: userDetail?.name || '',
+  //       email: userDetail?.email || '',
+  //       phone: userDetail?.phone || '',
+  //       walletAddress: userDetail?.wallet || '',
+  //       gender: userDetail?.gender || Gender.UKNOWN,
+  //     });
+  //   }
+  // }, [userDetail]);
   const handleEditUser = async (data: any) => {
     console.log(data);
     await updateUser.mutateAsync({
@@ -164,7 +170,7 @@ export default function EditProfile({ userDetail }: Iprops) {
                   <FormItem>
                     <Label>Gender</Label>
                     <Select
-                      onValueChange={field.onChange}
+                      onValueChange={(value) => field.onChange(value as Gender)}
                       defaultValue={field.value}
                     >
                       <FormControl>
@@ -189,7 +195,7 @@ export default function EditProfile({ userDetail }: Iprops) {
           </div>
 
           <div className="flex justify-end mt-3">
-            <Button>Update Profile</Button>
+            <Button type="submit">Update Profile</Button>
           </div>
         </div>
       </form>

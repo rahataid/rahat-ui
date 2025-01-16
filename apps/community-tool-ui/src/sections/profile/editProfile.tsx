@@ -30,7 +30,6 @@ type Iprops = {
 };
 export default function EditProfile({ userDetail }: Iprops) {
   const updateUser = useUpdateMe();
-  console.log('user', userDetail);
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     email: z.string(),
@@ -54,20 +53,7 @@ export default function EditProfile({ userDetail }: Iprops) {
     ),
   });
 
-  // useEffect(() => {
-  //   console.log('Effect running', userDetail);
-  //   if (userDetail) {
-  //     form.reset({
-  //       name: userDetail?.name || '',
-  //       email: userDetail?.email || '',
-  //       phone: userDetail?.phone || '',
-  //       walletAddress: userDetail?.wallet || '',
-  //       gender: userDetail?.gender || Gender.UKNOWN,
-  //     });
-  //   }
-  // }, [userDetail]);
   const handleEditUser = async (data: any) => {
-    console.log(data);
     await updateUser.mutateAsync({
       payload: {
         ...data,

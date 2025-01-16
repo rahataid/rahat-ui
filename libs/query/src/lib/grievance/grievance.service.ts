@@ -14,7 +14,7 @@ export const useGrievanceList: any = (payload: Pagination) => {
 
   const query = useQuery(
     {
-      queryKey: ['get_grievances'],
+      queryKey: ['get_grievances', payload],
       queryFn: async () => grievanceClient.list(payload),
     },
     queryClient,

@@ -100,7 +100,10 @@ export default function TransactionView() {
   React.useEffect(() => {
     (async () => {
       const transactionsObject: TransactionsObject = result.data;
-      const transactionLists = await mergeTransactions(transactionsObject);
+      const transactionLists = await mergeTransactions(
+        transactionsObject,
+        contractAddress,
+      );
       setTransactionList(transactionLists);
     })();
   }, [result.data]);

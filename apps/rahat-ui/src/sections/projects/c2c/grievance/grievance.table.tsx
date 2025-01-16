@@ -37,25 +37,37 @@ const GrievanceTable = () => {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const grievanceList = useGrievanceList({
-    page: 1,
-    perPage: 20,
-    sort: 'createdAt',
-    order: 'asc',
-  });
+  const [rowDetails, setRowDetails] = React.useState();
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const {
     pagination,
+    filters,
+    setFilters,
     setNextPage,
     setPrevPage,
     setPerPage,
     selectedListItems,
     setSelectedListItems,
   } = usePagination();
+
+  const grievanceList = useGrievanceList({
+    page: pagination.page,
+    perPage: pagination.perPage,
+    sort: 'createdAt',
+    order: 'asc',
+    ...filters,
+  });
   const { id } = useParams();
   const route = useRouter();
-  const columns = useGrievanceTableColumns();
+  const columns = useGrievanceTableColumns({
+    data: grievanceList.data?.data,
+    rowDetails,
+    setRowDetails,
+  });
+
+  const meta = grievanceList.data?.response?.meta;
   const table = useReactTable({
     manualPagination: true,
     data: grievanceList.data?.data || [],
@@ -82,11 +94,9 @@ const GrievanceTable = () => {
         <div className="flex justify-between items-center mb-2">
           <Input
             placeholder="Search grievance..."
-            value={
-              (table.getColumn('reporter')?.getFilterValue() as string) ?? ''
-            }
+            value={filters['title']}
             onChange={(event) => {
-              table.getColumn('reporter')?.setFilterValue(event.target.value);
+              setFilters((prev) => ({ ...prev, title: event.target.value }));
             }}
             className="max-w-sm rounded mr-2"
           />
@@ -177,15 +187,16 @@ const GrievanceTable = () => {
           </Table>
         </div>
       </div>
-      <DataTablePagination table={table} />
+      {/* <DataTablePagination table={table} /> */}
 
-      {/* <CustomPagination
+      <CustomPagination
+        meta={meta}
         currentPage={pagination.page}
         handleNextPage={setNextPage}
         handlePageSizeChange={setPerPage}
         handlePrevPage={setPrevPage}
         perPage={pagination.perPage}
-      /> */}
+      />
     </>
   );
 };

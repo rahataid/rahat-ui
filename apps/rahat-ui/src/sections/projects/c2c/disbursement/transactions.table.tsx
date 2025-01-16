@@ -70,9 +70,9 @@ export function TransactionTable() {
 
   return (
     <div className="w-full">
-      <div className="rounded h-[calc(100vh-360px)] bg-card">
-        <Table>
-          <ScrollArea className="h-table1">
+      <div className="rounded  bg-card">
+        <ScrollArea className="h-table1 h-[calc(100vh-460px)]">
+          <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -147,8 +147,8 @@ export function TransactionTable() {
                 </TableRow>
               )}
             </TableBody>
-          </ScrollArea>
-        </Table>
+          </Table>
+        </ScrollArea>
       </div>
       <DataTablePagination table={table} />
     </div>

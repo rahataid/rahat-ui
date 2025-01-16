@@ -40,7 +40,7 @@ import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { UUID } from 'crypto';
 import { Copy, CopyCheck, Minus, MoreVertical, Trash2 } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import EditBeneficiary from './beneficiary.edit';
 import TransactionTable from './beneficiary.transaction.table';
 
@@ -90,11 +90,15 @@ export default function BeneficiaryDetail({
 
   const disbursementBeneficiary = beneficiaryDetails?.DisbursementBeneficiary;
   let amount = 0;
-  if (disbursementBeneficiary.length > 0) {
+  if (disbursementBeneficiary?.length > 0) {
     disbursementBeneficiary.forEach((beneficiary: any) => {
       amount += beneficiary.amount;
     });
   }
+
+  useEffect(() => {
+    setWalletAddressCopied(false);
+  }, [beneficiaryDetails]);
 
   return (
     <>

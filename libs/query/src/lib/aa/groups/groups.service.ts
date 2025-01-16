@@ -181,7 +181,6 @@ export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
-    placeholderData: keepPreviousData,
   });
 
   useEffect(() => {
@@ -262,8 +261,9 @@ export const useBeneficiariesGroups = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
-    placeholderData: keepPreviousData,
   });
+
+  console.log("query data", query.data)
 
   useEffect(() => {
     if (query?.data) {

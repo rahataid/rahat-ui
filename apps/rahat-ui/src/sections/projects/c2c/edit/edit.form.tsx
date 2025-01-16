@@ -387,7 +387,9 @@ export default function EditProject() {
                 <Button variant="ghost" className="text-primary" type="submit">
                   Go Back
                 </Button>
-                <Button>Edit Project</Button>
+                <Button disabled={projectEdit.isPending}>
+                  {projectEdit.isPending ? 'Editing' : 'Edit Project'}
+                </Button>
               </div>
             </div>
           </div>

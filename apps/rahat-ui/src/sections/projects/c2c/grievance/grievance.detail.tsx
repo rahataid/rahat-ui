@@ -43,7 +43,12 @@ export default function GrievanceDetail({ details, closeSecondPanel }: IProps) {
     setActiveTab(tab);
   };
 
-  const GrievanceStatus = ['NEW', 'UNDER_REVIEW', 'RESOLVED', 'CLOSED'];
+  const GrievanceStatus = [
+    { key: 'New', value: 'NEW' },
+    { key: 'Under Review', value: 'UNDER_REVIEW' },
+    { key: 'Resolved', value: 'RESOLVED' },
+    { key: 'Closed', value: 'CLOSED' },
+  ];
   return (
     <>
       <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
@@ -113,7 +118,9 @@ export default function GrievanceDetail({ details, closeSecondPanel }: IProps) {
             <SelectContent>
               <SelectGroup>
                 {GrievanceStatus?.map((status) => {
-                  return <SelectItem value={status}>{status}</SelectItem>;
+                  return (
+                    <SelectItem value={status.value}>{status.key}</SelectItem>
+                  );
                 })}
               </SelectGroup>
             </SelectContent>
@@ -147,12 +154,14 @@ export default function GrievanceDetail({ details, closeSecondPanel }: IProps) {
                     {details?.reportedBy || 'N/A'}
                   </p>
                   <p className="text-sm font-normal text-muted-foreground">
-                    Created By
+                    Reported By
                   </p>
                 </div>
                 <div className="text-left">
                   <p className="font-light text-base">
-                    {formatdbDate(details?.createdAt) || 'N/A'}
+                    {details?.createdAt
+                      ? formatdbDate(details?.createdAt)
+                      : 'N/A'}
                   </p>
                   <p className="text-sm font-normal text-muted-foreground">
                     Created On
@@ -173,7 +182,7 @@ export default function GrievanceDetail({ details, closeSecondPanel }: IProps) {
           </Card>
         </>
       )}
-      {activeTab === 'edit' && <EditGrievance />}
+      {activeTab === 'edit' && <EditGrievance details={details} />}
     </>
   );
 }

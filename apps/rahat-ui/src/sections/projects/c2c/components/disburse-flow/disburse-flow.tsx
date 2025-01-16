@@ -44,6 +44,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
+  const safeWallet = useProjectSettingsStore(
+    (state) => state?.settings?.[id]?.['SAFE_WALLET']?.address,
+  );
 
   const { data: safePendingTransactions, isLoading } =
     useGetSafePendingTransactions(id);
@@ -113,7 +116,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
         c2cProjectAddress: c2cproject?.address,
       });
       route.push(
-        `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&from=${data[0]?.from}`,
+        `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&from=${safeWallet}`,
       );
       return;
     }
@@ -146,7 +149,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const steps = [
     {
       id: 'Step 1',
-      title: 'Disburment Method',
+      title: 'Disbursement Method',
       component: (
         <Step1DisburseMethod
           value={stepData.treasurySource}

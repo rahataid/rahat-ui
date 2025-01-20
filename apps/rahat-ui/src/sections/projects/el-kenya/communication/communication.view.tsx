@@ -1,4 +1,8 @@
-import { useListRpCommunicationLogs, useSettingsStore } from '@rahat-ui/query';
+import {
+  useListRpCommunicationLogs,
+  useProjectStore,
+  useSettingsStore,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   getCoreRowModel,
@@ -48,6 +52,10 @@ export default function CommunicationView() {
         });
       });
   }, [data]);
+
+  const projectClosed = useProjectStore(
+    (state) => state.singleProject?.projectClosed,
+  );
 
   const cardData = [
     {
@@ -152,6 +160,7 @@ export default function CommunicationView() {
               onClick={() =>
                 router.push(`/projects/el-kenya/${id}/communication/manage`)
               }
+              disabled={projectClosed}
             >
               <Settings className="mr-1" size={18} /> Manage
             </Button>

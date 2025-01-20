@@ -4,6 +4,7 @@ import {
   useGetRedemption,
   usePagination,
   useProjectSettingsStore,
+  useProjectStore,
 } from '@rahat-ui/query';
 import {
   getCoreRowModel,
@@ -97,6 +98,10 @@ export default function ClaimDetailView() {
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
+  const projectClosed = useProjectStore(
+    (state) => state.singleProject?.projectClosed,
+  );
+
   const handleSubmit = () => {
     redeemToken
       .mutateAsync({
@@ -143,7 +148,7 @@ export default function ClaimDetailView() {
           />
           <Button
             type="submit"
-            disabled={data?.status != 'REQUESTED'}
+            disabled={data?.status != 'REQUESTED' || projectClosed}
             onClick={handleSubmit}
           >
             Approve

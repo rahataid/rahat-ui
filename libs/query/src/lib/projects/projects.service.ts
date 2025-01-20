@@ -529,7 +529,8 @@ export const useProject = (
 
   useEffect(() => {
     if (query.data) {
-      setSingleProject(query.data.data); // Access the 'data' property of the 'FormattedResponse' object
+      const projectClosed = query.data.data?.status === 'CLOSED';
+      setSingleProject({ ...query.data.data, projectClosed }); // Access the 'data' property of the 'FormattedResponse' object
     }
   }, [query.data]);
   return query;

@@ -1,4 +1,8 @@
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
+import {
+  usePagination,
+  useProjectBeneficiaries,
+  useProjectStore,
+} from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -37,6 +41,10 @@ export default function BeneficiaryView() {
 
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab') || 'beneficiary';
+
+  const projectClosed = useProjectStore(
+    (state) => state.singleProject?.projectClosed,
+  );
 
   useEffect(() => {
     setDefaultValue(tab);
@@ -121,6 +129,7 @@ export default function BeneficiaryView() {
           onClick={() =>
             router.push(`/projects/el-kenya/${id}/beneficiary/import`)
           }
+          disabled={projectClosed}
         >
           <CloudDownload className="mr-1" /> Import beneficiaries
         </Button>
@@ -142,6 +151,7 @@ export default function BeneficiaryView() {
               <AddButton
                 name="Beneficiary"
                 path={`/projects/el-kenya/${id}/beneficiary/add`}
+                disabled={projectClosed}
               />
             </div>
             <div className="flex justify-between gap-2 mb-2">
@@ -209,7 +219,7 @@ export default function BeneficiaryView() {
       </TabsContent>
       <TabsContent value="beneficiaryGroups">
         <div className="p-4 pt-2">
-          <BeneficiaryGroupView />
+          <BeneficiaryGroupView projectClosed={projectClosed} />
         </div>
       </TabsContent>
     </Tabs>

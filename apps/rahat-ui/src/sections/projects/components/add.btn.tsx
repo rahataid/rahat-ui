@@ -13,6 +13,7 @@ type IProps = {
     | 'ghost'
     | 'link';
   className?: string;
+  disabled?: boolean;
 };
 
 export default function AddButton({
@@ -20,6 +21,7 @@ export default function AddButton({
   name,
   variant = 'default',
   className = '',
+  disabled = false,
 }: IProps) {
   const router = useRouter();
   return (
@@ -28,6 +30,7 @@ export default function AddButton({
       type="button"
       onClick={() => router.push(path)}
       className={className}
+      disabled={disabled}
     >
       <Plus size={18} className="mr-1" /> Add {name}
     </Button>

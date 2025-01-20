@@ -2,6 +2,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useFindAllKenyaStats,
   useProjectSettingsStore,
+  useProjectStore,
 } from '@rahat-ui/query';
 import {
   ChartColumnStacked,
@@ -35,6 +36,10 @@ export default function VouchersView() {
   const { data: tokenBalance } = useReadRahatTokenTotalSupply({
     address: contractSettings?.rahattoken?.address as `0x${string}`,
   });
+
+  const projectClosed = useProjectStore(
+    (state) => state.singleProject?.projectClosed,
+  );
 
   const tokenAllocated = kenyaStats?.data?.find(
     (i: any) => i.name === 'BENEFICIARY_TOTAL',
@@ -174,6 +179,7 @@ export default function VouchersView() {
             onClick={() =>
               router.push(`/projects/el-kenya/${id}/vouchers/manage`)
             }
+            disabled={projectClosed}
           >
             <Plus size={18} className="mr-1" />
             Manage Voucher

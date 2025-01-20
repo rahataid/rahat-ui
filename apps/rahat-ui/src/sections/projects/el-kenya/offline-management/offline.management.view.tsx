@@ -2,6 +2,7 @@ import {
   useGetOfflineVendors,
   usePagination,
   useProjectBeneficiaries,
+  useProjectStore,
 } from '@rahat-ui/query';
 import {
   getCoreRowModel,
@@ -27,6 +28,10 @@ export default function OfflineManagementView() {
   const { id, Id } = useParams() as { id: UUID; Id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+
+  const projectClosed = useProjectStore(
+    (state) => state.singleProject?.projectClosed,
+  );
 
   const {
     data: offlineVendors,
@@ -80,6 +85,7 @@ export default function OfflineManagementView() {
               onClick={() =>
                 router.push(`/projects/el-kenya/${id}/offline-management/setup`)
               }
+              disabled={projectClosed}
             >
               <Plus size={18} className="mr-1" />
               Setup offline beneficiary

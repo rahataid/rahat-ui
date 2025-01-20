@@ -22,17 +22,19 @@ type IProps = {
   name: string;
   handleContinueClick: VoidFunction;
   className?: string;
+  disabled?: boolean;
 };
 
 export default function DeleteButton({
   name,
   handleContinueClick,
   className,
+  disabled = false,
 }: IProps) {
   return (
     <TooltipProvider delayDuration={100}>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger disabled={disabled}>
           <AlertDialog>
             <AlertDialogTrigger className="flex items-center">
               <div

@@ -21,6 +21,10 @@ import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
 
+interface ExtendedProject extends Project {
+  projectClosed: boolean;
+}
+
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
   return res.data;
@@ -530,7 +534,11 @@ export const useProject = (
   useEffect(() => {
     if (query.data) {
       const projectClosed = query.data.data?.status === 'CLOSED';
-      setSingleProject({ ...query.data.data, projectClosed }); // Access the 'data' property of the 'FormattedResponse' object
+      const updatedProject: ExtendedProject = {
+        ...query.data.data,
+        projectClosed,
+      };
+      setSingleProject(updatedProject); // Access the 'data' property of the 'FormattedResponse' object
     }
   }, [query.data]);
   return query;

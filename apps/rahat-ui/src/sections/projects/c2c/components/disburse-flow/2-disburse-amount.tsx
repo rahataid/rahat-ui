@@ -81,7 +81,13 @@ export default function Step2DisburseAmount({
               name="disburseAmount"
               placeholder="Enter amount to send"
               value={value}
-              onChange={onChange}
+              onChange={(event) => {
+                const amount = Number(event.target.value);
+                if (amount > Number(projectBalance)) {
+                  return;
+                }
+                onChange(event);
+              }}
               className="p-2 border border-gray-300 rounded-md w-1/2"
             />
             <span className="text-gray-600">{tokenName}</span>

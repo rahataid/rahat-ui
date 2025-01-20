@@ -113,12 +113,12 @@ export const useProjectBeneficiaryTableColumns = () => {
       cell: ({ row }) => {
         const disbursementBeneficiary = row.original?.DisbursementBeneficiary;
         let amount = 0;
-        if (disbursementBeneficiary.length > 0) {
+        if (disbursementBeneficiary?.length > 0) {
           disbursementBeneficiary.forEach((beneficiary: any) => {
             amount += beneficiary.amount;
           });
         }
-        return <div className="font-medium">{amount}</div>;
+        return <div className="font-medium">{amount || 0}</div>;
       },
     },
     {

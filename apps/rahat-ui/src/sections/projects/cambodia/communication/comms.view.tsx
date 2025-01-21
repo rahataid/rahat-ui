@@ -43,8 +43,6 @@ export default function CommunicationView() {
     setPerPage,
     selectedListItems,
     setSelectedListItems,
-    resetSelectedListItems,
-    resetFilters,
   } = usePagination();
   const { data: broadStatusCount } = useCambodiaBroadCastCounts({
     projectUUID: id,
@@ -107,7 +105,6 @@ export default function CommunicationView() {
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
-      console.log('value', value);
       const filterValue = value === 'ALL' ? setFilters({}) : value;
       table.getColumn(name)?.setFilterValue(filterValue);
       setFilters({
@@ -140,6 +137,7 @@ export default function CommunicationView() {
       setFilters({});
     }
   };
+
   const address = tableData
     ?.filter((item: any) => item.status === 'FAIL')
     .map((add) => add.address);
@@ -162,6 +160,13 @@ export default function CommunicationView() {
     setFilters({});
   }, []);
 
+  const handleClearDate = () => {
+    setFilters({
+      ...filters,
+      startDate: undefined,
+      endDate: undefined,
+    });
+  };
   return (
     <>
       <div className="p-4">
@@ -192,6 +197,7 @@ export default function CommunicationView() {
               handleDateChange={handleDateChange}
               type="range"
               className="w-full"
+              handleClearDate={handleClearDate}
             />
 
             <SelectComponent
@@ -205,7 +211,7 @@ export default function CommunicationView() {
               }
               value={table.getColumn('name')?.getFilterValue() as string}
             />
-            {/* <ViewColumns table={table} /> */}
+
             <Button
               variant="outline"
               className="text-muted-foreground w-1/4"
@@ -219,15 +225,6 @@ export default function CommunicationView() {
             </Button>
 
             <AddSMSView address={address} />
-
-            {filters.startDate && filters.endDate && (
-              <Badge
-                onClick={() => setFilters({})}
-                className="w-44 flex hover:cursor-pointer"
-              >
-                <p>Clear Date</p>
-              </Badge>
-            )}
           </div>
           <CambodiaTable
             table={table}

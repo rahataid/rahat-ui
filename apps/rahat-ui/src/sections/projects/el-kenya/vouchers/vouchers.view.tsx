@@ -103,7 +103,7 @@ export default function VouchersView() {
       const { voucherType, count, week } = item;
 
       // Find or create a series entry for the current voucher type
-      let seriesEntry = acc.find((s) => s.name === voucherType);
+      let seriesEntry = acc?.find((s) => s?.name === voucherType);
       if (!seriesEntry) {
         seriesEntry = {
           name: voucherType,
@@ -122,7 +122,7 @@ export default function VouchersView() {
   }
 
   const stackedColumnData = React.useMemo(() => {
-    if (!weeklyRedemptionsStats)
+    if (!weeklyRedemptionsStats || weeklyRedemptionsStats?.length === 0)
       return { categories: ['demo'], series: [{ name: 'demo', data: [0] }] };
     if (weeklyRedemptionsStats?.length > 0)
       return transformData(weeklyRedemptionsStats);
@@ -234,19 +234,21 @@ export default function VouchersView() {
               </div>
             </div> */}
           </div>
-          <div>
-            <div className="col-span-3 border rounded-md bg-card p-4 shadow">
-              <p className="text-md font-medium mb-4">Total Vouchers</p>
-              <div className="flex justify-center">
-                <ChartColumnStacked
-                  series={stackedColumnData?.series}
-                  categories={stackedColumnData?.categories as string[]}
-                  stacked
-                  custom
-                />
+          {weeklyRedemptionsStats?.length > 0 && (
+            <div>
+              <div className="col-span-3 border rounded-md bg-card p-4 shadow">
+                <p className="text-md font-medium mb-4">Total Vouchers</p>
+                <div className="flex justify-center">
+                  <ChartColumnStacked
+                    series={stackedColumnData?.series}
+                    categories={stackedColumnData?.categories as string[]}
+                    stacked
+                    custom
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </ScrollArea>
       </div>
     </>

@@ -58,12 +58,17 @@ export default function EditCommunicationForm({
 
   const selectedTransport = form.watch(fieldName('transportId'));
   const sessionId = form.watch(fieldName('sessionId'));
+  const message = form.watch(fieldName('message'));
 
   React.useEffect(() => {
     const transportData = appTransports?.find(
       (t) => t.cuid === selectedTransport,
     );
     setContentType(transportData?.validationContent as ValidationContent);
+    if(transportData?.validationContent === ValidationContent.URL){
+      setAudioFile(message)
+    }
+
   }, [selectedTransport, contentType, setContentType]);
 
   const fileUpload = useUploadFile();

@@ -7,6 +7,7 @@ import {
 
 export const mergeTransactions = async (
   transactionsObj: TransactionsObject,
+  contractAddress: string,
 ) => {
   console.log({ transactionsObj });
   const { transfers, transferProcesseds } = transactionsObj;
@@ -22,6 +23,7 @@ export const mergeTransactions = async (
         timeZone: 'UTC',
       }),
       amount: transaction.value,
+      to: contractAddress,
     })),
     ...transferProcesseds.map((transaction) => ({
       ...transaction,

@@ -11,6 +11,7 @@ import useStakeholdersGroupsTableColumn from './useStakeholdersGroupsTableColumn
 import CustomPagination from '../../../../../components/customPagination';
 import { UUID } from 'crypto';
 import { getPaginationFromLocalStorage } from '../../prev.pagination.storage';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export default function StakeholdersGroupsListView() {
   const { id } = useParams();
@@ -25,7 +26,7 @@ export default function StakeholdersGroupsListView() {
     setPagination(prevPagination);
   }, []);
 
-  useStakeholdersGroups(id as UUID, { ...pagination });
+  const {isLoading} = useStakeholdersGroups(id as UUID, { ...pagination });
 
   const { stakeholdersGroups, stakeholdersGroupsMeta } =
     useStakeholdersGroupsStore((state) => ({
@@ -41,6 +42,14 @@ export default function StakeholdersGroupsListView() {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  if (isLoading) {
+    return (
+      <div className='flex items-center justify-center mt-60'>
+        <TableLoader />
+      </div>
+    )
+  }
 
   return (
     <div className="rounded border bg-card">

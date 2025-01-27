@@ -195,7 +195,7 @@ function BeneficiaryDetailTableView() {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      {projectBeneficiaries.isFetching ? (
+                      {projectBeneficiaries.isLoading ? (
                         <TableLoader />
                       ) : (
                         'No data available.'

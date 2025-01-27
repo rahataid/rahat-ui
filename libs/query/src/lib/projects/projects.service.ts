@@ -20,6 +20,7 @@ import { MS_CAM_ACTIONS, PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
 import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
+import Swal from 'sweetalert2';
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
@@ -557,7 +558,6 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
 
   const query = useQuery({
     queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, restPayloadString],
-    placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {
@@ -664,14 +664,29 @@ export const useUpdateElRedemption = () => {
 export const useProjectEdit = () => {
   const { queryClient, rumsanService } = useRSQuery();
   // const projectClient = getProjectClient(rumsanService.client);
-
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
   return useMutation(
     {
-      onError(error, variables, context) {
-        console.error('Error', error, variables, context);
+      onSuccess: () => {
+        toast.fire({
+          title: 'Project edited successfully',
+          icon: 'success',
+        });
+        queryClient.invalidateQueries({
+          queryKey: [TAGS.GET_PROJECT_DETAILS],
+        });
       },
-      onSuccess(data, variables, context) {
-        console.log('Success', data, variables, context);
+      onError: () => {
+        toast.fire({
+          title: 'Error while editing project.',
+          icon: 'error',
+        });
       },
       mutationKey: ['projectEdit'],
       mutationFn: async ({ uuid, data }: { uuid: UUID; data: any }) => {
@@ -1230,4 +1245,62 @@ export const useCambodiaProjectSettings = (payload: any) => {
     },
   });
   return query;
+};
+
+export const useCambodiaTriggerComms = () => {
+  const q = useProjectAction<any[]>();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationKey: [MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.TRIGGER_COMMUNICATION],
+
+    mutationFn: async (payload: any) => {
+      const { projectUUID, ...restPayload } = payload;
+
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.TRIGGER_COMMUNICATION,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+    onSuccess: () => {
+      Swal.fire(
+        'Your message is scheduled and will be delivered shortly',
+        '',
+        'success',
+      );
+      qc.invalidateQueries({
+        queryKey: [MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.LIST],
+      });
+    },
+  });
+};
+export const useValidateHealthWorker = () => {
+  const q = useProjectAction<any[]>();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.VALIDATE_HEALTH_WORKER],
+
+    mutationFn: async (payload: any) => {
+      const { projectUUID, ...restPayload } = payload;
+
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.CHW.VALIDATE_HEALTH_WORKER,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.VALIDATE_HEALTH_WORKER],
+      });
+    },
+  });
 };

@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useGrievanceAdd } from '@rahat-ui/query';
+import { useEffect } from 'react';
 
 // Step 1: Update the Form Schema
 const FormSchema = z.object({
@@ -106,7 +107,11 @@ function GrievanceSelectField({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select
+            value={field.value}
+            onValueChange={field.onChange}
+            defaultValue={field.value}
+          >
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Select an option" />
@@ -164,12 +169,12 @@ function GrievanceForm({
                 name="description"
                 placeholder="Description"
               />
-              {/* Step 3: Add the Status Dropdown */}
+              {/* Step 3: Add the Status Dropdown
               <GrievanceSelectField
                 control={form.control}
                 name="status"
-                options={statusOptions}
-              />
+                options={statusOptions} */}
+              {/* /> */}
             </div>
             <div className="flex justify-between">
               <Button
@@ -189,7 +194,7 @@ function GrievanceForm({
   );
 }
 
-export default function GrievanceAdd() {
+export default function GrievanceAdd({ details }: any) {
   const router = useRouter();
   const addGrievance = useGrievanceAdd();
   const { id } = useParams();
@@ -224,6 +229,20 @@ export default function GrievanceAdd() {
     router.back();
     await addGrievance.mutateAsync(grievance);
   };
+  console.log(details.details);
+
+  useEffect(() => {
+    if (details) {
+      form.reset({
+        reportedBy: details?.reportedBy || '',
+        contactInfo: details?.reporterContact || '',
+        grievanceTitle: details?.title || '',
+        grievanceType: details?.type || '',
+        description: details?.description || '',
+        status: details?.status || '',
+      });
+    }
+  }, [details, form]);
 
   return (
     <GrievanceForm

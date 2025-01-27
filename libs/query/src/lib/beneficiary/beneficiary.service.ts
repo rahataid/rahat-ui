@@ -61,7 +61,6 @@ export const useBeneficiaryGroupsList = (payload: any): any => {
     {
       queryKey: [TAGS.GET_BENEFICIARIES_GROUPS, payload],
       queryFn: () => listBeneficiaryGroups(payload),
-      placeholderData: keepPreviousData,
     },
     queryClient,
   );
@@ -415,22 +414,22 @@ const uploadBeneficiaryBulkQueue = async (
   client: any,
   projectId?: UUID,
   automatedGroupOption?: {
-    createAutomatedGroup: boolean;
-    groupKey: string;
+    createAutomatedGroup?: boolean;
+    groupKey?: string;
   },
 ) => {
   const formData = new FormData();
   formData.append('file', selectedFile);
   formData.append('doctype', doctype);
   if (projectId) formData.append('projectId', projectId);
+  formData.append(
+    'automatedGroupOption[createAutomatedGroup]',
+    Boolean(automatedGroupOption?.createAutomatedGroup).toString(),
+  );
   if (automatedGroupOption?.createAutomatedGroup) {
     formData.append(
-      'automatedGroupOption[createAutomatedGroup]',
-      automatedGroupOption.createAutomatedGroup.toString(),
-    );
-    formData.append(
       'automatedGroupOption[groupKey]',
-      automatedGroupOption.groupKey,
+      automatedGroupOption.groupKey as string,
     );
   }
   const response = await client.post('/beneficiaries/upload-queue', formData);
@@ -495,7 +494,7 @@ export const useBeneficiaryPii = (
   // TODO: UPDATE WITH OPTIONALPAGINATION
   payload: {
     projectId: UUID;
-  } & Pagination,
+  } & Partial<Pagination>,
 ): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);

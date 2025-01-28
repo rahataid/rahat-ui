@@ -34,8 +34,8 @@ export default function BeneficiaryDetail() {
     <div className="h-[calc(100vh-95px)] m-4">
       <div className="flex justify-between items-center">
         <HeaderWithBack
-          title="Beneficiary details"
-          subtitle="Here is the detailed view of selected beneficiary"
+          title="Consumer details"
+          subtitle="Here is the detailed view of selected consumer"
           path={`/projects/el-kenya/${id}/beneficiary`}
         />
         {/* <div className="flex space-x-2">
@@ -75,7 +75,7 @@ export default function BeneficiaryDetail() {
           </div>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Beneficiary Type</h1>
+          <h1 className="text-md text-muted-foreground">Consumer Type</h1>
           <p className="font-medium">
             <Badge>{type}</Badge>
           </p>

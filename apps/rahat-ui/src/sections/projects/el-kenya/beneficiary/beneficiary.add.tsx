@@ -96,10 +96,8 @@ export default function AddBeneficiaryForm() {
             <div className="flex space-x-3 mb-10">
               <Back path="/projects/el-kenya/${id}/beneficiary" />
               <div>
-                <h1 className="text-2xl font-semibold ">Add Beneficiary</h1>
-                <p className=" text-muted-foreground">
-                  Create a new beneficiary
-                </p>
+                <h1 className="text-2xl font-semibold ">Add Consumer</h1>
+                <p className=" text-muted-foreground">Create a new consumer</p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4 mb-4 border rounded shadow-md p-4">
@@ -109,11 +107,11 @@ export default function AddBeneficiaryForm() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Beneficiary Name</FormLabel>
+                      <FormLabel>Consumer Name</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter beneficiary name"
+                          placeholder="Enter consumer name"
                           {...field}
                         />
                       </FormControl>
@@ -188,7 +186,7 @@ export default function AddBeneficiaryForm() {
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter beneficiary location"
+                          placeholder="Enter consumer location"
                           {...field}
                         />
                       </FormControl>

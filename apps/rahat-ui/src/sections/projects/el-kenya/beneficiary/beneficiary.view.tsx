@@ -114,14 +114,14 @@ export default function BeneficiaryView() {
             className="w-full data-[state=active]:bg-white"
             value="beneficiary"
           >
-            Beneficiary
+            Consumer
           </TabsTrigger>
           <TabsTrigger
             id="beneficiaryGroups"
             className="w-full data-[state=active]:bg-white"
             value="beneficiaryGroups"
           >
-            Beneficiary Groups
+            Consumer Groups
           </TabsTrigger>
         </TabsList>
         <Button
@@ -131,7 +131,7 @@ export default function BeneficiaryView() {
           }
           disabled={projectClosed}
         >
-          <CloudDownload className="mr-1" /> Import beneficiaries
+          <CloudDownload className="mr-1" /> Import consumers
         </Button>
       </div>
       <TabsContent value="beneficiary">
@@ -149,13 +149,13 @@ export default function BeneficiaryView() {
                 }
               />
               <AddButton
-                name="Beneficiary"
+                name="Consumer"
                 path={`/projects/el-kenya/${id}/beneficiary/add`}
                 disabled={projectClosed}
               />
             </div>
             <div className="flex justify-between gap-2 mb-2">
-              <SelectComponent
+              {/* <SelectComponent
                 onChange={(e) => setFilters({ ...filters, voucherType: e })}
                 name="Voucher Type"
                 options={['SINGLE_VISION', 'READING_GLASSES']}
@@ -166,7 +166,7 @@ export default function BeneficiaryView() {
                 name="Beneficiary Type"
                 options={['PRE_DETERMINED', 'WALK_IN']}
                 value={filters?.type || ''}
-              />
+              /> */}
               <SelectComponent
                 onChange={(e) =>
                   setFilters({ ...filters, eyeCheckupStatus: e })

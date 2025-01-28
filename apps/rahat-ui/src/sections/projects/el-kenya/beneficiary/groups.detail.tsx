@@ -68,7 +68,7 @@ export default function GroupDetailView() {
         <div className="flex justify-between items-center">
           <HeaderWithBack
             title={data?.name || 'N/A'}
-            subtitle="Here is a detailed view of the selected beneficiary group"
+            subtitle="Here is a detailed view of the selected consumer group"
             path={`/projects/el-kenya/${id}/beneficiary?tab=beneficiaryGroups`}
           />
           {/* <CoreBtnComponent
@@ -81,7 +81,7 @@ export default function GroupDetailView() {
         <DataCard
           className="border-solid w-1/3 rounded-md"
           iconStyle="bg-white text-secondary-muted"
-          title="Total Beneficiaries"
+          title="Total Consumers"
           Icon={UsersRound}
           number={data?.groupedBeneficiaries?.length || 0}
         />

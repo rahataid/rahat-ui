@@ -54,7 +54,7 @@ export default function MembersTable({
             <AddButton
               variant="outline"
               className="border-primary text-primary"
-              name="Beneficiary"
+              name="Consumer"
               path={`/projects/el-kenya/${id}/beneficiary/group/${groupUUID}/select?name=${name}`}
               disabled={projectClosed}
             />
@@ -113,10 +113,10 @@ export default function MembersTable({
                               <FileWarning size={18} strokeWidth={1.5} />
                             </div>
                             <p className="font-medium text-lg">
-                              No beneficiary added
+                              No consumer added
                             </p>
                             <p className="text-muted-foreground text-base">
-                              Add beneficiary to the group to display data
+                              Add consumer to the group to display data
                             </p>
                             <AddButton
                               name="Beneficiary"

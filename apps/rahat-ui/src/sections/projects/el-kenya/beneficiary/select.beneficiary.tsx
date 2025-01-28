@@ -112,7 +112,7 @@ export default function SelectBeneficiaryView() {
     try {
       await updateBeneficiaryGroup.mutateAsync(payload);
     } catch (e) {
-      console.error('Error while updating beneficiary group::', e);
+      console.error('Error while updating consumer group::', e);
     }
   };
 
@@ -124,8 +124,8 @@ export default function SelectBeneficiaryView() {
     <>
       <div className="p-4">
         <HeaderWithBack
-          title="Select Beneficiary"
-          subtitle="Select beneficiaries from the list below to them assign to the selected group"
+          title="Select Consumer"
+          subtitle="Select consumer from the list below to them assign to the selected group"
           path={`/projects/el-kenya/${id}/beneficiary/group/${groupid}`}
         />
         <div className="border rounded shadow p-3">
@@ -172,7 +172,7 @@ export default function SelectBeneficiaryView() {
             className="px-10"
             onClick={() => handleUpdateBeneficiaryGroup()}
           >
-            Add ({Object.keys(selectedListItems).length ?? 0} Beneficiaries )
+            Add ({Object.keys(selectedListItems).length ?? 0} Consumers )
           </Button>
         </div>
       </div>

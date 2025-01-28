@@ -59,8 +59,8 @@ export default function GroupCreateView() {
       <form onSubmit={form.handleSubmit(handleCreateGroup)}>
         <div className="p-4 h-[calc(100vh-115px)]">
           <HeaderWithBack
-            title="Create Beneficiary Group"
-            subtitle="Create a new beneficiary group"
+            title="Create Consumer Group"
+            subtitle="Create a new Consumer group"
             path={`/projects/el-kenya/${id}/beneficiary?tab=beneficiaryGroups`}
           />
           <div className="shadow-md p-4 rounded-sm bg-card">

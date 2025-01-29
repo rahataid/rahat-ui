@@ -185,7 +185,7 @@ export default function AuthPage() {
                   }
                   className="underline font-medium"
                 >
-                  Privacy Policy
+                  Terms of Service
                 </Link>
               </span>
               and

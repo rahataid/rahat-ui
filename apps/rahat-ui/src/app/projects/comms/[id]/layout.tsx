@@ -4,8 +4,9 @@ import { UUID } from 'crypto';
 import * as React from 'react';
 import { useParams } from 'next/navigation';
 import { ProjectTypes } from '@rahataid/sdk/enums';
-import { ProjectLayout } from '../../../../sections/projects/components';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+// import { ProjectLayout } from '../../../../sections/projects/components';
+// import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import { ProjectLayout, useSecondPanel } from 'modules';
 
 export default function ProjectLayoutRoot({
   children,
@@ -16,8 +17,8 @@ export default function ProjectLayoutRoot({
   const uuid = useParams().id as UUID;
 
   return (
-      <ProjectLayout projectType={ProjectTypes.COMMS}>
-        {secondPanel ? [children, secondPanel] : children}
-      </ProjectLayout>
+    <ProjectLayout projectType={ProjectTypes.COMMS}>
+      {secondPanel ? [children, secondPanel] : children}
+    </ProjectLayout>
   );
 }

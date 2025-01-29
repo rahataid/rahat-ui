@@ -1,7 +1,12 @@
-import { CommsTextView } from 'apps/rahat-ui/src/sections/projects/comms/campaigns';
+'use client';
 
-const Page = () => {
-  return <CommsTextView />;
-};
+import { TextCampaign } from 'modules';
+import dynamic from 'next/dynamic';
 
-export default Page;
+function Page() {
+  return <TextCampaign />;
+}
+
+export default dynamic(() => Promise.resolve(Page), {
+  ssr: false,
+});

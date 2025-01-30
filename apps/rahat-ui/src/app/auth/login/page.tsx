@@ -188,7 +188,7 @@ export default function AuthPage() {
                   Terms of Service
                 </Link>
               </span>
-              and
+              {''} and {''}
               <Link
                 target="_blank"
                 href={

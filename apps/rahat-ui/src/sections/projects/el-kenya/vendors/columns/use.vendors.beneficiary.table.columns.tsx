@@ -5,27 +5,21 @@ export const useElkenyaVendorsBeneficiaryTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'phone',
-      header: 'Beneficiary Phone',
+      header: 'Number',
       cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
     },
+
     {
-      accessorKey: 'type',
-      header: 'Beneficiary Type',
-      cell: ({ row }) => <Badge>{row.getValue('type') || 'N/A'}</Badge>,
-    },
-    {
-      accessorKey: 'voucherStatus',
-      header: 'Voucher Status',
+      accessorKey: 'eyeCheckupStatus',
+      header: 'Voucher Usage',
       cell: ({ row }) => (
-        <Badge>{row.getValue('voucherStatus') || 'N/A'}</Badge>
+        <Badge>{row.getValue('eyeCheckupStatus') || 'N/A'}</Badge>
       ),
     },
     {
-      accessorKey: 'glassesStatus',
-      header: 'Glasses Status',
-      cell: ({ row }) => (
-        <Badge>{row.getValue('glassesStatus') || 'N/A'}</Badge>
-      ),
+      accessorKey: 'voucherType',
+      header: 'Glasses Purchase Type',
+      cell: ({ row }) => <Badge>{row.getValue('voucherType') || 'N/A'}</Badge>,
     },
   ];
   return columns;

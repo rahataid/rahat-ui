@@ -167,25 +167,31 @@ export default function BeneficiaryView() {
                 options={['PRE_DETERMINED', 'WALK_IN']}
                 value={filters?.type || ''}
               /> */}
+
+              <SelectComponent
+                onChange={(e) => setFilters({ ...filters, consentStatus: e })}
+                name="Consent"
+                options={['Yes', 'No']}
+                value={filters?.consentStatus || ''}
+              />
               <SelectComponent
                 onChange={(e) =>
                   setFilters({ ...filters, eyeCheckupStatus: e })
                 }
-                name="Eye Checkup Status"
-                options={['CHECKED', 'NOT_CHECKED']}
+                name="Voucher Usage"
+                options={['CHECKED', 'NOT_CHECKED', 'PURCHASE_OF_GLASSES']}
                 value={filters?.eyeCheckupStatus || ''}
               />
               <SelectComponent
-                onChange={(e) => setFilters({ ...filters, glassesStatus: e })}
-                name="Glasses Status"
-                options={['REQUIRED', 'NOT_REQUIRED']}
-                value={filters?.glassesStatus || ''}
-              />
-              <SelectComponent
-                onChange={(e) => setFilters({ ...filters, voucherStatus: e })}
-                name="Voucher Status"
-                options={['REDEEMED', 'NOT_REDEEMED']}
-                value={filters?.voucherStatus || ''}
+                onChange={(e) => setFilters({ ...filters, voucherType: e })}
+                name="Glass Type"
+                options={[
+                  'SINGLE_VISION',
+                  'READING_GLASSES',
+                  'SUN_GLASSES',
+                  'PRESCRIBED_LENS',
+                ]}
+                value={filters?.voucherType || ''}
               />
               <ViewColumns table={table} />
             </div>

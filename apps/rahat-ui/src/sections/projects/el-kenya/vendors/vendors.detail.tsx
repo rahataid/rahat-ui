@@ -12,7 +12,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { UUID } from 'crypto';
-import { Copy, CopyCheck } from 'lucide-react';
+import { Copy, CopyCheck, User } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 import HeaderWithBack from '../../components/header.with.back';
@@ -28,6 +28,7 @@ export default function VendorsDetail() {
 
   const phone = searchParams.get('phone');
   const name = searchParams.get('name');
+  const email = searchParams.get('email');
   const vendorWallet = searchParams.get('walletAddress') || '';
   const vendorId = searchParams.get('vendorId');
   const vendorUUID = searchParams.get('vendorUUID') as UUID;
@@ -84,32 +85,35 @@ export default function VendorsDetail() {
           />
         </div>
       </div>
-      <div className="p-5 rounded border grid grid-cols-4 gap-5 mb-5">
-        <div>
-          <h1 className="text-md text-muted-foreground">Vendor Name</h1>
-          <p className="font-medium">{name}</p>
-        </div>
-        {/* <div>
-          <h1 className="text-md text-muted-foreground">Location</h1>
-          <p className="font-medium">N/A</p>
-        </div> */}
-        <div>
-          <h1 className="text-md text-muted-foreground">Phone Number</h1>
-          <p className="font-medium">{phone || 'N/A'}</p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Wallet Address</h1>
+      <div className="p-5 rounded grid grid-cols-3 gap-5 mb-5">
+        <div className="border shadow flex items-center gap-2 p-5">
           <div
-            className="flex items-center space-x-2 cursor-pointer"
-            onClick={() => clickToCopy(vendorWallet)}
+            className={'rounded-full h-8 w-8 flex items-center justify-center '}
           >
-            <p>{truncateEthAddress(vendorWallet.trimEnd())}</p>
-            {walletAddressCopied === vendorWallet ? (
-              <CopyCheck size={15} strokeWidth={1.5} />
-            ) : (
-              <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
-            )}
+            <User size={20} strokeWidth={2} />
           </div>
+          <div>
+            <p className="font-medium">{name}</p>
+            <div
+              className="flex items-center space-x-2 cursor-pointer"
+              onClick={() => clickToCopy(vendorWallet)}
+            >
+              <p className="text-muted-foreground">
+                {truncateEthAddress(vendorWallet.trimEnd())}
+              </p>
+              {walletAddressCopied === vendorWallet ? (
+                <CopyCheck size={15} strokeWidth={1.5} />
+              ) : (
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              )}
+            </div>
+            <p className="font-medium text-muted-foreground">{phone}</p>
+            <p className="font-medium text-muted-foreground">{email}</p>
+          </div>
+        </div>
+        <div className="border shadow flex flex-col items-center gap-2 p-5">
+          <p className="font-medium ">Voucher Redeemed</p>
+          <p className="font-medium text-blue-700 text-muted-foreground">123</p>
         </div>
       </div>
       <Tabs defaultValue="transactionHistory">
@@ -124,7 +128,7 @@ export default function VendorsDetail() {
             className="w-full data-[state=active]:bg-white"
             value="beneficiaryList"
           >
-            Beneficiary List
+            Consumer List
           </TabsTrigger>
         </TabsList>
         <TabsContent value="transactionHistory">

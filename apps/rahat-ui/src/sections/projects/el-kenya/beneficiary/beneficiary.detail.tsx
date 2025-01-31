@@ -1,7 +1,7 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import React from 'react';
-import { Copy, CopyCheck } from 'lucide-react';
+import { Copy, CopyCheck, User, Users } from 'lucide-react';
 import HeaderWithBack from '../../components/header.with.back';
 import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -47,73 +47,57 @@ export default function BeneficiaryDetail() {
           />
         </div> */}
       </div>
-      <div className="p-5 rounded-md shadow border grid grid-cols-4 gap-5">
+      <div className="p-5 rounded-md  grid grid-cols-4 gap-5">
         {/* <div>
           <h1 className="text-md text-muted-foreground">Beneficiary Name</h1>
           <p className="font-medium">{name}</p>
         </div> */}
-        <div>
-          <h1 className="text-md text-muted-foreground">Gender</h1>
-          <p className="font-medium">{gender}</p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Phone Number</h1>
-          <p className="font-medium">{phone}</p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Wallet Address</h1>
+        <div className="flex items-center gap-2 shadow border p-5">
           <div
-            className="flex items-center space-x-2 cursor-pointer"
-            onClick={() => clickToCopy(walletAddress)}
+            className={'rounded-full h-8 w-8 flex items-center justify-center '}
           >
-            <p>{truncateEthAddress(walletAddress)}</p>
-            {walletAddressCopied === walletAddress ? (
-              <CopyCheck size={15} strokeWidth={1.5} />
-            ) : (
-              <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
-            )}
+            <User size={20} strokeWidth={2} />
+          </div>
+          <div>
+            <p className="font-medium">{phone}</p>
+
+            <div
+              className="flex items-center space-x-2 cursor-pointer"
+              onClick={() => clickToCopy(walletAddress)}
+            >
+              <p className="text-muted-foreground">
+                {truncateEthAddress(walletAddress)}
+              </p>
+              {walletAddressCopied === walletAddress ? (
+                <CopyCheck size={15} strokeWidth={1.5} />
+              ) : (
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              )}
+            </div>
+            <p className="font-medium text-muted-foreground">{gender}</p>
           </div>
         </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Consumer Type</h1>
-          <p className="font-medium">
-            <Badge>{type}</Badge>
-          </p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Eye Checkup Status</h1>
+
+        <div className="shadow border p-5">
+          <p className="font-medium">Voucher Usage</p>
           <p className="font-medium">
             <Badge>{eyeCheckupStatus}</Badge>
           </p>
         </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Glasses Status</h1>
-          <p className="font-medium">
-            <Badge>{glassesStatus}</Badge>
-          </p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Voucher Type</h1>
+
+        <div className="shadow border p-5">
+          <p className="font-medium">Glass Type</p>
           <p className="font-medium">
             <Badge>{voucherType}</Badge>
           </p>
         </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Voucher Status</h1>
+
+        <div className="shadow border p-5">
+          <p className="font-medium">Consent Status</p>
           <p className="font-medium">
-            <Badge>{voucherStatus}</Badge>
+            <Badge>{voucherType}</Badge>
           </p>
         </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Location</h1>
-          <p className="font-medium">{location}</p>
-        </div>
-        {type === 'WALK_IN' && (
-          <div>
-            <h1 className="text-md text-muted-foreground">Serial Number</h1>
-            <p className="font-medium">{serialNumber}</p>
-          </div>
-        )}
       </div>
     </div>
   );

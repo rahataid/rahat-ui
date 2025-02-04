@@ -32,6 +32,7 @@ export default function VendorsDetail() {
   const vendorWallet = searchParams.get('walletAddress') || '';
   const vendorId = searchParams.get('vendorId');
   const vendorUUID = searchParams.get('vendorUUID') as UUID;
+  const voucherReedeemed = searchParams.get('voucherReedeemed');
 
   const projectClosed = useProjectStore(
     (state) => state.singleProject?.projectClosed,
@@ -113,7 +114,9 @@ export default function VendorsDetail() {
         </div>
         <div className="border shadow flex flex-col items-center gap-2 p-5">
           <p className="font-medium ">Voucher Redeemed</p>
-          <p className="font-medium text-blue-700 text-muted-foreground">123</p>
+          <p className="font-medium text-blue-700 text-muted-foreground">
+            {voucherReedeemed}
+          </p>
         </div>
       </div>
       <Tabs defaultValue="transactionHistory">

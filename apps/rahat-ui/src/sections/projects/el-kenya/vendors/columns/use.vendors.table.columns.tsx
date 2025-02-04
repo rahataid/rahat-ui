@@ -30,7 +30,9 @@ export const useElkenyaVendorsTableColumns = ({
     {
       accessorKey: 'BeneficiaryRedemption',
       header: 'Voucher Redeemed',
-      cell: ({ row }) => <div>{row.getValue('BeneficiaryRedemption')}</div>,
+      cell: ({ row }) => (
+        <div>{row.getValue('BeneficiaryRedemption') || 0}</div>
+      ),
     },
     {
       id: 'actions',

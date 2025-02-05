@@ -14,7 +14,7 @@ import './globals.css';
 import { RSQueryProvider } from '@rumsan/react-query/providers/rs-query-provider';
 import { CommunicationQueryProvider } from '@rumsan/communication-query/providers/communication-query-provider';
 import { NewCommunicationQueryProvider } from '@rahat-ui/query';
-import { SecondPanelProvider } from 'modules';
+import { SecondPanelProvider } from 'packages/modules';
 
 // export const metadata = {
 //   icons: {

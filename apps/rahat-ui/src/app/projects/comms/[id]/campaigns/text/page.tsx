@@ -1,12 +1,14 @@
 'use client';
 
-import { TextCampaign } from 'modules';
 import dynamic from 'next/dynamic';
 
-function Page() {
-  return <TextCampaign />;
-}
+const TextCampaignPage = dynamic(
+  () => import('packages/modules').then((mod) => mod.TextCampaign),
+  {
+    ssr: false,
+  },
+);
 
-export default dynamic(() => Promise.resolve(Page), {
-  ssr: false,
-});
+export default function Page() {
+  return <TextCampaignPage />;
+}

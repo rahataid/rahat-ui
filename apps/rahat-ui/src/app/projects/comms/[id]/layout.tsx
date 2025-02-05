@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 import { ProjectTypes } from '@rahataid/sdk/enums';
 // import { ProjectLayout } from '../../../../sections/projects/components';
 // import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
-import { ProjectLayout, useSecondPanel } from 'modules';
+import { ProjectLayout, useSecondPanel } from 'packages/modules';
 
 export default function ProjectLayoutRoot({
   children,

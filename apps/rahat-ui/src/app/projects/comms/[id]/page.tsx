@@ -2,16 +2,19 @@
 
 import { useParams } from 'next/navigation';
 import { useProject } from '@rahat-ui/query';
-import { UUID } from 'crypto';
 import dynamic from 'next/dynamic';
-import { CommsDashboard } from 'modules';
+import { UUID } from 'crypto';
+
+const CommsDashboard = dynamic(
+  () => import('packages/modules').then((mod) => mod.CommsDashboard),
+  { ssr: false },
+);
 
 function Page() {
   const { id } = useParams();
   useProject(id as UUID);
+
   return <CommsDashboard />;
 }
 
-export default dynamic(() => Promise.resolve(Page), {
-  ssr: false,
-});
+export default Page;

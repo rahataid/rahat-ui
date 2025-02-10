@@ -111,9 +111,10 @@ export default function ExcelUploader() {
           return;
         }
         const headersInFile = filteredData[0];
-
         const isValidHeaders = expectedHeaders.every(
-          (header, index) => header === headersInFile[index],
+          (header, index) =>
+            header.trim().toLowerCase() ===
+            headersInFile[index]?.trim().toLowerCase(),
         );
 
         if (!isValidHeaders) {

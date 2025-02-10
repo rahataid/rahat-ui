@@ -78,7 +78,19 @@ export default function BeneficiaryView() {
 
   const handleViewClick = (rowData: any) => {
     router.push(
-      `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${rowData.name}&&walletAddress=${rowData.walletAddress}&&gender=${rowData.gender}&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${rowData.eyeCheckupStatus}&&glassesStatus=${rowData.glassesStatus}&&voucherType=${rowData.voucherType}&&phone=${rowData.phone}&&type=${rowData.type}&&location=${rowData?.projectData?.location}&&serialNumber=${rowData?.extras?.serialNumber}`,
+      `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${
+        rowData.name
+      }&&walletAddress=${rowData.walletAddress}&&gender=${
+        rowData.gender
+      }&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${
+        rowData.eyeCheckupStatus
+      }&&glassesStatus=${rowData.glassesStatus}&&voucherType=${
+        rowData.voucherType
+      }&&phone=${rowData.phone}&&type=${rowData.type}&&location=${
+        rowData?.projectData?.location
+      }&&serialNumber=${rowData?.extras?.serialNumber}&&age=${
+        rowData?.age || 0
+      }`,
     );
   };
 
@@ -106,128 +118,95 @@ export default function BeneficiaryView() {
   };
 
   return (
-    <Tabs value={defaultValue} onValueChange={onTabChange}>
-      <div className="flex justify-between items-center p-4 pb-0">
-        <TabsList className="border bg-secondary rounded">
-          <TabsTrigger
-            id="beneficiary"
-            className="w-full data-[state=active]:bg-white"
-            value="beneficiary"
-          >
-            Consumer
-          </TabsTrigger>
-          <TabsTrigger
-            id="beneficiaryGroups"
-            className="w-full data-[state=active]:bg-white"
-            value="beneficiaryGroups"
-          >
-            Consumer Groups
-          </TabsTrigger>
-        </TabsList>
-        <Button
-          variant="outline"
-          onClick={() =>
-            router.push(`/projects/el-kenya/${id}/beneficiary/import`)
-          }
-          disabled={projectClosed}
-        >
-          <CloudDownload className="mr-1" /> Import consumers
-        </Button>
+    <div>
+      <div className="flex justify-between items-center mb-4 ml-4">
+        <div>
+          <h1 className="font-semibold text-2xl mb-">Consumers</h1>
+          <p className="text-muted-foreground">
+            Track all the consumer reports here.
+          </p>
+        </div>
       </div>
-      <TabsContent value="beneficiary">
-        <div className="p-4 pt-2">
-          <div className="rounded border bg-card p-4">
-            <div className="flex justify-between space-x-2 mb-2">
-              <SearchInput
-                className="w-full"
-                name="phone number"
-                value={
-                  (table.getColumn('phone')?.getFilterValue() as string) ?? ''
-                }
-                onSearch={(event) =>
-                  table.getColumn('phone')?.setFilterValue(event.target.value)
-                }
-              />
-              <AddButton
-                name="Consumer"
-                path={`/projects/el-kenya/${id}/beneficiary/add`}
-                disabled={projectClosed}
-              />
-            </div>
-            <div className="flex justify-between gap-2 mb-2">
-              {/* <SelectComponent
-                onChange={(e) => setFilters({ ...filters, voucherType: e })}
-                name="Voucher Type"
-                options={['SINGLE_VISION', 'READING_GLASSES']}
-                value={filters?.voucherType || ''}
-              />
-              <SelectComponent
-                onChange={(e) => setFilters({ ...filters, type: e })}
-                name="Beneficiary Type"
-                options={['PRE_DETERMINED', 'WALK_IN']}
-                value={filters?.type || ''}
-              /> */}
-
-              <SelectComponent
-                onChange={(e) => setFilters({ ...filters, consentStatus: e })}
-                name="Consent"
-                options={['Yes', 'No']}
-                value={filters?.consentStatus || ''}
-              />
-              <SelectComponent
-                onChange={(e) =>
-                  setFilters({ ...filters, eyeCheckupStatus: e })
-                }
-                name="Voucher Usage"
-                options={['CHECKED', 'NOT_CHECKED', 'PURCHASE_OF_GLASSES']}
-                value={filters?.eyeCheckupStatus || ''}
-              />
-              <SelectComponent
-                onChange={(e) => setFilters({ ...filters, voucherType: e })}
-                name="Glass Type"
-                options={[
-                  'SINGLE_VISION',
-                  'READING_GLASSES',
-                  'SUN_GLASSES',
-                  'PRESCRIBED_LENS',
-                ]}
-                value={filters?.voucherType || ''}
-              />
-              <ViewColumns table={table} />
-            </div>
-            {Object.keys(filters).length != 0 && (
-              <FiltersTags
-                filters={filters}
-                setFilters={setFilters}
-                total={meta?.total || 0}
-              />
-            )}
-            <ElkenyaTable
-              table={table}
-              tableHeight={
-                Object.keys(filters).length
-                  ? 'h-[calc(100vh-389px)]'
-                  : 'h-[calc(100vh-323px)]'
+      <div className="p-4 pt-2">
+        <div className="rounded border bg-card p-4">
+          <div className="flex justify-between gap-2 mb-2">
+            <SearchInput
+              className="w-full"
+              name="phone number"
+              value={
+                (table.getColumn('phone')?.getFilterValue() as string) ?? ''
               }
-              loading={isLoading}
+              onSearch={(event) =>
+                table.getColumn('phone')?.setFilterValue(event.target.value)
+              }
             />
+
+            <SelectComponent
+              onChange={(e) => setFilters({ ...filters, consentStatus: e })}
+              name="Consent"
+              options={[
+                { value: 'Yes', label: 'Yes' },
+                { value: 'No', label: 'No' },
+              ]}
+              value={filters?.consentStatus || ''}
+            />
+            <SelectComponent
+              onChange={(e) => setFilters({ ...filters, voucherStatus: e })}
+              name="Voucher Status"
+              options={[
+                { value: 'REDEEMED', label: 'REDEEMED' },
+                { value: 'NOT_REDEEMED', label: 'NOT_REDEEMED' },
+              ]}
+              value={filters?.voucherStatus || ''}
+            />
+            <SelectComponent
+              onChange={(e) => setFilters({ ...filters, eyeCheckupStatus: e })}
+              name="Voucher Usage"
+              options={[
+                { value: 'CHECKED', label: 'Checked' },
+                { value: 'PURCHASE_OF_GLASSES', label: 'Purchase of Glasses' },
+              ]}
+              value={filters?.eyeCheckupStatus || ''}
+            />
+            <SelectComponent
+              onChange={(e) => setFilters({ ...filters, voucherType: e })}
+              name="Glass Type"
+              options={[
+                { value: 'READING_GLASSES', label: 'Reading Glasses' },
+                { value: 'SUN_GLASSES', label: 'Sun Glasses' },
+                { value: 'PRESCRIBED_LENSES', label: 'Prescribed Lenses' },
+              ]}
+              value={filters?.voucherType || ''}
+            />
+            <ViewColumns table={table} />
           </div>
+          {Object.keys(filters).length != 0 && (
+            <FiltersTags
+              filters={filters}
+              setFilters={setFilters}
+              total={meta?.total || 0}
+            />
+          )}
+          <ElkenyaTable
+            table={table}
+            tableHeight={
+              Object.keys(filters).length
+                ? 'h-[calc(100vh-389px)]'
+                : 'h-[calc(100vh-323px)]'
+            }
+            loading={isLoading}
+          />
         </div>
-        <CustomPagination
-          meta={meta || { total: 0, currentPage: 0 }}
-          handleNextPage={setNextPage}
-          handlePrevPage={setPrevPage}
-          handlePageSizeChange={setPerPage}
-          currentPage={pagination.page}
-          perPage={pagination.perPage}
-          total={0}
-        />
-      </TabsContent>
-      <TabsContent value="beneficiaryGroups">
-        <div className="p-4 pt-2">
-          <BeneficiaryGroupView projectClosed={projectClosed} />
-        </div>
-      </TabsContent>
-    </Tabs>
+      </div>
+      <CustomPagination
+        meta={meta || { total: 0, currentPage: 0 }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={0}
+      />
+    </div>
   );
 }

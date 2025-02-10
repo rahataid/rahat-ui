@@ -12,7 +12,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { UUID } from 'crypto';
-import { Copy, CopyCheck, User } from 'lucide-react';
+import { Copy, CopyCheck, Store, User } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 import HeaderWithBack from '../../components/header.with.back';
@@ -87,11 +87,11 @@ export default function VendorsDetail() {
         </div>
       </div>
       <div className="p-5 rounded grid grid-cols-3 gap-5 mb-5">
-        <div className="border shadow flex items-center gap-2 p-5">
+        <div className="border shadow flex items-center gap-4 p-5">
           <div
             className={'rounded-full h-8 w-8 flex items-center justify-center '}
           >
-            <User size={20} strokeWidth={2} />
+            <Store />
           </div>
           <div>
             <p className="font-medium">{name}</p>
@@ -112,9 +112,9 @@ export default function VendorsDetail() {
             <p className="font-medium text-muted-foreground">{email}</p>
           </div>
         </div>
-        <div className="border shadow flex flex-col items-center gap-2 p-5">
+        <div className="border shadow flex flex-col justify-between gap-2 p-5">
           <p className="font-medium ">Voucher Redeemed</p>
-          <p className="font-medium text-blue-700 text-muted-foreground">
+          <p className="text-4xl font-semibold text-primary truncate w-52">
             {voucherReedeemed}
           </p>
         </div>

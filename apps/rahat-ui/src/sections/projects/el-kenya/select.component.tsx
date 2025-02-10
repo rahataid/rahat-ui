@@ -10,7 +10,7 @@ import {
 type Iprops = {
   className?: string;
   name: string;
-  options?: Array<string>;
+  options?: { value: string; label: string }[];
   value?: string;
   onChange?: (value: string) => void;
 };
@@ -29,8 +29,8 @@ export default function SelectComponent({
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          {options?.map((o: string) => (
-            <SelectItem value={o}>{o}</SelectItem>
+          {options?.map((o) => (
+            <SelectItem value={o.value}>{o.label}</SelectItem>
           ))}
         </SelectGroup>
       </SelectContent>

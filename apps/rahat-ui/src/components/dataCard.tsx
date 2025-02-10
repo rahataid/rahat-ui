@@ -92,6 +92,10 @@ export default function DataCard({
                     <TooltipContent>{number}</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
+              ) : Array.isArray(number) ? (
+                <div className="text-4xl font-semibold text-primary truncate w-52">
+                  {number.reduce((sum, item) => sum + item.count, 0)}
+                </div>
               ) : (
                 <div className="text-4xl font-semibold text-primary truncate w-52">
                   {number}

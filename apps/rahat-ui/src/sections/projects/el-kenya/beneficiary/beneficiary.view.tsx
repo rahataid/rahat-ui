@@ -30,6 +30,7 @@ import {
 } from '@rahat-ui/shadcn/components/tabs';
 import BeneficiaryGroupView from './beneficiary.group.view';
 import FiltersTags from '../../components/filtersTags';
+import * as XLSX from 'xlsx';
 
 export default function BeneficiaryView() {
   const { id } = useParams() as { id: UUID };
@@ -117,6 +118,36 @@ export default function BeneficiaryView() {
     setDefaultValue(value);
   };
 
+  const handleDownload = () => {
+    const data = beneficiaries?.data.filter(
+      (beneficiary) => beneficiary?.extras?.consent === 'yes',
+    );
+    const mappedData = data.map((value) => {
+      return {
+        Phone: value?.phone,
+        Gender: value?.gender,
+        'Consent Status': value?.extras?.consent,
+        'Voucher Status': value?.voucherStatus,
+        'Voucher Usage': value?.eyeCheckupStatus,
+        'Glass Purchase Type': value?.voucherType,
+      };
+    });
+    generateExcel(mappedData, 'Consumer', 6);
+  };
+
+  const generateExcel = (data: any, title: string, numberOfColumns: number) => {
+    const wb = XLSX.utils.book_new();
+
+    const ws = XLSX.utils.json_to_sheet(data);
+
+    const columnWidths = 20;
+    ws['!cols'] = Array(numberOfColumns).fill({ wch: columnWidths });
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    XLSX.writeFile(wb, `${title}.xlsx`);
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4 ml-4">
@@ -178,7 +209,10 @@ export default function BeneficiaryView() {
               ]}
               value={filters?.voucherType || ''}
             />
-            <ViewColumns table={table} />
+            <Button type="button" variant="outline" onClick={handleDownload}>
+              <CloudDownload size={18} className="mr-1" />
+              Download
+            </Button>
           </div>
           {Object.keys(filters).length != 0 && (
             <FiltersTags

@@ -28,7 +28,6 @@ const ProjectMainView = () => {
           ...dataSource.args.apiCallData?.headers,
         },
       });
-      console.log('response', response);
       if (!response.ok) {
         throw new Error(`Failed to fetch data from ${dataSource.args.url}`);
       }
@@ -46,7 +45,6 @@ const ProjectMainView = () => {
       fetchDataForSource,
     );
     const results = await Promise.all(promises);
-    console.log(results);
 
     generateExcel(results[0], 'EL_Report', newDatasource[0]?.data?.ui);
   }

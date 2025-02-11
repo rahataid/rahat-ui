@@ -46,7 +46,7 @@ export const useElkenyaBeneficiaryTableColumns = ({
     {
       accessorKey: 'consentStatus',
       header: 'Consent Status',
-      cell: ({ row }) => <div>{row.getValue('consentStatus')}</div>,
+      cell: ({ row }) => <div>{row.original.extras?.consent || 'N/A'}</div>,
     },
     {
       accessorKey: 'voucherStatus',

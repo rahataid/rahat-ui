@@ -28,6 +28,7 @@ import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { useDisburseTableColumns } from './useDisburseTable';
+import { DataTablePagination } from '../transactions/dataTablePagination';
 
 export function DisburseTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -154,14 +155,7 @@ export function DisburseTable() {
           </ScrollArea>
         </Table>
       </div>
-      <CustomPagination
-        currentPage={pagination.page}
-        handleNextPage={setNextPage}
-        handlePageSizeChange={setPerPage}
-        handlePrevPage={setPrevPage}
-        meta={data || {}}
-        perPage={pagination.perPage}
-      />
+      <DataTablePagination table={table} />
     </div>
   );
 }

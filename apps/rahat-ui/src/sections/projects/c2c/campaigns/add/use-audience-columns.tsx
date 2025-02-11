@@ -7,25 +7,23 @@ import { SelectedRowType } from './add-campaign-view';
 export const useAudienceColumns = (
   beneficiaryData: { data: { piiData: TPIIData }[] },
   selectedRows: SelectedRowType[],
-  audienceData: Audience[],
-  createAudience: any,
   setSelectedRows: any,
 ) => {
-  const handleCreateAudience = (item: TPIIData) => {
-    const checkAudienceExist = audienceData?.some(
-      (audience: Audience) => audience?.details?.phone === item.phone,
-    );
+  // const handleCreateAudience = (item: TPIIData) => {
+  //   const checkAudienceExist = audienceData?.some(
+  //     (audience: Audience) => audience?.details?.phone === item.phone,
+  //   );
 
-    if (!checkAudienceExist) {
-      createAudience?.mutateAsync({
-        details: {
-          name: item.name,
-          phone: item.phone,
-          email: item.email,
-        },
-      });
-    }
-  };
+  //   if (!checkAudienceExist) {
+  //     createAudience?.mutateAsync({
+  //       details: {
+  //         name: item.name,
+  //         phone: item.phone,
+  //         email: item.email,
+  //       },
+  //     });
+  //   }
+  // };
   const columns: ColumnDef<any>[] = [
     {
       id: 'select',
@@ -37,13 +35,11 @@ export const useAudienceColumns = (
               setSelectedRows([]);
 
               beneficiaryData?.data?.map((item) => {
-                handleCreateAudience(item.piiData);
                 setSelectedRows((prevSelectedRows: SelectedRowType[]) => [
                   ...prevSelectedRows,
                   {
-                    name: item?.piiData?.name,
-                    id: item?.piiData?.beneficiaryId,
                     phone: item?.piiData?.phone,
+                    email: item?.piiData?.email,
                   },
                 ]);
               });
@@ -65,10 +61,12 @@ export const useAudienceColumns = (
             onCheckedChange={(checked) => {
               const item = row.original;
 
-              handleCreateAudience(item);
               setSelectedRows((prevSelectedRows: SelectedRowType[]) =>
                 checked
-                  ? [...prevSelectedRows, item]
+                  ? [
+                      ...prevSelectedRows,
+                      { phone: item?.phone, email: item?.email },
+                    ]
                   : selectedRows?.filter(
                       (value) => value?.phone !== item?.phone,
                     ),

@@ -25,7 +25,12 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 
-import { useCampaignStore, useListC2cCampaign } from '@rahat-ui/query';
+import {
+  useCampaignStore,
+  useListC2cCampaign,
+  useListC2cTransport,
+} from '@rahat-ui/query';
+
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,
@@ -65,13 +70,28 @@ export default function TextTable() {
 
   const { data, isLoading, isError, isSuccess, isFetching } =
     useListC2cCampaign(id);
+  const { data: transportData } = useListC2cTransport(id);
 
   const tableData = React.useMemo(() => {
-    const result = Array.isArray(data?.rows)
-      ? data?.rows?.filter(
-          (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE,
-        )
-      : [];
+    const result =
+      data
+        ?.filter((campaign: any) => {
+          const voiceCuid = transportData?.find(
+            (transport: any) => transport.type === 'VOICE',
+          )?.cuid;
+          return voiceCuid !== campaign.transportId;
+        })
+        .map((campaign: any) => ({
+          name: campaign.name,
+          uuid: campaign.uuid,
+          message: campaign.message,
+          type: campaign.type,
+          status: campaign.sessionId ? 'COMPLETED' : 'NOT_COMPLETED',
+          totalAudiences: campaign?.addresses?.length,
+          transport: transportData?.find(
+            (transport: any) => transport.cuid === campaign.transportId,
+          )?.name,
+        })) || [];
 
     campaignStore.setTotalTextCampaign(data?.response?.meta?.total || 0);
     return result;
@@ -101,11 +121,9 @@ export default function TextTable() {
       <div className="flex items-center mb-2">
         <Input
           placeholder="Filter campaigns..."
-          value={
-            (table.getColumn('campaign')?.getFilterValue() as string) ?? ''
-          }
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('campaign')?.setFilterValue(event.target.value)
+            table.getColumn('name')?.setFilterValue(event.target.value)
           }
           className="max-w-sm mr-3"
         />

@@ -39,7 +39,9 @@ export default function VendorsView() {
         rowData.walletAddress
       } &&vendorId=${rowData.id} &&vendorUUID=${
         rowData.uuid
-      }&&voucherReedeemed=${rowData?.BeneficiaryRedemption || 0}`,
+      }&&voucherReedeemed=${rowData?.BeneficiaryRedemption || 0}&&email=${
+        rowData.email
+      }`,
     );
   };
   const columns = useElkenyaVendorsTableColumns({ handleViewClick });

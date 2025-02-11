@@ -8,7 +8,11 @@ export const useElkenyaVendorsBeneficiaryTableColumns = () => {
       header: 'Number',
       cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
     },
-
+    {
+      accessorKey: 'voucherStatus',
+      header: 'Voucher Status',
+      cell: ({ row }) => <div>{row.getValue('voucherStatus') || 'N/A'}</div>,
+    },
     {
       accessorKey: 'eyeCheckupStatus',
       header: 'Voucher Usage',

@@ -80,7 +80,7 @@ export default function BeneficiaryView() {
   const handleViewClick = (rowData: any) => {
     router.push(
       `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${
-        rowData.name
+        rowData?.extras?.vendorName
       }&&walletAddress=${rowData.walletAddress}&&gender=${
         rowData.gender
       }&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${
@@ -194,7 +194,7 @@ export default function BeneficiaryView() {
               onChange={(e) => setFilters({ ...filters, eyeCheckupStatus: e })}
               name="Voucher Usage"
               options={[
-                { value: 'CHECKED', label: 'Checked' },
+                { value: 'CHECKED', label: 'Eye Checkup' },
                 { value: 'PURCHASE_OF_GLASSES', label: 'Purchase of Glasses' },
               ]}
               value={filters?.eyeCheckupStatus || ''}
@@ -219,6 +219,12 @@ export default function BeneficiaryView() {
               filters={filters}
               setFilters={setFilters}
               total={meta?.total || 0}
+              labelMapping={{
+                consentStatus: 'Consent',
+                voucherStatus: 'Voucher Status',
+                eyeCheckupStatus: 'Voucher Usage',
+                voucherType: 'Glass Type',
+              }}
             />
           )}
           <ElkenyaTable

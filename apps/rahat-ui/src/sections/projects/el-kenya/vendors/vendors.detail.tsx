@@ -68,23 +68,6 @@ export default function VendorsDetail() {
           subtitle="Here is the detailed view of selected vendor"
           path={`/projects/el-kenya/${id}/vendors`}
         />
-        <div
-          className={`flex space-x-2 ${
-            projectClosed && 'pointer-events-none opacity-70'
-          }`}
-        >
-          <EditButton
-            className="border-none bg-sky-50 shadow-none"
-            path={`/projects/el-kenya/${id}/vendors/${vendorUUID}/edit`}
-            disabled={projectClosed}
-          />
-          <DeleteButton
-            className="border-none bg-red-100 shadow-none"
-            name="vendor"
-            handleContinueClick={deleteVendor}
-            disabled={projectClosed}
-          />
-        </div>
       </div>
       <div className="p-5 rounded grid grid-cols-3 gap-5 mb-5">
         <div className="border shadow flex items-center gap-4 p-5">

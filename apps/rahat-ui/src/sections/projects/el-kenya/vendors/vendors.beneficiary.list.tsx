@@ -36,6 +36,8 @@ export default function VendorsBeneficiaryList({
           voucherStatus:
             beneficiary?.Disbursement?.Beneficiary?.voucherStatus ||
             beneficiary?.Beneficiary?.voucherStatus,
+          voucherType: beneficiary?.Beneficiary?.voucherType,
+          eyeCheckupStatus: beneficiary?.Beneficiary?.eyeCheckupStatus,
         };
       });
     } else {

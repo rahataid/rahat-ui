@@ -90,7 +90,7 @@ export default function BeneficiaryView() {
       }&&phone=${rowData.phone}&&type=${rowData.type}&&location=${
         rowData?.projectData?.location
       }&&serialNumber=${rowData?.extras?.serialNumber}&&age=${
-        rowData?.age || 0
+        rowData?.extras?.age || 0
       }`,
     );
   };
@@ -176,8 +176,8 @@ export default function BeneficiaryView() {
               onChange={(e) => setFilters({ ...filters, consentStatus: e })}
               name="Consent"
               options={[
-                { value: 'Yes', label: 'Yes' },
-                { value: 'No', label: 'No' },
+                { value: 'yes', label: 'Yes' },
+                { value: 'no', label: 'No' },
               ]}
               value={filters?.consentStatus || ''}
             />

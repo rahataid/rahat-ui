@@ -40,7 +40,8 @@ export default function VendorsDetail() {
 
   const { data, isLoading: isVendorLoading } = useGetOfflineSingleVendor(
     id,
-    Number(vendorId),
+    vendorUUID,
+    // Number(vendorId),
   );
 
   const removeVendor = useRemoveVendor();
@@ -126,7 +127,7 @@ export default function VendorsDetail() {
         <TabsContent value="beneficiaryList">
           <VendorsBeneficiaryList
             beneficiaryList={[
-              ...(data?.data || []),
+              // ...(data?.data || []),
               ...(data?.extras?.BeneficiaryRedemption || []),
             ]}
             loading={isVendorLoading}

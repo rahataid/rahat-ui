@@ -608,6 +608,48 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   };
 };
 
+export const useListConsentConsumer = (projectUUID: UUID) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const LIST_CONSENT = 'beneficiary.list_full_data_by_project';
+  const query = useQuery({
+    queryKey: [LIST_CONSENT],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: LIST_CONSENT,
+          payload: {},
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return {
+    ...query,
+    data: useMemo(() => {
+      return {
+        ...query.data,
+        data: query.data?.data?.length
+          ? query.data.data.map((row: any) => ({
+              walletAddress: row?.walletAddress?.toString(),
+              name: row?.piiData?.name || '',
+              email: row?.piiData?.email || '',
+              gender: row?.projectData?.gender?.toString() || '',
+              phone: row?.piiData?.phone || 'N/A',
+              glassPurchaseType: row?.voucherType,
+              voucherUsage: row?.eyeCheckupStatus,
+              voucherStatus: row?.voucherStatus,
+            }))
+          : [],
+      };
+    }, [query.data]),
+  };
+};
+
 export const useListELRedemption = (
   payload: Pagination & { uuid: UUID },
 ): any => {

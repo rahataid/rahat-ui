@@ -35,7 +35,7 @@ export default function VendorsView() {
     router.push(
       `/projects/el-kenya/${id}/vendors/${rowData.walletAddress}?name=${
         rowData.name
-      }&&phone=${rowData.phone}&&walletAddress=${
+      }&&phone=${encodeURIComponent(rowData.phone)}&&walletAddress=${
         rowData.walletAddress
       } &&vendorId=${rowData.id} &&vendorUUID=${
         rowData.uuid

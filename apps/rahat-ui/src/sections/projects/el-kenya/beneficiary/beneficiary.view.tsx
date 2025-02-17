@@ -1,4 +1,5 @@
 import {
+  useListConsentConsumer,
   usePagination,
   useProjectBeneficiaries,
   useProjectStore,
@@ -74,6 +75,7 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...filters,
   });
+  const { data: consumerData } = useListConsentConsumer(id);
 
   const meta = beneficiaries?.response?.meta;
 
@@ -87,11 +89,11 @@ export default function BeneficiaryView() {
         rowData.eyeCheckupStatus
       }&&glassesStatus=${rowData.glassesStatus}&&voucherType=${
         rowData.voucherType
-      }&&phone=${rowData.phone}&&type=${rowData.type}&&location=${
-        rowData?.projectData?.location
-      }&&serialNumber=${rowData?.extras?.serialNumber}&&age=${
-        rowData?.extras?.age || 0
-      }`,
+      }&&phone=${encodeURIComponent(rowData.phone)}&&type=${
+        rowData.type
+      }&&location=${rowData?.projectData?.location}&&serialNumber=${
+        rowData?.extras?.serialNumber
+      }&&age=${rowData?.extras?.age || 0}`,
     );
   };
 
@@ -119,20 +121,7 @@ export default function BeneficiaryView() {
   };
 
   const handleDownload = () => {
-    const data = beneficiaries?.data.filter(
-      (beneficiary) => beneficiary?.extras?.consent === 'yes',
-    );
-    const mappedData = data.map((value) => {
-      return {
-        Phone: value?.phone,
-        Gender: value?.gender,
-        'Consent Status': value?.extras?.consent,
-        'Voucher Status': value?.voucherStatus,
-        'Voucher Usage': value?.eyeCheckupStatus,
-        'Glass Purchase Type': value?.voucherType,
-      };
-    });
-    generateExcel(mappedData, 'Consumer', 6);
+    generateExcel(consumerData.data, 'Consumer', 8);
   };
 
   const generateExcel = (data: any, title: string, numberOfColumns: number) => {

@@ -14,7 +14,7 @@ export default function BeneficiaryDetail() {
     React.useState<string>();
 
   const searchParams = useSearchParams();
-  const phone = searchParams.get('phone');
+  const phone = decodeURIComponent(searchParams.get('phone') || '');
   const type = searchParams.get('type');
   const age = searchParams.get('age');
   const name = searchParams.get('name');

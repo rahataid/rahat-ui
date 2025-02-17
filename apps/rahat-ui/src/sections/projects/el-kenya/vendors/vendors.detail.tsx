@@ -26,7 +26,7 @@ export default function VendorsDetail() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const phone = searchParams.get('phone');
+  const phone = decodeURIComponent(searchParams.get('phone') || '');
   const name = searchParams.get('name');
   const email = searchParams.get('email');
   const vendorWallet = searchParams.get('walletAddress') || '';
@@ -40,8 +40,7 @@ export default function VendorsDetail() {
 
   const { data, isLoading: isVendorLoading } = useGetOfflineSingleVendor(
     id,
-    vendorUUID,
-    // Number(vendorId),
+    Number(vendorId),
   );
 
   const removeVendor = useRemoveVendor();
@@ -61,6 +60,7 @@ export default function VendorsDetail() {
     await removeVendor.mutateAsync({ vendorId: vendorUUID, projectId: id });
     router.push(`/projects/el-kenya/${id}/vendors`);
   };
+
   return (
     <div className="h-[calc(100vh-95px)] m-4">
       <div className="flex justify-between items-center">

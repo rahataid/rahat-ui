@@ -84,94 +84,92 @@ const BarChartWrapper = ({ actualData, component }: BarChartData) => {
     return (
       <div className="bg-card rounded-sm p-4 shadow-md">
         <p className="text-md font-medium mb-4">{component?.title}</p>
-        <ScrollArea className="h-[288px]">
-          <div className="flex justify-center gap-4 w-full h-[500px]">
-            {/* Bar Chart */}
-            <div className="flex-1 flex flex-col bg-white p-4 rounded-lg shadow-md">
-              <BarChart
-                categories={categories}
-                series={series}
-                xaxisLabels={component?.props?.xaxisLabels}
-                horizontal={component?.props?.horizontal}
-                // className="w-full h-full"
+        <div className="flex items-end justify-center gap-4 w-full ">
+          {/* Bar Chart */}
+          <div className="flex-1 flex flex-col bg-white p-4 rounded-lg shadow-md">
+            <BarChart
+              categories={categories}
+              series={series}
+              xaxisLabels={component?.props?.xaxisLabels}
+              horizontal={component?.props?.horizontal}
+              // className="w-full h-full"
+            />
+          </div>
+
+          {/* Eye Checkup Report */}
+          <div className="flex-1 flex flex-col bg-white   rounded-lg shadow-md">
+            <div className="flex justify-between items-center ">
+              <h1 className="text-md font-medium">
+                {eyeCheckUpReport?.data?.name}
+              </h1>
+              <div className="flex gap-2">
+                <DropdownComponent
+                  transformedData={transformedMonthData}
+                  title="Month"
+                  handleSelect={(key, value) =>
+                    handleSelect(key, value, 'eyeCheckup')
+                  }
+                  current={currentMonthName?.label}
+                  className="w-[100px]"
+                />
+                <DropdownComponent
+                  transformedData={transformedYearData}
+                  title="Year"
+                  handleSelect={(key, value) =>
+                    handleSelect(key, value, 'eyeCheckup')
+                  }
+                  current={eyeCheckupFilters.year.toString()}
+                  className="w-[100px]"
+                />
+              </div>
+            </div>
+            <div className="flex-1 h-[400px]">
+              <SmsVoucherLineCharts
+                series={eyeCheckUpReport?.data?.series}
+                categories={eyeCheckUpReport?.data?.categories}
+                name={eyeCheckUpReport?.data?.name}
+                key={eyeCheckUpReport?.data?.name}
               />
             </div>
+          </div>
 
-            {/* Eye Checkup Report */}
-            <div className="flex-1 flex flex-col bg-white p-4 rounded-lg shadow-md">
-              <div className="flex justify-between items-center mb-4">
-                <h1 className="text-md font-medium">
-                  {eyeCheckUpReport?.data?.name}
-                </h1>
-                <div className="flex gap-2">
-                  <DropdownComponent
-                    transformedData={transformedMonthData}
-                    title="Month"
-                    handleSelect={(key, value) =>
-                      handleSelect(key, value, 'eyeCheckup')
-                    }
-                    current={currentMonthName?.label}
-                    className="w-[100px]"
-                  />
-                  <DropdownComponent
-                    transformedData={transformedYearData}
-                    title="Year"
-                    handleSelect={(key, value) =>
-                      handleSelect(key, value, 'eyeCheckup')
-                    }
-                    current={eyeCheckupFilters.year.toString()}
-                    className="w-[100px]"
-                  />
-                </div>
-              </div>
-              <div className="flex-1">
-                <SmsVoucherLineCharts
-                  series={eyeCheckUpReport?.data?.series}
-                  categories={eyeCheckUpReport?.data?.categories}
-                  name={eyeCheckUpReport?.data?.name}
-                  key={eyeCheckUpReport?.data?.name}
+          {/* Purchase of Glass Report */}
+          <div className="flex-1 flex flex-col bg-white  rounded-lg shadow-md">
+            <div className="flex justify-between items-center ">
+              <h1 className="text-md font-medium">
+                {purchaseOfGlassReport?.data?.name}
+              </h1>
+              <div className="flex gap-2">
+                <DropdownComponent
+                  transformedData={transformedMonthData}
+                  title="Month"
+                  handleSelect={(key, value) =>
+                    handleSelect(key, value, 'purchase')
+                  }
+                  current={currentMonthName?.label}
+                  className="w-[100px]"
+                />
+                <DropdownComponent
+                  transformedData={transformedYearData}
+                  title="Year"
+                  handleSelect={(key, value) =>
+                    handleSelect(key, value, 'purchase')
+                  }
+                  current={purchaseFilters.year.toString()}
+                  className="w-[100px]"
                 />
               </div>
             </div>
-
-            {/* Purchase of Glass Report */}
-            <div className="flex-1 flex flex-col bg-white p-4 rounded-lg shadow-md">
-              <div className="flex justify-between items-center mb-4">
-                <h1 className="text-md font-medium">
-                  {purchaseOfGlassReport?.data?.name}
-                </h1>
-                <div className="flex gap-2">
-                  <DropdownComponent
-                    transformedData={transformedMonthData}
-                    title="Month"
-                    handleSelect={(key, value) =>
-                      handleSelect(key, value, 'purchase')
-                    }
-                    current={purchaseFilters.month.toString()}
-                    className="w-[100px]"
-                  />
-                  <DropdownComponent
-                    transformedData={transformedYearData}
-                    title="Year"
-                    handleSelect={(key, value) =>
-                      handleSelect(key, value, 'purchase')
-                    }
-                    current={purchaseFilters.year.toString()}
-                    className="w-[100px]"
-                  />
-                </div>
-              </div>
-              <div className="flex-1">
-                <SmsVoucherLineCharts
-                  series={purchaseOfGlassReport?.data?.series}
-                  categories={purchaseOfGlassReport?.data?.categories}
-                  name={purchaseOfGlassReport?.data?.name}
-                  key={purchaseOfGlassReport?.data?.name}
-                />
-              </div>
+            <div className="flex-1">
+              <SmsVoucherLineCharts
+                series={purchaseOfGlassReport?.data?.series}
+                categories={purchaseOfGlassReport?.data?.categories}
+                name={purchaseOfGlassReport?.data?.name}
+                key={purchaseOfGlassReport?.data?.name}
+              />
             </div>
           </div>
-        </ScrollArea>
+        </div>
       </div>
     );
 };

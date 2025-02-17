@@ -1,6 +1,7 @@
 import {
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -25,6 +26,7 @@ export default function TransactionsView() {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    getSortedRowModel: getSortedRowModel(),
     state: {
       columnVisibility,
     },

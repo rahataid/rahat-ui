@@ -1,5 +1,6 @@
 import {
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -28,6 +29,8 @@ export default function VendorsTransactionsHistory({
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    getSortedRowModel: getSortedRowModel(),
+
     state: {
       columnVisibility,
     },

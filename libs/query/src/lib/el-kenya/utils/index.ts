@@ -8,13 +8,7 @@ export const formatTransaction = (trans: any) => ({
     trans.claimer ||
     trans.beneficiaryAddress,
   topic: trans.eventType,
-  timeStamp: new Date(parseInt(trans.blockTimestamp) * 1000).toLocaleString(
-    'en-US',
-    {
-      timeZone: 'UTC',
-      hour12: false,
-    },
-  ),
+  timeStamp: new Date(parseInt(trans.blockTimestamp) * 1000),
   txHash: trans.transactionHash,
   amount: trans?.amount || '',
   voucherId: trans.tokenAddress || trans.token || '-',

@@ -3,6 +3,7 @@ import {
   useKenyaVendorTransactions,
   useProjectStore,
   useRemoveVendor,
+  useVendorBeneficiary,
 } from '@rahat-ui/query';
 import {
   Tabs,
@@ -38,7 +39,7 @@ export default function VendorsDetail() {
     (state) => state.singleProject?.projectClosed,
   );
 
-  const { data, isLoading: isVendorLoading } = useGetOfflineSingleVendor(
+  const { data, isLoading: isVendorLoading } = useVendorBeneficiary(
     id,
     Number(vendorId),
   );
@@ -126,10 +127,7 @@ export default function VendorsDetail() {
         </TabsContent>
         <TabsContent value="beneficiaryList">
           <VendorsBeneficiaryList
-            beneficiaryList={[
-              ...(data?.data || []),
-              ...(data?.extras?.BeneficiaryRedemption || []),
-            ]}
+            beneficiaryList={[...(data?.beneficiaryRedemption || [])]}
             loading={isVendorLoading}
           />
         </TabsContent>

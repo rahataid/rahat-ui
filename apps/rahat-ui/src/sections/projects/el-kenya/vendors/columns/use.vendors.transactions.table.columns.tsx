@@ -2,13 +2,14 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { formatDateFromBloackChain } from 'apps/rahat-ui/src/utils';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
+import { mapTopic } from '../../const';
 
 export const useElkenyaVendorsTransactionsTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'topic',
       header: 'Topic',
-      cell: ({ row }) => <div>{row.getValue('topic')}</div>,
+      cell: ({ row }) => <div>{mapTopic(row.getValue('topic'))}</div>,
     },
     {
       accessorKey: 'txHash',

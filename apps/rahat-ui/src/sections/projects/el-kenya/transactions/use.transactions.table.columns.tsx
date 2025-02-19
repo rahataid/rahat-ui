@@ -1,23 +1,62 @@
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@radix-ui/react-tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { formatDateFromBloackChain } from 'apps/rahat-ui/src/utils';
 import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
-import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Copy, CopyCheck } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
+import { mapTopic } from '../const';
 
 export const useElkenyaTransactionsTableColumns = () => {
+  const [walletAddressCopied, setWalletAddressCopied] = useState<string>();
+
+  const clickToCopy = (walletAddress: string, uuid: string) => {
+    navigator.clipboard.writeText(walletAddress);
+    setWalletAddressCopied(uuid);
+  };
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'beneficiary',
       header: 'Wallet Address',
       cell: ({ row }) => (
-        <div>{truncateEthAddress(row.getValue('beneficiary'))}</div>
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() =>
+                clickToCopy(row.getValue('beneficiary'), row?.original?.uuid)
+              }
+            >
+              <p>{truncateEthAddress(row.getValue('beneficiary'))}</p>
+              {walletAddressCopied &&
+              walletAddressCopied === row?.original?.uuid ? (
+                <CopyCheck size={15} strokeWidth={1.5} />
+              ) : (
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              )}
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary" side="bottom">
+              <p className="text-xs font-medium">
+                {walletAddressCopied &&
+                walletAddressCopied === row?.original?.uuid
+                  ? 'copied'
+                  : 'click to copy'}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       ),
     },
     {
       accessorKey: 'topic',
       header: 'Topic',
-      cell: ({ row }) => <div>{row.getValue('topic')}</div>,
+      cell: ({ row }) => <div>{mapTopic(row.getValue('topic'))}</div>,
     },
     {
       accessorKey: 'txHash',

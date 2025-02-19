@@ -9,6 +9,7 @@ import { useParams } from 'next/navigation';
 import { useElkenyaVendorsTransactionsTableColumns } from './columns/use.vendors.transactions.table.columns';
 import React from 'react';
 import ElkenyaTable from '../table.component';
+import ClientSidePagination from '../../components/client.side.pagination';
 
 export default function VendorsTransactionsHistory({
   tableData,
@@ -39,9 +40,10 @@ export default function VendorsTransactionsHistory({
     <div className="p-4 border rounded-sm">
       <ElkenyaTable
         table={table}
-        tableHeight="h-[calc(100vh-380px)]"
+        tableHeight="h-[calc(100vh-500px)]"
         loading={loading}
       />
+      <ClientSidePagination table={table} />
     </div>
   );
 }

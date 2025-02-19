@@ -9,7 +9,7 @@ import {
 
 // import { NavItem } from '../components';
 import { useParams } from 'next/navigation';
-import { NavItem } from 'modules/layout/nav-items.types';
+import { NavItem } from 'packages/modules/layout/nav-items.types';
 
 export const useNavItems = () => {
   const { id } = useParams();

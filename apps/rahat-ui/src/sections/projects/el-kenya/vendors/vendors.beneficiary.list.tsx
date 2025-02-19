@@ -1,6 +1,7 @@
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -51,6 +52,7 @@ export default function VendorsBeneficiaryList({
     data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     state: {
       columnVisibility,

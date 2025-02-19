@@ -1,5 +1,6 @@
 import {
   getCoreRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
   VisibilityState,
@@ -25,13 +26,12 @@ export default function VendorsTransactionsHistory({
 
   const columns = useElkenyaVendorsTransactionsTableColumns();
   const table = useReactTable({
-    manualPagination: true,
     data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-
     state: {
       columnVisibility,
     },

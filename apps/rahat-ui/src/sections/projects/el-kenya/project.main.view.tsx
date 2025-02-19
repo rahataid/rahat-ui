@@ -53,7 +53,7 @@ const ProjectMainView = () => {
       <div className="flex justify-between">
         <div>
           <h1 className="font-semibold text-[28px] mb-2">
-            Welcome to CVA Dashboard
+            Welcome to EL SMS Voucher Program
           </h1>
           <p className="text-muted-foreground text-base">
             Your Hub for Real-Time Analytics and Data Visualization of the

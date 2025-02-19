@@ -22,16 +22,8 @@ import SelectComponent from '../select.component';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { CloudDownload } from 'lucide-react';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import ViewColumns from '../../components/view.columns';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@rahat-ui/shadcn/components/tabs';
-import BeneficiaryGroupView from './beneficiary.group.view';
-import FiltersTags from '../../components/filtersTags';
 import * as XLSX from 'xlsx';
+import SmsVoucherFiltersTags from '../filtersTags';
 
 export default function BeneficiaryView() {
   const { id } = useParams() as { id: UUID };
@@ -93,7 +85,7 @@ export default function BeneficiaryView() {
         rowData.type
       }&&location=${rowData?.projectData?.location}&&serialNumber=${
         rowData?.extras?.serialNumber
-      }&&age=${rowData?.extras?.age || 0}`,
+      }&&age=${rowData?.extras?.age || 0}&&consent=${rowData?.extras?.consent}`,
     );
   };
 
@@ -174,8 +166,8 @@ export default function BeneficiaryView() {
               onChange={(e) => setFilters({ ...filters, voucherStatus: e })}
               name="Voucher Status"
               options={[
-                { value: 'REDEEMED', label: 'REDEEMED' },
-                { value: 'NOT_REDEEMED', label: 'NOT_REDEEMED' },
+                { value: 'REDEEMED', label: 'Redeemed' },
+                { value: 'NOT_REDEEMED', label: 'Not Redeemed' },
               ]}
               value={filters?.voucherStatus || ''}
             />
@@ -204,7 +196,7 @@ export default function BeneficiaryView() {
             </Button>
           </div>
           {Object.keys(filters).length != 0 && (
-            <FiltersTags
+            <SmsVoucherFiltersTags
               filters={filters}
               setFilters={setFilters}
               total={meta?.total || 0}

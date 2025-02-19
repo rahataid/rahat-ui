@@ -7,6 +7,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import EditButton from '../../../../components/edit.btn';
 import DeleteButton from '../../../../components/delete.btn';
+import { mapStatus } from '../const';
 
 export default function BeneficiaryDetail() {
   const { id, benId } = useParams() as { id: UUID; benId: UUID };
@@ -18,6 +19,7 @@ export default function BeneficiaryDetail() {
   const type = searchParams.get('type');
   const age = searchParams.get('age');
   const name = searchParams.get('name');
+  const consent = searchParams.get('consent');
   const walletAddress = searchParams.get('walletAddress') || '';
   const gender = searchParams.get('gender') || '';
   const voucherType = searchParams.get('voucherType') || '';
@@ -99,28 +101,28 @@ export default function BeneficiaryDetail() {
         <div className="shadow border p-5 flex flex-col justify-between">
           <p className="font-medium">Voucher Usage</p>
           <p className="font-medium">
-            <Badge>{eyeCheckupStatus}</Badge>
+            <Badge>{mapStatus(eyeCheckupStatus)}</Badge>
           </p>
         </div>
 
         <div className="shadow border p-5 flex flex-col justify-between">
           <p className="font-medium">Voucher Status</p>
           <p className="font-medium">
-            <Badge>{voucherStatus}</Badge>
+            <Badge>{mapStatus(voucherStatus)}</Badge>
           </p>
         </div>
 
         <div className="shadow border p-5 flex flex-col justify-between">
           <p className="font-medium">Glass Type</p>
           <p className="font-medium">
-            <Badge>{voucherType}</Badge>
+            <Badge>{mapStatus(voucherType)}</Badge>
           </p>
         </div>
 
         <div className="shadow border p-5 flex flex-col justify-between">
           <p className="font-medium">Consent Status</p>
           <p className="font-medium">
-            <Badge>{voucherType}</Badge>
+            <Badge>{mapStatus(consent || '-')}</Badge>
           </p>
         </div>
       </div>

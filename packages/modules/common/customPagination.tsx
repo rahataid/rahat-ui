@@ -32,7 +32,7 @@ export default function CustomPagination({
 }: IProps) {
   const lastPage = meta?.lastPage || 1;
   return (
-    <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2 border-t bg-card">
+    <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2  bg-card">
       {/* <div className="flex-1 text-sm text-muted-foreground">
         {currentPage} of {total} row(s) selected.
       </div> */}

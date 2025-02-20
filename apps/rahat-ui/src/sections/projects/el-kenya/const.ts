@@ -16,5 +16,5 @@ export function mapTopic(topic: string) {
   const topicMapping: any = {
     'Walk In Beneficiary Added': 'Consumer Added',
   };
-  return topicMapping[topic] || '-';
+  return topicMapping[topic] || topic;
 }

@@ -30,6 +30,8 @@ type usePaginationReturn = {
   setFilters: (filters: { [key: string]: any }) => void;
   setNextPage: () => void;
   setPrevPage: () => void;
+  setFirstPage: () => void;
+  setLastPage: (page: number) => void;
   resetPagination: () => void;
   resetFilters: () => void;
   setSelectedListItems: (selectedListItems: any) => void;
@@ -82,6 +84,15 @@ export const usePagination = (): usePaginationReturn => {
     () => setPagination((prev) => ({ ...prev, page: prev.page - 1 })),
     [],
   );
+
+  const setFirstPage = useCallback(
+    () => setPagination((prev) => ({ ...prev, page: 1 })),
+    [],
+  );
+  const setLastPage = useCallback(
+    (page: number) => setPagination((prev) => ({ ...prev, page: page })),
+    [],
+  );
   const resetPagination = useCallback(
     () => setPagination({ page: 1, perPage: 10 }),
     [],
@@ -108,6 +119,8 @@ export const usePagination = (): usePaginationReturn => {
     setFilters,
     setNextPage,
     setPrevPage,
+    setFirstPage,
+    setLastPage,
     resetPagination,
     resetFilters,
     selectedListItems,

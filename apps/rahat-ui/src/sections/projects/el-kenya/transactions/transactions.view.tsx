@@ -11,7 +11,7 @@ import { useElkenyaTransactionsTableColumns } from './use.transactions.table.col
 import { useKenyaProjectTransactions } from '@rahat-ui/query';
 import React from 'react';
 import ElkenyaTable from '../table.component';
-import ClientSidePagination from '../../components/client.side.pagination';
+import { ClientSidePagination } from '../clientSidePagination';
 
 export default function TransactionsView() {
   const { id } = useParams() as { id: UUID };

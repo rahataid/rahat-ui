@@ -24,6 +24,7 @@ import { CloudDownload } from 'lucide-react';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import * as XLSX from 'xlsx';
 import SmsVoucherFiltersTags from '../filtersTags';
+import DataTablePagination from '../serverSidePagination';
 
 export default function BeneficiaryView() {
   const { id } = useParams() as { id: UUID };
@@ -49,6 +50,8 @@ export default function BeneficiaryView() {
     setFilters,
     setNextPage,
     setPrevPage,
+    setFirstPage,
+    setLastPage,
     setPerPage,
     selectedListItems,
     setSelectedListItems,
@@ -219,10 +222,21 @@ export default function BeneficiaryView() {
           />
         </div>
       </div>
-      <CustomPagination
+      {/* <CustomPagination
         meta={meta || { total: 0, currentPage: 0 }}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={0}
+      /> */}
+      <DataTablePagination
+        meta={meta || { total: 0, currentPage: 0 }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handleFirstPage={setFirstPage}
+        handleLastPage={setLastPage}
         handlePageSizeChange={setPerPage}
         currentPage={pagination.page}
         perPage={pagination.perPage}

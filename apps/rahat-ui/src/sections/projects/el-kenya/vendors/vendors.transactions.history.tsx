@@ -10,7 +10,7 @@ import { useParams } from 'next/navigation';
 import { useElkenyaVendorsTransactionsTableColumns } from './columns/use.vendors.transactions.table.columns';
 import React from 'react';
 import ElkenyaTable from '../table.component';
-import ClientSidePagination from '../../components/client.side.pagination';
+import { ClientSidePagination } from '../clientSidePagination';
 
 export default function VendorsTransactionsHistory({
   tableData,

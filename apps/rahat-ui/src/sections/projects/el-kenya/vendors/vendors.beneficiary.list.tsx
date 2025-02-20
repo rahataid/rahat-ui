@@ -10,7 +10,7 @@ import { useParams } from 'next/navigation';
 import React, { useMemo } from 'react';
 import ElkenyaTable from '../table.component';
 import { useElkenyaVendorsBeneficiaryTableColumns } from './columns/use.vendors.beneficiary.table.columns';
-import ClientSidePagination from '../../components/client.side.pagination';
+import { ClientSidePagination } from '../clientSidePagination';
 
 interface VendorsBeneficiaryListProps {
   beneficiaryList: any;

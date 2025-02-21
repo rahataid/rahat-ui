@@ -7,7 +7,7 @@ import {
 } from 'libs/shadcn/src/components/ui/card';
 import { cn } from 'libs/shadcn/src/utils';
 import { LucideIcon, RefreshCcw } from 'lucide-react';
-import TableLoader from './table.loader';
+import { TableLoader } from './table.loader';
 import {
   TooltipContent,
   Tooltip,
@@ -27,7 +27,7 @@ type CardProps = {
   iconStyle?: string;
 };
 
-export default function DataCard({
+export function DataCard({
   title,
   number,
   smallNumber,

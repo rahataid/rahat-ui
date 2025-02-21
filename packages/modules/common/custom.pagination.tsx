@@ -21,7 +21,7 @@ type IProps = {
 
 const pageSizes = ['5', '10', '20', '30', '40', '50', '100'];
 
-export default function CustomPagination({
+export function CustomPagination({
   handleNextPage,
   handlePageSizeChange,
   handlePrevPage,

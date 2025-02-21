@@ -17,7 +17,7 @@ type IProps = {
   loading?: boolean;
 };
 
-export default function DemoTable({ table, tableHeight, loading }: IProps) {
+export function DemoTable({ table, tableHeight, loading }: IProps) {
   return (
     <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
       {loading ? (

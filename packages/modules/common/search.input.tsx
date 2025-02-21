@@ -13,7 +13,7 @@ type IProps = {
   value?: string;
 };
 
-export default function SearchInput({
+export function SearchInput({
   name,
   className,
   onSearch,

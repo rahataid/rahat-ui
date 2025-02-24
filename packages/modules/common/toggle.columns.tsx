@@ -15,7 +15,7 @@ type IProps = {
   table: Table<any>;
 };
 
-export default function ToggleColumns({ table }: IProps) {
+export function ToggleColumns({ table }: IProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

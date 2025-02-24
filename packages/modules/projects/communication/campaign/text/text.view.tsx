@@ -4,13 +4,15 @@ import { useListCommsCommunicationLogs, usePagination } from 'libs/query/src';
 import { UUID } from 'crypto';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import useTextTableColumn from './useTableColumn';
-import DemoTable from 'packages/modules/common/table';
-import CustomPagination from 'packages/modules/common/customPagination';
+import {
+  CustomPagination,
+  DataCard,
+  DemoTable,
+  IconLabelBtn,
+  SearchInput,
+  ToggleColumns,
+} from 'packages/modules';
 import { Mail, MessageCircle, PhoneCall, Settings } from 'lucide-react';
-import SearchInput from 'packages/modules/common/search.input';
-import ToggleColumns from 'packages/modules/common/toggle.columns';
-import DataCard from 'packages/modules/common/dataCard';
-import IconLabelBtn from 'packages/modules/common/icon.label.btn';
 
 export default function TextView() {
   const { id } = useParams();

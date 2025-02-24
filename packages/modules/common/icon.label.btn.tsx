@@ -10,7 +10,7 @@ type IProps = {
   variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost';
   disabled?: boolean;
 };
-export default function IconLabelBtn({
+export function IconLabelBtn({
   Icon,
   name,
   handleClick,

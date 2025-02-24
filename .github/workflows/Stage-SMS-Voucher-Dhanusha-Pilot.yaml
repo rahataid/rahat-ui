@@ -1,4 +1,4 @@
-name: Stage SMS Voucher Pilot CI/CD
+name: Stage SMS Voucher Dhanusha Pilot CI/CD
 on:
   push:
     branches:
@@ -10,7 +10,7 @@ on:
 
 env:
   CI: false
-  env_stage: ${{ secrets.ENV_STAGE_SMS_VOUCHER_PILOT}}
+  env_stage: ${{ secrets.ENV_STAGE_SMS_VOUCHER_DHANUSHA_PILOT}}
 
 jobs:
   rahat-ui:
@@ -57,5 +57,5 @@ jobs:
           context: .
           file: Dockerfile.rahat-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-          tags: esatya/rahat-ui:stage-sms-voucher-pilot
+          tags: esatya/rahat-ui:stage-sms-voucher-dhanusha-pilot
 

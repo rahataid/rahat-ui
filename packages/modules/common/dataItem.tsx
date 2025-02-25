@@ -16,16 +16,16 @@ const DataItem = ({
 }: DataItemProps) => {
   return (
     <div>
-      <h1 className="text-xl text-black">{label}</h1>
+      <h1 className="text-lg text-black">{label}</h1>
       {isBadge ? (
         <Badge
           variant={badgeVariant}
-          className="text-lg text-muted-foreground font-medium"
+          className="text-sm text-muted-foreground font-medium"
         >
           {value}
         </Badge>
       ) : (
-        <p className=" text-lg text-muted-foreground font-medium">{value}</p>
+        <p className=" text-sm text-muted-foreground font-medium">{value}</p>
       )}
     </div>
   );

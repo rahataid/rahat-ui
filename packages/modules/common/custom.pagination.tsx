@@ -9,6 +9,12 @@ import {
 } from 'libs/shadcn/src/components/ui/select';
 import { PaginatedResult } from '@rumsan/sdk/types';
 import { Button } from 'libs/shadcn/src/components/ui/button';
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from 'lucide-react';
 type IProps = {
   handleNextPage: () => void;
   handlePrevPage: () => void;
@@ -66,11 +72,29 @@ export function CustomPagination({
           variant="outline"
           size="sm"
           onClick={handlePrevPage}
+          disabled={currentPage === 1}
+        >
+          <ChevronsLeft />
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handlePrevPage}
           // disabled={meta && meta?.prev === null && currentPage === 1}
           disabled={currentPage === 1}
           type="button"
         >
-          Previous
+          <ChevronLeft />
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleNextPage}
+          disabled={meta?.lastPage == 0 || currentPage === meta?.lastPage}
+        >
+          <ChevronsRight />
         </Button>
         <Button
           variant="outline"
@@ -83,7 +107,7 @@ export function CustomPagination({
           // }
           disabled={meta?.lastPage == 0 || currentPage === meta?.lastPage}
         >
-          Next
+          <ChevronRight />
         </Button>
       </div>
     </div>

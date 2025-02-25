@@ -1,9 +1,10 @@
 import { Coins, Copy, CopyCheck, User } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React from 'react';
-import DataCard from '../../common/dataCard';
+// import DataCard from '../../common/dataCard';
 import DataItem from '../../common/dataItem';
 import useCopy from '../../hooks/useCopy';
+import { DataCard } from '../../common';
 
 const BeneficiaryInfo = () => {
   const { id } = useParams();

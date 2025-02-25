@@ -18,15 +18,14 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import CustomPagination from '../../common/customPagination';
-
 import { useRouter } from 'next/navigation';
 
 import { usePagination } from 'libs/query/src';
-import SearchInput from '../../common/search.input';
-import DemoTable from '../../common/table';
 import BeneficiaryGroups from './BeneficiaryGroups';
 import { useProjectBeneficiaryTableColumns } from './columns';
+import { ClientSidePagination, DemoTable, SearchInput } from '../../common';
+import { Button } from '../../../../libs/shadcn/src/components/ui/button';
+import { CloudDownload } from 'lucide-react';
 function BeneficiaryView() {
   const router = useRouter();
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
@@ -89,6 +88,13 @@ function BeneficiaryView() {
             Beneficiary Groups
           </TabsTrigger>
         </TabsList>
+
+        {/* <Button
+          variant="outline"
+          onClick={() => router.push('/beneficiary/import')}
+        >
+          <CloudDownload className="mr-1" /> Import beneficiaries
+        </Button> */}
       </div>
       <TabsContent value="beneficiary">
         <div className="px-4">
@@ -100,15 +106,7 @@ function BeneficiaryView() {
             />
             <DemoTable table={table} />
 
-            <CustomPagination
-              meta={{ total: 0, currentPage: 0 }}
-              handleNextPage={setNextPage}
-              handlePrevPage={setPrevPage}
-              handlePageSizeChange={setPerPage}
-              currentPage={pagination.page}
-              perPage={pagination.perPage}
-              total={0}
-            />
+            <ClientSidePagination table={table} />
           </div>
         </div>
       </TabsContent>

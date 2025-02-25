@@ -1,13 +1,16 @@
 import React from 'react';
-import SearchInput from '../../common/search.input';
 import { ScrollArea } from '../../../../libs/shadcn/src/components/ui/scroll-area';
 import CommonCard from '../../common/card';
 import { UUID } from 'crypto';
 import { Search, Users } from 'lucide-react';
 import { Badge } from '../../../../libs/shadcn/src/components/ui/badge';
 import NoResult from '../../common/noResults';
-import CustomPagination from '../../common/customPagination';
 import { usePagination } from 'libs/query/src';
+import {
+  ClientSidePagination,
+  CustomPagination,
+  SearchInput,
+} from '../../common';
 
 const filteredGroups = [
   {

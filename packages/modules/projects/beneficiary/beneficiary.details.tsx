@@ -10,7 +10,7 @@ const BeneficiaryDetail = () => {
       <div className="flex justify-between items-center">
         <HeaderWithBack
           title={'Beneficiary Details'}
-          subtitle="Detailed view of the selected beneficiary group"
+          subtitle="Detailed view of the selected beneficiary"
           path="/beneficiary"
         />
       </div>

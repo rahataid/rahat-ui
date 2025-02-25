@@ -10,10 +10,16 @@ const BeneficiaryDetail = dynamic(
   () => import('packages/modules').then((mod) => mod.BeneficiaryDetails),
   { ssr: false },
 );
+
+const BeneficiaryGroupDetails = dynamic(
+  () => import('packages/modules').then((mod) => mod.BeneficiaryGroupsDetails),
+  { ssr: false },
+);
+
 export default function DemoPage() {
   return (
     <>
-      <BeneficiaryDetail />
+      <BeneficiaryView />
     </>
   );
 }

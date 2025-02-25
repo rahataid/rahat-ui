@@ -176,8 +176,19 @@ export default function AuthPage() {
 
           {!optSent && (
             <p className="text-muted-foreground text-sm">
-              By clicking continue, you agree to our{' '}
-              <span className="font-medium">Terms of Service</span> and{' '}
+              By clicking continue, you agree to our
+              <span className="font-medium">
+                <Link
+                  target="_blank"
+                  href={
+                    'https://docs.google.com/document/d/15eSgn1OPwsvWRU0inMOHYFgV5kvdOVA7L5LPoo6jJO0/edit'
+                  }
+                  className="underline font-medium"
+                >
+                  Terms of Service
+                </Link>
+              </span>
+              {''} and {''}
               <Link
                 target="_blank"
                 href={

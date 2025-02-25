@@ -44,6 +44,7 @@ export default function CommunicationView() {
     selectedListItems,
     setSelectedListItems,
   } = usePagination();
+
   const { data: broadStatusCount } = useCambodiaBroadCastCounts({
     projectUUID: id,
   }) as any;
@@ -105,7 +106,8 @@ export default function CommunicationView() {
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
-      const filterValue = value === 'ALL' ? setFilters({}) : value;
+      const filterValue =
+        value === 'ALL' ? filters.status === undefined : value;
       table.getColumn(name)?.setFilterValue(filterValue);
       setFilters({
         ...filters,
@@ -134,7 +136,11 @@ export default function CommunicationView() {
         });
       }
     } else {
-      setFilters({});
+      setFilters({
+        ...filters,
+        startDate: undefined,
+        endDate: undefined,
+      });
     }
   };
 
@@ -161,6 +167,7 @@ export default function CommunicationView() {
   }, []);
 
   const handleClearDate = () => {
+    console.log(filters.status);
     setFilters({
       ...filters,
       startDate: undefined,
@@ -223,8 +230,6 @@ export default function CommunicationView() {
             >
               <Download className="w-4 h-4 mr-3" /> Download Report
             </Button>
-
-            <AddSMSView address={address} />
           </div>
           <CambodiaTable
             table={table}

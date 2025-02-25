@@ -14,7 +14,7 @@ export function mapStatus(status: string) {
 }
 export function mapTopic(topic: string) {
   const topicMapping: any = {
-    'Walk In Beneficiary Added': 'Consumer Added',
+    'Walk In Beneficiary Added': 'Voucher Redeemed',
   };
   return topicMapping[topic] || topic;
 }

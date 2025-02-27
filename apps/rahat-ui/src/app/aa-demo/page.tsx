@@ -11,15 +11,15 @@ const BeneficiaryDetail = dynamic(
   { ssr: false },
 );
 
-const BeneficiaryGroupDetails = dynamic(
-  () => import('packages/modules').then((mod) => mod.BeneficiaryGroupsDetails),
+const StakeholdersView = dynamic(
+  () => import('packages/modules').then((mod) => mod.StakeholdersView),
   { ssr: false },
 );
 
 export default function DemoPage() {
   return (
     <>
-      <BeneficiaryView />
+      <StakeholdersView />
     </>
   );
 }

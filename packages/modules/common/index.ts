@@ -7,3 +7,4 @@ export * from './custom.pagination';
 export * from './data.card';
 export * from './icon.label.btn';
 export * from './table.loader';
+export * from './addButton';

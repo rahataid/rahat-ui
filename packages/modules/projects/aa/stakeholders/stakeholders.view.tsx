@@ -7,7 +7,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '../../../../libs/shadcn/src/components/ui/tabs';
+} from '../../../../../libs/shadcn/src/components/ui/tabs';
 
 import {
   VisibilityState,
@@ -20,13 +20,18 @@ import {
 
 import { useRouter } from 'next/navigation';
 
-import { usePagination } from 'libs/query/src';
-import BeneficiaryGroups from './BeneficiaryGroups';
+import BeneficiaryGroups from './StakeholderGroups';
 import { useProjectBeneficiaryTableColumns } from './columns';
-import { ClientSidePagination, DemoTable, SearchInput } from '../../common';
-import { Button } from '../../../../libs/shadcn/src/components/ui/button';
+import {
+  ClientSidePagination,
+  DemoTable,
+  SearchInput,
+  AddButton,
+} from '../../../common';
 import { CloudDownload } from 'lucide-react';
-function BeneficiaryView() {
+import { usePagination } from '../../../../../libs/query/src';
+// import AddButton from '@/packages/modules/common/addButton';
+function StakeholdersView() {
   const router = useRouter();
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
 
@@ -57,18 +62,18 @@ function BeneficiaryView() {
     <Tabs defaultValue="beneficiary">
       <TabsContent value="beneficiary">
         <div>
-          <h1 className="font-bold text-2xl text-label pl-4">Beneficiary</h1>
+          <h1 className="font-bold text-2xl text-label pl-4">Stakeholders</h1>
         </div>
       </TabsContent>
       <TabsContent value="beneficiaryGroups">
         <div>
           <h1 className="font-bold text-2xl text-label pl-4">
-            Beneficiary Groups
+            Stakeholders Groups
           </h1>
         </div>
       </TabsContent>
       <p className="text-muted-foreground text-left pl-4 mb-0 pb-0">
-        Track all the beneficiaries in the project
+        Track all the stakeholders in the project
       </p>
 
       <div className="flex justify-between items-center p-4">
@@ -78,14 +83,14 @@ function BeneficiaryView() {
             className="w-full data-[state=active]:bg-white"
             value="beneficiary"
           >
-            Beneficiary
+            Stakeholders
           </TabsTrigger>
           <TabsTrigger
             id="beneficiaryGroups"
             className="w-full data-[state=active]:bg-white"
             value="beneficiaryGroups"
           >
-            Beneficiary Groups
+            Stakeholders Groups
           </TabsTrigger>
         </TabsList>
 
@@ -99,11 +104,17 @@ function BeneficiaryView() {
       <TabsContent value="beneficiary">
         <div className="px-4">
           <div className="p-4 rounded-sm border">
-            <SearchInput
-              className="w-full"
-              name="group"
-              onSearch={(e) => handleSearch(e.target.value)}
-            />
+            <div className="flex  gap-2">
+              <SearchInput
+                className="w-full"
+                name="group"
+                onSearch={(e) => handleSearch(e.target.value)}
+              />
+              <AddButton
+                path="/projects/aa/stakeholders/add"
+                name="Stakeholder"
+              />
+            </div>
             <DemoTable table={table} />
 
             <ClientSidePagination table={table} />
@@ -119,4 +130,4 @@ function BeneficiaryView() {
   );
 }
 
-export default memo(BeneficiaryView);
+export default memo(StakeholdersView);

@@ -1,16 +1,9 @@
-import React from 'react';
-import { ScrollArea } from '../../../../libs/shadcn/src/components/ui/scroll-area';
-import CommonCard from '../../common/card';
-import { UUID } from 'crypto';
-import { Search, Users } from 'lucide-react';
-import { Badge } from '../../../../libs/shadcn/src/components/ui/badge';
-import NoResult from '../../common/noResults';
 import { usePagination } from 'libs/query/src';
-import {
-  ClientSidePagination,
-  CustomPagination,
-  SearchInput,
-} from '../../common';
+import { Users } from 'lucide-react';
+import React from 'react';
+import { ScrollArea } from '../../../../../libs/shadcn/src/components/ui/scroll-area';
+import { CustomPagination, SearchInput } from '../../../common';
+import NoResult from '../../../common/noResults';
 
 const filteredGroups = [
   {
@@ -110,7 +103,7 @@ const filteredGroups = [
     status: 'Inactive',
   },
 ];
-const BeneficiaryGroups = () => {
+const StakeGoldersGroups = () => {
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
 
   const handleSearch = (e) => {
@@ -175,4 +168,4 @@ const BeneficiaryGroups = () => {
   );
 };
 
-export default BeneficiaryGroups;
+export default StakeGoldersGroups;

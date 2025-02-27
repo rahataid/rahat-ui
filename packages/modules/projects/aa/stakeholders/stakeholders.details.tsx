@@ -1,10 +1,9 @@
 'use client';
 import React from 'react';
-import HeaderWithBack from '../../common/header.with.back';
-import BeneficiaryInfo from './beneficiary.info';
-import TransactionLogs from './transaction.log';
+import HeaderWithBack from '../../../common/header.with.back';
+import BeneficiaryInfo from './staholders.info';
 
-const BeneficiaryDetail = () => {
+const StakeholdersDetail = () => {
   return (
     <div className="p-4 ">
       <div className="flex justify-between items-center">
@@ -20,12 +19,12 @@ const BeneficiaryDetail = () => {
           <BeneficiaryInfo />
         </div>
 
-        <div className="flex border flex-col rounded-lg  gap-4 p-4 mx-4  w-full ">
+        {/* <div className="flex border flex-col rounded-lg  gap-4 p-4 mx-4  w-full ">
           <TransactionLogs />
-        </div>
+        </div> */}
       </div>
     </div>
   );
 };
 
-export default BeneficiaryDetail;
+export default StakeholdersDetail;

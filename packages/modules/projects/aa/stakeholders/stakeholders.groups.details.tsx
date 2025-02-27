@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import HeaderWithBack from '../../common/header.with.back';
+import HeaderWithBack from '../../../common/header.with.back';
 import {
   ClientSidePagination,
   DataCard,
   DemoTable,
   SearchInput,
-} from '../../common';
+} from '../../../common';
 import { Coins, User } from 'lucide-react';
 import {
   getCoreRowModel,
@@ -19,7 +19,7 @@ import { useProjectBeneficiaryGroupTableColumns } from './columns';
 
 type Props = {};
 
-const BeneficiaryGroupsDetails = (props: Props) => {
+const StakeholdersGroupsDetails = (props: Props) => {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const columns = useProjectBeneficiaryGroupTableColumns();
   const table = useReactTable({
@@ -81,4 +81,4 @@ const BeneficiaryGroupsDetails = (props: Props) => {
   );
 };
 
-export default BeneficiaryGroupsDetails;
+export default StakeholdersGroupsDetails;

@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
   TooltipContent,
-} from '../../../../libs/shadcn/src/components/ui/tooltip';
+} from '../../../../../libs/shadcn/src/components/ui/tooltip';
 
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 

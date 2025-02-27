@@ -12,6 +12,8 @@ type Props = {
   donutSize?: string;
   width?: number | string;
   height?: number | string;
+  showLegend?: boolean;
+  colors?: string[];
 };
 
 export default function ChartDonut({
@@ -20,8 +22,11 @@ export default function ChartDonut({
   donutSize,
   width = 230,
   height = 200,
+  showLegend = true,
+  colors = ['#00b67a', '#8BC34A', '#FFA726', '#007bb6', '#7a00b6'],
 }: Props) {
   const chartOptions = useChart({
+    colors,
     labels: labels,
     stroke: {
       show: false,
@@ -29,6 +34,7 @@ export default function ChartDonut({
     legend: {
       position: 'bottom',
       horizontalAlign: 'center',
+      show: showLegend,
     },
     tooltip: {
       fillSeriesColor: true,

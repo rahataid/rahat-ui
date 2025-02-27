@@ -8,14 +8,14 @@ import {
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import { useProjectVendorTableColumns } from './table.columns';
 import { projectVendors } from './static';
 import {
   SearchInput,
   DemoTable,
   ClientSidePagination,
-  PageHeading,
+  Heading,
 } from 'packages/modules';
+import { useProjectVendorTableColumns } from './columns/useVendorColumns';
 
 export default function VendorsView() {
   const { id } = useParams() as { id: UUID };
@@ -39,7 +39,7 @@ export default function VendorsView() {
   return (
     <>
       <div className="p-4">
-        <PageHeading
+        <Heading
           title="Vendors"
           description="Track all the vendor reports here"
         />

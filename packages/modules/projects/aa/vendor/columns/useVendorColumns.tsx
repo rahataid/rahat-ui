@@ -2,7 +2,7 @@ import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { IProjectVendor } from './types';
+import { IProjectVendor } from '../types';
 
 export const useProjectVendorTableColumns = () => {
   const { id } = useParams();

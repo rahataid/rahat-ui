@@ -162,6 +162,7 @@ export default function BeneficiaryView() {
               options={[
                 { value: 'yes', label: 'Yes' },
                 { value: 'no', label: 'No' },
+                { value: 'skip', label: 'Skip' },
               ]}
               value={filters?.consentStatus || ''}
             />

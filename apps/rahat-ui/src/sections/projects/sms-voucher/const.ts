@@ -9,6 +9,7 @@ export function mapStatus(status: string) {
     NOT_REDEEMED: 'Not Redeemed',
     yes: 'Yes',
     no: 'No',
+    skip: 'Skip',
   };
   return statusMapping[status] || '-';
 }

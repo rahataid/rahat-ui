@@ -1,2 +1,2 @@
 export * from './communication';
-export * from './beneficiary';
+export * from './aa';

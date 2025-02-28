@@ -8,3 +8,4 @@ export * from './data.card';
 export * from './icon.label.btn';
 export * from './table.loader';
 export * from './back';
+export * from './transaction.card';

@@ -146,19 +146,19 @@ export default function PieChart({
           </div>
         </div>
       ) : (
-        <div className="bg-card shadow-md rounded-lg p-4 flex items-center justify-center">
-          <div className="rounded-lg overflow-hidden p-4">
-            <div className="flex flex-col items-center justify-center gap-4">
-              <h2 className={`font-medium p-0 text-left`}>{title}</h2>
-              <Chart
-                dir="ltr"
-                type="pie"
-                series={chartSeries}
-                options={chartOptions}
-                height={height}
-                width={width}
-              />
-            </div>
+        <div className="border bg-card shadow-md rounded-lg p-4">
+          <h2 className="font-semibold text-sm text-muted-foreground mb-4">
+            {title}
+          </h2>
+          <div className="flex justify-center">
+            <Chart
+              dir="ltr"
+              type="pie"
+              series={chartSeries}
+              options={chartOptions}
+              height={height}
+              width={width}
+            />
           </div>
         </div>
       )}

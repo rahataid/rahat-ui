@@ -7,7 +7,7 @@ import useChart from '../use-chart';
 
 type Props = {
   ctSeries?: number[];
-  ctCategories: string[];
+  ctCategories?: string[];
   width?: number | string;
   height?: number | string;
   horizontal?: boolean;
@@ -18,6 +18,8 @@ type Props = {
   categories?: any;
   series?: any;
   communityTool?: boolean;
+  custom?: boolean;
+  title?: string;
 };
 
 export default function ChartBar({
@@ -31,8 +33,10 @@ export default function ChartBar({
   categories,
   series,
   ctSeries,
-  ctCategories,
+  ctCategories = [],
   communityTool = false,
+  custom = false,
+  title = '',
 }: Props) {
   const chartOptions = useChart({
     colors,
@@ -92,7 +96,7 @@ export default function ChartBar({
     },
   });
 
-  return (
+  return !custom ? (
     <Chart
       dir="ltr"
       type="bar"
@@ -105,5 +109,23 @@ export default function ChartBar({
       height={height}
       width={width}
     />
+  ) : (
+    <div className="p-4 border rounded-md shadow">
+      <p className="font-semibold text-sm/6 text-muted-foreground">{title}</p>
+      <div className="flex justify-center">
+        <Chart
+          dir="ltr"
+          type="bar"
+          series={[
+            {
+              data: communityTool ? ctSeries : series,
+            },
+          ]}
+          options={chartOptions}
+          height={height}
+          width={width}
+        />
+      </div>
+    </div>
   );
 }

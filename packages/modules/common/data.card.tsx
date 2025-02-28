@@ -39,16 +39,11 @@ export function DataCard({
   iconStyle,
 }: CardProps) {
   return (
-    <Card
-      className={cn(
-        'flex flex-col rounded justify-center border border-none shadow bg-card',
-        className,
-      )}
-    >
+    <Card className={cn('flex flex-col rounded justify-center', className)}>
       <CardHeader className="pb-2 p-4">
         <div className="flex items-start justify-between ">
           <div className="flex items-center gap-3">
-            <CardTitle className="text-lg font-medium text-neutral-800 dark:text-white">
+            <CardTitle className="text-sm/6 font-semibold text-neutral-800 dark:text-white">
               {title}
             </CardTitle>
             {refresh && (
@@ -94,7 +89,7 @@ export function DataCard({
                   </Tooltip>
                 </TooltipProvider>
               ) : (
-                <div className="text-4xl font-semibold text-primary truncate w-52">
+                <div className="text-3xl font-semibold text-primary truncate w-52">
                   {number}
                 </div>
               )}

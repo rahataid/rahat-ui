@@ -1,2 +1,2 @@
-export { default as AAVendorsView } from './vendor/main';
-export { default as AAVendorDetail } from './vendor/detail';
+export * from './vendor';
+export * from './fundManagement';

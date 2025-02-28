@@ -1,16 +1,17 @@
+import { cn } from 'libs/shadcn/src';
 import React from 'react';
 
 interface IProps {
   title: string;
   description: string;
-  titleSize?: string;
+  titleStyle?: string;
 }
 
-export function Heading({ title, titleSize = '4xl', description }: IProps) {
+export function Heading({ title, titleStyle, description }: IProps) {
   return (
     <div className="mb-4">
-      <p className={`font-bold text-${titleSize}`}>{title}</p>
-      <p className="text-sm text-muted-foreground">{description}</p>
+      <p className={cn('font-bold text-4xl', titleStyle)}>{title}</p>
+      <p className="text-sm/4 text-muted-foreground">{description}</p>
     </div>
   );
 }

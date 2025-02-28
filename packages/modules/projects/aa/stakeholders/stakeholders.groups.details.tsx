@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import HeaderWithBack from '../../../common/header.with.back';
 import {
+  AddButton,
   ClientSidePagination,
   DataCard,
   DemoTable,
   SearchInput,
 } from '../../../common';
-import { Coins, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -15,13 +16,13 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { useProjectBeneficiaryGroupTableColumns } from './columns';
+import { useProjectStakeholdersGroupTableColumns } from './columns';
 
 type Props = {};
 
 const StakeholdersGroupsDetails = (props: Props) => {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const columns = useProjectBeneficiaryGroupTableColumns();
+  const columns = useProjectStakeholdersGroupTableColumns();
   const table = useReactTable({
     manualPagination: true,
     data: [],
@@ -47,32 +48,42 @@ const StakeholdersGroupsDetails = (props: Props) => {
       <div className="flex justify-between items-center">
         <HeaderWithBack
           title={'Rumsan Beneficiary Group'}
-          subtitle="Detailed view of the selected beneficiary group"
-          path="/beneficiary"
+          subtitle="Detailed view of the selected stakeholders group"
+          path="/stakeholders"
         />
       </div>
-      <div className="flex gap-6 mb-5">
+      <div className="flex gap-6 mb-3">
         <DataCard
-          className="border-solid w-1/4 rounded-md"
+          className="border-solid w-1/4  h-1/4 rounded-md"
           iconStyle="bg-white text-secondary-muted"
-          title="Total Beneficiaries"
+          title="Total Stakeholders"
           Icon={User}
-          number={'10'}
-        />
-        <DataCard
-          className="border-solid w-1/4 rounded-md"
-          iconStyle="bg-white text-secondary-muted"
-          title="Total Token Assigned"
-          Icon={Coins}
           number={'10'}
         />
       </div>
       <div className="p-4 rounded-sm border">
-        <SearchInput
-          className="w-full"
-          name="group"
-          onSearch={(e) => handleSearch(e.target.value)}
-        />
+        <div className="flex justify-between space-x-2 items-center mb-3 ">
+          <SearchInput
+            className="w-full"
+            name="stakeholders name"
+            onSearch={(e) => handleSearch(e.target.value)}
+          />
+
+          <SearchInput
+            className="w-full"
+            name="organization"
+            onSearch={(e) => handleSearch(e.target.value)}
+          />
+
+          <SearchInput
+            className="w-full"
+            name="municipality"
+            onSearch={(e) => handleSearch(e.target.value)}
+          />
+
+          <AddButton path="/projects/aa/stakeholders/add" name="Stakeholder" />
+        </div>
+
         <DemoTable table={table} tableHeight="h-[calc(100vh-500px)]" />
 
         <ClientSidePagination table={table} />

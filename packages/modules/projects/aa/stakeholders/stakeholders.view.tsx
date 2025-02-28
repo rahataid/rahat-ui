@@ -21,7 +21,7 @@ import {
 import { useRouter } from 'next/navigation';
 
 import BeneficiaryGroups from './StakeholderGroups';
-import { useProjectBeneficiaryTableColumns } from './columns';
+import { useProjectStakeholdersTableColumns } from './columns';
 import {
   ClientSidePagination,
   DemoTable,
@@ -30,13 +30,13 @@ import {
 } from '../../../common';
 import { CloudDownload } from 'lucide-react';
 import { usePagination } from '../../../../../libs/query/src';
-// import AddButton from '@/packages/modules/common/addButton';
+import { Button } from '../../../../../libs/shadcn/src/components/ui/button';
 function StakeholdersView() {
   const router = useRouter();
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const columns = useProjectBeneficiaryTableColumns();
+  const columns = useProjectStakeholdersTableColumns();
 
   const table = useReactTable({
     manualPagination: true,
@@ -94,12 +94,12 @@ function StakeholdersView() {
           </TabsTrigger>
         </TabsList>
 
-        {/* <Button
+        <Button
           variant="outline"
-          onClick={() => router.push('/beneficiary/import')}
+          // onClick={() => router.push('/beneficiary/import')}
         >
-          <CloudDownload className="mr-1" /> Import beneficiaries
-        </Button> */}
+          <CloudDownload className="mr-1" /> Import Stakeholders
+        </Button>
       </div>
       <TabsContent value="beneficiary">
         <div className="px-4">

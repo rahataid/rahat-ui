@@ -2,7 +2,7 @@ import { usePagination } from 'libs/query/src';
 import { Users } from 'lucide-react';
 import React from 'react';
 import { ScrollArea } from '../../../../../libs/shadcn/src/components/ui/scroll-area';
-import { CustomPagination, SearchInput } from '../../../common';
+import { AddButton, CustomPagination, SearchInput } from '../../../common';
 import NoResult from '../../../common/noResults';
 
 const filteredGroups = [
@@ -117,6 +117,11 @@ const StakeGoldersGroups = () => {
             className="w-full"
             name="group"
             onSearch={(e) => handleSearch(e.target.value)}
+          />
+
+          <AddButton
+            path="/projects/aa/stakeholders/add"
+            name="Stakeholder group"
           />
         </div>
         <ScrollArea className="h-[calc(100vh-360px)] mb-2">

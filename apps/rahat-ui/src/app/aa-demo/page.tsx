@@ -6,20 +6,20 @@ const BeneficiaryView = dynamic(
   () => import('packages/modules').then((mod) => mod.BeneficiaryView),
   { ssr: false },
 );
-const BeneficiaryDetail = dynamic(
-  () => import('packages/modules').then((mod) => mod.BeneficiaryDetails),
+const StakeholdersView = dynamic(
+  () => import('packages/modules').then((mod) => mod.StakeholdersView),
   { ssr: false },
 );
 
-const StakeholdersView = dynamic(
-  () => import('packages/modules').then((mod) => mod.StakeholdersView),
+const ImportStakeholders = dynamic(
+  () => import('packages/modules').then((mod) => mod.ImportStakeholders),
   { ssr: false },
 );
 
 export default function DemoPage() {
   return (
     <>
-      <StakeholdersView />
+      <ImportStakeholders />
     </>
   );
 }

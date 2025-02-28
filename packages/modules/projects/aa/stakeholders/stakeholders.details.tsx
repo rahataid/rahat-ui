@@ -1,27 +1,43 @@
 'use client';
 import React from 'react';
 import HeaderWithBack from '../../../common/header.with.back';
-import BeneficiaryInfo from './staholders.info';
+import StakeHolderInfo from './staholders.info';
+import { Button } from '../../../../../libs/shadcn/src/components/ui/button';
+import { Edit2, Trash2 } from 'lucide-react';
 
 const StakeholdersDetail = () => {
   return (
     <div className="p-4 ">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center p-4 ">
         <HeaderWithBack
-          title={'Beneficiary Details'}
-          subtitle="Detailed view of the selected beneficiary"
-          path="/beneficiary"
+          title={'Stakeholders Details'}
+          subtitle="Detailed view of the selected stakeholder"
+          path="/stakeholders"
         />
+        <div className=" flex flex-end justify-end gap-3 mt-auto">
+          <Button
+            variant="outline"
+            style={{ borderColor: 'red' }}
+            className="flex items-center gap-3 rounded-md w-36 text-red-600"
+          >
+            <Trash2 size={16} />
+            <span className="text-lg font-thin">Delete</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            className="flex  rounded-md  items-center gap-3 w-36"
+          >
+            <Edit2 size={16} />
+            <span className="text-lg font-thin">Edit</span>
+          </Button>
+        </div>
       </div>
 
       <div className="flex">
         <div className="flex border rounded-lg flex-col gap-4 p-4 mx-4  w-full">
-          <BeneficiaryInfo />
+          <StakeHolderInfo />
         </div>
-
-        {/* <div className="flex border flex-col rounded-lg  gap-4 p-4 mx-4  w-full ">
-          <TransactionLogs />
-        </div> */}
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ import {
   TableRow,
 } from 'libs/shadcn/src/components/ui/table';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
-import TableLoader from './table.loader';
+import { TableLoader } from './table.loader';
 
 type IProps = {
   table: Table<any>;

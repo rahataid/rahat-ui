@@ -12,22 +12,21 @@ import {
   Heading,
   SearchInput,
 } from 'packages/modules';
-import { useFundManagementTableColumns } from '../columns/useFMColumns';
-import { IFundManagement } from '../types';
+import { useFMDetailTableColumns } from '../columns/useFMDetailColumns';
 
 interface IProps {
-  fmList: IFundManagement[];
+  group: any[];
   loading?: boolean;
 }
 
-export default function FundManagementList({ fmList, loading }: IProps) {
+export default function FundManagementDetailTable({ group, loading }: IProps) {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
-  const columns = useFundManagementTableColumns();
+  const columns = useFMDetailTableColumns();
   const table = useReactTable({
-    data: fmList || [],
+    data: group || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -36,11 +35,11 @@ export default function FundManagementList({ fmList, loading }: IProps) {
     },
   });
   return (
-    <div className="">
+    <div className="border rounded-md p-4">
       <Heading
-        title="Fund Management List"
+        title="Group Name"
         titleStyle="text-lg"
-        description="List of all the funds created"
+        description="List of all the beneficiaries in the group"
       />
       <SearchInput
         className="w-full"
@@ -53,7 +52,7 @@ export default function FundManagementList({ fmList, loading }: IProps) {
       <DemoTable
         table={table}
         tableHeight={
-          fmList?.length > 0 ? 'h-[calc(100vh-420px)]' : 'h-[calc(100vh-800px)]'
+          group?.length > 0 ? 'h-[calc(100vh-420px)]' : 'h-[calc(100vh-800px)]'
         }
         loading={loading}
       />

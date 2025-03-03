@@ -2,35 +2,29 @@ import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { IFundManagement } from '../types';
 
-export const useFundManagementTableColumns = () => {
+export const useFMDetailTableColumns = () => {
   const { id } = useParams();
   const router = useRouter();
 
   const handleViewClick = (fmId: string) => {
     router.push(`/projects/aa/${id}/vendors/${fmId}`);
   };
-  const columns: ColumnDef<IFundManagement>[] = [
+  const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'title',
-      header: 'Title',
-      cell: ({ row }) => <div>{row.getValue('title') || 'N/A'}</div>,
+      accessorKey: 'beneficiaries',
+      header: 'Beneficiaries',
+      cell: ({ row }) => <div>{row.getValue('beneficiaries') || 'N/A'}</div>,
     },
     {
-      accessorKey: 'beneficiaryGroup',
-      header: 'Beneficiary Group',
-      cell: ({ row }) => <div>{row.getValue('beneficiaryGroup') || 'N/A'}</div>,
+      accessorKey: 'walletAddress',
+      header: 'Wallet Address',
+      cell: ({ row }) => <div>{row.getValue('walletAddress') || 'N/A'}</div>,
     },
     {
-      accessorKey: 'tokens',
-      header: 'Tokens',
-      cell: ({ row }) => <div>{row.getValue('tokens') || 'N/A'}</div>,
-    },
-    {
-      accessorKey: 'createdBy',
-      header: 'Created By',
-      cell: ({ row }) => <div>{row.getValue('createdBy') || 'N/A'}</div>,
+      accessorKey: 'tokensAssigned',
+      header: 'Tokens Assigned',
+      cell: ({ row }) => <div>{row.getValue('tokensAssigned') || 'N/A'}</div>,
     },
     {
       id: 'actions',

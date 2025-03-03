@@ -16,8 +16,12 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
   const { pagination, filters } = usePagination();
-  filters.type = 'Lead';
-
+  const projectSlug = 'el-cambodia';
+  // if (projectSlug) filters.type = 'Lead';
+  const encodedFilters = encodeURIComponent(
+    JSON.stringify((filters.type = 'Lead')),
+  );
+  const encodedPagination = encodeURIComponent(JSON.stringify(pagination));
   // Split the dataMap to extract the name and the path within the object
   const [name, ...pathParts] = component.dataMap.split('.');
   const path = pathParts.join('.');
@@ -43,11 +47,7 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
     const handleClick = (e) => {
       if (component?.title === 'Total Villagers Referred') {
         e.preventDefault();
-        const projectSlug = 'el-cambodia';
-        const encodedFilters = encodeURIComponent(JSON.stringify(filters));
-        const encodedPagination = encodeURIComponent(
-          JSON.stringify(pagination),
-        );
+
         const targetUrl = `/projects/${projectSlug}/${id}/beneficiary#filters=${encodedFilters}&pagination=${encodedPagination}`;
         router.push(targetUrl);
       }

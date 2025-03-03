@@ -33,6 +33,7 @@ export default function VendorsDetail() {
     setWalletAddressCopied(id);
   };
 
+  console.log(vendorsStats);
   return (
     <div className="h-[calc(100vh-95px)] m-4">
       <div className="flex justify-between items-center">

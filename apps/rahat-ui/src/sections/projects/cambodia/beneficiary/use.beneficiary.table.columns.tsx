@@ -1,3 +1,4 @@
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -33,6 +34,17 @@ export const useCambodiaBeneficiaryTableColumns = () => {
       header: 'Health Worker',
       cell: ({ row }) => {
         return <div>{row?.original?.healthWorker?.name || '-'}</div>;
+      },
+    },
+
+    {
+      accessorKey: 'createdAt',
+      header: 'Timestamp',
+      cell: ({ row }) => {
+        const date = new Date(row.getValue('createdAt'));
+        const formattedDate = date.toLocaleDateString();
+
+        return <div className="lowercase ml-4">{formattedDate}</div>;
       },
     },
 

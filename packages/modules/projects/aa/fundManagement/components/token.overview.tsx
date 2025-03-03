@@ -15,7 +15,7 @@ export default function TokensOverview() {
         {FMTokensOverviewData?.map((i) => (
           <DataCard
             key={i.name}
-            className="rounded-md "
+            className="rounded-md"
             title={i.name}
             number={i.amount}
           />

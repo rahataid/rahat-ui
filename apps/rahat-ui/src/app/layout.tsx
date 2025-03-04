@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { GeistSans } from 'geist/font/sans';
 import { QueryProvider } from '../providers/query-provider';
-// import { SecondPanelProvider } from '../providers/second-panel-provider';
+import { SecondPanelProvider } from '../providers/second-panel-provider';
 import { ServiceProvider } from '../providers/service.provider';
 import { ThemeProvider } from '../providers/theme-provider';
 import { Wagmi } from '../providers/wagmi.provider';
@@ -14,13 +14,12 @@ import './globals.css';
 import { RSQueryProvider } from '@rumsan/react-query/providers/rs-query-provider';
 import { CommunicationQueryProvider } from '@rumsan/communication-query/providers/communication-query-provider';
 import { NewCommunicationQueryProvider } from '@rahat-ui/query';
-import { SecondPanelProvider } from 'packages/modules';
 
-// export const metadata = {
-//   icons: {
-//     icon: '/svg/rahat-logo.png',
-//   },
-// };
+export const metadata = {
+  icons: {
+    icon: '/svg/rahat-logo.png',
+  },
+};
 
 export default function RootLayout({
   children,

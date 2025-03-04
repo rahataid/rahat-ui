@@ -1,5 +1,3 @@
-'use client';
-
 import { Toaster } from '@rahat-ui/shadcn/components/toaster';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

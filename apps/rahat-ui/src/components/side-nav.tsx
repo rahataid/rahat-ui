@@ -29,6 +29,7 @@ export default function SideNav() {
           <Image src="/rahat-logo.png" alt="logo" height={20} width={30} />
         </header>
         <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
+          <p>core</p>
           {data.map((item) => {
             const isActive = item.path.split('/')[1] === activePath;
             return (

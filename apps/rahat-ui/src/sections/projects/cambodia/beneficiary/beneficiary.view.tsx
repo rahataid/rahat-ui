@@ -64,6 +64,7 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...(debouncedSearch as any),
   });
+
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;

@@ -2,7 +2,12 @@ import Link from 'next/link';
 import DataCard from '../../components/dataCard';
 import { getValueFromPath } from '../../utils/extractObjetInfo';
 import getIcon from '../../utils/getIcon';
-import { useParams, useRouter } from 'next/navigation';
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from 'next/navigation';
 import { UUID } from 'crypto';
 import { usePagination } from '@rahat-ui/query';
 
@@ -15,12 +20,12 @@ type DataCardData = {
 const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
+  const pathName = usePathname();
   const { pagination, filters } = usePagination();
+  const slug = pathName.split('/')[2];
   const projectSlug = 'el-cambodia';
-  // if (projectSlug) filters.type = 'Lead';
-  const encodedFilters = encodeURIComponent(
-    JSON.stringify((filters.type = 'Lead')),
-  );
+  if (projectSlug === slug) filters.type = 'Lead';
+  const encodedFilters = encodeURIComponent(JSON.stringify(filters));
   const encodedPagination = encodeURIComponent(JSON.stringify(pagination));
   // Split the dataMap to extract the name and the path within the object
   const [name, ...pathParts] = component.dataMap.split('.');
@@ -44,11 +49,11 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
   if (cardDataValue !== null) {
     const icon = getIcon(component?.icon);
 
-    const handleClick = (e) => {
+    const handleClick = () => {
       if (component?.title === 'Total Villagers Referred') {
-        e.preventDefault();
+        // e.preventDefault();
 
-        const targetUrl = `/projects/${projectSlug}/${id}/beneficiary#filters=${encodedFilters}&pagination=${encodedPagination}`;
+        const targetUrl = `/projects/${projectSlug}/${id}/beneficiary#pagination=${encodedPagination}&filters=${encodedFilters}`;
         router.push(targetUrl);
       }
     };

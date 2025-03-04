@@ -43,8 +43,12 @@ export const useCambodiaBeneficiaryTableColumns = () => {
       cell: ({ row }) => {
         const date = new Date(row.getValue('createdAt'));
         const formattedDate = date.toLocaleDateString();
-
-        return <div className="lowercase ml-4">{formattedDate}</div>;
+        const formattedTime = date.toLocaleTimeString();
+        return (
+          <div className="lowercase ml-4">
+            {formattedDate} {formattedTime}
+          </div>
+        );
       },
     },
 

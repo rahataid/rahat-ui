@@ -9,3 +9,4 @@ export * from './icon.label.btn';
 export * from './table.loader';
 export * from './back';
 export * from './transaction.card';
+export * from './addButton';

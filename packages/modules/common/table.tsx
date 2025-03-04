@@ -10,6 +10,7 @@ import {
 } from 'libs/shadcn/src/components/ui/table';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { TableLoader } from './table.loader';
+import NoResult from './noResults';
 
 type IProps = {
   table: Table<any>;
@@ -65,7 +66,7 @@ export function DemoTable({ table, tableHeight, loading }: IProps) {
                   colSpan={table.getAllColumns().length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  <NoResult />
                 </TableCell>
               </TableRow>
             )}

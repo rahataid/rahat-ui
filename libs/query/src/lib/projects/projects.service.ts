@@ -643,6 +643,7 @@ export const useListConsentConsumer = (projectUUID: UUID) => {
               glassPurchaseType: row?.voucherType,
               voucherUsage: row?.eyeCheckupStatus,
               voucherStatus: row?.voucherStatus,
+              consent: row?.extras?.consent,
             }))
           : [],
       };

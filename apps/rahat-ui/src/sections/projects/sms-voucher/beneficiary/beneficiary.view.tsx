@@ -116,7 +116,7 @@ export default function BeneficiaryView() {
   };
 
   const handleDownload = () => {
-    generateExcel(consumerData.data, 'Consumer', 8);
+    generateExcel(consumerData.data, 'Consumer', 9);
   };
 
   const generateExcel = (data: any, title: string, numberOfColumns: number) => {

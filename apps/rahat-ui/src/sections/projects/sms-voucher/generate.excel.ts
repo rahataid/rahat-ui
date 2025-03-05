@@ -21,20 +21,20 @@ export const generateExcel = (data: any, title: string, uiConfig: any) => {
     if (Array.isArray(item.data)) {
       item.data.forEach((entry: any) => {
         processedData.push({
-          Category: item.name,
+          Category: item.name?.split('_ID')[0],
           ID: entry.id || 'N/A',
           Count: entry.count || 0,
         });
       });
     } else if (typeof item.data === 'object' && item.data !== null) {
       processedData.push({
-        Category: item.name,
+        Category: item.name?.split('_ID')[0],
         ID: 'N/A',
         Count: item.data.count || 0,
       });
     } else {
       processedData.push({
-        Category: item.name,
+        Category: item.name?.split('_ID')[0],
         ID: 'N/A',
         Count: item.data,
       });

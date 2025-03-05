@@ -553,6 +553,14 @@ type GetProjectBeneficiaries = Pagination & {
   vouchers?: any;
 };
 
+type GetConsumerData = {
+  projectUUID: UUID;
+  voucherStatus?: string;
+  eyeCheckupStatus?: string;
+  voucherType?: string;
+  consentStatus?: string;
+};
+
 export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   const q = useProjectAction<Beneficiary[]>();
   const { projectUUID, ...restPayload } = payload;
@@ -608,11 +616,18 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   };
 };
 
-export const useListConsentConsumer = (projectUUID: UUID) => {
+export const useListConsentConsumer = (payload: GetConsumerData) => {
   const q = useProjectAction<Beneficiary[]>();
   const LIST_CONSENT = 'beneficiary.list_full_data_by_project';
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const queryKey = useMemo(
+    () => [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, restPayloadString],
+    [restPayloadString],
+  );
   const query = useQuery({
-    queryKey: [LIST_CONSENT],
+    queryKey: [LIST_CONSENT, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -621,7 +636,7 @@ export const useListConsentConsumer = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: LIST_CONSENT,
-          payload: {},
+          payload: restPayload,
         },
       });
       return mutate;
@@ -636,8 +651,7 @@ export const useListConsentConsumer = (projectUUID: UUID) => {
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
               walletAddress: row?.walletAddress?.toString(),
-              name: row?.piiData?.name || '',
-              email: row?.piiData?.email || '',
+              vendorName: row?.extras?.vendorName || '',
               gender: row?.projectData?.gender?.toString() || '',
               phone: row?.piiData?.phone || 'N/A',
               glassPurchaseType: row?.voucherType,

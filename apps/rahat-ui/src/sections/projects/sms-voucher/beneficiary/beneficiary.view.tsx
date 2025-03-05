@@ -70,7 +70,10 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...filters,
   });
-  const { data: consumerData } = useListConsentConsumer(id);
+  const { data: consumerData } = useListConsentConsumer({
+    projectUUID: id,
+    ...filters,
+  });
 
   const meta = beneficiaries?.response?.meta;
 
@@ -116,7 +119,7 @@ export default function BeneficiaryView() {
   };
 
   const handleDownload = () => {
-    generateExcel(consumerData.data, 'Consumer', 9);
+    generateExcel(consumerData.data, 'Consumer', 8);
   };
 
   const generateExcel = (data: any, title: string, numberOfColumns: number) => {
@@ -124,7 +127,7 @@ export default function BeneficiaryView() {
 
     const ws = XLSX.utils.json_to_sheet(data);
 
-    const columnWidths = 20;
+    const columnWidths = 25;
     ws['!cols'] = Array(numberOfColumns).fill({ wch: columnWidths });
 
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');

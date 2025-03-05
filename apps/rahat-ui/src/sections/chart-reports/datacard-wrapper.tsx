@@ -10,7 +10,6 @@ import {
 } from 'next/navigation';
 import { UUID } from 'crypto';
 import { usePagination } from '@rahat-ui/query';
-
 type DataCardData = {
   component: any;
   source: any;
@@ -21,12 +20,12 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
   const pathName = usePathname();
-  const { pagination, filters } = usePagination();
+  const { pagination, filters, setFilters } = usePagination();
   const slug = pathName.split('/')[2];
   const projectSlug = 'el-cambodia';
-  if (projectSlug === slug) filters.type = 'Lead';
-  const encodedFilters = encodeURIComponent(JSON.stringify(filters));
-  const encodedPagination = encodeURIComponent(JSON.stringify(pagination));
+  // if (projectSlug === slug) filters.type = 'Lead';
+  // const encodedFilters = encodeURIComponent(JSON.stringify(filters));
+  // const encodedPagination = encodeURIComponent(JSON.stringify(pagination));
   // Split the dataMap to extract the name and the path within the object
   const [name, ...pathParts] = component.dataMap.split('.');
   const path = pathParts.join('.');
@@ -51,12 +50,15 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
 
     const handleClick = () => {
       if (component?.title === 'Total Villagers Referred') {
-        // e.preventDefault();
-
-        const targetUrl = `/projects/${projectSlug}/${id}/beneficiary#pagination=${encodedPagination}&filters=${encodedFilters}`;
+        setFilters({});
+        const targetUrl = `/projects/${projectSlug}/${id}/beneficiary`;
+        setFilters({
+          type: 'Lead',
+        });
         router.push(targetUrl);
       }
     };
+
     return (
       <div onClick={handleClick} className="hover:cursor-pointer">
         <DataCard

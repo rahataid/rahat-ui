@@ -13,8 +13,8 @@ import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
 import { CloudUpload, Download, UserRoundX } from 'lucide-react';
 import Link from 'next/link';
-import { useParams, useSearchParams } from 'next/navigation';
-import React from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import SearchInput from '../../components/search.input';
 import SelectComponent from '../select.component';
@@ -25,7 +25,7 @@ export default function BeneficiaryView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-
+  const router = useRouter();
   const {
     pagination,
     filters,
@@ -36,6 +36,7 @@ export default function BeneficiaryView() {
     selectedListItems,
     setSelectedListItems,
     resetSelectedListItems,
+    resetFilters,
   } = usePagination();
   const debouncedSearch = useDebounce(filters, 500);
 
@@ -64,6 +65,12 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...(debouncedSearch as any),
   });
+
+  useEffect(() => {
+    return () => {
+      router.refresh();
+    };
+  }, []);
 
   const handleFilterChange = (event: any) => {
     if (event && event.target) {

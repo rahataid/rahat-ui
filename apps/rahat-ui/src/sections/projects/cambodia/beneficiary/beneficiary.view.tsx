@@ -70,7 +70,7 @@ export default function BeneficiaryView() {
     return () => {
       router.refresh();
     };
-  }, []);
+  }, [router]);
 
   const handleFilterChange = (event: any) => {
     if (event && event.target) {

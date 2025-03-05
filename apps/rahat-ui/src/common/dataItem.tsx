@@ -1,5 +1,5 @@
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import React from 'react';
-import { Badge } from '../../../libs/shadcn/src/components/ui/badge';
 
 interface DataItemProps {
   label: string;
@@ -8,7 +8,7 @@ interface DataItemProps {
   badgeVariant?: 'secondary' | 'outline' | 'destructive';
 }
 
-const DataItem = ({
+export const DataItem = ({
   label,
   value,
   isBadge = false,
@@ -30,5 +30,3 @@ const DataItem = ({
     </div>
   );
 };
-
-export default DataItem;

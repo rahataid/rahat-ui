@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import HeaderWithBack from '../../../common/header.with.back';
+import { HeaderWithBack } from '../../../../common';
 import BeneficiaryInfo from './beneficiary.info';
 import TransactionLogs from './transaction.log';
 

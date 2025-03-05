@@ -8,6 +8,7 @@ import {
 } from '../../../common';
 import { Coins, User } from 'lucide-react';
 import {
+  ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -15,27 +16,49 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { useProjectBeneficiaryGroupTableColumns } from './columns';
+import { useProjectBeneficiaryGroupDetailsTableColumns } from './columns';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import { useSingleBeneficiaryGroup } from '@rahat-ui/query';
 
 type Props = {};
 
 const BeneficiaryGroupsDetails = (props: Props) => {
+  const params = useParams();
+  const projectId = params.id as UUID;
+  const groupId = params.groupId as UUID;
+  const { data: groupDetails, isLoading } = useSingleBeneficiaryGroup(
+    projectId,
+    groupId,
+  );
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const columns = useProjectBeneficiaryGroupTableColumns();
+
+  const columns = useProjectBeneficiaryGroupDetailsTableColumns();
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+  const tableData = React.useMemo(() => {
+    if (groupDetails) {
+      return groupDetails?.groupedBeneficiaries?.map((d: any) => ({
+        walletAddress: d?.Beneficiary?.walletAddress,
+        name: d?.Beneficiary?.pii?.name,
+      }));
+    } else return [];
+  }, [groupDetails]);
   const table = useReactTable({
     manualPagination: true,
-    data: [],
+    data: tableData ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    // onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => row.uuid,
     state: {
       columnVisibility,
-      // rowSelection: selectedListItems,
+      columnFilters,
     },
   });
 
@@ -46,7 +69,7 @@ const BeneficiaryGroupsDetails = (props: Props) => {
     <div className="p-4 ">
       <div className="flex justify-between items-center">
         <HeaderWithBack
-          title={'Rumsan Beneficiary Group'}
+          title={tableData?.name}
           subtitle="Detailed view of the selected beneficiary group"
           path="/beneficiary"
         />
@@ -71,7 +94,12 @@ const BeneficiaryGroupsDetails = (props: Props) => {
         <SearchInput
           className="w-full"
           name="group"
-          onSearch={(e) => handleSearch(e.target.value)}
+          value={
+            (table.getColumn('walletAddress')?.getFilterValue() as string) ?? ''
+          }
+          onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+            table.getColumn('walletAddress')?.setFilterValue(event.target.value)
+          }
         />
         <DemoTable table={table} tableHeight="h-[calc(100vh-500px)]" />
 

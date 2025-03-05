@@ -2,14 +2,10 @@
 
 import * as React from 'react';
 import { memo, useState } from 'react';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '../../../../../libs/shadcn/src/components/ui/tabs';
 
 import {
+  ColumnFiltersState,
+  SortingState,
   VisibilityState,
   getCoreRowModel,
   getFilteredRowModel,
@@ -18,35 +14,70 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
-import { usePagination } from '../../../../../libs/query/src';
 import BeneficiaryGroups from './BeneficiaryGroups';
 import { useProjectBeneficiaryTableColumns } from './columns';
-import { ClientSidePagination, DemoTable, SearchInput } from '../../../common';
-import { Button } from '../../../../../libs/shadcn/src/components/ui/button';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { CloudDownload } from 'lucide-react';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
+import {
+  ClientSidePagination,
+  DemoTable,
+  SearchInput,
+} from 'apps/rahat-ui/src/common';
+import { UUID } from 'crypto';
 function BeneficiaryView() {
-  const router = useRouter();
-  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
+  const { id } = useParams();
+  const uuid = id as UUID;
+  const {
+    pagination,
+    filters,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    selectedListItems,
+    setSelectedListItems,
+  } = usePagination();
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
   const columns = useProjectBeneficiaryTableColumns();
+  const projectBeneficiaries = useProjectBeneficiaries({
+    page: pagination.page,
+    perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'createdAt',
+    projectUUID: uuid,
+    ...filters,
+  });
 
   const table = useReactTable({
     manualPagination: true,
-    data: [],
+    data: projectBeneficiaries?.data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    // onRowSelectionChange: setSelectedListItems,
+    onRowSelectionChange: setSelectedListItems,
+    onSortingChange: setSorting,
     getRowId: (row) => row.uuid,
     state: {
+      sorting,
+      columnFilters,
       columnVisibility,
-      // rowSelection: selectedListItems,
+      rowSelection: selectedListItems,
     },
   });
 
@@ -111,6 +142,7 @@ function BeneficiaryView() {
         </div>
       </TabsContent>
       <TabsContent value="beneficiaryGroups">
+        {/* TODO : Remaining  for the beneficiary groups query */}
         <div className="px-4">
           <BeneficiaryGroups />
         </div>

@@ -7,7 +7,7 @@ type IProps = {
   subtitle: string;
 };
 
-export default function HeaderWithBack({ title, path, subtitle }: IProps) {
+export function HeaderWithBack({ title, path, subtitle }: IProps) {
   return (
     <div className="mb-3">
       <div className="flex flex-col justify-center ml-1">

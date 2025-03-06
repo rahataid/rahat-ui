@@ -1,5 +1,5 @@
 import React from 'react';
-import Back from './back';
+import { Back } from './back';
 
 type IProps = {
   title: string;

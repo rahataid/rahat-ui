@@ -9,7 +9,7 @@ export const useFundManagementTableColumns = () => {
   const router = useRouter();
 
   const handleViewClick = (fmId: string) => {
-    router.push(`/projects/aa/${id}/vendors/${fmId}`);
+    router.push(`/projects/aa/${id}/fund-management/${fmId}`);
   };
   const columns: ColumnDef<IFundManagement>[] = [
     {

@@ -1,6 +1,9 @@
 import React from 'react';
-import { Back, DataCard, Heading } from 'packages/modules';
 import FundManagementDetailTable from './tables/fm.detail.table';
+import { useParams } from 'next/navigation';
+import { useSingleGroupReservedFunds } from '@rahat-ui/query';
+import { UUID } from 'crypto';
+import { DataCard, HeaderWithBack } from 'apps/rahat-ui/src/common';
 
 export const FMTokensData = [
   {
@@ -22,24 +25,37 @@ export const FMTokensData = [
 ];
 
 export default function FundManagementDetail() {
+  const { id: projectID, fundId } = useParams();
+
+  const { data, isLoading } = useSingleGroupReservedFunds(
+    projectID as UUID,
+    fundId,
+  );
   return (
     <div className="p-4">
-      <Back path="" />
-      <Heading
-        title="Title Demo"
-        description="Detailed view of the reserved fund"
-      />
-      <div className="grid grid-cols-4 gap-4 mb-4">
+      <div className="flex justify-between items-center">
+        <HeaderWithBack
+          path={`/projects/aa/${projectID}/fund-management`}
+          title="Assign Funds"
+          subtitle="Fill the form below to assign funds to beneficiaries"
+        />
+      </div>
+      {/* <div className="grid grid-cols-4 gap-4 mb-4"> */}
+      <div className="flex gap-6 mb-3">
         {FMTokensData?.map((i) => (
           <DataCard
             key={i.name}
-            className="rounded-md"
             title={i.name}
             number={i.amount}
+            className="border-solid w-1/4   rounded-md"
+            iconStyle="bg-white text-secondary-muted"
           />
         ))}
       </div>
-      <FundManagementDetailTable group={[]} />
+      <FundManagementDetailTable
+        group={data?.groupedBeneficiaries}
+        loading={isLoading}
+      />
     </div>
   );
 }

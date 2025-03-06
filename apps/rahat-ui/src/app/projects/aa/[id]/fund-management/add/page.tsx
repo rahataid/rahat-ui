@@ -1,9 +1,9 @@
 'use client';
 
-import AddFundManagementView from 'apps/rahat-ui/src/sections/projects/aa/fund-management/fund.management.add';
+import { AAAssignFundsView } from 'apps/rahat-ui/src/sections/projects/aa-2';
 
 const AddFundManagement = () => {
-  return <AddFundManagementView />;
+  return <AAAssignFundsView />;
 };
 
 export default AddFundManagement;

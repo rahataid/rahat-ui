@@ -27,20 +27,48 @@ import {
   CommandItem,
   CommandList,
 } from 'libs/shadcn/src/components/ui/command';
-
-const benefGroups = [
-  { label: 'Group 1', value: 'group1' },
-  { label: 'Group 2', value: 'group2' },
-] as const;
+import {
+  PROJECT_SETTINGS_KEYS,
+  useBeneficiariesGroupStore,
+  useFundAssignmentStore,
+  useProjectSettingsStore,
+  useReservationStats,
+  useReserveTokenForGroups,
+} from '@rahat-ui/query';
+import { useParams, useRouter } from 'next/navigation';
+import { UUID } from 'crypto';
+import { useReadAaProjectTokenBudget } from 'apps/rahat-ui/src/hooks/aa/contracts/aaProject';
+import { set } from 'lodash';
 
 export default function AssignFundsForm() {
+  const router = useRouter();
+  const params = useParams();
+  const projectId = params.id as UUID;
+  const reserveTokenForGroups = useReserveTokenForGroups();
+  const { data: reservationStats, isLoading: isLoadingReservationStats } =
+    useReservationStats(projectId);
   const FormSchema = z.object({
     title: z.string().min(4, { message: 'Title must be at least 4 character' }),
     beneficiaryGroup: z
       .string()
       .min(1, { message: 'Select a beneficiary group' }),
     tokenAmount: z.string().min(1, { message: 'Enter valid amount' }),
+    totalTokensReserved: z.number(),
   });
+
+  const contractSettings = useProjectSettingsStore(
+    (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
+
+  const { data: projectBudget } = useReadAaProjectTokenBudget({
+    address: contractSettings?.aaproject?.address,
+    args: [contractSettings?.rahattoken?.address],
+  });
+
+  const parsedProjectBudget = Number(projectBudget);
+  const totalReservedTokens =
+    reservationStats?.data?.totalReservedTokens?._sum?.benTokens || 0;
+  const availableBudget = parsedProjectBudget - totalReservedTokens;
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -48,10 +76,48 @@ export default function AssignFundsForm() {
       title: '',
       beneficiaryGroup: '',
       tokenAmount: '',
+      totalTokensReserved: 0,
     },
   });
 
-  const handleAssignFunds = async (data: z.infer<typeof FormSchema>) => {};
+  // const handleAssignFunds = async (data: z.infer<typeof FormSchema>) => {};
+
+  const { beneficiariesGroups, beneficiariesGroupsMeta } =
+    useBeneficiariesGroupStore((state) => ({
+      beneficiariesGroups: state.beneficiariesGroups,
+      beneficiariesGroupsMeta: state.beneficiariesGroupsMeta,
+    }));
+
+  const { setAssignedFundData } = useFundAssignmentStore((state) => ({
+    setAssignedFundData: state.setAssignedFundData,
+  }));
+  const handleAssignFunds = async (data: z.infer<typeof FormSchema>) => {
+    const reserveTokenPayload = {
+      beneficiaryGroupId: data.beneficiaryGroup,
+      numberOfTokens: Number(data.tokenAmount),
+      title: data.title,
+      totalTokensReserved: data.totalTokensReserved,
+    };
+    const fundData = {
+      projectUUID: projectId,
+      reserveTokenPayload,
+    };
+
+    setAssignedFundData(fundData);
+
+    router.push(`/projects/aa/${projectId}/fund-management/confirm`);
+
+    // try {
+    //   await reserveTokenForGroups.mutateAsync({
+    //     projectUUID: projectId,
+    //     reserveTokenPayload,
+    //   });
+    //   router.push(`/projects/aa/${projectId}/fund-management`);
+    // } catch (e) {
+    //   console.error('Creating reserve token::', e);
+    // }
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleAssignFunds)}>
@@ -94,7 +160,7 @@ export default function AssignFundsForm() {
                           )}
                         >
                           {field.value
-                            ? benefGroups.find(
+                            ? beneficiariesGroups.find(
                                 (group) => group.value === field.value,
                               )?.label
                             : 'Select beneficiary group'}
@@ -111,22 +177,22 @@ export default function AssignFundsForm() {
                         <CommandList>
                           <CommandEmpty>No group found.</CommandEmpty>
                           <CommandGroup>
-                            {benefGroups.map((group) => (
+                            {beneficiariesGroups.map((group) => (
                               <CommandItem
-                                value={group.label}
-                                key={group.value}
+                                value={group?.uuid}
+                                key={group?.uuid}
                                 onSelect={() => {
                                   form.setValue(
                                     'beneficiaryGroup',
-                                    group.value,
+                                    group?.uuid,
                                   );
                                 }}
                               >
-                                {group.label}
+                                {group?.name}
                                 <Check
                                   className={cn(
                                     'ml-auto',
-                                    group.value === field.value
+                                    group?.uuid === field.value
                                       ? 'opacity-100'
                                       : 'opacity-0',
                                   )}

@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { use } from 'react';
 import StakeHolderInfo from './staholders.info';
 import { Edit2, Trash2 } from 'lucide-react';
 import {
@@ -11,14 +11,18 @@ import {
   DataCard,
 } from 'apps/rahat-ui/src/common';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 const StakeholdersDetail = () => {
+  const params = useParams();
+  const id = params.id as UUID;
   return (
     <div className="p-4 ">
       <div className="flex justify-between items-center p-4 ">
         <HeaderWithBack
           title={'Stakeholders Details'}
           subtitle="Detailed view of the selected stakeholder"
-          path="/stakeholders"
+          path={`/projects/aa/${id}/stakeholders`}
         />
         <div className=" flex flex-end justify-end gap-3 mt-auto">
           <Button

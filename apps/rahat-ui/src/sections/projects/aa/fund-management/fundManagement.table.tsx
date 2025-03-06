@@ -57,7 +57,7 @@ export function FundManagementTable({ table }: IProps) {
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                No results.
+                No Fund Reserved
               </TableCell>
             </TableRow>
           )}

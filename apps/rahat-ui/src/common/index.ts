@@ -14,3 +14,4 @@ export * from './header.with.back';
 export * from './dataItem';
 export * from './noResults';
 export * from './spinner.loader';
+export * from './back';

@@ -1,13 +1,11 @@
-import React from 'react';
 import {
+  Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-  Tabs,
 } from 'libs/shadcn/src/components/ui/tabs';
-import TokensOverview from './token.overview';
 import FundManagementList from '../tables/fm.table';
-import { fundManagements } from '../static';
+import TokensOverview from './token.overview';
 
 export default function FundManagementTabs() {
   return (
@@ -31,7 +29,7 @@ export default function FundManagementTabs() {
           <TokensOverview />
         </TabsContent>
         <TabsContent value="fundManagementList">
-          <FundManagementList fmList={fundManagements} />
+          <FundManagementList />
         </TabsContent>
       </Tabs>
     </div>

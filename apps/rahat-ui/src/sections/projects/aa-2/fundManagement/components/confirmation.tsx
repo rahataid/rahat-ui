@@ -1,10 +1,23 @@
 import React from 'react';
-import { Back, Heading } from 'packages/modules';
+// import { Back, Heading } from 'packages/modules';
 import { Button } from 'libs/shadcn/src/components/ui/button';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { UserRound } from 'lucide-react';
+import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import {
+  useFundAssignmentStore,
+  useReserveTokenForGroups,
+} from '@rahat-ui/query';
+import { useRouter } from 'next/navigation';
 
 export default function Confirmation() {
+  const router = useRouter();
+  const { assignedFundData } = useFundAssignmentStore((state) => ({
+    assignedFundData: state.assignedFundData,
+  }));
+
+  const { projectUUID, reserveTokenPayload } = assignedFundData;
+  const reserveTokenForGroups = useReserveTokenForGroups();
   const cardData = [
     { label: 'Title', value: 'Demo Title Name' },
     { label: 'Beneficiary Group Name', value: 'Demo Group Name' },
@@ -25,12 +38,24 @@ export default function Confirmation() {
     { label: 'John Doe', value: '+1000' },
     { label: 'John Doe', value: '+1000' },
   ];
+
+  const handleSubmit = async () => {
+    try {
+      await reserveTokenForGroups.mutateAsync({
+        projectUUID,
+        reserveTokenPayload,
+      });
+      router.push(`/projects/aa/${projectUUID}/fund-management`);
+    } catch (e) {
+      console.error('Creating reserve token::', e);
+    }
+  };
   return (
     <div className="p-4">
-      <Back path="" />
-      <Heading
+      <HeaderWithBack
+        path={``}
         title="Confirmation"
-        description="Check the details below and confirm to proceed"
+        subtitle="Check the details below and confirm to proceed"
       />
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="p-4 rounded-md bg-gray-50">
@@ -65,10 +90,16 @@ export default function Confirmation() {
       </div>
       <div className="flex justify-end items-center">
         <div className="flex space-x-2">
-          <Button type="button" variant="secondary">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => router.back()}
+          >
             Cancel
           </Button>
-          <Button className="px-10">Confirm</Button>
+          <Button className="px-10" onClick={handleSubmit}>
+            Confirm
+          </Button>
         </div>
       </div>
     </div>

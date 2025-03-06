@@ -1,6 +1,13 @@
+'use client';
 import React from 'react';
-import { Back, DataCard, Heading } from 'packages/modules';
 import { AssignFundsForm } from './components';
+import {
+  Back,
+  DataCard,
+  HeaderWithBack,
+  Heading,
+} from 'apps/rahat-ui/src/common';
+import { useParams } from 'next/navigation';
 
 const data = [
   {
@@ -17,12 +24,13 @@ const data = [
   },
 ];
 export default function AssignFundsView() {
+  const { id } = useParams();
   return (
     <div className="p-4">
-      <Back path="" />
-      <Heading
+      <HeaderWithBack
+        path={`/projects/aa/${id}/fund-management`}
         title="Assign Funds"
-        description="Fill the form below to assign funds to beneficiaries"
+        subtitle="Fill the form below to assign funds to beneficiaries"
       />
       <div className="grid grid-cols-4 gap-4 mb-4">
         {data?.map((i) => (

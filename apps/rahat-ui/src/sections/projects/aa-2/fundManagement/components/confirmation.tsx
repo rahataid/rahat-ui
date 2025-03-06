@@ -1,5 +1,4 @@
 import React from 'react';
-// import { Back, Heading } from 'packages/modules';
 import { Button } from 'libs/shadcn/src/components/ui/button';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { UserRound } from 'lucide-react';

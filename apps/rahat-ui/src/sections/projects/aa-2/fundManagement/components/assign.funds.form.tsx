@@ -1,24 +1,15 @@
-import React from 'react';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from 'libs/shadcn/src/components/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { Input } from 'libs/shadcn/src/components/ui/input';
-import { Button } from 'libs/shadcn/src/components/ui/button';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from 'libs/shadcn/src/components/ui/popover';
+  PROJECT_SETTINGS_KEYS,
+  useBeneficiariesGroupStore,
+  useFundAssignmentStore,
+  useProjectSettingsStore,
+  useReservationStats,
+} from '@rahat-ui/query';
+import { useReadAaProjectTokenBudget } from 'apps/rahat-ui/src/hooks/aa/contracts/aaProject';
+import { UUID } from 'crypto';
 import { cn } from 'libs/shadcn/src';
-import { Check, ChevronDown } from 'lucide-react';
+import { Button } from 'libs/shadcn/src/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -28,23 +19,28 @@ import {
   CommandList,
 } from 'libs/shadcn/src/components/ui/command';
 import {
-  PROJECT_SETTINGS_KEYS,
-  useBeneficiariesGroupStore,
-  useFundAssignmentStore,
-  useProjectSettingsStore,
-  useReservationStats,
-  useReserveTokenForGroups,
-} from '@rahat-ui/query';
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from 'libs/shadcn/src/components/ui/form';
+import { Input } from 'libs/shadcn/src/components/ui/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from 'libs/shadcn/src/components/ui/popover';
+import { Check, ChevronDown } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { UUID } from 'crypto';
-import { useReadAaProjectTokenBudget } from 'apps/rahat-ui/src/hooks/aa/contracts/aaProject';
-import { set } from 'lodash';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 export default function AssignFundsForm() {
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
-  const reserveTokenForGroups = useReserveTokenForGroups();
   const { data: reservationStats, isLoading: isLoadingReservationStats } =
     useReservationStats(projectId);
   const FormSchema = z.object({
@@ -80,8 +76,6 @@ export default function AssignFundsForm() {
     },
   });
 
-  // const handleAssignFunds = async (data: z.infer<typeof FormSchema>) => {};
-
   const { beneficiariesGroups, beneficiariesGroupsMeta } =
     useBeneficiariesGroupStore((state) => ({
       beneficiariesGroups: state.beneficiariesGroups,
@@ -106,16 +100,6 @@ export default function AssignFundsForm() {
     setAssignedFundData(fundData);
 
     router.push(`/projects/aa/${projectId}/fund-management/confirm`);
-
-    // try {
-    //   await reserveTokenForGroups.mutateAsync({
-    //     projectUUID: projectId,
-    //     reserveTokenPayload,
-    //   });
-    //   router.push(`/projects/aa/${projectId}/fund-management`);
-    // } catch (e) {
-    //   console.error('Creating reserve token::', e);
-    // }
   };
 
   return (

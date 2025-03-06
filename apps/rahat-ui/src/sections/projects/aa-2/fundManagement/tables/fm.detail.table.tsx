@@ -34,7 +34,6 @@ export default function FundManagementDetailTable({ group, loading }: IProps) {
       columnVisibility,
     },
   });
-  console.log(group);
   return (
     <div className="border rounded-sm p-4">
       <Heading

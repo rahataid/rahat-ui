@@ -61,14 +61,6 @@ const UpdateOrAddStakeholdersGroup = () => {
     stakeholdersMeta: state.stakeholdersMeta,
   }));
 
-  // const preSelected =
-  //   (isEditing &&
-  //     stakeholdersGroupDetail?.stakeholders?.reduce((acc, stakeholder) => {
-  //       acc[stakeholder.uuid] = true;
-  //       return acc;
-  //     }, {})) ||
-  //   {};
-
   useEffect(() => {
     if (isEditing && stakeholdersGroupDetail) {
       const preSelected = stakeholdersGroupDetail?.stakeholders?.reduce(

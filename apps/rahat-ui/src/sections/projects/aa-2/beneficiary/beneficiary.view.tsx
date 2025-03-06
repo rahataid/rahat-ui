@@ -14,26 +14,23 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
-import BeneficiaryGroups from './BeneficiaryGroups';
-import { useProjectBeneficiaryTableColumns } from './columns';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { CloudDownload } from 'lucide-react';
+import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
-  ClientSidePagination,
   CustomPagination,
   DemoTable,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
+import BeneficiaryGroups from './BeneficiaryGroups';
+import { useProjectBeneficiaryTableColumns } from './columns';
 function BeneficiaryView() {
   const { id } = useParams();
   const uuid = id as UUID;

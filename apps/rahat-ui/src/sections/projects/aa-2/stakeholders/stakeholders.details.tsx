@@ -1,18 +1,10 @@
 'use client';
-import React, { use } from 'react';
-import StakeHolderInfo from './staholders.info';
-import { Edit2, Trash2 } from 'lucide-react';
-import {
-  AddButton,
-  ClientSidePagination,
-  DemoTable,
-  SearchInput,
-  HeaderWithBack,
-  DataCard,
-} from 'apps/rahat-ui/src/common';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useParams } from 'next/navigation';
+import { HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
+import { Edit2, Trash2 } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import StakeHolderInfo from './staholders.info';
 const StakeholdersDetail = () => {
   const params = useParams();
   const id = params.id as UUID;

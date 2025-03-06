@@ -1,13 +1,7 @@
 'use client';
-import React from 'react';
-import { AssignFundsForm } from './components';
-import {
-  Back,
-  DataCard,
-  HeaderWithBack,
-  Heading,
-} from 'apps/rahat-ui/src/common';
+import { DataCard, HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { useParams } from 'next/navigation';
+import { AssignFundsForm } from './components';
 
 const data = [
   {

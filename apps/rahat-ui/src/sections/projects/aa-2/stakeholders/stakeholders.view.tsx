@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import { memo, useState } from 'react';
 
 import {
@@ -16,14 +15,17 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 import { useProjectStakeholdersTableColumns } from './columns';
 
-import { CloudDownload } from 'lucide-react';
+import {
+  usePagination,
+  useStakeholders,
+  useStakeholdersStore,
+} from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   AddButton,
   ClientSidePagination,
@@ -31,14 +33,9 @@ import {
   IconLabelBtn,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
-import {
-  usePagination,
-  useStakeholders,
-  useStakeholdersStore,
-} from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { CloudDownload } from 'lucide-react';
 import StakeGoldersGroups from './StakeholderGroups';
-import Link from 'next/link';
 
 function StakeholdersView() {
   const router = useRouter();

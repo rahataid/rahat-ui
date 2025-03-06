@@ -29,7 +29,6 @@ const BeneficiaryGroupsDetails = (props: Props) => {
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
-  console.log(groupId);
   const { data: groupDetails, isLoading } = useSingleBeneficiaryGroup(
     projectId,
     groupId,
@@ -64,8 +63,7 @@ const BeneficiaryGroupsDetails = (props: Props) => {
       columnFilters,
     },
   });
-  console.log('datasgrp', groupDetails);
-  console.log('tablegrp', tableData);
+
   const handleSearch = (e) => {
     console.log(e.target.value);
   };

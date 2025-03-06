@@ -1,6 +1,6 @@
+import { mapStatus } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
-import { mapStatus } from '../../const';
 
 export const useElkenyaVendorsBeneficiaryTableColumns = () => {
   const columns: ColumnDef<any>[] = [

@@ -5,9 +5,7 @@ import { Copy, CopyCheck, Store, User, Users } from 'lucide-react';
 import HeaderWithBack from '../../components/header.with.back';
 import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import EditButton from '../../../../components/edit.btn';
-import DeleteButton from '../../../../components/delete.btn';
-import { mapStatus } from '../const';
+import { mapStatus } from '@rahat-ui/query';
 
 export default function BeneficiaryDetail() {
   const { id, benId } = useParams() as { id: UUID; benId: UUID };

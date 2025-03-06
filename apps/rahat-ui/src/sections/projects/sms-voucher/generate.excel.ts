@@ -1,4 +1,5 @@
 import * as XLSX from 'xlsx';
+import { mapTopic } from './const';
 
 export const generateExcel = (data: any, title: string, uiConfig: any) => {
   // Extract all dataMap values from the UI configuration
@@ -18,11 +19,13 @@ export const generateExcel = (data: any, title: string, uiConfig: any) => {
   const processedData: any = [];
 
   filteredData.forEach((item: any) => {
+    console.log(item.data);
+
     if (Array.isArray(item.data)) {
       item.data.forEach((entry: any) => {
         processedData.push({
-          Category: item.name?.split('_ID')[0],
-          ID: entry.id || 'N/A',
+          Category: mapTopic(item.name?.split('_ID')[0]),
+          ID: mapTopic(entry.id) || 'N/A',
           Count: entry.count || 0,
         });
       });

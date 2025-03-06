@@ -20,6 +20,7 @@ import { MS_CAM_ACTIONS, PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
 import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
+import { mapStatus } from '../el-kenya';
 
 interface ExtendedProject extends Project {
   projectClosed: boolean;
@@ -654,9 +655,9 @@ export const useListConsentConsumer = (payload: GetConsumerData) => {
               vendorName: row?.extras?.vendorName || '',
               gender: row?.projectData?.gender?.toString() || '',
               phone: row?.piiData?.phone || 'N/A',
-              glassPurchaseType: row?.voucherType,
-              voucherUsage: row?.eyeCheckupStatus,
-              voucherStatus: row?.voucherStatus,
+              glassPurchaseType: mapStatus(row?.voucherType),
+              voucherUsage: mapStatus(row?.eyeCheckupStatus),
+              voucherStatus: mapStatus(row?.voucherStatus),
               consent: row?.extras?.consent,
             }))
           : [],

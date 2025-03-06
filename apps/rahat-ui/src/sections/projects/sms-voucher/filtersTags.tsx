@@ -6,7 +6,7 @@ import {
   ScrollArea,
   ScrollBar,
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { mapStatus } from './const';
+import { mapStatus } from '@rahat-ui/query';
 
 const SmsVoucherFiltersTags = ({
   filters,

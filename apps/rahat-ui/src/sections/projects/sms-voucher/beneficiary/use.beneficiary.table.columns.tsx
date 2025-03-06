@@ -1,8 +1,8 @@
+import { mapStatus } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { mapStatus } from '../const';
 
 interface BeneficiaryTableProps {
   handleViewClick: any;

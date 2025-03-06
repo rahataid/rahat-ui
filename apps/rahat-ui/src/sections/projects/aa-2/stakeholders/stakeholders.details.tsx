@@ -1,10 +1,16 @@
 'use client';
 import React from 'react';
-import HeaderWithBack from '../../../common/header.with.back';
 import StakeHolderInfo from './staholders.info';
-import { Button } from '../../../../../libs/shadcn/src/components/ui/button';
 import { Edit2, Trash2 } from 'lucide-react';
-
+import {
+  AddButton,
+  ClientSidePagination,
+  DemoTable,
+  SearchInput,
+  HeaderWithBack,
+  DataCard,
+} from 'apps/rahat-ui/src/common';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 const StakeholdersDetail = () => {
   return (
     <div className="p-4 ">

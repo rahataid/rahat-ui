@@ -1,9 +1,13 @@
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {
+  AddButton,
+  CustomPagination,
+  NoResult,
+  SearchInput,
+} from 'apps/rahat-ui/src/common';
 import { usePagination } from 'libs/query/src';
 import { Users } from 'lucide-react';
 import React from 'react';
-import { ScrollArea } from '../../../../../libs/shadcn/src/components/ui/scroll-area';
-import { AddButton, CustomPagination, SearchInput } from '../../../common';
-import NoResult from '../../../common/noResults';
 
 const filteredGroups = [
   {

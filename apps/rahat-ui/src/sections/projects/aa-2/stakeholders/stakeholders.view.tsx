@@ -2,12 +2,6 @@
 
 import * as React from 'react';
 import { memo, useState } from 'react';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '../../../../../libs/shadcn/src/components/ui/tabs';
 
 import {
   VisibilityState,
@@ -22,15 +16,23 @@ import { useRouter } from 'next/navigation';
 
 import BeneficiaryGroups from './StakeholderGroups';
 import { useProjectStakeholdersTableColumns } from './columns';
+
+import { CloudDownload } from 'lucide-react';
 import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  AddButton,
   ClientSidePagination,
   DemoTable,
   SearchInput,
-  AddButton,
-} from '../../../common';
-import { CloudDownload } from 'lucide-react';
-import { usePagination } from '../../../../../libs/query/src';
-import { Button } from '../../../../../libs/shadcn/src/components/ui/button';
+} from 'apps/rahat-ui/src/common';
+import { usePagination } from '@rahat-ui/query';
+
 function StakeholdersView() {
   const router = useRouter();
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();

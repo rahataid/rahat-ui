@@ -1,11 +1,6 @@
+'use client';
 import React, { useState } from 'react';
-import HeaderWithBack from '../../../common/header.with.back';
-import {
-  ClientSidePagination,
-  DataCard,
-  DemoTable,
-  SearchInput,
-} from '../../../common';
+
 import { Coins, User } from 'lucide-react';
 import {
   ColumnFiltersState,
@@ -20,6 +15,13 @@ import { useProjectBeneficiaryGroupDetailsTableColumns } from './columns';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useSingleBeneficiaryGroup } from '@rahat-ui/query';
+import {
+  ClientSidePagination,
+  DataCard,
+  DemoTable,
+  HeaderWithBack,
+  SearchInput,
+} from 'apps/rahat-ui/src/common';
 
 type Props = {};
 
@@ -27,6 +29,7 @@ const BeneficiaryGroupsDetails = (props: Props) => {
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
+  console.log(groupId);
   const { data: groupDetails, isLoading } = useSingleBeneficiaryGroup(
     projectId,
     groupId,
@@ -61,7 +64,8 @@ const BeneficiaryGroupsDetails = (props: Props) => {
       columnFilters,
     },
   });
-
+  console.log('datasgrp', groupDetails);
+  console.log('tablegrp', tableData);
   const handleSearch = (e) => {
     console.log(e.target.value);
   };
@@ -69,9 +73,9 @@ const BeneficiaryGroupsDetails = (props: Props) => {
     <div className="p-4 ">
       <div className="flex justify-between items-center">
         <HeaderWithBack
-          title={tableData?.name}
+          title={groupDetails?.name}
           subtitle="Detailed view of the selected beneficiary group"
-          path="/beneficiary"
+          path={`/projects/aa/${projectId}/beneficiary`}
         />
       </div>
       <div className="flex gap-6 mb-5">

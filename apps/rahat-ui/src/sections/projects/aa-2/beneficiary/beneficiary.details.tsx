@@ -1,17 +1,19 @@
 'use client';
 import React from 'react';
-import { HeaderWithBack } from '../../../../common';
 import BeneficiaryInfo from './beneficiary.info';
 import TransactionLogs from './transaction.log';
+import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import { useParams } from 'next/navigation';
 
 const BeneficiaryDetail = () => {
+  const { id } = useParams();
   return (
     <div className="p-4 ">
       <div className="flex justify-between items-center">
         <HeaderWithBack
           title={'Beneficiary Details'}
           subtitle="Detailed view of the selected beneficiary"
-          path="/beneficiary"
+          path={`/projects/aa/${id}/beneficiary`}
         />
       </div>
 

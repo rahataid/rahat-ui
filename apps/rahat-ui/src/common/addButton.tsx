@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '../../../libs/shadcn/src/components/ui/button';
 import { Plus } from 'lucide-react';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 type IProps = {
   path: string;

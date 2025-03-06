@@ -1,5 +1,8 @@
 import React from 'react';
 import { Table, flexRender } from '@tanstack/react-table';
+import { TableLoader } from './table.loader';
+import { NoResult } from './noResults';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Table as TableComponent,
   TableBody,
@@ -7,10 +10,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from 'libs/shadcn/src/components/ui/table';
-import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
-import { TableLoader } from './table.loader';
-import NoResult from './noResults';
+} from '@rahat-ui/shadcn/src/components/ui/table';
 
 type IProps = {
   table: Table<any>;

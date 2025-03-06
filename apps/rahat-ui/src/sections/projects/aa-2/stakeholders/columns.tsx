@@ -1,5 +1,5 @@
 'use client';
-import { Checkbox } from '../../../../../libs/shadcn/src/components/ui/checkbox';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { Edit2, Eye, Trash2 } from 'lucide-react';
 import * as React from 'react';

@@ -13,8 +13,7 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { Users } from 'lucide-react';
-import { useParams, useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/router';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 const BeneficiaryGroups = () => {
   const { id } = useParams();

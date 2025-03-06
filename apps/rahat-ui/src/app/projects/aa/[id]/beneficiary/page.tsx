@@ -1,5 +1,4 @@
-// import { BeneficiaryView } from '../../../../../sections/projects/aa2';
-
+'use client';
 import { AABeneficiaryView } from 'apps/rahat-ui/src/sections/projects/aa-2';
 
 const Page = () => {

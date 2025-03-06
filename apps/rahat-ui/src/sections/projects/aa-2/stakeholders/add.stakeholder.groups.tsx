@@ -1,15 +1,15 @@
 'use client';
 import React, { useState } from 'react';
-import { Input } from '../../../../../libs/shadcn/src/components/ui/input';
-import { Label } from '../../../../../libs/shadcn/src/components/ui/label';
-import {
-  AddButton,
-  CustomPagination,
-  DemoTable,
-  Heading,
-  SearchInput,
-} from '../../../common';
-import HeaderWithBack from '../../../common/header.with.back';
+// import { Input } from '../../../../../libs/shadcn/src/components/ui/input';
+// import { Label } from '../../../../../libs/shadcn/src/components/ui/label';
+// import {
+//   AddButton,
+//   CustomPagination,
+//   DemoTable,
+//   Heading,
+//   SearchInput,
+// } from '../../../common';
+// import HeaderWithBack from '../../../common/header.with.back';
 
 import {
   getCoreRowModel,
@@ -21,8 +21,19 @@ import {
 } from '@tanstack/react-table';
 import { useProjectSelectStakeholdersTableColumns } from './columns';
 import { usePagination } from 'libs/query/src';
-import { Button } from '../../../../../libs/shadcn/src/components/ui/button';
-import { mockData } from '../../../common/data/data';
+import { mockData } from 'apps/rahat-ui/src/common/data/data';
+import {
+  CustomPagination,
+  DemoTable,
+  HeaderWithBack,
+  Heading,
+  SearchInput,
+} from 'apps/rahat-ui/src/common';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+// import { Button } from '../../../../../libs/shadcn/src/components/ui/button';
+// import { mockData } from '../../../common/data/data';
 const AddStakeholdersGroup = () => {
   const [stakeholdersGroupName, setStakeholdersGroupName] = useState('');
   const {
@@ -90,7 +101,7 @@ const AddStakeholdersGroup = () => {
           <Heading
             title=" Select Stakeholders"
             description="Select stakeholders from the list below to create group"
-            titleSize="2xl"
+            titleStyle="2xl"
           />
         </div>
 

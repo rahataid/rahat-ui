@@ -1,7 +1,6 @@
+'use client';
 import React from 'react';
 
-// import { ScrollArea } from '../../../../../libs/shadcn/src/components/ui/scroll-area';
-// import useCopy from '../../../hooks/useCopy';
 import { ArrowRightLeft, Copy, CopyCheck } from 'lucide-react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';

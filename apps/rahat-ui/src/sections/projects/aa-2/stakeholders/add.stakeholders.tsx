@@ -1,23 +1,21 @@
 import React from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '../../../../../libs/shadcn/src/components/ui/button';
+import { isValidPhoneNumber } from 'react-phone-number-input';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { UUID } from 'crypto';
+import { HeaderWithBack } from 'apps/rahat-ui/src/common';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '../../../../../libs/shadcn/src/components/ui/form';
-import { Input } from '../../../../../libs/shadcn/src/components/ui/input';
-
-import { isValidPhoneNumber } from 'react-phone-number-input';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { UUID } from 'crypto';
-import { PhoneInput } from '../../../../../libs/shadcn/src/components/ui/phone-input';
-import HeaderWithBack from '../../../common/header.with.back';
-import { Label } from '../../../../../libs/shadcn/src/components/ui/label';
+} from '@rahat-ui/shadcn/src/components/ui/form';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import {
   Select,
   SelectContent,
@@ -25,9 +23,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../../../../libs/shadcn/src/components/ui/select';
-import { DISTRICTS_OF_NEPAL } from '../../../common/data/district';
-import { MUNICIPALITIES_OF_NEPAL } from '../../../common/data/municipality';
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import { DISTRICTS_OF_NEPAL } from 'apps/rahat-ui/src/common/data/district';
+import { MUNICIPALITIES_OF_NEPAL } from 'apps/rahat-ui/src/common/data/municipality';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 export default function AddStakeholders() {
   const { id } = useParams();

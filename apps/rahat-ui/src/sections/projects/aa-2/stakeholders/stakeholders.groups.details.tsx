@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import HeaderWithBack from '../../../common/header.with.back';
+
 import {
   AddButton,
   ClientSidePagination,
-  DataCard,
   DemoTable,
   SearchInput,
-} from '../../../common';
+  HeaderWithBack,
+  DataCard,
+} from 'apps/rahat-ui/src/common';
 import { User } from 'lucide-react';
 import {
   getCoreRowModel,

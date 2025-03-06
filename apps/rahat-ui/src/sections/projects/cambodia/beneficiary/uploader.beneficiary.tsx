@@ -19,24 +19,54 @@ import {
   ScrollBar,
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { ArrowDownToLine, Share } from 'lucide-react';
+import { ArrowDownToLine, Share, X } from 'lucide-react';
 import {
   useUploadBeneficiaryBulkQueue,
   useValidateHealthWorker,
 } from '@rahat-ui/query';
 import { toast } from 'react-toastify';
 import HeaderWithBack from '../../components/header.with.back';
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@radix-ui/react-tooltip';
+import { TooltipContent } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 const DOWNLOAD_FILE_URL = '/files/cambodia-file.xlsx';
+const expectedHeaders = [
+  'Beneficiary Name',
+  'Gender',
+  'Age',
+  'Occupation',
+  'Province',
+  'District',
+  'Commune',
+  'Village',
+  'Beneficiary Phone Number',
+  'Health Worker Username',
+  'Vision Center Name',
+  'Reason For Lead',
+  'Internet Status*',
+  'Bank Status*',
+  'Phone Status*',
+  'Type',
+];
 export default function ExcelUploader() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
   const [data, setData] = useState<any[][]>([]);
-  const [fileName, setFileName] = useState<string>('No File Choosen');
+  const [fileName, setFileName] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadBeneficiary = useUploadBeneficiaryBulkQueue();
   const validateHealthWorker = useValidateHealthWorker();
+  const allowedExtensions: { [key: string]: string } = {
+    xlsx: 'excel',
+    xls: 'excel',
+    json: 'json',
+    csv: 'csv',
+  };
   const handleDownloadClick = () => {
     fetch(DOWNLOAD_FILE_URL)
       .then((response) => response.blob())
@@ -55,6 +85,11 @@ export default function ExcelUploader() {
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    const extension = file?.name.split('.').pop()?.toLowerCase() as string;
+    if (!allowedExtensions[extension]) {
+      toast.error('Invalid file format. Please upload a CSV file.');
+      setFileName('');
+    }
 
     setFileName(file?.name as string);
     if (file) {
@@ -70,6 +105,26 @@ export default function ExcelUploader() {
             (cell) => cell !== null && cell !== undefined && cell !== '',
           ),
         );
+        if (filteredData.length === 0) {
+          toast.error('Empty excel file');
+          setFileName('');
+          return;
+        }
+        const headersInFile = filteredData[0];
+        const isValidHeaders = expectedHeaders.every(
+          (header, index) =>
+            header.trim().toLowerCase() ===
+            headersInFile[index]?.trim().toLowerCase(),
+        );
+
+        if (!isValidHeaders) {
+          toast.error(
+            'Header not matched! For correct format please download the sample file below.',
+          );
+          setFileName('');
+          return;
+        }
+
         if (filteredData.length > 100)
           return toast.error(
             'Maximum 100 beneficiaries can be uploaded at a time',
@@ -83,12 +138,6 @@ export default function ExcelUploader() {
       reader.readAsBinaryString(file);
       setSelectedFile(file);
     }
-  };
-  const allowedExtensions: { [key: string]: string } = {
-    xlsx: 'excel',
-    xls: 'excel',
-    json: 'json',
-    csv: 'csv',
   };
 
   const handleUpload = async () => {
@@ -125,9 +174,14 @@ export default function ExcelUploader() {
     const healthWorkerUsername = row[healthWorkerUsernameIndex];
     const invalidUsernames =
       validateHealthWorker?.data?.data?.map((b) => b.koboUsername) || [];
-    console.log(invalidUsernames);
     return !invalidUsernames.includes(healthWorkerUsername);
   });
+
+  const handleClearFile = () => {
+    setFileName('');
+    setData([]);
+    if (inputRef.current) inputRef.current.value = '';
+  };
 
   return (
     <>
@@ -141,7 +195,7 @@ export default function ExcelUploader() {
         </div>
 
         <div className="rounded-lg p-4 border bg-card">
-          <div className="flex justify-between space-x-2 mb-2">
+          <div className="flex justify-between items-center space-x-2 mb-2">
             <div className="relative w-full">
               <Input
                 type="file"
@@ -158,9 +212,31 @@ export default function ExcelUploader() {
                   <Share size={22} className="px-1" />
                   Choose File
                 </span>
-                <span className="px-4 py-2 flex-grow truncate">{fileName}</span>
+                <span className="px-4 py-2 flex-grow truncate">
+                  {fileName ? fileName : 'No File Choosen'}
+                </span>
               </div>
             </div>
+            {fileName && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      onClick={handleClearFile}
+                      className="w-8 h-8 flex items-center justify-center rounded-full bg-muted-foreground text-white hover:bg-primary"
+                      variant="outline"
+                      size="icon"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Clear File</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
         </div>
 
@@ -175,7 +251,7 @@ export default function ExcelUploader() {
             <div className="border-2 border-dashed border-black mt-6 mx-auto sm:w-[1500px] w-[1600px]">
               <ScrollArea className="h-[calc(100vh-450px)] ">
                 <Table className=" table-auto">
-                  <TableHeader>
+                  <TableHeader className="sticky top-0 bg-card">
                     <TableRow>
                       {data[0].map((header, index) => (
                         <TableHead

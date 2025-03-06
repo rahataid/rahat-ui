@@ -99,7 +99,7 @@ export default function ImportStakeholder() {
           <HeaderWithBack
             title="Import Stakeholders"
             subtitle="List of all stakeholders you can import"
-            path="/stakeholders"
+            path={`/projects/aa/${id}/stakeholders`}
           />
         </div>
 

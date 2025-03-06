@@ -4,11 +4,17 @@ import {
   CustomPagination,
   NoResult,
   SearchInput,
+  SpinnerLoader,
 } from 'apps/rahat-ui/src/common';
-import { usePagination } from 'libs/query/src';
 import { Users } from 'lucide-react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
-
+import {
+  usePagination,
+  useStakeholdersGroups,
+  useStakeholdersGroupsStore,
+} from '@rahat-ui/query';
+import { UUID } from 'crypto';
 const filteredGroups = [
   {
     address: 'e8cf1e3c-460d-41f1-9f85-d56adf9578cd',
@@ -108,8 +114,18 @@ const filteredGroups = [
   },
 ];
 const StakeGoldersGroups = () => {
+  const { id } = useParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
 
+  const { isLoading } = useStakeholdersGroups(id as UUID, { ...pagination });
+
+  const { stakeholdersGroups, stakeholdersGroupsMeta } =
+    useStakeholdersGroupsStore((state) => ({
+      stakeholdersGroups: state.stakeholdersGroups,
+      stakeholdersGroupsMeta: state.stakeholdersGroupsMeta,
+    }));
   const handleSearch = (e) => {
     console.log(e);
   };
@@ -124,24 +140,26 @@ const StakeGoldersGroups = () => {
           />
 
           <AddButton
-            path="/projects/aa/stakeholders/add"
+            path={`/projects/aa/${id}/stakeholders/groups/add`}
             name="Stakeholder group"
           />
         </div>
         <ScrollArea className="h-[calc(100vh-360px)] mb-2">
-          {filteredGroups.length > 0 ? (
+          {isLoading ? (
+            <SpinnerLoader />
+          ) : stakeholdersGroups.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">
-              {filteredGroups?.map((i: any, index: number) => {
+              {stakeholdersGroups?.map((i: any, index: number) => {
                 return (
                   <div key={index} className="rounded-md border shadow p-4">
                     <div className="flex flex-col space-y-2">
                       <div
                         className="cursor-pointer rounded-md bg-secondary grid place-items-center h-28"
-                        // onClick={() => {
-                        //   router.push(
-                        //     `/beneficiary/groups/${i?.uuid}?isAssignedToProject=${isAssignedToProject}`,
-                        //   );
-                        // }}
+                        onClick={() => {
+                          router.push(
+                            `/projects/aa/${id}/stakeholders/groups/${i.uuid}`,
+                          );
+                        }}
                       >
                         <div className="bg-[#667085] text-white p-2 rounded-full">
                           <Users size={20} strokeWidth={2.5} />
@@ -164,7 +182,16 @@ const StakeGoldersGroups = () => {
         </ScrollArea>
 
         <CustomPagination
-          meta={{ total: 0, currentPage: 0 }}
+          meta={
+            stakeholdersGroupsMeta || {
+              total: 0,
+              currentPage: 0,
+              lastPage: 0,
+              perPage: 0,
+              next: null,
+              prev: null,
+            }
+          }
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}

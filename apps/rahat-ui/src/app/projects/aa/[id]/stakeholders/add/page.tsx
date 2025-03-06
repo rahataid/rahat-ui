@@ -1,9 +1,9 @@
 'use client';
 
-import { AddStakeholdersView } from '../../../../../../sections/projects/aa/stakeholders';
+import { AAAddStakeholders } from 'apps/rahat-ui/src/sections/projects/aa-2';
 
 const Page = () => {
-  return <AddStakeholdersView />;
+  return <AAAddStakeholders />;
 };
 
 export default Page;

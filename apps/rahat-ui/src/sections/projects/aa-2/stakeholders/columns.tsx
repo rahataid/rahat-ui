@@ -2,10 +2,13 @@
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { Edit2, Eye, Trash2 } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useState } from 'react';
 
 export const useProjectStakeholdersTableColumns = () => {
+  const router = useRouter();
+  const { id, stakeholderId } = useParams();
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
@@ -56,11 +59,11 @@ export const useProjectStakeholdersTableColumns = () => {
               className="hover:text-primary cursor-pointer"
               size={16}
               strokeWidth={1.5}
-              // onClick={() =>
-              //   router.push(
-              //     `/projects/el-cambodia/${id}/beneficiary/${row.original.uuid}`,
-              //   )
-              // }
+              onClick={() =>
+                router.push(
+                  `/projects/aa/${id}/stakeholders/${row.original.uuid}`,
+                )
+              }
             />
             <Edit2
               className="hover:text-primary cursor-pointer"
@@ -75,6 +78,7 @@ export const useProjectStakeholdersTableColumns = () => {
 
             <Trash2
               className="hover:text-primary cursor-pointer"
+              color="red"
               size={16}
               strokeWidth={1.5}
               // onClick={() =>

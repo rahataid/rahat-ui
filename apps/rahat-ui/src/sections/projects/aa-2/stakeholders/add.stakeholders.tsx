@@ -27,15 +27,15 @@ import {
 import { DISTRICTS_OF_NEPAL } from 'apps/rahat-ui/src/common/data/district';
 import { MUNICIPALITIES_OF_NEPAL } from 'apps/rahat-ui/src/common/data/municipality';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useCreateStakeholders } from '@rahat-ui/query';
 
 export default function AddStakeholders() {
   const { id } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const stakeholdersListPath = `/projects/aa/${id}/stakeholders`;
-
   const addedFromGroup = searchParams.get('fromGroup');
+  const createStakeholder = useCreateStakeholders();
 
   const isValidPhoneNumberRefinement = (value: string | undefined) => {
     if (value === undefined || value === '') return true; // If phone number is empty or undefined, it's considered valid
@@ -77,8 +77,15 @@ export default function AddStakeholders() {
   });
 
   const handleCreateStakeholders = async (data: z.infer<typeof FormSchema>) => {
-    console.log(data);
-    form.reset();
+    try {
+      await createStakeholder.mutateAsync({
+        projectUUID: id as UUID,
+        stakeholderPayload: data,
+      });
+      form.reset();
+    } catch (e) {
+      console.error('Create Stakeholder Error::', e);
+    }
   };
 
   return (
@@ -87,7 +94,7 @@ export default function AddStakeholders() {
         <HeaderWithBack
           title={'Add Stakeholders'}
           subtitle="Fill the form below  to create a new stakeholder details"
-          path="/stakeholders"
+          path={`/projects/aa/${id}/stakeholders`}
         />
       </div>
       <Form {...form}>
@@ -269,7 +276,9 @@ export default function AddStakeholders() {
               >
                 Cancel
               </Button>
-              <Button className="w-32">Add</Button>
+              <Button className="w-32" disabled={form.formState.isSubmitting}>
+                Add
+              </Button>
             </div>
           </div>
         </form>

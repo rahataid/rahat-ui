@@ -29,6 +29,7 @@ import {
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
   ClientSidePagination,
+  CustomPagination,
   DemoTable,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
@@ -130,14 +131,29 @@ function BeneficiaryView() {
       <TabsContent value="beneficiary">
         <div className="px-4">
           <div className="p-4 rounded-sm border">
-            <SearchInput
-              className="w-full"
-              name="group"
-              onSearch={(e) => handleSearch(e.target.value)}
-            />
+            <div className="flex mb-2 gap-2">
+              <SearchInput
+                className="w-full"
+                name="group"
+                onSearch={(e) => handleSearch(e.target.value)}
+              />
+            </div>
             <DemoTable table={table} />
 
-            <ClientSidePagination table={table} />
+            <CustomPagination
+              currentPage={pagination.page}
+              handleNextPage={setNextPage}
+              handlePrevPage={setPrevPage}
+              handlePageSizeChange={setPerPage}
+              meta={
+                (projectBeneficiaries?.data?.response?.meta as any) || {
+                  total: 0,
+                  currentPage: 0,
+                }
+              }
+              perPage={pagination?.perPage}
+              total={projectBeneficiaries?.data?.response?.meta?.total || 0}
+            />
           </div>
         </div>
       </TabsContent>

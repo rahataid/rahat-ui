@@ -75,10 +75,10 @@ export const useNavItems = () => {
           icon: <Speech size={18} strokeWidth={1.5} />,
           path: `/projects/aa/${params.id}/communication-logs`,
         },
-        {
-          title: 'Transaction Log',
-          icon: <BadgeDollarSign size={18} strokeWidth={1.5} />,
-        },
+        // {
+        //   title: 'Transaction Log',
+        //   icon: <BadgeDollarSign size={18} strokeWidth={1.5} />,
+        // },
       ],
     },
   ];

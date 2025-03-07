@@ -1,118 +1,32 @@
-import React from 'react';
-import { ScrollArea } from '../../../../../libs/shadcn/src/components/ui/scroll-area';
-import CommonCard from '../../../common/card';
-import { UUID } from 'crypto';
-import { Search, Users } from 'lucide-react';
-import { Badge } from '../../../../../libs/shadcn/src/components/ui/badge';
-import NoResult from '../../../common/noResults';
-import { usePagination } from '../.../../../../../../libs/query/src';
+'use client';
 import {
-  ClientSidePagination,
+  useBeneficiariesGroups,
+  useBeneficiariesGroupStore,
+  usePagination,
+} from '@rahat-ui/query';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {
   CustomPagination,
+  NoResult,
   SearchInput,
-} from '../../../common';
+  SpinnerLoader,
+} from 'apps/rahat-ui/src/common';
+import { UUID } from 'crypto';
+import { Users } from 'lucide-react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
-const filteredGroups = [
-  {
-    address: 'e8cf1e3c-460d-41f1-9f85-d56adf9578cd',
-    title: 'Title 1',
-    name: 'Subtitle 1',
-    image: '',
-    badge: 'New',
-    status: 'Active',
-  },
-  {
-    address: 'b72d1f17-7bfa-49d4-9e80-cd96b0cd0897',
-    title: 'Title 2',
-    name: 'Subtitle 2',
-    image: '',
-    badge: 'Featured',
-    status: 'Inactive',
-  },
-  {
-    address: '7d038dc6-bf10-4f0f-95d2-396e38ec3b94',
-    title: 'Title 3',
-    name: 'Subtitle 3',
-    image: '',
-    badge: 'Trending',
-    status: 'Active',
-  },
-  {
-    address: '50b4b7b5-65fa-45c4-b4b5-cbb9a788d7a6',
-    title: 'Title 4',
-    name: 'Subtitle 4',
-    image: '',
-    badge: 'Limited',
-    status: 'Inactive',
-  },
-  {
-    address: 'e8cf1e3c-460d-41f1-9f85-d56adf9578cd',
-    title: 'Title 1',
-    name: 'Subtitle 1',
-    image: '',
-    badge: 'New',
-    status: 'Active',
-  },
-  {
-    address: 'b72d1f17-7bfa-49d4-9e80-cd96b0cd0897',
-    title: 'Title 2',
-    name: 'Subtitle 2',
-    image: '',
-    badge: 'Featured',
-    status: 'Inactive',
-  },
-  {
-    address: '7d038dc6-bf10-4f0f-95d2-396e38ec3b94',
-    title: 'Title 3',
-    name: 'Subtitle 3',
-    image: '',
-    badge: 'Trending',
-    status: 'Active',
-  },
-  {
-    address: '50b4b7b5-65fa-45c4-b4b5-cbb9a788d7a6',
-    title: 'Title 4',
-    name: 'Subtitle 4',
-    image: '',
-    badge: 'Limited',
-    status: 'Inactive',
-  },
-  {
-    address: 'e8cf1e3c-460d-41f1-9f85-d56adf9578cd',
-    title: 'Title 1',
-    name: 'Subtitle 1',
-    image: '',
-    badge: 'New',
-    status: 'Active',
-  },
-  {
-    address: 'b72d1f17-7bfa-49d4-9e80-cd96b0cd0897',
-    title: 'Title 2',
-    name: 'Subtitle 2',
-    image: '',
-    badge: 'Featured',
-    status: 'Inactive',
-  },
-  {
-    address: '7d038dc6-bf10-4f0f-95d2-396e38ec3b94',
-    title: 'Title 3',
-    name: 'Subtitle 3',
-    image: '',
-    badge: 'Trending',
-    status: 'Active',
-  },
-  {
-    address: '50b4b7b5-65fa-45c4-b4b5-cbb9a788d7a6',
-    title: 'Title 4',
-    name: 'Subtitle 4',
-    image: '',
-    badge: 'Limited',
-    status: 'Inactive',
-  },
-];
 const BeneficiaryGroups = () => {
+  const { id } = useParams();
+  const uuid = id as UUID;
+  const searchParams = useSearchParams();
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
-
+  const router = useRouter();
+  const { isLoading } = useBeneficiariesGroups(id as UUID, { ...pagination });
+  const { beneficiariesGroups, beneficiariesGroupsMeta } =
+    useBeneficiariesGroupStore((state) => ({
+      beneficiariesGroups: state.beneficiariesGroups,
+      beneficiariesGroupsMeta: state.beneficiariesGroupsMeta,
+    }));
   const handleSearch = (e) => {
     console.log(e);
   };
@@ -127,19 +41,21 @@ const BeneficiaryGroups = () => {
           />
         </div>
         <ScrollArea className="h-[calc(100vh-360px)] mb-2">
-          {filteredGroups.length > 0 ? (
+          {isLoading ? (
+            <SpinnerLoader />
+          ) : beneficiariesGroups.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">
-              {filteredGroups?.map((i: any, index: number) => {
+              {beneficiariesGroups?.map((i: any, index: number) => {
                 return (
                   <div key={index} className="rounded-md border shadow p-4">
                     <div className="flex flex-col space-y-2">
                       <div
                         className="cursor-pointer rounded-md bg-secondary grid place-items-center h-28"
-                        // onClick={() => {
-                        //   router.push(
-                        //     `/beneficiary/groups/${i?.uuid}?isAssignedToProject=${isAssignedToProject}`,
-                        //   );
-                        // }}
+                        onClick={() => {
+                          router.push(
+                            `/projects/aa/${id}/beneficiary/groupDetails/${i.uuid}`,
+                          );
+                        }}
                       >
                         <div className="bg-[#667085] text-white p-2 rounded-full">
                           <Users size={20} strokeWidth={2.5} />
@@ -162,7 +78,16 @@ const BeneficiaryGroups = () => {
         </ScrollArea>
 
         <CustomPagination
-          meta={{ total: 0, currentPage: 0 }}
+          meta={
+            beneficiariesGroupsMeta || {
+              total: 0,
+              currentPage: 0,
+              lastPage: 0,
+              perPage: 0,
+              next: null,
+              prev: null,
+            }
+          }
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}

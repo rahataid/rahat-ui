@@ -1,18 +1,20 @@
 'use client';
-import React from 'react';
-import HeaderWithBack from '../../../common/header.with.back';
-import StakeHolderInfo from './staholders.info';
-import { Button } from '../../../../../libs/shadcn/src/components/ui/button';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import { UUID } from 'crypto';
 import { Edit2, Trash2 } from 'lucide-react';
-
+import { useParams } from 'next/navigation';
+import StakeHolderInfo from './staholders.info';
 const StakeholdersDetail = () => {
+  const params = useParams();
+  const id = params.id as UUID;
   return (
     <div className="p-4 ">
       <div className="flex justify-between items-center p-4 ">
         <HeaderWithBack
           title={'Stakeholders Details'}
           subtitle="Detailed view of the selected stakeholder"
-          path="/stakeholders"
+          path={`/projects/aa/${id}/stakeholders`}
         />
         <div className=" flex flex-end justify-end gap-3 mt-auto">
           <Button

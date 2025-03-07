@@ -1,26 +1,26 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import * as XLSX from 'xlsx';
 
+import { UUID } from 'crypto';
+import { useParams, useRouter } from 'next/navigation';
+
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
+  ScrollArea,
+  ScrollBar,
+} from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {
+  Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-  Table,
-} from '../../../../../libs/shadcn/src/components/ui/table';
-import { Input } from '../../../../../libs/shadcn/src/components/ui/input';
-import HeaderWithBack from '../../../common/header.with.back';
-
-import { useParams, useRouter } from 'next/navigation';
-import { UUID } from 'crypto';
-import {
-  ScrollArea,
-  ScrollBar,
-} from '../../../../../libs/shadcn/src/components/ui/scroll-area';
-import { Button } from '../../../../../libs/shadcn/src/components/ui/button';
+} from '@rahat-ui/shadcn/src/components/ui/table';
+import { HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { Repeat2, Share } from 'lucide-react';
 import { toast } from 'react-toastify';
 export default function ImportStakeholder() {
@@ -84,7 +84,7 @@ export default function ImportStakeholder() {
           <HeaderWithBack
             title="Import Stakeholders"
             subtitle="List of all stakeholders you can import"
-            path="/stakeholders"
+            path={`/projects/aa/${id}/stakeholders`}
           />
         </div>
 

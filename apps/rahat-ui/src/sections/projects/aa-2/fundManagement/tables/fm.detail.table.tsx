@@ -35,7 +35,7 @@ export default function FundManagementDetailTable({ group, loading }: IProps) {
     },
   });
   return (
-    <div className="border rounded-md p-4">
+    <div className="border rounded-sm p-4">
       <Heading
         title="Group Name"
         titleStyle="text-lg"
@@ -51,9 +51,7 @@ export default function FundManagementDetailTable({ group, loading }: IProps) {
       />
       <DemoTable
         table={table}
-        tableHeight={
-          group?.length > 0 ? 'h-[calc(100vh-420px)]' : 'h-[calc(100vh-800px)]'
-        }
+        tableHeight="h-[calc(100vh-550px)]"
         loading={loading}
       />
       <ClientSidePagination table={table} />

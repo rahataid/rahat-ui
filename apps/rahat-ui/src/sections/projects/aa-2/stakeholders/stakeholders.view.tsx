@@ -1,13 +1,6 @@
 'use client';
 
-import * as React from 'react';
 import { memo, useState } from 'react';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '../../../../../libs/shadcn/src/components/ui/tabs';
 
 import {
   VisibilityState,
@@ -18,29 +11,61 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
-import BeneficiaryGroups from './StakeholderGroups';
 import { useProjectStakeholdersTableColumns } from './columns';
+
 import {
+  usePagination,
+  useStakeholders,
+  useStakeholdersStore,
+} from '@rahat-ui/query';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
+import {
+  AddButton,
   ClientSidePagination,
   DemoTable,
+  IconLabelBtn,
   SearchInput,
-  AddButton,
-} from '../../../common';
+} from 'apps/rahat-ui/src/common';
+import { UUID } from 'crypto';
 import { CloudDownload } from 'lucide-react';
-import { usePagination } from '../../../../../libs/query/src';
-import { Button } from '../../../../../libs/shadcn/src/components/ui/button';
+import StakeGoldersGroups from './StakeholderGroups';
+
 function StakeholdersView() {
   const router = useRouter();
-  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
+  const params = useParams();
 
+  const searchParams = useSearchParams();
+
+  const projectId = params.id as UUID;
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+    setFilters,
+    filters,
+  } = usePagination();
+
+  useStakeholders(projectId, { ...pagination, ...filters });
+
+  const { stakeholders, stakeholdersMeta } = useStakeholdersStore((state) => ({
+    stakeholders: state.stakeholders,
+    stakeholdersMeta: state.stakeholdersMeta,
+  }));
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const columns = useProjectStakeholdersTableColumns();
 
   const table = useReactTable({
     manualPagination: true,
-    data: [],
+    data: stakeholders ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -94,24 +119,34 @@ function StakeholdersView() {
           </TabsTrigger>
         </TabsList>
 
-        <Button
-          variant="outline"
-          // onClick={() => router.push('/beneficiary/import')}
+        {/* <Link
+          href={`/projects/aa/${projectId}/stakeholders/import`}
+          type="button"
+          className="flex items-center justify-center gap-3 rounded-md w-48 border-2 border-primary text-primary hover:bg-primary hover:text-white focus:outline-none focus:ring-2 focus:ring-primary"
         >
-          <CloudDownload className="mr-1" /> Import Stakeholders
-        </Button>
+          <CloudDownload className="mr-1" /> <span>Import Stakeholders</span>
+        </Link> */}
+
+        <IconLabelBtn
+          name="Import Stakeholders"
+          Icon={CloudDownload}
+          handleClick={() =>
+            router.push(`/projects/aa/${projectId}/stakeholders/import`)
+          }
+          variant="outline"
+        />
       </div>
       <TabsContent value="beneficiary">
         <div className="px-4">
           <div className="p-4 rounded-sm border">
-            <div className="flex  gap-2">
+            <div className="flex mb-2 gap-2">
               <SearchInput
                 className="w-full"
                 name="group"
                 onSearch={(e) => handleSearch(e.target.value)}
               />
               <AddButton
-                path="/projects/aa/stakeholders/add"
+                path={`/projects/aa/${projectId}/stakeholders/add`}
                 name="Stakeholder"
               />
             </div>
@@ -123,7 +158,7 @@ function StakeholdersView() {
       </TabsContent>
       <TabsContent value="beneficiaryGroups">
         <div className="px-4">
-          <BeneficiaryGroups />
+          <StakeGoldersGroups />
         </div>
       </TabsContent>
     </Tabs>

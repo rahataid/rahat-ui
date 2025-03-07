@@ -1,16 +1,5 @@
 'use client';
-import React, { useState } from 'react';
-import { Input } from '../../../../../libs/shadcn/src/components/ui/input';
-import { Label } from '../../../../../libs/shadcn/src/components/ui/label';
-import {
-  AddButton,
-  CustomPagination,
-  DemoTable,
-  Heading,
-  SearchInput,
-} from '../../../common';
-import HeaderWithBack from '../../../common/header.with.back';
-
+import React, { useEffect, useState } from 'react';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -20,12 +9,38 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { useProjectSelectStakeholdersTableColumns } from './columns';
-import { usePagination } from 'libs/query/src';
-import { Button } from '../../../../../libs/shadcn/src/components/ui/button';
-import { mockData } from '../../../common/data/data';
-const AddStakeholdersGroup = () => {
+import { mockData } from 'apps/rahat-ui/src/common/data/data';
+import {
+  CustomPagination,
+  DemoTable,
+  HeaderWithBack,
+  Heading,
+  SearchInput,
+} from 'apps/rahat-ui/src/common';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useParams, useRouter } from 'next/navigation';
+import { UUID } from 'crypto';
+import {
+  useCreateStakeholdersGroups,
+  usePagination,
+  useSingleStakeholdersGroup,
+  useStakeholders,
+  useStakeholdersStore,
+  useUpdateStakeholdersGroups,
+} from '@rahat-ui/query';
+
+const UpdateOrAddStakeholdersGroup = () => {
+  const params = useParams();
+  const projectId = params.id as UUID;
+  const groupId = params.editId as UUID;
+  const router = useRouter();
+  const isEditing = Boolean(groupId);
   const [stakeholdersGroupName, setStakeholdersGroupName] = useState('');
   const {
+    filters,
+    setFilters,
     pagination,
     setNextPage,
     setPrevPage,
@@ -35,14 +50,42 @@ const AddStakeholdersGroup = () => {
     resetSelectedListItems,
   } = usePagination();
 
-  const handleSearch = (value: string) => {
-    console.log(value);
+  useStakeholders(projectId, { ...pagination, ...filters });
+
+  const { data: stakeholdersGroupDetail } = useSingleStakeholdersGroup(
+    projectId,
+    groupId,
+  );
+  const { stakeholders, stakeholdersMeta } = useStakeholdersStore((state) => ({
+    stakeholders: state.stakeholders,
+    stakeholdersMeta: state.stakeholdersMeta,
+  }));
+
+  useEffect(() => {
+    if (isEditing && stakeholdersGroupDetail) {
+      const preSelected = stakeholdersGroupDetail?.stakeholders?.reduce(
+        (acc, stakeholder) => {
+          acc[stakeholder.uuid] = true;
+          return acc;
+        },
+        {},
+      );
+      setStakeholdersGroupName(stakeholdersGroupDetail.name);
+      setSelectedListItems(preSelected);
+    }
+  }, [isEditing, setSelectedListItems, stakeholdersGroupDetail]);
+
+  const createStakeholdersGroup = useCreateStakeholdersGroups();
+  const updateStakeholdersGroup = useUpdateStakeholdersGroups();
+
+  const handleSearch = (event, key) => {
+    setFilters({ ...filters, [key]: event.target.value });
   };
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const columns = useProjectSelectStakeholdersTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: mockData || [],
+    data: stakeholders || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -58,27 +101,52 @@ const AddStakeholdersGroup = () => {
   });
 
   const handleCreateGroup = async () => {
+    const stakeholders = Object.keys(selectedListItems).filter(
+      (key) => selectedListItems[key],
+    );
+    const stakeholdersList = stakeholders?.map((stakeholder) => ({
+      uuid: stakeholder,
+    }));
     const data = {
-      stakeholdersGroupName: stakeholdersGroupName,
-      stakeholders: Object.keys(selectedListItems).filter(
-        (key) => selectedListItems[key],
-      ),
+      projectUUID: projectId,
+      stakeholdersGroupPayload: {
+        name: stakeholdersGroupName,
+        stakeholders: stakeholdersList,
+      },
     };
+
+    const updateData = {
+      projectUUID: projectId,
+      stakeholdersGroupPayload: {
+        uuid: stakeholdersGroupDetail?.uuid,
+        name: stakeholdersGroupName,
+        stakeholders: stakeholdersList,
+      },
+    };
+    if (isEditing) {
+      await updateStakeholdersGroup.mutateAsync(updateData);
+    } else {
+      await createStakeholdersGroup.mutateAsync(data);
+    }
+    router.push(`/projects/aa/${projectId}/stakeholders`);
   };
 
   return (
     <div className="p-4">
       <div className="flex flex-col">
         <HeaderWithBack
-          title={'Create Stakeholder Group'}
+          title={
+            isEditing ? 'Add Stakeholder Group' : 'Create Stakeholder Group'
+          }
           subtitle="Fill the form below to create a new stakeholder group"
-          path="/stakeholders"
+          path={`/projects/aa/${projectId}/stakeholders`}
         />
         <div className="ml-1 mb-1">
           <Label className="mb-2"> Stake Holder Group Name</Label>
           <Input
             placeholder="Write stakeholder group name"
             className="w-full rounded-md"
+            // value={stakeholdersGroupName || stakeholdersGroupDetail?.name}
             value={stakeholdersGroupName}
             onChange={(e) => setStakeholdersGroupName(e.target.value)}
           />
@@ -90,7 +158,7 @@ const AddStakeholdersGroup = () => {
           <Heading
             title=" Select Stakeholders"
             description="Select stakeholders from the list below to create group"
-            titleSize="2xl"
+            titleStyle="2xl"
           />
         </div>
 
@@ -98,32 +166,41 @@ const AddStakeholdersGroup = () => {
           <SearchInput
             className="w-full"
             name="stakeholders name"
-            onSearch={(e) => handleSearch(e.target.value)}
+            onSearch={(e) => handleSearch(e, 'name')}
           />
 
           <SearchInput
             className="w-full"
             name="organization"
-            onSearch={(e) => handleSearch(e.target.value)}
+            onSearch={(e) => handleSearch(e, 'organization')}
           />
 
           <SearchInput
             className="w-full"
             name="municipality"
-            onSearch={(e) => handleSearch(e.target.value)}
+            onSearch={(e) => handleSearch(e, 'municipality')}
           />
         </div>
 
         <DemoTable table={table} tableHeight="h-[calc(100vh-520px)]" />
 
         <CustomPagination
-          meta={{ total: 0, currentPage: 0 }}
+          meta={
+            stakeholdersMeta || {
+              total: 0,
+              currentPage: 0,
+              lastPage: 0,
+              perPage: 0,
+              next: null,
+              prev: null,
+            }
+          }
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}
           currentPage={pagination.page}
           perPage={pagination.perPage}
-          total={0}
+          total={stakeholdersMeta?.lastPage || 0}
         />
 
         <div className="flex justify-end gap-4">
@@ -150,4 +227,4 @@ const AddStakeholdersGroup = () => {
   );
 };
 
-export default AddStakeholdersGroup;
+export default UpdateOrAddStakeholdersGroup;

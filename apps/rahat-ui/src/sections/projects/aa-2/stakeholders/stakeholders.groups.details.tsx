@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import HeaderWithBack from '../../../common/header.with.back';
+
 import {
   AddButton,
   ClientSidePagination,
-  DataCard,
   DemoTable,
   SearchInput,
-} from '../../../common';
+  HeaderWithBack,
+  DataCard,
+} from 'apps/rahat-ui/src/common';
 import { User } from 'lucide-react';
 import {
   getCoreRowModel,
@@ -17,15 +18,26 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { useProjectStakeholdersGroupTableColumns } from './columns';
+import { useParams, useRouter } from 'next/navigation';
+import { UUID } from 'crypto';
+import { useSingleStakeholdersGroup } from '@rahat-ui/query';
 
 type Props = {};
 
 const StakeholdersGroupsDetails = (props: Props) => {
+  const router = useRouter();
+  const params = useParams();
+  const projectId = params.id as UUID;
+  const groupId = params.groupId as UUID;
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const columns = useProjectStakeholdersGroupTableColumns();
+  const { data: groupDetails, isLoading } = useSingleStakeholdersGroup(
+    projectId,
+    groupId,
+  );
   const table = useReactTable({
     manualPagination: true,
-    data: [],
+    data: groupDetails?.stakeholders || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -47,9 +59,9 @@ const StakeholdersGroupsDetails = (props: Props) => {
     <div className="p-4 ">
       <div className="flex justify-between items-center">
         <HeaderWithBack
-          title={'Rumsan Beneficiary Group'}
+          title={groupDetails?.name}
           subtitle="Detailed view of the selected stakeholders group"
-          path="/stakeholders"
+          path={`/projects/aa/${projectId}/stakeholders`}
         />
       </div>
       <div className="flex gap-6 mb-3">
@@ -81,10 +93,17 @@ const StakeholdersGroupsDetails = (props: Props) => {
             onSearch={(e) => handleSearch(e.target.value)}
           />
 
-          <AddButton path="/projects/aa/stakeholders/add" name="Stakeholder" />
+          <AddButton
+            path={`/projects/aa/${projectId}/stakeholders/groups/edit/${groupId}`}
+            name="Stakeholder"
+          />
         </div>
 
-        <DemoTable table={table} tableHeight="h-[calc(100vh-500px)]" />
+        <DemoTable
+          table={table}
+          tableHeight="h-[calc(100vh-500px)]"
+          loading={isLoading}
+        />
 
         <ClientSidePagination table={table} />
       </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import Back from './back';
+import { Back } from './back';
 
 type IProps = {
   title: string;
@@ -7,7 +7,7 @@ type IProps = {
   subtitle: string;
 };
 
-export default function HeaderWithBack({ title, path, subtitle }: IProps) {
+export function HeaderWithBack({ title, path, subtitle }: IProps) {
   return (
     <div className="mb-3">
       <div className="flex flex-col justify-center ml-1">

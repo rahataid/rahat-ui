@@ -1,9 +1,9 @@
+'use client';
 import { Coins, Copy, CopyCheck, User } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React from 'react';
-import DataItem from '../../../common/dataItem';
-import useCopy from '../../../hooks/useCopy';
-import { DataCard } from '../../../common';
+import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { DataCard, DataItem } from 'apps/rahat-ui/src/common';
 
 const BeneficiaryInfo = () => {
   const { id } = useParams();
@@ -17,7 +17,6 @@ const BeneficiaryInfo = () => {
         </div>
 
         <div className="flex flex-col ml-6">
-          <h1 className="text-2xl">BeneficiaryName</h1>
           <div className="flex items-center">
             <div className="text-lg text-muted-foreground truncate w-48 overflow-hidden mr-2">
               0xb81dA6366ab7dAb06151D55Af059e496F56170d5

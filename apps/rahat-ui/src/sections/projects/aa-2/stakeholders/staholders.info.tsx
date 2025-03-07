@@ -1,10 +1,7 @@
-import { Coins, Copy, CopyCheck, User } from 'lucide-react';
+import { DataItem } from 'apps/rahat-ui/src/common';
+import { User } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import React from 'react';
 // import DataCard from '../../common/dataCard';
-import DataItem from '../../../common/dataItem';
-import useCopy from '../../../hooks/useCopy';
-import { DataCard } from '../../../common';
 
 const StakeHolderInfo = () => {
   const { id } = useParams();

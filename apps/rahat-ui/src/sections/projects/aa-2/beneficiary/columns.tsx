@@ -3,22 +3,22 @@ import * as React from 'react';
 import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
+
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 import {
   Tooltip,
   TooltipProvider,
   TooltipTrigger,
   TooltipContent,
-} from '../../../../../libs/shadcn/src/components/ui/tooltip';
-
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { useParams, useRouter } from 'next/navigation';
+import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 
 export const useProjectBeneficiaryTableColumns = () => {
-  const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
+  const router = useRouter();
+  const { id } = useParams();
 
-  const clickToCopy = (walletAddress: string, id: number) => {
-    navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(id);
-  };
+  const { clickToCopy, copyAction } = useCopy();
 
   const columns: ColumnDef<any>[] = [
     {
@@ -34,7 +34,7 @@ export const useProjectBeneficiaryTableColumns = () => {
               }
             >
               <p>{truncateEthAddress(row?.original?.walletAddress)}</p>
-              {walletAddressCopied === row?.original?.uuid ? (
+              {copyAction === row?.original?.uuid ? (
                 <CopyCheck size={15} strokeWidth={1.5} />
               ) : (
                 <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
@@ -42,7 +42,7 @@ export const useProjectBeneficiaryTableColumns = () => {
             </TooltipTrigger>
             <TooltipContent className="bg-secondary" side="bottom">
               <p className="text-xs font-medium">
-                {walletAddressCopied === row?.original?.uuid
+                {copyAction === row?.original?.uuid
                   ? 'copied'
                   : 'click to copy'}
               </p>
@@ -67,11 +67,11 @@ export const useProjectBeneficiaryTableColumns = () => {
               className="hover:text-primary cursor-pointer"
               size={16}
               strokeWidth={1.5}
-              // onClick={() =>
-              //   router.push(
-              //     `/projects/el-cambodia/${id}/beneficiary/${row.original.uuid}`,
-              //   )
-              // }
+              onClick={() =>
+                router.push(
+                  `/projects/aa/${id}/beneficiary/${row.original.uuid}`,
+                )
+              }
             />
           </div>
         );
@@ -82,13 +82,11 @@ export const useProjectBeneficiaryTableColumns = () => {
   return columns;
 };
 
-export const useProjectBeneficiaryGroupTableColumns = () => {
-  const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
+export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
+  const router = useRouter();
+  const { id } = useParams();
 
-  const clickToCopy = (walletAddress: string, id: number) => {
-    navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(id);
-  };
+  const { clickToCopy, copyAction } = useCopy();
 
   const columns: ColumnDef<any>[] = [
     {
@@ -104,7 +102,7 @@ export const useProjectBeneficiaryGroupTableColumns = () => {
               }
             >
               <p>{truncateEthAddress(row?.original?.walletAddress)}</p>
-              {walletAddressCopied === row?.original?.uuid ? (
+              {copyAction === row?.original?.uuid ? (
                 <CopyCheck size={15} strokeWidth={1.5} />
               ) : (
                 <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
@@ -112,7 +110,7 @@ export const useProjectBeneficiaryGroupTableColumns = () => {
             </TooltipTrigger>
             <TooltipContent className="bg-secondary" side="bottom">
               <p className="text-xs font-medium">
-                {walletAddressCopied === row?.original?.uuid
+                {copyAction === row?.original?.uuid
                   ? 'copied'
                   : 'click to copy'}
               </p>
@@ -135,7 +133,7 @@ export const useProjectBeneficiaryGroupTableColumns = () => {
               strokeWidth={1.5}
               // onClick={() =>
               //   router.push(
-              //     `/projects/el-cambodia/${id}/beneficiary/${row.original.uuid}`,
+              //     `/projects/aa/${id}/beneficiary/groupDetails/${row.original.uuid}`,
               //   )
               // }
             />

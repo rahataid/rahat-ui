@@ -6,7 +6,7 @@ type IProps = {
   path: string;
 };
 
-export default function Back({ path }: IProps) {
+export function Back({ path }: IProps) {
   return (
     <Link href={path}>
       <div className="flex gap-2 mb-5">

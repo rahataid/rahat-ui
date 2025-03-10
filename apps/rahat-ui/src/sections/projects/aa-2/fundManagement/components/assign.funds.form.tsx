@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   PROJECT_SETTINGS_KEYS,
+  useBeneficiariesGroups,
   useBeneficiariesGroupStore,
   useFundAssignmentStore,
   useProjectSettingsStore,
@@ -41,6 +42,7 @@ export default function AssignFundsForm() {
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
+
   const { data: reservationStats, isLoading: isLoadingReservationStats } =
     useReservationStats(projectId);
   const FormSchema = z.object({

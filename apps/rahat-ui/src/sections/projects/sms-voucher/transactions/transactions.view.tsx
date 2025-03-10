@@ -9,7 +9,7 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { useElkenyaTransactionsTableColumns } from './use.transactions.table.columns';
 import { useKenyaProjectTransactions } from '@rahat-ui/query';
-import React from 'react';
+import React, { useState } from 'react';
 import ElkenyaTable from '../table.component';
 import { ClientSidePagination } from '../clientSidePagination';
 
@@ -18,8 +18,11 @@ export default function TransactionsView() {
   const { data, error, isLoading } = useKenyaProjectTransactions();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  const [sorting, setSorting] = useState([{ id: 'timeStamp', desc: true }]);
 
-  const columns = useElkenyaTransactionsTableColumns();
+  const columns = useElkenyaTransactionsTableColumns({
+    setSorting: setSorting,
+  });
   const table = useReactTable({
     data: data || [],
     columns,
@@ -29,6 +32,7 @@ export default function TransactionsView() {
     getSortedRowModel: getSortedRowModel(),
     state: {
       columnVisibility,
+      sorting,
     },
   });
   return (

@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { mapTopic } from '../const';
 
-export const useElkenyaTransactionsTableColumns = () => {
+export const useElkenyaTransactionsTableColumns = ({ setSorting }: any) => {
   const [walletAddressCopied, setWalletAddressCopied] = useState<string>();
 
   const clickToCopy = (walletAddress: string, uuid: string) => {
@@ -73,21 +73,32 @@ export const useElkenyaTransactionsTableColumns = () => {
     },
     {
       accessorKey: 'timeStamp',
-      header: ({ column }) => (
-        <div
-          className="flex items-center gap-2 cursor-pointer"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Timestamp
-          {column.getIsSorted() === 'asc' ? (
-            <ArrowUp size={16} />
-          ) : column.getIsSorted() === 'desc' ? (
-            <ArrowDown size={16} />
-          ) : (
-            <ArrowUpDown size={16} />
-          )}
-        </div>
-      ),
+      header: ({ column }) => {
+        const isSorted = column.getIsSorted();
+
+        const handleSort = () => {
+          setSorting((prevSorting: any) => {
+            const currentSort = prevSorting.find(
+              (s: any) => s.id === 'timeStamp',
+            );
+            return [{ id: 'timeStamp', desc: !currentSort?.desc }];
+          });
+        };
+
+        return (
+          <div
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={handleSort}
+          >
+            Timestamp
+            {isSorted === 'asc' ? (
+              <ArrowUp size={16} />
+            ) : (
+              <ArrowDown size={16} />
+            )}
+          </div>
+        );
+      },
       enableSorting: true,
       cell: ({ row }) => (
         <div>{formatDateFromBloackChain(row.getValue('timeStamp'))}</div>
@@ -98,7 +109,6 @@ export const useElkenyaTransactionsTableColumns = () => {
 
         return dateA - dateB;
       },
-      sortDescFirst: true,
     },
   ];
   return columns;

@@ -25,7 +25,7 @@ export default function BeneficiaryDetail() {
   const glassesStatus = searchParams.get('glassesStatus') || '';
   const eyeCheckupStatus = searchParams.get('eyeCheckupStatus') || '';
   const location = searchParams.get('location') || '-';
-  const serialNumber = searchParams.get('serialNumber') || '-';
+  const createdAt = searchParams.get('createdAt') || '-';
 
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
@@ -94,6 +94,7 @@ export default function BeneficiaryDetail() {
             <Store />
             <p className="text-muted-foreground">Vendor Name: {name}</p>
           </div>
+          <p className="text-muted-foreground">Onboarded Time: {createdAt}</p>
         </div>
 
         <div className="shadow border p-5 flex flex-col justify-between">

@@ -603,13 +603,17 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
               voucherClaimStatus: row?.claimStatus,
               name: row?.piiData?.name || '',
               email: row?.piiData?.email || '',
-              gender: row?.projectData?.gender?.toString() || '',
-              phone: row?.piiData?.phone || 'N/A',
+              gender:
+                row?.projectData?.gender?.toString() ||
+                row?.extras?.gender ||
+                '',
+              phone: row?.piiData?.phone || row?.extras?.phone || 'N/A',
               type: row?.type?.toString() || 'N/A',
               phoneStatus: row?.projectData?.phoneStatus || '',
               bankedStatus: row?.projectData?.bankedStatus || '',
               internetStatus: row?.projectData?.internetStatus || '',
               benTokens: row?.benTokens || 'N/A',
+              createdAt: new Date(row?.createdAt).toLocaleDateString() || '',
             }))
           : [],
       };

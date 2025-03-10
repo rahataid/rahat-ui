@@ -91,7 +91,9 @@ export default function BeneficiaryView() {
         rowData.type
       }&&location=${rowData?.projectData?.location}&&serialNumber=${
         rowData?.extras?.serialNumber
-      }&&age=${rowData?.extras?.age || 0}&&consent=${rowData?.extras?.consent}`,
+      }&&age=${rowData?.extras?.age || 0}&&consent=${
+        rowData?.extras?.consent
+      }&&createdAt=${rowData?.createdAt}`,
     );
   };
 

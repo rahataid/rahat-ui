@@ -44,7 +44,8 @@ export const useVendorList = (
               : 'Pending',
             email: d.User?.email,
             projectName:
-              d.User?.VendorProject?.map((vp) => vp.Project?.name) || 'N/A',
+              d.User?.VendorProject?.map((vp: any) => vp.Project?.name) ||
+              'N/A',
             walletAddress: d.User.wallet,
             name: d.User?.name,
             phone: d.User?.phone,

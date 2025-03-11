@@ -1,5 +1,5 @@
 import React from 'react';
-import { Back, Heading } from 'packages/modules';
+import { Back, Heading } from '../../../../common';
 import {
   OverviewCard,
   ProfileCard,

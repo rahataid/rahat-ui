@@ -11,6 +11,7 @@ import {
   Group,
   ParkingMeter,
   BadgeDollarSign,
+  Landmark,
 } from 'lucide-react';
 
 export type NavItem = {
@@ -79,6 +80,11 @@ export const useNavItems = () => {
         //   title: 'Transaction Log',
         //   icon: <BadgeDollarSign size={18} strokeWidth={1.5} />,
         // },
+        {
+          title: 'Vendors',
+          icon: <Landmark size={18} strokeWidth={1.5} />,
+          path: `/projects/aa/${params.id}/vendors`,
+        },
       ],
     },
   ];

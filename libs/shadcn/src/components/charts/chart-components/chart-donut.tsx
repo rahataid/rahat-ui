@@ -14,6 +14,7 @@ type Props = {
   height?: number | string;
   showLegend?: boolean;
   colors?: string[];
+  showDonutLabel?: boolean;
 };
 
 export default function ChartDonut({
@@ -24,6 +25,7 @@ export default function ChartDonut({
   height = 200,
   showLegend = true,
   colors = ['#00b67a', '#8BC34A', '#FFA726', '#007bb6', '#7a00b6'],
+  showDonutLabel = false,
 }: Props) {
   const chartOptions = useChart({
     colors,
@@ -46,7 +48,7 @@ export default function ChartDonut({
       pie: {
         donut: {
           labels: {
-            show: false,
+            show: showDonutLabel,
           },
           size: donutSize,
         },

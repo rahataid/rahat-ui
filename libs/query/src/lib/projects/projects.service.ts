@@ -613,7 +613,7 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
               bankedStatus: row?.projectData?.bankedStatus || '',
               internetStatus: row?.projectData?.internetStatus || '',
               benTokens: row?.benTokens || 'N/A',
-              createdAt: new Date(row?.createdAt).toLocaleDateString() || '',
+              createdAt: new Date(row?.createdAt).toLocaleString() || '',
             }))
           : [],
       };
@@ -657,8 +657,9 @@ export const useListConsentConsumer = (payload: GetConsumerData) => {
           ? query.data.data.map((row: any) => ({
               walletAddress: row?.walletAddress?.toString(),
               vendorName: row?.extras?.vendorName || '',
-              gender: row?.projectData?.gender?.toString() || '',
-              phone: row?.piiData?.phone || 'N/A',
+              gender:
+                row?.projectData?.gender?.toString() || row?.extras?.gender,
+              phone: row?.piiData?.phone || row?.extras?.phone,
               glassPurchaseType: mapStatus(row?.voucherType),
               voucherUsage: mapStatus(row?.eyeCheckupStatus),
               voucherStatus: mapStatus(row?.voucherStatus),

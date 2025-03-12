@@ -49,8 +49,10 @@ export const useTableColumns = (handleAssignClick: any) => {
       cell: ({ row }) => {
         return (
           <div className="font-medium flex flex-col">
-            {row.original.projectName?.map((name) => (
-              <Badge className="mb-2">{name}</Badge>
+            {row.original.projectName?.map((name: any, index: number) => (
+              <Badge key={index} className="w-fit mb-2 rounded-md">
+                {name}
+              </Badge>
             ))}
           </div>
         );

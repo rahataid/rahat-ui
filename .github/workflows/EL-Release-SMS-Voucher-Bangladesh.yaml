@@ -62,9 +62,9 @@ jobs:
           file: Dockerfile.rahat-ui
           push: ${{ github.event_name == 'workflow_dispatch' }}
           tags: |
-            esatya/rahat-ui:el-release-bangladesh
-            esatya/rahat-ui:el-release-bangladesh-${{ env.VERSION  }}
-            esatya/rahat-ui:el-release-bangladesh-${{ env.VERSION  }}-${{ env.timestamp }}
+            esatya/rahat-ui:el-release-smsvoucher-bangladesh
+            esatya/rahat-ui:el-release-smsvoucher-bangladesh-${{ env.VERSION  }}
+            esatya/rahat-ui:el-release-smsvoucher-bangladesh-${{ env.VERSION  }}-${{ env.timestamp }}
 
   community-tool-ui:
     name: community-tool-ui
@@ -121,6 +121,6 @@ jobs:
           file: Dockerfile.community-tool-ui
           push: ${{ github.event_name == 'workflow_dispatch' }}
           tags: |
-            esatya/community-tool-ui:el-release-bangladesh
-            esatya/community-tool-ui:el-release-bangladesh-${{ env.VERSION  }}
-            esatya/community-tool-ui:el-release-bangladesh-${{ env.VERSION  }}-${{ env.timestamp }}
+            esatya/community-tool-ui:el-release-smsvoucher-bangladesh
+            esatya/community-tool-ui:el-release-smsvoucher-bangladesh-${{ env.VERSION  }}
+            esatya/community-tool-ui:el-release-smsvoucher-bangladesh-${{ env.VERSION  }}-${{ env.timestamp }}

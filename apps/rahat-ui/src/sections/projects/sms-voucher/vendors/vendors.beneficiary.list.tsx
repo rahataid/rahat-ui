@@ -27,10 +27,11 @@ export default function VendorsBeneficiaryList({
   const tableData = useMemo(() => {
     if (beneficiaryList?.length > 0) {
       return beneficiaryList.map((beneficiary: any) => {
+        console.log(beneficiary);
         return {
           phone:
             beneficiary?.piiData?.phone ||
-            beneficiary?.Disbursement?.Beneficiary?.extras?.phone,
+            beneficiary?.Beneficiary?.extras?.phone,
           type:
             beneficiary?.Disbursement?.Beneficiary?.type ||
             beneficiary?.Beneficiary?.type,

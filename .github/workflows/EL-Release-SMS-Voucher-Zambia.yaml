@@ -1,0 +1,126 @@
+name: EL Release SMS Voucher Zambia CI/CD
+on:
+  workflow_dispatch:
+
+env:
+  CI: false
+  env_release: ${{ secrets.ENV_EL_RELEASE_SMS_VOUCHER_ZAMBIA }}
+
+jobs:
+  rahat-ui:
+    name: rahat-ui
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref_name, 'release/') && github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: import env file
+        run: |
+          touch ./.env && echo "$env_release" >> ./.env 
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20.10.0
+
+      - name: Install pnpm
+        run: |
+          npm install -g pnpm@8.14.1 
+
+      - name: Install dependencies
+        run: pnpm install     
+
+      - name: Build apps
+        run: |
+          pnpm build:all
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: docker login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract version from package.json
+        id: extract_version
+        run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_ENV
+
+      - name: Extract Timestamp
+        id: extract-timestamp
+        run: |
+          TIMESTAMP=$(date "+%Y-%m-%d_%H-%M-%S")
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_ENV
+
+      # Rahat-UI Image
+      - name: build && push rahat-ui
+        id: build-push-rahat-ui
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.rahat-ui
+          push: ${{ github.event_name == 'workflow_dispatch' }}
+          tags: |
+            esatya/rahat-ui:el-release-zambia
+            esatya/rahat-ui:el-release-zambia-${{ env.VERSION  }}
+            esatya/rahat-ui:el-release-zambia-${{ env.VERSION  }}-${{ env.timestamp }}
+
+  community-tool-ui:
+    name: community-tool-ui
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref_name, 'release/') && github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: import env file
+        run: |
+          touch ./.env && echo "$env_release" >> ./.env 
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20.10.0
+    
+      - name: Install pnpm
+        run: |
+          npm install -g pnpm@8.14.1
+
+      - name: Install dependencies
+        run: pnpm install     
+
+      - name: Build apps
+        run: |
+          pnpm build:all
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: docker login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Extract version from package.json
+        id: extract_version
+        run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_ENV
+
+      - name: Extract Timestamp
+        id: extract-timestamp
+        run: |
+          TIMESTAMP=$(date "+%Y-%m-%d_%H-%M-%S")
+          echo "timestamp=$TIMESTAMP" >> $GITHUB_ENV
+
+      # Community-Tool-UI Image
+      - name: build && push community-tool-ui`
+        id: build-push-community-tool-ui
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.community-tool-ui
+          push: ${{ github.event_name == 'workflow_dispatch' }}
+          tags: |
+            esatya/community-tool-ui:el-release-zambia
+            esatya/community-tool-ui:el-release-zambia-${{ env.VERSION  }}
+            esatya/community-tool-ui:el-release-zambia-${{ env.VERSION  }}-${{ env.timestamp }}

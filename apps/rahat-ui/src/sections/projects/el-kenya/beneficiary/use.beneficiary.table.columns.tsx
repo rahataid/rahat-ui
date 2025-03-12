@@ -2,6 +2,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { mapStatus } from '../const';
 
 interface BeneficiaryTableProps {
   handleViewClick: any;
@@ -46,13 +47,22 @@ export const useElkenyaBeneficiaryTableColumns = ({
     {
       accessorKey: 'consentStatus',
       header: 'Consent Status',
-      cell: ({ row }) => <div>{row.getValue('consentStatus')}</div>,
+      cell: ({ row }) => <div>{mapStatus(row.original.extras?.consent)}</div>,
+    },
+    {
+      accessorKey: 'voucherStatus',
+      header: 'Voucher Status',
+      cell: ({ row }) => <div>{mapStatus(row.getValue('voucherStatus'))}</div>,
     },
     {
       accessorKey: 'eyeCheckupStatus',
       header: 'Voucher Usage',
       cell: ({ row }) => (
-        <Badge>{row.getValue('eyeCheckupStatus') || 'N/A'}</Badge>
+        <Badge>
+          {row.original.eyeCheckupStatus === 'NOT_CHECKED'
+            ? '-'
+            : mapStatus(row.original.eyeCheckupStatus)}
+        </Badge>
       ),
     },
     {
@@ -62,7 +72,9 @@ export const useElkenyaBeneficiaryTableColumns = ({
         const voucherType = row.getValue('voucherType');
         const colors = getDynamicColor(voucherType as string);
         return (
-          <Badge className={colors}>{(voucherType as string) || 'N/A'}</Badge>
+          <Badge className={colors}>
+            {mapStatus(voucherType as string) || '-'}
+          </Badge>
         );
       },
     },

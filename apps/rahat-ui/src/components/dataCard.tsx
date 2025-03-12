@@ -45,7 +45,7 @@ export default function DataCard({
       )}
     >
       <CardHeader className="pb-2 p-4">
-        <div className="flex flex-col items-start justify-between ">
+        <div className="flex items-start justify-between ">
           <div className="flex items-center gap-3">
             <CardTitle className="text-lg font-medium text-neutral-800 dark:text-white">
               {title}
@@ -92,6 +92,10 @@ export default function DataCard({
                     <TooltipContent>{number}</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
+              ) : Array.isArray(number) ? (
+                <div className="text-4xl font-semibold text-primary truncate w-52">
+                  {number.reduce((sum, item) => sum + item.count, 0)}
+                </div>
               ) : (
                 <div className="text-4xl font-semibold text-primary truncate w-52">
                   {number}

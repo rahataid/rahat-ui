@@ -20,6 +20,7 @@ import { MS_CAM_ACTIONS, PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
 import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
+import { mapStatus } from '../el-kenya';
 
 interface ExtendedProject extends Project {
   projectClosed: boolean;
@@ -553,6 +554,14 @@ type GetProjectBeneficiaries = Pagination & {
   vouchers?: any;
 };
 
+type GetConsumerData = {
+  projectUUID: UUID;
+  voucherStatus?: string;
+  eyeCheckupStatus?: string;
+  voucherType?: string;
+  consentStatus?: string;
+};
+
 export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   const q = useProjectAction<Beneficiary[]>();
   const { projectUUID, ...restPayload } = payload;
@@ -594,13 +603,66 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
               voucherClaimStatus: row?.claimStatus,
               name: row?.piiData?.name || '',
               email: row?.piiData?.email || '',
-              gender: row?.projectData?.gender?.toString() || '',
-              phone: row?.piiData?.phone || 'N/A',
+              gender:
+                row?.projectData?.gender?.toString() ||
+                row?.extras?.gender ||
+                '',
+              phone: row?.piiData?.phone || row?.extras?.phone || 'N/A',
               type: row?.type?.toString() || 'N/A',
               phoneStatus: row?.projectData?.phoneStatus || '',
               bankedStatus: row?.projectData?.bankedStatus || '',
               internetStatus: row?.projectData?.internetStatus || '',
               benTokens: row?.benTokens || 'N/A',
+              createdAt: new Date(row?.createdAt).toLocaleDateString() || '',
+            }))
+          : [],
+      };
+    }, [query.data]),
+  };
+};
+
+export const useListConsentConsumer = (payload: GetConsumerData) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const LIST_CONSENT = 'beneficiary.list_full_data_by_project';
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const queryKey = useMemo(
+    () => [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, restPayloadString],
+    [restPayloadString],
+  );
+  const query = useQuery({
+    queryKey: [LIST_CONSENT, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: LIST_CONSENT,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return {
+    ...query,
+    data: useMemo(() => {
+      return {
+        ...query.data,
+        data: query.data?.data?.length
+          ? query.data.data.map((row: any) => ({
+              walletAddress: row?.walletAddress?.toString(),
+              vendorName: row?.extras?.vendorName || '',
+              gender: row?.projectData?.gender?.toString() || '',
+              phone: row?.piiData?.phone || 'N/A',
+              glassPurchaseType: mapStatus(row?.voucherType),
+              voucherUsage: mapStatus(row?.eyeCheckupStatus),
+              voucherStatus: mapStatus(row?.voucherStatus),
+              consent: row?.extras?.consent,
             }))
           : [],
       };

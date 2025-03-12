@@ -34,7 +34,7 @@ export default function VendorsDetail() {
     isLoading,
   } = useGetOfflineSingleVendor(id as UUID, Number(vid));
   const cardData = [
-    { name: 'Offline Beneficiaries', value: offlineVendor?.data.length },
+    { name: 'Offline Beneficiaries', value: offlineVendor?.data?.length },
     {
       name: 'Vouchers Assigned',
       value: offlineVendor?.extras.totalAmountAssigned,

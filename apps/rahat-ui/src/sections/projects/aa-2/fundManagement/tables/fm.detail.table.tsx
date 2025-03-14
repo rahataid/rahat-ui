@@ -6,13 +6,13 @@ import {
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
+import { useFMDetailTableColumns } from '../columns/useFMDetailColumns';
 import {
   ClientSidePagination,
   DemoTable,
   Heading,
   SearchInput,
-} from 'packages/modules';
-import { useFMDetailTableColumns } from '../columns/useFMDetailColumns';
+} from 'apps/rahat-ui/src/common';
 
 interface IProps {
   group: any[];

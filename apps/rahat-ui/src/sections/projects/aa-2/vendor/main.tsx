@@ -9,13 +9,13 @@ import {
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { projectVendors } from './static';
-import {
-  SearchInput,
-  DemoTable,
-  ClientSidePagination,
-  Heading,
-} from 'packages/modules';
 import { useProjectVendorTableColumns } from './columns/useVendorColumns';
+import {
+  ClientSidePagination,
+  DemoTable,
+  Heading,
+  SearchInput,
+} from 'apps/rahat-ui/src/common';
 
 export default function VendorsView() {
   const { id } = useParams() as { id: UUID };

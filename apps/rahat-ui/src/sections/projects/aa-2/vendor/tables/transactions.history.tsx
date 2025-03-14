@@ -4,13 +4,13 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
+import { useVendorsTransactionTableColumns } from '../columns/useTransactionColumns';
 import {
   ClientSidePagination,
   DemoTable,
   Heading,
   SearchInput,
-} from 'packages/modules';
-import { useVendorsTransactionTableColumns } from '../columns/useTransactionColumns';
+} from 'apps/rahat-ui/src/common';
 
 export default function VendorsTransactionsHistory({
   tableData,
@@ -37,7 +37,7 @@ export default function VendorsTransactionsHistory({
     <div className="">
       <Heading
         title="Transaction History"
-        titleSize="lg"
+        titleStyle="text-lg"
         description="List of all the transactions made"
       />
       <SearchInput

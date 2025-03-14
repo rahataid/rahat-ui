@@ -1,8 +1,8 @@
 import React from 'react';
-import { Heading } from 'packages/modules';
 import { ArrowLeftRight, Info } from 'lucide-react';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
-import { ITransactions } from '../types';
+import { Heading } from './page.heading';
+import { ITransactions } from '../types/transactions';
 
 interface IProps {
   cardTitle: string;

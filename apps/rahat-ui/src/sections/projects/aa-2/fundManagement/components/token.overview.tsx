@@ -1,7 +1,7 @@
 import React from 'react';
-import { DataCard, Heading, TransactionCard } from 'packages/modules';
 import { FMTokensOverviewData, FMTransactionsData } from '../static';
 import { BarChart, PieChart } from 'libs/shadcn/src/components/charts';
+import { DataCard, Heading, TransactionCard } from 'apps/rahat-ui/src/common';
 
 export default function TokensOverview() {
   return (

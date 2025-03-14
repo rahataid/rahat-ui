@@ -1,14 +1,18 @@
+import React from 'react';
 import { useGroupsReservedFunds, usePagination } from '@rahat-ui/query';
 import {
   getCoreRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { CustomPagination } from 'apps/rahat-ui/src/common';
+import {
+  CustomPagination,
+  DemoTable,
+  Heading,
+  SearchInput,
+} from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams, useSearchParams } from 'next/navigation';
-import { DemoTable, Heading, SearchInput } from 'packages/modules';
-import React from 'react';
 import { useFundManagementTableColumns } from '../columns/useFMColumns';
 
 export default function FundManagementList() {

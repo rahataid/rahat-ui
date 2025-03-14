@@ -6,13 +6,13 @@ import {
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import React, { useMemo } from 'react';
+import { useVendorsBeneficiaryTableColumns } from '../columns/useBeneficiaryColumns';
 import {
   ClientSidePagination,
   DemoTable,
   Heading,
   SearchInput,
-} from 'packages/modules';
-import { useVendorsBeneficiaryTableColumns } from '../columns/useBeneficiaryColumns';
+} from 'apps/rahat-ui/src/common';
 
 interface VendorsBeneficiaryListProps {
   beneficiaryList: any;
@@ -61,7 +61,7 @@ export default function VendorsBeneficiaryList({
     <div className="">
       <Heading
         title="Offline Beneficiaries"
-        titleSize="lg"
+        titleStyle="text-lg"
         description="List of all the offline beneficiaries"
       />
       <SearchInput

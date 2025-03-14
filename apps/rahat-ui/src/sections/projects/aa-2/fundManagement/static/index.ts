@@ -1,4 +1,4 @@
-import { ITransactions } from 'packages/modules/types';
+import { ITransactions } from 'apps/rahat-ui/src/types/transactions';
 import { IFundManagement } from '../types';
 
 export const FMTokensOverviewData = [

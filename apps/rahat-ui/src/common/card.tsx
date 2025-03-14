@@ -1,11 +1,11 @@
 'use client';
 import * as React from 'react';
 import Image from 'next/image';
-import { Card, CardContent } from '../../../libs/shadcn/src/components/ui/card';
 import { useRouter } from 'next/navigation';
-import { Badge } from '../../../libs/shadcn/src/components/ui/badge';
 import { UUID } from 'crypto';
-import { cn } from '../../../libs/shadcn/src';
+import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
+import { cn } from '@rahat-ui/shadcn/src';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   address: UUID;

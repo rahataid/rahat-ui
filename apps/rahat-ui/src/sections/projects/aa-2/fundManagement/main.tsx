@@ -1,8 +1,8 @@
 import React from 'react';
-import { Heading, IconLabelBtn } from 'packages/modules';
 import { FundManagementTabs } from './components';
 import { Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 
 export default function FundManagementView() {
   const router = useRouter();

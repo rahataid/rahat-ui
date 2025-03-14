@@ -1,7 +1,7 @@
 import React from 'react';
-import { Heading } from 'packages/modules';
 import { ArrowLeftRight } from 'lucide-react';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
+import { Heading } from 'apps/rahat-ui/src/common';
 
 const Transaction = () => {
   return (
@@ -29,7 +29,7 @@ export default function TransactionCard() {
     <div className="border rounded-md p-4">
       <Heading
         title="Recent Transactions"
-        titleSize="lg"
+        titleStyle="text-lg"
         description="List of recently made transactions"
       />
       <ScrollArea className="p-3 h-[calc(100vh-700px)]">

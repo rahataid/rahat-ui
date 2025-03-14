@@ -1,9 +1,9 @@
 'use client';
 
-import { FundManagementView } from '../../../../../sections/projects/aa/fund-management';
+import { AAFundManagementView } from 'apps/rahat-ui/src/sections/projects/aa-2';
 
 const Page = () => {
-  return <FundManagementView />;
+  return <AAFundManagementView />;
 };
 
 export default Page;

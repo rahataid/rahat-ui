@@ -1,13 +1,17 @@
 'use client';
 
-import { AATriggerStatementsView } from 'apps/rahat-ui/src/sections/projects/aa/trigger-statements';
+import dynamic from 'next/dynamic';
 
-const Page = () => {
-  return (
-    <>
-      <AATriggerStatementsView />
-    </>
-  );
-};
+const TriggerStatementPage = dynamic(
+  () =>
+    import('apps/rahat-ui/src/sections/projects/aa-2/triggerStatement').then(
+      (mod) => mod.AATriggerStatementView,
+    ),
+  {
+    ssr: false,
+  },
+);
 
-export default Page;
+export default function Page() {
+  return <TriggerStatementPage />;
+}

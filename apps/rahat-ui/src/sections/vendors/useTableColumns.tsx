@@ -57,6 +57,12 @@ export const useTableColumns = (handleAssignClick: any) => {
           </div>
         );
       },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        return row
+          .getValue(columnId)
+          ?.some((name: string) => name === filterValue);
+      },
     },
 
     {

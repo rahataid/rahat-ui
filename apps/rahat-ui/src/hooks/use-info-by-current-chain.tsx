@@ -16,7 +16,8 @@ export const useInfoByCurrentChain: () => ChainInfo = () => {
   }
 
   if (!process.env.NEXT_PUBLIC_SAFE_WALLET_ADDRESS) {
-    throw new Error('Safe wallet address not found.');
+    throw new Error(`Safe wallet address not found. 
+      Solution: Add NEXT_PUBLIC_SAFE_WALLET_ADDRESS to your .env file.`);
   }
 
   const safeUrl = `https://app.safe.global/transactions/queue?safe=${chain.name

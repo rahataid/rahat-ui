@@ -83,10 +83,12 @@ export default function Step2DisburseAmount({
               value={value}
               onChange={(event) => {
                 const amount = Number(event.target.value);
-                if (amount > Number(projectBalance)) {
-                  return;
+                if (
+                  treasurySource === 'MULTISIG' ||
+                  amount <= Number(projectBalance)
+                ) {
+                  onChange(event);
                 }
-                onChange(event);
               }}
               className="p-2 border border-gray-300 rounded-md w-1/2"
             />

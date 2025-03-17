@@ -6,27 +6,31 @@ import { ArrowRight, Plus } from 'lucide-react';
 type IProps = {
   title: string;
   subtitle: string;
-  handleAddTrigger: () => void;
+  hideAddTrigger?: boolean;
+  handleAddTrigger?: () => void;
   chartSeries: number[];
   chartLabels: string[];
   mandatoryTriggers: number;
   optionalTriggers: number;
   triggeredMandatoryTriggers: number;
   triggeredOptionalTriggers: number;
-  handleViewDetails: () => void;
+  hideViewDetails?: boolean;
+  handleViewDetails?: () => void;
 };
 
 export default function TriggersPhaseCard({
   title,
   subtitle,
-  handleAddTrigger,
+  hideAddTrigger = false,
+  handleAddTrigger = () => {},
   chartLabels,
   chartSeries,
   mandatoryTriggers,
   optionalTriggers,
   triggeredMandatoryTriggers,
   triggeredOptionalTriggers,
-  handleViewDetails,
+  hideViewDetails = false,
+  handleViewDetails = () => {},
 }: IProps) {
   return (
     <div className="p-4 rounded-md border shadow-md flex flex-col justify-between">
@@ -35,7 +39,9 @@ export default function TriggersPhaseCard({
           <Heading title={title} titleStyle="text-xl" description={subtitle} />
           <IconLabelBtn
             variant="outline"
-            className="border-primary text-primary"
+            className={`border-primary text-primary ${
+              hideAddTrigger && 'hidden'
+            }`}
             Icon={Plus}
             name="Add Trigger"
             handleClick={handleAddTrigger}
@@ -87,7 +93,9 @@ export default function TriggersPhaseCard({
 
       <IconLabelBtn
         variant="outline"
-        className="border-primary text-primary w-full mt-8 flex-row-reverse gap-2"
+        className={`border-primary text-primary w-full mt-8 flex-row-reverse gap-2 ${
+          hideViewDetails && 'hidden'
+        }`}
         Icon={ArrowRight}
         name="View Details"
         handleClick={handleViewDetails}

@@ -1,7 +1,10 @@
 import { Heading } from 'apps/rahat-ui/src/common';
 import { TriggersListCard, TriggersPhaseCard } from './components';
+import { useParams, useRouter } from 'next/navigation';
 
 export default function TriggerStatementView() {
+  const router = useRouter();
+  const { id } = useParams();
   return (
     <div className="p-4">
       <Heading
@@ -12,26 +15,34 @@ export default function TriggerStatementView() {
         <TriggersPhaseCard
           title="Readiness"
           subtitle="Overview of readiness phase"
-          handleAddTrigger={() => {}}
+          handleAddTrigger={() => {
+            router.push(`/projects/aa/${id}/trigger-statements/add`);
+          }}
           chartLabels={['Mandatory', 'Optional']}
           chartSeries={[10, 2]}
           mandatoryTriggers={10}
           optionalTriggers={2}
           triggeredMandatoryTriggers={8}
           triggeredOptionalTriggers={1}
-          handleViewDetails={() => {}}
+          handleViewDetails={() => {
+            router.push(`/projects/aa/${id}/trigger-statements/111`);
+          }}
         />
         <TriggersPhaseCard
           title="Activation"
           subtitle="Overview of activation phase"
-          handleAddTrigger={() => {}}
+          handleAddTrigger={() => {
+            router.push(`/projects/aa/${id}/trigger-statements/add`);
+          }}
           chartLabels={['Mandatory', 'Optional']}
           chartSeries={[10, 2]}
           mandatoryTriggers={10}
           optionalTriggers={2}
           triggeredMandatoryTriggers={8}
           triggeredOptionalTriggers={1}
-          handleViewDetails={() => {}}
+          handleViewDetails={() => {
+            router.push(`/projects/aa/${id}/trigger-statements/111`);
+          }}
         />
         <TriggersListCard />
       </div>

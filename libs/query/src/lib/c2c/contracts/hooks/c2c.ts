@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { encodeFunctionData, formatEther, parseEther } from 'viem';
+import { encodeFunctionData, formatEther, parseEther, parseUnits } from 'viem';
 import {
   c2CProjectAbi,
   useWriteC2CProjectMulticall,
@@ -12,6 +12,10 @@ import {
 } from '../../project-actions';
 import { UUID } from 'crypto';
 import { useProjectAction } from '../../../projects';
+import {
+  useReadRahatToken,
+  useReadRahatTokenDecimals,
+} from '../generated-hooks/token';
 
 //Temporary solution, should be changed when crypto is implemented
 export const useDepositTokenToProject = () => {
@@ -24,11 +28,17 @@ export const useDepositTokenToProject = () => {
 export const useMultiSigDisburseToken = ({
   disbursementId,
   projectUUID,
+  rahatTokenAddress,
 }: {
   disbursementId: number;
   projectUUID: UUID;
+  rahatTokenAddress: `0x${string}`;
 }) => {
   const multi = useWriteC2CProjectMulticall();
+  const token = useReadRahatTokenDecimals({
+    address: rahatTokenAddress,
+  });
+  console.log('token', token);
   const projectAction = useProjectAction(['c2c', 'disburseToken']);
 
   return useMutation({
@@ -61,6 +71,7 @@ export const useMultiSigDisburseToken = ({
       safeAddress: `0x{string}`;
       c2cProjectAddress: `0x{string}`;
     }) => {
+      amount = parseUnits(amount.toString(), token.data as number);
       console.log('beneficiaryAddresses', {
         amount,
         beneficiaryAddresses,

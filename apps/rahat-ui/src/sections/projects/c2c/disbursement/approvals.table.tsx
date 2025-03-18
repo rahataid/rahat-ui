@@ -29,7 +29,7 @@ import {
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
-import { parseEther } from 'viem';
+import { parseEther, parseUnits } from 'viem';
 import { useApprovalTable } from './useApprovalTable';
 import Image from 'next/image';
 import { DataTablePagination } from '../transactions/dataTablePagination';
@@ -84,15 +84,16 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
   const disburseMultiSig = useMultiSigDisburseToken({
     disbursementId: disbursement?.id,
     projectUUID,
+    rahatTokenAddress: contractSettings?.rahattoken?.address,
   });
 
   const handleMigSigTransaction = async () => {
     const amountString = disbursement?.DisbursementBeneficiary[0]?.amount
       ? disbursement?.DisbursementBeneficiary[0]?.amount.toString()
       : '0';
-    const parsedAmount = parseEther(amountString);
+
     await disburseMultiSig.mutateAsync({
-      amount: parsedAmount,
+      amount: amountString,
       beneficiaryAddresses: disbursement?.DisbursementBeneficiary?.map(
         (d: any) => d.beneficiaryWalletAddress,
       ) as `0x${string}`[],

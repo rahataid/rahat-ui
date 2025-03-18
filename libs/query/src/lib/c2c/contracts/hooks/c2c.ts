@@ -11,11 +11,13 @@ import {
   useAddDisbursement,
 } from '../../project-actions';
 import { UUID } from 'crypto';
-import { useProjectAction } from '../../../projects';
+import { useProjectAction, useProjectSettingsStore } from '../../../projects';
 import {
   useReadRahatToken,
   useReadRahatTokenDecimals,
 } from '../generated-hooks/token';
+import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
+import { useParams } from 'next/navigation';
 
 //Temporary solution, should be changed when crypto is implemented
 export const useDepositTokenToProject = () => {
@@ -23,6 +25,19 @@ export const useDepositTokenToProject = () => {
   //     config: {
   //   }
   // })
+};
+
+export const useTokenDetails = () => {
+  const { id } = useParams();
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+  const rahatTokenAddress = contractSettings?.rahattoken?.address;
+  const token = useReadRahatTokenDecimals({
+    address: rahatTokenAddress,
+  });
+
+  return token;
 };
 
 export const useMultiSigDisburseToken = ({

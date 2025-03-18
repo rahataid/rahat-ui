@@ -1,3 +1,9 @@
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
 import { Chain } from 'viem';
 import { useChainId, useChains } from 'wagmi';
 
@@ -7,22 +13,24 @@ type ChainInfo = {
 } & Chain;
 
 export const useInfoByCurrentChain: () => ChainInfo = () => {
+  const { id }: { id: UUID } = useParams();
+
+  const safeWallet = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.SAFE_WALLET],
+  );
+  console.log('first', safeWallet);
   const chainId = useChainId();
   const chain = useChains()
     .filter(({ id }) => id === chainId)
     .pop();
+
   if (!chain) {
     throw new Error('Chain not found.');
   }
 
-  if (!process.env.NEXT_PUBLIC_SAFE_WALLET_ADDRESS) {
-    throw new Error(`Safe wallet address not found. 
-      Solution: Add NEXT_PUBLIC_SAFE_WALLET_ADDRESS to your .env file.`);
-  }
-
   const safeUrl = `https://app.safe.global/transactions/queue?safe=${chain.name
     .replace(/\s+/g, '')
-    .toLowerCase()}:${process.env.NEXT_PUBLIC_SAFE_WALLET_ADDRESS}`;
+    .toLowerCase()}:${safeWallet?.address}`;
 
   return {
     ...chain,

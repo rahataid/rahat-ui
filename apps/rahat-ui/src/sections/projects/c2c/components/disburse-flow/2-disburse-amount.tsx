@@ -78,14 +78,19 @@ export default function Step2DisburseAmount({
           </label>
           <div className="flex items-center space-x-2">
             <Input
+              type="number"
               name="disburseAmount"
               placeholder="Enter amount to send"
               value={value}
               onChange={(event) => {
                 const amount = Number(event.target.value);
-                if (amount > Number(projectBalance)) {
-                  return;
-                }
+
+                const isInvalidAmount =
+                  treasurySource === 'PROJECT' &&
+                  amount > Number(projectBalance);
+
+                if (isInvalidAmount) return;
+
                 onChange(event);
               }}
               className="p-2 border border-gray-300 rounded-md w-1/2"

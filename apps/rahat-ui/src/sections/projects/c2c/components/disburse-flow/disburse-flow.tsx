@@ -285,7 +285,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
                   disburseMultiSig.isPending ||
                   disburseToken.isPending ||
                   (currentStep === 0 && !stepData.treasurySource) ||
-                  (currentStep === 1 && !stepData.disburseAmount)
+                  (currentStep === 1 &&
+                    (!stepData.disburseAmount ||
+                      Number(stepData.disburseAmount) <= 0))
                 }
               >
                 {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}

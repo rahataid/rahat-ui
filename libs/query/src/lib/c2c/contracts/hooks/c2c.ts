@@ -115,6 +115,7 @@ export const useDisburseTokenToBeneficiaries = () => {
   const { queryClient } = useRSQuery();
   console.log({ multi, queryClient });
   const addDisbursement = useAddDisbursement();
+  const decimals = useTokenDetails();
 
   return useMutation(
     {
@@ -200,13 +201,14 @@ export const useDisburseTokenToBeneficiaries = () => {
         //   args: [encodeGetBeneficiaryClaims],
         //   address: rahatTokenAddress,
         // });
+        amount = parseUnits(amount.toString(), decimals.data as number);
         console.log({ c2CProjectAbi, rahatTokenAddress, amount });
         const encodedForDisburse = beneficiaryAddresses.map((beneficiary) => {
           console.log({ beneficiary });
           return encodeFunctionData({
             abi: c2CProjectAbi,
             functionName: 'disburseProjectToken',
-            args: [rahatTokenAddress, beneficiary, BigInt(amount)],
+            args: [rahatTokenAddress, beneficiary, amount],
           });
         });
         return multi.writeContractAsync({

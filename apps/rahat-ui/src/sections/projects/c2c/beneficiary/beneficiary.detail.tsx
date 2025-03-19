@@ -92,7 +92,7 @@ export default function BeneficiaryDetail({
   let amount = 0;
   if (disbursementBeneficiary?.length > 0) {
     disbursementBeneficiary.forEach((beneficiary: any) => {
-      amount += beneficiary.amount;
+      amount += Number(beneficiary.amount);
     });
   }
 

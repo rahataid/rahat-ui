@@ -1,11 +1,22 @@
 'use client';
 
+import { z } from 'zod';
+import { UUID } from 'crypto';
+import { useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useParams, useRouter } from 'next/navigation';
+import HeaderWithBack from '../../../components/header.with.back';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+
 import {
-  useCreateBeneficiary,
-  useCreateC2cCampaign,
-  useCreateCampaign,
   useFindAllBeneficiaryGroups,
-  useListRpTransport,
+  useGetc2cCampaign,
+  useGetRpCampaign,
+  useUpdateC2cCampaign,
+  useUpdateCampaign,
 } from '@rahat-ui/query';
 
 import {
@@ -25,37 +36,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { z } from 'zod';
-import { UUID } from 'crypto';
-import { Loader2 } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useParams, useRouter } from 'next/navigation';
-import HeaderWithBack from '../../components/header.with.back';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 
-export default function AddSMSForm() {
-  const addBeneficiary = useCreateBeneficiary();
-
+export default function EditSMSForm() {
   const router = useRouter();
-  const { id } = useParams();
+  const { id, cid } = useParams();
 
-  const createCampaign = useCreateC2cCampaign(id as UUID);
-  const { data: transportData } = useListRpTransport(id as UUID);
-  const { data: benificiaryGroups } = useFindAllBeneficiaryGroups(id as UUID, {
-    page: 1,
-    perPage: 100,
-  });
-  console.log(transportData);
+  const updateCampaign = useUpdateC2cCampaign(id as UUID);
+  const { data: campginData } = useGetc2cCampaign(id as UUID, cid);
+  const { data: benificiaryGroups } = useFindAllBeneficiaryGroups(id as UUID);
 
-  // const transportId = transportData?.find(
-  //   (transport) => transport.name === 'Prabhu SMS',
-  // )?.cuid;
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     group: z.string().min(2, { message: 'Group is required' }),
-    transportId: z.string().min(2, { message: 'Transport is required' }),
     message: z
       .string()
       .min(5, { message: 'message must be at least 5 character' }),
@@ -66,34 +58,42 @@ export default function AddSMSForm() {
     defaultValues: {
       name: '',
       group: '',
-      transportId: '',
       message: '',
     },
   });
+  useEffect(() => {
+    if (campginData) {
+      form.reset({
+        name: campginData.name || '',
+        group: campginData.groupUID || '',
+        message: campginData.message || '',
+      });
+    }
+  }, [campginData, form]);
 
-  const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
-    const createCampagin = {
+  const handleUpdateCampaign = async (data: z.infer<typeof FormSchema>) => {
+    const updateCampagin = {
       name: data.name,
       message: data.message,
-      transportId: data.transportId,
       groupUID: data.group,
+      uuid: cid,
     };
-    createCampaign.mutate(createCampagin);
+    updateCampaign.mutate(updateCampagin);
     form.reset();
-    router.push(`/projects/c2c/${id}/communication/manage`);
+    router.push(`/projects/c2c/${id}/communication/text/manage`);
   };
 
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleCreateCampaign)}>
+        <form onSubmit={form.handleSubmit(handleUpdateCampaign)}>
           <div className="h-[calc(100vh-145px)] m-4">
             <HeaderWithBack
-              title="Add SMS"
-              subtitle="Create a new SMS text"
-              path={`/projects/c2c/${id}/communication`}
+              title="Edit SMS"
+              subtitle="edit a SMS text"
+              path={`/projects/c2c/${id}/communication/text`}
             />
-            <div className="grid grid-cols-3 gap-4 mb-4 border rounded shadow-md p-4">
+            <div className="grid grid-cols-2 gap-4 mb-4 border rounded shadow-md p-4">
               <FormField
                 control={form.control}
                 name="name"
@@ -116,38 +116,6 @@ export default function AddSMSForm() {
 
               <FormField
                 control={form.control}
-                name="transportId"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Transport</FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <SelectTrigger className="text-muted-foreground">
-                          <SelectValue placeholder="Select Transport" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {transportData?.map((transport: any) => {
-                              return (
-                                <SelectItem value={transport.cuid}>
-                                  {transport.name}
-                                </SelectItem>
-                              );
-                            })}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
                 name="group"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
@@ -155,7 +123,8 @@ export default function AddSMSForm() {
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value || campginData?.groupUID}
+                        defaultValue={field.value || campginData?.groupUID}
                       >
                         <SelectTrigger className="text-muted-foreground">
                           <SelectValue placeholder="Select group" />
@@ -205,19 +174,19 @@ export default function AddSMSForm() {
               type="button"
               variant="secondary"
               onClick={() =>
-                router.push(`/projects/c2c/${id}/communication/manage`)
+                router.push(`/projects/c2c/${id}/communication/text/manage`)
               }
             >
               Cancel
             </Button>
-            {addBeneficiary.isPending ? (
+            {updateCampaign.isPending ? (
               <Button disabled>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Please wait
               </Button>
             ) : (
               <Button type="submit" className="px-8">
-                Add
+                Update
               </Button>
             )}
           </div>

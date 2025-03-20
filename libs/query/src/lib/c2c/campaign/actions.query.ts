@@ -1,4 +1,5 @@
 import { MS_ACTIONS } from '@rahataid/sdk';
+import { Pagination } from '@rumsan/sdk/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
@@ -6,7 +7,9 @@ import { useProjectAction } from '../../projects';
 
 // Constants for actions
 const CREATE_CAMPAIGN = 'c2cProject.campaign.create';
+const UPDATE_CAMPAIGN = 'c2cProject.campaign.update';
 const CREATE_AUDIENCE = 'c2cProject.campaign.create_audience';
+const CREATE_BULK_AUDIENCE = 'c2cProject.campaign.create_bulk_audience';
 const GET_ALL_CAMPAIGN = 'c2cProject.campaign.get';
 const GET_CAMPAIGN = 'c2cProject.campaign.getOne';
 const GET_ALL_TRANSPORT = 'c2cProject.campaign.get_transport';
@@ -14,6 +17,7 @@ const GET_ALL_AUDIENCE = 'c2cProject.campaign.get_audience';
 const TRIGGER_CAMPAIGN = 'c2cProject.campaign.trigger';
 const GET_ALL_COMMUNICATION_LOGS = 'c2cProject.campaign.communication_logs';
 const GET_ALL_COMMUNICATION_STATS = 'c2cProject.campaign.communication_stats';
+const GET_CAMPAIGN_LOGS = 'c2cProject.campaign.log';
 
 // Hooks for create campaign
 export const useCreateC2cCampaign = (projectUUID: UUID) => {
@@ -55,7 +59,46 @@ export const useCreateC2cCampaign = (projectUUID: UUID) => {
   });
 };
 
-export const useTriggerC2cCampaign = (projectUUID: UUID) => {
+export const useUpdateC2cCampaign = (projectUUID: UUID) => {
+  const action = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async (data: any) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: UPDATE_CAMPAIGN,
+          payload: data,
+        },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.fire({
+        title: 'Campaign updated successfully',
+        icon: 'success',
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['c2cCampaignList'],
+      });
+    },
+    onError: () => {
+      toast.fire({
+        title: 'Error while updating campaign.',
+        icon: 'error',
+      });
+    },
+  });
+};
+
+export const useTriggerc2cCampaign = (projectUUID: UUID) => {
   const action = useProjectAction();
   const queryClient = useQueryClient();
   const alert = useSwal();
@@ -82,6 +125,9 @@ export const useTriggerC2cCampaign = (projectUUID: UUID) => {
         icon: 'success',
       });
       queryClient.invalidateQueries({
+        queryKey: ['c2cCampaignLogs'],
+      });
+      queryClient.invalidateQueries({
         queryKey: ['c2cCampaign'],
       });
     },
@@ -91,31 +137,39 @@ export const useTriggerC2cCampaign = (projectUUID: UUID) => {
         icon: 'error',
       });
       queryClient.invalidateQueries({
-        queryKey: ['c2cCampaign'],
+        queryKey: ['c2cCampaignLogs'],
       });
     },
   });
 };
 
-export const useListC2cCampaign = (projectUUID: UUID) => {
+export const useListc2cCampaign = (
+  projectUUID: UUID,
+  payload: Pagination & { [key: string]: string },
+) => {
   const action = useProjectAction();
 
-  return useQuery({
-    queryKey: ['c2cCampaignList', projectUUID],
+  const query = useQuery({
+    queryKey: ['c2cCampaignList', projectUUID, payload],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
           action: GET_ALL_CAMPAIGN,
-          payload: {},
+          payload: payload,
         },
       });
-      return res.data;
+      return { data: res.data, meta: res.response.meta };
     },
   });
+  return {
+    ...query,
+    data: query?.data?.data || [],
+    meta: query?.data?.meta,
+  };
 };
 
-export const useListC2cCommunicationStats = (projectUUID: UUID) => {
+export const useListc2cCommunicationStats = (projectUUID: UUID) => {
   const action = useProjectAction();
 
   return useQuery({
@@ -133,7 +187,10 @@ export const useListC2cCommunicationStats = (projectUUID: UUID) => {
   });
 };
 
-export const useListC2cCommunicationLogs = (projectUUID: UUID) => {
+export const useListc2cCommunicationLogs = (
+  projectUUID: UUID,
+  payload: Pagination,
+) => {
   const action = useProjectAction();
 
   return useQuery({
@@ -143,15 +200,33 @@ export const useListC2cCommunicationLogs = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: GET_ALL_COMMUNICATION_LOGS,
-          payload: {},
+          payload: payload,
         },
       });
-      return res.data;
+      return res;
     },
   });
 };
 
-export const useGetC2cCampaign = (projectUUID: UUID, id: number) => {
+export const useListc2cCampaignLog = (projectUUID: UUID, payload: any) => {
+  const action = useProjectAction();
+
+  return useQuery({
+    queryKey: ['c2cCampaignLogs', projectUUID, payload],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: GET_CAMPAIGN_LOGS,
+          payload: payload,
+        },
+      });
+      return res;
+    },
+  });
+};
+
+export const useGetc2cCampaign = (projectUUID: UUID, uuid: string) => {
   const action = useProjectAction();
 
   return useQuery({
@@ -161,7 +236,7 @@ export const useGetC2cCampaign = (projectUUID: UUID, id: number) => {
         uuid: projectUUID,
         data: {
           action: GET_CAMPAIGN,
-          payload: { id },
+          payload: { uuid },
         },
       });
       return res.data;
@@ -169,9 +244,8 @@ export const useGetC2cCampaign = (projectUUID: UUID, id: number) => {
   });
 };
 
-export const useCreateC2cAudience = (projectUUID: UUID) => {
+export const useCreatec2cAudience = (projectUUID: UUID) => {
   const action = useProjectAction();
-  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: any) => {
@@ -184,17 +258,31 @@ export const useCreateC2cAudience = (projectUUID: UUID) => {
       });
       return res.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['c2cListAudience'] });
+  });
+};
+
+export const useBulkCreatec2cAudience = (projectUUID: UUID) => {
+  const action = useProjectAction();
+
+  return useMutation({
+    mutationFn: async (data: any) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: CREATE_BULK_AUDIENCE,
+          payload: data,
+        },
+      });
+      return res.data;
     },
   });
 };
 
-export const useListC2cAudience = (projectUUID: UUID) => {
+export const useListc2cAudience = (projectUUID: UUID) => {
   const action = useProjectAction();
 
   return useQuery({
-    queryKey: ['c2cListAudience'],
+    queryKey: ['c2cListAudience', projectUUID],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
@@ -208,7 +296,7 @@ export const useListC2cAudience = (projectUUID: UUID) => {
   });
 };
 
-export const useListC2cTransport = (projectUUID: UUID) => {
+export const useListc2cTransport = (projectUUID: UUID) => {
   const action = useProjectAction();
 
   return useQuery({

@@ -32,6 +32,7 @@ import * as React from 'react';
 import { parseEther } from 'viem';
 import { useApprovalTable } from './useApprovalTable';
 import Image from 'next/image';
+import { DataTablePagination } from '../transactions/dataTablePagination';
 
 export function ApprovalTable({ disbursement }: { disbursement: any }) {
   const { id } = useParams();
@@ -115,7 +116,7 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
           </Button>
         </div>
       )}
-      <div className="rounded h-[calc(100vh-320px)] bg-card">
+      <div className="rounded h-[calc(100vh-360px)] bg-card">
         <Table>
           <ScrollArea className="h-table1">
             <TableHeader>
@@ -195,26 +196,7 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
           </ScrollArea>
         </Table>
       </div>
-      <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <DataTablePagination table={table} />
     </div>
   );
 }

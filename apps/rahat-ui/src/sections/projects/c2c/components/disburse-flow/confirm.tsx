@@ -1,11 +1,21 @@
 'use client';
 import { CheckCircleIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import React from 'react';
+import { useAccount } from 'wagmi';
 
 const Confirm = () => {
   const { id } = useParams();
+
+  const searchParams = useSearchParams();
+  const { address } = useAccount();
+
+  const amount = Number(searchParams.get('amount'));
+  const source = searchParams.get('source');
+  const beneficiary = Number(searchParams.get('beneficiary'));
+  const from = searchParams.get('from');
+
   return (
     <>
       <div className="flex items-center gap-2 m-4">
@@ -22,25 +32,34 @@ const Confirm = () => {
                 You have successfully sent request for disbursement of
               </p>
               <p className="text-lg font-medium text-gray-700">
-                <strong>400 USDC</strong> : 100 USDC each to 4 Beneficiaries
-                from this
+                <strong>{amount * beneficiary} USDC</strong> : {amount} USDC
+                each to {beneficiary} Beneficiaries from{' '}
+                {source === 'MULTISIG'
+                  ? 'this'
+                  : source === 'PROJECT'
+                  ? `c2c Project Balance`
+                  : `your wallet ${address}`}
               </p>
-              Gnosis A/C :{' '}
+              {source === 'MULTISIG' && (
+                <>
+                  <p>'Gnosis A/C' : </p>
+                  <Link
+                    className="text-blue-500 font-medium underline mt-2"
+                    href="/gnosis-account"
+                  >
+                    {from}
+                  </Link>
+                  <p className="text-sm text-gray-500 mt-4">
+                    Please contact your Gnosis A/C holder for the release of the
+                    token
+                  </p>
+                </>
+              )}
               <Link
-                className="text-blue-500 font-medium underline mt-2"
-                href="/gnosis-account"
+                className="mt-6 bg-blue-100 text-blue-500 py-2 px-8 rounded-md inline-block"
+                href={`/projects/c2c/${id}/transactions`}
               >
-                x23121sd321cdq
-              </Link>
-              <p className="text-sm text-gray-500 mt-4">
-                Please contact your Gnosis A/C holder for the release of the
-                token
-              </p>
-              <Link
-                className="mt-6 bg-blue-50 text-blue-500 py-2 px-4 rounded-md inline-block"
-                href={`/projects/c2c/${id}/disbursement`}
-              >
-                View Disbursement
+                View Transactions
               </Link>
             </div>
           </div>

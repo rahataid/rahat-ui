@@ -14,6 +14,7 @@ type Step3DisburseSummaryProps = {
   token: string;
   projectSubgraphDetails: any;
   tokenName?: string;
+  treasurySource: string;
 };
 
 export default function Step3DisburseSummary({
@@ -22,6 +23,7 @@ export default function Step3DisburseSummary({
   token,
   projectSubgraphDetails,
   tokenName = 'USDC',
+  treasurySource,
 }: Step3DisburseSummaryProps) {
   const { id } = useParams();
 
@@ -60,21 +62,25 @@ export default function Step3DisburseSummary({
                   {selectedBeneficiaries?.length}
                 </p>
               </div>
-              <div>
-                <h2 className="text-sm font-medium text-gray-500">
-                  Project Balance
-                </h2>
-                <p className="text-lg font-semibold text-gray-800">
-                  {projectBalance} USDC
-                </p>
-              </div>
+              {treasurySource === 'PROJECT' && (
+                <div>
+                  <h2 className="text-sm font-medium text-gray-500">
+                    Project Balance
+                  </h2>
+                  <p className="text-lg font-semibold text-gray-800">
+                    {projectBalance} USDC
+                  </p>
+                </div>
+              )}
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
                   Send amount among beneficiaries
                 </h2>
                 <p className="text-lg font-semibold text-gray-800">
                   {selectedBeneficiaries &&
-                    Number(value) / selectedBeneficiaries?.length}{' '}
+                    Math.round(
+                      Number(value) * selectedBeneficiaries?.length * 100,
+                    ) / 100}{' '}
                   USDC
                 </p>
               </div>

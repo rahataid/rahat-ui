@@ -101,7 +101,7 @@ export const columns: ColumnDef<Transaction>[] = [
         currency: 'USD',
       }).format(amount);
 
-      return <div className="text-right font-medium">{formatted}</div>;
+      return <div className="text-right font-medium">{formatted} USDC</div>;
     },
   },
 ];

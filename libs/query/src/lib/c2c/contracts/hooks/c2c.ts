@@ -18,6 +18,7 @@ import {
 } from '../generated-hooks/token';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 import { useParams } from 'next/navigation';
+import { waitForTransactionReceipt } from 'viem/actions';
 
 //Temporary solution, should be changed when crypto is implemented
 export const useDepositTokenToProject = () => {
@@ -44,10 +45,12 @@ export const useMultiSigDisburseToken = ({
   disbursementId,
   projectUUID,
   rahatTokenAddress,
+  config,
 }: {
   disbursementId: number;
   projectUUID: UUID;
   rahatTokenAddress: `0x${string}`;
+  config: any;
 }) => {
   const multi = useWriteC2CProjectMulticall();
   const token = useReadRahatTokenDecimals({
@@ -60,19 +63,32 @@ export const useMultiSigDisburseToken = ({
     onError: (error) => {
       console.error(error);
     },
-    async onSuccess(data, variables, context) {
-      await projectAction.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: 'c2cProject.disbursement.update',
-          payload: {
-            id: disbursementId,
-            status: DisbursementStatus.COMPLETED,
-          },
-        },
-      });
-      console.log({ data, variables, context });
-    },
+    // async onSuccess(data, variables, context) {
+    //   console.log('data', data);
+    //   await waitForTransactionReceipt(config, {
+    //     hash: data,
+    //   })
+    //     .catch((e) => {
+    //       console.error('Error in waiting for transaction receipt', e);
+    //       throw e;
+    //     })
+    //     .then((receipt) => {
+    //       console.log('receipt', receipt);
+    //       return receipt;
+    //     });
+
+    //   await projectAction.mutateAsync({
+    //     uuid: projectUUID,
+    //     data: {
+    //       action: 'c2cProject.disbursement.update',
+    //       payload: {
+    //         id: disbursementId,
+    //         status: DisbursementStatus.COMPLETED,
+    //       },
+    //     },
+    //   });
+    //   console.log({ data, variables, context });
+    // },
     mutationFn: async ({
       amount,
       beneficiaryAddresses,

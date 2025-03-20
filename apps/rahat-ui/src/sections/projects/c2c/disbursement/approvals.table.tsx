@@ -3,6 +3,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useGetDisbursementApprovals,
   useMultiSigDisburseToken,
+  useProjectAction,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -33,10 +34,14 @@ import { parseEther, parseUnits } from 'viem';
 import { useApprovalTable } from './useApprovalTable';
 import Image from 'next/image';
 import { DataTablePagination } from '../transactions/dataTablePagination';
+import { config } from '../../../../../wagmi.config';
+import { useWaitForTransactionReceipt } from 'wagmi';
+import Swal from 'sweetalert2';
 
 export function ApprovalTable({ disbursement }: { disbursement: any }) {
   const { id } = useParams();
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [txHash, setTxHash] = React.useState<string | undefined>(undefined);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
@@ -50,10 +55,8 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const columns = useApprovalTable();
-  const { id: projectUUID, uuid } = useParams() as {
-    id: UUID;
-    uuid: UUID;
-  };
+
+  const { id: projectUUID, uuid } = useParams() as { id: UUID; uuid: UUID };
   const { data, isLoading, isFetching, isError } = useGetDisbursementApprovals({
     disbursementUUID: uuid,
     projectUUID: projectUUID,
@@ -61,7 +64,13 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     perPage: 10,
     transactionHash: disbursement?.transactionHash,
   });
-  console.log(disbursement);
+
+  const projectAction = useProjectAction(['c2c', 'disburseToken']);
+  const waitedReceiptData = useWaitForTransactionReceipt({
+    hash: txHash,
+    enabled: !!txHash,
+  });
+
   const table = useReactTable({
     data: data?.approvals || [],
     columns,
@@ -85,6 +94,7 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     disbursementId: disbursement?.id,
     projectUUID,
     rahatTokenAddress: contractSettings?.rahattoken?.address,
+    config: config,
   });
 
   const handleMigSigTransaction = async () => {
@@ -102,6 +112,53 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
       c2cProjectAddress: contractSettings?.c2cproject?.address,
     });
   };
+
+  React.useEffect(() => {
+    if (disburseMultiSig.isSuccess) {
+      setTxHash(disburseMultiSig.data);
+    }
+  }, [disburseMultiSig.data, disburseMultiSig.isSuccess]);
+
+  // Add a ref to prevent multiple status updates
+  const hasUpdatedStatus = React.useRef(false);
+
+  React.useEffect(() => {
+    if (waitedReceiptData.isSuccess && !hasUpdatedStatus.current) {
+      hasUpdatedStatus.current = true;
+      const saveDisbursementStatus = async () => {
+        await projectAction.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: 'c2cProject.disbursement.update',
+            payload: {
+              id: disbursement?.id,
+              status: 'COMPLETED',
+            },
+          },
+        });
+      };
+      saveDisbursementStatus()
+        .then(() => {
+          // Reset the ref after the status update
+          hasUpdatedStatus.current = false;
+          Swal.fire({
+            title: 'Transaction Executed',
+            text: 'The transaction has been executed successfully.',
+            icon: 'success',
+            confirmButtonText: 'OK',
+          });
+        })
+        .catch((error) => {
+          console.error('Error updating disbursement status:', error);
+          Swal.fire({
+            title: 'Transaction Failed',
+            text: 'There was an error executing the transaction.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+          });
+        });
+    }
+  }, [waitedReceiptData.isSuccess, projectAction, projectUUID, disbursement]);
 
   return (
     <div className="w-full">
@@ -123,18 +180,16 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </TableHead>
-                    );
-                  })}
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  ))}
                 </TableRow>
               ))}
             </TableHeader>

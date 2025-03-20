@@ -13,7 +13,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import React, { FC, useEffect, useState } from 'react';
-import { parseEther } from 'viem';
+import { parseEther, parseUnits } from 'viem';
 import Step1DisburseMethod from './1-disburse-method';
 import Step2DisburseAmount from './2-disburse-amount';
 import Step3DisburseSummary from './3-disburse-summary';
@@ -99,7 +99,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       return;
     }
 
-    const disburseAmount = parseEther(stepData.disburseAmount);
+    const disburseAmount = parseUnits(stepData.disburseAmount, 6);
     const beneficiaryAddresses = selectedBeneficiaries as `0x${string}`[];
     const { rahattoken, c2cproject } = contractSettings || {};
 

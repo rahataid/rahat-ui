@@ -1,14 +1,14 @@
 import { UUID } from 'crypto';
-import ElkenyaTable from '../table.component';
+import ElkenyaTable from '../../table.component';
 import React, { useMemo, useState } from 'react';
 import { TriggerConfirmModal } from './confirm.modal';
 import getIcon from 'apps/rahat-ui/src/utils/getIcon';
 import { useParams, useRouter } from 'next/navigation';
-import SearchInput from '../../components/search.input';
-import ViewColumns from '../../components/view.columns';
+import SearchInput from '../../../components/search.input';
+import ViewColumns from '../../../components/view.columns';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import HeaderWithBack from '../../components/header.with.back';
-import { useElkenyaSMSTableColumns } from './use.sms.table.columns';
+import HeaderWithBack from '../../../components/header.with.back';
+import { useElkenyaSMSTableColumns } from '../use.sms.table.columns';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 import {
@@ -135,7 +135,7 @@ export default function CommunicationView() {
           <HeaderWithBack
             title="SMS Details"
             subtitle="Here is the detailed view of the selected SMS"
-            path={`/projects/c2c/${id}/communication/manage`}
+            path={`/projects/c2c/${id}/communication/email/manage`}
           />
           <TriggerConfirmModal
             campaignId={cid}

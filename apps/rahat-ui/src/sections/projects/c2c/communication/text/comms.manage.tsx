@@ -28,7 +28,7 @@ export default function ManageTexts() {
   const { data: transportData } = useListRpTransport(id as UUID);
 
   const transportId = transportData?.find(
-    (transport) => transport.name === process.env.NEXT_PUBLIC_SMS_TRANSPORT,
+    (transport) => transport.name === 'Prabhu SMS',
   )?.cuid;
 
   const { data: campaignData, meta } = useListc2cCampaign(id as UUID, {

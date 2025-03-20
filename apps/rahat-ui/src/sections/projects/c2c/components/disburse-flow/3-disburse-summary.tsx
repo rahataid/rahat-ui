@@ -83,7 +83,9 @@ export default function Step3DisburseSummary({
                 </h2>
                 <p className="text-lg font-semibold text-gray-800">
                   {selectedBeneficiaries &&
-                    Number(value) * selectedBeneficiaries?.length}{' '}
+                    Math.round(
+                      Number(value) * selectedBeneficiaries?.length * 100,
+                    ) / 100}{' '}
                   USDC
                 </p>
               </div>

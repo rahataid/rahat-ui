@@ -85,6 +85,7 @@ export default function Step2DisburseAmount({
           </label>
           <div className="flex items-center space-x-2">
             <Input
+              type="number"
               name="disburseAmount"
               placeholder="Enter amount to send"
               value={value}

@@ -5,6 +5,7 @@ import {
   useCreateC2cCampaign,
   useCreateCampaign,
   useFindAllBeneficiaryGroups,
+  useListRpTransport,
 } from '@rahat-ui/query';
 
 import {
@@ -41,17 +42,20 @@ export default function AddSMSForm() {
   const { id } = useParams();
 
   const createCampaign = useCreateC2cCampaign(id as UUID);
-  // const { data: transportData } = useListRpTransport(id as UUID);
+  const { data: transportData } = useListRpTransport(id as UUID);
   const { data: benificiaryGroups } = useFindAllBeneficiaryGroups(id as UUID, {
     page: 1,
     perPage: 100,
   });
+  console.log(transportData);
+
   // const transportId = transportData?.find(
   //   (transport) => transport.name === 'Prabhu SMS',
   // )?.cuid;
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     group: z.string().min(2, { message: 'Group is required' }),
+    transportId: z.string().min(2, { message: 'Transport is required' }),
     message: z
       .string()
       .min(5, { message: 'message must be at least 5 character' }),
@@ -62,6 +66,7 @@ export default function AddSMSForm() {
     defaultValues: {
       name: '',
       group: '',
+      transportId: '',
       message: '',
     },
   });
@@ -70,7 +75,7 @@ export default function AddSMSForm() {
     const createCampagin = {
       name: data.name,
       message: data.message,
-      // transportId: transportId,
+      transportId: data.transportId,
       groupUID: data.group,
     };
     createCampaign.mutate(createCampagin);
@@ -88,7 +93,7 @@ export default function AddSMSForm() {
               subtitle="Create a new SMS text"
               path={`/projects/c2c/${id}/communication`}
             />
-            <div className="grid grid-cols-2 gap-4 mb-4 border rounded shadow-md p-4">
+            <div className="grid grid-cols-3 gap-4 mb-4 border rounded shadow-md p-4">
               <FormField
                 control={form.control}
                 name="name"
@@ -107,6 +112,38 @@ export default function AddSMSForm() {
                     </FormItem>
                   );
                 }}
+              />
+
+              <FormField
+                control={form.control}
+                name="transportId"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Transport</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <SelectTrigger className="text-muted-foreground">
+                          <SelectValue placeholder="Select Transport" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {transportData?.map((transport: any) => {
+                              return (
+                                <SelectItem value={transport.cuid}>
+                                  {transport.name}
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
 
               <FormField

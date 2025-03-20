@@ -50,7 +50,7 @@ export default function AddSMSForm() {
   console.log(transportData);
 
   const transportId = transportData?.find(
-    (transport) => transport.name === process.env.NEXT_PUBLIC_SMS_TRANSPORT,
+    (transport) => transport.name === 'Prabhu SMS',
   )?.cuid;
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),

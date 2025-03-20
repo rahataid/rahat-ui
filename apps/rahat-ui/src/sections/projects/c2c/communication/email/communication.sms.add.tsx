@@ -49,7 +49,7 @@ export default function AddSMSForm() {
   });
 
   const transportId = transportData?.find(
-    (transport) => transport.name === process.env.NEXT_PUBLIC_EMAIL_TRANSPORT,
+    (transport) => transport.name === 'Email Broadcast',
   )?.cuid;
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),

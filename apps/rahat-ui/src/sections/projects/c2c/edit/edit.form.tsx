@@ -37,7 +37,6 @@ import {
   useProject,
   useProjectEdit,
   useProjectSettingsStore,
-  useProjectStore,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { CalendarIcon } from 'lucide-react';
@@ -103,30 +102,17 @@ export default function EditProject() {
   });
 
   useEffect(() => {
-    form.setValue('extras.treasury.contractAddress', projectContract);
-  }, [form, projectContract]);
-
-  useEffect(() => {
     if (project && project?.data) {
       const projectData = JSON.parse(JSON.stringify(project?.data));
       form.reset({
         ...projectData,
-        ...(projectData?.extras?.treasury
-          ? {
-              extras: {
-                ...projectData.extras,
-              },
-            }
-          : {
-              extras: {
-                treasury: {
-                  network: '',
-                  multiSigWalletAddress: '',
-                  contractAddress: projectContract,
-                  treasurySources: [],
-                },
-              },
-            }),
+        extras: {
+          ...projectData.extras,
+          treasury: {
+            ...projectData.extras?.treasury,
+            contractAddress: projectContract,
+          },
+        },
         projectType: projectData.type,
         startDate: projectData.startDate
           ? new Date(projectData.startDate)
@@ -158,16 +144,14 @@ export default function EditProject() {
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <FormField
                   name="name"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormControl>
-                          <Input type="text" placeholder="Name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="text" placeholder="Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
                 <FormField
                   name="projectType"
@@ -184,19 +168,14 @@ export default function EditProject() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {enumToObjectArray(ProjectTypes).map((item) => {
-                            return (
-                              <SelectItem
-                                key={item.value}
-                                value={item.value.toLowerCase()}
-                              >
-                                {item.label}
-                              </SelectItem>
-                            );
-                          })}
-                          {/* // <SelectItem value="CVA">CVA</SelectItem>
-                          // <SelectItem value="AA">AA</SelectItem>
-                          // <SelectItem value="EL">EL</SelectItem> */}
+                          {enumToObjectArray(ProjectTypes).map((item) => (
+                            <SelectItem
+                              key={item.value}
+                              value={item.value.toLowerCase()}
+                            >
+                              {item.label}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -205,177 +184,155 @@ export default function EditProject() {
                 />
                 <FormField
                   name="location"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="Location"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="text" placeholder="Location" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <FormField
                     name="longitude"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              placeholder="Longitude"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder="Longitude"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                   <FormField
                     name="latitude"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              placeholder="Latitude"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder="Latitude"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
                 <FormField
                   name="projectManager"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="Project Manager"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Project Manager"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-
                 <FormField
                   name="description"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="Description"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Description"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <FormField
                     name="startDate"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={'outline'}
-                                  className={cn(
-                                    'w-full pl-3 text-left font-normal',
-                                    !field.value && 'text-muted-foreground',
-                                  )}
-                                >
-                                  {field.value ? (
-                                    format(field.value, 'PPP')
-                                  ) : (
-                                    <span>Start Date</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className="w-auto p-0"
-                              align="start"
-                            >
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) =>
-                                  date > new Date() ||
-                                  date < new Date('1900-01-01')
-                                }
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </FormItem>
-                      );
-                    }}
+                    render={({ field }) => (
+                      <FormItem>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={'outline'}
+                                className={cn(
+                                  'w-full pl-3 text-left font-normal',
+                                  !field.value && 'text-muted-foreground',
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, 'PPP')
+                                ) : (
+                                  <span>Start Date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date > new Date() ||
+                                date < new Date('1900-01-01')
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </FormItem>
+                    )}
                   />
                   <FormField
                     name="endDate"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={'outline'}
-                                  className={cn(
-                                    'w-full pl-3 text-left font-normal',
-                                    !field.value && 'text-muted-foreground',
-                                  )}
-                                >
-                                  {field.value ? (
-                                    format(field.value, 'PPP')
-                                  ) : (
-                                    <span>End Date</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className="w-auto p-0"
-                              align="start"
-                            >
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) => date < new Date()}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </FormItem>
-                      );
-                    }}
+                    render={({ field }) => (
+                      <FormItem>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={'outline'}
+                                className={cn(
+                                  'w-full pl-3 text-left font-normal',
+                                  !field.value && 'text-muted-foreground',
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, 'PPP')
+                                ) : (
+                                  <span>End Date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date > new Date() ||
+                                date < new Date('1900-01-01')
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </FormItem>
+                    )}
                   />
                 </div>
               </div>

@@ -12,14 +12,18 @@ import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { ArrowUpDown, Copy, CopyCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
-import { formatEther } from 'viem';
+import { formatEther, parseUnits } from 'viem';
 import { Transaction } from './types';
+import { useTokenDetails } from '@rahat-ui/query';
+import { useInfoByCurrentChain } from 'apps/rahat-ui/src/hooks/use-info-by-current-chain';
 const useTransactionColumn = () => {
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
   const clickToCopy = (walletAddress: string, index: number) => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(index);
   };
+  const chainInfo = useInfoByCurrentChain();
+  const tokenDetails = useTokenDetails();
 
   const columns: ColumnDef<Transaction>[] = [
     {
@@ -94,7 +98,7 @@ const useTransactionColumn = () => {
       cell: ({ row }) => (
         <Link
           target="_blank"
-          href={`https://sepolia.basescan.org/tx/${row.getValue(
+          href={`${chainInfo.blockExplorers?.default.url}/tx/${row.getValue(
             'transactionHash',
           )}`}
           className="capitalize text-blue-500"
@@ -107,7 +111,10 @@ const useTransactionColumn = () => {
       accessorKey: 'amount',
       header: () => <div className="text-right">Amount</div>,
       cell: ({ row }) => {
-        const amount = parseFloat(formatEther(BigInt(row.getValue('amount'))));
+        // const amount = parseFloat(formatEther(BigInt(row.getValue('amount'))));
+        const amount =
+          (row.getValue('amount') as number) / 10 ** (tokenDetails.data ?? 18);
+        console.log('second', amount);
 
         // Format the amount in USD without the currency symbol
         const formatted = new Intl.NumberFormat('en-US', {

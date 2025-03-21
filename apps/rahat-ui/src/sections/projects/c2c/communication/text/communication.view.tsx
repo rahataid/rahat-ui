@@ -1,13 +1,13 @@
 import { UUID } from 'crypto';
 import { Settings } from 'lucide-react';
-import C2CTable from '../table.component';
+import C2CTable from '../../table.component';
 import React, { useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import SearchInput from '../../components/search.input';
-import ViewColumns from '../../components/view.columns';
+import SearchInput from '../../../components/search.input';
+import ViewColumns from '../../../components/view.columns';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useElkenyaSMSTableColumns } from './use.sms.table.columns';
-import ClientSidePagination from '../../components/client.side.pagination';
+import { useElkenyaSMSTableColumns } from '../use.sms.table.columns';
+import ClientSidePagination from '../../../components/client.side.pagination';
 import {
   useListc2cCommunicationLogs,
   useListRpCommunicationLogs,
@@ -162,7 +162,7 @@ export default function CommunicationView() {
             <ViewColumns table={table} />
             <Button
               onClick={() =>
-                router.push(`/projects/c2c/${id}/communication/manage`)
+                router.push(`/projects/c2c/${id}/communication/text/manage`)
               }
             >
               <Settings className="mr-1" size={18} /> Manage

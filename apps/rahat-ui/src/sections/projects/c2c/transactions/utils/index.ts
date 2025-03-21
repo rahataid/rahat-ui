@@ -19,7 +19,7 @@ export const mergeTransactions = async (
       topic: 'Received',
       date: new Date(
         parseInt(transaction.blockTimestamp) * 1000,
-      ).toLocaleDateString('en-US', {
+      ).toLocaleString('en-US', {
         timeZone: 'UTC',
       }),
       amount: transaction.value,
@@ -33,7 +33,7 @@ export const mergeTransactions = async (
       topic: 'Disbursed',
       date: new Date(
         parseInt(transaction.blockTimestamp) * 1000,
-      ).toLocaleDateString('en-US', {
+      ).toLocaleString('en-US', {
         timeZone: 'UTC',
       }),
     })),

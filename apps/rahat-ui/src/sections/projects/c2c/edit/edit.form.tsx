@@ -113,6 +113,14 @@ export default function EditProject() {
             contractAddress: projectContract,
           },
         },
+        projectType: projectData.type,
+        startDate: projectData.startDate
+          ? new Date(projectData.startDate)
+          : null,
+        endDate: projectData.endDate ? new Date(projectData.endDate) : null,
+        location: projectData.location,
+        latitude: projectData.latitude,
+        longitude: projectData.longitude,
       });
     }
   }, [form, project, projectContract]);
@@ -152,6 +160,7 @@ export default function EditProject() {
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>

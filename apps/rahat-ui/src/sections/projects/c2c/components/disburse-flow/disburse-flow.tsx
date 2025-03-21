@@ -116,12 +116,12 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
         c2cProjectAddress: c2cproject?.address,
       });
       route.push(
-        `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&from=${safeWallet}`,
+        `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&from=${safeWallet}&&disbursementUuid=${data?.uuid}`,
       );
       return;
     }
 
-    await disburseToken.mutateAsync({
+    const disbursement = await disburseToken.mutateAsync({
       amount: disburseAmount,
       beneficiaryAddresses,
       rahatTokenAddress: rahattoken?.address,
@@ -129,9 +129,10 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       disburseMethod: stepData.treasurySource,
       projectUUID: id,
     });
+    console.log('SUCCESS', disbursement);
 
     route.push(
-      `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}`,
+      `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&disbursementUuid=${disbursement?.uuid}`,
     );
   };
 

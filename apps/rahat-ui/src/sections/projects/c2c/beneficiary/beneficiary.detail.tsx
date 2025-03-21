@@ -271,7 +271,7 @@ export default function BeneficiaryDetail({
                         <div className="grid grid-cols-3 gap-3 mt-3">
                           <div>
                             <p className="font-light text-base">
-                              {amount + ' USDC' || 'N/A'}
+                              {amount.toFixed(2) + ' USDC' || 'N/A'}
                             </p>
                             <p className="text-sm font-normal text-muted-foreground">
                               Disbursed Amount

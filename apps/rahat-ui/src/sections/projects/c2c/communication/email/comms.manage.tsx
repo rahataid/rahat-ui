@@ -39,8 +39,8 @@ export default function ManageTexts() {
     <div className="p-4">
       <div className="flex justify-between items-center">
         <HeaderWithBack
-          title="Manage Texts"
-          subtitle="Here is list of all the text messages"
+          title="Manage Emails"
+          subtitle="Here is list of all the Emails"
           path={`/projects/c2c/${id}/communication/email`}
         />
         <AddButton

@@ -28,15 +28,14 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
-import { parseEther, parseUnits } from 'viem';
-import { useApprovalTable } from './useApprovalTable';
-import Image from 'next/image';
-import { DataTablePagination } from '../transactions/dataTablePagination';
-import { config } from '../../../../../wagmi.config';
-import { useWaitForTransactionReceipt } from 'wagmi';
 import Swal from 'sweetalert2';
+import { useWaitForTransactionReceipt } from 'wagmi';
+import { config } from '../../../../../wagmi.config';
+import { DataTablePagination } from '../transactions/dataTablePagination';
+import { useApprovalTable } from './useApprovalTable';
 
 export function ApprovalTable({ disbursement }: { disbursement: any }) {
   const { id } = useParams();
@@ -160,10 +159,31 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     }
   }, [waitedReceiptData.isSuccess, projectAction, projectUUID, disbursement]);
 
+  const approved = data?.approvals?.filter(
+    (approval: any) => approval?.hasApproved,
+  );
   return (
     <div className="w-full">
       {data?.isExecuted && (
         <div className="flex items-center justify-end px-4 py-2 border-b-2 bg-card">
+          <div className="flex flex-col sm:flex-row items-center mr-4 justify-between space-y-2 sm:space-y-0 text-sm font-medium text-gray-500">
+            <div className="flex items-center">
+              <span className="mr-2">Approvals:</span>
+              <span className="px-2 py-1 bg-green-100 text-green-800 rounded">
+                {approved?.length}
+              </span>
+              <span className="mx-1">/</span>
+              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">
+                {data?.approvals?.length}
+              </span>
+            </div>
+            <div className="flex items-center">
+              <span className="mr-2">Required:</span>
+              <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded">
+                {data?.confirmationsRequired}
+              </span>
+            </div>
+          </div>
           <Button
             disabled={disburseMultiSig.isPending}
             variant="outline"

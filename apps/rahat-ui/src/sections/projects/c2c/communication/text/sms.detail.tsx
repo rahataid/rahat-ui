@@ -102,7 +102,7 @@ export default function CommunicationView() {
         return {
           createdAt: new Date(item.createdAt).toLocaleString(),
           status: item?.status,
-          to: item?.address,
+          address: item?.address,
         };
       });
     } else {

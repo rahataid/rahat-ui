@@ -89,8 +89,8 @@ export default function EditSMSForm() {
         <form onSubmit={form.handleSubmit(handleUpdateCampaign)}>
           <div className="h-[calc(100vh-145px)] m-4">
             <HeaderWithBack
-              title="Edit SMS"
-              subtitle="edit a SMS text"
+              title="Edit Email"
+              subtitle="edit a Email"
               path={`/projects/c2c/${id}/communication/email`}
             />
             <div className="grid grid-cols-2 gap-4 mb-4 border rounded shadow-md p-4">

@@ -118,7 +118,7 @@ export const useProjectBeneficiaryTableColumns = () => {
             amount += Number(beneficiary.amount);
           });
         }
-        return <div className="font-medium">{amount || 0} USDC</div>;
+        return <div className="font-medium">{amount.toFixed(2) || 0} USDC</div>;
       },
     },
     {

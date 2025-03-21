@@ -102,7 +102,7 @@ export default function CommunicationView() {
         return {
           createdAt: new Date(item.createdAt).toLocaleString(),
           status: item?.status,
-          to: item?.address,
+          address: item?.address,
         };
       });
     } else {
@@ -133,8 +133,8 @@ export default function CommunicationView() {
       <div className="p-4">
         <div className="flex justify-between">
           <HeaderWithBack
-            title="SMS Details"
-            subtitle="Here is the detailed view of the selected SMS"
+            title="Email Details"
+            subtitle="Here is the detailed view of the selected Email"
             path={`/projects/c2c/${id}/communication/email/manage`}
           />
           <TriggerConfirmModal

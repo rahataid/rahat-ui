@@ -95,42 +95,30 @@ export const useDisburseTokenToBeneficiaries = () => {
       onError: (error) => {
         console.error(error);
       },
-      onSuccess: async (
-        d,
-        {
-          rahatTokenAddress,
-          c2cProjectAddress,
-          amount,
-          beneficiaryAddresses,
-          disburseMethod,
-          projectUUID,
-        },
-      ) => {
-        queryClient.invalidateQueries({
-          queryKey: ['ProjectDetails', c2cProjectAddress],
-        });
-        console.log('success', d);
-        console.log({
-          amount,
-          beneficiaryAddresses,
-          c2cProjectAddress,
-          rahatTokenAddress,
-        });
-        await addDisbursement.mutateAsync({
-          amount: formatEther(amount),
-          beneficiaries: beneficiaryAddresses,
-          from: c2cProjectAddress,
-          transactionHash: d,
-          type: disburseMethod as DisbursementType,
-          timestamp: new Date().toISOString(),
-          status: DisbursementStatus.COMPLETED,
-          projectUUID,
-        });
-
+      onSuccess: async () => {
+        // queryClient.invalidateQueries({
+        //   queryKey: ['ProjectDetails', c2cProjectAddress],
+        // });
+        // console.log('success', d);
+        // console.log({
+        //   amount,
+        //   beneficiaryAddresses,
+        //   c2cProjectAddress,
+        //   rahatTokenAddress,
+        // });
+        // const de = await addDisbursement.mutateAsync({
+        //   amount: formatEther(amount),
+        //   beneficiaries: beneficiaryAddresses,
+        //   from: c2cProjectAddress,
+        //   transactionHash: d,
+        //   type: disburseMethod as DisbursementType,
+        //   timestamp: new Date().toISOString(),
+        //   status: DisbursementStatus.COMPLETED,
+        //   projectUUID,
+        // });
         // await addDisbursement.mutateAsync({
         //   amount: d,
         //   c2cProjectAddress
-
         // })
       },
       mutationFn: async ({
@@ -138,6 +126,8 @@ export const useDisburseTokenToBeneficiaries = () => {
         beneficiaryAddresses,
         rahatTokenAddress,
         c2cProjectAddress,
+        projectUUID,
+        disburseMethod,
       }: {
         beneficiaryAddresses: `0x${string}`[];
         amount: bigint;
@@ -183,10 +173,33 @@ export const useDisburseTokenToBeneficiaries = () => {
             args: [rahatTokenAddress, beneficiary, BigInt(amount)],
           });
         });
-        return multi.writeContractAsync({
+        const claim = await multi.writeContractAsync({
           args: [encodedForDisburse],
           address: c2cProjectAddress,
         });
+        if (claim) {
+          queryClient.invalidateQueries({
+            queryKey: ['ProjectDetails', c2cProjectAddress],
+          });
+          // console.log('success', d);
+          console.log({
+            amount,
+            beneficiaryAddresses,
+            c2cProjectAddress,
+            rahatTokenAddress,
+          });
+          const de = await addDisbursement.mutateAsync({
+            amount: formatEther(amount),
+            beneficiaries: beneficiaryAddresses,
+            from: c2cProjectAddress,
+            transactionHash: claim,
+            type: disburseMethod as DisbursementType,
+            timestamp: new Date().toISOString(),
+            status: DisbursementStatus.COMPLETED,
+            projectUUID: projectUUID,
+          });
+          return de;
+        }
       },
     },
     queryClient,

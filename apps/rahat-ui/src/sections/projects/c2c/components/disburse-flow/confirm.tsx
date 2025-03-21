@@ -15,6 +15,7 @@ const Confirm = () => {
   const source = searchParams.get('source');
   const beneficiary = Number(searchParams.get('beneficiary'));
   const from = searchParams.get('from');
+  const disbursementUuid = searchParams.get('disbursementUuid');
 
   return (
     <>
@@ -57,7 +58,7 @@ const Confirm = () => {
               )}
               <Link
                 className="mt-6 bg-blue-100 text-blue-500 py-2 px-8 rounded-md inline-block"
-                href={`/projects/c2c/${id}/transactions`}
+                href={`/projects/c2c/${id}/disbursement/${disbursementUuid}`}
               >
                 View Transactions
               </Link>

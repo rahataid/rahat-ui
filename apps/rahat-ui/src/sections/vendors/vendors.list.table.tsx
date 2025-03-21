@@ -80,8 +80,12 @@ export default function VendorsTable({
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
   const projectNames =
     (projectList?.data?.data?.length > 0 &&
-      projectList?.data?.data?.map((project: any) => project?.name)) ||
+      projectList?.data?.data?.map((project: any) => ({
+        label: project?.name,
+        value: project?.name,
+      }))) ||
     [];
+  console.log(projectNames);
 
   return (
     <div className="border rounded shadow p-3">
@@ -102,7 +106,12 @@ export default function VendorsTable({
               ?.setFilterValue(event === 'All' ? '' : event);
           }}
           name="Status"
-          options={['All', 'Assigned', 'Not Assigned']}
+          options={[
+            { label: 'All', value: 'All' },
+            { label: 'Assigned', value: 'Assigned' },
+            { label: 'Not Assigned', value: 'Not Assigned' },
+            { label: 'Pending', value: 'Pending' },
+          ]}
           value={(table.getColumn('status')?.getFilterValue() as string) || ''}
         />
 

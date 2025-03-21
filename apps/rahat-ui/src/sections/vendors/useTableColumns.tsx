@@ -47,7 +47,13 @@ export const useTableColumns = (handleAssignClick: any) => {
       accessorKey: 'projectName',
       header: 'Project Name',
       cell: ({ row }) => {
-        return <div className="font-medium">{row.getValue('projectName')}</div>;
+        return (
+          <div className="font-medium flex flex-col">
+            {row.original.projectName?.map((name) => (
+              <Badge className="mb-2">{name}</Badge>
+            ))}
+          </div>
+        );
       },
     },
 

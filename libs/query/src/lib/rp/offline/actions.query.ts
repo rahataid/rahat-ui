@@ -96,6 +96,28 @@ export const useGetOfflineSingleVendor = (
   });
 };
 
+export const useVendorBeneficiary = (projectUUID: UUID, vendorId: number) => {
+  const action = useProjectAction();
+
+  return useQuery({
+    queryKey: ['rpProject.getBeneficiaryRedemption'],
+    queryFn: async () => {
+      try {
+        const res = await action.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: 'rpProject.getBeneficiaryRedemption',
+            payload: { vendorId },
+          },
+        });
+        return res?.data;
+      } catch (e) {
+        return e;
+      }
+    },
+  });
+};
+
 export const useSyncOfflineBeneficiaries = (projectUUID: UUID) => {
   const action = useProjectAction();
 

@@ -23,7 +23,8 @@ export type ProjectType =
   | 'ALL'
   | 'C2C'
   | 'el-kenya'
-  | 'el-cambodia';
+  | 'el-cambodia'
+  | 'sms-voucher';
 
 export type useProjectNavItemsType = (
   projectType: ProjectType,

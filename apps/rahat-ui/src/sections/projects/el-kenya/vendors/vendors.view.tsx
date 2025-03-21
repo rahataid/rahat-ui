@@ -16,7 +16,7 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import ViewColumns from '../../components/view.columns';
 import { MS_ACTIONS } from '@rahataid/sdk';
 import Pagination from 'apps/rahat-ui/src/components/pagination';
-import ClientSidePagination from '../../components/client.side.pagination';
+import { ClientSidePagination } from '../clientSidePagination';
 
 export default function VendorsView() {
   const { id } = useParams() as { id: UUID };
@@ -33,7 +33,15 @@ export default function VendorsView() {
   const getVendors = useProjectAction();
   const handleViewClick = (rowData: any) => {
     router.push(
-      `/projects/el-kenya/${id}/vendors/${rowData.walletAddress}?name=${rowData.name}&&phone=${rowData.phone}&&walletAddress=${rowData.walletAddress} &&vendorId=${rowData.id} &&vendorUUID=${rowData.uuid}`,
+      `/projects/el-kenya/${id}/vendors/${rowData.walletAddress}?name=${
+        rowData.name
+      }&&phone=${encodeURIComponent(rowData.phone)}&&walletAddress=${
+        rowData.walletAddress
+      } &&vendorId=${rowData.id} &&vendorUUID=${
+        rowData.uuid
+      }&&voucherReedeemed=${rowData?.BeneficiaryRedemption || 0}&&email=${
+        rowData.email
+      }`,
     );
   };
   const columns = useElkenyaVendorsTableColumns({ handleViewClick });
@@ -108,6 +116,7 @@ export default function VendorsView() {
         canNextPage={table.getCanNextPage()}
         nextPage={table.nextPage}
       /> */}
+
       <ClientSidePagination table={table} />
     </>
   );

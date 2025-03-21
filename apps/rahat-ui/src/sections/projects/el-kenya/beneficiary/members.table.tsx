@@ -15,6 +15,7 @@ import ViewColumns from '../../components/view.columns';
 import AddButton from '../../components/add.btn';
 import { useParams } from 'next/navigation';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import { useProjectStore } from '@rahat-ui/query';
 
 type IProps = {
   table: Table<any>;
@@ -32,6 +33,10 @@ export default function MembersTable({
   loading,
 }: IProps) {
   const { id } = useParams();
+  const projectClosed = useProjectStore(
+    (state) => state.singleProject?.projectClosed,
+  );
+
   return (
     <>
       <div className="p-4 border rounded-md mt-5">
@@ -49,8 +54,9 @@ export default function MembersTable({
             <AddButton
               variant="outline"
               className="border-primary text-primary"
-              name="Beneficiary"
+              name="Consumer"
               path={`/projects/el-kenya/${id}/beneficiary/group/${groupUUID}/select?name=${name}`}
+              disabled={projectClosed}
             />
           ) : null}
         </div>
@@ -107,10 +113,10 @@ export default function MembersTable({
                               <FileWarning size={18} strokeWidth={1.5} />
                             </div>
                             <p className="font-medium text-lg">
-                              No beneficiary added
+                              No consumer added
                             </p>
                             <p className="text-muted-foreground text-base">
-                              Add beneficiary to the group to display data
+                              Add consumer to the group to display data
                             </p>
                             <AddButton
                               name="Beneficiary"

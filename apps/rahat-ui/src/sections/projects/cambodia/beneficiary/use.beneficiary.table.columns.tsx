@@ -42,8 +42,12 @@ export const useCambodiaBeneficiaryTableColumns = () => {
       header: 'Timestamp',
       cell: ({ row }) => {
         const date = new Date(row.getValue('createdAt'));
-        const formattedDate = date.toLocaleDateString();
-        const formattedTime = date.toLocaleTimeString();
+        const formattedDate = date.toLocaleDateString('en-Us', {
+          timeZone: 'Asia/Phnom_Penh',
+        });
+        const formattedTime = date.toLocaleTimeString('en-Us', {
+          timeZone: 'Asia/Phnom_Penh',
+        });
         return (
           <div className="lowercase ml-4">
             {formattedDate} {formattedTime}

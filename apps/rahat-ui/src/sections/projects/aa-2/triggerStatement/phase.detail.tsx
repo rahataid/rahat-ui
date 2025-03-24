@@ -2,7 +2,7 @@ import { Back, Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { Plus, Undo2 } from 'lucide-react';
 import { TriggersListTabs, TriggersPhaseCard } from './components';
 
-export default function TriggerStatementDetail() {
+export default function PhaseDetail() {
   return (
     <div className="p-4">
       <Back path="" />

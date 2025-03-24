@@ -1,9 +1,17 @@
-'use client'
+'use client';
 
-import { AAPhaseDetailView } from "../../../../../../sections/projects/aa/phase";
+import dynamic from 'next/dynamic';
 
-const Page = () => {
-    return <AAPhaseDetailView />
+const PhaseDetailPage = dynamic(
+  () =>
+    import('apps/rahat-ui/src/sections/projects/aa-2/triggerStatement').then(
+      (mod) => mod.AAPhaseDetailView,
+    ),
+  {
+    ssr: false,
+  },
+);
+
+export default function Page() {
+  return <PhaseDetailPage />;
 }
-
-export default Page;

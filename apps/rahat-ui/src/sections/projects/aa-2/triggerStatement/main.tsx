@@ -40,9 +40,7 @@ export default function TriggerStatementView() {
               triggeredMandatoryTriggers={8}
               triggeredOptionalTriggers={1}
               handleViewDetails={() => {
-                router.push(
-                  `/projects/aa/${projectId}/trigger-statements/${d.uuid}`,
-                );
+                router.push(`/projects/aa/${projectId}/phase/${d.uuid}`);
               }}
             />
           ))}

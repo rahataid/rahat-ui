@@ -50,7 +50,7 @@ function ViewCommunityBeneficiaryByGroupName() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const table = useReactTable({
     manualPagination: true,
-    data: data?.data?.tempeBeneficiary || [],
+    data: data?.data?.tempBeneficiaries || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),

@@ -1,5 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
-import { encodeFunctionData, formatEther, parseEther, parseUnits } from 'viem';
+import {
+  encodeFunctionData,
+  formatEther,
+  formatUnits,
+  parseEther,
+  parseUnits,
+} from 'viem';
 import {
   c2CProjectAbi,
   useWriteC2CProjectMulticall,
@@ -97,7 +103,7 @@ export const useMultiSigDisburseToken = ({
       c2cProjectAddress,
     }: {
       beneficiaryAddresses: `0x${string}`[];
-      amount: bigint;
+      amount: string;
       rahatTokenAddress: `0x{string}`;
       safeAddress: `0x{string}`;
       c2cProjectAddress: `0x{string}`;
@@ -173,7 +179,7 @@ export const useDisburseTokenToBeneficiaries = () => {
         disburseMethod,
       }: {
         beneficiaryAddresses: `0x${string}`[];
-        amount: bigint;
+        amount: string;
         rahatTokenAddress: `0x{string}`;
         c2cProjectAddress: `0x{string}`;
         disburseMethod: string;
@@ -207,6 +213,7 @@ export const useDisburseTokenToBeneficiaries = () => {
         //   args: [encodeGetBeneficiaryClaims],
         //   address: rahatTokenAddress,
         // });
+
         amount = parseUnits(amount.toString(), decimals.data as number);
         console.log({ c2CProjectAbi, rahatTokenAddress, amount });
         const encodedForDisburse = beneficiaryAddresses.map((beneficiary) => {

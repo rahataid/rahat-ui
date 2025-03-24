@@ -99,7 +99,6 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       return;
     }
 
-    const disburseAmount = parseUnits(stepData.disburseAmount, 6);
     const beneficiaryAddresses = selectedBeneficiaries as `0x${string}`[];
     const { rahattoken, c2cproject } = contractSettings || {};
 
@@ -122,7 +121,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     }
 
     const disbursement = await disburseToken.mutateAsync({
-      amount: disburseAmount,
+      amount: stepData.disburseAmount,
       beneficiaryAddresses,
       rahatTokenAddress: rahattoken?.address,
       c2cProjectAddress: c2cproject?.address,

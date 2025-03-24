@@ -42,7 +42,7 @@ function ViewCommunityBeneficiaryByGroupName() {
   const { setCommunityBeneficiariesUUID, communityBeneficiariesUUID } =
     useBeneficiaryStore();
 
-  const { data, isLoading } = useListTempBeneficiary(uuid as string, {
+  const { data } = useListTempBeneficiary(uuid as string, {
     ...pagination,
     ...(debouncedFilters as any),
   });
@@ -50,7 +50,7 @@ function ViewCommunityBeneficiaryByGroupName() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const table = useReactTable({
     manualPagination: true,
-    data: data?.data?.tempBeneficiaries || [],
+    data: data?.data?.tempeBeneficiary || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -85,7 +85,6 @@ function ViewCommunityBeneficiaryByGroupName() {
             filters={filters}
             pagination={pagination}
             setPagination={setPagination}
-            loading={isLoading}
           />
         </TabsContent>
 

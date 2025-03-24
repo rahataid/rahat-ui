@@ -54,14 +54,12 @@ export default function VouchersView() {
   )?.data;
 
   const glassRequired =
-    kenyaStats?.data
-      ?.find((i: any) => i.name === 'NOT_REDEEM_STATS')
-      ?.data?.find((i: any) => i.id === 'REQUIRED')?.count || 0;
+    kenyaStats?.data?.find((i: any) => i.name === 'NOT_REDEEM_STATS')?.data
+      ?.glassesRequired || 0;
 
   const glassNotRequired =
-    kenyaStats?.data
-      ?.find((i: any) => i.name === 'NOT_REDEEM_STATS')
-      ?.data?.find((i: any) => i.id === 'NOT_REQUIRED')?.count || 0;
+    kenyaStats?.data?.find((i: any) => i.name === 'NOT_REDEEM_STATS')?.data
+      ?.glassesNotRequired || 0;
 
   const REDEMPTION_STATS = kenyaStats?.data?.find(
     (i: any) => i.name === 'REDEMPTION_STATS',
@@ -123,6 +121,7 @@ export default function VouchersView() {
 
       return acc;
     }, []);
+
     return { categories, series };
   }
 

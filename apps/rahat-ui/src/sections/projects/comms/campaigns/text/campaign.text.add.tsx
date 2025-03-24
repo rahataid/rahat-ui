@@ -7,6 +7,7 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -29,27 +30,27 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useRouter } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { ArrowLeft, CheckIcon, Plus } from 'lucide-react';
-import SpinnerLoader from '../../../components/spinner.loader';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useGetApprovedTemplate } from '@rumsan/communication-query';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { useCreateCampaign, useListRpTransport } from '@rahat-ui/query';
+import {
+  useCreateCampaign,
+  useCreateCommsCampaign,
+  useFindAllCommsBeneficiaryGroups,
+  useListRpTransport,
+} from '@rahat-ui/query';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 
 const FormSchema = z.object({
-  campaignType: z.string({
-    required_error: 'Camapign Type is required.',
-  }),
   campaignName: z.string({
     required_error: 'Camapign Name is required.',
+  }),
+  group: z.string({
+    required_error: 'Please select a group.',
   }),
   message: z.string({
     required_error: 'Message is required.',
   }),
-
-  // messageSid: z.string().optional(),
-  subject: z.string().optional(),
 });
 
 const TextCampaignAddDrawer = () => {
@@ -57,30 +58,36 @@ const TextCampaignAddDrawer = () => {
 
   const { data: transportData } = useListRpTransport(id as UUID);
 
-  const createCampaign = useCreateCampaign(id as UUID);
-
-  const [isEmail, setisEmail] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [checkTemplate, setCheckTemplate] = useState(false);
-  const [templatemessage, setTemplatemessage] = useState('');
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-   
-    },
+    defaultValues: {},
     mode: 'onChange',
   });
-  const isWhatsappMessage =
-    form.getValues().campaignType?.toLowerCase() === 'whatsapp';
+
+  const { data: benificiaryGroups } = useFindAllCommsBeneficiaryGroups(
+    id as UUID,
+    {
+      page: 1,
+      perPage: 1000,
+      order: 'desc',
+      sort: 'createdAt',
+      projectUUID: id,
+    },
+  );
+  const createCampaign = useCreateCommsCampaign(id as UUID);
 
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
+    const transportId = transportData?.find(
+      (t) => t?.name === 'Prabhu SMS',
+    )?.cuid;
+
     const createCampagin = {
       name: data.campaignName,
       message: data.message,
-      transportId: data?.campaignType,
+      transportId: transportId,
+      groupUID: data.group,
     };
     createCampaign.mutate(createCampagin);
     setIsOpen(false);
@@ -135,65 +142,37 @@ const TextCampaignAddDrawer = () => {
                 />
                 <FormField
                   control={form.control}
-                  name="campaignType"
-                  render={({ field, fieldState }) => (
-                    <FormItem>
-                      <Select
-                        onValueChange={(value) => {
-                          const selectedCampaign = transportData.find(
-                            (item) => item.cuid === value,
-                          );
-                          if (selectedCampaign?.type.toLowerCase() === 'smtp') {
-                            setisEmail(true);
-                          } else {
-                            setisEmail(false);
-                          }
-                          field.onChange(value);
-                        }}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="rounded mt-2">
-                            <SelectValue placeholder="Select campaign type" />
+                  name="group"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 mt-4">
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className="text-muted-foreground">
+                            <SelectValue placeholder="Select group" />
                           </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {transportData?.map((transport) => {
-                            return (
-                              <SelectItem
-                                key={transport.cuid}
-                                value={transport.cuid}
-                              >
-                                {transport.name}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-
+                          <SelectContent>
+                            <SelectGroup>
+                              {benificiaryGroups?.length > 0 &&
+                                benificiaryGroups.map((group) => (
+                                  <SelectItem
+                                    key={group.uuid}
+                                    value={group.uuid}
+                                  >
+                                    {group.name}
+                                  </SelectItem>
+                                ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                {isEmail && (
-                  <FormField
-                    control={form.control}
-                    name="subject"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            className="rounded mt-2"
-                            placeholder="Subject"
-                            {...field}
-                          />
-                        </FormControl>
 
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
                 <FormField
                   control={form.control}
                   name="message"
@@ -219,19 +198,14 @@ const TextCampaignAddDrawer = () => {
                     Cancel
                   </Button>
                 </DrawerClose>
-                {isSubmitting ? (
-                  <>
-                    <SpinnerLoader />
-                  </>
-                ) : (
-                  <Button
-                    type="submit"
-                    onClick={form.handleSubmit(handleCreateCampaign)}
-                    className="w-full"
-                  >
-                    Submit
-                  </Button>
-                )}
+
+                <Button
+                  type="submit"
+                  onClick={form.handleSubmit(handleCreateCampaign)}
+                  className="w-full"
+                >
+                  Submit
+                </Button>
               </DrawerFooter>
             </div>
           </DrawerContent>

@@ -2,8 +2,8 @@ import {
   useCambodiaHealthWorkersStats,
   useCHWList,
   usePagination,
-  useProjectBeneficiaries,
 } from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -11,31 +11,18 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
+import { Coins, Download, Users } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React from 'react';
-import SearchInput from '../../components/search.input';
-import AddButton from '../../components/add.btn';
-import { useCambodiaChwTableColumns } from './use.chw.table.columns';
-import SelectComponent from '../select.component';
-import CambodiaTable from '../table.component';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { filter } from 'lodash';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Coins, Download, Home, Search, Settings2, Users } from 'lucide-react';
-import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
-import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import ViewColumns from '../../components/view.columns';
 import * as XLSX from 'xlsx';
+import SearchInput from '../../components/search.input';
+import ViewColumns from '../../components/view.columns';
+import CambodiaTable from '../table.component';
+import { useCambodiaChwTableColumns } from './use.chw.table.columns';
 export default function CHWView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =

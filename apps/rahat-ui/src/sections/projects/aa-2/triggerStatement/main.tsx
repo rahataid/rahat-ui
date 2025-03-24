@@ -44,7 +44,7 @@ export default function TriggerStatementView() {
               }}
             />
           ))}
-        <TriggersListCard />
+        <TriggersListCard projectId={projectId} />
       </div>
     </div>
   );

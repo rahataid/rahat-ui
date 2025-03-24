@@ -1,11 +1,15 @@
 import { Back, Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { Plus, Undo2 } from 'lucide-react';
 import { TriggersListTabs, TriggersPhaseCard } from './components';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 export default function PhaseDetail() {
+  const params = useParams();
+  const projectId = params.id as UUID;
   return (
     <div className="p-4">
-      <Back path="" />
+      <Back />
       <div className="flex justify-between items-center">
         <Heading
           title="Activation"
@@ -35,13 +39,13 @@ export default function PhaseDetail() {
           hideAddTrigger={true}
           hideViewDetails={true}
         />
-        <div className="p-4 border rounded-md shadow col-span-2">
+        <div className="p-4 border rounded-sm shadow col-span-2">
           <Heading
             title="Triggers"
             titleStyle="text-xl/6"
             description="List of all triggers in the activation phase"
           />
-          <TriggersListTabs />
+          <TriggersListTabs projectId={projectId} />
         </div>
       </div>
     </div>

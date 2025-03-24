@@ -10,7 +10,7 @@ interface IProps {
 export function Heading({ title, titleStyle, description }: IProps) {
   return (
     <div className="mb-4">
-      <p className={cn('font-bold text-4xl', titleStyle)}>{title}</p>
+      <p className={cn('font-bold text-4xl mb-1', titleStyle)}>{title}</p>
       <p className="text-sm/4 text-muted-foreground">{description}</p>
     </div>
   );

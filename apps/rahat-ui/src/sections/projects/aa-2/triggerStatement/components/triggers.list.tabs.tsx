@@ -6,7 +6,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import DynamicTriggersList from './dynamic.triggers.list';
 
-export default function TriggersListTabs() {
+type IProps = {
+  projectId: string;
+};
+
+export default function TriggersListTabs({ projectId }: IProps) {
   return (
     <Tabs defaultValue="All">
       <TabsList className="border bg-secondary rounded mb-2">
@@ -36,16 +40,16 @@ export default function TriggersListTabs() {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="All">
-        <DynamicTriggersList />
+        <DynamicTriggersList projectId={projectId} />
       </TabsContent>
       <TabsContent value="Not Triggered">
-        <DynamicTriggersList />
+        <DynamicTriggersList projectId={projectId} />
       </TabsContent>
       <TabsContent value="Triggered">
-        <DynamicTriggersList />
+        <DynamicTriggersList projectId={projectId} />
       </TabsContent>
       <TabsContent value="History">
-        <DynamicTriggersList />
+        <DynamicTriggersList projectId={projectId} />
       </TabsContent>
     </Tabs>
   );

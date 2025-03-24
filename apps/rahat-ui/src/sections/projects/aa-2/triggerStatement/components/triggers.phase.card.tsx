@@ -33,9 +33,9 @@ export default function TriggersPhaseCard({
   handleViewDetails = () => {},
 }: IProps) {
   return (
-    <div className="p-4 rounded-md border shadow-md flex flex-col justify-between">
+    <div className="p-4 rounded border shadow-md flex flex-col justify-between">
       <div>
-        <div className="flex justify-between items-center space-x-4">
+        <div className="flex flex-wrap justify-between items-center space-x-4">
           <Heading title={title} titleStyle="text-xl" description={subtitle} />
           <IconLabelBtn
             variant="outline"
@@ -60,7 +60,7 @@ export default function TriggersPhaseCard({
           />
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <div className="bg-[#EAF2FB] rounded-md p-4">
+          <div className="bg-[#EAF2FB] rounded p-4">
             <p className="text-sm/4">Mandatory</p>
             <p className="font-semibold text-2xl/10">{mandatoryTriggers}</p>
             <div>
@@ -74,7 +74,7 @@ export default function TriggersPhaseCard({
               />
             </div>
           </div>
-          <div className="bg-[#FCF6E9] rounded-md p-4">
+          <div className="bg-[#FCF6E9] rounded p-4">
             <p className="text-sm/4">Optional</p>
             <p className="font-semibold text-2xl/10">{optionalTriggers}</p>
             <div>

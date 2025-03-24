@@ -1,11 +1,17 @@
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TriggerCard from './trigger.card';
 
-export default function DynamicTriggersList() {
+type IProps = {
+  projectId: string;
+};
+
+export default function DynamicTriggersList({ projectId }: IProps) {
   return (
     <ScrollArea className="h-[calc(100vh-550px)]">
       <div className="flex flex-col space-y-3 pr-2.5">
         <TriggerCard
+          projectId={projectId}
+          triggerId="111"
           phase="Activation"
           type="Automatic"
           isTriggered={true}
@@ -15,6 +21,8 @@ export default function DynamicTriggersList() {
           time={new Date().toLocaleString()}
         />
         <TriggerCard
+          projectId={projectId}
+          triggerId="111"
           phase="Readiness"
           type="Manual"
           isTriggered={false}
@@ -24,6 +32,8 @@ export default function DynamicTriggersList() {
           time={new Date().toLocaleString()}
         />
         <TriggerCard
+          projectId={projectId}
+          triggerId="111"
           phase="Activation"
           type="Automatic"
           isTriggered={true}

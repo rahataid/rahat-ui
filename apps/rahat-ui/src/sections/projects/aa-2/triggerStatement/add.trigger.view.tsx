@@ -106,7 +106,7 @@ export default function AddTriggerView() {
         title="Add Trigger"
         description="Fill the form below to create new trigger statement"
       />
-      <div className="border p-4 mb-4 rounded-md shadow">
+      <div className="border p-4 mb-4 rounded shadow">
         <Heading
           title="Select Trigger Type"
           titleStyle="text-xl/6 font-semibold"
@@ -154,7 +154,7 @@ export default function AddTriggerView() {
       <div className="grid grid-cols-1 gap-2">
         {allTriggers.map((t, i) => {
           return (
-            <div key={i} className="p-4 rounded-md border shadow">
+            <div key={i} className="p-4 rounded border shadow">
               <div className="flex justify-between items-center space-x-4 mb-2">
                 <div className="flex items-center space-x-4">
                   <Badge className="font-medium">

@@ -23,16 +23,14 @@ export const useElkenyaVendorsTableColumns = ({
       cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
     },
     {
-      accessorKey: 'email',
-      header: 'Email',
-      cell: ({ row }) => <div>{row.getValue('email') || 'N/A'}</div>,
-    },
-    {
       accessorKey: 'BeneficiaryRedemption',
       header: 'Voucher Redeemed',
-      cell: ({ row }) => (
-        <div>{row.getValue('BeneficiaryRedemption') || 0}</div>
-      ),
+      cell: ({ row }) => <div>{row.getValue('BeneficiaryRedemption')}</div>,
+    },
+    {
+      accessorKey: 'TokenRedemption',
+      header: 'Voucher Reimbursed',
+      cell: ({ row }) => <div>{row.getValue('TokenRedemption')}</div>,
     },
     {
       id: 'actions',

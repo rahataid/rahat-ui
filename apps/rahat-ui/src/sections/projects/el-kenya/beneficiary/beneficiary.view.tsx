@@ -1,5 +1,4 @@
 import {
-  useListConsentConsumer,
   usePagination,
   useProjectBeneficiaries,
   useProjectStore,
@@ -22,9 +21,15 @@ import SelectComponent from '../select.component';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { CloudDownload } from 'lucide-react';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import * as XLSX from 'xlsx';
-import SmsVoucherFiltersTags from '../filtersTags';
-import DataTablePagination from '../serverSidePagination';
+import ViewColumns from '../../components/view.columns';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/components/tabs';
+import BeneficiaryGroupView from './beneficiary.group.view';
+import FiltersTags from '../../components/filtersTags';
 
 export default function BeneficiaryView() {
   const { id } = useParams() as { id: UUID };
@@ -50,8 +55,6 @@ export default function BeneficiaryView() {
     setFilters,
     setNextPage,
     setPrevPage,
-    setFirstPage,
-    setLastPage,
     setPerPage,
     selectedListItems,
     setSelectedListItems,
@@ -70,25 +73,12 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...filters,
   });
-  const { data: consumerData } = useListConsentConsumer(id);
 
   const meta = beneficiaries?.response?.meta;
 
   const handleViewClick = (rowData: any) => {
     router.push(
-      `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${
-        rowData?.extras?.vendorName
-      }&&walletAddress=${rowData.walletAddress}&&gender=${
-        rowData.gender
-      }&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${
-        rowData.eyeCheckupStatus
-      }&&glassesStatus=${rowData.glassesStatus}&&voucherType=${
-        rowData.voucherType
-      }&&phone=${encodeURIComponent(rowData.phone)}&&type=${
-        rowData.type
-      }&&location=${rowData?.projectData?.location}&&serialNumber=${
-        rowData?.extras?.serialNumber
-      }&&age=${rowData?.extras?.age || 0}&&consent=${rowData?.extras?.consent}`,
+      `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${rowData.name}&&walletAddress=${rowData.walletAddress}&&gender=${rowData.gender}&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${rowData.eyeCheckupStatus}&&glassesStatus=${rowData.glassesStatus}&&voucherType=${rowData.voucherType}&&phone=${rowData.phone}&&type=${rowData.type}&&location=${rowData?.projectData?.location}&&serialNumber=${rowData?.extras?.serialNumber}`,
     );
   };
 
@@ -115,133 +105,123 @@ export default function BeneficiaryView() {
     setDefaultValue(value);
   };
 
-  const handleDownload = () => {
-    generateExcel(consumerData.data, 'Consumer', 8);
-  };
-
-  const generateExcel = (data: any, title: string, numberOfColumns: number) => {
-    const wb = XLSX.utils.book_new();
-
-    const ws = XLSX.utils.json_to_sheet(data);
-
-    const columnWidths = 20;
-    ws['!cols'] = Array(numberOfColumns).fill({ wch: columnWidths });
-
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-    XLSX.writeFile(wb, `${title}.xlsx`);
-  };
-
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4 ml-4">
-        <div>
-          <h1 className="font-semibold text-2xl mb-">Consumers</h1>
-          <p className="text-muted-foreground">
-            Track all the consumer reports here.
-          </p>
-        </div>
+    <Tabs value={defaultValue} onValueChange={onTabChange}>
+      <div className="flex justify-between items-center p-4 pb-0">
+        <TabsList className="border bg-secondary rounded">
+          <TabsTrigger
+            id="beneficiary"
+            className="w-full data-[state=active]:bg-white"
+            value="beneficiary"
+          >
+            Beneficiary
+          </TabsTrigger>
+          <TabsTrigger
+            id="beneficiaryGroups"
+            className="w-full data-[state=active]:bg-white"
+            value="beneficiaryGroups"
+          >
+            Beneficiary Groups
+          </TabsTrigger>
+        </TabsList>
+        <Button
+          variant="outline"
+          onClick={() =>
+            router.push(`/projects/el-kenya/${id}/beneficiary/import`)
+          }
+          disabled={projectClosed}
+        >
+          <CloudDownload className="mr-1" /> Import beneficiaries
+        </Button>
       </div>
-      <div className="p-4 pt-2">
-        <div className="rounded border bg-card p-4">
-          <div className="flex justify-between gap-2 mb-2">
-            <SearchInput
-              className="w-full"
-              name="phone number"
-              value={
-                (table.getColumn('phone')?.getFilterValue() as string) ?? ''
+      <TabsContent value="beneficiary">
+        <div className="p-4 pt-2">
+          <div className="rounded border bg-card p-4">
+            <div className="flex justify-between space-x-2 mb-2">
+              <SearchInput
+                className="w-full"
+                name="phone number"
+                value={
+                  (table.getColumn('phone')?.getFilterValue() as string) ?? ''
+                }
+                onSearch={(event) =>
+                  table.getColumn('phone')?.setFilterValue(event.target.value)
+                }
+              />
+              <AddButton
+                name="Beneficiary"
+                path={`/projects/el-kenya/${id}/beneficiary/add`}
+                disabled={projectClosed}
+              />
+            </div>
+            <div className="flex justify-between gap-2 mb-2">
+              <SelectComponent
+                onChange={(e) => setFilters({ ...filters, voucherType: e })}
+                name="Voucher Type"
+                options={['SINGLE_VISION', 'READING_GLASSES']}
+                value={filters?.voucherType || ''}
+              />
+              <SelectComponent
+                onChange={(e) => setFilters({ ...filters, type: e })}
+                name="Beneficiary Type"
+                options={['PRE_DETERMINED', 'WALK_IN']}
+                value={filters?.type || ''}
+              />
+              <SelectComponent
+                onChange={(e) =>
+                  setFilters({ ...filters, eyeCheckupStatus: e })
+                }
+                name="Eye Checkup Status"
+                options={['CHECKED', 'NOT_CHECKED']}
+                value={filters?.eyeCheckupStatus || ''}
+              />
+              <SelectComponent
+                onChange={(e) => setFilters({ ...filters, glassesStatus: e })}
+                name="Glasses Status"
+                options={['REQUIRED', 'NOT_REQUIRED']}
+                value={filters?.glassesStatus || ''}
+              />
+              <SelectComponent
+                onChange={(e) => setFilters({ ...filters, voucherStatus: e })}
+                name="Voucher Status"
+                options={['REDEEMED', 'NOT_REDEEMED']}
+                value={filters?.voucherStatus || ''}
+              />
+              <ViewColumns table={table} />
+            </div>
+            {Object.keys(filters).length != 0 && (
+              <FiltersTags
+                filters={filters}
+                setFilters={setFilters}
+                total={meta?.total || 0}
+              />
+            )}
+            <ElkenyaTable
+              table={table}
+              tableHeight={
+                Object.keys(filters).length
+                  ? 'h-[calc(100vh-389px)]'
+                  : 'h-[calc(100vh-323px)]'
               }
-              onSearch={(event) =>
-                table.getColumn('phone')?.setFilterValue(event.target.value)
-              }
+              loading={isLoading}
             />
-
-            <SelectComponent
-              onChange={(e) => setFilters({ ...filters, consentStatus: e })}
-              name="Consent"
-              options={[
-                { value: 'yes', label: 'Yes' },
-                { value: 'no', label: 'No' },
-              ]}
-              value={filters?.consentStatus || ''}
-            />
-            <SelectComponent
-              onChange={(e) => setFilters({ ...filters, voucherStatus: e })}
-              name="Voucher Status"
-              options={[
-                { value: 'REDEEMED', label: 'Redeemed' },
-                { value: 'NOT_REDEEMED', label: 'Not Redeemed' },
-              ]}
-              value={filters?.voucherStatus || ''}
-            />
-            <SelectComponent
-              onChange={(e) => setFilters({ ...filters, eyeCheckupStatus: e })}
-              name="Voucher Usage"
-              options={[
-                { value: 'CHECKED', label: 'Eye Checkup' },
-                { value: 'PURCHASE_OF_GLASSES', label: 'Purchase of Glasses' },
-              ]}
-              value={filters?.eyeCheckupStatus || ''}
-            />
-            <SelectComponent
-              onChange={(e) => setFilters({ ...filters, voucherType: e })}
-              name="Glass Type"
-              options={[
-                { value: 'READING_GLASSES', label: 'Reading Glasses' },
-                { value: 'SUN_GLASSES', label: 'Sun Glasses' },
-                { value: 'PRESCRIBED_LENSES', label: 'Prescribed Lenses' },
-              ]}
-              value={filters?.voucherType || ''}
-            />
-            <Button type="button" variant="outline" onClick={handleDownload}>
-              <CloudDownload size={18} className="mr-1" />
-              Download
-            </Button>
           </div>
-          {Object.keys(filters).length != 0 && (
-            <SmsVoucherFiltersTags
-              filters={filters}
-              setFilters={setFilters}
-              total={meta?.total || 0}
-              labelMapping={{
-                consentStatus: 'Consent',
-                voucherStatus: 'Voucher Status',
-                eyeCheckupStatus: 'Voucher Usage',
-                voucherType: 'Glass Type',
-              }}
-            />
-          )}
-          <ElkenyaTable
-            table={table}
-            tableHeight={
-              Object.keys(filters).length
-                ? 'h-[calc(100vh-389px)]'
-                : 'h-[calc(100vh-323px)]'
-            }
-            loading={isLoading}
-          />
         </div>
-      </div>
-      {/* <CustomPagination
-        meta={meta || { total: 0, currentPage: 0 }}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        currentPage={pagination.page}
-        perPage={pagination.perPage}
-        total={0}
-      /> */}
-      <DataTablePagination
-        meta={meta || { total: 0, currentPage: 0 }}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handleFirstPage={setFirstPage}
-        handleLastPage={setLastPage}
-        handlePageSizeChange={setPerPage}
-        currentPage={pagination.page}
-        perPage={pagination.perPage}
-        total={0}
-      />
-    </div>
+        <CustomPagination
+          meta={meta || { total: 0, currentPage: 0 }}
+          handleNextPage={setNextPage}
+          handlePrevPage={setPrevPage}
+          handlePageSizeChange={setPerPage}
+          currentPage={pagination.page}
+          perPage={pagination.perPage}
+          total={0}
+        />
+      </TabsContent>
+      <TabsContent value="beneficiaryGroups">
+        <div className="p-4 pt-2">
+          <BeneficiaryGroupView projectClosed={projectClosed} />
+        </div>
+      </TabsContent>
+    </Tabs>
   );
 }

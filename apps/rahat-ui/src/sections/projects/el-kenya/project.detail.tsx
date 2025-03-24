@@ -1,7 +1,7 @@
 import { useGetProjectDatasource } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import DynamicReports from './sms-voucher-dynamic-reports';
+import { DynamicReports } from '../../chart-reports';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export default function ProjectDetail() {

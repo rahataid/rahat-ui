@@ -1,7 +1,6 @@
 import {
   getCoreRowModel,
   getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -11,7 +10,7 @@ import { useElkenyaTransactionsTableColumns } from './use.transactions.table.col
 import { useKenyaProjectTransactions } from '@rahat-ui/query';
 import React from 'react';
 import ElkenyaTable from '../table.component';
-import { ClientSidePagination } from '../clientSidePagination';
+import ClientSidePagination from '../../components/client.side.pagination';
 
 export default function TransactionsView() {
   const { id } = useParams() as { id: UUID };
@@ -26,7 +25,6 @@ export default function TransactionsView() {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    getSortedRowModel: getSortedRowModel(),
     state: {
       columnVisibility,
     },

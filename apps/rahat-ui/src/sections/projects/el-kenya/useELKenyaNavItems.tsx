@@ -25,22 +25,22 @@ export const useNavItems = () => {
           icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
         },
         {
-          title: 'Consumers',
+          title: 'Beneficiaries',
           path: `/projects/el-kenya/${id}/beneficiary`,
           subtitle: 20,
           icon: <UsersRound size={18} strokeWidth={1.5} />,
         },
-        // {
-        //   title: 'Communications',
-        //   subtitle: 20,
-        //   icon: <Speech size={18} strokeWidth={1.5} />,
-        //   path: `/projects/el-kenya/${id}/communication`,
-        // },
-        // {
-        //   title: 'Vouchers',
-        //   path: `/projects/el-kenya/${id}/vouchers`,
-        //   icon: <Ticket size={18} strokeWidth={1.5} />,
-        // },
+        {
+          title: 'Communications',
+          subtitle: 20,
+          icon: <Speech size={18} strokeWidth={1.5} />,
+          path: `/projects/el-kenya/${id}/communication`,
+        },
+        {
+          title: 'Vouchers',
+          path: `/projects/el-kenya/${id}/vouchers`,
+          icon: <Ticket size={18} strokeWidth={1.5} />,
+        },
         {
           title: 'Transactions',
           path: `/projects/el-kenya/${id}/transactions`,
@@ -54,16 +54,16 @@ export const useNavItems = () => {
           icon: <HandCoins size={18} strokeWidth={1.5} />,
         },
 
-        // {
-        //   title: 'Offline Management',
-        //   path: `/projects/el-kenya/${id}/offline-management`,
-        //   icon: <CloudOff size={18} strokeWidth={1.5} />,
-        // },
-        // {
-        //   title: 'Claim',
-        //   path: `/projects/el-kenya/${id}/claim`,
-        //   icon: <Gift size={18} strokeWidth={1.5} />,
-        // },
+        {
+          title: 'Offline Management',
+          path: `/projects/el-kenya/${id}/offline-management`,
+          icon: <CloudOff size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Claim',
+          path: `/projects/el-kenya/${id}/claim`,
+          icon: <Gift size={18} strokeWidth={1.5} />,
+        },
       ],
     },
   ];

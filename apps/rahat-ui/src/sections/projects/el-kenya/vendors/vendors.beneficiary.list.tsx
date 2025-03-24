@@ -1,7 +1,6 @@
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
   getCoreRowModel,
-  getPaginationRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -10,7 +9,6 @@ import { useParams } from 'next/navigation';
 import React, { useMemo } from 'react';
 import ElkenyaTable from '../table.component';
 import { useElkenyaVendorsBeneficiaryTableColumns } from './columns/use.vendors.beneficiary.table.columns';
-import { ClientSidePagination } from '../clientSidePagination';
 
 interface VendorsBeneficiaryListProps {
   beneficiaryList: any;
@@ -38,8 +36,6 @@ export default function VendorsBeneficiaryList({
           voucherStatus:
             beneficiary?.Disbursement?.Beneficiary?.voucherStatus ||
             beneficiary?.Beneficiary?.voucherStatus,
-          voucherType: beneficiary?.Beneficiary?.voucherType,
-          eyeCheckupStatus: beneficiary?.Beneficiary?.eyeCheckupStatus,
         };
       });
     } else {
@@ -52,7 +48,6 @@ export default function VendorsBeneficiaryList({
     data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     state: {
       columnVisibility,
@@ -62,10 +57,9 @@ export default function VendorsBeneficiaryList({
     <div className="p-4 border rounded-sm">
       <ElkenyaTable
         table={table}
-        tableHeight="h-[calc(100vh-500px)]"
+        tableHeight="h-[calc(100vh-380px)]"
         loading={loading}
       />
-      <ClientSidePagination table={table} />
     </div>
   );
 }

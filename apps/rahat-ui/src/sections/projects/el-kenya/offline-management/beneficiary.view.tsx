@@ -52,8 +52,6 @@ export default function BeneficiaryView({
     const selectedRows = table
       .getSelectedRowModel()
       .rows.map((data) => data.original);
-    console.log(selectedRows);
-
     handleStepDataChange({
       target: {
         name: 'disbursements',

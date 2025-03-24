@@ -3,7 +3,6 @@ import {
   useCambodiaCommsList,
   usePagination,
 } from '@rahat-ui/query';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -11,24 +10,23 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import getIcon from 'apps/rahat-ui/src/utils/getIcon';
 import { UUID } from 'crypto';
-import { Download } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { useMemo } from 'react';
-import SelectComponent from '../select.component';
+import SearchInput from '../../components/search.input';
+import AddButton from '../../components/add.btn';
+import getIcon from 'apps/rahat-ui/src/utils/getIcon';
+import ViewColumns from '../../components/view.columns';
 import CambodiaTable from '../table.component';
 import { useTableColumns } from './use.table.columns';
-
-import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
-import { DateRange } from 'react-day-picker';
-import * as XLSX from 'xlsx';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 export default function CommunicationView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+
   const {
     pagination,
     filters,
@@ -38,6 +36,7 @@ export default function CommunicationView() {
     setPerPage,
     selectedListItems,
     setSelectedListItems,
+    resetSelectedListItems,
   } = usePagination();
 
   const { data: broadStatusCount } = useCambodiaBroadCastCounts({
@@ -45,17 +44,8 @@ export default function CommunicationView() {
   }) as any;
   const { data, isLoading } = useCambodiaCommsList({
     projectUUID: id,
-    page: pagination.page,
-    perPage: pagination.perPage,
-    ...filters,
+    ...pagination,
   });
-  const { data: filteredData } = useCambodiaCommsList({
-    projectUUID: id,
-    page: 1,
-    perPage: data?.response?.meta?.total,
-    ...filters,
-  });
-
   const tableData = useMemo(() => {
     if (data?.data) {
       return data?.data;
@@ -67,17 +57,15 @@ export default function CommunicationView() {
   const columns = useTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: tableData,
+    data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setSelectedListItems,
+    // onRowSelectionChange: setSelectedListItems,
     getFilteredRowModel: getFilteredRowModel(),
-    getRowId: (row) => row.cuid,
     state: {
       columnVisibility,
-      rowSelection: selectedListItems,
     },
   });
 
@@ -98,83 +86,6 @@ export default function CommunicationView() {
       total: broadStatusCount?.data?.fail || 0,
     },
   ];
-
-  const handleFilterChange = (event: any) => {
-    if (event && event.target) {
-      const { name, value } = event.target;
-      const filterValue =
-        value === 'ALL'
-          ? setFilters({
-              ...filters,
-              status: {},
-            })
-          : value;
-      table.getColumn(name)?.setFilterValue(filterValue);
-      setFilters({
-        ...filters,
-        [name]: filterValue,
-      });
-    }
-  };
-
-  const handleDateChange = (date: DateRange | undefined) => {
-    if (date?.from && date?.to) {
-      if (date.from.getTime() === date.to.getTime()) {
-        // If the dates are the same, adjust the end date to cover the full day
-        const startOfDay = new Date(date.from.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(date.to.setHours(23, 59, 59, 999));
-
-        setFilters({
-          ...filters,
-          startDate: startOfDay.toISOString(),
-          endDate: endOfDay.toISOString(),
-        });
-      } else {
-        setFilters({
-          ...filters,
-          startDate: date.from,
-          endDate: date.to,
-        });
-      }
-    } else {
-      setFilters({
-        ...filters,
-        startDate: undefined,
-        endDate: undefined,
-      });
-    }
-  };
-
-  const address = tableData
-    ?.filter((item: any) => item.status === 'FAIL')
-    .map((add) => add.address);
-
-  const handleDownload = async () => {
-    const rowsToDownload = filteredData?.data || [];
-    const workbook = XLSX.utils.book_new();
-    const worksheetData = rowsToDownload?.map((item: any) => ({
-      Phone: item.address,
-      Status: item.status,
-      CreatedAt: new Date(item.createdAt).toLocaleDateString(),
-    }));
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Communication Report');
-
-    XLSX.writeFile(workbook, 'Communication Report.xlsx');
-  };
-
-  // useEffect(() => {
-  //   setFilters({});
-  // }, []);
-
-  const handleClearDate = () => {
-    console.log(filters.status);
-    setFilters({
-      ...filters,
-      startDate: undefined,
-      endDate: undefined,
-    });
-  };
   return (
     <>
       <div className="p-4">
@@ -199,38 +110,20 @@ export default function CommunicationView() {
         </div>
 
         <div className="rounded border bg-card p-4">
-          <div className="flex justify-end items-center space-x-2 mb-2">
-            <DateRangePicker
-              placeholder="Pick a date range"
-              handleDateChange={handleDateChange}
-              type="range"
+          <div className="flex justify-between space-x-2 mb-2">
+            <SearchInput
               className="w-full"
-              handleClearDate={handleClearDate}
-            />
-
-            <SelectComponent
-              className="w-1/2"
-              name="Status"
-              options={['ALL', 'SUCCESS', 'FAIL']}
-              onChange={(value) =>
-                handleFilterChange({
-                  target: { name: 'status', value },
-                })
+              name="to"
+              value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
+              onSearch={(event) =>
+                table.getColumn('to')?.setFilterValue(event.target.value)
               }
-              // value={table.getColumn('sendTo')?.getFilterValue() as string}
             />
-
-            <Button
-              variant="outline"
-              className="text-muted-foreground w-1/4"
-              onClick={handleDownload}
-              disabled={
-                Object.keys(filters).length === 0 ||
-                filters.status === undefined
-              }
-            >
-              <Download className="w-4 h-4 mr-3" /> Download Report
-            </Button>
+            <ViewColumns table={table} />
+            {/* <AddButton
+              path={`/projects/el-cambodia/${id}/communication/add`}
+              name="SMS"
+            /> */}
           </div>
           <CambodiaTable
             table={table}

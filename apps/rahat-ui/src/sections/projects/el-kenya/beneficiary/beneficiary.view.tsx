@@ -168,7 +168,7 @@ export default function BeneficiaryView() {
               <SelectComponent
                 onChange={(e) => setFilters({ ...filters, glassesStatus: e })}
                 name="Glasses Status"
-                options={['REQUIRED', 'NOT_REQUIRED']}
+                options={['  REQUIRED', 'NOT_REQUIRED']}
                 value={filters?.glassesStatus || ''}
               />
               <SelectComponent
@@ -183,7 +183,7 @@ export default function BeneficiaryView() {
               <FiltersTags
                 filters={filters}
                 setFilters={setFilters}
-                total={meta?.total || 0}
+                total={beneficiaries?.data?.length}
               />
             )}
             <ElkenyaTable

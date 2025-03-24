@@ -66,7 +66,7 @@ export default function ConversionListView() {
       <div className="rounded border bg-card p-4">
         <CambodiaTable
           table={table}
-          tableHeight="h-[calc(100vh-660px)]"
+          tableHeight="h-[calc(100vh-570px)]"
           loading={isLoading}
         />
       </div>

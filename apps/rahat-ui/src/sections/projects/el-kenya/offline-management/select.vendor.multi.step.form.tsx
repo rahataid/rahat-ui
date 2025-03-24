@@ -198,7 +198,6 @@ export default function SelectVendorMultiStepForm() {
   const handleSyncBen = async () => {
     setIsSyncing(true);
     const vendorId = stepData.vendor.id;
-    console.log(stepData.disbursements);
     let selectedDisbursementId = stepData.disbursements.map(
       (disbursement: any) => {
         return { id: disbursement.disbursmentId, phone: disbursement.phone };

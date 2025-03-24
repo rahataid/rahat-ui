@@ -1,3 +1,5 @@
+// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 'use client';
 
 import { getDefaultConfig } from 'connectkit';
@@ -8,6 +10,7 @@ import {
   mainnet,
   polygonMumbai,
   sepolia,
+  base,
 } from 'wagmi/chains';
 import { safe } from 'wagmi/connectors';
 import { rahatChain } from './src/chain-custom';
@@ -28,6 +31,7 @@ export const config: Config = createConfig(
       // polygon,
       rahatChain,
       baseSepolia,
+      base,
       // polygonMumbai,
       arbitrumSepolia,
     ],

@@ -1,10 +1,11 @@
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
+  useTokenDetails,
 } from '@rahat-ui/query';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { useParams } from 'next/navigation';
-import { formatEther } from 'viem';
+import { formatEther, formatUnits } from 'viem';
 import { useReadContract } from 'wagmi';
 
 type Step2DisburseAmountProps = {
@@ -36,8 +37,14 @@ export default function Step2DisburseAmount({
     functionName: 'balanceOf',
     args: [contractSettings?.c2cproject?.address],
   });
+  const tokenDetails = useTokenDetails();
 
-  const projectBalance = data ? formatEther(BigInt(data)) : '0';
+  const projectBalance = data
+    ? formatUnits(
+        data as bigint,
+        tokenDetails ? (tokenDetails.data as number) : 18,
+      )
+    : '0';
 
   // const [amount, setAmount] = useState<string>('0');
   return (
@@ -78,15 +85,18 @@ export default function Step2DisburseAmount({
           </label>
           <div className="flex items-center space-x-2">
             <Input
+              type="number"
               name="disburseAmount"
               placeholder="Enter amount to send"
               value={value}
               onChange={(event) => {
                 const amount = Number(event.target.value);
-                if (amount > Number(projectBalance)) {
-                  return;
+                if (
+                  treasurySource === 'MULTISIG' ||
+                  amount <= Number(projectBalance)
+                ) {
+                  onChange(event);
                 }
-                onChange(event);
               }}
               className="p-2 border border-gray-300 rounded-md w-1/2"
             />

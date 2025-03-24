@@ -36,7 +36,56 @@ import { useWaitForTransactionReceipt } from 'wagmi';
 import { config } from '../../../../../wagmi.config';
 import { DataTablePagination } from '../transactions/dataTablePagination';
 import { useApprovalTable } from './useApprovalTable';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
 
+// Define transaction steps
+type TransactionStep =
+  | 'idle'
+  | 'initiating'
+  | 'waiting'
+  | 'updating'
+  | 'success'
+  | 'error';
+
+// Props for the TransactionModal component
+interface TransactionModalProps {
+  transactionStep: TransactionStep;
+  errorMessage: string | null;
+  onClose: () => void;
+}
+
+// TransactionModal component to display transaction progress
+function TransactionModal({
+  transactionStep,
+  errorMessage,
+  onClose,
+}: TransactionModalProps) {
+  return (
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Transaction Status</DialogTitle>
+        </DialogHeader>
+        <div>
+          {transactionStep === 'initiating' && <p>Initiating transaction...</p>}
+          {transactionStep === 'waiting' && <p>Waiting for confirmation...</p>}
+          {transactionStep === 'updating' && <p>Updating status...</p>}
+          {transactionStep === 'success' && (
+            <p>Transaction executed successfully!</p>
+          )}
+          {transactionStep === 'error' && <p>Error: {errorMessage}</p>}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// Main ApprovalTable component
 export function ApprovalTable({ disbursement }: { disbursement: any }) {
   const { id } = useParams();
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -44,19 +93,27 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [transactionStep, setTransactionStep] =
+    React.useState<TransactionStep>('idle');
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+
+  const columns = useApprovalTable();
+  const { id: projectUUID, uuid } = useParams() as { id: UUID; uuid: UUID };
+
+  // Fetch project settings
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
   const safeWallet = useProjectSettingsStore(
     (state) => state?.settings?.[id]?.['SAFE_WALLET']?.address,
   );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  const columns = useApprovalTable();
 
-  const { id: projectUUID, uuid } = useParams() as { id: UUID; uuid: UUID };
-  const { data, isLoading, isFetching, isError } = useGetDisbursementApprovals({
+  // Fetch disbursement approvals data
+  const { data, isLoading, isFetching } = useGetDisbursementApprovals({
     disbursementUUID: uuid,
     projectUUID: projectUUID,
     page: 1,
@@ -64,12 +121,21 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     transactionHash: disbursement?.transactionHash,
   });
 
+  // Initialize project action and transaction hooks
   const projectAction = useProjectAction(['c2c', 'disburseToken']);
   const waitedReceiptData = useWaitForTransactionReceipt({
     hash: txHash,
     enabled: !!txHash,
   });
 
+  const disburseMultiSig = useMultiSigDisburseToken({
+    disbursementId: disbursement?.id,
+    projectUUID,
+    rahatTokenAddress: contractSettings?.rahattoken?.address,
+    config: config,
+  });
+
+  // Set up the table using Tanstack React Table
   const table = useReactTable({
     data: data?.approvals || [],
     columns,
@@ -89,43 +155,53 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     },
   });
 
-  const disburseMultiSig = useMultiSigDisburseToken({
-    disbursementId: disbursement?.id,
-    projectUUID,
-    rahatTokenAddress: contractSettings?.rahattoken?.address,
-    config: config,
-  });
+  const approved = data?.approvals?.filter(
+    (approval: any) => approval?.hasApproved,
+  );
 
+  // Handle multi-signature transaction execution
   const handleMigSigTransaction = async () => {
-    const amountString = disbursement?.DisbursementBeneficiary[0]?.amount
-      ? disbursement?.DisbursementBeneficiary[0]?.amount.toString()
-      : '0';
+    setTransactionStep('initiating');
+    setIsModalOpen(true); // Open the modal
+    try {
+      const amountString = disbursement?.DisbursementBeneficiary[0]?.amount
+        ? disbursement?.DisbursementBeneficiary[0]?.amount.toString()
+        : '0';
 
-    await disburseMultiSig.mutateAsync({
-      amount: amountString,
-      beneficiaryAddresses: disbursement?.DisbursementBeneficiary?.map(
-        (d: any) => d.beneficiaryWalletAddress,
-      ) as `0x${string}`[],
-      rahatTokenAddress: contractSettings?.rahattoken?.address,
-      safeAddress: safeWallet,
-      c2cProjectAddress: contractSettings?.c2cproject?.address,
-    });
+      await disburseMultiSig.mutateAsync({
+        amount: amountString,
+        beneficiaryAddresses: disbursement?.DisbursementBeneficiary?.map(
+          (d: any) => d.beneficiaryWalletAddress,
+        ) as `0x${string}`[],
+        rahatTokenAddress: contractSettings?.rahattoken?.address,
+        safeAddress: safeWallet,
+        c2cProjectAddress: contractSettings?.c2cproject?.address,
+      });
+    } catch (error) {
+      setTransactionStep('error');
+      setErrorMessage(error.message || 'An error occurred during initiation');
+      setIsModalOpen(false); // Close the modal on error
+    }
   };
 
+  // Update transaction hash and step when transaction is successful
   React.useEffect(() => {
     if (disburseMultiSig.isSuccess) {
       setTxHash(disburseMultiSig.data);
+      setTransactionStep('waiting');
     }
-  }, [disburseMultiSig.data, disburseMultiSig.isSuccess]);
+  }, [disburseMultiSig.isSuccess, disburseMultiSig.data]);
 
-  // Add a ref to prevent multiple status updates
+  // Track whether status has been updated to prevent infinite loops
   const hasUpdatedStatus = React.useRef(false);
 
+  // Handle transaction receipt and update status
   React.useEffect(() => {
     if (waitedReceiptData.isSuccess && !hasUpdatedStatus.current) {
+      setTransactionStep('updating');
       hasUpdatedStatus.current = true;
-      const saveDisbursementStatus = async () => {
-        await projectAction.mutateAsync({
+      projectAction
+        .mutateAsync({
           uuid: projectUUID,
           data: {
             action: 'c2cProject.disbursement.update',
@@ -134,11 +210,9 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
               status: 'COMPLETED',
             },
           },
-        });
-      };
-      saveDisbursementStatus()
+        })
         .then(() => {
-          // Reset the ref after the status update
+          setTransactionStep('success');
           hasUpdatedStatus.current = false;
           Swal.fire({
             title: 'Transaction Executed',
@@ -146,22 +220,18 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
             icon: 'success',
             confirmButtonText: 'OK',
           });
+          setTxHash(undefined); // Prevents infinite loop by clearing txHash
+          setIsModalOpen(false); // Close the modal on success
         })
         .catch((error) => {
-          console.error('Error updating disbursement status:', error);
-          Swal.fire({
-            title: 'Transaction Failed',
-            text: 'There was an error executing the transaction.',
-            icon: 'error',
-            confirmButtonText: 'OK',
-          });
+          setTransactionStep('error');
+          setErrorMessage('Failed to update disbursement status');
+          hasUpdatedStatus.current = false;
+          setIsModalOpen(false); // Close the modal on error
         });
     }
   }, [waitedReceiptData.isSuccess, projectAction, projectUUID, disbursement]);
 
-  const approved = data?.approvals?.filter(
-    (approval: any) => approval?.hasApproved,
-  );
   return (
     <div className="w-full">
       {data?.isExecuted && (
@@ -170,22 +240,25 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
             <div className="flex items-center">
               <span className="mr-2">Approvals:</span>
               <span className="px-2 py-1 bg-green-100 text-green-800 rounded">
-                {approved?.length}
+                {approved?.length || 0}
               </span>
               <span className="mx-1">/</span>
               <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">
-                {data?.approvals?.length}
+                {data?.approvals?.length || 0}
               </span>
             </div>
             <div className="flex items-center">
               <span className="mr-2">Required:</span>
               <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded">
-                {data?.confirmationsRequired}
+                {data?.confirmationsRequired || 0}
               </span>
             </div>
           </div>
           <Button
-            disabled={disburseMultiSig.isPending}
+            disabled={
+              disburseMultiSig.isPending ||
+              (approved?.length || 0) < (data?.confirmationsRequired || 0)
+            }
             variant="outline"
             size="sm"
             onClick={handleMigSigTransaction}
@@ -194,6 +267,7 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
           </Button>
         </div>
       )}
+
       <div className="rounded h-[calc(100vh-360px)] bg-card">
         <Table>
           <ScrollArea className="h-table1">
@@ -272,7 +346,16 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
           </ScrollArea>
         </Table>
       </div>
+
       <DataTablePagination table={table} />
+
+      {isModalOpen && (
+        <TransactionModal
+          transactionStep={transactionStep}
+          errorMessage={errorMessage}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -2,10 +2,10 @@ name: Cam Kenya CI/CD
 on:
   push:
     branches:
-      - 'dev'
+      - 'cam-ken_merge'
   pull_request:
     branches:
-      - 'dev'
+      - 'cam-ken_merge'
   workflow_dispatch:
 
 env:

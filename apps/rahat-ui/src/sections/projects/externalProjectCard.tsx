@@ -1,5 +1,4 @@
-//TODO: remove after merge
-
+//TODO: remove after release branch merge
 'use client';
 import Image from 'next/image';
 import { Card, CardContent } from '@rahat-ui/shadcn/components/card';

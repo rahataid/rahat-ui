@@ -26,9 +26,9 @@ type IProps = {
 };
 
 export default function AddManualTriggerForm({ form }: IProps) {
-  // const selectedPhase = JSON.parse(
-  //   localStorage.getItem('selectedPhase') as string,
-  // );
+  const selectedPhase = JSON.parse(
+    localStorage.getItem('selectedPhase') as string,
+  );
 
   return (
     <>
@@ -41,7 +41,7 @@ export default function AddManualTriggerForm({ form }: IProps) {
                 <Input
                   className="bg-gray-300"
                   type="text"
-                  value={'selectedPhase.name'}
+                  value={selectedPhase.name}
                   disabled
                 />
               </FormControl>
@@ -111,15 +111,6 @@ export default function AddManualTriggerForm({ form }: IProps) {
                 </FormItem>
               )}
             />
-          </div>
-          <div className="flex justify-end mt-4">
-            <Button type="button" variant="outline" className="w-40 mr-2">
-              Cancel
-            </Button>
-            {/* <Button type="submit" className="w-40">
-              Confirm
-            </Button> */}
-            <ConfirmAddTrigger />
           </div>
         </form>
       </Form>

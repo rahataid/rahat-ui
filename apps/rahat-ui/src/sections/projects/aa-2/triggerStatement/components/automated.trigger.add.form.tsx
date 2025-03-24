@@ -47,9 +47,9 @@ type IProps = {
 export default function AddAutomatedTriggerForm({ form }: IProps) {
   // const params = useParams();
   // const projectId = params.id as UUID;
-  // const selectedPhase = JSON.parse(
-  //   localStorage.getItem('selectedPhase') as string,
-  // );
+  const selectedPhase = JSON.parse(
+    localStorage.getItem('selectedPhase') as string,
+  );
 
   // const dataSources = useProjectSettingsStore(
   //   (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
@@ -68,7 +68,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 <Input
                   className="bg-gray-300"
                   type="text"
-                  value={'selectedPhase.name'}
+                  value={selectedPhase?.name}
                   disabled
                 />
               </FormControl>
@@ -229,15 +229,6 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 </FormItem>
               )}
             />
-          </div>
-          <div className="flex justify-end mt-4">
-            <Button type="button" variant="outline" className="w-40 mr-2">
-              Cancel
-            </Button>
-            {/* <Button type="submit" className="w-40">
-              Confirm
-            </Button> */}
-            <ConfirmAddTrigger />
           </div>
         </form>
       </Form>

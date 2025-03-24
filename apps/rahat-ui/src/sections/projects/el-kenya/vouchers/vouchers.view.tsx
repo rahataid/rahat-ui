@@ -49,14 +49,12 @@ export default function VouchersView() {
   )?.data;
 
   const glassRequired =
-    kenyaStats?.data
-      ?.find((i: any) => i.name === 'NOT_REDEEM_STATS')
-      ?.data?.find((i: any) => i.id === 'REQUIRED')?.count || 0;
+    kenyaStats?.data?.find((i: any) => i.name === 'NOT_REDEEM_STATS')?.data
+      ?.glassesRequired || 0;
 
   const glassNotRequired =
-    kenyaStats?.data
-      ?.find((i: any) => i.name === 'NOT_REDEEM_STATS')
-      ?.data?.find((i: any) => i.id === 'NOT_REQUIRED')?.count || 0;
+    kenyaStats?.data?.find((i: any) => i.name === 'NOT_REDEEM_STATS')?.data
+      ?.glassesNotRequired || 0;
 
   const REDEMPTION_STATS = kenyaStats?.data?.find(
     (i: any) => i.name === 'REDEMPTION_STATS',
@@ -103,7 +101,7 @@ export default function VouchersView() {
       const { voucherType, count, week } = item;
 
       // Find or create a series entry for the current voucher type
-      let seriesEntry = acc?.find((s) => s?.name === voucherType);
+      let seriesEntry = acc.find((s) => s.name === voucherType);
       if (!seriesEntry) {
         seriesEntry = {
           name: voucherType,
@@ -118,11 +116,12 @@ export default function VouchersView() {
 
       return acc;
     }, []);
+
     return { categories, series };
   }
 
   const stackedColumnData = React.useMemo(() => {
-    if (!weeklyRedemptionsStats || weeklyRedemptionsStats?.length === 0)
+    if (!weeklyRedemptionsStats)
       return { categories: ['demo'], series: [{ name: 'demo', data: [0] }] };
     if (weeklyRedemptionsStats?.length > 0)
       return transformData(weeklyRedemptionsStats);
@@ -234,21 +233,19 @@ export default function VouchersView() {
               </div>
             </div> */}
           </div>
-          {weeklyRedemptionsStats?.length > 0 && (
-            <div>
-              <div className="col-span-3 border rounded-md bg-card p-4 shadow">
-                <p className="text-md font-medium mb-4">Total Vouchers</p>
-                <div className="flex justify-center">
-                  <ChartColumnStacked
-                    series={stackedColumnData?.series}
-                    categories={stackedColumnData?.categories as string[]}
-                    stacked
-                    custom
-                  />
-                </div>
+          <div>
+            <div className="col-span-3 border rounded-md bg-card p-4 shadow">
+              <p className="text-md font-medium mb-4">Total Vouchers</p>
+              <div className="flex justify-center">
+                <ChartColumnStacked
+                  series={stackedColumnData?.series}
+                  categories={stackedColumnData?.categories as string[]}
+                  stacked
+                  custom
+                />
               </div>
             </div>
-          )}
+          </div>
         </ScrollArea>
       </div>
     </>

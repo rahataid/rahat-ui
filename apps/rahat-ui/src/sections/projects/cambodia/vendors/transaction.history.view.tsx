@@ -59,7 +59,7 @@ export default function TransactionHistoryView({ vendorAddress }: IProps) {
       <div className="rounded border bg-card p-4 mb-0 pb-0">
         <CambodiaTable
           table={table}
-          tableHeight="h-[calc(100vh-660px)]"
+          tableHeight="h-[calc(100vh-570px)]"
           loading={isLoading}
         />
       </div>

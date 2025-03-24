@@ -1,7 +1,7 @@
 {
   "name": "@rahat-ui/source",
-  "version": "0.0.0",
-  "license": "MPL-2.0",
+  "version": "1.2.1",
+  "license": "MIT",
   "scripts": {
     "rahat-ui": "nx serve rahat-ui",
     "start": "nx serve rahat-ui",

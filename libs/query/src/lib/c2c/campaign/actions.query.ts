@@ -187,7 +187,10 @@ export const useListc2cCommunicationStats = (projectUUID: UUID) => {
   });
 };
 
-export const useListc2cCommunicationLogs = (projectUUID: UUID) => {
+export const useListc2cCommunicationLogs = (
+  projectUUID: UUID,
+  payload: Pagination,
+) => {
   const action = useProjectAction();
 
   return useQuery({
@@ -197,10 +200,10 @@ export const useListc2cCommunicationLogs = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: GET_ALL_COMMUNICATION_LOGS,
-          payload: {},
+          payload: payload,
         },
       });
-      return res.data;
+      return res;
     },
   });
 };

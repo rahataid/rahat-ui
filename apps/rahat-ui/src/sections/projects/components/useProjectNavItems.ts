@@ -6,10 +6,10 @@ import { useProjectListNavItems } from '../useNavItems';
 import { useProjectNavItemsType } from './nav-items.types';
 import { useNavItems as useC2CNavItems } from '../c2c/useNavItems';
 import { useNavItems as useRPNavItems } from '../rp/useRPNavItems';
-import { useNavItems as useELKenyaNavItems } from '../../../app/projects/el-kenya/useELKenyaNavItems';
 import { useNavItems as useSmsVoucherNavItems } from '../sms-voucher/useELKenyaNavItems';
 import { useNavItems as useCambodiaNavItems } from '../cambodia/useCambodiaNavItems';
 import { useNavItems as useCommsNavItems } from '../comms/useCommsNavItems';
+import { useELKenyaNavItems } from '../el-kenya';
 
 const hooks = {
   [ProjectTypes.ANTICIPATORY_ACTION]: useAANavItems,

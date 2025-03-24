@@ -44,7 +44,7 @@ import { UUID } from 'crypto';
 import TableLoader from '../../components/table.loader';
 import Image from 'next/image';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import SelectComponent from '../../app/projects/el-kenya/select.component';
+import SelectComponent from '../projects/el-kenya/select.component';
 
 export type IVendor = {
   id: string;

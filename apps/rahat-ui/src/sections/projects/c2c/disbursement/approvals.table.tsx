@@ -87,6 +87,7 @@ function TransactionModal({
 
 // Main ApprovalTable component
 export function ApprovalTable({ disbursement }: { disbursement: any }) {
+  console.log('data', disbursement);
   const { id } = useParams();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [txHash, setTxHash] = React.useState<string | undefined>(undefined);

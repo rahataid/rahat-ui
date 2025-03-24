@@ -17,7 +17,6 @@ import { useParams, useRouter } from 'next/navigation';
 import VoiceCampaignAddDrawer from './campaign.voice.add';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
-
 const VoiceCampaignDetails = () => {
   const { pagination, filters } = usePagination();
   const router = useRouter();
@@ -33,8 +32,8 @@ const VoiceCampaignDetails = () => {
   const ivrTransportCuids = transportData
     ?.filter((transport: any) => transport.name.toLowerCase() === 'ivr')
     .map((transport: any) => transport.cuid);
-  const filteredComs = campaignData?.filter((com: any) =>
-    ivrTransportCuids?.includes(com.transportId),
+  const filteredComs = campaignData?.filter(
+    (com: any) => ivrTransportCuids?.includes(com.transportId) && !com.isIvr,
   );
   console.log(filteredComs, ivrTransportCuids);
   return (
@@ -50,7 +49,7 @@ const VoiceCampaignDetails = () => {
                 key={ivrCampaign.uuid}
                 onClick={() =>
                   router.push(
-                    `/projects/comms/${id}/campaigns/text/manage/${ivrCampaign.uuid}`,
+                    `/projects/comms/${id}/campaigns/voice/manage/${ivrCampaign.uuid}`,
                   )
                 }
                 className="flex flex-col rounded justify-center shadow bg-card cursor-pointer hover:shadow-md hover:border-1 hover:border-blue-500 ease-in duration-200"

@@ -1,4 +1,4 @@
-name: Dev CI/CD
+name: Cam Kenya CI/CD
 on:
   push:
     branches:

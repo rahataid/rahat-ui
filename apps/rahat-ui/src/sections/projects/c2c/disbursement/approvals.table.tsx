@@ -5,6 +5,7 @@ import {
   useMultiSigDisburseToken,
   useProjectAction,
   useProjectSettingsStore,
+  useQueryClient,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -123,6 +124,7 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
 
   // Initialize project action and transaction hooks
   const projectAction = useProjectAction(['c2c', 'disburseToken']);
+  const queryClient = useQueryClient();
   const waitedReceiptData = useWaitForTransactionReceipt({
     hash: txHash,
     enabled: !!txHash,
@@ -212,6 +214,9 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
           },
         })
         .then(() => {
+          queryClient.invalidateQueries({
+            queryKey: ['get-disbursement', disbursement?.uuid],
+          });
           setTransactionStep('success');
           hasUpdatedStatus.current = false;
           Swal.fire({

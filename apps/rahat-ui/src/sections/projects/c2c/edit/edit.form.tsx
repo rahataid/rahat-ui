@@ -101,7 +101,7 @@ export default function EditProject() {
         },
       },
       name: '',
-      type: project?.data?.type,
+      type: '',
     },
   });
 
@@ -112,14 +112,17 @@ export default function EditProject() {
         ...projectData,
         extras: {
           ...projectData.extras,
-          startDate: new Date(projectData.extras?.startDate),
-          endDate: new Date(projectData.extras?.endDate),
+          startDate: projectData?.extras?.startDate
+            ? new Date(new Date(projectData.extras.startDate))
+            : undefined,
+          endDate: projectData?.extras?.endDate
+            ? new Date(new Date(projectData.extras.endDate))
+            : undefined,
           treasury: {
             ...projectData.extras?.treasury,
             contractAddress: projectContract,
           },
         },
-        projectType: projectData.type,
       });
     }
   }, [form, project, projectContract]);
@@ -157,13 +160,14 @@ export default function EditProject() {
                   )}
                 />
                 <FormField
-                  name="extras.type"
+                  name="type"
                   render={({ field }) => (
                     <FormItem>
                       <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
+                        onValueChange={(val) => {
+                          if (val) field.onChange(val);
+                        }}
+                        value={field.value.toLocaleLowerCase() || ''}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -171,14 +175,16 @@ export default function EditProject() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {enumToObjectArray(ProjectTypes).map((item) => (
-                            <SelectItem
-                              key={item.value}
-                              value={item.value.toLowerCase()}
-                            >
-                              {item.label}
-                            </SelectItem>
-                          ))}
+                          {enumToObjectArray(ProjectTypes).map((item) => {
+                            return (
+                              <SelectItem
+                                key={item.value}
+                                value={item.value.toLowerCase()}
+                              >
+                                {item.label}
+                              </SelectItem>
+                            );
+                          })}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -348,17 +354,14 @@ export default function EditProject() {
               </Accordion>
               <div className="flex justify-between mt-4">
                 <Button
+                  type="button"
                   variant="ghost"
                   className="text-primary"
                   onClick={() => router.back()}
                 >
                   Go Back
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={projectEdit.isPending}
-                  onSubmit={() => onAdvancedFormSubmit(form.getValues())}
-                >
+                <Button type="submit" disabled={projectEdit.isPending}>
                   {projectEdit.isPending ? 'Editing' : 'Edit Project'}
                 </Button>
               </div>

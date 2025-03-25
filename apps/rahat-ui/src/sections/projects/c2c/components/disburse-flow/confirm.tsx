@@ -50,6 +50,8 @@ const Confirm = () => {
                   <Link
                     className="text-blue-500 font-medium underline mt-2"
                     href={`${chainInfo.safeURL}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     {from}
                   </Link>

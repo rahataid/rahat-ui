@@ -115,7 +115,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
         c2cProjectAddress: c2cproject?.address,
       });
       route.push(
-        `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&from=${safeWallet}&&disbursementUuid=${data?.uuid}`,
+        `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&from=${safeWallet}&&disbursementUuid=${data?.uuid}&&safeTxHash=${data?.safeTxHash}`,
       );
       return;
     }
@@ -139,7 +139,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     if (currentStep === 0) {
       route.push(`/projects/c2c/${id}/beneficiary`);
     } else if (currentStep > 0) {
-      if (currentStep === 2) {
+      if (currentStep === 1 || currentStep === 2) {
         stepData.disburseAmount = '';
       }
       setCurrentStep(currentStep - 1);

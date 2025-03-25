@@ -255,7 +255,7 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
         </div>
       </div>
 
-      {data?.isExecuted && (
+      {data?.isExecuted && disbursement?.status !== 'COMPLETED' && (
         <div className="flex items-center justify-end px-4 py-2 border-b-2 bg-card">
           <Button
             disabled={

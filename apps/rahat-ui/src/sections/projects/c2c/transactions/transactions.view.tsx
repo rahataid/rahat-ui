@@ -87,6 +87,9 @@ export default function TransactionView() {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
+  const safeWallet = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.SAFE_WALLET],
+  );
   const contractAddress = contractSettings?.c2cproject?.address;
 
   const [result] = useQuery({
@@ -103,6 +106,7 @@ export default function TransactionView() {
       const transactionLists = await mergeTransactions(
         transactionsObject,
         contractAddress,
+        safeWallet?.address,
       );
       setTransactionList(transactionLists);
     })();

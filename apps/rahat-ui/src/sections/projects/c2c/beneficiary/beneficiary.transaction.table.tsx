@@ -93,14 +93,11 @@ export const columns: ColumnDef<Transaction>[] = [
     accessorKey: 'amount',
     header: 'Amount',
     cell: ({ row }) => {
-      const amount = parseFloat(formatUnits(BigInt(row.getValue('amount')), 6));
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted} USDC</div>;
+      return (
+        <div className="text-right font-medium">
+          {row.getValue('amount')} USDC
+        </div>
+      );
     },
   },
 ];

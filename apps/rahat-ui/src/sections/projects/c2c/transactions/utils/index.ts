@@ -8,37 +8,62 @@ import {
 export const mergeTransactions = async (
   transactionsObj: TransactionsObject,
   contractAddress: string,
-  walletAddress?: string,
+  tokenDetails: any,
 ) => {
   console.log({ transactionsObj });
   const { transfers, transferProcesseds } = transactionsObj;
 
   const mergedTransactions: MergeTransactions[] = [
     // Combine the arrays
-    ...transfers.map((transaction) => ({
-      ...transaction,
-      topic: 'Received',
-      date: new Date(
-        parseInt(transaction.blockTimestamp) * 1000,
-      ).toLocaleString('en-US', {
-        timeZone: 'UTC',
-      }),
-      amount: transaction.value,
-      to: contractAddress,
-    })),
-    ...transferProcesseds.map((transaction) => ({
-      ...transaction,
-      from: walletAddress,
-      to: transaction._to,
-      amount: transaction._amount,
-      token: transaction._tokenAddress,
-      topic: 'Disbursed',
-      date: new Date(
-        parseInt(transaction.blockTimestamp) * 1000,
-      ).toLocaleString('en-US', {
-        timeZone: 'UTC',
-      }),
-    })),
+    ...transfers.map((transaction) => {
+      const amount =
+        (Number(transaction.value) as number) / 10 ** (tokenDetails.data ?? 18);
+      console.log('second', amount);
+
+      // Format the amount in USD without the currency symbol
+      const formatted = new Intl.NumberFormat('en-US', {
+        style: 'decimal', // Use 'decimal' to remove currency symbol
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(amount);
+      return {
+        ...transaction,
+        topic: 'Received',
+        date: new Date(
+          parseInt(transaction.blockTimestamp) * 1000,
+        ).toLocaleString('en-US', {
+          timeZone: 'UTC',
+        }),
+        amount: formatted,
+        to: contractAddress,
+      };
+    }),
+    ...transferProcesseds.map((transaction) => {
+      const amount =
+        (Number(transaction._amount) as number) /
+        10 ** (tokenDetails.data ?? 18);
+      console.log('second', amount);
+
+      // Format the amount in USD without the currency symbol
+      const formatted = new Intl.NumberFormat('en-US', {
+        style: 'decimal', // Use 'decimal' to remove currency symbol
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(amount);
+      return {
+        ...transaction,
+        from: transaction._from,
+        to: transaction._to,
+        amount: transaction._amount,
+        token: transaction._tokenAddress,
+        topic: 'Disbursed',
+        date: new Date(
+          parseInt(transaction.blockTimestamp) * 1000,
+        ).toLocaleString('en-US', {
+          timeZone: 'UTC',
+        }),
+      };
+    }),
   ];
 
   // Optionally, sort by timestamp if needed

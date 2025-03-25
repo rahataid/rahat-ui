@@ -1,3 +1,5 @@
+import { formatEther } from 'viem';
+
 export const mergeTransactions = async (transactionsObj: any) => {
   console.log({ transactionsObj });
   const { tokenReceiveds, transferProcesseds } = transactionsObj;
@@ -16,7 +18,7 @@ export const mergeTransactions = async (transactionsObj: any) => {
     ...transferProcesseds.map((transaction: any) => ({
       ...transaction,
       to: transaction._beneficiary,
-      amount: transaction._amount,
+      amount: formatEther(transaction._amount),
       token: transaction._tokenAddress,
       topic: 'Disbursed',
       date: new Date(

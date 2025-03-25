@@ -8,6 +8,7 @@ import {
 export const mergeTransactions = async (
   transactionsObj: TransactionsObject,
   contractAddress: string,
+  walletAddress?: string,
 ) => {
   console.log({ transactionsObj });
   const { transfers, transferProcesseds } = transactionsObj;
@@ -27,6 +28,7 @@ export const mergeTransactions = async (
     })),
     ...transferProcesseds.map((transaction) => ({
       ...transaction,
+      from: walletAddress,
       to: transaction._to,
       amount: transaction._amount,
       token: transaction._tokenAddress,

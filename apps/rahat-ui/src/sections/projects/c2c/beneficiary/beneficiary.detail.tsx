@@ -60,6 +60,7 @@ export default function BeneficiaryDetail({
 
   const { data: transactionList, isLoading } =
     useBeneficiaryTransaction(walletAddress);
+  console.log('transactionList', transactionList);
 
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',

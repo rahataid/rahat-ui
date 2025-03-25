@@ -95,9 +95,11 @@ export const useTransactionTable = () => {
         <div className="capitalize text-blue-500">
           <Link
             target="_blank"
-            href={`${chainInfo.blockExplorers?.default.url}/tx/${row.original.transactionHash}`}
+            href={`${
+              chainInfo.blockExplorers?.default.url
+            }/tx/${row.original.transactionHash.toLowerCase()}`}
           >
-            {row.original.transactionHash}
+            {truncateEthAddress(row.original.transactionHash)}
           </Link>
         </div>
       ),

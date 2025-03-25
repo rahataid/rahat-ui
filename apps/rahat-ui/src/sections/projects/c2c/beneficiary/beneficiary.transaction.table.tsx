@@ -113,11 +113,11 @@ export default function BeneficiaryDetailTableView({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const { data: beneficiaryTransaction, isFetching } =
-    useBeneficiaryTransaction(walletAddress);
+  const { isFetching } = useBeneficiaryTransaction(walletAddress);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  console.log('transaction', transaction);
 
   const table = useReactTable({
     manualPagination: true,

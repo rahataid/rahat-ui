@@ -5,6 +5,7 @@ import {
   TransactionDetails,
   usePagination,
   useProjectSettingsStore,
+  useTokenDetails,
 } from '@rahat-ui/query';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -39,6 +40,8 @@ import { mergeTransactions } from './utils';
 
 export default function TransactionView() {
   const { id } = useParams();
+  const tokenDetails = useTokenDetails();
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [transactionList, setTransactionList] = React.useState<Transaction[]>(
     [],
@@ -106,7 +109,7 @@ export default function TransactionView() {
       const transactionLists = await mergeTransactions(
         transactionsObject,
         contractAddress,
-        safeWallet?.address,
+        tokenDetails,
       );
       setTransactionList(transactionLists);
     })();

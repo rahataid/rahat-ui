@@ -86,8 +86,8 @@ export default function AddSMSForm() {
         <form onSubmit={form.handleSubmit(handleCreateCampaign)}>
           <div className="h-[calc(100vh-145px)] m-4">
             <HeaderWithBack
-              title="Add SMS"
-              subtitle="Create a new SMS text"
+              title="Add Email"
+              subtitle="Create a new Email"
               path={`/projects/c2c/${id}/communication/email`}
             />
             <div className="grid grid-cols-3 gap-4 mb-4 border rounded shadow-md p-4">

@@ -6,6 +6,7 @@ import {
   useCreateCampaign,
   useFindAllBeneficiaryGroups,
   useListRpTransport,
+  usePagination,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
@@ -41,11 +42,16 @@ export default function AddSMSForm() {
   const { id } = useParams();
 
   const createCampaign = useCreateCampaign(id as UUID);
-  // const { data: transportData } = useListRpTransport(id as UUID);
-  const { data: benificiaryGroups } = useFindAllBeneficiaryGroups(id as UUID, { page: 1, perPage: 100 });
-  // const transportId = transportData?.find(
-  //   (transport) => transport.name === 'Prabhu SMS',
-  // )?.cuid;
+  const { pagination, filters } = usePagination();
+
+  const { data: benificiaryGroups } = useFindAllBeneficiaryGroups(id as UUID, {
+    page: pagination.page,
+    perPage: 1000,
+    order: 'desc',
+    sort: 'createdAt',
+    projectUUID: id,
+    ...filters,
+  });
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     group: z.string().min(2, { message: 'Group is required' }),

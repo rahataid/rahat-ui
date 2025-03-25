@@ -42,7 +42,7 @@ function ViewCommunityBeneficiaryByGroupName() {
   const { setCommunityBeneficiariesUUID, communityBeneficiariesUUID } =
     useBeneficiaryStore();
 
-  const { data } = useListTempBeneficiary(uuid as string, {
+  const { data, isLoading } = useListTempBeneficiary(uuid as string, {
     ...pagination,
     ...(debouncedFilters as any),
   });
@@ -85,6 +85,7 @@ function ViewCommunityBeneficiaryByGroupName() {
             filters={filters}
             pagination={pagination}
             setPagination={setPagination}
+            loading={isLoading}
           />
         </TabsContent>
 

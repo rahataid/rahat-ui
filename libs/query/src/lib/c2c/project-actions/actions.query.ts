@@ -341,7 +341,7 @@ export const useDisburseTokenUsingMultisig = () => {
         timestamp: String(Math.floor(Date.now() / 1000)), // Convert to seconds timestamp
       });
 
-      return { ...disbursementResult, safeTxHash: safeTxHash };
+      return disbursementResult;
     },
   });
 };

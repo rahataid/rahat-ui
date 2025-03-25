@@ -1,3 +1,5 @@
+// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import {
   Transfers,
   Transaction,
@@ -8,7 +10,6 @@ import {
 export const mergeTransactions = async (
   transactionsObj: TransactionsObject,
   contractAddress: string,
-  walletAddress?: string,
 ) => {
   console.log({ transactionsObj });
   const { transfers, transferProcesseds } = transactionsObj;
@@ -28,7 +29,6 @@ export const mergeTransactions = async (
     })),
     ...transferProcesseds.map((transaction) => ({
       ...transaction,
-      from: walletAddress,
       to: transaction._to,
       amount: transaction._amount,
       token: transaction._tokenAddress,

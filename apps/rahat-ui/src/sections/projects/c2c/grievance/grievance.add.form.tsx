@@ -196,7 +196,7 @@ export default function GrievanceAdd() {
   });
 
   const handleGoBack = () => {
-    router.push(`/projects/c2c/${id}/grievance`);
+    router.back();
   };
 
   const handleCreateGrievance = async (data: FormData) => {

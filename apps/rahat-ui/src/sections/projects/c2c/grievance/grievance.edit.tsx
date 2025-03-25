@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useGrievanceAdd } from '@rahat-ui/query';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 // Step 1: Update the Form Schema
 const FormSchema = z.object({
@@ -105,32 +105,29 @@ function GrievanceSelectField({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => {
-        return (
-          <FormItem>
-            <Select
-              onValueChange={(val) => {
-                if (val) field.onChange(val);
-              }}
-              value={field.value && field.value}
-            >
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select an option" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {options.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        );
-      }}
+      render={({ field }) => (
+        <FormItem>
+          <Select
+            value={field.value}
+            onValueChange={field.onChange}
+            defaultValue={field.value}
+          >
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Select an option" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              {options.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
+      )}
     />
   );
 }
@@ -140,8 +137,6 @@ function GrievanceForm({
   handleSubmit,
   handleGoBack,
 }: GrievanceFormProps) {
-  console.log('value', form.getValues('grievanceType'));
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
@@ -203,7 +198,6 @@ export default function GrievanceAdd({ details }: any) {
   const router = useRouter();
   const addGrievance = useGrievanceAdd();
   const { id } = useParams();
-  const hasReset = useRef(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
@@ -235,9 +229,10 @@ export default function GrievanceAdd({ details }: any) {
     router.back();
     await addGrievance.mutateAsync(grievance);
   };
+  console.log(details.details);
 
   useEffect(() => {
-    if (details && !hasReset.current) {
+    if (details) {
       form.reset({
         reportedBy: details?.reportedBy || '',
         contactInfo: details?.reporterContact || '',
@@ -246,9 +241,8 @@ export default function GrievanceAdd({ details }: any) {
         description: details?.description || '',
         status: details?.status || '',
       });
-      hasReset.current = true; // Prevent re-resetting
     }
-  }, [details]);
+  }, [details, form]);
 
   return (
     <GrievanceForm

@@ -32,19 +32,14 @@ export const useAudienceTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-      accessorKey: 'project',
-      header: 'Project',
-      cell: ({ row }) => <div>{row.getValue('project')}</div>,
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => <div>{row.getValue('status')}</div>,
     },
     {
-      accessorKey: 'phone',
-      header: 'Phone Number',
-      cell: ({ row }) => <Badge>{row.getValue('phone')}</Badge>,
-    },
-    {
-      accessorKey: 'email',
-      header: 'Email',
-      cell: ({ row }) => <Badge>{row.getValue('email')}</Badge>,
+      accessorKey: 'createdAt',
+      header: 'Date',
+      cell: ({ row }) => <Badge>{row.getValue('createdAt')}</Badge>,
     },
   ];
   return columns;

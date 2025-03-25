@@ -30,7 +30,6 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { UUID } from 'crypto';
-import { mapStatus } from '../const';
 
 type IProps = {
   details: Grievance & { uuid: UUID };
@@ -98,7 +97,7 @@ export default function GrievanceDetail({ details, closeSecondPanel }: IProps) {
           />
           <div>
             <div className="flex flex-col items-start justify-start gap-2 mb-1 w-full">
-              <Badge>{mapStatus(details?.status)}</Badge>
+              <Badge>{details?.status}</Badge>
               <h1 className="font-semibold text-xl">{details?.title}</h1>
             </div>
           </div>

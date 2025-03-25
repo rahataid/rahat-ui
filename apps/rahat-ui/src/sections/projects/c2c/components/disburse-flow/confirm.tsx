@@ -1,5 +1,4 @@
 'use client';
-import { useInfoByCurrentChain } from 'apps/rahat-ui/src/hooks/use-info-by-current-chain';
 import { CheckCircleIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
@@ -11,14 +10,12 @@ const Confirm = () => {
 
   const searchParams = useSearchParams();
   const { address } = useAccount();
-  const chainInfo = useInfoByCurrentChain();
 
   const amount = Number(searchParams.get('amount'));
   const source = searchParams.get('source');
   const beneficiary = Number(searchParams.get('beneficiary'));
   const from = searchParams.get('from');
   const disbursementUuid = searchParams.get('disbursementUuid');
-  const safeTxHash = searchParams.get('safeTxHash');
 
   return (
     <>
@@ -49,7 +46,7 @@ const Confirm = () => {
                   <p>'Gnosis A/C' : </p>
                   <Link
                     className="text-blue-500 font-medium underline mt-2"
-                    href={`${chainInfo.safeURL}`}
+                    href="/gnosis-account"
                   >
                     {from}
                   </Link>

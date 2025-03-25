@@ -108,7 +108,7 @@ export const useMultiSigDisburseToken = ({
       safeAddress: `0x{string}`;
       c2cProjectAddress: `0x{string}`;
     }) => {
-      amount = parseUnits(amount.toString(), token.data as number);
+      amount = parseUnits(amount.toString(), token.data as number).toString();
       console.log('beneficiaryAddresses', {
         amount,
         beneficiaryAddresses,
@@ -121,7 +121,7 @@ export const useMultiSigDisburseToken = ({
         return encodeFunctionData({
           abi: c2CProjectAbi,
           functionName: 'disburseExternalToken',
-          args: [rahatTokenAddress, beneficiary, safeAddress, amount],
+          args: [rahatTokenAddress, beneficiary, safeAddress, BigInt(amount)],
         });
       });
       return multi.writeContractAsync({
@@ -214,14 +214,17 @@ export const useDisburseTokenToBeneficiaries = () => {
         //   address: rahatTokenAddress,
         // });
 
-        amount = parseUnits(amount.toString(), decimals.data as number);
+        amount = parseUnits(
+          amount.toString(),
+          decimals.data as number,
+        ).toString();
         console.log({ c2CProjectAbi, rahatTokenAddress, amount });
         const encodedForDisburse = beneficiaryAddresses.map((beneficiary) => {
           console.log({ beneficiary });
           return encodeFunctionData({
             abi: c2CProjectAbi,
             functionName: 'disburseProjectToken',
-            args: [rahatTokenAddress, beneficiary, amount],
+            args: [rahatTokenAddress, beneficiary, BigInt(amount)],
           });
         });
         const claim = await multi.writeContractAsync({
@@ -240,7 +243,7 @@ export const useDisburseTokenToBeneficiaries = () => {
             rahatTokenAddress,
           });
           const de = await addDisbursement.mutateAsync({
-            amount: formatEther(amount),
+            amount: formatEther(BigInt(amount)),
             beneficiaries: beneficiaryAddresses,
             from: c2cProjectAddress,
             transactionHash: claim,

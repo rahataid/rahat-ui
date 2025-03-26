@@ -210,6 +210,7 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
             payload: {
               id: disbursement?.id,
               status: 'COMPLETED',
+              transactionHash: disburseMultiSig?.data,
             },
           },
         })

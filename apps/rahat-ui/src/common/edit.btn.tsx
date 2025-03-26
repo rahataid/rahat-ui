@@ -48,7 +48,7 @@ export function EditButton({
             <AlertDialogTrigger className="flex items-center">
               <div
                 className={cn(
-                  'rounded-full border border-primary text-primary bg-card p-2 shadow-md',
+                  'rounded-full border border-primary text-primary bg-card p-2 hover:shadow-md',
                   className,
                 )}
               >

@@ -1,5 +1,10 @@
 import React from 'react';
-import { Back, Heading } from 'apps/rahat-ui/src/common';
+import {
+  Back,
+  DeleteButton,
+  EditButton,
+  Heading,
+} from 'apps/rahat-ui/src/common';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Tabs,
@@ -71,20 +76,22 @@ export default function AddTriggerView() {
     },
   });
 
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-  };
-
   const handleSubmitManualTrigger = async (
     data: z.infer<typeof ManualFormSchema>,
   ) => {
-    setAllTriggers([...allTriggers, { ...data, type: activeTab }]);
+    setAllTriggers([
+      ...allTriggers,
+      { ...data, type: activeTab, time: new Date() },
+    ]);
   };
 
   const handleSubmitAutomatedTrigger = async (
     data: z.infer<typeof AutomatedFormSchema>,
   ) => {
-    setAllTriggers([...allTriggers, { ...data, type: activeTab }]);
+    setAllTriggers([
+      ...allTriggers,
+      { ...data, type: activeTab, time: new Date() },
+    ]);
   };
 
   const handleStoreTriggers = () => {
@@ -106,6 +113,23 @@ export default function AddTriggerView() {
     manualForm.reset();
     automatedForm.reset();
     setOpen(false);
+  };
+
+  const handleDelete = (trigger: any) => {
+    const newTriggers = allTriggers?.filter((t) => t.time !== trigger.time);
+    setAllTriggers(newTriggers);
+  };
+
+  const handleEdit = (trigger: any) => {
+    if (trigger.type === 'manual') {
+      setActiveTab('manual');
+      manualForm.reset(trigger);
+    } else if (trigger.type === 'automated') {
+      setActiveTab('automated');
+      automatedForm.reset(trigger);
+    }
+
+    handleDelete(trigger);
   };
 
   React.useEffect(() => {
@@ -138,7 +162,7 @@ export default function AddTriggerView() {
             description="Select trigger type and fill the details below"
           />
 
-          <Tabs defaultValue={activeTab} onValueChange={handleTabChange}>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="border bg-secondary rounded mb-2">
               <TabsTrigger
                 className="w-full data-[state=active]:bg-white"
@@ -186,13 +210,24 @@ export default function AddTriggerView() {
                       {t.type.charAt(0).toUpperCase() + t.type.slice(1)}
                     </Badge>
                   </div>
-                  edit & delete
+                  <div className="flex items-center space-x-2">
+                    <EditButton
+                      className="border-none bg-blue-50"
+                      description="This action will refill the form with the selected trigger's data for editing."
+                      onFallback={() => handleEdit(t)}
+                    />
+                    <DeleteButton
+                      className="border-none bg-red-50"
+                      name="trigger"
+                      handleContinueClick={() => handleDelete(t)}
+                    />
+                  </div>
                 </div>
                 <p className="text-sm/6 font-medium mb-2">{t.title}</p>
                 <p className="text-muted-foreground text-sm/4">
                   {`${
                     t.dataSource
-                  } . ${'riverBasin'} . ${new Date().toLocaleString()}`}
+                  } . ${'riverBasin'} . ${t.time?.toLocaleString()}`}
                 </p>
               </div>
             );

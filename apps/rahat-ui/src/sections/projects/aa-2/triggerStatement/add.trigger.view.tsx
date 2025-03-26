@@ -16,13 +16,12 @@ import {
 } from './components';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export default function AddTriggerView() {
   const [activeTab, setActiveTab] = React.useState<string>('automated');
   const [allTriggers, setAllTriggers] = React.useState<any[]>([]);
   const [open, setOpen] = React.useState<boolean>(false);
-
-  console.log('All Triggers::', allTriggers);
 
   const ManualFormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid title' }),
@@ -86,9 +85,14 @@ export default function AddTriggerView() {
 
   const handleStoreTriggers = () => {
     const formHandlers: { [key in 'manual' | 'automated']: () => void } = {
-      manual: () => manualForm.handleSubmit(handleSubmitManualTrigger)(),
-      automated: () =>
-        automatedForm.handleSubmit(handleSubmitAutomatedTrigger)(),
+      manual: () => {
+        manualForm.formState.isValid ? setOpen(true) : setOpen(false);
+        manualForm.handleSubmit(handleSubmitManualTrigger)();
+      },
+      automated: () => {
+        automatedForm.handleSubmit(handleSubmitAutomatedTrigger)();
+        automatedForm.formState.isValid ? setOpen(true) : setOpen(false);
+      },
     };
 
     formHandlers[activeTab as 'manual' | 'automated']?.();
@@ -106,76 +110,78 @@ export default function AddTriggerView() {
         title="Add Trigger"
         description="Fill the form below to create new trigger statement"
       />
-      <div className="border p-4 mb-4 rounded shadow">
-        <Heading
-          title="Select Trigger Type"
-          titleStyle="text-xl/6 font-semibold"
-          description="Select trigger type and fill the details below"
-        />
-
-        <Tabs defaultValue={activeTab} onValueChange={handleTabChange}>
-          <TabsList className="border bg-secondary rounded mb-2">
-            <TabsTrigger
-              className="w-full data-[state=active]:bg-white"
-              value="automated"
-            >
-              Automated trigger
-            </TabsTrigger>
-            <TabsTrigger
-              className="w-full data-[state=active]:bg-white"
-              value="manual"
-            >
-              Manual trigger
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="automated">
-            <AutomatedTriggerAddForm form={automatedForm} />
-          </TabsContent>
-          <TabsContent value="manual">
-            <ManualTriggerAddForm form={manualForm} />
-          </TabsContent>
-        </Tabs>
-
-        <div className="flex justify-end mt-4">
-          <Button type="button" variant="outline" className="w-40 mr-2">
-            Cancel
-          </Button>
-          <ConfirmAddTrigger
-            activeTab={activeTab}
-            handleStore={handleStoreTriggers}
-            handleAddAnother={handleAddAnotherTrigger}
-            open={open}
-            setOpen={setOpen}
-            automatedForm={automatedForm}
-            manualForm={manualForm}
+      <ScrollArea className="h-[calc(100vh-210px)] pr-3">
+        <div className="border p-4 mb-4 rounded shadow">
+          <Heading
+            title="Select Trigger Type"
+            titleStyle="text-xl/6 font-semibold"
+            description="Select trigger type and fill the details below"
           />
+
+          <Tabs defaultValue={activeTab} onValueChange={handleTabChange}>
+            <TabsList className="border bg-secondary rounded mb-2">
+              <TabsTrigger
+                className="w-full data-[state=active]:bg-white"
+                value="automated"
+              >
+                Automated trigger
+              </TabsTrigger>
+              <TabsTrigger
+                className="w-full data-[state=active]:bg-white"
+                value="manual"
+              >
+                Manual trigger
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="automated">
+              <AutomatedTriggerAddForm form={automatedForm} />
+            </TabsContent>
+            <TabsContent value="manual">
+              <ManualTriggerAddForm form={manualForm} />
+            </TabsContent>
+          </Tabs>
+
+          <div className="flex justify-end mt-4">
+            <Button type="button" variant="outline" className="w-40 mr-2">
+              Cancel
+            </Button>
+            <ConfirmAddTrigger
+              activeTab={activeTab}
+              handleStore={handleStoreTriggers}
+              handleAddAnother={handleAddAnotherTrigger}
+              open={open}
+              setOpen={setOpen}
+              automatedForm={automatedForm}
+              manualForm={manualForm}
+            />
+          </div>
         </div>
-      </div>
-      <div className="grid grid-cols-1 gap-2">
-        {allTriggers.map((t, i) => {
-          return (
-            <div key={i} className="p-4 rounded border shadow">
-              <div className="flex justify-between items-center space-x-4 mb-2">
-                <div className="flex items-center space-x-4">
-                  <Badge className="font-medium">
-                    {t.isMandatory ? 'Mandatory' : 'Optional'}
-                  </Badge>
-                  <Badge className="font-medium">
-                    {t.type.charAt(0).toUpperCase() + t.type.slice(1)}
-                  </Badge>
+        <div className="grid grid-cols-1 gap-2">
+          {allTriggers.map((t, i) => {
+            return (
+              <div key={i} className="p-4 rounded border shadow">
+                <div className="flex justify-between items-center space-x-4 mb-2">
+                  <div className="flex items-center space-x-4">
+                    <Badge className="font-medium">
+                      {t.isMandatory ? 'Mandatory' : 'Optional'}
+                    </Badge>
+                    <Badge className="font-medium">
+                      {t.type.charAt(0).toUpperCase() + t.type.slice(1)}
+                    </Badge>
+                  </div>
+                  edit & delete
                 </div>
-                edit & delete
+                <p className="text-sm/6 font-medium mb-2">{t.title}</p>
+                <p className="text-muted-foreground text-sm/4">
+                  {`${
+                    t.dataSource
+                  } . ${'riverBasin'} . ${new Date().toLocaleString()}`}
+                </p>
               </div>
-              <p className="text-sm/6 font-medium mb-2">{t.title}</p>
-              <p className="text-muted-foreground text-sm/4">
-                {`${
-                  t.dataSource
-                } . ${'riverBasin'} . ${new Date().toLocaleString()}`}
-              </p>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      </ScrollArea>
     </div>
   );
 }

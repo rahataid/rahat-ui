@@ -68,11 +68,11 @@ export default function ConfirmAddTrigger({
   // }, [activeTab, manualForm, automatedForm]);
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>
-        <Button className="w-40" onClick={() => handleStore()}>
-          Confirm
-        </Button>
-      </AlertDialogTrigger>
+      {/* <AlertDialogTrigger asChild> */}
+      <Button className="w-40" onClick={() => handleStore()}>
+        Confirm
+      </Button>
+      {/* </AlertDialogTrigger> */}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="text-center">

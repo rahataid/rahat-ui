@@ -14,62 +14,22 @@ import { Plus } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
 
 type IProps = {
-  activeTab: string;
   handleStore: () => void;
   handleAddAnother: () => void;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  manualForm: UseFormReturn<
-    {
-      title: string;
-      isMandatory?: boolean | undefined;
-      notes?: string;
-    },
-    any,
-    undefined
-  >;
-  automatedForm: UseFormReturn<
-    {
-      title: string;
-      dataSource: string;
-      isMandatory?: boolean | undefined;
-      minLeadTimeDays: string;
-      maxLeadTimeDays: string;
-      probability: string;
-      notes?: string;
-    },
-    any,
-    undefined
-  >;
 };
 
 export default function ConfirmAddTrigger({
-  activeTab,
   handleStore,
   handleAddAnother,
   open,
   setOpen,
-  manualForm,
-  automatedForm,
 }: IProps) {
-  // const [triggerData, setTriggerData] = React.useState<any>({});
-  // console.log({ triggerData });
-
-  // React.useEffect(() => {
-  //   if (activeTab === 'manual') {
-  //     const formValues = manualForm.getValues();
-  //     setTriggerData(formValues);
-  //   }
-
-  //   if (activeTab === 'automated') {
-  //     const formValues = automatedForm.getValues();
-  //     setTriggerData(formValues);
-  //   }
-  // }, [activeTab, manualForm, automatedForm]);
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       {/* <AlertDialogTrigger asChild> */}
-      <Button className="w-40" onClick={() => handleStore()}>
+      <Button className="w-40" onClick={handleStore}>
         Confirm
       </Button>
       {/* </AlertDialogTrigger> */}

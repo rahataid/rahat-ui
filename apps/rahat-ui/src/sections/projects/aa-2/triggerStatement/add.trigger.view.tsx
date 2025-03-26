@@ -22,6 +22,10 @@ export default function AddTriggerView() {
   const [activeTab, setActiveTab] = React.useState<string>('automated');
   const [allTriggers, setAllTriggers] = React.useState<any[]>([]);
   const [open, setOpen] = React.useState<boolean>(false);
+  const [isManualDataValid, setIsManualDataValid] =
+    React.useState<boolean>(false);
+  const [isAutomatedDataValid, setIsAutomatedDataValid] =
+    React.useState<boolean>(false);
 
   const ManualFormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid title' }),
@@ -86,12 +90,12 @@ export default function AddTriggerView() {
   const handleStoreTriggers = () => {
     const formHandlers: { [key in 'manual' | 'automated']: () => void } = {
       manual: () => {
-        manualForm.formState.isValid ? setOpen(true) : setOpen(false);
         manualForm.handleSubmit(handleSubmitManualTrigger)();
+        isManualDataValid ? setOpen(true) : setOpen(false);
       },
       automated: () => {
         automatedForm.handleSubmit(handleSubmitAutomatedTrigger)();
-        automatedForm.formState.isValid ? setOpen(true) : setOpen(false);
+        isAutomatedDataValid ? setOpen(true) : setOpen(false);
       },
     };
 
@@ -103,6 +107,22 @@ export default function AddTriggerView() {
     automatedForm.reset();
     setOpen(false);
   };
+
+  React.useEffect(() => {
+    const isValid =
+      activeTab === 'automated'
+        ? automatedForm.formState.isValid
+        : manualForm.formState.isValid;
+
+    activeTab === 'automated'
+      ? setIsAutomatedDataValid(isValid)
+      : setIsManualDataValid(isValid);
+  }, [
+    automatedForm.formState.isValid,
+    manualForm.formState.isValid,
+    activeTab,
+  ]);
+
   return (
     <div className="p-4">
       <Back />
@@ -146,13 +166,10 @@ export default function AddTriggerView() {
               Cancel
             </Button>
             <ConfirmAddTrigger
-              activeTab={activeTab}
-              handleStore={handleStoreTriggers}
-              handleAddAnother={handleAddAnotherTrigger}
               open={open}
               setOpen={setOpen}
-              automatedForm={automatedForm}
-              manualForm={manualForm}
+              handleStore={handleStoreTriggers}
+              handleAddAnother={handleAddAnotherTrigger}
             />
           </div>
         </div>

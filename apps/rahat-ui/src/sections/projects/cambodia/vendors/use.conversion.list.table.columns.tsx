@@ -10,11 +10,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { Copy, CopyCheck } from 'lucide-react';
 export const useConversionListTableColumns = () => {
-  const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
+  const [walletAddressCopied, setWalletAddressCopied] = useState<string>();
 
-  const clickToCopy = (walletAddress: string, index: number) => {
+  const clickToCopy = (walletAddress: string, id: string) => {
     navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(index);
+    setWalletAddressCopied(id);
   };
   const columns: ColumnDef<any>[] = [
     {
@@ -32,22 +32,19 @@ export const useConversionListTableColumns = () => {
       header: 'Wallet',
       cell: ({ row }) => (
         <>
-          {row?.original?.beneficiary?.walletAddress ? (
+          {row?.original?.walletAddress ? (
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger
                   className="flex gap-3 cursor-pointer"
                   onClick={() =>
-                    clickToCopy(
-                      row?.original?.beneficiary?.walletAddress,
-                      row.index,
-                    )
+                    clickToCopy(row?.original?.walletAddress, row.id)
                   }
                 >
                   <p className="truncate w-16">
-                    {row?.original?.beneficiary?.walletAddress}
+                    {row?.original?.walletAddress}
                   </p>
-                  {walletAddressCopied === row.index ? (
+                  {walletAddressCopied === row.id ? (
                     <CopyCheck size={20} strokeWidth={1.5} />
                   ) : (
                     <Copy size={20} strokeWidth={1.5} />
@@ -55,7 +52,7 @@ export const useConversionListTableColumns = () => {
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary" side="bottom">
                   <p className="text-xs font-medium">
-                    {walletAddressCopied === row.index
+                    {walletAddressCopied === row.id
                       ? 'copied'
                       : 'click to copy'}
                   </p>

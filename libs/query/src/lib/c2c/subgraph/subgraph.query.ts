@@ -10,6 +10,7 @@ import { Transaction } from 'viem';
 import { mergeTransactions } from '../utils';
 import { RumsanService } from '@rumsan/sdk';
 import { useRSQuery } from '@rumsan/react-query';
+import { useTokenDetails } from '../contracts/hooks';
 
 export const useProjectDetails = (projectAddress: string) => {
   // const { queryClient } = useRSQuery();
@@ -75,6 +76,7 @@ export const useBeneficiaryTransaction = (beneficiaryAddress: string) => {
   // track loading/error states for the REST request
   const [restLoading, setRestLoading] = useState(false);
   const [restError, setRestError] = useState<Error | null>(null);
+  const { data: decimals } = useTokenDetails();
 
   // from your custom hook or context
   const { rumsanService } = useRSQuery();
@@ -98,7 +100,7 @@ export const useBeneficiaryTransaction = (beneficiaryAddress: string) => {
     (async () => {
       try {
         // 1) Merge the GraphQL data
-        const transactionLists = await mergeTransactions(result.data);
+        const transactionLists = await mergeTransactions(result.data, decimals);
 
         // 2) REST request to fetch offramp transactions
         setRestLoading(true);

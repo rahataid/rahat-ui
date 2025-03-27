@@ -115,7 +115,6 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
         c2cProjectAddress: c2cproject?.address,
       });
       const resData = Array.isArray(data) ? data?.[0] : data;
-      console.log('data', resData);
       route.push(
         `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&from=${safeWallet}&&disbursementUuid=${resData?.Disbursement?.uuid}&&safeTxHash=${resData?.safeTxHash}`,
       );

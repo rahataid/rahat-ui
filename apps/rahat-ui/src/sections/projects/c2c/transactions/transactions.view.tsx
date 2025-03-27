@@ -46,6 +46,8 @@ export default function TransactionView() {
   const [transactionList, setTransactionList] = React.useState<Transaction[]>(
     [],
   );
+
+  console.log('transactionList', transactionList);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
@@ -54,17 +56,7 @@ export default function TransactionView() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    resetSelectedListItems,
-  } = usePagination();
+  const { setPerPage } = usePagination();
 
   const [rowSelection, setRowSelection] = React.useState({});
 
@@ -103,6 +95,8 @@ export default function TransactionView() {
     pause: !contractAddress,
   });
 
+  console.log('tokenDetails', tokenDetails);
+
   React.useEffect(() => {
     (async () => {
       const transactionsObject: TransactionsObject = result.data;
@@ -111,6 +105,7 @@ export default function TransactionView() {
         contractAddress,
         tokenDetails,
       );
+      console.log('transactionLists', transactionLists);
       setTransactionList(transactionLists);
     })();
   }, [result.data]);

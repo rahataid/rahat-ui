@@ -1,13 +1,13 @@
-'use client';
-import { Coins, Copy, CopyCheck, User } from 'lucide-react';
-import { useParams } from 'next/navigation';
 import React from 'react';
+import { Coins, Copy, CopyCheck, User } from 'lucide-react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { DataCard, DataItem } from 'apps/rahat-ui/src/common';
 
-const BeneficiaryInfo = () => {
-  const { id } = useParams();
-  const isIdOne = id === '1'; // untill api is used
+type IProps = {
+  beneficiary: any;
+};
+
+const BeneficiaryInfo = ({ beneficiary }: IProps) => {
   const { clickToCopy, copyAction } = useCopy();
   return (
     <>

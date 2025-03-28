@@ -1,9 +1,17 @@
 'use client';
 
-import { AAStakeholdersDetails } from 'apps/rahat-ui/src/sections/projects/aa-2';
+import dynamic from 'next/dynamic';
 
-const Page = () => {
-  return <AAStakeholdersDetails />;
-};
+const StakeholderDetailPage = dynamic(
+  () =>
+    import('apps/rahat-ui/src/sections/projects/aa-2').then(
+      (mod) => mod.AAStakeholdersDetails,
+    ),
+  {
+    ssr: false,
+  },
+);
 
-export default Page;
+export default function Page() {
+  return <StakeholderDetailPage />;
+}

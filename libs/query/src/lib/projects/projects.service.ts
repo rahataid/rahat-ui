@@ -599,6 +599,26 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   };
 };
 
+export const useProjectBeneficiaryDetail = (payload: any) => {
+  const q = useProjectAction<Beneficiary>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const query = useQuery({
+    queryKey: ['rahat.jobs.beneficiary.find_one_beneficiary', restPayload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'rahat.jobs.beneficiary.find_one_beneficiary',
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query?.data;
+};
+
 export const useListELRedemption = (
   payload: Pagination & { uuid: UUID },
 ): any => {

@@ -10,7 +10,7 @@ on:
 
 env:
   CI: false
-  env_dev: ${{ secrets.ENV_DEV_AA }}
+  env_dev: ${{ secrets.ENV_AA_DEV }}
   # env_npmrc: ${{ secrets.ENV_NPMRC }}
 
 jobs:

@@ -15,3 +15,5 @@ export * from './dataItem';
 export * from './noResults';
 export * from './spinner.loader';
 export * from './back';
+export * from './edit.btn';
+export * from './delete.btn';

@@ -33,9 +33,7 @@ export function NavMain(items: IProps) {
       {/* <SidebarGroupLabel>Platform</SidebarGroupLabel> */}
       <SidebarMenu>
         {items?.items?.map((item) => {
-          console.log('itemPath::', item.path?.split('/')[4]);
           const isActive = (item.path as string)?.split('/')[4] === activePath;
-          console.log({ isActive });
           return item?.children?.length ? (
             <Collapsible
               key={item.title}

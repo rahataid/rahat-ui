@@ -1,22 +1,30 @@
 import React from 'react';
-import { ArrowLeft, ChevronLeft } from 'lucide-react';
-import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 type IProps = {
-  path: string;
+  path?: string;
 };
 
 export function Back({ path }: IProps) {
+  const router = useRouter();
+
+  const handleClick = () => {
+    if (path) {
+      router.push(path);
+    } else {
+      router.back();
+    }
+  };
+
   return (
-    <Link href={path}>
-      <div className="flex gap-2 mb-5">
-        <ArrowLeft
-          size={25}
-          strokeWidth={2}
-          className="cursor-pointer opacity-70 hover:opacity-100"
-        />
-        <span> Back</span>
-      </div>
-    </Link>
+    <div className="flex gap-2 mb-5 cursor-pointer" onClick={handleClick}>
+      <ArrowLeft
+        size={25}
+        strokeWidth={2}
+        className="opacity-70 hover:opacity-100"
+      />
+      <span> Back</span>
+    </div>
   );
 }

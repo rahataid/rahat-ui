@@ -1,6 +1,9 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useRouter } from 'next/navigation';
 
 type IProps = {
+  projectId: string;
+  triggerId: string;
   phase: string;
   type: string;
   isTriggered: boolean;
@@ -11,6 +14,8 @@ type IProps = {
 };
 
 export default function TriggerCard({
+  projectId,
+  triggerId,
   phase,
   type,
   isTriggered,
@@ -19,6 +24,7 @@ export default function TriggerCard({
   riverBasin,
   time,
 }: IProps) {
+  const router = useRouter();
   const renderBadgeColor = (phase: string) => {
     switch (phase) {
       case 'Readiness':
@@ -30,7 +36,14 @@ export default function TriggerCard({
     }
   };
   return (
-    <div className="p-4 rounded-md border shadow">
+    <div
+      className="p-4 rounded border shadow cursor-pointer"
+      onClick={() => {
+        router.push(
+          `/projects/aa/${projectId}/trigger-statements/${triggerId}`,
+        );
+      }}
+    >
       <div className="flex justify-between items-center space-x-4 mb-2">
         <div className="flex items-center space-x-4">
           <Badge className={`font-medium ${renderBadgeColor(phase)}`}>

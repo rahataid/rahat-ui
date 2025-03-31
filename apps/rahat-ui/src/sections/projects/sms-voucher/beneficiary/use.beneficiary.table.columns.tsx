@@ -79,6 +79,11 @@ export const useElkenyaBeneficiaryTableColumns = ({
       },
     },
     {
+      accessorKey: 'vendor',
+      header: 'Vendor',
+      cell: ({ row }) => <div>{row.original.extras?.vendorName}</div>,
+    },
+    {
       id: 'actions',
       header: 'Actions',
       enableHiding: false,

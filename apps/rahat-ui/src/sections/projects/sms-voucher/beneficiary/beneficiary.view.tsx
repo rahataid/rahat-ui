@@ -221,8 +221,8 @@ export default function BeneficiaryView() {
             table={table}
             tableHeight={
               Object.keys(filters).length
-                ? 'h-[calc(100vh-389px)]'
-                : 'h-[calc(100vh-323px)]'
+                ? 'h-[calc(100vh-339px)]'
+                : 'h-[calc(100vh-273px)]'
             }
             loading={isLoading}
           />

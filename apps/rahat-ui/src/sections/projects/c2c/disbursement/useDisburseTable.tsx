@@ -1,12 +1,5 @@
 import { Disbursement } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
 import { formatdbDate } from 'apps/rahat-ui/src/utils';
 import { Eye } from 'lucide-react';
@@ -18,10 +11,13 @@ export const useDisburseTableColumns = () => {
   const columns: ColumnDef<Disbursement>[] = [
     {
       accessorKey: 'date',
-      header: 'Date Time',
+      header: 'Date/Time',
       cell: ({ row }) => (
         <div className="capitalize">
-          {formatdbDate(row.original?.createdAt)}
+          {formatdbDate(row.original?.createdAt || row.original?.updatedAt)
+            .split(' ')
+            .slice(0, 5)
+            .join(' ')}
         </div>
       ),
     },

@@ -1,7 +1,7 @@
 import { UUID } from 'crypto';
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
-import { useTriggerRpCampaign } from '@rahat-ui/query';
+import { useTriggerc2cCampaign, useTriggerRpCampaign } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
@@ -20,7 +20,7 @@ type IProps = {
 export function TriggerConfirmModal({ campaignId, completed }: IProps) {
   const { id } = useParams();
   const [open, setOpen] = useState(false);
-  const triggerCampaign = useTriggerRpCampaign(id as UUID);
+  const triggerCampaign = useTriggerc2cCampaign(id as UUID);
   const handleTriggerCampaign = () => {
     triggerCampaign.mutateAsync({ uuid: campaignId });
     setOpen(false);

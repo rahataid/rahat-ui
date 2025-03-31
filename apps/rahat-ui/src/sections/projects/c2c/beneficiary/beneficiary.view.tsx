@@ -1,28 +1,15 @@
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
-import {
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  useReactTable,
-  VisibilityState,
-} from '@tanstack/react-table';
-import { UUID } from 'crypto';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect } from 'react';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { CloudDownload } from 'lucide-react';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/components/tabs';
+import { useSearchParams } from 'next/navigation';
+import React, { useEffect } from 'react';
 import BeneficiaryGroupView from './beneficiary.group.view';
 import BeneficiaryTable from './beneficiary.table';
 
 export default function BeneficiaryView() {
-  const { id } = useParams() as { id: UUID };
-  const router = useRouter();
   const [defaultValue, setDefaultValue] = React.useState<string>('beneficiary');
 
   const searchParams = useSearchParams();
@@ -31,10 +18,6 @@ export default function BeneficiaryView() {
   useEffect(() => {
     setDefaultValue(tab);
   }, [tab]);
-
-  interface BeneficiaryViewProps {
-    id: UUID;
-  }
 
   interface OnTabChange {
     (value: string): void;

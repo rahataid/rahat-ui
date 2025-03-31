@@ -111,19 +111,11 @@ const useTransactionColumn = () => {
       accessorKey: 'amount',
       header: () => <div className="text-right">Amount</div>,
       cell: ({ row }) => {
-        // const amount = parseFloat(formatEther(BigInt(row.getValue('amount'))));
-        const amount =
-          (row.getValue('amount') as number) / 10 ** (tokenDetails.data ?? 18);
-        console.log('second', amount);
-
-        // Format the amount in USD without the currency symbol
-        const formatted = new Intl.NumberFormat('en-US', {
-          style: 'decimal', // Use 'decimal' to remove currency symbol
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }).format(amount);
-
-        return <div className="text-right font-medium">{formatted} USDC</div>;
+        return (
+          <div className="text-right font-medium">
+            {row.getValue('amount')} USDC
+          </div>
+        );
       },
     },
   ];

@@ -24,6 +24,7 @@ import { TransactionTable } from './transactions.table';
 import { useChains } from 'connectkit';
 import { useChainId, useConnect, useConnections } from 'wagmi';
 import { useInfoByCurrentChain } from 'apps/rahat-ui/src/hooks/use-info-by-current-chain';
+import { formatdbDate } from 'apps/rahat-ui/src/utils';
 
 export default function DisburseDetails() {
   const { id: projectUUID, uuid } = useParams() as {
@@ -32,12 +33,6 @@ export default function DisburseDetails() {
   };
   const { data } = useGetDisbursement(projectUUID, uuid);
   const chainInfo = useInfoByCurrentChain();
-
-  console.log('chains', chainInfo);
-  console.log('data', data);
-  const date = new Date(data?.createdAt);
-  const datePart = date.toDateString().split(' ').slice(1).join(' ');
-  const timePart = date.toTimeString().split(' ')[0].slice(0, 5);
 
   const amount = data?.amount;
   const formatted = new Intl.NumberFormat('en-US', {
@@ -53,7 +48,10 @@ export default function DisburseDetails() {
           <div className="mt-3">
             <CardContent>
               <p className="text-primary">
-                {datePart} - {timePart}
+                {formatdbDate(data?.createdAt || data?.updatedAt)
+                  .split(' ')
+                  .slice(0, 5)
+                  .join(' ')}
               </p>
               <CardDescription>Disbursed on</CardDescription>
             </CardContent>

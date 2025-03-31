@@ -5,6 +5,7 @@ import {
   useMultiSigDisburseToken,
   useProjectAction,
   useProjectSettingsStore,
+  useQueryClient,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -124,6 +125,7 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
 
   // Initialize project action and transaction hooks
   const projectAction = useProjectAction(['c2c', 'disburseToken']);
+  const queryClient = useQueryClient();
   const waitedReceiptData = useWaitForTransactionReceipt({
     hash: txHash,
     enabled: !!txHash,
@@ -213,6 +215,9 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
           },
         })
         .then(() => {
+          queryClient.invalidateQueries({
+            queryKey: ['get-disbursement', disbursement?.uuid],
+          });
           setTransactionStep('success');
           hasUpdatedStatus.current = false;
           Swal.fire({
@@ -235,26 +240,29 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
 
   return (
     <div className="w-full">
-      {data?.isExecuted && (
-        <div className="flex items-center justify-end px-4 py-2 border-b-2 bg-card">
-          <div className="flex flex-col sm:flex-row items-center mr-4 justify-between space-y-2 sm:space-y-0 text-sm font-medium text-gray-500">
-            <div className="flex items-center">
-              <span className="mr-2">Approvals:</span>
-              <span className="px-2 py-1 bg-green-100 text-green-800 rounded">
-                {approved?.length || 0}
-              </span>
-              <span className="mx-1">/</span>
-              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">
-                {data?.approvals?.length || 0}
-              </span>
-            </div>
-            <div className="flex items-center">
-              <span className="mr-2">Required:</span>
-              <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded">
-                {data?.confirmationsRequired || 0}
-              </span>
-            </div>
+      <div className="mt-2 mb-2 flex items-center justify-end">
+        <div className="flex flex-col sm:flex-row items-center mr-4 justify-between space-y-2 sm:space-y-0 text-sm font-medium text-gray-500">
+          <div className="flex items-center">
+            <span className="mr-2">Approvals:</span>
+            <span className="px-2 py-1 bg-green-100 text-green-800 rounded">
+              {approved?.length || 0}
+            </span>
+            <span className="mx-1">/</span>
+            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">
+              {data?.approvals?.length || 0}
+            </span>
           </div>
+          <div className="flex items-center">
+            <span className="mr-2">Required:</span>
+            <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded">
+              {data?.confirmationsRequired || 0}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {data?.isExecuted && disbursement?.status !== 'COMPLETED' && (
+        <div className="flex items-center justify-end px-4 py-2 border-b-2 bg-card">
           <Button
             disabled={
               disburseMultiSig.isPending ||

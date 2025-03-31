@@ -17,7 +17,7 @@ export default function DashboardLayout({
   return (
     <AuthGuard>
       <div className="flex">
-        <SideNav />
+        {hasDefaultHeader && <SideNav />}
         <div className="w-full h-screen">
           <Nav hasDefaultHeader={hasDefaultHeader} />
           <div className={margin}>{children}</div>

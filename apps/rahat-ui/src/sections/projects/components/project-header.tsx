@@ -22,6 +22,7 @@ import ThemeSwitch from 'apps/rahat-ui/src/components/themeToggleSwitch';
 import ConnectWallet from 'apps/rahat-ui/src/components/wallet/connect-wallet';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { toast } from 'react-toastify';
+import { SidebarTrigger } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 
 export function ProjectNav({
   //   data = [],
@@ -51,7 +52,10 @@ export function ProjectNav({
 
   return (
     <div className="h-14 flex justify-between pl-2 pr-6 py-2 z-50 bg-card border-b">
-      {component}
+      <div className="flex items-center space-x-4">
+        <SidebarTrigger />
+        {component}
+      </div>
       <div className="flex gap-4 items-center">
         <ConnectWallet />
 

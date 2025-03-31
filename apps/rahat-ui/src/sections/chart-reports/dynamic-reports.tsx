@@ -200,12 +200,15 @@ import LineChartWrapper from './linechart-wrapper';
 import MapWrapper from './map-wrapper';
 import PieChartWrapper from './pie-chart-wrapper';
 import { useAuthStore } from '@rumsan/react-query';
+
 const token = useAuthStore.getState().token;
+
 type DataSource = {
   type: 'stats' | 'url' | 'blockchain';
   args: { [key: string]: any } & { apiCallData?: RequestInit };
   data: any;
 };
+
 type UIComponent = {
   title: string;
   type: 'dataCard' | 'pie' | 'bar' | 'stacked_bar' | 'donut' | 'map' | 'line';
@@ -215,21 +218,25 @@ type UIComponent = {
   colSpan: number;
   rowSpan: number;
 };
+
 type UISection = {
   title: string;
   fields: UIComponent[];
 };
+
 type DynamicReportsProps = {
   dataSources: { [key: string]: DataSource };
   ui: UISection[];
   className?: string;
 };
+
 const DynamicReports: FC<DynamicReportsProps> = ({
   dataSources,
   ui,
   className,
 }) => {
   const [dynamicData, setDynamicData] = useState<{ [key: string]: any }>({});
+
   useEffect(() => {
     const fetchDynamicData = async () => {
       const fetchDataForSource = async (source: string) => {
@@ -245,16 +252,12 @@ const DynamicReports: FC<DynamicReportsProps> = ({
                 ...dataSource.args.apiCallData,
                 headers: {
                   'Content-Type': 'application/json',
-                  Authorization: 'Bearer ' + token,
+                  Authorization: `Bearer ${token}`,
                   ...dataSource.args.apiCallData?.headers,
                 },
               });
-              console.log('response', response);
-              if (!response.ok) {
-                throw new Error(
-                  `Failed to fetch data from ${dataSource.args.url}`,
-                );
-              }
+              if (!response.ok)
+                throw new Error(`Failed to fetch from ${dataSource.args.url}`);
               const res = await response.json();
               fetchedData = res?.data;
             } catch (error) {
@@ -263,23 +266,20 @@ const DynamicReports: FC<DynamicReportsProps> = ({
             }
             break;
           case 'blockchain':
-            // Logic for fetching data from blockchain, not implemented here
-            fetchedData = []; // Placeholder for demonstration
+            fetchedData = [];
             break;
           default:
             fetchedData = null;
         }
         return { source, data: fetchedData };
       };
+
       const fetchAllData = async () => {
-        console.log('dataSources', dataSources);
         const promises = Object.keys(dataSources).map(fetchDataForSource);
         const results = await Promise.all(promises);
         const dataMap: { [key: string]: any } = {};
         results.forEach(({ source, data }) => {
-          if (data) {
-            dataMap[source] = data;
-          }
+          if (data) dataMap[source] = data;
         });
         setDynamicData(dataMap);
       };
@@ -287,12 +287,12 @@ const DynamicReports: FC<DynamicReportsProps> = ({
     };
     fetchDynamicData();
   }, [dataSources]);
+
   const renderUIComponent = (component: UIComponent, dataIndex: number) => {
-    const { title, type, props, dataSrc, dataMap, colSpan } = component;
-    const actualData = dynamicData[dataSrc];
-    const source = dataSources?.[dataSrc];
-    console.log('actualData', actualData);
-    switch (type) {
+    const actualData = dynamicData[component.dataSrc];
+    const source = dataSources?.[component.dataSrc];
+
+    switch (component.type) {
       case 'dataCard':
         return (
           <ErrorBoundary>
@@ -304,25 +304,21 @@ const DynamicReports: FC<DynamicReportsProps> = ({
           </ErrorBoundary>
         );
       case 'pie':
-        return (
+        return actualData ? (
           <ErrorBoundary>
-            {actualData && (
-              <PieChartWrapper
-                component={component}
-                source={source}
-                actualData={actualData}
-              />
-            )}
+            <PieChartWrapper
+              component={component}
+              source={source}
+              actualData={actualData}
+            />
           </ErrorBoundary>
-        );
+        ) : null;
       case 'bar':
-        return (
+        return actualData ? (
           <ErrorBoundary>
-            {actualData && (
-              <BarChartWrapper actualData={actualData} component={component} />
-            )}
+            <BarChartWrapper actualData={actualData} component={component} />
           </ErrorBoundary>
-        );
+        ) : null;
       case 'donut':
         return (
           <ErrorBoundary>
@@ -349,31 +345,21 @@ const DynamicReports: FC<DynamicReportsProps> = ({
         return null;
     }
   };
-  const renderUIRow = (row: UISection, rowIndex: number) => {
-    return (
-      <div key={rowIndex}>
-        {row?.title && (
-          <h1 className={`font-bold text-lg ${rowIndex !== 0 && 'mt-5'}`}>
-            {row?.title}
-          </h1>
-        )}
-        <div className={`grid grid-cols-${row?.fields?.length} gap-2 mt-2`}>
-          {row?.fields?.map((component, colIndex) => (
-            <div
-              key={colIndex}
-              className={`grid-cols-${component.colSpan} grid-rows-${component.rowSpan}`}
-            >
-              {renderUIComponent(component, colIndex)}
-            </div>
-          ))}
-        </div>
+
+  const renderUIRow = (row: UISection, rowIndex: number) => (
+    <div key={rowIndex} className="mb-4">
+      {row?.title && <h1 className="font-bold text-lg mt-4">{row.title}</h1>}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
+        {row.fields.map((component, colIndex) => (
+          <div key={colIndex} className="w-full">
+            {renderUIComponent(component, colIndex)}
+          </div>
+        ))}
       </div>
-    );
-  };
-  return (
-    <div className={className}>
-      {ui?.map((row, index) => renderUIRow(row, index))}
     </div>
   );
+
+  return <div className={`p-4 ${className}`}>{ui?.map(renderUIRow)}</div>;
 };
+
 export default DynamicReports;

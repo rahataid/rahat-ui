@@ -38,6 +38,7 @@ function VendorsView() {
     projectModal.onTrue();
   };
 
+  console.log('vendorData', vendorData);
   console.log(refetch);
 
   const handleAssignProject = async () => {

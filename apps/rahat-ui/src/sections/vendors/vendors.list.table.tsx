@@ -99,23 +99,19 @@ export default function VendorsTable({
           className="rounded w-full"
         />
 
-        <SelectComponent
+        {/* TODO: fix this */}
+        {/* <SelectComponent
           onChange={(event) => {
             table
               .getColumn('status')
               ?.setFilterValue(event === 'All' ? '' : event);
           }}
           name="Status"
-          options={[
-            { label: 'All', value: 'All' },
-            { label: 'Assigned', value: 'Assigned' },
-            { label: 'Not Assigned', value: 'Not Assigned' },
-            { label: 'Pending', value: 'Pending' },
-          ]}
+          options={['All', 'Assigned', 'Not Assigned', 'Pending']}
           value={(table.getColumn('status')?.getFilterValue() as string) || ''}
-        />
+        /> */}
 
-        <SelectComponent
+        {/* <SelectComponent
           onChange={(event) => {
             table
               .getColumn('projectName')
@@ -126,7 +122,7 @@ export default function VendorsTable({
           value={
             (table.getColumn('projectName')?.getFilterValue() as string) || ''
           }
-        />
+        /> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

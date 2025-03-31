@@ -61,7 +61,7 @@ export const useVendorList = (
 
   useEffect(() => {
     if (vendor.isSuccess) {
-      setVendors(vendor.data.data as any[]);
+      setVendors((vendor.data.data as any[]) || []);
       setMeta(vendor.data.response.meta);
     }
   }, [vendor.isSuccess, setVendors]);

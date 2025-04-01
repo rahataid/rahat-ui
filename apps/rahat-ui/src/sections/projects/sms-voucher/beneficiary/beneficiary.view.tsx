@@ -138,7 +138,7 @@ export default function BeneficiaryView() {
   };
 
   return (
-    <div>
+    <div className="mt-6">
       <div className="flex justify-between items-center mb-4 ml-4">
         <div>
           <h1 className="font-semibold text-2xl mb-">Consumers</h1>

@@ -42,9 +42,9 @@ export default function ProjectListView() {
   }, [data?.data]);
 
   return (
-    <div className=" p-4 bg-card mt-14">
+    <div className=" p-4 bg-card">
       <div className="mb-4">
-        <h1 className="font-semibold text-2xl mb-">Projects</h1>
+        <h1 className="font-semibold text-2xl">Projects</h1>
         <p className="text-muted-foreground">
           Here is a list of all the projects
         </p>

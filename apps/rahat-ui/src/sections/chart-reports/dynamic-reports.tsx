@@ -359,7 +359,7 @@ const DynamicReports: FC<DynamicReportsProps> = ({
     </div>
   );
 
-  return <div className={`p-4 ${className}`}>{ui?.map(renderUIRow)}</div>;
+  return <div className={`${className}`}>{ui?.map(renderUIRow)}</div>;
 };
 
 export default DynamicReports;

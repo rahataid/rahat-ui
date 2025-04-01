@@ -72,7 +72,7 @@ export default function DashboardView() {
 
         <TabsContent value="overview">
           {/* Dynamic Height for Mobile */}
-          <ScrollArea className="p-4 h-auto md:h-[calc(100vh-220px)]">
+          <ScrollArea className="h-auto md:h-[calc(100vh-220px)]">
             {newDatasource?.data && newDatasource?.data[0]?.data?.ui.length && (
               <DynamicReports
                 className="grid gap-2"

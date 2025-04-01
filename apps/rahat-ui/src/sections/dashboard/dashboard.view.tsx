@@ -81,7 +81,7 @@ export default function DashboardView() {
               />
             )}
 
-            {dataForMap && (
+            {/* {dataForMap && (
               <StyledMapContainer>
                 <ClusterMap
                   {...mapboxBasicConfig}
@@ -90,7 +90,7 @@ export default function DashboardView() {
                   className="w-full h-[300px] sm:h-[500px]"
                 />
               </StyledMapContainer>
-            )}
+            )} */}
           </ScrollArea>
         </TabsContent>
 

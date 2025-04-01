@@ -22,6 +22,7 @@ import { paths } from '../routes/paths';
 import ThemeSwitch from './themeToggleSwitch';
 import ConnectWallet from './wallet/connect-wallet';
 import SearchInput from '../sections/projects/components/search.input';
+import { SidebarTrigger } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 
 export function Nav({ hasDefaultHeader = true }) {
   const { user, clearUser } = useUserStore((state) => ({
@@ -40,8 +41,11 @@ export function Nav({ hasDefaultHeader = true }) {
 
   return (
     hasDefaultHeader && (
-      <div className="h-14 fixed w-[calc(100vw-56px)] flex justify-between gap-4 items-center p-2 border-b">
-        <SearchInput className="w-1/4" name="" onSearch={() => {}} isDisabled />
+      <div className="h-14 flex justify-between pl-2 pr-6 py-2 z-50 bg-card border-b">
+        <div className="flex items-center space-x-4">
+          <SidebarTrigger />
+          {/* <SearchInput name="" onSearch={() => {}} isDisabled /> */}
+        </div>
         <div className="flex space-x-2 items-center">
           <ConnectWallet />
           <DropdownMenu>

@@ -29,19 +29,15 @@ import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import ConfirmAddTrigger from './confirm.add.trigger';
 
 type IProps = {
-  form: UseFormReturn<
-    {
-      title: string;
-      dataSource: string;
-      isMandatory?: boolean | undefined;
-      minLeadTimeDays: string;
-      maxLeadTimeDays: string;
-      probability: string;
-      notes?: string;
-    },
-    any,
-    undefined
-  >;
+  form: UseFormReturn<{
+    title: string;
+    dataSource: string;
+    isMandatory?: boolean;
+    minLeadTimeDays: string;
+    maxLeadTimeDays: string;
+    probability: string;
+    notes?: string;
+  }>;
   phase: any;
 };
 

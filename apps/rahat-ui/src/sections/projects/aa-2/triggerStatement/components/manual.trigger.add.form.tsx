@@ -14,15 +14,11 @@ import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import ConfirmAddTrigger from './confirm.add.trigger';
 
 type IProps = {
-  form: UseFormReturn<
-    {
-      title: string;
-      isMandatory?: boolean | undefined;
-      notes?: string;
-    },
-    any,
-    undefined
-  >;
+  form: UseFormReturn<{
+    title: string;
+    isMandatory?: boolean;
+    notes?: string;
+  }>;
   phase: any;
 };
 

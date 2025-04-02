@@ -57,6 +57,7 @@ export default function TriggerStatementDetail() {
             handleClick={handleDelete}
           /> */}
           <DeleteButton
+            disabled={trigger?.length < 1}
             className="rounded flex gap-1 items-center"
             name="trigger"
             label="Delete"

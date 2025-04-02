@@ -23,6 +23,7 @@ type IProps = {
   handleContinueClick: VoidFunction;
   className?: string;
   label?: string;
+  disabled?: boolean;
 };
 
 export function DeleteButton({
@@ -30,11 +31,14 @@ export function DeleteButton({
   handleContinueClick,
   className,
   label = '',
+  disabled = false,
 }: IProps) {
   return (
     <TooltipProvider delayDuration={100}>
-      <Tooltip>
-        <TooltipTrigger>
+      <Tooltip disableHoverableContent>
+        <TooltipTrigger
+          className={disabled ? 'pointer-events-none opacity-50' : ''}
+        >
           <AlertDialog>
             <AlertDialogTrigger className="flex items-center">
               <div

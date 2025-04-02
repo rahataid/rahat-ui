@@ -23,7 +23,7 @@ export const useActivitiesCategories = (uuid: UUID) => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.activityCategories.getAll',
+          action: 'ms.categories.getAll',
           payload: {},
         },
       });
@@ -34,33 +34,6 @@ export const useActivitiesCategories = (uuid: UUID) => {
   useEffect(() => {
     if (query.data) {
       setCategories(query?.data);
-    }
-  }, [query.data]);
-  return query;
-};
-
-export const useActivitiesPhase = (uuid: UUID) => {
-  const q = useProjectAction();
-  const { setPhase } = useActivitiesStore((state) => ({
-    setPhase: state.setPhases,
-  }));
-
-  const query = useQuery({
-    queryKey: ['phases', uuid],
-    queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: 'aaProject.phases.getAll',
-          payload: {},
-        },
-      });
-      return mutate.data;
-    },
-  });
-  useEffect(() => {
-    if (query.data) {
-      setPhase(query?.data);
     }
   }, [query.data]);
   return query;

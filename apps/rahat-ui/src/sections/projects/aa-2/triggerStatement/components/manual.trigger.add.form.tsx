@@ -23,13 +23,10 @@ type IProps = {
     any,
     undefined
   >;
+  phase: any;
 };
 
-export default function AddManualTriggerForm({ form }: IProps) {
-  const selectedPhase = JSON.parse(
-    localStorage.getItem('selectedPhase') as string,
-  );
-
+export default function AddManualTriggerForm({ form, phase }: IProps) {
   return (
     <>
       <Form {...form}>
@@ -41,7 +38,7 @@ export default function AddManualTriggerForm({ form }: IProps) {
                 <Input
                   className="bg-gray-300"
                   type="text"
-                  value={selectedPhase.name}
+                  value={phase?.name}
                   disabled
                 />
               </FormControl>
@@ -53,7 +50,7 @@ export default function AddManualTriggerForm({ form }: IProps) {
                 <Input
                   className="bg-gray-300"
                   type="text"
-                  value={'riverBasin'}
+                  value={phase?.riverBasin}
                   disabled
                 />
               </FormControl>

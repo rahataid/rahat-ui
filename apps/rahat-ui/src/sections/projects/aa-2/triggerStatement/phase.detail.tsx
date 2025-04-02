@@ -1,19 +1,37 @@
 import { Back, Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { Plus, Undo2 } from 'lucide-react';
 import { TriggersListTabs, TriggersPhaseCard } from './components';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
+import { useRevertPhase, useSinglePhase } from '@rahat-ui/query';
 
 export default function PhaseDetail() {
+  const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
+  const phaseId = params.phaseId as UUID;
+
+  const phase = useSinglePhase(projectId, phaseId);
+
+  const revertPhase = useRevertPhase();
+
+  const handleAddTriggerClick = () => {
+    router.push(`/projects/aa/${projectId}/trigger-statements/add`);
+  };
+
+  const handleRevertPhase = async () => {
+    await revertPhase.mutateAsync({
+      projectUUID: projectId,
+      payload: { phaseId: phaseId },
+    });
+  };
   return (
     <div className="p-4">
       <Back />
       <div className="flex justify-between items-center">
         <Heading
-          title="Activation"
-          description="Detailed view of the activation phase"
+          title={phase?.name || 'N/A'}
+          description={`Detailed view of the ${phase?.name?.toLowerCase()} phase`}
         />
         <div className="flex space-x-2">
           <IconLabelBtn
@@ -21,15 +39,20 @@ export default function PhaseDetail() {
             className="text-primary border-primary"
             Icon={Plus}
             name="Add Trigger"
-            handleClick={() => {}}
+            handleClick={handleAddTriggerClick}
           />
-          <IconLabelBtn Icon={Undo2} name="Revert" handleClick={() => {}} />
+          <IconLabelBtn
+            disabled={true}
+            Icon={Undo2}
+            name="Revert"
+            handleClick={handleRevertPhase}
+          />
         </div>
       </div>
       <div className="grid grid-cols-3 gap-4">
         <TriggersPhaseCard
           title="Phase Overview"
-          subtitle="Overview of activation phase"
+          subtitle={`Overview of ${phase?.name?.toLowerCase()} phase`}
           chartLabels={['Mandatory', 'Optional']}
           chartSeries={[10, 2]}
           mandatoryTriggers={10}
@@ -43,7 +66,7 @@ export default function PhaseDetail() {
           <Heading
             title="Triggers"
             titleStyle="text-xl/6"
-            description="List of all triggers in the activation phase"
+            description={`List of all triggers in the ${phase?.name?.toLowerCase()} phase`}
           />
           <TriggersListTabs projectId={projectId} />
         </div>

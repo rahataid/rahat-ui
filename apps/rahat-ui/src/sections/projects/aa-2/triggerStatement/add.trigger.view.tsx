@@ -22,6 +22,9 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useCreateTriggerStatement } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 export default function AddTriggerView() {
   const [activeTab, setActiveTab] = React.useState<string>('automated');
@@ -31,6 +34,15 @@ export default function AddTriggerView() {
     React.useState<boolean>(false);
   const [isAutomatedDataValid, setIsAutomatedDataValid] =
     React.useState<boolean>(false);
+
+  const params = useParams();
+  const projectId = params.id as UUID;
+
+  const selectedPhase = JSON.parse(
+    localStorage.getItem('selectedPhase') as string,
+  );
+
+  const addTriggers = useCreateTriggerStatement();
 
   const ManualFormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid title' }),
@@ -81,7 +93,12 @@ export default function AddTriggerView() {
   ) => {
     setAllTriggers([
       ...allTriggers,
-      { ...data, type: activeTab, time: new Date() },
+      {
+        ...data,
+        type: activeTab,
+        time: new Date(),
+        phaseId: selectedPhase?.id,
+      },
     ]);
   };
 
@@ -90,7 +107,12 @@ export default function AddTriggerView() {
   ) => {
     setAllTriggers([
       ...allTriggers,
-      { ...data, type: activeTab, time: new Date() },
+      {
+        ...data,
+        type: activeTab,
+        time: new Date(),
+        phaseId: selectedPhase?.id,
+      },
     ]);
   };
 
@@ -130,6 +152,41 @@ export default function AddTriggerView() {
     }
 
     handleDelete(trigger);
+  };
+
+  const handleCreateTriggers = async () => {
+    const payload = allTriggers?.map(
+      ({
+        dataSource,
+        isMandatory,
+        notes,
+        maxLeadTimeDays,
+        minLeadTimeDays,
+        probability,
+        type,
+        time,
+        ...rest
+      }) => ({
+        ...rest,
+        triggerStatement: {
+          type,
+          maxLeadTimeDays,
+          minLeadTimeDays,
+          probability,
+        },
+      }),
+    );
+    try {
+      await addTriggers.mutateAsync({
+        projectUUID: projectId,
+        triggerStatementPayload: { triggers: payload },
+      });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setOpen(false);
+      setAllTriggers([]);
+    }
   };
 
   React.useEffect(() => {
@@ -178,10 +235,13 @@ export default function AddTriggerView() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="automated">
-              <AutomatedTriggerAddForm form={automatedForm} />
+              <AutomatedTriggerAddForm
+                form={automatedForm}
+                phase={selectedPhase}
+              />
             </TabsContent>
             <TabsContent value="manual">
-              <ManualTriggerAddForm form={manualForm} />
+              <ManualTriggerAddForm form={manualForm} phase={selectedPhase} />
             </TabsContent>
           </Tabs>
 
@@ -194,6 +254,8 @@ export default function AddTriggerView() {
               setOpen={setOpen}
               handleStore={handleStoreTriggers}
               handleAddAnother={handleAddAnotherTrigger}
+              handleSave={handleCreateTriggers}
+              isSubmitting={addTriggers?.isPending}
             />
           </div>
         </div>

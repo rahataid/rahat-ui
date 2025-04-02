@@ -22,11 +22,11 @@ export function ClientSidePagination<TData>({
   table,
 }: DataTablePaginationProps<TData>) {
   return (
-    <div className="flex items-center justify-end p-4 bg-card">
+    <div className="flex items-center justify-between sm:justify-end p-4 bg-card">
       <div className="flex items-center space-x-2 lg:space-x-4">
         {/* Rows per page selection */}
         <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
+          <p className="text-sm font-medium hidden sm:block">Rows per page</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => table.setPageSize(Number(value))}

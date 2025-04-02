@@ -71,11 +71,11 @@ export default function VendorsDetail() {
           path={`/projects/sms-voucher/${id}/vendors`}
         />
       </div>
-      <div className="p-5 rounded grid grid-cols-3 gap-5 mb-5">
+
+      {/* Responsive Grid Layout */}
+      <div className="p-5 rounded grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mb-5">
         <div className="border shadow flex items-center gap-4 p-5">
-          <div
-            className={'rounded-full h-8 w-8 flex items-center justify-center '}
-          >
+          <div className="rounded-full h-8 w-8 flex items-center justify-center">
             <Store />
           </div>
           <div>
@@ -97,23 +97,26 @@ export default function VendorsDetail() {
             <p className="font-medium text-muted-foreground">{email}</p>
           </div>
         </div>
+
         <div className="border shadow flex flex-col justify-between gap-2 p-5">
-          <p className="font-medium ">Voucher Redeemed</p>
-          <p className="text-4xl font-semibold text-primary truncate w-52">
+          <p className="font-medium">Voucher Redeemed</p>
+          <p className="text-4xl font-semibold text-primary truncate w-full sm:w-52">
             {voucherReedeemed}
           </p>
         </div>
       </div>
+
+      {/* Tabs - Scrollable on Mobile */}
       <Tabs defaultValue="transactionHistory">
-        <TabsList className="border bg-secondary rounded mb-2">
+        <TabsList className="border bg-secondary rounded mb-2 flex overflow-x-auto">
           <TabsTrigger
-            className="w-full data-[state=active]:bg-white"
+            className="w-full min-w-[140px] text-center data-[state=active]:bg-white"
             value="transactionHistory"
           >
             Transaction History
           </TabsTrigger>
           <TabsTrigger
-            className="w-full data-[state=active]:bg-white"
+            className="w-full min-w-[140px] text-center data-[state=active]:bg-white"
             value="beneficiaryList"
           >
             Consumer List

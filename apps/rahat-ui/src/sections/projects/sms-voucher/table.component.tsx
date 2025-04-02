@@ -23,7 +23,7 @@ export default function ElkenyaTable({ table, tableHeight, loading }: IProps) {
         <TableLoader />
       ) : (
         <>
-          <TableComponent>
+          <TableComponent className="overflow-y-scroll">
             <TableHeader className="sticky top-0 bg-card">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>

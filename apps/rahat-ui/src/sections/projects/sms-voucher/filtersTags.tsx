@@ -57,7 +57,13 @@ const SmsVoucherFiltersTags = ({
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
-        <Button onClick={() => setFilters({})}>Clear filter</Button>
+        <Button
+          className="text-white"
+          size={'sm'}
+          onClick={() => setFilters({})}
+        >
+          Clear filter
+        </Button>
       </div>
     </div>
   );

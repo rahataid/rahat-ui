@@ -15,7 +15,7 @@ interface PhaseCardProps {
   description: string;
   location: string;
   leadTime: string;
-  userName: string;
+  responsibility: string;
   onUpdateStatus?: () => void;
   className?: string;
 }
@@ -25,7 +25,7 @@ export default function PhaseCard({
   description,
   location,
   leadTime,
-  userName,
+  responsibility,
   onUpdateStatus,
   className,
 }: PhaseCardProps) {
@@ -53,7 +53,7 @@ export default function PhaseCard({
       <CardFooter>
         <div className="flex items-center gap-2">
           <User className="w-4 h-4 text-gray-500" />
-          <span className="text-sm text-gray-500">{userName ?? ''}</span>
+          <span className="text-sm text-gray-500">{responsibility ?? ''}</span>
         </div>
       </CardFooter>
     </Card>

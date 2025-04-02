@@ -23,7 +23,7 @@ export const useActivitiesCategories = (uuid: UUID) => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.activityCategories.getAll',
+          action: 'ms.activityCategories.getAll',
           payload: {},
         },
       });
@@ -51,7 +51,7 @@ export const useActivitiesPhase = (uuid: UUID) => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.phases.getAll',
+          action: 'ms.phases.getAll',
           payload: {},
         },
       });
@@ -80,7 +80,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.activities.getAll',
+          action: 'ms.activities.getAll',
           payload: payload,
         },
       });
@@ -99,8 +99,8 @@ export const useActivities = (uuid: UUID, payload: any) => {
   const activitiesData = query?.data?.data?.map((d: any) => ({
     id: d.uuid,
     title: d.title,
-    responsibility: d.responsibility,
-    source: d.source,
+    responsibility: d?.manager?.name,
+    source: d?.phase?.source?.riverBasin,
     hazardType: d.hazardType?.name,
     category: d.category?.name,
     description: d.description,

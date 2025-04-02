@@ -11,11 +11,10 @@ export default function ActivitiesView() {
   const searchParams = useSearchParams();
 
   const router = useRouter();
-  const { activitiesData, activitiesMeta, isLoading } = useActivities(
+  const { data, activitiesData, activitiesMeta, isLoading } = useActivities(
     projectID as UUID,
     { perPage: 9999 },
   );
-
   const preparednessData =
     activitiesData?.filter((d) => d.phase === 'PREPAREDNESS') || [];
 
@@ -53,18 +52,21 @@ export default function ActivitiesView() {
           title="Preparedness"
           description="OverView of preparedness phase"
           phases={preparednessData}
+          loading={isLoading}
         />
 
         <PhaseContent
           title="Readiness"
           description="OverView of readiness phase"
           phases={readinesssData}
+          loading={isLoading}
         />
 
         <PhaseContent
           title="Activation"
           description="OverView of activation phase"
           phases={activationData}
+          loading={isLoading}
         />
       </div>
     </div>

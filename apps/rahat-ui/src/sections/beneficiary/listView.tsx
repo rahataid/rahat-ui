@@ -110,7 +110,7 @@ export default function ListView({
           .rows.map((row) => row.original.uuid)}
       />
       <div className="border rounded shadow p-3">
-        <div className="flex space-x-2 items-center mb-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:space-x-2 items-center mb-2 gap-2">
           <Input
             placeholder="Filter beneficiary..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
@@ -119,53 +119,34 @@ export default function ListView({
             }
             className="rounded"
           />
+          <div className="flex sm:gap-4 gap-2">
+            <DatePicker
+              placeholder="Pick Start Date"
+              handleDateChange={handleDateChange}
+              type="start"
+            />
+            <DatePicker
+              placeholder="Pick End Date"
+              handleDateChange={handleDateChange}
+              type="end"
+            />
+          </div>
 
-          <DatePicker
-            placeholder="Pick Start Date"
-            handleDateChange={handleDateChange}
-            type="start"
-          />
-          <DatePicker
-            placeholder="Pick End Date"
-            handleDateChange={handleDateChange}
-            type="end"
-          />
-
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                {selectedProject ? selectedProject.name : 'Select Project'}
-                <ChevronDown className="mr-2 h-4 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {selectFilterProjectItems.map((project: any) => (
-                <DropdownMenuItem
-                  key={project.name}
-                  textValue={project.value}
-                  onSelect={() => handleSelectProject(project)}
-                >
-                  {project.name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu> */}
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                <Settings2 className="mr-2 h-4 w-5" />
-                View
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
+          <div className="flex gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full md:w-auto">
+                  <Settings2 className="mr-2 h-4 w-5" />
+                  View
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => (
                     <DropdownMenuCheckboxItem
                       key={column.id}
                       className="capitalize"
@@ -176,15 +157,20 @@ export default function ListView({
                     >
                       {column.id}
                     </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <AddButton name="Beneficiary" path={`/beneficiary/add`} />
+                  ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <AddButton
+              className="text-white hover:text-blue-500 hover:border hover:border-blue-500"
+              name="Beneficiary"
+              path={`/beneficiary/add`}
+            />
+          </div>
+
           {table.getSelectedRowModel().rows.length ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className="ml-2">
+                <Button className="w-full md:w-auto">
                   {table.getSelectedRowModel().rows.length} - Beneficiary
                   Selected
                   <ChevronDown className="ml-1" strokeWidth={1.5} />
@@ -197,10 +183,7 @@ export default function ListView({
                 >
                   Bulk Assign Project
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={groupModal.onTrue}
-                  // disabled={isBulkAssigning}
-                >
+                <DropdownMenuItem onClick={groupModal.onTrue}>
                   Create Group
                 </DropdownMenuItem>
               </DropdownMenuContent>

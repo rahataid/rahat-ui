@@ -52,7 +52,7 @@ export function EditButton({
                   className,
                 )}
               >
-                <Pencil size={20} strokeWidth={1.5} />
+                <Pencil size={18} strokeWidth={1.5} />
               </div>
             </AlertDialogTrigger>
             <AlertDialogContent>

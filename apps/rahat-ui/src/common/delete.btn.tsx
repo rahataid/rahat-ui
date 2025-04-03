@@ -47,7 +47,7 @@ export function DeleteButton({
                   className,
                 )}
               >
-                <Trash2 size={20} strokeWidth={1.5} /> {label}
+                <Trash2 size={18} strokeWidth={1.5} /> {label}
               </div>
             </AlertDialogTrigger>
             <AlertDialogContent>

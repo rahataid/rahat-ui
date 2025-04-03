@@ -20,6 +20,10 @@ export default function TriggerStatementView() {
   useAATriggerStatements(projectId, {});
   const triggers = useAAStationsStore((state) => state.triggers);
 
+  function capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  }
+
   const setPhase = (phase: any) => {
     localStorage.setItem(
       'selectedPhase',
@@ -27,7 +31,7 @@ export default function TriggerStatementView() {
         id: phase?.uuid,
         name: phase?.name,
         source: phase?.source?.source,
-        riverBasin: phase?.source?.riverBasin,
+        riverBasin: capitalizeFirstLetter(phase?.source?.riverBasin),
       }),
     );
   };

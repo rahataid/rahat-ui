@@ -57,7 +57,7 @@ export default function TriggerStatementDetail() {
             handleClick={handleDelete}
           /> */}
           <DeleteButton
-            className="rounded flex gap-1 items-center"
+            className="rounded flex gap-1 items-center text-sm font-medium"
             name="trigger"
             label="Delete"
             handleContinueClick={handleDelete}

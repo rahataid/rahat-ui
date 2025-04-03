@@ -42,13 +42,14 @@ export default function BeneficiaryDetail() {
   // };
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center">
+      {/* Header and Actions */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
         <HeaderWithBack
           title="Beneficiary Details"
           subtitle="Here is a detailed view of the selected beneficiary"
           path="/beneficiary"
         />
-        <div className="flex space-x-2">
+        <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
           <CoreBtnComponent
             className="text-primary bg-sky-50"
             name="Assign to Project"
@@ -70,7 +71,9 @@ export default function BeneficiaryDetail() {
           />
         </div>
       </div>
-      <div className="p-5 rounded-md shadow border grid grid-cols-4 gap-5">
+
+      {/* Details Section */}
+      <div className="p-5 rounded-md shadow border grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
         <div>
           <h1 className="text-md text-muted-foreground">Beneficiary Name</h1>
           <p className="font-medium">{beneficiary?.piiData?.name || 'N/A'}</p>
@@ -83,20 +86,6 @@ export default function BeneficiaryDetail() {
           <h1 className="text-md text-muted-foreground">Estimated Age</h1>
           <p className="font-medium">{beneficiary?.age ?? 'N/A'}</p>
         </div>
-        {/* <div>
-          <h1 className="text-md text-muted-foreground">Wallet Address</h1>
-          <div
-            className="flex items-center space-x-2 cursor-pointer"
-            onClick={() => clickToCopy(beneficiary?.walletAddress as string)}
-          >
-            <p>{truncateEthAddress(beneficiary?.walletAddress as string)}</p>
-            {walletAddressCopied === beneficiary?.walletAddress ? (
-              <CopyCheck size={15} strokeWidth={1.5} />
-            ) : (
-              <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
-            )}
-          </div>
-        </div> */}
         <div>
           <h1 className="text-md text-muted-foreground">Address</h1>
           <p className="font-medium">{beneficiary?.location ?? 'N/A'}</p>

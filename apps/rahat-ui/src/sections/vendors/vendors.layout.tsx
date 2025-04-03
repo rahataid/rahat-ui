@@ -5,10 +5,8 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
-// import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { FC } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { NavItem } from './nav-items.types';
-import VendorsNavView from './vendors.nav.view';
 
 type VendorsLayoutProps = {
   children: React.ReactNode | React.ReactNode[];
@@ -16,47 +14,40 @@ type VendorsLayoutProps = {
 };
 
 const VendorsLayout: FC<VendorsLayoutProps> = ({ children, menuItems }) => {
-  const renderResizablePanel = (children: React.ReactNode, index?: number) => {
-    return (
-      <ResizablePanel minSize={30} key={index}>
-        {children}
-        {/* <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea> */}
-      </ResizablePanel>
-    );
-  };
-  const renderChildren = () => {
-    if (Array.isArray(children)) {
-      return children.map((child, index) => {
-        return (
-          <>
-            {/* <ResizableHandle withHandle /> */}
-            {renderResizablePanel(child, index)}
-          </>
-        );
-      });
-    }
-    return (
-      <>
-        {/* <ResizableHandle /> */}
-        {renderResizablePanel(children)}
-      </>
-    );
-  };
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    handleResize(); // Set initial state
+    window.addEventListener('resize', handleResize); // Listen for resize events
+
+    return () => {
+      window.removeEventListener('resize', handleResize); // Cleanup on unmount
+    };
+  }, []);
 
   return (
     <>
-      <ResizablePanelGroup direction="horizontal">
-        {/* <ResizablePanel defaultSize={20} minSize={20} maxSize={20}>
-          {menuItems.map((item) => (
-            <VendorsNavView
-              key={item.title}
-              title={item.title}
-              items={item.children}
-            />
-          ))}
-        </ResizablePanel> */}
-        {renderChildren()}
-      </ResizablePanelGroup>
+      {isMobile ? (
+        // Fullscreen panel on mobile
+        <div className="fixed inset-0 w-full h-full z-50 bg-white overflow-auto">
+          {children}
+        </div>
+      ) : (
+        // Resizable panels on desktop
+        <ResizablePanelGroup direction="horizontal">
+          {Array.isArray(children) ? (
+            children.map((child, index) => (
+              <ResizablePanel key={index}>{child}</ResizablePanel>
+            ))
+          ) : (
+            <ResizablePanel>{children}</ResizablePanel>
+          )}
+        </ResizablePanelGroup>
+      )}
     </>
   );
 };

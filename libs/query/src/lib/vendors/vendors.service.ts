@@ -43,7 +43,9 @@ export const useVendorList = (
               ? 'Assigned'
               : 'Pending',
             email: d.User?.email,
-            projectName: d.User?.VendorProject[0]?.Project?.name || 'N/A',
+            projectName:
+              d.User?.VendorProject?.map((vp: any) => vp.Project?.name) ||
+              'N/A',
             walletAddress: d.User.wallet,
             name: d.User?.name,
             phone: d.User?.phone,
@@ -59,7 +61,7 @@ export const useVendorList = (
 
   useEffect(() => {
     if (vendor.isSuccess) {
-      setVendors(vendor.data.data as any[]);
+      setVendors((vendor.data.data as any[]) || []);
       setMeta(vendor.data.response.meta);
     }
   }, [vendor.isSuccess, setVendors]);

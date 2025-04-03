@@ -13,6 +13,7 @@ import { NavItem } from '../components';
 
 export const useNavItems = () => {
   const { id } = useParams();
+  console.log('here');
 
   const navItems: NavItem[] = [
     {

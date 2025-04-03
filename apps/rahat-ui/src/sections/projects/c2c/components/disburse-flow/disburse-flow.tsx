@@ -114,8 +114,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
         rahatTokenAddress: rahattoken?.address,
         c2cProjectAddress: c2cproject?.address,
       });
+      const resData = Array.isArray(data) ? data?.[0] : data;
       route.push(
-        `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&from=${safeWallet}&&disbursementUuid=${data?.uuid}&&safeTxHash=${data?.safeTxHash}`,
+        `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&from=${safeWallet}&&disbursementUuid=${resData?.Disbursement?.uuid}&&safeTxHash=${resData?.safeTxHash}`,
       );
       return;
     }

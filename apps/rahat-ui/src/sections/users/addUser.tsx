@@ -70,8 +70,6 @@ export default function AddUser() {
   const { data: roleData } = useRoleList();
   const contractSettings = useSettingsStore((state) => state.accessManager);
   const roleSync = useSettingsStore((state) => state.roleOnChainSync);
-  const route = useRouter();
-
   const userCreate = useUserCreate();
   const addManager = useAddManager();
   const addAdmin = useAddAdmin();
@@ -117,9 +115,9 @@ export default function AddUser() {
         roles: [],
         wallet: '',
       });
-      route.push('/users');
+      router.push('/users');
     }
-  }, [form, route, userCreate.isSuccess]);
+  }, [userCreate.isSuccess]);
 
   return (
     <Form {...form}>
@@ -250,6 +248,7 @@ export default function AddUser() {
                   return (
                     <FormItem>
                       <Select
+                        disabled={!roleData?.data}
                         onValueChange={(value) => {
                           field.onChange([value]);
                         }}

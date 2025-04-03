@@ -18,7 +18,6 @@ export const mergeTransactions = async (
     ...transfers.map((transaction) => {
       const amount =
         (Number(transaction.value) as number) / 10 ** (tokenDetails.data ?? 18);
-      console.log('second', amount);
 
       // Format the amount in USD without the currency symbol
       const formatted = new Intl.NumberFormat('en-US', {
@@ -42,7 +41,6 @@ export const mergeTransactions = async (
       const amount =
         (Number(transaction._amount) as number) /
         10 ** (tokenDetails.data ?? 18);
-      console.log('second', amount);
 
       // Format the amount in USD without the currency symbol
       const formatted = new Intl.NumberFormat('en-US', {
@@ -54,7 +52,7 @@ export const mergeTransactions = async (
         ...transaction,
         from: transaction._from,
         to: transaction._to,
-        amount: transaction._amount,
+        amount: formatted,
         token: transaction._tokenAddress,
         topic: 'Disbursed',
         date: new Date(

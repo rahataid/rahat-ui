@@ -80,8 +80,12 @@ export default function VendorsTable({
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
   const projectNames =
     (projectList?.data?.data?.length > 0 &&
-      projectList?.data?.data?.map((project: any) => project?.name)) ||
+      projectList?.data?.data?.map((project: any) => ({
+        label: project?.name,
+        value: project?.name,
+      }))) ||
     [];
+  console.log(projectNames);
 
   return (
     <div className="border rounded shadow p-3">
@@ -95,18 +99,19 @@ export default function VendorsTable({
           className="rounded w-full"
         />
 
-        <SelectComponent
+        {/* TODO: fix this */}
+        {/* <SelectComponent
           onChange={(event) => {
             table
               .getColumn('status')
               ?.setFilterValue(event === 'All' ? '' : event);
           }}
           name="Status"
-          options={['All', 'Assigned', 'Not Assigned']}
+          options={['All', 'Assigned', 'Not Assigned', 'Pending']}
           value={(table.getColumn('status')?.getFilterValue() as string) || ''}
-        />
+        /> */}
 
-        <SelectComponent
+        {/* <SelectComponent
           onChange={(event) => {
             table
               .getColumn('projectName')
@@ -117,7 +122,7 @@ export default function VendorsTable({
           value={
             (table.getColumn('projectName')?.getFilterValue() as string) || ''
           }
-        />
+        /> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

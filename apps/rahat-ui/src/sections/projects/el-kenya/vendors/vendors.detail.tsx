@@ -1,6 +1,7 @@
 import {
   useGetOfflineSingleVendor,
   useKenyaVendorTransactions,
+  useProjectStore,
   useRemoveVendor,
 } from '@rahat-ui/query';
 import {
@@ -30,6 +31,10 @@ export default function VendorsDetail() {
   const vendorWallet = searchParams.get('walletAddress') || '';
   const vendorId = searchParams.get('vendorId');
   const vendorUUID = searchParams.get('vendorUUID') as UUID;
+
+  const projectClosed = useProjectStore(
+    (state) => state.singleProject?.projectClosed,
+  );
 
   const { data, isLoading: isVendorLoading } = useGetOfflineSingleVendor(
     id,
@@ -61,15 +66,21 @@ export default function VendorsDetail() {
           subtitle="Here is the detailed view of selected vendor"
           path={`/projects/el-kenya/${id}/vendors`}
         />
-        <div className="flex space-x-2">
+        <div
+          className={`flex space-x-2 ${
+            projectClosed && 'pointer-events-none opacity-70'
+          }`}
+        >
           <EditButton
             className="border-none bg-sky-50 shadow-none"
             path={`/projects/el-kenya/${id}/vendors/${vendorUUID}/edit`}
+            disabled={projectClosed}
           />
           <DeleteButton
             className="border-none bg-red-100 shadow-none"
             name="vendor"
             handleContinueClick={deleteVendor}
+            disabled={projectClosed}
           />
         </div>
       </div>

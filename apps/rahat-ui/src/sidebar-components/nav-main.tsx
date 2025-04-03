@@ -9,7 +9,6 @@ import {
 } from 'libs/shadcn/src/components/ui/collapsible';
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -27,7 +26,6 @@ type IProps = {
 export function NavMain(items: IProps) {
   const currentPath = usePathname();
   const activePath = currentPath.split('/')[4];
-  console.log('items', items);
   return (
     <SidebarGroup>
       {/* <SidebarGroupLabel>Platform</SidebarGroupLabel> */}
@@ -71,8 +69,8 @@ export function NavMain(items: IProps) {
                   tooltip={item.title}
                   className={
                     isActive
-                      ? 'bg-gray-700 text-white'
-                      : 'text-muted-foreground hover:text-foreground'
+                      ? 'bg-blue-500 text-white rounded'
+                      : 'text-muted-foreground rounded hover:text-foreground'
                   }
                 >
                   {item.icon}

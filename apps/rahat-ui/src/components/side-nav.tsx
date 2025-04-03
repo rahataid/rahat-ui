@@ -52,8 +52,8 @@ export default function SideNav() {
                       tooltip={item.title}
                       className={
                         isActive
-                          ? 'bg-gray-700 text-white'
-                          : 'text-muted-foreground hover:text-foreground'
+                          ? 'bg-blue-500 text-white rounded'
+                          : 'text-muted-foreground rounded hover:text-foreground'
                       }
                     >
                       {createElement(getIcon(item.icon))}

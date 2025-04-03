@@ -91,6 +91,8 @@
     "numeral": "^2.0.6",
     "pino-pretty": "^10.3.1",
     "postcss-import": "^16.0.1",
+    "posthog-js": "^1.234.6",
+    "posthog-node": "^4.11.1",
     "query-string": "^9.0.0",
     "radio-group": "^0.0.2",
     "react": "18.2.0",

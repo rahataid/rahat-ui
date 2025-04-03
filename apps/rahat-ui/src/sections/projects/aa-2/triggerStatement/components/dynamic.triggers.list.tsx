@@ -18,9 +18,9 @@ export default function DynamicTriggersList({ projectId, triggers }: IProps) {
             type={t?.triggerStatement?.type || 'N/A'}
             isTriggered={t?.isTriggered}
             title={t?.title || 'N/A'}
-            dataSource={t?.source?.source || 'N/A'}
-            riverBasin={t?.source?.riverBasin || 'N/A'}
-            time={t?.createdAt?.toLocaleString()}
+            dataSource={t?.phase?.source?.source || 'N/A'}
+            riverBasin={t?.phase?.source?.riverBasin || 'N/A'}
+            time={new Date(t?.createdAt)?.toLocaleString()}
           />
         ))}
         {/* <TriggerCard

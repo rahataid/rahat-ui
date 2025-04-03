@@ -1,9 +1,45 @@
+import {
+  useActivateTrigger,
+  useDeleteTriggerStatement,
+  useSingleTriggerStatement,
+} from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Back, Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
+import {
+  Back,
+  DeleteButton,
+  Heading,
+  IconLabelBtn,
+} from 'apps/rahat-ui/src/common';
+import { UUID } from 'crypto';
 import { Pencil, Trash2 } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
 
 export default function TriggerStatementDetail() {
+  const router = useRouter();
+  const { id } = useParams() as { id: UUID };
+
+  const triggerRepeatKey = window.location.href.split('/').slice(-1)[0];
+
+  const trigger = useSingleTriggerStatement(id, triggerRepeatKey);
+
+  const activateTigger = useActivateTrigger();
+  const removeTrigger = useDeleteTriggerStatement();
+
+  const handleTrigger = async () => {
+    await activateTigger.mutateAsync({
+      projectUUID: id,
+      activatePayload: { repeatKey: triggerRepeatKey },
+    });
+  };
+
+  const handleDelete = async () => {
+    await removeTrigger.mutateAsync({
+      projectUUID: id,
+      triggerStatementPayload: { repeatKey: triggerRepeatKey },
+    });
+    router.push(`/projects/aa/${id}/trigger-statements`);
+  };
   return (
     <div className="p-4">
       <Back />
@@ -13,48 +49,58 @@ export default function TriggerStatementDetail() {
           description="Detailed view of the selected trigger"
         />
         <div className="flex space-x-2">
-          <IconLabelBtn
+          {/* <IconLabelBtn
             variant="outline"
             className="text-red-500 border-red-500 hover:bg-red-50 hover:text-red-600 hover:border-red-600"
             Icon={Trash2}
             name="Delete"
-            handleClick={() => {}}
+            handleClick={handleDelete}
+          /> */}
+          <DeleteButton
+            disabled={trigger?.length < 1 ? false : true}
+            className="rounded flex gap-1 items-center"
+            name="trigger"
+            label="Delete"
+            handleContinueClick={handleDelete}
           />
-          <IconLabelBtn
+          {/* <IconLabelBtn
             variant="outline"
             className="text-gray-500"
             Icon={Pencil}
             name="Edit"
             handleClick={() => {}}
-          />
-          <Button>Trigger</Button>
+          /> */}
+          <Button
+            disabled={trigger?.length < 1 ? false : true}
+            onClick={handleTrigger}
+          >
+            Trigger
+          </Button>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-4">
         <div className="p-4 border rounded-sm">
           <Heading
-            title="Ensure the Distribution of Emergency Response Kits to All Identified
-            High-Risk and Vulnerable Households in the Affected Areas"
+            title={trigger?.title}
             titleStyle="text-lg/7"
-            description="Korem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
-            vulputate libero"
+            description=""
           />
           <div className="grid grid-cols-4 text-sm/4 text-muted-foreground mt-6">
             <div>
               <p className="mb-1">River Basin</p>
-              <p>Karnali</p>
+              <p>{trigger?.phase?.source?.riverBasin || 'N/A'}</p>
             </div>
             <div>
               <p className="mb-1">Phase</p>
-              <Badge>Preparedness</Badge>
+              <Badge>{trigger?.phase?.name || 'N/A'}</Badge>
             </div>
             <div>
               <p className="mb-1">Trigger Type</p>
-              <Badge>Automated</Badge>
+              <Badge>{trigger?.triggerStatement?.type || 'N/A'}</Badge>
             </div>
             <div>
               <p className="mb-1">Type</p>
-              <Badge>Optional</Badge>
+              <Badge>{trigger?.isMandatory ? 'Mandatory' : 'Optional'}</Badge>
             </div>
           </div>
         </div>
@@ -62,19 +108,27 @@ export default function TriggerStatementDetail() {
           <Heading
             title="Forecast Data"
             titleStyle="text-sm/4"
-            description={`Source:${'Karnali'}`}
+            description={`Source:${
+              trigger?.phase?.source?.riverBasin || 'N/A'
+            }`}
           />
           <div className="grid grid-cols-3 gap-4">
             <div className="p-3 text-center border rounded">
-              <p className="font-semibold text-3xl/10 text-primary">3</p>
+              <p className="font-semibold text-3xl/10 text-primary">
+                {trigger?.triggerStatement?.minLeadTimeDays}
+              </p>
               <p className="font-medium text-sm/6">Minimum Lead Time Days</p>
             </div>
             <div className="p-3 text-center border rounded">
-              <p className="font-semibold text-3xl/10 text-primary">5</p>
+              <p className="font-semibold text-3xl/10 text-primary">
+                {trigger?.triggerStatement?.maxLeadTimeDays}
+              </p>
               <p className="font-medium text-sm/6">Maximum Lead Time Days</p>
             </div>
             <div className="p-3 text-center border rounded">
-              <p className="font-semibold text-3xl/10 text-primary">0.98</p>
+              <p className="font-semibold text-3xl/10 text-primary">
+                {trigger?.triggerStatement?.probability}
+              </p>
               <p className="font-medium text-sm/6">Forecast Probability</p>
             </div>
           </div>

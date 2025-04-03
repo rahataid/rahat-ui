@@ -70,7 +70,12 @@ export default function TriggerStatementDetail() {
             name="Edit"
             handleClick={() => {}}
           /> */}
-          <Button onClick={handleTrigger}>Trigger</Button>
+          <Button
+            disabled={trigger?.length < 1 ? false : true}
+            onClick={handleTrigger}
+          >
+            Trigger
+          </Button>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-4">

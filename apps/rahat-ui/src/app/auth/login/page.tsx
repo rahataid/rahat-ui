@@ -93,8 +93,9 @@ export default function AuthPage() {
                 </p>
               )}
               <Button
+                className="text-white hover:border hover:border-blue-500 hover:text-blue-500"
                 type="submit"
-                disabled={isPending || !isEmailValid || !address}
+                disabled={isPending || !isEmailValid}
               >
                 Send OTP
               </Button>
@@ -127,7 +128,11 @@ export default function AuthPage() {
                   Please enter valid OTP
                 </div>
               )}
-              <Button type="submit" disabled={otp?.length !== 6}>
+              <Button
+                className="text-white hover:border hover:border-blue-500 hover:text-blue-500"
+                type="submit"
+                disabled={otp?.length !== 6}
+              >
                 Verify
               </Button>
             </div>

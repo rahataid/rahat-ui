@@ -31,6 +31,7 @@ import { DatePicker } from '../../components/datePicker';
 import FiltersTags from '../projects/components/filtersTags';
 import Image from 'next/image';
 import AddButton from '../projects/components/add.btn';
+import TableLoader from '../../components/table.loader';
 
 type IProps = {
   table: Table<ListBeneficiary>;
@@ -44,6 +45,7 @@ type IProps = {
   handleCreateGroup: any;
   handleDateChange: any;
   setFilters?: any;
+  loading: boolean;
 };
 
 export default function ListView({
@@ -58,6 +60,7 @@ export default function ListView({
   groupModal,
   handleDateChange,
   setFilters,
+  loading,
 }: IProps) {
   const [selectedProject, setSelectedProject] = useState<null | Record<
     string,
@@ -199,67 +202,71 @@ export default function ListView({
           />
         )}
         <ScrollArea className="h-[calc(100vh-340px)]">
-          <TableComponent>
-            <TableHeader className="sticky top-0 bg-card">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
+          {loading ? (
+            <TableLoader />
+          ) : (
+            <TableComponent>
+              <TableHeader className="sticky top-0 bg-card">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                        </TableHead>
+                      );
+                    })}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={table.getAllColumns().length}
-                    className="h-24 text-center"
-                  >
-                    <div className="flex flex-col items-center justify-center">
-                      <Image
-                        src="/noData.png"
-                        height={250}
-                        width={250}
-                        alt="no data"
-                      />
-                      <p className="text-medium text-base mb-1">
-                        No Data Available
-                      </p>
-                      <p className="text-sm mb-4 text-gray-500">
-                        There are no beneficiaries to display at the moment
-                      </p>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </TableComponent>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && 'selected'}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={table.getAllColumns().length}
+                      className="h-24 text-center"
+                    >
+                      <div className="flex flex-col items-center justify-center">
+                        <Image
+                          src="/noData.png"
+                          height={250}
+                          width={250}
+                          alt="no data"
+                        />
+                        <p className="text-medium text-base mb-1">
+                          No Data Available
+                        </p>
+                        <p className="text-sm mb-4 text-gray-500">
+                          There are no beneficiaries to display at the moment
+                        </p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </TableComponent>
+          )}
         </ScrollArea>
       </div>
     </>

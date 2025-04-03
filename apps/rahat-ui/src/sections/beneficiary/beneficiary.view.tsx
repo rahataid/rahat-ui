@@ -59,7 +59,7 @@ function BeneficiaryView() {
 
   useBeneficiaryGroupsList({ ...pagination });
 
-  const { data } = useBeneficiaryList({
+  const { data, isLoading } = useBeneficiaryList({
     ...pagination,
     ...filters,
   });
@@ -73,7 +73,6 @@ function BeneficiaryView() {
     page: 1,
     perPage: 10,
   });
-
   const table = useReactTable({
     manualPagination: true,
     data: data?.data || [],
@@ -206,6 +205,7 @@ function BeneficiaryView() {
             filters={filters}
             setFilters={setFilters}
             handleDateChange={handleDateChange}
+            loading={isLoading}
           />
         </div>
         <CustomPagination

@@ -46,7 +46,7 @@ export default function SideNav() {
             {data.map((item) => {
               const isActive = item.path.split('/')[1] === activePath;
               return (
-                <SidebarMenuItem>
+                <SidebarMenuItem key={item.title}>
                   <Link href={item.path as string}>
                     <SidebarMenuButton
                       tooltip={item.title}

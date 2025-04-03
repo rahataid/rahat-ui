@@ -8,6 +8,7 @@ import {
   usePhasesStore,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 
 export default function TriggerStatementView() {
   const router = useRouter();
@@ -19,10 +20,6 @@ export default function TriggerStatementView() {
 
   useAATriggerStatements(projectId, {});
   const triggers = useAAStationsStore((state) => state.triggers);
-
-  function capitalizeFirstLetter(string: string) {
-    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-  }
 
   const setPhase = (phase: any) => {
     localStorage.setItem(

@@ -1,4 +1,5 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { useRouter } from 'next/navigation';
 
 type IProps = {
@@ -35,9 +36,6 @@ export default function TriggerCard({
         return 'bg-gray-50 text-gray-500';
     }
   };
-  function capitalizeFirstLetter(string: string) {
-    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-  }
   return (
     <div
       className="p-4 rounded border shadow cursor-pointer"

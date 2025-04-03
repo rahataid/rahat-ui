@@ -30,7 +30,6 @@ export const useBeneficiaryTableColumns = () => {
     setWalletAddressCopied(uuid);
   };
   const openSplitDetailView = (rowDetail: ListBeneficiary) => {
-    console.log('rowDetail', rowDetail);
     if (window.innerWidth <= 768) {
       router.push(`/beneficiary/${rowDetail.uuid}`);
     } else {

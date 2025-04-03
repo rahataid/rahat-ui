@@ -36,7 +36,11 @@ export default function UsersTable({ table }: IProps) {
             className="rounded"
           />
           <ViewColumns table={table} />
-          <AddButton name="User" path="/users/add" />
+          <AddButton
+            className="text-white border hover:border-blue-500 hover:text-blue-500"
+            name="User"
+            path="/users/add"
+          />
         </div>
         <div>
           <ScrollArea className="h-[calc(100vh-303px)]">

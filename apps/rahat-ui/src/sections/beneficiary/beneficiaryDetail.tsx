@@ -1,33 +1,14 @@
 'use client';
 
 import { useBeneficiaryStore, useSingleBeneficiary } from '@rahat-ui/query';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/components/tooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { ListBeneficiary } from '@rahat-ui/types';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { UUID } from 'crypto';
 import {
-  Copy,
-  CopyCheck,
   Expand,
-  FolderDot,
   FolderPlus,
   Landmark,
   Mail,
   MapPin,
-  Minus,
-  MoreVertical,
   Pencil,
   Phone,
   Trash2,
@@ -37,12 +18,10 @@ import {
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import TooltipComponent from '../../components/tooltip';
 import { useBoolean } from '../../hooks/use-boolean';
 import AssignToProjectModal from './components/assignToProjectModal';
 import DeleteBeneficiaryModal from './components/deleteBenfModal';
-import SplitViewDetailCards from './components/split.view.detail.cards';
-import EditBeneficiary from './editBeneficiary';
-import TooltipComponent from '../../components/tooltip';
 
 type IProps = {
   beneficiaryDetail: any;
@@ -61,7 +40,6 @@ export default function BeneficiaryDetail({
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
-  console.log('beneficiaryDetail', beneficiaryDetail);
   const [walletAddressCopied, setWalletAddressCopied] =
     useState<boolean>(false);
   const walletAddress = beneficiaryDetail.walletAddress || '';

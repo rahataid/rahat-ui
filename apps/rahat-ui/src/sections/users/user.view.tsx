@@ -64,7 +64,7 @@ export default function UserView() {
           {(loggedUserRoles?.includes('Admin') ||
             loggedUserRoles?.includes('Manager')) && (
             <CoreBtnComponent
-              className="hover:text-primary"
+              className="hover:text-primary text-white"
               Icon={UserCog}
               name="Manage Roles"
               handleClick={() => router.push('/users/roles')}

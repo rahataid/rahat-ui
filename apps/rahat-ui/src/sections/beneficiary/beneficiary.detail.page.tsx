@@ -33,9 +33,9 @@ export default function BeneficiaryDetail() {
   const router = useRouter();
   // const [walletAddressCopied, setWalletAddressCopied] =
   //   React.useState<string>();
+  useSingleBeneficiary(id);
 
   const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
-
   // const clickToCopy = (walletAddress: string) => {
   //   navigator.clipboard.writeText(walletAddress);
   //   setWalletAddressCopied(walletAddress);

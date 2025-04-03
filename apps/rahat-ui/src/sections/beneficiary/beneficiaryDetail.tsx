@@ -61,6 +61,7 @@ export default function BeneficiaryDetail({
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
+  console.log('beneficiaryDetail', beneficiaryDetail);
   const [walletAddressCopied, setWalletAddressCopied] =
     useState<boolean>(false);
   const walletAddress = beneficiaryDetail.walletAddress || '';

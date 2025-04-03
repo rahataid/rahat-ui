@@ -29,7 +29,6 @@ import Image from 'next/image';
 
 export default function SideNav() {
   const { data, subData } = useNavData();
-  console.log('data', data);
   const [more, setMore] = React.useState(false);
   const currentPath = usePathname();
   const activePath = currentPath.split('/')[1];

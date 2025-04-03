@@ -24,6 +24,8 @@ type IProps = {
   className?: string;
   description?: string;
   onFallback?: (data?: any) => void;
+  label?: string;
+  disabled?: boolean;
 };
 
 export function EditButton({
@@ -31,6 +33,8 @@ export function EditButton({
   className,
   description = 'This action will redirect you to the edit page',
   onFallback,
+  label = '',
+  disabled = false,
 }: IProps) {
   const router = useRouter();
   const handleClick = () => {
@@ -42,8 +46,10 @@ export function EditButton({
   };
   return (
     <TooltipProvider delayDuration={100}>
-      <Tooltip>
-        <TooltipTrigger>
+      <Tooltip disableHoverableContent>
+        <TooltipTrigger
+          className={disabled ? 'pointer-events-none opacity-50' : ''}
+        >
           <AlertDialog>
             <AlertDialogTrigger className="flex items-center">
               <div
@@ -52,7 +58,7 @@ export function EditButton({
                   className,
                 )}
               >
-                <Pencil size={18} strokeWidth={1.5} />
+                <Pencil size={18} strokeWidth={1.5} /> {label}
               </div>
             </AlertDialogTrigger>
             <AlertDialogContent>

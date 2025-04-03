@@ -8,6 +8,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Back,
   DeleteButton,
+  EditButton,
   Heading,
   IconLabelBtn,
 } from 'apps/rahat-ui/src/common';
@@ -61,6 +62,16 @@ export default function TriggerStatementDetail() {
             name="trigger"
             label="Delete"
             handleContinueClick={handleDelete}
+          />
+          <EditButton
+            className="rounded flex gap-1 items-center text-sm font-medium"
+            label="Edit"
+            onFallback={() =>
+              router.push(
+                `/projects/aa/${id}/trigger-statements/${triggerRepeatKey}/edit`,
+              )
+            }
+            disabled={trigger?.phase?.isActive}
           />
           {/* <IconLabelBtn
             variant="outline"

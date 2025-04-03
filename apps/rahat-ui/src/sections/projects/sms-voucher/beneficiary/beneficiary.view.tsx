@@ -121,7 +121,7 @@ export default function BeneficiaryView() {
   };
 
   const handleDownload = () => {
-    generateExcel(consumerData.data, 'Consumer', 8);
+    generateExcel(consumerData.data, 'Consumer', 9);
   };
 
   const generateExcel = (data: any, title: string, numberOfColumns: number) => {
@@ -221,8 +221,8 @@ export default function BeneficiaryView() {
             table={table}
             tableHeight={
               Object.keys(filters).length
-                ? 'h-[calc(100vh-389px)]'
-                : 'h-[calc(100vh-323px)]'
+                ? 'h-[calc(100vh-339px)]'
+                : 'h-[calc(100vh-273px)]'
             }
             loading={isLoading}
           />

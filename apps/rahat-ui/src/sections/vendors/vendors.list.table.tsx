@@ -107,7 +107,11 @@ export default function VendorsTable({
               ?.setFilterValue(event === 'All' ? '' : event);
           }}
           name="Status"
-          options={['All', 'Assigned', 'Not Assigned', 'Pending']}
+          options={[
+            { label: 'All', value: 'All' },
+            { label: 'Assigned', value: 'Assigned' },
+            { label: 'Pending', value: 'Pending' },
+          ]}
           value={(table.getColumn('status')?.getFilterValue() as string) || ''}
         /> */}
 
@@ -118,7 +122,7 @@ export default function VendorsTable({
               ?.setFilterValue(event === 'All' ? '' : event);
           }}
           name="Project Name"
-          options={['All', ...projectNames]}
+          options={[{ label: 'All', value: 'All' }, ...projectNames]}
           value={
             (table.getColumn('projectName')?.getFilterValue() as string) || ''
           }
@@ -230,7 +234,9 @@ export default function VendorsTable({
                   projectList.data?.data.map((project: any) => {
                     return (
                       <SelectItem
-                        disabled={selectedRow?.projectName === project.name} //TODO FROM ID
+                        disabled={selectedRow?.projectName?.includes(
+                          project.name,
+                        )}
                         key={project.id}
                         value={project.uuid}
                       >

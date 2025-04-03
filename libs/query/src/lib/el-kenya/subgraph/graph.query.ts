@@ -11,7 +11,7 @@ query ProjectTransactions{
     transactionHash,
     eventType
   }
-   claimCreateds {
+  claimCreateds {
     amount
     blockNumber
     blockTimestamp
@@ -55,9 +55,9 @@ query ProjectTransactions{
     blockTimestamp
     transactionHash
     eventType
-  }
-
-  otpAddeds{
+} 
+    
+    otpAddeds{
   id
   beneficiary
   tokenAddress
@@ -79,6 +79,23 @@ query ProjectTransactions{
     transactionHash
     eventType
   }
+}
+`;
+
+export const SmsVoucherProjectTransactions = (first: number, skip: number) => `
+query ProjectTransactions{
+  walkInBeneficiaryAddeds(first: ${first}, skip: ${skip}) {
+    id,
+    beneficiary,
+    tokenAddress,
+    vendor,
+    amount,
+    blockNumber,
+    blockTimestamp,
+    transactionHash,
+    eventType
+  }
+  
 }
 `;
 
@@ -200,4 +217,4 @@ query walkInBeneficiary{
     eventType
   
 }
-}`
+}`;

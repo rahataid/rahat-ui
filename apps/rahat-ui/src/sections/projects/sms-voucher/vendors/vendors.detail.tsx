@@ -71,7 +71,7 @@ export default function VendorsDetail() {
           path={`/projects/sms-voucher/${id}/vendors`}
         />
       </div>
-      <div className="p-5 rounded grid grid-cols-3 gap-5 mb-5">
+      <div className="px-5 rounded grid grid-cols-3 gap-5 mb-5">
         <div className="border shadow flex items-center gap-4 p-5">
           <div
             className={'rounded-full h-8 w-8 flex items-center justify-center '}

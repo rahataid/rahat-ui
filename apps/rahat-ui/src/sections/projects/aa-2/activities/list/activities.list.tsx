@@ -4,9 +4,10 @@ import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import {
   useActivities,
   useActivitiesCategories,
-  useActivitiesPhase,
   useActivitiesStore,
   usePagination,
+  usePhases,
+  usePhasesStore,
 } from '@rahat-ui/query';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
 import ActivitiesTable from './activities.table';
@@ -32,7 +33,7 @@ export default function ActivitiesList() {
   const { id: projectID, title } = useParams();
   const searchParams = useSearchParams();
   useActivitiesCategories(projectID as UUID);
-  useActivitiesPhase(projectID as UUID);
+  usePhases(projectID as UUID);
   const [activitySearchText, setActivitySearchText] =
     React.useState<string>('');
   const [responsibilitySearchText, setResponsibilitySearchText] =
@@ -41,9 +42,11 @@ export default function ActivitiesList() {
   const [categoryFilterItem, setCategoryFilterItem] =
     React.useState<string>('');
   const [statusFilterItem, setStatusFilterItem] = React.useState<string>('');
-  const { phases, categories } = useActivitiesStore((state) => ({
-    phases: state.phases,
+  const { categories } = useActivitiesStore((state) => ({
     categories: state.categories,
+  }));
+  const { phases } = usePhasesStore((state) => ({
+    phases: state.phases,
   }));
   const {
     pagination,

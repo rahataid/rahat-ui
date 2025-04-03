@@ -61,11 +61,11 @@ export const useNavItems = () => {
           path: `/projects/aa/${params.id}/trigger-statements`,
           icon: <ParkingMeter size={18} strokeWidth={1.5} />,
         },
-        // {
-        //   title: 'Activities',
-        //   path: `/projects/aa/${params.id}/activities`,
-        //   icon: <Activity size={18} strokeWidth={1.5} />,
-        // },
+        {
+          title: 'Activities',
+          path: `/projects/aa/${params.id}/activities`,
+          icon: <Activity size={18} strokeWidth={1.5} />,
+        },
         {
           title: 'Fund Management',
           path: `/projects/aa/${params.id}/fund-management`,

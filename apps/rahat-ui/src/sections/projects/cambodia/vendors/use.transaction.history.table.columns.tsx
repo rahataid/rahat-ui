@@ -9,11 +9,11 @@ import {
 import { useState } from 'react';
 import { Copy, CopyCheck } from 'lucide-react';
 export const useTransactionHistoryTableColumns = () => {
-  const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
+  const [walletAddressCopied, setWalletAddressCopied] = useState<string>();
 
-  const clickToCopy = (walletAddress: string, index: number) => {
+  const clickToCopy = (walletAddress: string, id: string) => {
     navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(index);
+    setWalletAddressCopied(id);
   };
   const columns: ColumnDef<any>[] = [
     {
@@ -38,10 +38,10 @@ export const useTransactionHistoryTableColumns = () => {
               <Tooltip>
                 <TooltipTrigger
                   className="flex gap-3 cursor-pointer"
-                  onClick={() => clickToCopy(row?.original?.txHash, row.index)}
+                  onClick={() => clickToCopy(row?.original?.txHash, row.id)}
                 >
                   <p className="truncate w-24">{row?.original?.txHash}</p>
-                  {walletAddressCopied === row.index ? (
+                  {walletAddressCopied === row.id ? (
                     <CopyCheck size={20} strokeWidth={1.5} />
                   ) : (
                     <Copy size={20} strokeWidth={1.5} />
@@ -49,7 +49,7 @@ export const useTransactionHistoryTableColumns = () => {
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary" side="bottom">
                   <p className="text-xs font-medium">
-                    {walletAddressCopied === row.index
+                    {walletAddressCopied === row.id
                       ? 'copied'
                       : 'click to copy'}
                   </p>

@@ -57,7 +57,6 @@ export default function TriggerStatementDetail() {
             handleClick={handleDelete}
           /> */}
           <DeleteButton
-            disabled={trigger?.length < 1 ? false : true}
             className="rounded flex gap-1 items-center"
             name="trigger"
             label="Delete"
@@ -71,7 +70,7 @@ export default function TriggerStatementDetail() {
             handleClick={() => {}}
           /> */}
           <Button
-            disabled={trigger?.length < 1 ? false : true}
+            disabled={trigger?.triggerStatement?.type === 'automated'}
             onClick={handleTrigger}
           >
             Trigger

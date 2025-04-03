@@ -34,18 +34,25 @@ export default function VendorsDetail() {
     isLoading,
   } = useGetOfflineSingleVendor(id as UUID, Number(vid));
   const cardData = [
-    { name: 'Offline Beneficiaries', value: offlineVendor?.data.length },
+    {
+      name: 'Offline Beneficiaries',
+      value: (offlineVendor?.data && offlineVendor?.data.length) || 0,
+    },
     {
       name: 'Vouchers Assigned',
-      value: offlineVendor?.extras.totalAmountAssigned,
+      value:
+        (offlineVendor?.extras && offlineVendor?.extras.totalAmountAssigned) ||
+        0,
     },
     {
       name: 'Voucher Numbers',
-      value: offlineVendor?.extras.totalAmountAssigned,
+      value:
+        (offlineVendor?.extras && offlineVendor?.extras.totalAmountAssigned) ||
+        0,
     },
   ];
   React.useEffect(() => {
-    if (offlineVendor?.data.length > 0) {
+    if (offlineVendor?.data?.length > 0) {
       const benDetails = offlineVendor?.data.map((ben: any) => {
         return {
           amount: ben?.amount,

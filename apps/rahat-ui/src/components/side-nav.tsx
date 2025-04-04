@@ -68,7 +68,7 @@ export default function SideNav() {
       </SidebarContent>
       {/* SIDEBAR FOOTER */}
       <SidebarFooter>
-        <Link
+        {/* <Link
           href="/settings"
           className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors md:h-8 md:w-8 ${
             activePath === 'settings'
@@ -78,7 +78,7 @@ export default function SideNav() {
         >
           <Settings className="h-5 w-5" />
           <span className="sr-only">Settings</span>
-        </Link>
+        </Link> */}
 
         <div
           className="flex h-9 w-9 items-center justify-center rounded-full transition-colors md:h-8 md:w-8 

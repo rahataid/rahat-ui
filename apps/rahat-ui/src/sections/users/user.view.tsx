@@ -61,7 +61,7 @@ export default function UserView() {
               Here is the list of all the users
             </p>
           </div>
-          {(loggedUserRoles?.includes('Admin') ||
+          {/* {(loggedUserRoles?.includes('Admin') ||
             loggedUserRoles?.includes('Manager')) && (
             <CoreBtnComponent
               className="hover:text-primary text-white"
@@ -69,7 +69,7 @@ export default function UserView() {
               name="Manage Roles"
               handleClick={() => router.push('/users/roles')}
             />
-          )}
+          )} */}
         </div>
         <UsersTable loading={isLoading} table={table} />
       </div>

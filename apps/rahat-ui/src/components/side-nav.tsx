@@ -37,7 +37,7 @@ export default function SideNav() {
     <Sidebar collapsible="icon">
       {/* SIDEBAR HEADER */}
       <SidebarHeader>
-        <Image src="/rahat-logo.png" alt="logo" height={20} width={30} />
+        <Image src="/rahat-logo.png" alt="logo" height={42} width={42} />
       </SidebarHeader>
       {/* SIDEBAR CONTENT */}
       <SidebarContent>

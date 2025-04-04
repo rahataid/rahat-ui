@@ -11,7 +11,6 @@ import { useAuthStore } from '@rumsan/react-query';
 const ProjectMainView = () => {
   const { id } = useParams() as { id: UUID };
   const token = useAuthStore.getState().token;
-
   const project = useProjectStore((state) => state.singleProject);
   const { data: newDatasource, isLoading } = useGetProjectDatasource(id);
 
@@ -19,7 +18,6 @@ const ProjectMainView = () => {
     let fetchedData;
     try {
       const dataSource = newDatasource[0]?.data?.dataSources[source];
-
       const response = await fetch(dataSource.args.url, {
         ...dataSource.args.apiCallData,
         headers: {
@@ -45,14 +43,14 @@ const ProjectMainView = () => {
       fetchDataForSource,
     );
     const results = await Promise.all(promises);
-
     generateExcel(results[0], 'EL_Report', newDatasource[0]?.data?.ui);
   }
+
   return (
-    <div className="p-4">
-      <div className="flex justify-between">
+    <div className="p-4 flex flex-col gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
-          <h1 className="font-semibold text-[28px] mb-2">
+          <h1 className="font-semibold text-2xl md:text-[28px] mb-2">
             Welcome to EL SMS Voucher Program
           </h1>
           <p className="text-muted-foreground text-base">
@@ -60,10 +58,11 @@ const ProjectMainView = () => {
             system
           </p>
         </div>
-
-        <DownloadReportBtn handleDownload={handleDownload} />
+        <div className="mt-3 md:mt-0 w-full md:w-auto">
+          <DownloadReportBtn handleDownload={handleDownload} />
+        </div>
       </div>
-      <ScrollArea className="mt-5 h-[calc(100vh-185px)]">
+      <ScrollArea className="mt-5 max-h-[calc(100vh-185px)] overflow-auto">
         <ELKenyaProjectDetail />
       </ScrollArea>
     </div>

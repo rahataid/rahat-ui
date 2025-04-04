@@ -23,12 +23,9 @@ import { toast } from 'react-toastify';
 export default function VendorDetail() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
-  const { data: vendorDetail, isLoading } = useGetVendor(id);
+  const { data: vendorDetail } = useGetVendor(id);
   const vendor = React.useMemo(() => vendorDetail?.data, [vendorDetail]);
-  const isVendorAssigned = React.useMemo(
-    () => vendor?.projects?.length,
-    [vendor],
-  );
+  const isVendorAssigned = vendor?.projects?.length;
   const removeVendor = useRemoveVendor();
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<string>();
@@ -45,44 +42,16 @@ export default function VendorDetail() {
     router.push('/vendors');
   };
 
-  const renderAlertContent = ({
-    handleContinueClick,
-  }: {
-    handleContinueClick: () => void;
-  }) => {
-    return (
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleContinueClick}>
-            Continue
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    );
-  };
-
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center">
+      {/* Header and Actions */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
         <HeaderWithBack
-          title="Vendor details"
+          title="Vendor Details"
           subtitle="Here is a detailed view of the selected vendor"
           path="/vendors"
         />
-        <div className="flex space-x-2">
-          {/* <CoreBtnComponent
-            className="text-primary bg-sky-50"
-            name="Assign to Project"
-            Icon={FolderPlus}
-            handleClick={() => { }}
-          /> */}
+        <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
           <CoreBtnComponent
             name="Edit"
             Icon={Pencil}
@@ -99,55 +68,77 @@ export default function VendorDetail() {
                 Delete
               </Button>
             </AlertDialogTrigger>
-            {renderAlertContent({ handleContinueClick: deleteVendor })}
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={deleteVendor}>
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
           </AlertDialog>
         </div>
       </div>
-      <div className="p-5 rounded-md shadow border grid grid-cols-4 gap-5">
-        <div>
-          <h1 className="text-md text-muted-foreground">Vendor Name</h1>
-          <p className="font-medium">{vendor?.name || 'N/A'}</p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Gender</h1>
-          <p className="font-medium">{vendor?.gender || 'N/A'}</p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Project Name</h1>
-          {vendor?.projects?.length ? (
-            <div className="flex gap-2 flex-wrap">
-              {vendor?.projects?.map((project: any) => {
-                return <p className="font-medium">{project?.name}</p>;
-              })}
-            </div>
-          ) : (
-            <p className="font-medium">N/A</p>
-          )}
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Wallet Address</h1>
-          <div
-            className="flex items-center space-x-2 cursor-pointer"
-            onClick={() => clickToCopy(vendor?.wallet)}
-          >
-            <p>{truncateEthAddress(vendor?.wallet)}</p>
 
-            {walletAddressCopied === vendor?.wallet ? (
-              <CopyCheck size={15} strokeWidth={1.5} />
+      {/* Details Section */}
+      <div className="p-5 rounded-md shadow border grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
+        <DetailItem title="Vendor Name" content={vendor?.name} />
+        <DetailItem title="Gender" content={vendor?.gender} />
+        <DetailItem
+          title="Project Name"
+          content={
+            vendor?.projects?.length ? (
+              <div className="flex gap-2 flex-wrap">
+                {vendor.projects.map((project: any) => (
+                  <p key={project.id} className="font-medium">
+                    {project?.name}
+                  </p>
+                ))}
+              </div>
             ) : (
-              <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
-            )}
-          </div>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Phone Number</h1>
-          <p className="font-medium">{vendor?.phone || 'N/A'}</p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Email Address</h1>
-          <p className="font-medium">{vendor?.email || 'N/A'}</p>
-        </div>
+              'N/A'
+            )
+          }
+        />
+        <DetailItem
+          title="Wallet Address"
+          content={
+            <div
+              className="flex items-center space-x-2 cursor-pointer"
+              onClick={() => clickToCopy(vendor?.wallet)}
+            >
+              <p>{truncateEthAddress(vendor?.wallet)}</p>
+              {walletAddressCopied === vendor?.wallet ? (
+                <CopyCheck size={15} strokeWidth={1.5} />
+              ) : (
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              )}
+            </div>
+          }
+        />
+        <DetailItem title="Phone Number" content={vendor?.phone} />
+        <DetailItem title="Email Address" content={vendor?.email} />
       </div>
     </div>
   );
 }
+
+// Reusable Detail Item Component
+const DetailItem = ({
+  title,
+  content,
+}: {
+  title: string;
+  content?: React.ReactNode;
+}) => (
+  <div>
+    <h1 className="text-md text-muted-foreground">{title}</h1>
+    <p className="font-medium">{content ?? 'N/A'}</p>
+  </div>
+);

@@ -66,6 +66,7 @@ type IProps = {
   handleAssignProject: VoidFunction;
   projectModal: ProjectModalType;
   selectedRow: any;
+  loading: boolean;
 };
 
 export default function VendorsTable({
@@ -75,6 +76,7 @@ export default function VendorsTable({
   handleAssignProject,
   projectModal,
   selectedRow,
+  loading,
 }: IProps) {
   const projectList = useProjectList({});
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
@@ -85,7 +87,6 @@ export default function VendorsTable({
         value: project?.name,
       }))) ||
     [];
-  console.log(projectNames);
 
   return (
     <div className="border rounded shadow p-3">
@@ -130,7 +131,7 @@ export default function VendorsTable({
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
               <Settings2 className="mr-2 h-4 w-5" />
-              View
+              Views
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -157,58 +158,71 @@ export default function VendorsTable({
         </DropdownMenu>
       </div>
       <div>
-        {table.getRowModel().rows?.length ? (
-          <>
-            <ScrollArea className="h-[calc(100vh-285px)]">
-              <TableComponent>
-                <TableHeader className="sticky top-0 bg-card">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => {
-                        return (
-                          <TableHead key={header.id}>
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext(),
-                                )}
-                          </TableHead>
-                        );
-                      })}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </TableComponent>
-            </ScrollArea>
-          </>
+        {loading ? (
+          <TableLoader />
         ) : (
-          <div className="w-full h-[calc(100vh-290px)]">
-            <div className="flex flex-col items-center justify-center">
-              <Image src="/noData.png" height={250} width={250} alt="no data" />
-              <p className="text-medium text-base mb-1">No Data Available</p>
-              <p className="text-sm mb-4 text-gray-500">
-                There are no vendors to display at the moment
-              </p>
-            </div>
-          </div>
+          <>
+            {table.getRowModel().rows?.length ? (
+              <>
+                <ScrollArea className="h-[calc(100vh-285px)]">
+                  <TableComponent>
+                    <TableHeader className="sticky top-0 bg-card">
+                      {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow key={headerGroup.id}>
+                          {headerGroup.headers.map((header) => {
+                            return (
+                              <TableHead key={header.id}>
+                                {header.isPlaceholder
+                                  ? null
+                                  : flexRender(
+                                      header.column.columnDef.header,
+                                      header.getContext(),
+                                    )}
+                              </TableHead>
+                            );
+                          })}
+                        </TableRow>
+                      ))}
+                    </TableHeader>
+                    <TableBody>
+                      {table.getRowModel().rows.map((row) => (
+                        <TableRow
+                          key={row.id}
+                          data-state={row.getIsSelected() && 'selected'}
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell key={cell.id}>
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              )}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </TableComponent>
+                </ScrollArea>
+              </>
+            ) : (
+              <div className="w-full h-[calc(100vh-290px)]">
+                <div className="flex flex-col items-center justify-center">
+                  <Image
+                    src="/noData.png"
+                    height={250}
+                    width={250}
+                    alt="no data"
+                  />
+                  <p className="text-medium text-base mb-1">
+                    No Data Available
+                  </p>
+                  <p className="text-sm mb-4 text-gray-500">
+                    There are no vendors to display at the moment
+                  </p>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 

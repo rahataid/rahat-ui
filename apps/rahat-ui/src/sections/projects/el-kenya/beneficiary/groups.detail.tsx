@@ -15,19 +15,14 @@ import { useRpSingleBeneficiaryGroup } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import ClientSidePagination from '../../components/client.side.pagination';
-import { useBeneficiaryTableColumns } from '../../../beneficiary/useBeneficiaryColumns';
-import HeaderWithBack from '../../components/header.with.back';
 import { useKenyaGroupedBeneficiaryTableColumns } from './use.grouped.beneficiary.table.columns';
+import HeaderWithBack from '../../components/header.with.back';
 
 export default function GroupDetailView() {
   const { groupid, id } = useParams() as { groupid: UUID; id: UUID };
-  const projectModal = useBoolean();
-  const removeModal = useBoolean();
-
   const { data, isLoading } = useRpSingleBeneficiaryGroup(id, groupid);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  // const columns = useBeneficiaryTableColumns();
 
   const columns = useKenyaGroupedBeneficiaryTableColumns();
   const tableData = React.useMemo(() => {
@@ -54,45 +49,44 @@ export default function GroupDetailView() {
     onColumnVisibilityChange: setColumnVisibility,
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    // onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => row.uuid,
     state: {
       columnVisibility,
-      // rowSelection: selectedListItems,
     },
   });
 
   return (
     <>
-      <div className="p-4">
-        <div className="flex justify-between items-center">
+      <div className="p-2 sm:p-4">
+        <div className="flex flex-wrap justify-between items-center gap-4">
           <HeaderWithBack
             title={data?.name || 'N/A'}
             subtitle="Here is a detailed view of the selected consumer group"
             path={`/projects/el-kenya/${id}/beneficiary?tab=beneficiaryGroups`}
           />
-          {/* <CoreBtnComponent
-            className="text-primary bg-sky-50"
-            name="Assign to Project"
-            Icon={FolderPlus}
-            handleClick={() => {}}
-          /> */}
         </div>
-        <DataCard
-          className="border-solid w-1/3 rounded-md"
-          iconStyle="bg-white text-secondary-muted"
-          title="Total Consumers"
-          Icon={UsersRound}
-          number={data?.groupedBeneficiaries?.length || 0}
-        />
-        <MembersTable
-          table={table}
-          groupedBeneficiaries={data?.groupedBeneficiaries}
-          groupUUID={groupid}
-          name={data?.name}
-          loading={isLoading}
-        />
+
+        <div className="mt-4">
+          <DataCard
+            className="border-solid w-full sm:w-1/3 rounded-md"
+            iconStyle="bg-white text-secondary-muted"
+            title="Total Consumers"
+            Icon={UsersRound}
+            number={data?.groupedBeneficiaries?.length || 0}
+          />
+        </div>
+
+        <div className="overflow-auto mt-4">
+          <MembersTable
+            table={table}
+            groupedBeneficiaries={data?.groupedBeneficiaries}
+            groupUUID={groupid}
+            name={data?.name}
+            loading={isLoading}
+          />
+        </div>
       </div>
+
       <ClientSidePagination table={table} />
     </>
   );

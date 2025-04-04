@@ -40,8 +40,9 @@ import { Gender } from '@rahataid/sdk/enums';
 import { useUserCreate } from '@rumsan/react-query';
 import Swal from 'sweetalert2';
 
+// Form validation schema
 const FormSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 4 character' }),
+  name: z.string().min(2, { message: 'Name must be at least 4 characters' }),
   email: z.string().email(),
   gender: z.string().min(1, { message: 'Please select gender' }),
   roles: z.array(z.string()).length(1, { message: 'Please select role' }),
@@ -122,173 +123,178 @@ export default function AddUser() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleAddUser)}>
-        <div className="p-4 h-[calc(100vh-130px)]">
+        <div className="p-2 sm:p-4 h-[calc(100vh-130px)]">
           <HeaderWithBack
             title="Add User"
             subtitle="Create a new user detail"
             path="/users"
           />
 
-          <div className="grid grid-cols-2 gap-4 border p-4 rounded-md">
-            <>
-              <FormField
-                name="name"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>User Name</FormLabel>
-                    <FormControl>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border p-4 rounded-md">
+            {/* User Name */}
+            <FormField
+              name="name"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>User Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      className="w-full"
+                      placeholder="Enter user name"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Gender Selection */}
+            <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Gender</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex space-x-1"
+                    >
+                      {Object.values(Gender).map((gender) => (
+                        <FormItem
+                          key={gender}
+                          className="flex items-center space-x-3 space-y-0"
+                        >
+                          <FormControl>
+                            <RadioGroupItem value={gender} />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            {gender}
+                          </FormLabel>
+                        </FormItem>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Phone Number */}
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <PhoneInput
+                      className="w-full"
+                      placeholder="Enter phone number"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Email */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      className="w-full"
+                      placeholder="Enter email address"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Wallet Address */}
+
+            <FormField
+              control={form.control}
+              name="wallet"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Wallet Address</FormLabel>
+                  <FormControl>
+                    <div className="relative w-full">
+                      <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                       <Input
                         type="text"
-                        placeholder="Enter user name"
+                        className="w-full"
+                        placeholder="Enter wallet address"
                         {...field}
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Gender</FormLabel>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* User Role */}
+            <FormField
+              control={form.control}
+              name="roles"
+              render={({ field }) => (
+                <FormItem>
+                  <Select
+                    disabled={!roleData?.data}
+                    onValueChange={(value) => field.onChange([value])}
+                    defaultValue={field.value[0]}
+                  >
+                    <FormLabel>User Role</FormLabel>
                     <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="flex space-x-1"
-                      >
-                        {Object.values(Gender).map((gender) => (
-                          <FormItem
-                            key={gender}
-                            className="flex items-center space-x-3 space-y-0"
-                          >
-                            <FormControl>
-                              <RadioGroupItem value={gender} />
-                            </FormControl>
-                            <FormLabel className="font-normal">
-                              {gender.charAt(0).toUpperCase() +
-                                gender.slice(1).toLowerCase()}
-                            </FormLabel>
-                          </FormItem>
-                        ))}
-                      </RadioGroup>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select user role" />
+                      </SelectTrigger>
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <PhoneInput
-                          placeholder="Enter phone number"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Enter email address"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              <div className="col-span-2">
-                <FormField
-                  control={form.control}
-                  name="wallet"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Wallet Address</FormLabel>
-                        <FormControl>
-                          <div className="relative w-full">
-                            <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              type="text"
-                              placeholder="Enter wallet address"
-                              {...field}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-              </div>
-              <FormField
-                control={form.control}
-                name="roles"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <Select
-                        disabled={!roleData?.data}
-                        onValueChange={(value) => {
-                          field.onChange([value]);
-                        }}
-                        defaultValue={field.value[0]}
-                      >
-                        <FormLabel>User Role</FormLabel>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select user role" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectGroup>
-                            {roleData?.data &&
-                              roleData?.data?.map((role: any) => (
-                                <SelectItem value={role.name} key={role.id}>
-                                  {role.name}
-                                </SelectItem>
-                              ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            </>
+                    <SelectContent>
+                      <SelectGroup>
+                        {roleData?.data?.map((role) => (
+                          <SelectItem key={role.id} value={role.name}>
+                            {role.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </div>
-        <div className="flex justify-end space-x-2 p-4 border-t">
+
+        {/* Buttons */}
+        <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-2 p-4 border-t">
           <Button
-            className="px-14"
+            className="w-full md:w-auto px-14"
             type="button"
             variant="secondary"
             onClick={() => router.push('/users')}
           >
             Cancel
           </Button>
-          <Button type="submit" className="px-10">
+          <Button
+            className="text-white hover:text-blue-500 hover:border hover:border-blue-500 w-full md:w-auto px-10"
+            type="submit"
+          >
             Add
           </Button>
         </div>

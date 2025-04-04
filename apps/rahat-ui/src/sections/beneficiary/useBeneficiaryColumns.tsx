@@ -14,14 +14,15 @@ import {
   TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ListBeneficiary } from '@rahat-ui/types';
-import { useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 export const useBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<string>();
 
   const searchParam = useSearchParams();
-
+  const { id } = useParams();
+  const router = useRouter();
   const members = searchParam.get('member');
 
   const clickToCopy = (walletAddress: string, uuid: string) => {
@@ -29,12 +30,16 @@ export const useBeneficiaryTableColumns = () => {
     setWalletAddressCopied(uuid);
   };
   const openSplitDetailView = (rowDetail: ListBeneficiary) => {
-    setSecondPanelComponent(
-      <BeneficiaryDetail
-        beneficiaryDetail={rowDetail}
-        closeSecondPanel={closeSecondPanel}
-      />,
-    );
+    if (window.innerWidth <= 768) {
+      router.push(`/beneficiary/${rowDetail.uuid}`);
+    } else {
+      setSecondPanelComponent(
+        <BeneficiaryDetail
+          beneficiaryDetail={rowDetail}
+          closeSecondPanel={closeSecondPanel}
+        />,
+      );
+    }
   };
 
   const columns: ColumnDef<ListBeneficiary>[] = [

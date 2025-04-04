@@ -11,6 +11,8 @@ import { ProjectNav } from './project-header';
 import ProjectNavView from './project.nav.view';
 import { useProjectHeaderItems } from './useProjectHeaderItems';
 import { useProjectNavItems } from './useProjectNavItems';
+import { SidebarProvider } from '@rahat-ui/shadcn/src/components/ui/sidebar';
+import { ProjectSidebar } from 'apps/rahat-ui/src/sidebar-components/project-sidebar';
 
 type ProjectLayoutProps = {
   children: React.ReactNode | React.ReactNode[];
@@ -54,7 +56,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
 
   return (
     <>
-      <ProjectNav component={headerNav} />
+      {/* <ProjectNav component={headerNav} />
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={15} minSize={15} maxSize={15}>
           {menuItems.map((item) => (
@@ -67,7 +69,22 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
           {navFooter}
         </ResizablePanel>
         {renderChildren()}
-      </ResizablePanelGroup>
+      </ResizablePanelGroup> */}
+      <SidebarProvider>
+        {menuItems.map((item) => (
+          <ProjectSidebar
+            key={item.title}
+            title={item.title}
+            items={item.children}
+          />
+        ))}
+        <div className="w-full">
+          <ProjectNav component={headerNav} />
+          <ResizablePanelGroup direction="horizontal">
+            {renderChildren()}
+          </ResizablePanelGroup>
+        </div>
+      </SidebarProvider>
     </>
   );
 };

@@ -31,6 +31,7 @@ export default function BeneficiaryDetail() {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(walletAddress);
   };
+
   return (
     <div className="h-[calc(100vh-95px)] m-4">
       <div className="flex justify-between items-center">
@@ -39,32 +40,19 @@ export default function BeneficiaryDetail() {
           subtitle="Here is the detailed view of selected consumer"
           path={`/projects/sms-voucher/${id}/beneficiary`}
         />
-        {/* <div className="flex space-x-2">
-          <EditButton className="border-none bg-sky-50 shadow-none" path=""/>
-          <DeleteButton
-            className="border-none bg-red-100 shadow-none"
-            name="beneficiary"
-            handleContinueClick={() => {}}
-          />
-        </div> */}
+        {/* Buttons remain unchanged */}
       </div>
-      <div className="p-5 rounded-md  grid grid-cols-5 gap-3">
-        {/* <div>
-          <h1 className="text-md text-muted-foreground">Beneficiary Name</h1>
-          <p className="font-medium">{name}</p>
-        </div> */}
+
+      {/* Mobile Responsive Grid */}
+      <div className="p-5 rounded-md grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
+        {/* Consumer Info */}
         <div className="flex flex-col gap-2 shadow border p-5">
           <div className="flex items-center gap-4">
-            <div
-              className={
-                'rounded-full h-8 w-8 flex items-center justify-center '
-              }
-            >
+            <div className="rounded-full h-8 w-8 flex items-center justify-center">
               <User className="shadow-xl" size={24} />
             </div>
             <div>
               <p className="font-medium">{phone}</p>
-
               <div
                 className="flex items-center space-x-2 cursor-pointer"
                 onClick={() => clickToCopy(walletAddress)}
@@ -89,14 +77,14 @@ export default function BeneficiaryDetail() {
               </div>
             </div>
           </div>
-
           <div className="flex gap-2 text-muted-foreground">
             <Store />
-            <p className="text-muted-foreground">Vendor Name: {name}</p>
+            <p>Vendor Name: {name}</p>
           </div>
           <p className="text-muted-foreground">Onboarded Time: {createdAt}</p>
         </div>
 
+        {/* Voucher Usage */}
         <div className="shadow border p-5 flex flex-col justify-between">
           <p className="font-medium">Voucher Usage</p>
           <p className="font-medium">
@@ -104,6 +92,7 @@ export default function BeneficiaryDetail() {
           </p>
         </div>
 
+        {/* Voucher Status */}
         <div className="shadow border p-5 flex flex-col justify-between">
           <p className="font-medium">Voucher Status</p>
           <p className="font-medium">
@@ -111,6 +100,7 @@ export default function BeneficiaryDetail() {
           </p>
         </div>
 
+        {/* Glass Type */}
         <div className="shadow border p-5 flex flex-col justify-between">
           <p className="font-medium">Glass Type</p>
           <p className="font-medium">
@@ -118,6 +108,7 @@ export default function BeneficiaryDetail() {
           </p>
         </div>
 
+        {/* Consent Status */}
         <div className="shadow border p-5 flex flex-col justify-between">
           <p className="font-medium">Consent Status</p>
           <p className="font-medium">

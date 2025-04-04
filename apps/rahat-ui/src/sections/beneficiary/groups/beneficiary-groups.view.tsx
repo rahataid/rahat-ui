@@ -18,17 +18,7 @@ function BeneficiaryGroupsView() {
   const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [selectedGroup, setSelectedGroup] =
     React.useState<ListBeneficiaryGroup>([]);
-  const {
-    pagination,
-    selectedListItems,
-    setSelectedListItems,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    setPagination,
-    setFilters,
-    filters,
-  } = usePagination();
+  const { pagination, setPagination, setFilters, filters } = usePagination();
 
   useEffect(() => {
     setPagination({ page: 1, perPage: 100, order: 'desc', sort: 'createdAt' });
@@ -61,6 +51,7 @@ function BeneficiaryGroupsView() {
   const assignedGroupId = selectedGroup?.beneficiaryGroupProject?.map(
     (benProject: any) => benProject.Project.id,
   );
+
   return (
     <>
       <AssignBeneficiaryToProjectModal
@@ -69,17 +60,21 @@ function BeneficiaryGroupsView() {
         assignedGroupId={assignedGroupId}
       />
       <div className="p-4 rounded-sm border">
-        <div className="flex justify-between space-x-2 items-center mb-4">
+        <div className="flex justify-between items-center space-y-2 md:space-y-0 md:space-x-2 gap-2 mb-4">
           <SearchInput
-            className="w-full"
+            className="w-full mt-2"
             name="group"
             onSearch={(e) => handleSearch(e.target.value)}
           />
-          <AddButton name="Group" path="/beneficiary/groups/add" />
+          <AddButton
+            className="text-white hover:text-blue-500 hover:border hover:border-sky-500"
+            name="Group"
+            path="/beneficiary/groups/add"
+          />
         </div>
         <ScrollArea className="h-[calc(100vh-300px)]">
           {filteredGroups.length > 0 ? (
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {filteredGroups?.map((i: any, index: number) => {
                 const isAssignedToProject = i?.beneficiaryGroupProject?.length;
 
@@ -98,17 +93,20 @@ function BeneficiaryGroupsView() {
                           <Users size={20} strokeWidth={2.5} />
                         </div>
                       </div>
-                      <div className="flex">
-                        {i?.beneficiaryGroupProject?.map((project) => {
-                          return (
-                            <Badge key={project?.Project?.id}>
-                              {project?.Project?.name ?? 'N/A'}
-                            </Badge>
-                          );
-                        })}
+                      <div className="flex flex-wrap gap-1">
+                        {i?.beneficiaryGroupProject?.map((project) => (
+                          <Badge
+                            key={project?.Project?.id}
+                            className="text-xs px-2 py-1"
+                          >
+                            {project?.Project?.name ?? 'N/A'}
+                          </Badge>
+                        ))}
                       </div>
 
-                      <p className="text-base mb-1">{i?.name ?? 'N/A'}</p>
+                      <p className="text-base mb-1 truncate">
+                        {i?.name ?? 'N/A'}
+                      </p>
                       <div className="flex gap-2 items-center">
                         <Users size={18} strokeWidth={2} />
                         {i?._count?.groupedBeneficiaries || 0}
@@ -117,7 +115,6 @@ function BeneficiaryGroupsView() {
                         type="button"
                         variant="secondary"
                         onClick={() => handleAssignModalClick(i)}
-                        // disabled={isAssignedToProject}
                       >
                         <Plus className="mr-1" size={18} strokeWidth={1.5} />
                         Assign Project

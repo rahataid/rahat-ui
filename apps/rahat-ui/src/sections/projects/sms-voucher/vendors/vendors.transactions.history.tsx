@@ -40,7 +40,7 @@ export default function VendorsTransactionsHistory({
     <div className="p-4 border rounded-sm">
       <ElkenyaTable
         table={table}
-        tableHeight="h-[calc(100vh-500px)]"
+        tableHeight="h-[calc(100vh-600px)]"
         loading={loading}
       />
       <ClientSidePagination table={table} />

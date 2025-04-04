@@ -10,6 +10,7 @@ import {
   mainnet,
   polygonMumbai,
   sepolia,
+  base,
 } from 'wagmi/chains';
 import { safe } from 'wagmi/connectors';
 import { rahatChain } from './src/chain-custom';
@@ -30,6 +31,7 @@ export const config: Config = createConfig(
       // polygon,
       rahatChain,
       baseSepolia,
+      base,
       // polygonMumbai,
       arbitrumSepolia,
     ],

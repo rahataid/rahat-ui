@@ -1,16 +1,17 @@
 import { UUID } from 'crypto';
 import { Settings } from 'lucide-react';
-import C2CTable from '../table.component';
+import C2CTable from '../../table.component';
 import React, { useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import SearchInput from '../../components/search.input';
-import ViewColumns from '../../components/view.columns';
+import SearchInput from '../../../components/search.input';
+import ViewColumns from '../../../components/view.columns';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useElkenyaSMSTableColumns } from './use.sms.table.columns';
-import ClientSidePagination from '../../components/client.side.pagination';
+import { useElkenyaSMSTableColumns } from '../use.sms.table.columns';
+import ClientSidePagination from '../../../components/client.side.pagination';
 import {
   useListc2cCommunicationLogs,
   useListRpCommunicationLogs,
+  usePagination,
   useSettingsStore,
 } from '@rahat-ui/query';
 
@@ -22,6 +23,7 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 export default function CommunicationView() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
@@ -31,24 +33,43 @@ export default function CommunicationView() {
     succed: 0,
     failed: 0,
   });
-  const { data, isLoading } = useListc2cCommunicationLogs(id);
+  const {
+    pagination,
+    filters,
+    setFilters,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    selectedListItems,
+    setSelectedListItems,
+    resetSelectedListItems,
+  } = usePagination();
+  const { data, isLoading } = useListc2cCommunicationLogs(id, {
+    page: pagination.page,
+    perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'createdAt',
+  });
   console.log({ data });
+  const meta = data?.response.meta;
+  const logs = data?.response.data;
+
   const commsAppId = useSettingsStore((state) => state.commsSettings)?.APP_ID;
-  useEffect(() => {
-    setStats({
-      succed: 0,
-      failed: 0,
-    });
-    data
-      ?.filter((log) => log.app === commsAppId)
-      .map((logs: any) => {
-        setStats((prev) => {
-          return logs.status === 'SUCCESS'
-            ? { ...prev, succed: prev.succed + 1 }
-            : { ...prev, failed: prev.failed + 1 };
-        });
-      });
-  }, [data]);
+  // useEffect(() => {
+  //   setStats({
+  //     succed: 0,
+  //     failed: 0,
+  //   });
+  //   data
+  //     ?.filter((log) => log.app === commsAppId)
+  //     .map((logs: any) => {
+  //       setStats((prev) => {
+  //         return logs.status === 'SUCCESS'
+  //           ? { ...prev, succed: prev.succed + 1 }
+  //           : { ...prev, failed: prev.failed + 1 };
+  //       });
+  //     });
+  // }, [data]);
 
   const cardData = [
     {
@@ -70,17 +91,7 @@ export default function CommunicationView() {
 
   const tableData = useMemo(() => {
     if (data) {
-      return data
-        .filter((log) => log.app === commsAppId)
-        .map((log) => ({
-          ...log,
-          to:
-            (Array.isArray(log?.details?.responses) &&
-              (log?.details?.responses[0]?.mobile?.mobile ||
-                log?.details?.responses[0]?.mobile)) ||
-            (Array.isArray(log?.details?.bulkResponse) &&
-              log?.details?.bulkResponse[0]?.mobileNumber),
-        }));
+      return logs.filter((log) => log.app === commsAppId);
     } else {
       return [];
     }
@@ -141,15 +152,17 @@ export default function CommunicationView() {
             <SearchInput
               className="w-full"
               name=""
-              value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
+              value={
+                (table.getColumn('address')?.getFilterValue() as string) ?? ''
+              }
               onSearch={(event) =>
-                table.getColumn('to')?.setFilterValue(event.target.value)
+                table.getColumn('address')?.setFilterValue(event.target.value)
               }
             />
             <ViewColumns table={table} />
             <Button
               onClick={() =>
-                router.push(`/projects/c2c/${id}/communication/manage`)
+                router.push(`/projects/c2c/${id}/communication/text/manage`)
               }
             >
               <Settings className="mr-1" size={18} /> Manage
@@ -162,7 +175,15 @@ export default function CommunicationView() {
           />
         </div>
       </div>
-      <ClientSidePagination table={table} />
+      <CustomPagination
+        meta={meta || { total: 0, currentPage: 0 }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={0}
+      />
     </>
   );
 }

@@ -25,16 +25,16 @@ export function ProjectSidebar(menuItems: ProjectNavViewProps) {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <Image src="/rahat-logo.png" alt="logo" height={20} width={30} />
+        <Image src="/rahat-logo.png" alt="logo" height={42} width={42} />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={menuItems?.items} />
       </SidebarContent>
       <SidebarFooter>
-        <LogOut
-          className="cursor-pointer"
-          onClick={() => router.push('/projects')}
-        />
+        <div className="flex gap-2" onClick={() => router.push('/projects')}>
+          <LogOut className="cursor-pointer" />
+          <p>Logout</p>
+        </div>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

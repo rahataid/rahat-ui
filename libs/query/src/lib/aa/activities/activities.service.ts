@@ -23,7 +23,7 @@ export const useActivitiesCategories = (uuid: UUID) => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'ms.categories.getAll',
+          action: 'ms.activityCategories.getAll',
           payload: {},
         },
       });
@@ -166,7 +166,7 @@ export const useCreateActivities = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.activities.add',
+          action: 'ms.activities.add',
           payload: activityPayload,
         },
       });

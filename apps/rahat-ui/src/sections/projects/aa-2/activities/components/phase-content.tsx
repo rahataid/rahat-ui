@@ -15,13 +15,11 @@ import PhaseCard from './phase-card';
 import { useParams, useRouter } from 'next/navigation';
 
 interface Phase {
-  description: string;
   source: string;
-
   status: string;
   leadTime: string;
   phase?: string;
-  title: string | undefined;
+  title: string;
   responsibility: string;
 }
 
@@ -77,7 +75,7 @@ export default function PhaseContent({
             filteredPhases.map((phase, index) => (
               <PhaseCard
                 key={index}
-                description={phase.description}
+                title={phase?.title}
                 location={phase.source}
                 responsibility={phase.responsibility}
                 onUpdateStatus={() => {}}
@@ -87,7 +85,7 @@ export default function PhaseContent({
                   (phase.phase === 'PREPAREDNESS' && 'border-green-500') ||
                   (phase.phase === 'READINESS' && 'border-yellow-500') ||
                   (phase.phase === 'ACTIVATION' && 'border-red-500')
-                } shadow-sm rounded-xl`}
+                } shadow-sm rounded-xl p-0`}
               />
             ))
           ) : (

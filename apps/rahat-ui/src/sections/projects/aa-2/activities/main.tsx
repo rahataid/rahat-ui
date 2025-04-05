@@ -41,9 +41,11 @@ export default function ActivitiesView() {
 
           <IconLabelBtn
             Icon={Plus}
-            handleClick={() => {}}
+            handleClick={() =>
+              router.push(`/projects/aa/${projectID}/activities/add`)
+            }
             name="Add Activity"
-            variant="outline"
+            variant="default"
           />
         </div>
       </div>

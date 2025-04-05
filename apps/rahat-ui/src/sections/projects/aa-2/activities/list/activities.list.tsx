@@ -32,6 +32,7 @@ import FiltersTags from 'apps/rahat-ui/src/common/filtersTags';
 export default function ActivitiesList() {
   const { id: projectID, title } = useParams();
   const searchParams = useSearchParams();
+  const [filtersApplied, setFiltersApplied] = React.useState(false);
   useActivitiesCategories(projectID as UUID);
   usePhases(projectID as UUID);
   const [activitySearchText, setActivitySearchText] =
@@ -59,8 +60,6 @@ export default function ActivitiesList() {
   } = usePagination();
 
   React.useEffect(() => {
-    if (!title || !phases) return;
-
     const titleStr = Array.isArray(title) ? title[0] : title;
     const formattedTitle = titleStr.toUpperCase();
 
@@ -73,16 +72,16 @@ export default function ActivitiesList() {
     }));
 
     setPagination(prevPagination);
-  }, []);
+    setFiltersApplied(true);
+  }, [phases, title]);
 
   const router = useRouter();
 
   const { activitiesData, activitiesMeta, isLoading } = useActivities(
     projectID as UUID,
-    { ...pagination, ...filters },
+    filtersApplied ? { ...pagination, ...filters } : null,
   );
 
-  console.log(activitiesData);
   const { activitiesData: allData } = useActivities(projectID as UUID, {
     perPage: 9999,
   });
@@ -218,7 +217,7 @@ export default function ActivitiesList() {
         />
       )}
 
-      <div className="border  rounded border-gray-600">
+      <div className="rounded border border-gray-100">
         <ActivitiesTable table={table} />
         <CustomPagination
           meta={

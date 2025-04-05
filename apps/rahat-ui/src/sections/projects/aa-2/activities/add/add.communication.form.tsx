@@ -129,9 +129,7 @@ export default function AddCommunicationForm({
 
   const renderGroups = () => {
     const selectedGroupType = form.watch(fieldName('groupType'));
-    console.log('selectedGroupType:', selectedGroupType);
     let groups = <SelectLabel>Please select group type</SelectLabel>;
-    console.log('renderGroups', form.watch(fieldName('groupId')));
     switch (selectedGroupType) {
       case 'STAKEHOLDERS':
         groups = stakeholdersGroups.map((group: any) => (
@@ -203,17 +201,8 @@ export default function AddCommunicationForm({
     e.preventDefault();
     setEditMode(true);
     const itemData = communicationData[i];
-    console.log('itemData on edit:', itemData);
     handleEditClick(itemData);
   };
-  React.useEffect(() => {
-    if (form.watch(fieldName('groupType')) !== '') {
-      renderGroups();
-      // setEditMode(false);
-    }
-  }, [form.watch(fieldName('groupType'))]);
-
-  console.log(fieldName('groupId'), form.watch(fieldName('groupId')));
   return (
     <div className="border border-dashed rounded p-4 my-8">
       <div className="flex justify-between items-center mb-6">
@@ -250,9 +239,7 @@ export default function AddCommunicationForm({
               <FormLabel>Group</FormLabel>
               <Select
                 value={field.value} // Set the value correctly to trigger updates
-                onValueChange={(value) => {
-                  field.onChange(value); // Update form value
-                }}
+                onValueChange={field.onChange}
               >
                 <FormControl>
                   <SelectTrigger>

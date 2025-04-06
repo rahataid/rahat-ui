@@ -87,7 +87,7 @@ export const usePhases = (uuid: UUID) => {
         uuid,
         data: {
           action: 'ms.phases.getAll',
-          payload: {},
+          payload: { riverBasin: 'Karnali', activeYear: '2024' },
         },
       });
       return mutate.data;

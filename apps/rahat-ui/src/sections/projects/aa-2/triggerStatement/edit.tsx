@@ -5,17 +5,27 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { AutomatedTriggerAddForm, ManualTriggerAddForm } from './components';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useSingleTriggerStatement } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import {
+  useSingleTriggerStatement,
+  useUpdateTriggerStatement,
+} from '@rahat-ui/query';
+import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 
 export default function EditTrigger() {
+  const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
   const triggerRepeatKey = window.location.href.split('/').slice(-2, -1)[0];
 
+  const triggerDetailPage = `/projects/aa/${projectId}/trigger-statements/${triggerRepeatKey}`;
+
   const trigger = useSingleTriggerStatement(projectId, triggerRepeatKey);
+
+  const triggerType = trigger?.source === 'MANUAL' ? 'manual' : 'automated';
+
+  const updateTrigger = useUpdateTriggerStatement();
 
   const ManualFormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid title' }),
@@ -34,7 +44,7 @@ export default function EditTrigger() {
 
   const AutomatedFormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid name' }),
-    dataSource: z.string().min(1, { message: 'Please select data source' }),
+    source: z.string().min(1, { message: 'Please select data source' }),
     isMandatory: z.boolean().optional(),
     minLeadTimeDays: z
       .string()
@@ -52,7 +62,7 @@ export default function EditTrigger() {
     resolver: zodResolver(AutomatedFormSchema),
     defaultValues: {
       title: '',
-      dataSource: '',
+      source: '',
       maxLeadTimeDays: '',
       minLeadTimeDays: '',
       probability: '',
@@ -61,21 +71,54 @@ export default function EditTrigger() {
     },
   });
 
+  const handleSubmitManualTrigger = async (
+    data: z.infer<typeof ManualFormSchema>,
+  ) => {
+    handleUpdate(data);
+  };
+
+  const handleSubmitAutomatedTrigger = async (
+    data: z.infer<typeof AutomatedFormSchema>,
+  ) => {
+    handleUpdate(data);
+  };
+
+  const handleUpdate = async (data: any) => {
+    await updateTrigger.mutateAsync({
+      projectUUID: projectId,
+      triggerUpdatePayload: data,
+    });
+    router.push(triggerDetailPage);
+  };
+
+  const handleEditTriggers = () => {
+    const formHandlers: { [key in 'manual' | 'automated']: () => void } = {
+      manual: () => {
+        manualForm.handleSubmit(handleSubmitManualTrigger)();
+      },
+      automated: () => {
+        automatedForm.handleSubmit(handleSubmitAutomatedTrigger)();
+      },
+    };
+
+    formHandlers[triggerType as 'manual' | 'automated']?.();
+  };
+
   React.useEffect(() => {
-    if (trigger?.triggerStatement?.type === 'manual') {
+    if (triggerType === 'manual') {
       manualForm.reset({
         title: trigger?.title,
         notes: trigger?.notes,
         isMandatory: trigger?.isMandatory,
       });
-    } else if (trigger?.triggerStatement?.type === 'automated') {
+    } else if (triggerType === 'automated') {
       automatedForm.reset({
         title: trigger?.title,
-        dataSource: trigger?.phase?.source?.source,
+        source: trigger?.source,
         isMandatory: trigger?.isMandatory,
         maxLeadTimeDays: trigger?.triggerStatement?.maxLeadTimeDays,
         minLeadTimeDays: trigger?.triggerStatement?.maxLeadTimeDays,
-        notes: trigger?.notes,
+        notes: trigger?.notes || '',
         probability: trigger?.triggerStatement?.probability,
       });
     }
@@ -85,13 +128,11 @@ export default function EditTrigger() {
     <div className="p-4">
       <Back />
       <Heading
-        title={`Edit ${capitalizeFirstLetter(
-          trigger?.triggerStatement?.type || '',
-        )} Trigger`}
+        title={`Edit ${capitalizeFirstLetter(triggerType || '')} Trigger`}
         description=""
       />
       <div className="px-4 pb-4 border rounded shadow">
-        {trigger?.triggerStatement?.type === 'automated' ? (
+        {triggerType === 'automated' ? (
           <AutomatedTriggerAddForm
             form={automatedForm}
             phase={{
@@ -109,10 +150,19 @@ export default function EditTrigger() {
           />
         )}
         <div className="flex justify-end mt-4">
-          <Button type="button" variant="outline" className="w-40 mr-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-40 mr-2"
+            onClick={() => router.push(triggerDetailPage)}
+          >
             Cancel
           </Button>
-          <Button type="submit" className="w-40 mr-2" disabled>
+          <Button
+            type="submit"
+            className="w-40 mr-2"
+            onClick={handleEditTriggers}
+          >
             Update
           </Button>
         </div>

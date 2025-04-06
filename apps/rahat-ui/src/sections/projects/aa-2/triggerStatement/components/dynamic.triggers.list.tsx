@@ -15,10 +15,10 @@ export default function DynamicTriggersList({ projectId, triggers }: IProps) {
             projectId={projectId}
             triggerId={t?.repeatKey}
             phase={t?.phase?.name || 'N/A'}
-            type={t?.triggerStatement?.type || 'N/A'}
+            type={t?.source === 'MANUAL' ? 'Manual' : 'Automated'}
             isTriggered={t?.isTriggered}
             title={t?.title || 'N/A'}
-            dataSource={t?.phase?.source?.source || 'N/A'}
+            dataSource={t?.source || 'N/A'}
             riverBasin={t?.phase?.source?.riverBasin || 'N/A'}
             time={new Date(t?.createdAt)?.toLocaleString()}
           />

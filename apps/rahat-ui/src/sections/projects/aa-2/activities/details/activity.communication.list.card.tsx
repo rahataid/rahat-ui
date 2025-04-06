@@ -189,14 +189,14 @@ export default function CommunicationList({
             List of communications in this activity
           </p>
         </div>
-        <div className="flex mt-5">
+        {/* <div className="flex mt-5">
           <IconLabelBtn
             Icon={Plus}
             handleClick={() => console.log('add')}
             name="Add Commuication"
             className="h-7  text-sm"
           />
-        </div>
+        </div> */}
       </div>
 
       <Tabs defaultValue={'communications'}>

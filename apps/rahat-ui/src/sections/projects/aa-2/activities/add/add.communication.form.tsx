@@ -1,4 +1,10 @@
-import * as React from 'react';
+import {
+  useBeneficiariesGroupStore,
+  useStakeholdersGroupsStore,
+  useUploadFile,
+} from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   FormControl,
   FormField,
@@ -6,37 +12,20 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectLabel,
-  SelectGroup,
+  SelectTrigger,
+  SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import {
-  useStakeholdersGroupsStore,
-  useBeneficiariesGroupStore,
-  useUploadFile,
-} from '@rahat-ui/query';
-import {
-  File,
-  Mail,
-  MessageSquare,
-  Pencil,
-  PencilIcon,
-  Phone,
-  Trash2,
-  X,
-} from 'lucide-react';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Transport, ValidationContent } from '@rumsan/connect/src/types';
-import { DeleteButton, IconLabelBtn } from 'apps/rahat-ui/src/common';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
+import { Mail, MessageSquare, PencilIcon, Phone, Trash2 } from 'lucide-react';
+import * as React from 'react';
 
 type IProps = {
   form: any;
@@ -61,29 +50,28 @@ export default function AddCommunicationForm({
   );
   const [isPlaying, setIsPlaying] = React.useState(false);
 
-  const [editMode, setEditMode] = React.useState(false);
-  // const stakeholdersGroups = useStakeholdersGroupsStore(
-  //   (state) => state.stakeholdersGroups,
-  // );
+  const stakeholdersGroups = useStakeholdersGroupsStore(
+    (state) => state.stakeholdersGroups,
+  );
 
-  // const beneficiaryGroups = useBeneficiariesGroupStore(
-  //   (state) => state.beneficiariesGroups,
-  // );
+  const beneficiaryGroups = useBeneficiariesGroupStore(
+    (state) => state.beneficiariesGroups,
+  );
 
   const activityCommunication = form.watch('activityCommunication') || {};
   const isSaveDisabled =
     !activityCommunication.groupType || !activityCommunication.groupId;
-  const stakeholdersGroups = [
-    { id: '1', uuid: 'stkh-123', name: 'Health Workers' },
-    { id: '2', uuid: 'stkh-456', name: 'NGO Representatives' },
-    { id: '3', uuid: 'stkh-789', name: 'Community Leaders' },
-  ];
+  // const stakeholdersGroups = [
+  //   { id: '1', uuid: 'stkh-123', name: 'Health Workers' },
+  //   { id: '2', uuid: 'stkh-456', name: 'NGO Representatives' },
+  //   { id: '3', uuid: 'stkh-789', name: 'Community Leaders' },
+  // ];
 
-  const beneficiaryGroups = [
-    { id: '1', uuid: 'benf-101', name: 'Senior Citizens' },
-    { id: '2', uuid: 'benf-202', name: 'Pregnant Women' },
-    { id: '3', uuid: 'benf-303', name: 'Disabled Individuals' },
-  ];
+  // const beneficiaryGroups = [
+  //   { id: '1', uuid: 'benf-101', name: 'Senior Citizens' },
+  //   { id: '2', uuid: 'benf-202', name: 'Pregnant Women' },
+  //   { id: '3', uuid: 'benf-303', name: 'Disabled Individuals' },
+  // ];
 
   const fieldName = (name: string) =>
     `activityCommunication.${name}` || 'Select'; // Dynamic field name generator
@@ -100,32 +88,6 @@ export default function AddCommunicationForm({
   }, [selectedTransport]);
 
   const fileUpload = useUploadFile();
-
-  // const renderGroups = () => {
-  //   const selectedGroupType = form.watch(fieldName('groupType'));
-  //   console.log('select', selectedGroupType);
-  //   let groups = <SelectLabel>Please select group type</SelectLabel>;
-  //   switch (selectedGroupType) {
-  //     case 'STAKEHOLDERS':
-  //       console.log('object');
-  //       groups = stakeholdersGroups.map((group: any) => (
-  //         <SelectItem key={group.id} value={group.uuid}>
-  //           {group.name}
-  //         </SelectItem>
-  //       ));
-  //       break;
-  //     case 'BENEFICIARY':
-  //       groups = beneficiaryGroups.map((group: any) => (
-  //         <SelectItem key={group.id} value={group.uuid}>
-  //           {group.name}
-  //         </SelectItem>
-  //       ));
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  //   return groups;
-  // };
 
   const renderGroups = () => {
     const selectedGroupType = form.watch(fieldName('groupType'));
@@ -199,7 +161,6 @@ export default function AddCommunicationForm({
   // Handle the edit button click
   const editButtonClickHandler = (i: number, e: React.MouseEvent) => {
     e.preventDefault();
-    setEditMode(true);
     const itemData = communicationData[i];
     handleEditClick(itemData);
   };
@@ -237,10 +198,7 @@ export default function AddCommunicationForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Group</FormLabel>
-              <Select
-                value={field.value} // Set the value correctly to trigger updates
-                onValueChange={field.onChange}
-              >
+              <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder={'Select group'} />
@@ -283,7 +241,7 @@ export default function AddCommunicationForm({
             </FormItem>
           )}
         />
-        {/* {contentType === ValidationContent.URL && (
+        {contentType === ValidationContent.URL && (
           <FormField
             control={form.control}
             name={fieldName('audioURL')}
@@ -314,39 +272,9 @@ export default function AddCommunicationForm({
               );
             }}
           />
-        )} */}
+        )}
 
-        <FormField
-          control={form.control}
-          name={fieldName('audioURL')}
-          render={() => {
-            return (
-              <FormItem>
-                <FormLabel>Upload audio</FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    accept="audio/*"
-                    onChange={handleAudioFileChange}
-                  />
-                </FormControl>
-                <div className="flex justify-end">
-                  {fileUpload.isPending && (
-                    <p className="text-green-600 text-xs">uploading...</p>
-                  )}
-                  {fileUpload.isSuccess && (
-                    <p className="text-green-600 text-xs">upload complete</p>
-                  )}
-                  {fileUpload.isError && (
-                    <p className="text-red-600 text-xs">upload error</p>
-                  )}
-                </div>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
-        {/* {contentType === ValidationContent.TEXT && (
+        {contentType === ValidationContent.TEXT && (
           <FormField
             control={form.control}
             name={fieldName('message')}
@@ -362,22 +290,7 @@ export default function AddCommunicationForm({
               );
             }}
           />
-        )} */}
-        <FormField
-          control={form.control}
-          name={fieldName('message')}
-          render={({ field }) => {
-            return (
-              <FormItem className="col-span-2">
-                <FormLabel>Message</FormLabel>
-                <FormControl>
-                  <Textarea placeholder="Write message" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
+        )}
       </div>
 
       <div className="flex justify-end mt-4 gap-4">
@@ -393,7 +306,7 @@ export default function AddCommunicationForm({
       </div>
 
       <div className="grid grid-cols-1 gap-2 mt-4">
-        {communicationData.map((t, i) => {
+        {communicationData?.map((t, i) => {
           return (
             <Card className="p-4 shadow-sm rounded-sm" key={i}>
               <div className="flex items-start gap-4">
@@ -415,9 +328,9 @@ export default function AddCommunicationForm({
                 <div className="flex-1">
                   <div className="mb-1">
                     <h3 className="text-sm font-medium">
-                      {stakeholdersGroups.find((g) => g.uuid === t.groupId)
+                      {stakeholdersGroups?.find((g) => g.uuid === t.groupId)
                         ?.name ||
-                        beneficiaryGroups.find((g) => g.uuid === t.groupId)
+                        beneficiaryGroups?.find((g) => g.uuid === t.groupId)
                           ?.name}
                     </h3>
                     <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -430,8 +343,8 @@ export default function AddCommunicationForm({
                       <span>•</span>
                       <span>
                         {' '}
-                        {t.groupType.charAt(0).toUpperCase() +
-                          t.groupType.slice(1).toLowerCase()}
+                        {t?.groupType.charAt(0).toUpperCase() +
+                          t?.groupType.slice(1).toLowerCase()}
                       </span>
                       <span>•</span>
                     </div>

@@ -11,6 +11,7 @@ import {
 import { RefreshCw, User } from 'lucide-react';
 
 interface PhaseCardProps {
+  id: string;
   status: string;
   title: string;
   location: string;
@@ -22,6 +23,7 @@ interface PhaseCardProps {
 
 export default function PhaseCard({
   status,
+  id,
   title,
   location,
   leadTime,
@@ -39,7 +41,7 @@ export default function PhaseCard({
             {status}
           </Badge>
           <div
-            className="flex items-center gap-2 text-blue-500"
+            className="flex items-center gap-2 text-blue-500 hover:cursor-pointer"
             onClick={onUpdateStatus}
           >
             Update Status <RefreshCw className="w-4 h-4" />

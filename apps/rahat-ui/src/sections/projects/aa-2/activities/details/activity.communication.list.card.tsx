@@ -127,7 +127,23 @@ import { Plus } from 'lucide-react';
 
 // import { CommunicationCard } from '@/components/communication-card';
 
-export default function CommunicationList() {
+type CommunicationData = {
+  groupId: string;
+  groupType: string;
+  transportId: string;
+  message: string | { fileName: string; mediaURL: string };
+  communicationId: string;
+  transportName: string;
+  sessionStatus: string;
+};
+
+type CommunicationList = {
+  activityCommunication: any[];
+};
+
+export default function CommunicationList({
+  activityCommunication,
+}: CommunicationList) {
   const communications = [
     {
       groupName: 'Stakeholders Group Name',
@@ -163,12 +179,12 @@ export default function CommunicationList() {
   ];
 
   return (
-    <div className="border px-4 pt-2 rounded-xl">
+    <div className="border px-4 pt-2 rounded-xl h-[calc(75vh)]">
       <div className="mb-4 flex items-center justify-between ">
         <div>
           <h1 className="text-xl font-semibold text-gray-900">
             Communication List
-          </h1>
+          </h1>{' '}
           <p className="text-sm text-gray-500">
             List of communications in this activity
           </p>
@@ -190,40 +206,18 @@ export default function CommunicationList() {
         </TabsList>
 
         <TabsContent value="communications">
-          <ScrollArea className="overflow-y-auto h-[calc(100vh-330px)] ">
-            {communications
-              ?.filter((d) => d.status === 'Pending')
-              .map((comm, index) => (
-                <CommunicationCard
-                  key={index}
-                  groupName={comm.groupName}
-                  type={comm.type}
-                  stakeholders={comm.stakeholders}
-                  status={comm.status}
-                  message={comm.message}
-                  audioSrc={comm.audioSrc}
-                  onEdit={() => console.log('Edit communication', index)}
-                  onSend={() => console.log('Send communication', index)}
-                />
-              ))}
+          <ScrollArea className="overflow-y-auto h-[calc(100vh-320px)] ">
+            {activityCommunication?.map((comm, index) => (
+              <CommunicationCard key={index} activityCommunication={comm} />
+            ))}
           </ScrollArea>
         </TabsContent>
 
         <TabsContent value="history">
-          {communications
+          {activityCommunication
             ?.filter((d) => d.status === 'Sent')
             .map((comm, index) => (
-              <CommunicationCard
-                key={index}
-                groupName={comm.groupName}
-                type={comm.type}
-                stakeholders={comm.stakeholders}
-                status={comm.status}
-                message={comm.message}
-                audioSrc={comm.audioSrc}
-                onEdit={() => console.log('Edit communication', index)}
-                onSend={() => console.log('Send communication', index)}
-              />
+              <CommunicationCard key={index} activityCommunication={comm} />
             ))}
         </TabsContent>
       </Tabs>

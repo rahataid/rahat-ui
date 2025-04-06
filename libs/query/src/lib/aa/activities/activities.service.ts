@@ -134,7 +134,7 @@ export const useSingleActivity = (
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.activities.getOne',
+          action: 'ms.activities.getOne',
           payload: {
             uuid: activityId,
           },
@@ -261,7 +261,7 @@ export const useDeleteActivities = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.activities.remove',
+          action: 'ms.activities.remove',
           payload: activityPayload,
         },
       });
@@ -354,12 +354,13 @@ export const useUpdateActivityStatus = () => {
         uuid: string;
         status: string;
         activityDocuments?: Array<{ fileName: string; mediaURL: string }>;
+        notes?: string;
       };
     }) => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.activities.updateStatus',
+          action: 'ms.activities.updateStatus',
           payload: activityStatusPayload,
         },
       });

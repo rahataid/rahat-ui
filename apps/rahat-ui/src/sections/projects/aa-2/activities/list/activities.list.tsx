@@ -82,9 +82,10 @@ export default function ActivitiesList() {
     filtersApplied ? { ...pagination, ...filters } : null,
   );
 
-  const { activitiesData: allData } = useActivities(projectID as UUID, {
-    perPage: 9999,
-  });
+  const { activitiesData: allData } = useActivities(
+    projectID as UUID,
+    filtersApplied ? { perPage: activitiesMeta?.total, ...filters } : null,
+  );
 
   const columns = useActivitiesTableColumn();
 

@@ -62,7 +62,7 @@ const ProjectMainView = () => {
           <DownloadReportBtn handleDownload={handleDownload} />
         </div>
       </div>
-      <ScrollArea className="mt-5 max-h-[calc(100vh-185px)] overflow-auto">
+      <ScrollArea className="mt-5">
         <ELKenyaProjectDetail />
       </ScrollArea>
     </div>

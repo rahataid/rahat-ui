@@ -108,7 +108,7 @@ export default function VendorsDetail() {
 
       {/* Tabs - Scrollable on Mobile */}
       <Tabs defaultValue="transactionHistory">
-        <TabsList className="border bg-secondary rounded mb-2 flex overflow-x-auto">
+        <TabsList className="border bg-secondary rounded mb-2 flex">
           <TabsTrigger
             className="w-full min-w-[140px] text-center data-[state=active]:bg-white"
             value="transactionHistory"

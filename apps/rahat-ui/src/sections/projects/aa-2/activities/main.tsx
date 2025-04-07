@@ -1,9 +1,11 @@
 'use client';
+import { useActivities } from '@rahat-ui/query';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
+import { generateExcel } from 'apps/rahat-ui/src/utils';
+import { UUID } from 'crypto';
 import { CloudDownloadIcon, Plus } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useActivities, usePagination } from '@rahat-ui/query';
-import { UUID } from 'crypto';
+import { toast } from 'react-toastify';
 import PhaseContent from './components/phase-content';
 
 export default function ActivitiesView() {
@@ -24,6 +26,34 @@ export default function ActivitiesView() {
   const activationData =
     activitiesData?.filter((d) => d.phase === 'ACTIVATION') || [];
 
+  console.log(readinesssData);
+  const handleDownloadReport = () => {
+    if (activitiesData.length < 1) return toast.error('No data to download.');
+    const mappedData = activitiesData?.map((item: Record<string, any>) => {
+      let timeStamp;
+      if (item?.completedAt) {
+        const d = new Date(item.completedAt);
+        const localeDate = d.toLocaleDateString();
+        const localeTime = d.toLocaleTimeString();
+        timeStamp = `${localeDate} ${localeTime}`;
+      }
+      return {
+        Title: item.title || 'N/A',
+        'Early Action': item.category || 'N/A',
+        Phase: item.phase || 'N/A',
+        Type: item.isAutomated ? 'Automated' : 'Manual' || 'N/A',
+        Responsibility: item.responsibility,
+        'Responsible Station': item.source || 'N/A',
+        Status: item.status || 'N/A',
+        Timestamp: timeStamp || 'N/A',
+        'Completed by': item.completedBy || 'N/A',
+        'Difference in trigger and activity completion':
+          item.timeDifference || 'N/A',
+      };
+    });
+
+    generateExcel(mappedData, 'Activities_Report', 10);
+  };
   return (
     <div className="p-4">
       <div className="flex justify-between items-center space-x-4">
@@ -34,16 +64,18 @@ export default function ActivitiesView() {
         <div className="flex flex-end gap-2">
           <IconLabelBtn
             Icon={CloudDownloadIcon}
-            handleClick={() => {}}
+            handleClick={handleDownloadReport}
             name="Download Report"
             variant="outline"
           />
 
           <IconLabelBtn
             Icon={Plus}
-            handleClick={() => {}}
+            handleClick={() =>
+              router.push(`/projects/aa/${projectID}/activities/add`)
+            }
             name="Add Activity"
-            variant="outline"
+            variant="default"
           />
         </div>
       </div>

@@ -5,6 +5,8 @@ import { useProjectAction } from '../../projects/projects.service';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { useSwal } from '../../../swal';
+import { useProjectSettingsStore } from '../../projects';
+import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
 export const useCreateTriggerStatement = () => {
   const q = useProjectAction();
@@ -222,7 +224,9 @@ export const useAATriggerStatements = (uuid: UUID, payload: any) => {
   const { setTriggers } = useAAStationsStore((state) => ({
     setTriggers: state.setTriggers,
   }));
-
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
   const query = useQuery({
     queryKey: ['triggerstatements', uuid, payload],
     queryFn: async () => {
@@ -230,7 +234,17 @@ export const useAATriggerStatements = (uuid: UUID, payload: any) => {
         uuid,
         data: {
           action: 'ms.triggers.getAll',
-          payload: payload,
+          payload: {
+            ...payload,
+            activeYear:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'active_year'
+              ],
+            riverBasin:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'river_basin'
+              ],
+          },
         },
       });
       return mutate.data;

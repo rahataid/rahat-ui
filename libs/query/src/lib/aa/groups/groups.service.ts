@@ -263,8 +263,6 @@ export const useBeneficiariesGroups = (uuid: UUID, payload: any) => {
     },
   });
 
-  console.log("query data", query.data)
-
   useEffect(() => {
     if (query?.data) {
       const benfGroupsFormatted = query?.data?.data?.map((d: any) => {

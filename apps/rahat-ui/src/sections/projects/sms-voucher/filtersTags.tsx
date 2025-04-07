@@ -25,7 +25,7 @@ const SmsVoucherFiltersTags = ({
 
   return (
     <div className="rounded-md border bg-card py-2 px-4 text-sm mb-2">
-      <div className="flex items-center gap-6 w-full">
+      <div className="flex flex-col sm:flex-row items-center gap-6 w-full">
         <p className="text-primary min-w-max">{total} results found</p>
         <ScrollArea className="w-full py-2">
           <div className="flex gap-4 items-center">

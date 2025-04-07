@@ -1,9 +1,9 @@
 'use client';
 
-import { AddActivitiesView } from '../../../../../../sections/projects/aa/activities';
+import { AddActivities } from 'apps/rahat-ui/src/sections/projects/aa-2/activities';
 
 const Page = () => {
-  return <AddActivitiesView />;
+  return <AddActivities />;
 };
 
 export default Page;

@@ -15,13 +15,12 @@ import PhaseCard from './phase-card';
 import { useParams, useRouter } from 'next/navigation';
 
 interface Phase {
-  description: string;
+  id: string;
   source: string;
-
   status: string;
   leadTime: string;
   phase?: string;
-  title: string | undefined;
+  title: string;
   responsibility: string;
 }
 
@@ -38,13 +37,17 @@ export default function PhaseContent({
   phases,
   loading,
 }: PhasecontentProps) {
-  const { id } = useParams();
+  const { id: projectID } = useParams();
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredPhases = phases.filter((phase) =>
     phase.title?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
   const router = useRouter();
+
+  const handleUpdateStatus = (id: string) => {
+    router.push(`/projects/aa/${projectID}/activities/${id}/update-status`);
+  };
   return (
     <Card className="flex flex-col rounded-xl h-[80vh] w-full p-0">
       <CardHeader className="flex flex-col justify-between ">
@@ -56,7 +59,7 @@ export default function PhaseContent({
               className="w-5 h-5 cursor-pointer hover:shadow-md active:scale-95 focus:ring-2 focus:ring-blue-500 transition-transform"
               onClick={() => {
                 router.push(
-                  `/projects/aa/${id}/activities/list/${title.toLowerCase()}`,
+                  `/projects/aa/${projectID}/activities/list/${title.toLowerCase()}`,
                 );
               }}
             />
@@ -77,17 +80,18 @@ export default function PhaseContent({
             filteredPhases.map((phase, index) => (
               <PhaseCard
                 key={index}
-                description={phase.description}
+                id={phase.id}
+                title={phase?.title}
                 location={phase.source}
                 responsibility={phase.responsibility}
-                onUpdateStatus={() => {}}
+                onUpdateStatus={() => handleUpdateStatus(phase.id)}
                 status={phase.status}
                 leadTime={phase.leadTime}
                 className={`${
                   (phase.phase === 'PREPAREDNESS' && 'border-green-500') ||
                   (phase.phase === 'READINESS' && 'border-yellow-500') ||
                   (phase.phase === 'ACTIVATION' && 'border-red-500')
-                } shadow-sm rounded-xl`}
+                } shadow-sm rounded-xl p-0`}
               />
             ))
           ) : (

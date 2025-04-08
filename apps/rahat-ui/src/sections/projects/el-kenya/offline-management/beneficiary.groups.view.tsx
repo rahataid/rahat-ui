@@ -23,11 +23,11 @@ export default function BeneficiaryGroupsView({
   const [searchTerm, setSearchTerm] = React.useState<string>('');
 
   const filteredGroups = React.useMemo(() => {
-    if(benificiaryGroups){
-    return benificiaryGroups.filter((group: any) =>
-      group?.name?.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-  }
+    if (benificiaryGroups) {
+      return benificiaryGroups.filter((group: any) =>
+        group?.name?.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+    }
   }, [benificiaryGroups, searchTerm]);
 
   const handleSearch = React.useCallback((value: string) => {
@@ -48,10 +48,16 @@ export default function BeneficiaryGroupsView({
           <div className="grid grid-cols-4 gap-4">
             {filteredGroups?.map((benificiaryGroup) => {
               return (
-                <div key={benificiaryGroup?.uuid} className="cursor-pointer rounded-md border shadow p-4">
+                <div
+                  key={benificiaryGroup?.uuid}
+                  className="cursor-pointer rounded-md border shadow p-4"
+                >
                   <div className="flex flex-col space-y-2">
                     <div className="flex justify-end">
                       <Checkbox
+                        checked={stepData?.groups?.some(
+                          (group) => group.uuid === benificiaryGroup.uuid,
+                        )}
                         onCheckedChange={(e: boolean) => {
                           if (e) {
                             const currentData = stepData.groups;

@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import { AAActivityEditView } from "../../../../../../../sections/projects/aa/activities";
+import { AAEditActivity } from 'apps/rahat-ui/src/sections/projects/aa-2/activities';
 
 const Page = () => {
-    return <AAActivityEditView />
-}
+  return <AAEditActivity />;
+};
 
 export default Page;

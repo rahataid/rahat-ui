@@ -1339,6 +1339,7 @@ export const useProjectInfo = (uuid: UUID) => {
         },
       };
       setSettings(settingsToUpdate);
+      window.location.reload();
     }
   }, [query.data]);
   return query;

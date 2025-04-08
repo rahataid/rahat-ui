@@ -73,8 +73,7 @@ export default function AddCommunicationForm({
   //   { id: '3', uuid: 'benf-303', name: 'Disabled Individuals' },
   // ];
 
-  const fieldName = (name: string) =>
-    `activityCommunication.${name}` || 'Select'; // Dynamic field name generator
+  const fieldName = (name: string) => `activityCommunication.${name}`; // Dynamic field name generator
 
   const selectedTransport = form.watch(fieldName('transportId'));
 
@@ -123,9 +122,9 @@ export default function AddCommunicationForm({
       formData.append('file', file);
       const { data: afterUpload } = await fileUpload.mutateAsync(formData);
       setAudioFile(afterUpload);
+      // event.target.value = '';
     }
-    event.target.value = '';
-    setIsPlaying(false);
+    // setIsPlaying(false);
   };
 
   React.useEffect(() => {
@@ -144,13 +143,12 @@ export default function AddCommunicationForm({
 
   const handleSave = () => {
     onSave(); // Call the save function
-    form.reset({
-      [fieldName('groupType')]: '',
-      [fieldName('groupId')]: '',
-      [fieldName('transportId')]: '',
-      [fieldName('message')]: '',
-      [fieldName('audioURL')]: undefined, // Ensure this is properly reset
-    });
+
+    form.resetField(fieldName('groupId'), '');
+    form.setValue(fieldName('groupType'), '');
+    form.resetField(fieldName('message'), '');
+    form.resetField(fieldName('transportId'), '');
+    form.resetField(fieldName('audioURL'), '');
   };
 
   const handleEditClick = (itemData: any) => {
@@ -350,9 +348,7 @@ export default function AddCommunicationForm({
                     </div>
                   </div>
 
-                  <p className="text-sm text-gray-700 mt-1">
-                    {t?.message || 'Lorem ipsum dolor sit amet'}
-                  </p>
+                  <p className="text-sm text-gray-700 mt-1">{t?.message}</p>
                   {t?.audioURL?.mediaURL && (
                     <div className="pt-2">
                       <h3 className="text-sm font-medium mb-2">

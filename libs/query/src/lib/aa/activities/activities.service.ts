@@ -211,7 +211,7 @@ export const useUpdateActivities = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.activities.update',
+          action: 'ms.activities.update',
           payload: activityUpdatePayload,
         },
       });

@@ -224,10 +224,6 @@ export default function AddActivities() {
 
     // Update form state
     setCommunicationData(updatedCommunications);
-    // form.setValue('activityCommunication', updatedCommunications);
-
-    // Reset only the new input fields
-    // form.resetField('activityCommunication');
   };
 
   // Handle to remove the communication data from the array stored in a local state
@@ -244,7 +240,7 @@ export default function AddActivities() {
     const payloadData = {
       manager: manager
         ? {
-            id: manager.id?.toString(),
+            id: manager.wallet?.toString(),
             name: manager.name,
             email: manager.email,
             phone: manager.phone ?? '',
@@ -284,6 +280,7 @@ export default function AddActivities() {
       payload = payloadData;
     }
     try {
+      console.log('createactivity', payload);
       await createActivity.mutateAsync({
         projectUUID: projectID as UUID,
         activityPayload: payload,

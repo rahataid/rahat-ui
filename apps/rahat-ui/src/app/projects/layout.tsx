@@ -4,6 +4,7 @@ import { useParams, usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { ProjectLayout } from '../../sections/projects/components';
 import DashboardLayout from '../dashboard/layout';
+import { SidebarProvider } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 
 export default function ProjectLayoutRoot({
   children,

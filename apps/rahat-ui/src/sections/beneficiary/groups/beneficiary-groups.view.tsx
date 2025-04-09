@@ -67,7 +67,7 @@ function BeneficiaryGroupsView() {
             onSearch={(e) => handleSearch(e.target.value)}
           />
           <AddButton
-            className="text-white hover:text-blue-500 hover:border hover:border-sky-500"
+            className="text-white rounded-sm hover:text-blue-500 hover:border hover:border-sky-500"
             name="Group"
             path="/beneficiary/groups/add"
           />
@@ -79,7 +79,7 @@ function BeneficiaryGroupsView() {
                 const isAssignedToProject = i?.beneficiaryGroupProject?.length;
 
                 return (
-                  <div key={index} className="rounded-md border shadow p-4">
+                  <div key={index} className="rounded-sm border shadow p-4">
                     <div className="flex flex-col space-y-2">
                       <div
                         className="cursor-pointer rounded-md bg-secondary grid place-items-center h-28"

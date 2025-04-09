@@ -120,7 +120,7 @@ export default function ListView({
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
             }
-            className="rounded"
+            className="rounded-sm"
           />
           <div className="flex sm:gap-4 gap-2">
             <DatePicker
@@ -138,7 +138,10 @@ export default function ListView({
           <div className="flex gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full md:w-auto">
+                <Button
+                  variant="outline"
+                  className="w-full rounded-sm md:w-auto"
+                >
                   <Settings2 className="mr-2 h-4 w-5" />
                   View
                 </Button>
@@ -152,7 +155,7 @@ export default function ListView({
                   .map((column) => (
                     <DropdownMenuCheckboxItem
                       key={column.id}
-                      className="capitalize"
+                      className="capitalize rounded-sm"
                       checked={column.getIsVisible()}
                       onCheckedChange={(value) =>
                         column.toggleVisibility(!!value)
@@ -164,7 +167,7 @@ export default function ListView({
               </DropdownMenuContent>
             </DropdownMenu>
             <AddButton
-              className="text-white hover:text-blue-500 hover:border hover:border-blue-500"
+              className="text-white rounded-sm hover:text-blue-500 hover:border hover:border-blue-500"
               name="Beneficiary"
               path={`/beneficiary/add`}
             />

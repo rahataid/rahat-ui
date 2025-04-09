@@ -31,7 +31,7 @@ import ConfirmAddTrigger from './confirm.add.trigger';
 type IProps = {
   form: UseFormReturn<{
     title: string;
-    dataSource: string;
+    source: string;
     isMandatory?: boolean;
     minLeadTimeDays: string;
     maxLeadTimeDays: string;
@@ -104,14 +104,11 @@ export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
             />
             <FormField
               control={form.control}
-              name="dataSource"
+              name="source"
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormLabel>Source</FormLabel>
                       <FormControl>
                         <SelectTrigger>
@@ -119,9 +116,7 @@ export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value={phase?.source}>
-                          {phase?.source}
-                        </SelectItem>
+                        <SelectItem value="DHM">DHM</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

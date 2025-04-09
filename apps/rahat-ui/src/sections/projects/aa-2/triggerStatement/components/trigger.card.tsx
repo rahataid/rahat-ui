@@ -1,4 +1,5 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { useRouter } from 'next/navigation';
 
 type IProps = {
@@ -27,9 +28,9 @@ export default function TriggerCard({
   const router = useRouter();
   const renderBadgeColor = (phase: string) => {
     switch (phase) {
-      case 'Readiness':
+      case 'READINESS':
         return 'bg-green-50 text-green-500';
-      case 'Activation':
+      case 'ACTIVATION':
         return 'bg-red-50 text-red-500';
       default:
         return 'bg-gray-50 text-gray-500';
@@ -49,7 +50,7 @@ export default function TriggerCard({
           <Badge className={`font-medium ${renderBadgeColor(phase)}`}>
             {phase}
           </Badge>
-          <Badge className="font-medium">{type}</Badge>
+          <Badge className="font-medium">{capitalizeFirstLetter(type)}</Badge>
         </div>
         <Badge
           className={`font-medium ${
@@ -61,7 +62,7 @@ export default function TriggerCard({
       </div>
       <p className="text-sm/6 font-medium mb-2">{title}</p>
       <p className="text-muted-foreground text-sm/4 mb-1">
-        {`${dataSource} . ${riverBasin}`}
+        {`${dataSource} . ${capitalizeFirstLetter(riverBasin)}`}
       </p>
       <p className="text-muted-foreground text-sm/4">{time}</p>
     </div>

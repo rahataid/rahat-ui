@@ -164,6 +164,7 @@ export default function AddTriggerView() {
   const handleCreateTriggers = async () => {
     const payload = allTriggers?.map(
       ({
+        riverBasin,
         maxLeadTimeDays,
         minLeadTimeDays,
         probability,

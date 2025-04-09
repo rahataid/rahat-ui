@@ -10,17 +10,30 @@ import React from 'react';
 
 type IProps = {
   projectId: string;
+  phaseId: string;
 };
 
-export default function TriggersListTabs({ projectId }: IProps) {
-  const all = useAAStationsStore((state) => state.triggers);
+export default function TriggersListTabs({ projectId, phaseId }: IProps) {
+  const triggers = useAAStationsStore((state) => state.triggers);
+
+  const all = React.useMemo(
+    () => triggers?.filter((t) => t?.phase?.uuid === phaseId),
+    [triggers, phaseId],
+  );
+
   const triggered = React.useMemo(
-    () => all?.filter((t) => t?.isTriggered === true),
-    [all],
+    () =>
+      triggers?.filter(
+        (t) => t?.isTriggered === true && t?.phase?.uuid === phaseId,
+      ),
+    [triggers, phaseId],
   );
   const notTriggered = React.useMemo(
-    () => all?.filter((t) => t?.isTriggered === false),
-    [all],
+    () =>
+      triggers?.filter(
+        (t) => t?.isTriggered === false && t?.phase?.uuid === phaseId,
+      ),
+    [triggers, phaseId],
   );
 
   return (

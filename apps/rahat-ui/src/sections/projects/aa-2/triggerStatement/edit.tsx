@@ -84,9 +84,27 @@ export default function EditTrigger() {
   };
 
   const handleUpdate = async (data: any) => {
+    const {
+      minLeadTimeDays,
+      maxLeadTimeDays,
+      probability,
+      riverBasin,
+      ...rest
+    } = data;
+
     await updateTrigger.mutateAsync({
       projectUUID: projectId,
-      triggerUpdatePayload: data,
+      triggerUpdatePayload: {
+        ...rest,
+        phaseId: trigger?.phaseId,
+        uuid: trigger?.uuid,
+        source: trigger?.source === 'MANUAL' ? 'MANUAL' : 'DHM',
+        triggerStatement: {
+          minLeadTimeDays,
+          maxLeadTimeDays,
+          probability,
+        },
+      },
     });
     router.push(triggerDetailPage);
   };

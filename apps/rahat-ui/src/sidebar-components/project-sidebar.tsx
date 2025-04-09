@@ -32,7 +32,10 @@ export function ProjectSidebar(menuItems: ProjectNavViewProps) {
         <NavMain items={menuItems?.items} />
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenuButton tooltip={'Exit Project'}>
+        <SidebarMenuButton
+          onClick={() => router.push('/projects')}
+          tooltip={'Exit Project'}
+        >
           <LogOut className="cursor-pointer" />
           <span>{'Exit Project'}</span>
         </SidebarMenuButton>

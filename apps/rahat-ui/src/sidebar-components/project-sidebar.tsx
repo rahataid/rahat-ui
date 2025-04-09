@@ -8,6 +8,7 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarMenuButton,
   SidebarRail,
 } from 'libs/shadcn/src/components/ui/sidebar';
 import { NavMain } from './nav-main';
@@ -31,10 +32,10 @@ export function ProjectSidebar(menuItems: ProjectNavViewProps) {
         <NavMain items={menuItems?.items} />
       </SidebarContent>
       <SidebarFooter>
-        <div className="flex gap-2" onClick={() => router.push('/projects')}>
+        <SidebarMenuButton tooltip={'Exit Project'}>
           <LogOut className="cursor-pointer" />
-          <p>Logout</p>
-        </div>
+          <span>{'Exit Project'}</span>
+        </SidebarMenuButton>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

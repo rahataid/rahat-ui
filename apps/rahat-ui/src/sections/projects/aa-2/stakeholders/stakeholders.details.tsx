@@ -42,7 +42,7 @@ const StakeholdersDetail = () => {
 
       <div className="flex">
         <div className="flex border rounded-lg flex-col gap-4 p-4 mx-4  w-full">
-          <StakeHolderInfo />
+          <StakeHolderInfo stakeholder={details} />
         </div>
       </div>
     </div>

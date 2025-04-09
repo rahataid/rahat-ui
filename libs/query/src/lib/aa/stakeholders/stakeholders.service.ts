@@ -209,9 +209,8 @@ export const useStakeholderDetails = (
           payload: payload,
         },
       });
-      return mutate.response;
+      return mutate.data;
     },
   });
-
   return query?.data;
 };

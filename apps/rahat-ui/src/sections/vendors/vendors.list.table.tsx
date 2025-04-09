@@ -117,7 +117,7 @@ export default function VendorsTable({
           value={
             (table.getColumn('projectName')?.getFilterValue() as string) || ''
           }
-        />
+        /> */}
       </div>
       <div>
         {loading ? (

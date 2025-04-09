@@ -1,7 +1,15 @@
+import Link from 'next/link';
 import DataCard from '../../components/dataCard';
 import { getValueFromPath } from '../../utils/extractObjetInfo';
 import getIcon from '../../utils/getIcon';
-
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from 'next/navigation';
+import { UUID } from 'crypto';
+import { usePagination } from '@rahat-ui/query';
 type DataCardData = {
   component: any;
   source: any;
@@ -9,6 +17,15 @@ type DataCardData = {
 };
 
 const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
+  const router = useRouter();
+  const { id } = useParams() as { id: UUID };
+  const pathName = usePathname();
+  const { pagination, filters, setFilters } = usePagination();
+  const slug = pathName.split('/')[2];
+  const projectSlug = 'el-cambodia';
+  // if (projectSlug === slug) filters.type = 'Lead';
+  // const encodedFilters = encodeURIComponent(JSON.stringify(filters));
+  // const encodedPagination = encodeURIComponent(JSON.stringify(pagination));
   // Split the dataMap to extract the name and the path within the object
   const [name, ...pathParts] = component.dataMap.split('.');
   const path = pathParts.join('.');
@@ -30,19 +47,33 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
   // Render DataCard with the retrieved value
   if (cardDataValue !== null) {
     const icon = getIcon(component?.icon);
+
+    const handleClick = () => {
+      if (component?.title === 'Total Villagers Referred') {
+        setFilters({});
+        const targetUrl = `/projects/${projectSlug}/${id}/beneficiary`;
+        setFilters({
+          type: 'Lead',
+        });
+        router.push(targetUrl);
+      }
+    };
+
     return (
-      <DataCard
-        className="border-solid rounded-md"
-        iconStyle="bg-white text-black"
-        title={component.title}
-        // number={cardDataValue?.count === 0 ? 0 : cardDataValue?.count}
-        number={
-          cardDataValue?.count?.toString() ||
-          cardDataValue?.count ||
-          cardDataValue
-        }
-        Icon={icon}
-      />
+      <div onClick={handleClick} className="hover:cursor-pointer">
+        <DataCard
+          className="border-solid rounded-md"
+          iconStyle="bg-white text-black"
+          title={component.title}
+          // number={cardDataValue?.count === 0 ? 0 : cardDataValue?.count}
+          number={
+            cardDataValue?.count?.toString() ||
+            cardDataValue?.count ||
+            cardDataValue
+          }
+          Icon={icon}
+        />
+      </div>
     );
   }
 

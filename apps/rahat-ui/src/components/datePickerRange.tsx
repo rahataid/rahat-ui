@@ -1,8 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { addDays, format } from 'date-fns';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { Calendar as CalendarIcon, X } from 'lucide-react';
 
 import { cn } from '@rahat-ui/shadcn/src';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -12,27 +12,41 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
-import { useState } from 'react';
 import { DateRange } from 'react-day-picker';
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@radix-ui/react-tooltip';
+import { TooltipContent } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 type DatePickerType = {
   placeholder: string;
+  // selectedDate: DateRange | undefined;
   type: string;
   handleDateChange: (date: DateRange | undefined) => void;
   className?: string;
+  handleClearDate: VoidFunction;
 };
 
 export function DateRangePicker({
   placeholder,
   handleDateChange,
   type,
+  handleClearDate,
   className,
 }: DatePickerType) {
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
   });
-
+  const handleClose = () => {
+    handleClearDate();
+    setDate({
+      from: undefined,
+      to: undefined,
+    });
+  };
   return (
     <div className={cn('grid gap-2', className)}>
       <Popover>
@@ -49,10 +63,53 @@ export function DateRangePicker({
             {date?.from ? (
               date.to ? (
                 <>
-                  {format(date.from, 'PPP')} - {format(date.to, 'PPP')}
+                  <div className="flex justify-between items-center w-full">
+                    <p className="flex-1">
+                      {format(date.from, 'PPP')} - {format(date.to, 'PPP')}
+                    </p>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            onClick={handleClose}
+                            className="w-6 h-6 flex items-center justify-center rounded-full bg-muted-foreground text-white hover:bg-primary"
+                            variant="outline"
+                            size="icon"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Clear Date</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </>
               ) : (
-                format(date.from, 'PPP')
+                <div className="flex justify-between items-center w-full">
+                  <p className="flex-1">{format(date.from, 'PPP')}</p>
+
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          type="button"
+                          onClick={handleClose}
+                          className="w-6 h-6 flex items-center justify-center rounded-full bg-muted-foreground text-white hover:bg-primary"
+                          variant="outline"
+                          size="icon"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Clear Date</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
               )
             ) : (
               <span>{placeholder}</span>

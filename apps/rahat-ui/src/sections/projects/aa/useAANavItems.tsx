@@ -46,16 +46,16 @@ export const useNavItems = () => {
           path: `/projects/aa/${params.id}/stakeholders`,
           icon: <Users size={18} strokeWidth={1.5} />,
         },
-        {
-          title: 'Groups',
-          path: `/projects/aa/${params.id}/groups`,
-          icon: <Group size={18} strokeWidth={1.5} />,
-        },
-        {
-          title: 'Data Sources',
-          path: `/projects/aa/${params.id}/data-sources`,
-          icon: <HardDrive size={18} strokeWidth={1.5} />,
-        },
+        // {
+        //   title: 'Groups',
+        //   path: `/projects/aa/${params.id}/groups`,
+        //   icon: <Group size={18} strokeWidth={1.5} />,
+        // },
+        // {
+        //   title: 'Data Sources',
+        //   path: `/projects/aa/${params.id}/data-sources`,
+        //   icon: <HardDrive size={18} strokeWidth={1.5} />,
+        // },
         {
           title: 'Trigger Statements',
           path: `/projects/aa/${params.id}/trigger-statements`,
@@ -71,11 +71,11 @@ export const useNavItems = () => {
           path: `/projects/aa/${params.id}/fund-management`,
           icon: <AlignVerticalJustifyCenter size={18} strokeWidth={1.5} />,
         },
-        {
-          title: 'Communication Logs',
-          icon: <Speech size={18} strokeWidth={1.5} />,
-          path: `/projects/aa/${params.id}/communication-logs`,
-        },
+        // {
+        //   title: 'Communication Logs',
+        //   icon: <Speech size={18} strokeWidth={1.5} />,
+        //   path: `/projects/aa/${params.id}/communication-logs`,
+        // },
         // {
         //   title: 'Transaction Log',
         //   icon: <BadgeDollarSign size={18} strokeWidth={1.5} />,

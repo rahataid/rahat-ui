@@ -5,12 +5,24 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import DynamicTriggersList from './dynamic.triggers.list';
+import { useAAStationsStore } from '@rahat-ui/query';
+import React from 'react';
 
 type IProps = {
   projectId: string;
 };
 
 export default function TriggersListTabs({ projectId }: IProps) {
+  const all = useAAStationsStore((state) => state.triggers);
+  const triggered = React.useMemo(
+    () => all?.filter((t) => t?.isTriggered === true),
+    [all],
+  );
+  const notTriggered = React.useMemo(
+    () => all?.filter((t) => t?.isTriggered === false),
+    [all],
+  );
+
   return (
     <Tabs defaultValue="All">
       <TabsList className="border bg-secondary rounded mb-2">
@@ -40,16 +52,16 @@ export default function TriggersListTabs({ projectId }: IProps) {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="All">
-        <DynamicTriggersList projectId={projectId} />
+        <DynamicTriggersList projectId={projectId} triggers={all} />
       </TabsContent>
       <TabsContent value="Not Triggered">
-        <DynamicTriggersList projectId={projectId} />
+        <DynamicTriggersList projectId={projectId} triggers={notTriggered} />
       </TabsContent>
       <TabsContent value="Triggered">
-        <DynamicTriggersList projectId={projectId} />
+        <DynamicTriggersList projectId={projectId} triggers={triggered} />
       </TabsContent>
       <TabsContent value="History">
-        <DynamicTriggersList projectId={projectId} />
+        <DynamicTriggersList projectId={projectId} triggers={triggered} />
       </TabsContent>
     </Tabs>
   );

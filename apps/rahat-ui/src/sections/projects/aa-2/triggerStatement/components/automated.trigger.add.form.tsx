@@ -29,27 +29,24 @@ import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import ConfirmAddTrigger from './confirm.add.trigger';
 
 type IProps = {
-  form: UseFormReturn<
-    {
-      title: string;
-      dataSource: string;
-      isMandatory?: boolean | undefined;
-      minLeadTimeDays: string;
-      maxLeadTimeDays: string;
-      probability: string;
-      notes?: string;
-    },
-    any,
-    undefined
-  >;
+  form: UseFormReturn<{
+    title: string;
+    dataSource: string;
+    isMandatory?: boolean;
+    minLeadTimeDays: string;
+    maxLeadTimeDays: string;
+    probability: string;
+    notes?: string;
+  }>;
+  phase: any;
 };
 
-export default function AddAutomatedTriggerForm({ form }: IProps) {
+export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
   // const params = useParams();
   // const projectId = params.id as UUID;
-  const selectedPhase = JSON.parse(
-    localStorage.getItem('selectedPhase') as string,
-  );
+  // const selectedPhase = JSON.parse(
+  //   localStorage.getItem('selectedPhase') as string,
+  // );
 
   // const dataSources = useProjectSettingsStore(
   //   (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
@@ -68,7 +65,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 <Input
                   className="bg-gray-300"
                   type="text"
-                  value={selectedPhase?.name}
+                  value={phase?.name}
                   disabled
                 />
               </FormControl>
@@ -80,7 +77,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 <Input
                   className="bg-gray-300"
                   type="text"
-                  value={'riverBasin'}
+                  value={phase?.riverBasin}
                   disabled
                 />
               </FormControl>
@@ -122,7 +119,9 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value={'GLOFAS'}>GloFAS</SelectItem>
+                        <SelectItem value={phase?.source}>
+                          {phase?.source}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

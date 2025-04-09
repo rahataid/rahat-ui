@@ -23,7 +23,7 @@ export const useActivitiesCategories = (uuid: UUID) => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.activityCategories.getAll',
+          action: 'ms.activityCategories.getAll',
           payload: {},
         },
       });
@@ -34,33 +34,6 @@ export const useActivitiesCategories = (uuid: UUID) => {
   useEffect(() => {
     if (query.data) {
       setCategories(query?.data);
-    }
-  }, [query.data]);
-  return query;
-};
-
-export const useActivitiesPhase = (uuid: UUID) => {
-  const q = useProjectAction();
-  const { setPhase } = useActivitiesStore((state) => ({
-    setPhase: state.setPhases,
-  }));
-
-  const query = useQuery({
-    queryKey: ['phases', uuid],
-    queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: 'aaProject.phases.getAll',
-          payload: {},
-        },
-      });
-      return mutate.data;
-    },
-  });
-  useEffect(() => {
-    if (query.data) {
-      setPhase(query?.data);
     }
   }, [query.data]);
   return query;
@@ -80,7 +53,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.activities.getAll',
+          action: 'ms.activities.getAll',
           payload: payload,
         },
       });
@@ -99,8 +72,8 @@ export const useActivities = (uuid: UUID, payload: any) => {
   const activitiesData = query?.data?.data?.map((d: any) => ({
     id: d.uuid,
     title: d.title,
-    responsibility: d.responsibility,
-    source: d.source,
+    responsibility: d?.manager?.name,
+    source: d?.phase?.source?.riverBasin,
     hazardType: d.hazardType?.name,
     category: d.category?.name,
     description: d.description,
@@ -161,7 +134,7 @@ export const useSingleActivity = (
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.activities.getOne',
+          action: 'ms.activities.getOne',
           payload: {
             uuid: activityId,
           },
@@ -193,7 +166,7 @@ export const useCreateActivities = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.activities.add',
+          action: 'ms.activities.add',
           payload: activityPayload,
         },
       });
@@ -288,7 +261,7 @@ export const useDeleteActivities = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.activities.remove',
+          action: 'ms.activities.remove',
           payload: activityPayload,
         },
       });
@@ -381,12 +354,13 @@ export const useUpdateActivityStatus = () => {
         uuid: string;
         status: string;
         activityDocuments?: Array<{ fileName: string; mediaURL: string }>;
+        notes?: string;
       };
     }) => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.activities.updateStatus',
+          action: 'ms.activities.updateStatus',
           payload: activityStatusPayload,
         },
       });

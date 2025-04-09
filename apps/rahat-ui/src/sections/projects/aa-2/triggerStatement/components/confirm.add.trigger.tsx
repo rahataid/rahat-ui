@@ -11,26 +11,29 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { Plus } from 'lucide-react';
-import { UseFormReturn } from 'react-hook-form';
 
 type IProps = {
-  handleStore: () => void;
-  handleAddAnother: () => void;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  handleStore: () => void;
+  handleAddAnother: () => void;
+  handleSave: VoidFunction;
+  isSubmitting: boolean;
 };
 
 export default function ConfirmAddTrigger({
-  handleStore,
-  handleAddAnother,
   open,
   setOpen,
+  handleStore,
+  handleAddAnother,
+  handleSave,
+  isSubmitting = false,
 }: IProps) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       {/* <AlertDialogTrigger asChild> */}
-      <Button className="w-40" onClick={handleStore}>
-        Confirm
+      <Button disabled={isSubmitting} className="w-40" onClick={handleStore}>
+        {isSubmitting ? 'Please wait ...' : 'Confirm'}
       </Button>
       {/* </AlertDialogTrigger> */}
       <AlertDialogContent>
@@ -43,7 +46,7 @@ export default function ConfirmAddTrigger({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="flex flex-col space-y-2">
-          <Button>Save</Button>
+          <Button onClick={handleSave}>Save</Button>
           <IconLabelBtn
             variant="outline"
             className="flex flex-row-reverse gap-2"

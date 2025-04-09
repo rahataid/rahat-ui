@@ -604,16 +604,16 @@ export const useProjectBeneficiaryDetail = (payload: any) => {
   const { projectUUID, ...restPayload } = payload;
 
   const query = useQuery({
-    queryKey: ['rahat.jobs.beneficiary.find_one_beneficiary', restPayload],
+    queryKey: ['beneficiary.get_one_beneficiary', restPayload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'rahat.jobs.beneficiary.find_one_beneficiary',
+          action: 'beneficiary.get_one_beneficiary',
           payload: restPayload,
         },
       });
-      return mutate;
+      return mutate?.data;
     },
   });
   return query?.data;

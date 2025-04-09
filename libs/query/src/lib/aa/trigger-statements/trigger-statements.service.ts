@@ -331,3 +331,50 @@ export const useActivateTrigger = () => {
     },
   });
 };
+
+export const useUpdateTriggerStatement = () => {
+  const qc = useQueryClient();
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      triggerUpdatePayload,
+    }: {
+      projectUUID: UUID;
+      triggerUpdatePayload: any;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'ms.triggers.update',
+          payload: triggerUpdatePayload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['triggerStatements'] });
+      qc.invalidateQueries({ queryKey: ['triggerStatement'] });
+      toast.fire({
+        title: 'Trigger updated successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while updating trigger.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};

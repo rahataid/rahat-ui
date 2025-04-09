@@ -8,6 +8,7 @@ import {
   usePhasesStore,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 
 export default function TriggerStatementView() {
   const router = useRouter();
@@ -27,7 +28,7 @@ export default function TriggerStatementView() {
         id: phase?.uuid,
         name: phase?.name,
         source: phase?.source?.source,
-        riverBasin: phase?.source?.riverBasin,
+        riverBasin: capitalizeFirstLetter(phase?.source?.riverBasin),
       }),
     );
   };
@@ -57,11 +58,18 @@ export default function TriggerStatementView() {
               subtitle={`Overview of ${d.name.toLowerCase()} phase`}
               handleAddTrigger={() => handleAddTrigger(d)}
               chartLabels={['Mandatory', 'Optional']}
-              chartSeries={[10, 2]}
-              mandatoryTriggers={10}
-              optionalTriggers={2}
-              triggeredMandatoryTriggers={8}
-              triggeredOptionalTriggers={1}
+              chartSeries={[
+                d?.phaseStats?.totalMandatoryTriggers || 0,
+                d?.phaseStats?.totalOptionalTriggers || 0,
+              ]}
+              mandatoryTriggers={d?.phaseStats?.totalMandatoryTriggers || 0}
+              optionalTriggers={d?.phaseStats?.totalOptionalTriggers || 0}
+              triggeredMandatoryTriggers={
+                d?.phaseStats?.totalMandatoryTriggersTriggered || 0
+              }
+              triggeredOptionalTriggers={
+                d?.phaseStats?.totalOptionalTriggersTriggered || 0
+              }
               handleViewDetails={() => handleViewDetails(d)}
             />
           ))}

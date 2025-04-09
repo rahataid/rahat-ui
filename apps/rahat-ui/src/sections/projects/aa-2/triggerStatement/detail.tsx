@@ -8,6 +8,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Back,
   DeleteButton,
+  EditButton,
   Heading,
   IconLabelBtn,
 } from 'apps/rahat-ui/src/common';
@@ -31,6 +32,7 @@ export default function TriggerStatementDetail() {
       projectUUID: id,
       activatePayload: { repeatKey: triggerRepeatKey },
     });
+    router.push(`/projects/aa/${id}/trigger-statements`);
   };
 
   const handleDelete = async () => {
@@ -57,10 +59,20 @@ export default function TriggerStatementDetail() {
             handleClick={handleDelete}
           /> */}
           <DeleteButton
-            className="rounded flex gap-1 items-center"
+            className="rounded flex gap-1 items-center text-sm font-medium"
             name="trigger"
             label="Delete"
             handleContinueClick={handleDelete}
+          />
+          <EditButton
+            className="rounded flex gap-1 items-center text-sm font-medium"
+            label="Edit"
+            onFallback={() =>
+              router.push(
+                `/projects/aa/${id}/trigger-statements/${triggerRepeatKey}/edit`,
+              )
+            }
+            disabled={trigger?.phase?.isActive}
           />
           {/* <IconLabelBtn
             variant="outline"
@@ -70,7 +82,7 @@ export default function TriggerStatementDetail() {
             handleClick={() => {}}
           /> */}
           <Button
-            disabled={trigger?.triggerStatement?.type === 'automated'}
+            disabled={trigger?.source !== 'MANUAL' || trigger?.isTriggered}
             onClick={handleTrigger}
           >
             Trigger
@@ -95,7 +107,9 @@ export default function TriggerStatementDetail() {
             </div>
             <div>
               <p className="mb-1">Trigger Type</p>
-              <Badge>{trigger?.triggerStatement?.type || 'N/A'}</Badge>
+              <Badge>
+                {trigger?.source === 'MANUAL' ? 'Manual' : 'Automated'}
+              </Badge>
             </div>
             <div>
               <p className="mb-1">Type</p>
@@ -103,35 +117,37 @@ export default function TriggerStatementDetail() {
             </div>
           </div>
         </div>
-        <div className="p-4 border rounded-sm">
-          <Heading
-            title="Forecast Data"
-            titleStyle="text-sm/4"
-            description={`Source:${
-              trigger?.phase?.source?.riverBasin || 'N/A'
-            }`}
-          />
-          <div className="grid grid-cols-3 gap-4">
-            <div className="p-3 text-center border rounded">
-              <p className="font-semibold text-3xl/10 text-primary">
-                {trigger?.triggerStatement?.minLeadTimeDays}
-              </p>
-              <p className="font-medium text-sm/6">Minimum Lead Time Days</p>
-            </div>
-            <div className="p-3 text-center border rounded">
-              <p className="font-semibold text-3xl/10 text-primary">
-                {trigger?.triggerStatement?.maxLeadTimeDays}
-              </p>
-              <p className="font-medium text-sm/6">Maximum Lead Time Days</p>
-            </div>
-            <div className="p-3 text-center border rounded">
-              <p className="font-semibold text-3xl/10 text-primary">
-                {trigger?.triggerStatement?.probability}
-              </p>
-              <p className="font-medium text-sm/6">Forecast Probability</p>
+        {trigger?.source !== 'MANUAL' && (
+          <div className="p-4 border rounded-sm">
+            <Heading
+              title="Forecast Data"
+              titleStyle="text-sm/4"
+              description={`Source:${
+                trigger?.phase?.source?.riverBasin || 'N/A'
+              }`}
+            />
+            <div className="grid grid-cols-3 gap-4">
+              <div className="p-3 text-center border rounded">
+                <p className="font-semibold text-3xl/10 text-primary">
+                  {trigger?.triggerStatement?.minLeadTimeDays}
+                </p>
+                <p className="font-medium text-sm/6">Minimum Lead Time Days</p>
+              </div>
+              <div className="p-3 text-center border rounded">
+                <p className="font-semibold text-3xl/10 text-primary">
+                  {trigger?.triggerStatement?.maxLeadTimeDays}
+                </p>
+                <p className="font-medium text-sm/6">Maximum Lead Time Days</p>
+              </div>
+              <div className="p-3 text-center border rounded">
+                <p className="font-semibold text-3xl/10 text-primary">
+                  {trigger?.triggerStatement?.probability}
+                </p>
+                <p className="font-medium text-sm/6">Forecast Probability</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

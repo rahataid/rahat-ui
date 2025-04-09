@@ -1,5 +1,4 @@
 import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import DropdownComponent from '../components/dropdownComponent';
 import React from 'react';
 import MONTHS from '../../../utils/months.json';
@@ -81,7 +80,7 @@ const BarChartWrapper = ({ actualData, component }: BarChartData) => {
 
   if (categories && series)
     return (
-      <div className="rounded-sm bg-card p-4 space-y-6">
+      <div className="rounded-sm bg-card space-y-6">
         <p className="text-md font-medium mb-2">{component?.title}</p>
 
         {/* Row 1: Bar Chart */}
@@ -97,7 +96,7 @@ const BarChartWrapper = ({ actualData, component }: BarChartData) => {
         {/* Row 2: Line Charts (side-by-side on lg+, stacked on smaller screens) */}
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           {/* Eye Checkup Report */}
-          <div className="flex-1 min-w-[300px] sm:min-w-[600px] p-4">
+          <div className="flex-1 min-w-[300px] sm:min-w-[600px]">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
               <h1 className="text-md font-medium">
                 {eyeCheckUpReport?.data?.name}
@@ -134,7 +133,7 @@ const BarChartWrapper = ({ actualData, component }: BarChartData) => {
           </div>
 
           {/* Purchase of Glass Report */}
-          <div className="flex-1 min-w-[300px] sm:min-w-[600px] p-4">
+          <div className="flex-1 min-w-[300px] sm:min-w-[600px]">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
               <h1 className="text-md font-medium">
                 {purchaseOfGlassReport?.data?.name}

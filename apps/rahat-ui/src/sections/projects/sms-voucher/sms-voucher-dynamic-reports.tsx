@@ -99,7 +99,6 @@ const DynamicReports: FC<DynamicReportsProps> = ({
     const { title, type, props, dataSrc, dataMap, colSpan } = component;
     const actualData = dynamicData[dataSrc];
     const source = dataSources?.[dataSrc];
-    console.log('actualData', actualData);
     switch (type) {
       case 'dataCard':
         return (

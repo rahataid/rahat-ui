@@ -62,9 +62,7 @@ const ProjectMainView = () => {
           <DownloadReportBtn handleDownload={handleDownload} />
         </div>
       </div>
-      <ScrollArea className="mt-5">
-        <ELKenyaProjectDetail />
-      </ScrollArea>
+      <ELKenyaProjectDetail />
     </div>
   );
 };

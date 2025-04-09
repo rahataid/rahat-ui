@@ -14,7 +14,6 @@ export default function ProjectDetail() {
     <>
       {newDatasource && newDatasource[0]?.data?.ui.length && (
         <DynamicReports
-          className=""
           dataSources={newDatasource[0]?.data?.dataSources}
           ui={newDatasource[0]?.data?.ui}
         />

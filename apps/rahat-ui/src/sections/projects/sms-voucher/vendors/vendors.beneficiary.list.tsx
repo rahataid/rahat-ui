@@ -65,7 +65,7 @@ export default function VendorsBeneficiaryList({
     <div className="p-4 border rounded-sm">
       <ElkenyaTable
         table={table}
-        tableHeight="h-[calc(100vh-600px)]"
+        tableHeight="h-[calc(100vh-600px)] sm:h-[calc(100vh-450px)]"
         loading={loading}
       />
       <ClientSidePagination table={table} />

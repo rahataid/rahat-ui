@@ -54,10 +54,12 @@ export function ProjectNav({
     <div className="h-14 flex justify-between pl-2 pr-6 py-2 z-50 bg-card border-b">
       <div className="flex items-center space-x-4">
         <SidebarTrigger />
-        <div className="hidden sm:block">{component}</div>
+        <div className="">{component}</div>
       </div>
       <div className="flex gap-4 items-center">
-        <ConnectWallet />
+        <div className="hidden sm:block">
+          <ConnectWallet />
+        </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger>

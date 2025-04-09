@@ -8,6 +8,7 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarMenuButton,
   SidebarRail,
 } from 'libs/shadcn/src/components/ui/sidebar';
 import { NavMain } from './nav-main';
@@ -25,16 +26,19 @@ export function ProjectSidebar(menuItems: ProjectNavViewProps) {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <Image src="/rahat-logo.png" alt="logo" height={20} width={30} />
+        <Image src="/rahat-logo.png" alt="logo" height={42} width={42} />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={menuItems?.items} />
       </SidebarContent>
       <SidebarFooter>
-        <LogOut
-          className="cursor-pointer"
+        <SidebarMenuButton
           onClick={() => router.push('/projects')}
-        />
+          tooltip={'Exit Project'}
+        >
+          <LogOut className="cursor-pointer" />
+          <span>{'Exit Project'}</span>
+        </SidebarMenuButton>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

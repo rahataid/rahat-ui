@@ -9,7 +9,7 @@ type LineChartData = {
 const SmsVoucherLineCharts = ({ series, categories, name }: LineChartData) => {
   return (
     <>
-      <div className="rounded-md bg-card  p-4 pb-10 shadow border h-[400px]">
+      <div className="rounded-md bg-card shadow border h-[400px]">
         <LineChart
           series={[{ name: name, data: series }]}
           categories={categories}

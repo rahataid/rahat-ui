@@ -2,14 +2,6 @@
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
-import {
   TableBody,
   TableCell,
   Table as TableComponent,
@@ -19,7 +11,6 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Table, flexRender } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
 
 import { useProjectList } from '@rahat-ui/query';
 import {
@@ -32,18 +23,17 @@ import {
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { UUID } from 'crypto';
-import TableLoader from '../../components/table.loader';
 import Image from 'next/image';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import TableLoader from '../../components/table.loader';
 import SelectComponent from '../projects/el-kenya/select.component';
 
 export type IVendor = {
@@ -127,36 +117,7 @@ export default function VendorsTable({
           value={
             (table.getColumn('projectName')?.getFilterValue() as string) || ''
           }
-        /> */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              <Settings2 className="mr-2 h-4 w-5" />
-              Views
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        />
       </div>
       <div>
         {loading ? (

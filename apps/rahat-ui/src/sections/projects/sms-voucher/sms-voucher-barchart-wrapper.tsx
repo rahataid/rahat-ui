@@ -40,7 +40,6 @@ const BarChartWrapper = ({ actualData, component }: BarChartData) => {
 
   const { id } = useParams() as { id: UUID };
 
-  // Fetch data with separate filters
   const { data: purchaseOfGlassReport } = usePurchaseOfGlassLineChartsReports({
     projectUUID: id,
     filters: purchaseFilters,
@@ -82,27 +81,28 @@ const BarChartWrapper = ({ actualData, component }: BarChartData) => {
 
   if (categories && series)
     return (
-      <div className="bg-card rounded-sm p-4 shadow-md">
-        <p className="text-md font-medium mb-4">{component?.title}</p>
-        <div className="flex items-end justify-center gap-4 w-full ">
-          {/* Bar Chart */}
-          <div className="flex-1 flex flex-col bg-white p-4 rounded-lg shadow-md">
-            <BarChart
-              categories={categories}
-              series={series}
-              xaxisLabels={component?.props?.xaxisLabels}
-              horizontal={component?.props?.horizontal}
-              // className="w-full h-full"
-            />
-          </div>
+      <div className="rounded-sm bg-card p-4 space-y-6">
+        <p className="text-md font-medium mb-2">{component?.title}</p>
 
+        {/* Row 1: Bar Chart */}
+        <div className="min-w-[300px] sm:min-w-[600px]">
+          <BarChart
+            categories={categories}
+            series={series}
+            xaxisLabels={component?.props?.xaxisLabels}
+            horizontal={component?.props?.horizontal}
+          />
+        </div>
+
+        {/* Row 2: Line Charts (side-by-side on lg+, stacked on smaller screens) */}
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           {/* Eye Checkup Report */}
-          <div className="flex-1 flex flex-col bg-white   rounded-lg shadow-md">
-            <div className="flex justify-between items-center ">
+          <div className="flex-1 min-w-[300px] sm:min-w-[600px] p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
               <h1 className="text-md font-medium">
                 {eyeCheckUpReport?.data?.name}
               </h1>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <DropdownComponent
                   transformedData={transformedMonthData}
                   title="Month"
@@ -123,7 +123,7 @@ const BarChartWrapper = ({ actualData, component }: BarChartData) => {
                 />
               </div>
             </div>
-            <div className="flex-1 h-[400px]">
+            <div className="h-[400px]">
               <SmsVoucherLineCharts
                 series={eyeCheckUpReport?.data?.series}
                 categories={eyeCheckUpReport?.data?.categories}
@@ -134,12 +134,12 @@ const BarChartWrapper = ({ actualData, component }: BarChartData) => {
           </div>
 
           {/* Purchase of Glass Report */}
-          <div className="flex-1 flex flex-col bg-white  rounded-lg shadow-md">
-            <div className="flex justify-between items-center ">
+          <div className="flex-1 min-w-[300px] sm:min-w-[600px] p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
               <h1 className="text-md font-medium">
                 {purchaseOfGlassReport?.data?.name}
               </h1>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <DropdownComponent
                   transformedData={transformedMonthData}
                   title="Month"
@@ -160,7 +160,7 @@ const BarChartWrapper = ({ actualData, component }: BarChartData) => {
                 />
               </div>
             </div>
-            <div className="flex-1">
+            <div>
               <SmsVoucherLineCharts
                 series={purchaseOfGlassReport?.data?.series}
                 categories={purchaseOfGlassReport?.data?.categories}

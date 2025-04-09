@@ -165,11 +165,15 @@ const DynamicReports: FC<DynamicReportsProps> = ({
             {row?.title}
           </h1>
         )}
-        <div className={`grid grid-cols-${row?.fields?.length} gap-2 mt-2`}>
+        <div
+          className={`grid gap-4 mt-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4`}
+        >
           {row?.fields?.map((component, colIndex) => (
             <div
               key={colIndex}
-              className={`grid-cols-${component.colSpan} grid-rows-${component.rowSpan}`}
+              className={`col-span-1 sm:col-span-${
+                component.colSpan || 1
+              } row-span-${component.rowSpan || 1}`}
             >
               {renderUIComponent(component, colIndex)}
             </div>

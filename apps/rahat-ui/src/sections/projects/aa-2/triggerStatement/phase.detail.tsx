@@ -54,11 +54,14 @@ export default function PhaseDetail() {
           title="Phase Overview"
           subtitle={`Overview of ${phase?.name?.toLowerCase()} phase`}
           chartLabels={['Mandatory', 'Optional']}
-          chartSeries={[10, 2]}
-          mandatoryTriggers={10}
-          optionalTriggers={2}
-          triggeredMandatoryTriggers={8}
-          triggeredOptionalTriggers={1}
+          chartSeries={[
+            phase?.totalMandatoryTriggers,
+            phase?.totalOptionalTriggers,
+          ]}
+          mandatoryTriggers={phase?.totalMandatoryTriggers}
+          optionalTriggers={phase?.totalOptionalTriggers}
+          triggeredMandatoryTriggers={phase?.totalMandatoryTriggersTriggered}
+          triggeredOptionalTriggers={phase?.totalOptionalTriggersTriggered}
           hideAddTrigger={true}
           hideViewDetails={true}
         />
@@ -68,7 +71,7 @@ export default function PhaseDetail() {
             titleStyle="text-xl/6"
             description={`List of all triggers in the ${phase?.name?.toLowerCase()} phase`}
           />
-          <TriggersListTabs projectId={projectId} />
+          <TriggersListTabs projectId={projectId} phaseId={phaseId} />
         </div>
       </div>
     </div>

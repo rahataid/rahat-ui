@@ -54,7 +54,7 @@ export default function ConfirmAddTrigger({
             name="Add another trigger"
             handleClick={() => handleAddAnother()}
           />
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          {/* <AlertDialogCancel>Cancel</AlertDialogCancel> */}
         </div>
       </AlertDialogContent>
     </AlertDialog>

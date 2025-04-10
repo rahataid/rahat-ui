@@ -192,3 +192,25 @@ export const useDeleteStakeholders = () => {
     },
   });
 };
+
+export const useStakeholderDetails = (
+  uuid: UUID,
+  payload: { uuid: string },
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['stakeholder', uuid, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.stakeholders.getOne',
+          payload: payload,
+        },
+      });
+      return mutate.data;
+    },
+  });
+  return query?.data;
+};

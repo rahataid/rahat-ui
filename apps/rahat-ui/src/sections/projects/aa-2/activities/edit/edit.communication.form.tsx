@@ -3,8 +3,7 @@ import {
   useStakeholdersGroupsStore,
   useUploadFile,
 } from '@rahat-ui/query';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
   FormControl,
   FormField,
@@ -24,33 +23,29 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { Transport, ValidationContent } from '@rumsan/connect/src/types';
-import { Mail, MessageSquare, PencilIcon, Phone, Trash2 } from 'lucide-react';
+import { X } from 'lucide-react';
 import * as React from 'react';
 
 type IProps = {
   form: any;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   appTransports: Transport[] | undefined;
-  onSave: VoidFunction;
-  communicationData: any[];
-  onRemove: (index: number) => void;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  index: number;
+  onClose: VoidFunction;
 };
 
-export default function AddCommunicationForm({
+export default function EditCommunicationForm({
   form,
-  setLoading,
   appTransports,
-  onSave,
-  communicationData,
-  onRemove,
+  setLoading,
+  index,
+  onClose,
 }: IProps) {
   const [audioFile, setAudioFile] = React.useState({});
   const [contentType, setContentType] = React.useState<ValidationContent | ''>(
     '',
   );
   const [isPlaying, setIsPlaying] = React.useState(false);
-  const fileUpload = useUploadFile();
-
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
   );
@@ -59,11 +54,25 @@ export default function AddCommunicationForm({
     (state) => state.beneficiariesGroups,
   );
 
+  const fieldName = (name: string) => `activityCommunication.${index}.${name}`; // Dynamic field name generator
+
+  const selectedTransport = form.watch(fieldName('transportId'));
+  const sessionId = form.watch(fieldName('sessionId'));
+  const message = form.watch(fieldName('message'));
+  console.log(message);
+  React.useEffect(() => {
+    const transportData = appTransports?.find(
+      (t) => t.cuid === selectedTransport,
+    );
+    setContentType(transportData?.validationContent as ValidationContent);
+    if (transportData?.validationContent === ValidationContent.URL) {
+      setAudioFile(message);
+    }
+  }, [selectedTransport, contentType, setContentType]);
+
+  const fileUpload = useUploadFile();
   const activityCommunication = form.watch('activityCommunication') || {};
-  const isSaveDisabled =
-    !activityCommunication.groupType ||
-    !activityCommunication.groupId ||
-    fileUpload.isPending;
+
   // const stakeholdersGroups = [
   //   { id: '1', uuid: 'stkh-123', name: 'Health Workers' },
   //   { id: '2', uuid: 'stkh-456', name: 'NGO Representatives' },
@@ -76,19 +85,8 @@ export default function AddCommunicationForm({
   //   { id: '3', uuid: 'benf-303', name: 'Disabled Individuals' },
   // ];
 
-  const fieldName = (name: string) => `activityCommunication.${name}`; // Dynamic field name generator
-
-  const selectedTransport = form.watch(fieldName('transportId'));
-
-  const groupId = form.watch(fieldName('groupId'));
-
-  React.useEffect(() => {
-    const transportData = appTransports?.find(
-      (t) => t.cuid === selectedTransport,
-    );
-    setContentType(transportData?.validationContent as ValidationContent);
-  }, [selectedTransport]);
-
+  const isSaveDisabled =
+    !activityCommunication.groupType || !activityCommunication.groupId;
   const renderGroups = () => {
     const selectedGroupType = form.watch(fieldName('groupType'));
     let groups = <SelectLabel>Please select group type</SelectLabel>;
@@ -101,7 +99,7 @@ export default function AddCommunicationForm({
         ));
         break;
       case 'BENEFICIARY':
-        groups = beneficiaryGroups.map((group: any) => (
+        groups = beneficiaryGroups?.map((group: any) => (
           <SelectItem key={group.id} value={group.uuid}>
             {group.name}
           </SelectItem>
@@ -110,7 +108,6 @@ export default function AddCommunicationForm({
       default:
         break;
     }
-
     return groups;
   };
 
@@ -121,11 +118,16 @@ export default function AddCommunicationForm({
     if (file) {
       const formData = new FormData();
       formData.append('file', file);
+      console.log(formData);
+      // form.setValue(fieldName('audioURL'), {
+      //   fileName: 'file_example_MP3_700KB1.mp3',
+      //   mediaURL:
+      //     'https://rahat-rumsan.s3.us-east-1.amazonaws.com/aa/dev/QmeJHC7HHv7aLYwyD7h2Ax36NGVn7dLHm7iwV5w2WR72XR',
+      // });
       const { data: afterUpload } = await fileUpload.mutateAsync(formData);
+
       setAudioFile(afterUpload);
-      // event.target.value = '';
     }
-    // setIsPlaying(false);
   };
 
   React.useEffect(() => {
@@ -135,38 +137,19 @@ export default function AddCommunicationForm({
   React.useEffect(() => {
     setLoading(fileUpload.isPending);
   }, [fileUpload.isPending, !fileUpload.isPending]);
-
-  const handleRemoveclick = (index: number) => {
-    const scrollPosition = window.scrollY;
-    onRemove(index);
-    window.scrollTo(0, scrollPosition);
-  };
-
-  const handleSave = () => {
-    onSave(); // Call the save function
-
-    form.setValue(fieldName('groupId'), '');
-    form.setValue(fieldName('groupType'), '');
-    form.setValue(fieldName('message'), '');
-    form.setValue(fieldName('transportId'), '');
-    form.setValue(fieldName('audioURL'), '');
-  };
-
-  const handleEditClick = (itemData: any) => {
-    setAudioFile(itemData.audioFile); // Set previous audio file data
-    form.setValue('activityCommunication', itemData);
-  };
-
-  // Handle the edit button click
-  const editButtonClickHandler = (i: number, e: React.MouseEvent) => {
-    e.preventDefault();
-    const itemData = communicationData[i];
-    handleEditClick(itemData);
-  };
   return (
     <div className="border border-dashed rounded p-4 my-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-lg font-semibold">Add : Communication</h1>
+        <h1 className="text-lg font-semibold">Communication</h1>
+        {sessionId ? (
+          <span>
+            <Badge className="bg-yellow-100">communication completed</Badge>
+          </span>
+        ) : (
+          <div className="p-1 rounded-full bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 cursor-pointer">
+            <X size={20} strokeWidth={3} onClick={onClose} />
+          </div>
+        )}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <FormField
@@ -282,7 +265,18 @@ export default function AddCommunicationForm({
                 <FormItem className="col-span-2">
                   <FormLabel>Message</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Write message" {...field} />
+                    {typeof message === 'string' ? (
+                      <Textarea placeholder="Write message" {...field} />
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <p className="text-sm text-muted-foreground">
+                          {message?.fileName}
+                        </p>
+                        <audio controls src={message?.mediaURL} />
+                      </div>
+                    )}
+
+                    {/* <Textarea placeholder="Write message" {...field} /> */}
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -291,96 +285,23 @@ export default function AddCommunicationForm({
           />
         )}
       </div>
-
-      <div className="flex justify-end mt-4 gap-4">
-        <Button variant="outline">Remove</Button>
-        <Button
-          variant="outline"
-          onClick={handleSave}
-          type="button"
-          disabled={isSaveDisabled}
-        >
-          Save
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 gap-2 mt-4">
-        {communicationData?.map((t, i) => {
-          return (
-            <Card className="p-4 shadow-sm rounded-sm" key={i}>
-              <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-                  {appTransports?.find((g) => g.cuid === t.transportId)
-                    ?.name === 'EMAIL' ? (
-                    <Mail className="h-5 w-5 text-gray-500" />
-                  ) : appTransports?.find((g) => g.cuid === t.transportId)
-                      ?.name === 'SMS' ? (
-                    <MessageSquare className="h-5 w-5 text-gray-500" />
-                  ) : appTransports?.find((g) => g.cuid === t.transportId)
-                      ?.name === 'IVR' ? (
-                    <Phone className="h-5 w-5 text-gray-500" />
-                  ) : (
-                    <MessageSquare className="h-5 w-5 text-gray-500" />
-                  )}
-                </div>
-
-                <div className="flex-1">
-                  <div className="mb-1">
-                    <h3 className="text-sm font-medium">
-                      {stakeholdersGroups?.find((g) => g.uuid === t.groupId)
-                        ?.name ||
-                        beneficiaryGroups?.find((g) => g.uuid === t.groupId)
-                          ?.name}
-                    </h3>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <span>
-                        {
-                          appTransports?.find((g) => g.cuid === t.transportId)
-                            ?.name
-                        }
-                      </span>
-                      <span>•</span>
-                      <span>
-                        {' '}
-                        {t?.groupType.charAt(0).toUpperCase() +
-                          t?.groupType.slice(1).toLowerCase()}
-                      </span>
-                      <span>•</span>
-                    </div>
-                  </div>
-
-                  <p className="text-sm text-gray-700 mt-1">{t?.message}</p>
-                  {t?.audioURL?.mediaURL && (
-                    <div className="pt-2">
-                      <h3 className="text-sm font-medium mb-2">
-                        {t?.audioURL?.fileName}
-                      </h3>
-                      <audio
-                        src={t?.audioURL?.mediaURL}
-                        controls
-                        className="w-full h-10 "
-                        onPlay={() => setIsPlaying(true)}
-                        onPause={() => setIsPlaying(false)}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex gap-2">
-                  <PencilIcon
-                    className="text-blue-500 hover:text-blue-600 transition-colors w-5 h-5"
-                    onClick={(e) => editButtonClickHandler(i, e)}
-                  />
-                  <Trash2
-                    className="text-red-500 hover:text-red-600 transition-colors w-5 h-5"
-                    onClick={() => handleRemoveclick(i)}
-                  />
-                </div>
-              </div>
-            </Card>
-          );
-        })}
-      </div>
+      {form.watch(fieldName('audioURL'))?.mediaURL && (
+        <div className="flex flex-col gap-2">
+          <p className="text-sm text-muted-foreground">
+            {form.watch(fieldName('audioURL'))?.fileName}
+          </p>
+          <audio
+            controls
+            src={form.watch(fieldName('audioURL'))?.mediaURL}
+            className="bg-none w-full"
+            style={{
+              backgroundColor: 'transparent',
+              boxShadow: 'none',
+              border: 'none',
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

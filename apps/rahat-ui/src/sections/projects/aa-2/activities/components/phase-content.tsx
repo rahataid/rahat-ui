@@ -72,33 +72,31 @@ export default function PhaseContent({
           onSearch={(e) => setSearchQuery(e.target.value)}
         />
       </CardHeader>
-      <ScrollArea className="h-[70vh]">
-        <CardContent className="flex flex-col gap-2">
-          {loading ? (
-            <SpinnerLoader />
-          ) : filteredPhases?.length > 0 ? (
-            filteredPhases.map((phase, index) => (
-              <PhaseCard
-                key={index}
-                id={phase.id}
-                title={phase?.title}
-                location={phase.source}
-                responsibility={phase.responsibility}
-                onUpdateStatus={() => handleUpdateStatus(phase.id)}
-                status={phase.status}
-                leadTime={phase.leadTime}
-                className={`${
-                  (phase.phase === 'PREPAREDNESS' && 'border-green-500') ||
-                  (phase.phase === 'READINESS' && 'border-yellow-500') ||
-                  (phase.phase === 'ACTIVATION' && 'border-red-500')
-                } shadow-sm rounded-xl p-0`}
-              />
-            ))
-          ) : (
-            <NoResult />
-          )}
-        </CardContent>
-      </ScrollArea>
+      <CardContent className="flex flex-col gap-2 overflow-y-scroll overflow-x-hidden scrollbar-hidden ">
+        {loading ? (
+          <SpinnerLoader />
+        ) : filteredPhases?.length > 0 ? (
+          filteredPhases.map((phase, index) => (
+            <PhaseCard
+              key={index}
+              id={phase.id}
+              title={phase?.title}
+              location={phase.source}
+              responsibility={phase.responsibility}
+              onUpdateStatus={() => handleUpdateStatus(phase.id)}
+              status={phase.status}
+              leadTime={phase.leadTime}
+              className={`${
+                (phase.phase === 'PREPAREDNESS' && 'border-green-500') ||
+                (phase.phase === 'READINESS' && 'border-yellow-500') ||
+                (phase.phase === 'ACTIVATION' && 'border-red-500')
+              } shadow-sm rounded-xl p-0`}
+            />
+          ))
+        ) : (
+          <NoResult />
+        )}
+      </CardContent>
     </Card>
   );
 }

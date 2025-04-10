@@ -599,6 +599,26 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   };
 };
 
+export const useProjectBeneficiaryDetail = (payload: any) => {
+  const q = useProjectAction<Beneficiary>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const query = useQuery({
+    queryKey: ['beneficiary.get_one_beneficiary', restPayload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'beneficiary.get_one_beneficiary',
+          payload: restPayload,
+        },
+      });
+      return mutate?.data;
+    },
+  });
+  return query?.data;
+};
+
 export const useListELRedemption = (
   payload: Pagination & { uuid: UUID },
 ): any => {
@@ -1339,6 +1359,7 @@ export const useProjectInfo = (uuid: UUID) => {
         },
       };
       setSettings(settingsToUpdate);
+      // window.location.reload();
     }
   }, [query.data]);
   return query;

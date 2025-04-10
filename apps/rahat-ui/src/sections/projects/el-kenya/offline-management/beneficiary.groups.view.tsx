@@ -6,6 +6,7 @@ import { Banknote, Users } from 'lucide-react';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { initialStepData } from './select.vendor.multi.step.form';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import ClientSidePagination from '../card.pagination';
 
 interface BeneficiaryGroupsViewProps {
   benificiaryGroups: [];
@@ -21,6 +22,8 @@ export default function BeneficiaryGroupsView({
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
   const [searchTerm, setSearchTerm] = React.useState<string>('');
+  const [currentPage, setCurrentPage] = React.useState(0);
+  const [pageSize, setPageSize] = React.useState(10);
 
   const filteredGroups = React.useMemo(() => {
     if (benificiaryGroups) {
@@ -29,6 +32,16 @@ export default function BeneficiaryGroupsView({
       );
     }
   }, [benificiaryGroups, searchTerm]);
+
+  const paginatedGroups = React.useMemo(() => {
+    const start = currentPage * pageSize;
+    const end = start + pageSize;
+    return filteredGroups?.slice(start, end) ?? [];
+  }, [filteredGroups, currentPage, pageSize]);
+
+  React.useEffect(() => {
+    setCurrentPage(0);
+  }, [filteredGroups]);
 
   const handleSearch = React.useCallback((value: string) => {
     setSearchTerm(value);
@@ -44,9 +57,9 @@ export default function BeneficiaryGroupsView({
         />
       </div>
       <ScrollArea className="h-[calc(100vh-475px)]">
-        {filteredGroups?.length > 0 ? (
+        {paginatedGroups?.length > 0 ? (
           <div className="grid grid-cols-4 gap-4">
-            {filteredGroups?.map((benificiaryGroup) => {
+            {paginatedGroups?.map((benificiaryGroup) => {
               return (
                 <div
                   key={benificiaryGroup?.uuid}
@@ -106,6 +119,13 @@ export default function BeneficiaryGroupsView({
           <p className="text-center mt-10 text-muted-foreground">No result.</p>
         )}
       </ScrollArea>
+      <ClientSidePagination
+        totalItems={filteredGroups?.length || 0}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={setPageSize}
+      />
     </div>
   );
 }

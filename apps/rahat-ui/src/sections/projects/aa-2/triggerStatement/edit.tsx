@@ -1,5 +1,5 @@
 import React from 'react';
-import { Back, Heading } from 'apps/rahat-ui/src/common';
+import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -21,7 +21,10 @@ export default function EditTrigger() {
 
   const triggerDetailPage = `/projects/aa/${projectId}/trigger-statements/${triggerRepeatKey}`;
 
-  const trigger = useSingleTriggerStatement(projectId, triggerRepeatKey);
+  const { data: trigger, isLoading } = useSingleTriggerStatement(
+    projectId,
+    triggerRepeatKey,
+  );
 
   const triggerType = trigger?.source === 'MANUAL' ? 'manual' : 'automated';
 
@@ -142,7 +145,9 @@ export default function EditTrigger() {
     }
   }, [trigger]);
 
-  return (
+  return isLoading ? (
+    <TableLoader />
+  ) : (
     <div className="p-4">
       <Back />
       <Heading
@@ -180,6 +185,7 @@ export default function EditTrigger() {
             type="submit"
             className="w-40 mr-2"
             onClick={handleEditTriggers}
+            disabled={updateTrigger?.isPending}
           >
             Update
           </Button>

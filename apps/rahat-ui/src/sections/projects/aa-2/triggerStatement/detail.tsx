@@ -10,10 +10,9 @@ import {
   DeleteButton,
   EditButton,
   Heading,
-  IconLabelBtn,
+  TableLoader,
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
-import { Pencil, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
 export default function TriggerStatementDetail() {
@@ -22,7 +21,10 @@ export default function TriggerStatementDetail() {
 
   const triggerRepeatKey = window.location.href.split('/').slice(-1)[0];
 
-  const trigger = useSingleTriggerStatement(id, triggerRepeatKey);
+  const { data: trigger, isLoading } = useSingleTriggerStatement(
+    id,
+    triggerRepeatKey,
+  );
 
   const activateTigger = useActivateTrigger();
   const removeTrigger = useDeleteTriggerStatement();
@@ -42,7 +44,9 @@ export default function TriggerStatementDetail() {
     });
     router.push(`/projects/aa/${id}/trigger-statements`);
   };
-  return (
+  return isLoading ? (
+    <TableLoader />
+  ) : (
     <div className="p-4">
       <Back />
       <div className="flex justify-between items-center mb-4">
@@ -51,13 +55,6 @@ export default function TriggerStatementDetail() {
           description="Detailed view of the selected trigger"
         />
         <div className="flex space-x-2">
-          {/* <IconLabelBtn
-            variant="outline"
-            className="text-red-500 border-red-500 hover:bg-red-50 hover:text-red-600 hover:border-red-600"
-            Icon={Trash2}
-            name="Delete"
-            handleClick={handleDelete}
-          /> */}
           <DeleteButton
             className="rounded flex gap-1 items-center text-sm font-medium"
             name="trigger"
@@ -74,13 +71,6 @@ export default function TriggerStatementDetail() {
             }
             disabled={trigger?.phase?.isActive}
           />
-          {/* <IconLabelBtn
-            variant="outline"
-            className="text-gray-500"
-            Icon={Pencil}
-            name="Edit"
-            handleClick={() => {}}
-          /> */}
           <Button
             disabled={trigger?.source !== 'MANUAL' || trigger?.isTriggered}
             onClick={handleTrigger}
@@ -89,7 +79,11 @@ export default function TriggerStatementDetail() {
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div
+        className={`grid ${
+          trigger?.source !== 'MANUAL' ? 'grid-cols-2' : 'grid-cols-1'
+        } gap-4`}
+      >
         <div className="p-4 border rounded-sm">
           <Heading
             title={trigger?.title}

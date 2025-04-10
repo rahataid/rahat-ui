@@ -36,28 +36,6 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
               No triggers found
             </p>
           )}
-          {/* <TriggerCard
-            projectId={projectId}
-            triggerId="111"
-            phase="Readiness"
-            type="Manual"
-            isTriggered={false}
-            title="Ensure the Distribution of Emergency Response Kits to All Identified High-Risk and Vulnerable Households in the Affected Areas"
-            dataSource="GLOFAS"
-            riverBasin="Karnali at Chisapani"
-            time={new Date().toLocaleString()}
-          />
-          <TriggerCard
-            projectId={projectId}
-            triggerId="111"
-            phase="Activation"
-            type="Automatic"
-            isTriggered={true}
-            title="Ensure the Distribution of Emergency Response Kits to All Identified High-Risk and Vulnerable Households in the Affected Areas"
-            dataSource="GLOFAS"
-            riverBasin="Karnali at Chisapani"
-            time={new Date().toLocaleString()}
-          /> */}
         </div>
       </ScrollArea>
     </div>

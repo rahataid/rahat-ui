@@ -46,20 +46,20 @@ export default function EditCommunicationForm({
     '',
   );
   const [isPlaying, setIsPlaying] = React.useState(false);
-  // const stakeholdersGroups = useStakeholdersGroupsStore(
-  //   (state) => state.stakeholdersGroups,
-  // );
+  const stakeholdersGroups = useStakeholdersGroupsStore(
+    (state) => state.stakeholdersGroups,
+  );
 
-  // const beneficiaryGroups = useBeneficiariesGroupStore(
-  //   (state) => state.beneficiariesGroups,
-  // );
+  const beneficiaryGroups = useBeneficiariesGroupStore(
+    (state) => state.beneficiariesGroups,
+  );
 
   const fieldName = (name: string) => `activityCommunication.${index}.${name}`; // Dynamic field name generator
 
   const selectedTransport = form.watch(fieldName('transportId'));
   const sessionId = form.watch(fieldName('sessionId'));
   const message = form.watch(fieldName('message'));
-
+  console.log(message);
   React.useEffect(() => {
     const transportData = appTransports?.find(
       (t) => t.cuid === selectedTransport,
@@ -73,17 +73,17 @@ export default function EditCommunicationForm({
   const fileUpload = useUploadFile();
   const activityCommunication = form.watch('activityCommunication') || {};
 
-  const stakeholdersGroups = [
-    { id: '1', uuid: 'stkh-123', name: 'Health Workers' },
-    { id: '2', uuid: 'stkh-456', name: 'NGO Representatives' },
-    { id: '3', uuid: 'stkh-789', name: 'Community Leaders' },
-  ];
+  // const stakeholdersGroups = [
+  //   { id: '1', uuid: 'stkh-123', name: 'Health Workers' },
+  //   { id: '2', uuid: 'stkh-456', name: 'NGO Representatives' },
+  //   { id: '3', uuid: 'stkh-789', name: 'Community Leaders' },
+  // ];
 
-  const beneficiaryGroups = [
-    { id: '1', uuid: 'benf-101', name: 'Senior Citizens' },
-    { id: '2', uuid: 'benf-202', name: 'Pregnant Women' },
-    { id: '3', uuid: 'benf-303', name: 'Disabled Individuals' },
-  ];
+  // const beneficiaryGroups = [
+  //   { id: '1', uuid: 'benf-101', name: 'Senior Citizens' },
+  //   { id: '2', uuid: 'benf-202', name: 'Pregnant Women' },
+  //   { id: '3', uuid: 'benf-303', name: 'Disabled Individuals' },
+  // ];
 
   const isSaveDisabled =
     !activityCommunication.groupType || !activityCommunication.groupId;
@@ -267,15 +267,13 @@ export default function EditCommunicationForm({
                   <FormControl>
                     {typeof message === 'string' ? (
                       <Textarea placeholder="Write message" {...field} />
-                    ) : message?.mediaURL ? (
+                    ) : (
                       <div className="flex flex-col gap-2">
                         <p className="text-sm text-muted-foreground">
                           {message?.fileName}
                         </p>
                         <audio controls src={message?.mediaURL} />
                       </div>
-                    ) : (
-                      ''
                     )}
 
                     {/* <Textarea placeholder="Write message" {...field} /> */}

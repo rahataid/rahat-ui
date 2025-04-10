@@ -261,7 +261,6 @@ export default function EditActivity() {
       }),
     ),
   });
-  console.log(activityDetail);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -380,6 +379,7 @@ export default function EditActivity() {
         ...data,
         activityCommunication: activityCommunicationPayload,
       };
+      console.log('payload, after', payload);
     } else {
       payload = { uuid: activityID, ...data };
     }
@@ -670,18 +670,11 @@ export default function EditActivity() {
                             {uploadFile.isPending &&
                             documents?.[documents?.length - 1].name ===
                               file.name ? (
-                              <LoaderCircle
-                                size={16}
-                                strokeWidth={2.5}
-                                className="text-green-600 animate-spin"
-                              />
+                              <LoaderCircle className="text-green-600 animate-spin w-9 h-9" />
                             ) : (
-                              <FileCheck
-                                strokeWidth={2.5}
-                                className="w-8 h-8 text-green-600"
-                              />
+                              <FileCheck className="w-9 h-9 text-green-600" />
                             )}
-                            <p className="text-base ml-2 flex gap-2 items-center">
+                            <p className="text-sm ml-2 flex gap-2 items-center">
                               {file.name}
                             </p>
                             <X

@@ -49,6 +49,7 @@ export default function AddCommunicationForm({
     '',
   );
   const [isPlaying, setIsPlaying] = React.useState(false);
+  const fileUpload = useUploadFile();
 
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
@@ -60,7 +61,9 @@ export default function AddCommunicationForm({
 
   const activityCommunication = form.watch('activityCommunication') || {};
   const isSaveDisabled =
-    !activityCommunication.groupType || !activityCommunication.groupId;
+    !activityCommunication.groupType ||
+    !activityCommunication.groupId ||
+    fileUpload.isPending;
   // const stakeholdersGroups = [
   //   { id: '1', uuid: 'stkh-123', name: 'Health Workers' },
   //   { id: '2', uuid: 'stkh-456', name: 'NGO Representatives' },
@@ -85,8 +88,6 @@ export default function AddCommunicationForm({
     );
     setContentType(transportData?.validationContent as ValidationContent);
   }, [selectedTransport]);
-
-  const fileUpload = useUploadFile();
 
   const renderGroups = () => {
     const selectedGroupType = form.watch(fieldName('groupType'));
@@ -144,11 +145,11 @@ export default function AddCommunicationForm({
   const handleSave = () => {
     onSave(); // Call the save function
 
-    form.resetField(fieldName('groupId'), '');
+    form.setValue(fieldName('groupId'), '');
     form.setValue(fieldName('groupType'), '');
-    form.resetField(fieldName('message'), '');
-    form.resetField(fieldName('transportId'), '');
-    form.resetField(fieldName('audioURL'), '');
+    form.setValue(fieldName('message'), '');
+    form.setValue(fieldName('transportId'), '');
+    form.setValue(fieldName('audioURL'), '');
   };
 
   const handleEditClick = (itemData: any) => {

@@ -570,9 +570,8 @@ export default function AddActivities() {
                             documents?.[documents?.length - 1].name ===
                               file.name ? (
                               <LoaderCircle
-                                size={16}
                                 strokeWidth={2.5}
-                                className="text-green-600 animate-spin"
+                                className="text-green-600 animate-spin w-8 h-8"
                               />
                             ) : (
                               <FileCheck
@@ -580,7 +579,7 @@ export default function AddActivities() {
                                 className="w-8 h-8 text-green-600"
                               />
                             )}
-                            <p className="text-base ml-2 flex gap-2 items-center">
+                            <p className="text-sm ml-2 flex gap-2 items-center">
                               {file.name}
                             </p>
                             <X

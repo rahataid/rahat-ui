@@ -16,7 +16,7 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { IconLabelBtn } from 'apps/rahat-ui/src/common';
+import { IconLabelBtn, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { Plus } from 'lucide-react';
 
 // type IProps = {
@@ -139,45 +139,14 @@ type CommunicationData = {
 
 type CommunicationList = {
   activityCommunication: any[];
+  loading?: boolean;
 };
 
 export default function CommunicationList({
   activityCommunication,
+  loading,
 }: CommunicationList) {
-  const communications = [
-    {
-      groupName: 'Stakeholders Group Name',
-      type: 'SMS' as const,
-      stakeholders: 'Stakeholders',
-      status: 'Pending' as const,
-      message:
-        'As part of the Anticipatory Action project, we would like to inform you about an upcoming meeting on disaster preparedness.',
-    },
-    {
-      groupName: 'Stakeholders Group Name2',
-      type: 'SMS' as const,
-      stakeholders: 'Stakeholders',
-      status: 'Sent' as const,
-      message:
-        'As part of the Anticipatory Action project, we would like to inform you about an upcoming meeting on disaster preparedness.',
-    },
-    {
-      groupName: 'Stakeholders Group Name',
-      type: 'Email' as const,
-      stakeholders: 'Stakeholders',
-      status: 'Pending' as const,
-      message:
-        'As part of the Anticipatory Action project, we would like to inform you about an upcoming meeting on disaster preparedness.',
-    },
-    {
-      groupName: 'Stakeholders Group Name',
-      type: 'IVR' as const,
-      stakeholders: 'Stakeholders',
-      status: 'Pending' as const,
-      audioSrc: '/audio.mp3',
-    },
-  ];
-
+  console.log('commlist', activityCommunication);
   return (
     <div className="border px-4 pt-2 rounded-xl h-[calc(75vh)]">
       <div className="mb-4 flex items-center justify-between ">
@@ -206,6 +175,7 @@ export default function CommunicationList({
         </TabsList>
 
         <TabsContent value="communications">
+          {loading && <SpinnerLoader />}
           <ScrollArea className="overflow-y-auto h-[calc(100vh-320px)] ">
             {activityCommunication?.map((comm, index) => (
               <CommunicationCard key={index} activityCommunication={comm} />
@@ -214,6 +184,7 @@ export default function CommunicationList({
         </TabsContent>
 
         <TabsContent value="history">
+          {loading && <SpinnerLoader />}
           {activityCommunication
             ?.filter((d) => d.status === 'Sent')
             .map((comm, index) => (

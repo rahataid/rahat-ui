@@ -1,9 +1,10 @@
 import { UUID } from 'crypto';
-import { useProjectAction } from '../../projects';
+import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSwal } from 'libs/query/src/swal';
 import { usePhasesStore } from './phases.store';
 import React from 'react';
+import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
 export const useSinglePhase = (uuid: UUID, phaseId: UUID) => {
   const q = useProjectAction();
@@ -79,7 +80,9 @@ export const usePhases = (uuid: UUID) => {
   const { setPhase } = usePhasesStore((state) => ({
     setPhase: state.setPhases,
   }));
-
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
   const query = useQuery({
     queryKey: ['phases', uuid],
     queryFn: async () => {
@@ -87,7 +90,16 @@ export const usePhases = (uuid: UUID) => {
         uuid,
         data: {
           action: 'ms.phases.getAll',
-          payload: {},
+          payload: {
+            activeYear:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'active_year'
+              ],
+            riverBasin:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'river_basin'
+              ],
+          },
         },
       });
       return mutate.data;

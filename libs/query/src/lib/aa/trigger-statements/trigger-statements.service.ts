@@ -5,6 +5,8 @@ import { useProjectAction } from '../../projects/projects.service';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { useSwal } from '../../../swal';
+import { useProjectSettingsStore } from '../../projects';
+import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
 export const useCreateTriggerStatement = () => {
   const q = useProjectAction();
@@ -222,7 +224,9 @@ export const useAATriggerStatements = (uuid: UUID, payload: any) => {
   const { setTriggers } = useAAStationsStore((state) => ({
     setTriggers: state.setTriggers,
   }));
-
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
   const query = useQuery({
     queryKey: ['triggerstatements', uuid, payload],
     queryFn: async () => {
@@ -230,7 +234,17 @@ export const useAATriggerStatements = (uuid: UUID, payload: any) => {
         uuid,
         data: {
           action: 'ms.triggers.getAll',
-          payload: payload,
+          payload: {
+            ...payload,
+            activeYear:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'active_year'
+              ],
+            riverBasin:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'river_basin'
+              ],
+          },
         },
       });
       return mutate.data;
@@ -311,6 +325,53 @@ export const useActivateTrigger = () => {
       q.reset();
       toast.fire({
         title: 'Trigger activation failed.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useUpdateTriggerStatement = () => {
+  const qc = useQueryClient();
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      triggerUpdatePayload,
+    }: {
+      projectUUID: UUID;
+      triggerUpdatePayload: any;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'ms.triggers.update',
+          payload: triggerUpdatePayload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['triggerStatements'] });
+      qc.invalidateQueries({ queryKey: ['triggerStatement'] });
+      toast.fire({
+        title: 'Trigger updated successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while updating trigger.',
         icon: 'error',
         text: errorMessage,
       });

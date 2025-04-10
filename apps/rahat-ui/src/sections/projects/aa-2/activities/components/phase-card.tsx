@@ -11,8 +11,9 @@ import {
 import { RefreshCw, User } from 'lucide-react';
 
 interface PhaseCardProps {
+  id: string;
   status: string;
-  description: string;
+  title: string;
   location: string;
   leadTime: string;
   responsibility: string;
@@ -22,7 +23,8 @@ interface PhaseCardProps {
 
 export default function PhaseCard({
   status,
-  description,
+  id,
+  title,
   location,
   leadTime,
   responsibility,
@@ -33,25 +35,27 @@ export default function PhaseCard({
     <Card
       className={(cn(' border-gray-300 shadow-sm p-4 rounded-xl '), className)}
     >
-      <CardContent className="space-y-2">
-        <div className="flex items-center justify-between pt-1.5">
+      <CardContent className="space-y-2 p-2">
+        <div className="flex items-center justify-between ">
           <Badge className="bg-gray-200 text-gray-700 font-normal">
             {status}
           </Badge>
           <div
-            className="flex items-center gap-2 text-blue-500"
+            className="flex items-center gap-2 text-blue-500 hover:cursor-pointer"
             onClick={onUpdateStatus}
           >
             Update Status <RefreshCw className="w-4 h-4" />
           </div>
         </div>
-        <p className="text-sm font-medium text-gray-900">{description}</p>
+        <p className="text-sm font-medium text-gray-900 truncate w-96">
+          {title}
+        </p>
         <p className="text-sm text-gray-500">
           {location ?? ''} • {leadTime}
         </p>
       </CardContent>
-      <CardFooter>
-        <div className="flex items-center gap-2">
+      <CardFooter className="p-2 pt-0">
+        <div className="flex items-center gap-2 p-0">
           <User className="w-4 h-4 text-gray-500" />
           <span className="text-sm text-gray-500">{responsibility ?? ''}</span>
         </div>

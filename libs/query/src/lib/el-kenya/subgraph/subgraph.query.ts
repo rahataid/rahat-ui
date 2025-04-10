@@ -6,6 +6,7 @@ import {
   KenyaBeneficiaryTransactions,
   KenyaVendorTransactions,
   KenyaProjectTransactions,
+  SmsVoucherProjectTransactions,
 } from './graph.query';
 import { useEffect } from 'react';
 import { useKenyaProjectSubgraphStore } from './stores/kenya-project.store';
@@ -33,6 +34,44 @@ export const useKenyaProjectTransactions = () => {
           'offlineClaimProcesseds',
           'otpAddeds',
           'otpVerifieds',
+          'walkInBeneficiaryAddeds',
+        ];
+        const newData = transactionsType.reduce((acc, type) => {
+          const transactions = data[type] || [];
+          return acc.concat(transactions.map(formatTransaction));
+        }, []);
+        return newData;
+      },
+    },
+    queryClient,
+  );
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      console.log(query);
+      setProjectTransactions(query.data);
+    }
+  }, [query, queryClient]);
+
+  return query;
+};
+
+export const useSmsVoucherProjectTransactions = (first: number, skip: number) => {
+  const { subgraphClient } = useKenyaSubgraph();
+  const { queryClient } = useRSQuery();
+  const setProjectTransactions = useKenyaProjectSubgraphStore(
+    (state) => state.setProjectTransactions,
+  );
+
+  const query = useQuery(
+    {
+      queryKey: ['ProjectTransactions', first, skip],
+      queryFn: async () => {
+        const { data } = await subgraphClient.query(
+          SmsVoucherProjectTransactions(first, skip),
+          {},
+        );
+        const transactionsType = [
           'walkInBeneficiaryAddeds',
         ];
         const newData = transactionsType.reduce((acc, type) => {

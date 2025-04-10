@@ -8,14 +8,24 @@ import {
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { useElkenyaTransactionsTableColumns } from './use.transactions.table.columns';
-import { useKenyaProjectTransactions } from '@rahat-ui/query';
+import { useSmsVoucherProjectTransactions } from '@rahat-ui/query';
 import React, { useState } from 'react';
 import ElkenyaTable from '../table.component';
-import { ClientSidePagination } from '../clientSidePagination';
+import { TransactionPagination } from '../transactionPagination';
 
 export default function TransactionsView() {
   const { id } = useParams() as { id: UUID };
-  const { data, error, isLoading } = useKenyaProjectTransactions();
+
+  const [page, setPage] = useState<number>(0);
+  const [pageSize, setPageSize] = useState<number>(100);
+  const first = pageSize;
+  const skip = page * first;
+
+  const { data, isLoading } = useSmsVoucherProjectTransactions(first, skip);
+
+  // Check if there is more data
+  const hasNextPage = data && data.length === pageSize;
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [sorting, setSorting] = useState([{ id: 'timeStamp', desc: true }]);
@@ -26,6 +36,7 @@ export default function TransactionsView() {
   const table = useReactTable({
     data: data || [],
     columns,
+    manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -35,6 +46,7 @@ export default function TransactionsView() {
       sorting,
     },
   });
+
   return (
     <>
       <div className="p-4">
@@ -52,7 +64,13 @@ export default function TransactionsView() {
           />
         </div>
       </div>
-      <ClientSidePagination table={table} />
+      <TransactionPagination
+        hasNextPage={hasNextPage || false}
+        pageSize={pageSize}
+        page={page}
+        setPageSize={setPageSize}
+        setPage={setPage}
+      />
     </>
   );
 }

@@ -655,6 +655,7 @@ export const useListConsentConsumer = (payload: GetConsumerData) => {
         ...query.data,
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
+              createdAt: new Date(row?.createdAt).toLocaleString() || '',
               walletAddress: row?.walletAddress?.toString(),
               vendorName: row?.extras?.vendorName || '',
               gender:

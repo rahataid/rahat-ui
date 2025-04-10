@@ -35,9 +35,9 @@ export default function VendorsDetail() {
   const vendorUUID = searchParams.get('vendorUUID') as UUID;
   const voucherReedeemed = searchParams.get('voucherReedeemed');
 
-  const projectClosed = useProjectStore(
-    (state) => state.singleProject?.projectClosed,
-  );
+  // const projectClosed = useProjectStore(
+  //   (state) => state.singleProject?.projectClosed,
+  // );
 
   const { data, isLoading: isVendorLoading } = useVendorBeneficiary(
     id,

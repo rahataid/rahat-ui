@@ -48,7 +48,7 @@ export default function RiverWatchView() {
   ) : (
     <div className="flex flex-col space-y-4">
       <div
-        className="p-4 rounded-sm border shadow flex justify-between space-x-4 cursor-pointer"
+        className="p-4 rounded-sm border shadow flex justify-between space-x-4 cursor-pointer hover:shadow-md"
         onClick={() =>
           router.push(
             `/projects/aa/${projectId}/data-sources/dhm/river-watch/${riverWatch?.id}`,

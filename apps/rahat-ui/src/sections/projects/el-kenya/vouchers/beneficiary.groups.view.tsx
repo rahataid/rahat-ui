@@ -12,6 +12,7 @@ import {
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import ClientSidePagination from '../card.pagination';
 interface BeneficiaryGroupsView {
   handleStepDataChange: (e) => void;
   handleNext: any;
@@ -59,6 +60,7 @@ export default function BeneficiaryGroupsView({
       group.name?.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [beneficiaryGroups, searchTerm]);
+
   const groupId = beneficiaryGroups?.map(
     (beneficiaryGroup: any) => beneficiaryGroup?.uuid,
   );
@@ -67,9 +69,17 @@ export default function BeneficiaryGroupsView({
     useGetBeneficiariesDisbursements(id as UUID, groupId || []);
 
   const [disbursementData, setDisbursementData] = React.useState([]);
+  const [currentPage, setCurrentPage] = React.useState(0);
+  const [pageSize, setPageSize] = React.useState(10);
 
   const [selectedGroup, setSelectedGroup] = React.useState<any[]>([]);
   const [isSelectAll, setIsSelectAll] = React.useState<boolean>(false);
+
+  const paginatedGroups = React.useMemo(() => {
+    const start = currentPage * pageSize;
+    const end = start + pageSize;
+    return filteredGroups?.slice(start, end) ?? [];
+  }, [filteredGroups, currentPage, pageSize]);
 
   useEffect(() => {
     if (benificiaryDisbursement) {
@@ -77,6 +87,9 @@ export default function BeneficiaryGroupsView({
     }
   }, [benificiaryDisbursement]);
 
+  React.useEffect(() => {
+    setCurrentPage(0);
+  }, [filteredGroups]);
   const handleSearch = React.useCallback((value: string) => {
     setSearchTerm(value);
   }, []);
@@ -133,15 +146,10 @@ export default function BeneficiaryGroupsView({
           <Button
             type="button"
             disabled={selectedGroup?.length === 0}
-            onClick={
-              () => {
-                setBeneficiaryGroupSelected(true);
-                handleNext();
-              }
-              // router.push(
-              //   `/projects/el-kenya/${id}/vouchers/bulk?benefGroup=true`,
-              // )
-            }
+            onClick={() => {
+              setBeneficiaryGroupSelected(true);
+              handleNext();
+            }}
           >
             <Plus size={18} className="mr-1" />
             Bulk Assign
@@ -161,9 +169,9 @@ export default function BeneficiaryGroupsView({
         <ScrollArea className="h-[calc(100vh-554px)]">
           {isLoading ? (
             <TableLoader />
-          ) : filteredGroups?.length > 0 ? (
+          ) : paginatedGroups?.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">
-              {filteredGroups?.map((beneficiaryGroup) => {
+              {paginatedGroups?.map((beneficiaryGroup) => {
                 const disbursements = disbursementData?.filter(
                   (disbursement) =>
                     disbursement.beneficiaryGroupId === beneficiaryGroup.uuid,
@@ -180,34 +188,6 @@ export default function BeneficiaryGroupsView({
                   >
                     <div className="flex flex-col space-y-2">
                       <div className="flex justify-end">
-                        {/* <Checkbox
-                        onCheckedChange={(e: boolean) => {
-                          if (e) {
-                            const currentData = stepData.selectedGroups;
-                            handleStepDataChange({
-                              target: {
-                                name: 'selectedGroups',
-                                value: [...currentData, beneficiaryGroup],
-                              },
-                            });
-                          } else {
-                            const currentData = stepData.selectedGroups.filter(
-                              (group) => group.uuid !== beneficiaryGroup.uuid,
-                            );
-                            handleStepDataChange({
-                              target: {
-                                name: 'selectedGroups',
-                                value: currentData,
-                                beneficiaryGroup,
-                              },
-                            });
-                            // const filteredSelected = selectedGroupId.filter(
-                            //   (id) => id !== uuid,
-                            // );
-                            // setSelectedGroupId(filteredSelected);
-                          }
-                        }}
-                      /> */}
                         <Checkbox
                           checked={selectedGroup.some(
                             (sg) => sg.uuid === beneficiaryGroup.uuid,
@@ -248,6 +228,13 @@ export default function BeneficiaryGroupsView({
             </p>
           )}
         </ScrollArea>
+        <ClientSidePagination
+          totalItems={filteredGroups?.length || 0}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={setPageSize}
+        />
       </div>
     </div>
   );

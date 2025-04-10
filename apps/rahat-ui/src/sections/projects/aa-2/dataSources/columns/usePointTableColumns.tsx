@@ -4,14 +4,16 @@ import { ColumnDef } from '@tanstack/react-table';
 export const usePointTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'date',
+      accessorKey: 'datetime',
       header: 'Date',
-      cell: ({ row }) => <div>{row.getValue('date')}</div>,
+      cell: ({ row }) => (
+        <div>{new Date(row.getValue('datetime')).toLocaleString()}</div>
+      ),
     },
     {
-      accessorKey: 'point',
+      accessorKey: 'value',
       header: 'Point',
-      cell: ({ row }) => <div>{row.getValue('point')}</div>,
+      cell: ({ row }) => <div>{row.getValue('value')}</div>,
     },
   ];
   return columns;

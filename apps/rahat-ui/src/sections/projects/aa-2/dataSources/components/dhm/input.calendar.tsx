@@ -15,7 +15,7 @@ export default function InputCalendar() {
   );
   return (
     <Popover>
-      <PopoverTrigger asChild>
+      <PopoverTrigger asChild disabled>
         <Button variant={'outline'} className="w-52 pl-3 text-left font-normal">
           <span className="text-muted-foreground">
             {selectedDate ? format(selectedDate, 'PPP') : 'Pick a date...'}

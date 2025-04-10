@@ -3,7 +3,11 @@ import { usePointTableColumns } from '../../columns/usePointTableColumns';
 import ZoomableLineChart from './chart';
 import WaterLevelTable from './table';
 
-export default function PointWaterLevel() {
+type IProps = {
+  waterLevels: any;
+};
+
+export default function PointWaterLevel({ waterLevels }: IProps) {
   const [data] = React.useState(() => generateData());
 
   const series = [
@@ -14,11 +18,6 @@ export default function PointWaterLevel() {
   ];
 
   const columns = usePointTableColumns();
-
-  const pointTableData = [
-    { date: new Date().toLocaleString(), point: '1.96' },
-    { date: new Date().toLocaleString(), point: '1.96' },
-  ];
 
   function generateData(): [number, number][] {
     const base = new Date('2023-01-01').getTime();
@@ -33,7 +32,7 @@ export default function PointWaterLevel() {
       <div className="bg-secondary">
         <ZoomableLineChart series={series} title="Custom Zoom Chart" />
       </div>
-      <WaterLevelTable tableData={pointTableData} columns={columns} />
+      <WaterLevelTable tableData={waterLevels} columns={columns} />
     </div>
   );
 }

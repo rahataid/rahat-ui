@@ -4,24 +4,26 @@ import { ColumnDef } from '@tanstack/react-table';
 export const useHourlyAndDailyTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'date',
+      accessorKey: 'datetime',
       header: 'Date',
-      cell: ({ row }) => <div>{row.getValue('date')}</div>,
+      cell: ({ row }) => (
+        <div>{new Date(row.getValue('datetime')).toLocaleString()}</div>
+      ),
     },
     {
       accessorKey: 'min',
       header: 'Min',
-      cell: ({ row }) => <div>{row.getValue('min')}</div>,
+      cell: ({ row }) => <div>{row.getValue('min') || 'N/A'}</div>,
     },
     {
       accessorKey: 'max',
       header: 'Max',
-      cell: ({ row }) => <div>{row.getValue('max')}</div>,
+      cell: ({ row }) => <div>{row.getValue('max') || 'N/A'}</div>,
     },
     {
-      accessorKey: 'average',
+      accessorKey: 'value',
       header: 'Average',
-      cell: ({ row }) => <div>{row.getValue('average')}</div>,
+      cell: ({ row }) => <div>{row.getValue('value')}</div>,
     },
   ];
   return columns;

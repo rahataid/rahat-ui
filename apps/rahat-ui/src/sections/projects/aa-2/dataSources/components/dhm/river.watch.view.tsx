@@ -1,54 +1,69 @@
+import { useDhmWaterLevels } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Heading } from 'apps/rahat-ui/src/common';
+import { Heading, TableLoader } from 'apps/rahat-ui/src/common';
+import { UUID } from 'crypto';
 import { MapPin, RadioTower, Skull, TriangleAlert } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import React from 'react';
 
 export default function RiverWatchView() {
   const router = useRouter();
   const params = useParams();
-  const projectId = params.id;
+  const projectId = params.id as UUID;
 
-  const cardData = [
-    {
-      icon: RadioTower,
-      label: 'Station Index',
-      value: '281.5',
-    },
-    {
-      icon: MapPin,
-      label: 'District',
-      value: 'Darchula',
-    },
-    {
-      icon: TriangleAlert,
-      label: 'Warning Level',
-      value: '152.6',
-    },
-    {
-      icon: Skull,
-      label: 'Danger Level',
-      value: '152.8',
-    },
-  ];
-  return (
+  const { data: riverWatch, isLoading } = useDhmWaterLevels(projectId, {
+    riverBasin: 'Mahakali',
+    type: 'POINT',
+    from: '2025/04/04',
+    to: '2025/04/04',
+  });
+
+  const cardData = React.useMemo(
+    () => [
+      {
+        icon: RadioTower,
+        label: 'Station Index',
+        value: riverWatch?.info?.stationIndex,
+      },
+      {
+        icon: MapPin,
+        label: 'District',
+        value: riverWatch?.info?.district,
+      },
+      {
+        icon: TriangleAlert,
+        label: 'Warning Level',
+        value: riverWatch?.info?.warning_level,
+      },
+      {
+        icon: Skull,
+        label: 'Danger Level',
+        value: riverWatch?.info?.danger_level,
+      },
+    ],
+    [riverWatch],
+  );
+  return isLoading ? (
+    <TableLoader />
+  ) : (
     <div className="flex flex-col space-y-4">
       <div
         className="p-4 rounded-sm border shadow flex justify-between space-x-4 cursor-pointer"
         onClick={() =>
           router.push(
-            `/projects/aa/${projectId}/data-sources/dhm/river-watch/111`,
+            `/projects/aa/${projectId}/data-sources/dhm/river-watch/${riverWatch?.id}`,
           )
         }
       >
         <div className="w-full">
           <div className="flex justify-between gap-4">
             <Heading
-              title="Doda (Machheli) River at East West Highway"
+              title={riverWatch?.info?.name}
               titleStyle="text-xl/6 font-semibold"
-              description="Doda (Machheli) River at East West Highway"
+              description={riverWatch?.info?.description}
             />
             <div>
-              <Badge>Steady</Badge>
+              <Badge>{riverWatch?.info?.steady}</Badge>
             </div>
           </div>
           <div className="grid grid-cols-4 gap-4">
@@ -69,90 +84,14 @@ export default function RiverWatchView() {
           </div>
         </div>
         <div className="p-4 rounded-sm border shadow text-center w-64">
-          <p className="text-primary font-semibold text-3xl/10">1.955m</p>
+          <p className="text-primary font-semibold text-3xl/10">
+            {riverWatch?.info?.waterLevel?.value}
+          </p>
           <p className="text-sm/6 font-medium">Water Level</p>
           <p className="text-gray-500 text-sm/6">
-            {new Date().toLocaleString()}
+            {new Date(riverWatch?.info?.waterLevel?.datetime).toLocaleString()}
           </p>
-          <Badge>Below Warning Level</Badge>
-        </div>
-      </div>
-
-      <div className="p-4 rounded-sm border shadow flex justify-between space-x-4">
-        <div className="w-full">
-          <div className="flex justify-between gap-4">
-            <Heading
-              title="Doda (Machheli) River at East West Highway"
-              titleStyle="text-xl/6 font-semibold"
-              description="Doda (Machheli) River at East West Highway"
-            />
-            <div>
-              <Badge>Steady</Badge>
-            </div>
-          </div>
-          <div className="grid grid-cols-4 gap-4">
-            {cardData?.map((d) => {
-              const Icon = d.icon;
-              return (
-                <div className="flex space-x-3 items-center">
-                  <div>
-                    <Icon className="text-gray-500" size={20} />
-                  </div>
-                  <div>
-                    <p className="text-sm/6 font-medium mb-1">{d.label}</p>
-                    <p className="text-sm/4 text-gray-600">{d.value}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        <div className="p-4 rounded-sm border shadow text-center w-64">
-          <p className="text-primary font-semibold text-3xl/10">1.955m</p>
-          <p className="text-sm/6 font-medium">Water Level</p>
-          <p className="text-gray-500 text-sm/6">
-            {new Date().toLocaleString()}
-          </p>
-          <Badge>Below Warning Level</Badge>
-        </div>
-      </div>
-
-      <div className="p-4 rounded-sm border shadow flex justify-between space-x-4">
-        <div className="w-full">
-          <div className="flex justify-between gap-4">
-            <Heading
-              title="Doda (Machheli) River at East West Highway"
-              titleStyle="text-xl/6 font-semibold"
-              description="Doda (Machheli) River at East West Highway"
-            />
-            <div>
-              <Badge>Steady</Badge>
-            </div>
-          </div>
-          <div className="grid grid-cols-4 gap-4">
-            {cardData?.map((d) => {
-              const Icon = d.icon;
-              return (
-                <div className="flex space-x-3 items-center">
-                  <div>
-                    <Icon className="text-gray-500" size={20} />
-                  </div>
-                  <div>
-                    <p className="text-sm/6 font-medium mb-1">{d.label}</p>
-                    <p className="text-sm/4 text-gray-600">{d.value}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        <div className="p-4 rounded-sm border shadow text-center w-64">
-          <p className="text-primary font-semibold text-3xl/10">1.955m</p>
-          <p className="text-sm/6 font-medium">Water Level</p>
-          <p className="text-gray-500 text-sm/6">
-            {new Date().toLocaleString()}
-          </p>
-          <Badge>Below Warning Level</Badge>
+          <Badge>{riverWatch?.info?.status}</Badge>
         </div>
       </div>
     </div>

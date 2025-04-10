@@ -42,8 +42,8 @@ function RiverWatchMap({ coordinates }: any) {
         {/* Map Indicators  */}
         <div className="absolute top-2 right-2 bg-white p-4 rounded shadow-lg z-10 text-xs">
           <div className="flex space-x-2 items-center">
-            <MapPin color="red" />
-            <p>River Watch</p>
+            <MapPin color="red" size={18} fill="red" fillOpacity={0.3} />
+            <p>River</p>
           </div>
         </div>
 
@@ -84,7 +84,10 @@ function RiverWatchMap({ coordinates }: any) {
                 latitude={Number(item.latitude)}
               >
                 <MapPin
+                  size={18}
                   color="red"
+                  fill="red"
+                  fillOpacity={0.3}
                   onClick={(e) => zoomToSelectedLoc(e, item)}
                 />
               </Marker>

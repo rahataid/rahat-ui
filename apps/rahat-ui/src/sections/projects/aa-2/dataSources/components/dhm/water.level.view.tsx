@@ -1,4 +1,3 @@
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Tabs,
   TabsContent,
@@ -9,11 +8,18 @@ import { Heading } from 'apps/rahat-ui/src/common';
 import InputCalendar from './input.calendar';
 import PointWaterLevel from './point.water.level';
 import HourlyAndDailyWaterLevel from './hourly.and.daily.water.level';
+import React, { Dispatch, SetStateAction } from 'react';
 
-export function WaterLevelView() {
+type IProps = {
+  activeTab: string;
+  setActiveTab: Dispatch<SetStateAction<string>>;
+  data: any;
+};
+
+export function WaterLevelView({ activeTab, setActiveTab, data }: IProps) {
   return (
     <div className="p-4 rounded-sm border shadow">
-      <Tabs defaultValue="Point">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="flex justify-between items-center">
           <Heading
             title="Water Level"
@@ -45,13 +51,13 @@ export function WaterLevelView() {
           </div>
         </div>
         <TabsContent value="Point">
-          <PointWaterLevel />
+          <PointWaterLevel waterLevels={data?.info?.history} />
         </TabsContent>
         <TabsContent value="Hourly">
-          <HourlyAndDailyWaterLevel />
+          <HourlyAndDailyWaterLevel waterLevels={data?.info?.history} />
         </TabsContent>
         <TabsContent value="Daily">
-          <HourlyAndDailyWaterLevel />
+          <HourlyAndDailyWaterLevel waterLevels={data?.info?.history} />
         </TabsContent>
       </Tabs>
     </div>

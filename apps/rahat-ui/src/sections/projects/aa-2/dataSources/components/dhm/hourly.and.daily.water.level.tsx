@@ -1,4 +1,5 @@
 import { useHourlyAndDailyTableColumns } from '../../columns/useHourlyAndDailyTableColumns';
+import TimeSeriesChart from './chart';
 import WaterLevelTable from './table';
 
 type Iprops = {
@@ -6,11 +7,21 @@ type Iprops = {
 };
 
 export default function HourlyAndDailyWaterLevel({ waterLevels }: Iprops) {
+  const series = [
+    {
+      name: 'Water Level',
+      data: waterLevels?.map((item: any) => [
+        new Date(item.datetime).getTime(),
+        item.value,
+      ]),
+    },
+  ];
+
   const columns = useHourlyAndDailyTableColumns();
 
   return (
     <div className="grid grid-cols-2 gap-4">
-      <div className="bg-secondary">Chart</div>
+      <TimeSeriesChart series={series} />
       <WaterLevelTable tableData={waterLevels} columns={columns} />
     </div>
   );

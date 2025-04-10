@@ -1,44 +1,38 @@
-// components/ZoomableLineChart.tsx
-import React from 'react';
-import ReactApexChart from 'react-apexcharts';
-import { ApexOptions } from 'apexcharts';
+'use client';
 
-type ZoomableLineChartProps = {
-  series: { name: string; data: [number, number][] }[];
-  title?: string;
+import React from 'react';
+import dynamic from 'next/dynamic';
+const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
+
+type ChartProps = {
+  series: ApexAxisChartSeries;
 };
 
-const ZoomableLineChart: React.FC<ZoomableLineChartProps> = ({
-  series,
-  title = 'Zoomable Line Chart',
-}) => {
-  const options: ApexOptions = {
+const TimeSeriesChart = ({ series }: ChartProps) => {
+  const options: ApexCharts.ApexOptions = {
     chart: {
       type: 'line',
-      height: 350,
-      zoom: { enabled: true },
-      toolbar: { autoSelected: 'zoom' },
+      zoom: { enabled: false },
     },
-    dataLabels: { enabled: false },
-    stroke: { curve: 'smooth' },
-    title: {
-      text: title,
-      align: 'left',
+    xaxis: {
+      type: 'datetime',
+      title: {
+        text: 'Time Stamp',
+      },
     },
-    xaxis: { type: 'datetime' },
+    yaxis: {
+      title: {
+        text: 'Water Level (m)',
+      },
+    },
     tooltip: {
-      x: { format: 'dd MMM yyyy' },
+      x: { format: 'dd MMM HH:mm' },
     },
   };
 
   return (
-    <ReactApexChart
-      options={options}
-      series={series}
-      type="line"
-      height={350}
-    />
+    <ApexChart options={options} series={series} type="line" height={400} />
   );
 };
 
-export default ZoomableLineChart;
+export default TimeSeriesChart;

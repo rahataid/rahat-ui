@@ -1,12 +1,10 @@
-import { Back, Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
-import { Trash } from 'lucide-react';
-import React from 'react';
-import { CommunicationDetailCard } from './communication.card';
-import { useParams, useRouter } from 'next/navigation';
-import { UUID } from 'crypto';
 import { useSingleActivity } from '@rahat-ui/query';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { Back, Heading, SpinnerLoader } from 'apps/rahat-ui/src/common';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
+import { CommunicationDetailCard } from './communication.card';
 const activityDetail = {
   id: 4,
   uuid: '7b21ae50-41e2-4d68-8ba1-0b127f5d5af1',
@@ -126,11 +124,11 @@ const CommunicationDetailsView = () => {
   const projectId = params.id as UUID;
   const activityId = params.activityId as UUID;
 
+  const { data: activityDetail, isLoading } = useSingleActivity(
+    projectId,
+    activityId,
+  );
 
-  // const { data: activityDetail, isLoading = false } = useSingleActivity(
-  //   projectId,
-  //   activityId,
-  // );
   return (
     <div className="p-4">
       <div className="flex flex-col space-y-0">
@@ -144,7 +142,7 @@ const CommunicationDetailsView = () => {
             />
           </div>
           <div className="flex flex-col">
-            <p className="text-sm text-muted-foreground">Activity title:</p>
+            {/* <p className="text-sm text-muted-foreground">Activity title:</p> */}
             <p className="text-base">
               {activityDetail?.title}{' '}
               <span>
@@ -153,18 +151,23 @@ const CommunicationDetailsView = () => {
             </p>
           </div>
         </div>
-        <ScrollArea className="h-[calc(100vh-280px)]">
-          <div className="grid lg:grid-cols-2 gap-3">
-            {activityDetail?.activityCommunication?.map((comm: any) => (
-              <CommunicationDetailCard
-                key={comm.communicationId}
-                activityCommunication={comm}
-                activityId={activityId}
-                projectId={projectId}
-              />
-            ))}
-          </div>
-        </ScrollArea>
+
+        {isLoading ? (
+          <SpinnerLoader className="w-10 h-10" />
+        ) : (
+          <ScrollArea className="h-[calc(100vh-280px)]">
+            <div className="grid lg:grid-cols-3 gap-3">
+              {activityDetail?.activityCommunication?.map((comm: any) => (
+                <CommunicationDetailCard
+                  key={comm.communicationId}
+                  activityCommunication={comm}
+                  activityId={activityId}
+                  projectId={projectId}
+                />
+              ))}
+            </div>
+          </ScrollArea>
+        )}
       </div>
     </div>
   );

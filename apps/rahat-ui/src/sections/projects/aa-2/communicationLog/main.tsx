@@ -12,15 +12,6 @@ import React from 'react';
 import { usePagination } from '@rahat-ui/query';
 
 export default function CommunicationMainLogsView() {
-  const {
-    pagination,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    setPagination,
-    setFilters,
-    filters,
-  } = usePagination();
   const commStats = [
     {
       componentType: 'DATACARD',

@@ -43,9 +43,8 @@ export default function CommsActivitiesTable() {
 
   const { activitiesData, activitiesMeta } = useActivitiesHavingComms(
     projectId as UUID,
-    { ...pagination },
+    { ...pagination, filters },
   );
-
   const columns = useCommsActivitiesTableColumns();
 
   const table = useReactTable({

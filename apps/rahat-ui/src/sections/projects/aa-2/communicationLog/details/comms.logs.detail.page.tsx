@@ -13,6 +13,7 @@ import Loader from 'apps/rahat-ui/src/components/table.loader';
 import { UUID } from 'crypto';
 import {
   AudioLines,
+  CloudDownload,
   Component,
   Download,
   Hash,
@@ -55,10 +56,6 @@ export default function CommsLogsDetailPage() {
     commsIdXactivityIdXsessionId as string
   ).split('%40');
 
-  console.log('comms', communicationId);
-  console.log('act', activityId);
-  console.log('Session', sessionId);
-
   const {
     pagination,
     setNextPage,
@@ -79,10 +76,13 @@ export default function CommsLogsDetailPage() {
     activityId,
   );
   const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
-    useListSessionLogs(sessionId, { ...pagination, ...filters });
+    useListSessionLogs(sessionId, { ...pagination, filters });
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
 
+  console.log('comms', communicationId);
+  console.log('act', logs);
+  console.log('Session', sessionLogs);
   const mutateRetry = useRetryFailedBroadcast(
     projectID as UUID,
     communicationId,
@@ -166,6 +166,8 @@ export default function CommsLogsDetailPage() {
     });
   };
 
+  const onFailedExports = () => {};
+
   if (isLoading || isLoadingSessionLogs) {
     return <Loader />;
   }
@@ -182,9 +184,13 @@ export default function CommsLogsDetailPage() {
               description="Here is the detailed view of selected communication"
             />
 
-            <Button type="button">
-              <Download className="mr-2" size={16} strokeWidth={2} />
-              <span className="font-normal">Failed Exports</span>
+            <Button
+              variant="outline"
+              className=" gap-2"
+              onClick={onFailedExports}
+            >
+              Failed Exports
+              <CloudDownload className="h-4 w-4" />
             </Button>
           </div>
           <Card className="p-4 rounded-sm bg-white">
@@ -233,7 +239,9 @@ export default function CommsLogsDetailPage() {
                     <div className="w-6 h-6 flex items-center justify-center">
                       <AudioLines />
                     </div>
-                    <span className="font-medium">IVR</span>
+                    <span className="font-medium">
+                      {logs?.sessionDetails?.Transport?.name}
+                    </span>
                   </div>
                   <Badge className="bg-green-100 text-green-600 hover:bg-green-100 rounded-full px-3">
                     {logs?.sessionDetails?.status}
@@ -243,17 +251,7 @@ export default function CommsLogsDetailPage() {
                 {/* Communication */}
                 <div className="space-y-3">
                   <p className="text-sm text-gray-500">Communication</p>
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <p className="text-center mb-2">Audiorecord.mp4</p>
-
-                    <audio
-                      src={
-                        'https://rahat-rumsan.s3.us-east-1.amazonaws.com/aa/dev/QmeJHC7HHv7aLYwyD7h2Ax36NGVn7dLHm7iwV5w2WR72XR'
-                      }
-                      controls
-                      className="w-full h-10 "
-                    />
-                  </div>
+                  {renderMessage(logs?.communicationDetail?.message)}
                 </div>
               </CardContent>
             </Card>
@@ -326,40 +324,28 @@ function renderDateTime(dateTime: string) {
   return 'N/A';
 }
 
-// function renderMessage(message: any) {
-//   if (typeof message === 'string') {
-//     return message;
-//   }
-//   return (
-//     <div className="bg-card space-x-8 flex items-center">
-//       <a
-//         className="cursor-pointer inline-flex"
-//         href={message?.mediaURL}
-//         target="_blank"
-//       >
-//         <Download size={20} strokeWidth={1.5} className="mr-2" />
-//         <span>{`${message?.fileName?.substring(0, 20)}...`}</span>
-//       </a>
-//       <div className="p-2 w-1/2">
-//         <Player
-//           src={message?.mediaURL}
-//           accent={[41, 121, 214]}
-//           grey={[250, 250, 250]}
-//         />
-//       </div>
-//     </div>
-//   );
-// }
+function renderMessage(message: any) {
+  if (typeof message === 'string') {
+    return message || 'dsadasdad';
+  }
+  return (
+    <div className="bg-gray-50 p-3 rounded-sm">
+      <p className="text-center mb-2">{message?.fileName || 'dasdasdsasd'} </p>
+
+      <audio src={message?.audioURL} controls className="w-full h-10 " />
+    </div>
+  );
+}
 
 // function renderBadgeBg(status: string) {
-//   if(status === SessionStatus.FAILED){
-//     return "bg-red-200"
+//   if (status === SessionStatus.FAILED) {
+//     return 'bg-red-200';
 //   }
-//   if(status === SessionStatus.COMPLETED){
-//     return "bg-green-200"
+//   if (status === SessionStatus.COMPLETED) {
+//     return 'bg-green-200';
 //   }
-//   if(status === SessionStatus.PENDING){
-//     return
+//   if (status === SessionStatus.PENDING) {
+//     return;
 //   }
-//   return "bg-gray-200"
+//   return 'bg-gray-200';
 // }

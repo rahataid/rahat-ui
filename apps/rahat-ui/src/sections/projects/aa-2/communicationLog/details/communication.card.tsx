@@ -13,6 +13,7 @@ import {
   Pause,
   Cloud,
   ArrowRight,
+  CloudDownload,
 } from 'lucide-react';
 import {
   Card,
@@ -145,7 +146,7 @@ export function CommunicationDetailCard({
             onClick={onFailedExports}
           >
             Failed Exports
-            <Cloud className="h-4 w-4" />
+            <CloudDownload className="h-4 w-4" />
           </Button>
           <Button
             variant="outline"

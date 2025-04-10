@@ -1,4 +1,5 @@
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { File } from 'lucide-react';
 
 interface DocumentCardProps {
@@ -21,8 +22,10 @@ export default function DocumentCard({
         <File />
       </div>
       <div>
-        <h4 className="text-gray-900 font-medium truncate w-56">{fileName}</h4>
-        <p className="text-gray-500 text-sm">{date}</p>
+        <h4 className="text-gray-900 font-medium truncate w-56 text-sm">
+          {fileName}
+        </h4>
+        <p className="text-gray-500 text-xs">{date}</p>
       </div>
     </div>
   );
@@ -30,9 +33,10 @@ export default function DocumentCard({
 
 interface DocumentListProps {
   documents: DocumentCardProps[];
+  loading?: boolean;
 }
 
-export function DocumentList({ documents }: DocumentListProps) {
+export function DocumentList({ documents, loading }: DocumentListProps) {
   return (
     <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 h-[45vh]">
       <h3 className="text-lg font-semibold text-gray-900">Documents</h3>
@@ -40,6 +44,7 @@ export function DocumentList({ documents }: DocumentListProps) {
         List of all the uploaded documents
       </p>
       <ScrollArea className="h-[calc(100vh-600px)]">
+        {loading && <SpinnerLoader />}
         <div className="grid grid-cols-2 gap-4 p-4">
           {documents?.map((doc, index) => (
             <DocumentCard key={index} {...doc} />

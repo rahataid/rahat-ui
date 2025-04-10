@@ -68,7 +68,7 @@ export default function ActivitiesList() {
 
     setFilters((prev) => ({
       ...prev,
-      phase: phases.find((p) => p.name === formattedTitle)?.uuid || prev.phase,
+      phase: phases.find((p) => p.name === formattedTitle)?.uuid,
     }));
 
     setPagination(prevPagination);

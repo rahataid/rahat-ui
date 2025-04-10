@@ -5,7 +5,7 @@ import { isValidPhoneNumber } from 'react-phone-number-input';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { UUID } from 'crypto';
-import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import { HeaderWithBack, Heading } from 'apps/rahat-ui/src/common';
 import {
   Form,
   FormControl,
@@ -27,15 +27,24 @@ import {
 import { DISTRICTS_OF_NEPAL } from 'apps/rahat-ui/src/common/data/district';
 import { MUNICIPALITIES_OF_NEPAL } from 'apps/rahat-ui/src/common/data/municipality';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useCreateStakeholders } from '@rahat-ui/query';
+import {
+  useCreateStakeholders,
+  useStakeholderDetails,
+  useStakeholders,
+  useUpdateStakeholders,
+} from '@rahat-ui/query';
 
-export default function AddStakeholders() {
-  const { id } = useParams();
+export default function EditStakeholders() {
   const router = useRouter();
+  const params = useParams();
+  const projectId = params.id as UUID;
+  const stakeholdersId = params.stakeholdersId as UUID;
   const searchParams = useSearchParams();
 
-  const addedFromGroup = searchParams.get('fromGroup');
-  const createStakeholder = useCreateStakeholders();
+  const stakeholder = useStakeholderDetails(projectId, {
+    uuid: stakeholdersId,
+  });
+  const updateStakeholder = useUpdateStakeholders();
 
   const isValidPhoneNumberRefinement = (value: string | undefined) => {
     if (value === undefined || value === '') return true; // If phone number is empty or undefined, it's considered valid
@@ -66,41 +75,35 @@ export default function AddStakeholders() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: '',
-      phone: '',
-      email: '',
-      designation: '',
-      organization: '',
-      district: '',
-      municipality: '',
+      name: stakeholder?.name || '',
+      phone: stakeholder?.phone || '',
+      email: stakeholder?.email || '',
+      designation: stakeholder?.designation || '',
+      organization: stakeholder?.organization || '',
+      district: stakeholder?.district || '',
+      municipality: stakeholder?.municipality || '',
     },
   });
 
-  const handleCreateStakeholders = async (data: z.infer<typeof FormSchema>) => {
+  const handleEditStakeholders = async (data: z.infer<typeof FormSchema>) => {
     try {
-      await createStakeholder.mutateAsync({
-        projectUUID: id as UUID,
-        stakeholderPayload: data,
+      await updateStakeholder.mutateAsync({
+        projectUUID: projectId,
+        stakeholderPayload: { uuid: stakeholdersId, ...data },
       });
-      router.push(`/projects/aa/${id}/stakeholders`);
+      router.push(`/projects/aa/${projectId}/stakeholders/${stakeholdersId}`);
       form.reset();
     } catch (e) {
-      console.error('Create Stakeholder Error::', e);
+      console.error('Error updating stakeholder', e);
     }
   };
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center">
-        <HeaderWithBack
-          title={'Add Stakeholders'}
-          subtitle="Fill the form below  to create a new stakeholder details"
-          path={`/projects/aa/${id}/stakeholders`}
-        />
-      </div>
+      <Heading title="Edit Stakeholder" description="" />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleCreateStakeholders)}>
-          <div className=" p-4 rounded-lg border bg-card gap-3">
+        <form onSubmit={form.handleSubmit(handleEditStakeholders)}>
+          <div className="p-4 rounded-sm shadow border bg-card gap-3">
             <FormField
               control={form.control}
               name="name"
@@ -272,13 +275,17 @@ export default function AddStakeholders() {
               <Button
                 type="button"
                 variant="secondary"
-                className=" px-8 "
-                onClick={() => form.reset()}
+                className=" px-8"
+                onClick={() =>
+                  router.push(
+                    `/projects/aa/${projectId}/stakeholders/${stakeholdersId}`,
+                  )
+                }
               >
                 Cancel
               </Button>
               <Button className="w-32" disabled={form.formState.isSubmitting}>
-                Add
+                Update
               </Button>
             </div>
           </div>

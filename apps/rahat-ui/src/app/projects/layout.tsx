@@ -1,10 +1,10 @@
 'use client';
 
-import { useParams, usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import * as React from 'react';
+import AuthGuard from '../../guards/auth-guard';
 import { ProjectLayout } from '../../sections/projects/components';
 import DashboardLayout from '../dashboard/layout';
-import AuthGuard from '../../guards/auth-guard';
 
 export default function ProjectLayoutRoot({
   children,

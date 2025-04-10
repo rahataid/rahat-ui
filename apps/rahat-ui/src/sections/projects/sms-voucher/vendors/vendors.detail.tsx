@@ -74,7 +74,7 @@ export default function VendorsDetail() {
 
       {/* Responsive Grid Layout */}
       <div className="p-5 rounded grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mb-5">
-        <div className="border shadow flex items-center gap-4 p-5">
+        <div className="border rounded-sm shadow flex items-center gap-4 p-5">
           <div className="rounded-full h-8 w-8 flex items-center justify-center">
             <Store />
           </div>
@@ -98,7 +98,7 @@ export default function VendorsDetail() {
           </div>
         </div>
 
-        <div className="border shadow flex flex-col justify-between gap-2 p-5">
+        <div className="border rounded-sm shadow flex flex-col justify-between gap-2 p-5">
           <p className="font-medium">Voucher Redeemed</p>
           <p className="text-4xl font-semibold text-primary truncate w-full sm:w-52">
             {voucherReedeemed}

@@ -216,7 +216,7 @@ export default function BeneficiaryView() {
               type="button"
               variant="outline"
               onClick={handleDownload}
-              className="w-full sm:w-auto"
+              className="w-full rounded-sm sm:w-auto"
             >
               <CloudDownload size={18} className="mr-1" />
               Download

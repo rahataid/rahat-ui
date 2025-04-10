@@ -15,10 +15,12 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from 'libs/shadcn/src/components/ui/sidebar';
 import Link from 'next/link';
 import { NavItem } from '../sections/projects/components';
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 
 type IProps = {
   items?: NavItem[];
@@ -26,6 +28,7 @@ type IProps = {
 export function NavMain(items: IProps) {
   const currentPath = usePathname();
   const activePath = currentPath.split('/')[4];
+
   return (
     <SidebarGroup>
       {/* <SidebarGroupLabel>Platform</SidebarGroupLabel> */}

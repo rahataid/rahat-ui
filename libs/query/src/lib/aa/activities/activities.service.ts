@@ -6,10 +6,11 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { useProjectAction } from '../../projects';
+import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { useActivitiesStore } from './activities.store';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
+import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
 export const useActivitiesCategories = (uuid: UUID) => {
   const q = useProjectAction();
@@ -41,7 +42,9 @@ export const useActivitiesCategories = (uuid: UUID) => {
 
 export const useActivities = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
-
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
   const { setActivities, setActivitiesMeta } = useActivitiesStore((state) => ({
     setActivities: state.setActivities,
     setActivitiesMeta: state.setActivitiesMeta,
@@ -54,7 +57,17 @@ export const useActivities = (uuid: UUID, payload: any) => {
         uuid,
         data: {
           action: 'ms.activities.getAll',
-          payload: payload,
+          payload: {
+            ...payload,
+            activeYear:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'active_year'
+              ],
+            riverBasin:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'river_basin'
+              ],
+          },
         },
       });
       return mutate.response;

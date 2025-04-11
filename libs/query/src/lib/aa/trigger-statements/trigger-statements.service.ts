@@ -176,20 +176,37 @@ export const useAAStations = (uuid: UUID) => {
   return query;
 };
 
-export const useDhmWaterLevels = (uuid: UUID) => {
+export const useDhmWaterLevels = (uuid: UUID, payload: any, activeTab?:string) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['dhmwaterlevels', uuid],
+    queryKey: ['dhmwaterlevels', uuid, activeTab],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.waterLevels.getDhm',
-          payload: {
-            page: 1,
-            perPage: 15,
-          },
+          action: 'ms.waterLevels.getDhm',
+          payload: payload,
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};
+
+export const useDhmRainfallLevels = (uuid: UUID,payload:any) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['dhmrainfalllevels', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.rainfallLevels.getDhm',
+          payload: payload
         },
       });
       return mutate.data;

@@ -6,6 +6,7 @@ import { UUID } from 'crypto';
 import { useDhmWaterLevels } from '@rahat-ui/query';
 import React from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { format } from 'date-fns';
 
 export default function RiverWatchDetails() {
   const params = useParams();
@@ -13,13 +14,15 @@ export default function RiverWatchDetails() {
 
   const [activeTab, setActiveTab] = React.useState<string>('Point');
 
+  const formattedDate = format(new Date(), 'yyyy/MM/dd');
+
   const { data: riverWatch, isLoading } = useDhmWaterLevels(
     projectId,
     {
       riverBasin: 'Mahakali',
       type: activeTab?.toUpperCase(),
-      from: '2025/04/04',
-      to: '2025/04/04',
+      from: formattedDate,
+      to: formattedDate,
     },
     activeTab,
   );

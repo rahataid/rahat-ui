@@ -2,6 +2,7 @@ import { useDhmWaterLevels } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Heading, TableLoader } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
+import { format } from 'date-fns';
 import { MapPin, RadioTower, Skull, TriangleAlert } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
@@ -11,11 +12,13 @@ export default function RiverWatchView() {
   const params = useParams();
   const projectId = params.id as UUID;
 
+  const formattedDate = format(new Date(), 'yyyy/MM/dd');
+
   const { data: riverWatch, isLoading } = useDhmWaterLevels(projectId, {
     riverBasin: 'Mahakali',
     type: 'POINT',
-    from: '2025/04/04',
-    to: '2025/04/04',
+    from: formattedDate,
+    to: formattedDate,
   });
 
   const cardData = React.useMemo(

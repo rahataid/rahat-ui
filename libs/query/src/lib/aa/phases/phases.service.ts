@@ -23,7 +23,7 @@ export const useSinglePhase = (uuid: UUID, phaseId: UUID) => {
       return mutate.data;
     },
   });
-  return query?.data;
+  return query;
 };
 
 export const useRevertPhase = () => {

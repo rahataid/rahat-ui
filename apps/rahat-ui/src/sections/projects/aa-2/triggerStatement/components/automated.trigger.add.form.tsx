@@ -1,10 +1,5 @@
 import * as React from 'react';
-import { useParams } from 'next/navigation';
 import { UseFormReturn } from 'react-hook-form';
-import {
-  PROJECT_SETTINGS_KEYS,
-  useProjectSettingsStore,
-} from '@rahat-ui/query';
 import {
   Form,
   FormControl,
@@ -21,12 +16,8 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { UUID } from 'crypto';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-import ConfirmAddTrigger from './confirm.add.trigger';
 
 type IProps = {
   form: UseFormReturn<{
@@ -42,18 +33,6 @@ type IProps = {
 };
 
 export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
-  // const params = useParams();
-  // const projectId = params.id as UUID;
-  // const selectedPhase = JSON.parse(
-  //   localStorage.getItem('selectedPhase') as string,
-  // );
-
-  // const dataSources = useProjectSettingsStore(
-  //   (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
-  // );
-
-  // const riverBasin = dataSources?.glofas?.location;
-
   return (
     <>
       <Form {...form}>

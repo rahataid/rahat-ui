@@ -38,7 +38,7 @@ export default function TriggerCard({
   };
   return (
     <div
-      className="p-4 rounded border shadow cursor-pointer"
+      className="p-4 rounded border shadow cursor-pointer hover:shadow-md"
       onClick={() => {
         router.push(
           `/projects/aa/${projectId}/trigger-statements/${triggerId}`,

@@ -74,7 +74,7 @@ export default function TriggersListTabs({ projectId, phaseId }: IProps) {
         <DynamicTriggersList projectId={projectId} triggers={triggered} />
       </TabsContent>
       <TabsContent value="History">
-        <DynamicTriggersList projectId={projectId} triggers={triggered} />
+        <DynamicTriggersList projectId={projectId} triggers={[]} />
       </TabsContent>
     </Tabs>
   );

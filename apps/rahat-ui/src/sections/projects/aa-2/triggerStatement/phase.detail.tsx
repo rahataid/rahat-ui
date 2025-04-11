@@ -1,4 +1,9 @@
-import { Back, Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
+import {
+  Back,
+  Heading,
+  IconLabelBtn,
+  TableLoader,
+} from 'apps/rahat-ui/src/common';
 import { Plus, Undo2 } from 'lucide-react';
 import { TriggersListTabs, TriggersPhaseCard } from './components';
 import { useParams, useRouter } from 'next/navigation';
@@ -11,7 +16,7 @@ export default function PhaseDetail() {
   const projectId = params.id as UUID;
   const phaseId = params.phaseId as UUID;
 
-  const phase = useSinglePhase(projectId, phaseId);
+  const { data: phase, isLoading } = useSinglePhase(projectId, phaseId);
 
   const revertPhase = useRevertPhase();
 
@@ -25,7 +30,9 @@ export default function PhaseDetail() {
       payload: { phaseId: phaseId },
     });
   };
-  return (
+  return isLoading ? (
+    <TableLoader />
+  ) : (
     <div className="p-4">
       <Back />
       <div className="flex justify-between items-center">

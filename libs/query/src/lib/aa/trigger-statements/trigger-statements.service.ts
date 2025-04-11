@@ -296,7 +296,7 @@ export const useSingleTriggerStatement = (
       return mutate.data;
     },
   });
-  return query?.data;
+  return query;
 };
 
 export const useActivateTrigger = () => {

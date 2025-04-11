@@ -58,7 +58,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
         data: {
           action: 'ms.activities.getAll',
           payload: {
-            payload,
+            ...payload,
             activeYear:
               settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
                 'active_year'

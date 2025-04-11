@@ -7,7 +7,12 @@ type IProps = {
 
 export default function DownloadReportBtn({ handleDownload }: IProps) {
   return (
-    <Button type="button" variant="outline" onClick={handleDownload}>
+    <Button
+      className="rounded"
+      type="button"
+      variant="outline"
+      onClick={handleDownload}
+    >
       <CloudDownload size={18} className="mr-1" />
       Download Report
     </Button>

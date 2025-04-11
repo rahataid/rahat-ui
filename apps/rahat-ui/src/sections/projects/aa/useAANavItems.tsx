@@ -52,11 +52,11 @@ export const useNavItems = () => {
         //   path: `/projects/aa/${params.id}/groups`,
         //   icon: <Group size={18} strokeWidth={1.5} />,
         // },
-        // {
-        //   title: 'Data Sources',
-        //   path: `/projects/aa/${params.id}/data-sources`,
-        //   icon: <HardDrive size={18} strokeWidth={1.5} />,
-        // },
+        {
+          title: 'Data Sources',
+          path: `/projects/aa/${params.id}/data-sources`,
+          icon: <HardDrive size={18} strokeWidth={1.5} />,
+        },
         {
           title: 'Trigger Statements',
           path: `/projects/aa/${params.id}/trigger-statements`,

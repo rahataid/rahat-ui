@@ -2,10 +2,10 @@
 
 import dynamic from 'next/dynamic';
 
-const DataSourcesPage = dynamic(
+const RiverWatchPage = dynamic(
   () =>
     import('apps/rahat-ui/src/sections/projects/aa-2/dataSources').then(
-      (mod) => mod.AADataSourcesView,
+      (mod) => mod.AADHMRiverWatchDetails,
     ),
   {
     ssr: false,
@@ -13,5 +13,5 @@ const DataSourcesPage = dynamic(
 );
 
 export default function Page() {
-  return <DataSourcesPage />;
+  return <RiverWatchPage />;
 }

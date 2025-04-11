@@ -28,6 +28,7 @@ type IProps = {
 export function NavMain(items: IProps) {
   const currentPath = usePathname();
   const activePath = currentPath.split('/')[4];
+  const { setOpenMobile, setOpen } = useSidebar();
 
   return (
     <SidebarGroup>
@@ -67,7 +68,10 @@ export function NavMain(items: IProps) {
             </Collapsible>
           ) : (
             <SidebarMenuItem>
-              <Link href={item.path as string}>
+              <Link
+                onClick={() => setOpenMobile(false)}
+                href={item.path as string}
+              >
                 <SidebarMenuButton
                   tooltip={item.title}
                   className={

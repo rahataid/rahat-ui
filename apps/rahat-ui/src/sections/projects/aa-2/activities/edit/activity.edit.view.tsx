@@ -190,7 +190,7 @@ export default function EditActivity() {
   const { phases } = usePhasesStore((state) => ({
     phases: state.phases,
   }));
-  console.log(phases);
+
   const [documents, setDocuments] = React.useState<
     { id: number; name: string }[]
   >([]);
@@ -423,6 +423,7 @@ export default function EditActivity() {
                     Cancel
                   </Button>
                   <Button
+                    className="  w-36"
                     type="submit"
                     disabled={
                       updateActivity?.isPending ||
@@ -430,7 +431,7 @@ export default function EditActivity() {
                       audioUploading
                     }
                   >
-                    Confirm
+                    Update
                   </Button>
                 </div>
               </div>

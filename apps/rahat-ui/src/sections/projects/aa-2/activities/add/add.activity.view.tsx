@@ -305,7 +305,7 @@ export default function AddActivities() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="  w-36"
+                    className="w-36"
                     onClick={() => {
                       router.push(activitiesListPath);
                     }}
@@ -313,6 +313,7 @@ export default function AddActivities() {
                     Cancel
                   </Button>
                   <Button
+                    className="w-36"
                     type="submit"
                     disabled={
                       createActivity?.isPending ||

@@ -109,6 +109,12 @@ export default function TriggerStatementDetail() {
               <p className="mb-1">Type</p>
               <Badge>{trigger?.isMandatory ? 'Mandatory' : 'Optional'}</Badge>
             </div>
+            {trigger?.isTriggered && (
+              <div>
+                <p className="mb-1">Triggered At</p>
+                <p>{new Date(trigger?.triggeredAt).toLocaleString()}</p>
+              </div>
+            )}
           </div>
         </div>
         {trigger?.source !== 'MANUAL' && (

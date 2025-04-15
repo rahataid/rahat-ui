@@ -65,7 +65,13 @@ export function Info({ riverWatch }: any) {
           })}
         </div>
       </div>
-      <div className="p-4 rounded-sm border shadow text-center w-64">
+      <div
+        className={`p-4 rounded-sm border shadow text-center w-64 ${
+          riverWatch?.info?.status === 'BELOW WARNING LEVEL'
+            ? 'bg-green-50'
+            : ''
+        }`}
+      >
         <p className="text-primary font-semibold text-3xl/10">
           {riverWatch?.info?.waterLevel?.value}
         </p>

@@ -50,6 +50,7 @@ export default function RiverWatchDetails() {
                   latitude: riverWatch?.info?.latitude,
                   longitude: riverWatch?.info?.longitude,
                   name: riverWatch?.info?.name,
+                  stationIndex: riverWatch?.info?.stationIndex,
                 },
               ]}
             />

@@ -37,9 +37,11 @@ export default function ActivitiesDetailView() {
   }, [deleteActivity.isSuccess]);
 
   return (
-    <div className="h-[calc(100vh-65px)]  p-4">
+    <div className="h-[calc(100vh-65px)] p-4">
       <div className="flex flex-col space-y-0">
-        <Back path={`/projects/aa/${projectId}/activities`} />
+        <Back
+          path={`/projects/aa/${projectId}/activities/list/${activityDetail?.phase?.name.toLowerCase()}`}
+        />
 
         <div className="mt-4 flex justify-between items-center">
           <div>
@@ -51,7 +53,6 @@ export default function ActivitiesDetailView() {
           <div className="flex space-x-3">
             <IconLabelBtn
               Icon={Trash}
-              // handleClick={() => () => removeActivity(activityDetail.uuid)}
               handleClick={() => removeActivity()}
               name="Delete"
               variant="outline"

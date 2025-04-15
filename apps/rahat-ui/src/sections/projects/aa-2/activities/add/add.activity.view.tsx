@@ -123,11 +123,9 @@ export default function AddActivities() {
       .optional(),
     activityCommunication: z.array(
       z.object({
-        groupType: z.string().min(1, { message: 'Please select group type' }),
-        groupId: z.string().min(1, { message: 'Please select group' }),
-        transportId: z
-          .string()
-          .min(1, { message: 'Please select communication type' }),
+        groupType: z.string().optional(),
+        groupId: z.string().optional(),
+        transportId: z.string().optional(),
         message: z.string().optional(),
         audioURL: z
           .object({
@@ -154,15 +152,6 @@ export default function AddActivities() {
       activityCommunication: [],
     },
   });
-
-  // const {
-  //   fields: activityCommunicationFields,
-  //   append: activityCommunicationAppend,
-  //   remove: activityCommunicationRemove,
-  // } = useFieldArray({
-  //   control: form.control, // control props comes from useForm (optional: if you are using FormProvider)
-  //   name: 'activityCommunication', // unique name for your Field Array
-  // });
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -234,6 +223,7 @@ export default function AddActivities() {
     setCommunicationData(updatedCommunications);
   };
   const handleCreateActivities = async (data: z.infer<typeof FormSchema>) => {
+    console.log('objectadd');
     const manager =
       users?.data?.find((u) => u?.wallet === data.responsibility) || null;
     const { responsibility, activityCommunication, ...rest } = data;
@@ -294,6 +284,7 @@ export default function AddActivities() {
       setDocuments([]);
     }
   };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
@@ -329,7 +320,7 @@ export default function AddActivities() {
                       audioUploading
                     }
                   >
-                    Confirm
+                    Add
                   </Button>
                 </div>
               </div>

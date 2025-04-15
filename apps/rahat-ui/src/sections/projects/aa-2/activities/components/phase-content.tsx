@@ -90,7 +90,7 @@ export default function PhaseContent({
                 (phase.phase === 'PREPAREDNESS' && 'border-green-500') ||
                 (phase.phase === 'READINESS' && 'border-yellow-500') ||
                 (phase.phase === 'ACTIVATION' && 'border-red-500')
-              } shadow-sm rounded-xl p-0`}
+              } shadow-sm rounded-xl p-0 hover:cursor-pointer hover:bg-gray-100`}
             />
           ))
         ) : (

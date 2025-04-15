@@ -150,18 +150,29 @@ export default function AddCommunicationForm({
     form.setValue(fieldName('message'), '');
     form.setValue(fieldName('transportId'), '');
     form.setValue(fieldName('audioURL'), '');
+    setAudioFile({});
+    fileUpload.reset();
+    // form.setValue('activityCommunication', {});
   };
 
   const handleEditClick = (itemData: any) => {
-    setAudioFile(itemData.audioFile); // Set previous audio file data
-    form.setValue('activityCommunication', itemData);
+    setAudioFile(itemData?.audioFile);
+    // for setting the group id
+    setTimeout(() => {
+      form.setValue(fieldName('groupId'), itemData.groupId);
+    }, 50);
+    form.setValue(fieldName('groupType'), itemData?.groupType);
+    form.setValue(fieldName('message'), itemData?.message);
+    form.setValue(fieldName('transportId'), itemData?.transportId);
+    form.setValue(fieldName('audioURL'), itemData?.audioFile);
   };
 
   // Handle the edit button click
-  const editButtonClickHandler = (i: number, e: React.MouseEvent) => {
-    e.preventDefault();
+  const editButtonClickHandler = (i: number) => {
+    // e.preventDefault();
     const itemData = communicationData[i];
     handleEditClick(itemData);
+    onRemove(i);
   };
   return (
     <div className="border border-dashed rounded p-4 my-8">
@@ -259,12 +270,23 @@ export default function AddCommunicationForm({
                     {fileUpload.isPending && (
                       <p className="text-green-600 text-xs">uploading...</p>
                     )}
-                    {fileUpload.isSuccess && (
-                      <p className="text-green-600 text-xs">upload complete</p>
-                    )}
+
                     {fileUpload.isError && (
                       <p className="text-red-600 text-xs">upload error</p>
                     )}
+
+                    {fileUpload.isSuccess && (
+                      <p className="text-green-600 text-xs">upload complete</p>
+                    )}
+                    {/* {fileUpload.isPending && (
+                      <p className="text-green-600 text-xs">uploading...</p>
+                    )}
+                    {fileUpload.isSuccess && (
+                       <p className="text-green-600 text-xs">upload complete</p>
+                   )}
+                    {fileUpload.isError && (
+                      <p className="text-red-600 text-xs">upload error</p>
+                    )} */}
                   </div>
                   <FormMessage />
                 </FormItem>
@@ -369,7 +391,7 @@ export default function AddCommunicationForm({
                 <div className="flex gap-2">
                   <PencilIcon
                     className="text-blue-500 hover:text-blue-600 transition-colors w-5 h-5"
-                    onClick={(e) => editButtonClickHandler(i, e)}
+                    onClick={() => editButtonClickHandler(i)}
                   />
                   <Trash2
                     className="text-red-500 hover:text-red-600 transition-colors w-5 h-5"

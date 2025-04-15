@@ -9,6 +9,7 @@ import {
   CardFooter,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { RefreshCw, User } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
 
 interface PhaseCardProps {
   id: string;
@@ -31,9 +32,12 @@ export default function PhaseCard({
   onUpdateStatus,
   className,
 }: PhaseCardProps) {
+  const router = useRouter();
+  const { id: ProjectId } = useParams();
   return (
     <Card
       className={(cn(' border-gray-300 shadow-sm p-4 rounded-xl '), className)}
+      onClick={() => router.push(`/projects/aa/${ProjectId}/activities/${id}`)}
     >
       <CardContent className="space-y-2 p-2">
         <div className="flex items-center justify-between ">

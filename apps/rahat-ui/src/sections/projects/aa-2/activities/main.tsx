@@ -82,21 +82,21 @@ export default function ActivitiesView() {
       <div className="grid  lg:grid-cols-1 xl:grid-cols-3  gap-4  items-center   ">
         <PhaseContent
           title="Preparedness"
-          description="OverView of preparedness phase"
+          description="Overview of preparedness phase"
           phases={preparednessData}
           loading={isLoading}
         />
 
         <PhaseContent
           title="Readiness"
-          description="OverView of readiness phase"
+          description="Overview of readiness phase"
           phases={readinesssData}
           loading={isLoading}
         />
 
         <PhaseContent
           title="Activation"
-          description="OverView of activation phase"
+          description="Overview of activation phase"
           phases={activationData}
           loading={isLoading}
         />

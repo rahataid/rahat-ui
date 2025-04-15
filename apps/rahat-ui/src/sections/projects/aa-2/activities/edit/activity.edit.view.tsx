@@ -400,7 +400,7 @@ export default function EditActivity() {
       <form onSubmit={form.handleSubmit(handleUpdateActivity)}>
         <div className="p-4">
           <div className=" mb-2 flex flex-col space-y-0">
-            <Back path={`/projects/aa/${projectID}/activities`} />
+            <Back path={`/projects/aa/${projectID}/activities/${activityID}`} />
 
             <div className="mt-4 flex justify-between items-center">
               <div>

@@ -14,9 +14,17 @@ type IProps = {
   activeTab: string;
   setActiveTab: Dispatch<SetStateAction<string>>;
   data: any;
+  selectedDate: Date | undefined;
+  setSelectedDate: Dispatch<SetStateAction<Date | undefined>>;
 };
 
-export function WaterLevelView({ activeTab, setActiveTab, data }: IProps) {
+export function WaterLevelView({
+  activeTab,
+  setActiveTab,
+  data,
+  selectedDate,
+  setSelectedDate,
+}: IProps) {
   return (
     <div className="p-4 rounded-sm border shadow">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -47,7 +55,10 @@ export function WaterLevelView({ activeTab, setActiveTab, data }: IProps) {
                 Daily
               </TabsTrigger>
             </TabsList>
-            <InputCalendar />
+            <InputCalendar
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+            />
           </div>
         </div>
         <TabsContent value="Point">

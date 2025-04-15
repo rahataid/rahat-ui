@@ -9,13 +9,18 @@ import {
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 
-export default function InputCalendar() {
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
-    undefined,
-  );
+type IProps = {
+  selectedDate: Date | undefined;
+  setSelectedDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
+};
+
+export default function InputCalendar({
+  selectedDate,
+  setSelectedDate,
+}: IProps) {
   return (
     <Popover>
-      <PopoverTrigger asChild disabled>
+      <PopoverTrigger asChild>
         <Button variant={'outline'} className="w-52 pl-3 text-left font-normal">
           <span className="text-muted-foreground">
             {selectedDate ? format(selectedDate, 'PPP') : 'Pick a date...'}

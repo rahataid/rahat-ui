@@ -72,7 +72,9 @@ function RiverWatchMap({ coordinates }: any) {
                 closeButton={false}
               >
                 <p className="text-sm tracking-wide">{selectedMarker.name}</p>
-                <p className="text-sm">{selectedMarker.stationIndex}</p>
+                <p className="text-sm">
+                  Station Index = {selectedMarker.stationIndex}
+                </p>
               </Popup>
             </div> // Marker Details
           ) : null}

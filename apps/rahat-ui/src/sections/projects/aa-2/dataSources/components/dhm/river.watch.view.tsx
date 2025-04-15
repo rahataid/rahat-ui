@@ -89,7 +89,7 @@ export default function RiverWatchView() {
         <div
           className={`p-4 rounded-sm border shadow text-center w-64 ${
             riverWatch?.info?.status === 'BELOW WARNING LEVEL'
-              ? 'bg-green-50'
+              ? 'bg-green-500'
               : ''
           }`}
         >

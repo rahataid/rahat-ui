@@ -15,6 +15,8 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ListBeneficiary } from '@rahat-ui/types';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useSidebar } from '@rahat-ui/shadcn/src/components/ui/sidebar';
+import { usesoftDeleteAuthApp } from '@rahat-ui/query';
 
 export const useBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();

@@ -480,7 +480,7 @@ export default function EditActivity() {
                           {users?.data.map((item) => (
                             <SelectItem
                               key={item.id}
-                              value={item.wallet as string}
+                              value={item.uuid as string}
                             >
                               {item.name}
                             </SelectItem>

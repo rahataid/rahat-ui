@@ -60,6 +60,7 @@ export default function TriggerStatementDetail() {
             name="trigger"
             label="Delete"
             handleContinueClick={handleDelete}
+            disabled={trigger?.isTriggered}
           />
           <EditButton
             className="rounded flex gap-1 items-center text-sm font-medium"
@@ -69,7 +70,7 @@ export default function TriggerStatementDetail() {
                 `/projects/aa/${id}/trigger-statements/${triggerRepeatKey}/edit`,
               )
             }
-            disabled={trigger?.phase?.isActive}
+            disabled={trigger?.phase?.isActive || trigger?.isTriggered}
           />
           <Button
             disabled={trigger?.source !== 'MANUAL' || trigger?.isTriggered}

@@ -321,7 +321,7 @@ export const useTriggerCommunication = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.activities.communication.trigger',
+          action: 'ms.activities.communication.trigger',
           payload: activityCommunicationPayload,
         },
       });

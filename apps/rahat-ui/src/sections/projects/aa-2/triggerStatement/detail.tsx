@@ -90,7 +90,11 @@ export default function TriggerStatementDetail() {
             titleStyle="text-lg/7"
             description=""
           />
-          <div className="grid grid-cols-4 text-sm/4 text-muted-foreground mt-6">
+          <div
+            className={`grid ${
+              trigger?.isTriggered ? 'grid-cols-5' : 'grid-cols-4'
+            } text-sm/4 text-muted-foreground mt-6`}
+          >
             <div>
               <p className="mb-1">River Basin</p>
               <p>{trigger?.phase?.source?.riverBasin || 'N/A'}</p>
@@ -109,6 +113,12 @@ export default function TriggerStatementDetail() {
               <p className="mb-1">Type</p>
               <Badge>{trigger?.isMandatory ? 'Mandatory' : 'Optional'}</Badge>
             </div>
+            {trigger?.isTriggered && (
+              <div>
+                <p className="mb-1">Triggered At</p>
+                <p>{new Date(trigger?.triggeredAt).toLocaleString()}</p>
+              </div>
+            )}
           </div>
         </div>
         {trigger?.source !== 'MANUAL' && (

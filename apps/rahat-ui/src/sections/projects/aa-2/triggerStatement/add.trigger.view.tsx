@@ -185,7 +185,8 @@ export default function AddTriggerView() {
         projectUUID: projectId,
         triggerStatementPayload: { triggers: payload },
       });
-      router.push(triggerViewPath);
+      // router.push(triggerViewPath);
+      router.back();
     } catch (e) {
       console.error(e);
     } finally {

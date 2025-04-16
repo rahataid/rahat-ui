@@ -5,13 +5,14 @@ import { useRouter } from 'next/navigation';
 type IProps = {
   projectId: string;
   triggerId: string;
-  phase: string;
+  phase?: string;
   type: string;
   isTriggered: boolean;
   title: string;
   dataSource: string;
   riverBasin: string;
   time: string;
+  triggerType?: string;
 };
 
 export default function TriggerCard({
@@ -24,16 +25,17 @@ export default function TriggerCard({
   dataSource,
   riverBasin,
   time,
+  triggerType,
 }: IProps) {
   const router = useRouter();
-  const renderBadgeColor = (phase: string) => {
+  const renderPhaseBadgeColor = (phase: string) => {
     switch (phase) {
       case 'READINESS':
-        return 'bg-green-50 text-green-500';
+        return 'bg-yellow-50 text-yellow-500';
       case 'ACTIVATION':
         return 'bg-red-50 text-red-500';
       default:
-        return 'bg-gray-50 text-gray-500';
+        return 'bg-green-50 text-green-500';
     }
   };
   return (
@@ -47,8 +49,10 @@ export default function TriggerCard({
     >
       <div className="flex justify-between items-center space-x-4 mb-2">
         <div className="flex items-center space-x-4">
-          <Badge className={`font-medium ${renderBadgeColor(phase)}`}>
-            {phase}
+          <Badge
+            className={`font-medium ${phase && renderPhaseBadgeColor(phase)}`}
+          >
+            {phase ? phase : triggerType}
           </Badge>
           <Badge className="font-medium">{capitalizeFirstLetter(type)}</Badge>
         </div>

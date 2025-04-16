@@ -81,7 +81,13 @@ export default function RainfallWatchView() {
             })}
           </div>
         </div>
-        <div className="p-4 rounded-sm border shadow text-center w-64">
+        <div
+          className={`p-4 rounded-sm border shadow text-center w-64 ${
+            rainfallWatch?.info?.status === 'BELOW WARNING LEVEL'
+              ? 'bg-green-500'
+              : ''
+          }`}
+        >
           <p className="text-primary font-semibold text-3xl/10">N/A</p>
           <p className="text-sm/6 font-medium">Water Level</p>
           <p className="text-gray-500 text-sm/6">N/A</p>

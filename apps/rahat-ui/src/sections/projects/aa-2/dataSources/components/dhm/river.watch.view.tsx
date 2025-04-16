@@ -1,4 +1,8 @@
-import { useDhmWaterLevels } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useDhmWaterLevels,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Heading, TableLoader } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
@@ -11,11 +15,16 @@ export default function RiverWatchView() {
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
-
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
   const formattedDate = format(new Date(), 'yyyy/MM/dd');
 
   const { data: riverWatch, isLoading } = useDhmWaterLevels(projectId, {
-    riverBasin: 'Mahakali',
+    riverBasin:
+      settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+        'river_basin'
+      ],
     type: 'POINT',
     from: formattedDate,
     to: formattedDate,
@@ -46,6 +55,7 @@ export default function RiverWatchView() {
     ],
     [riverWatch],
   );
+  console.log(riverWatch?.info);
   return isLoading ? (
     <TableLoader />
   ) : (

@@ -190,7 +190,7 @@ export default function EditActivity() {
   const { phases } = usePhasesStore((state) => ({
     phases: state.phases,
   }));
-  console.log(phases);
+
   const [documents, setDocuments] = React.useState<
     { id: number; name: string }[]
   >([]);
@@ -400,7 +400,7 @@ export default function EditActivity() {
       <form onSubmit={form.handleSubmit(handleUpdateActivity)}>
         <div className="p-4">
           <div className=" mb-2 flex flex-col space-y-0">
-            <Back path={`/projects/aa/${projectID}/activities`} />
+            <Back path={`/projects/aa/${projectID}/activities/${activityID}`} />
 
             <div className="mt-4 flex justify-between items-center">
               <div>
@@ -423,6 +423,7 @@ export default function EditActivity() {
                     Cancel
                   </Button>
                   <Button
+                    className="  w-36"
                     type="submit"
                     disabled={
                       updateActivity?.isPending ||
@@ -430,7 +431,7 @@ export default function EditActivity() {
                       audioUploading
                     }
                   >
-                    Confirm
+                    Update
                   </Button>
                 </div>
               </div>

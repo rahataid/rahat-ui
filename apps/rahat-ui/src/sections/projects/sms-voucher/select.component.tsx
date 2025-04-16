@@ -13,6 +13,7 @@ type Iprops = {
   options?: { value: string; label: string }[];
   value?: string;
   onChange?: (value: string) => void;
+  showSelect?: boolean;
 };
 
 export default function SelectComponent({
@@ -21,11 +22,12 @@ export default function SelectComponent({
   options,
   value,
   onChange,
+  showSelect = true,
 }: Iprops) {
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger className={className}>
-        <SelectValue placeholder={`Select ${name}`} />
+        <SelectValue placeholder={showSelect ? `Select ${name}` : `${name}`} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>

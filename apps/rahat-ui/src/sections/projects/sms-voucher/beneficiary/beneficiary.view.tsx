@@ -173,6 +173,7 @@ export default function BeneficiaryView() {
               ]}
               value={filters?.consentStatus || ''}
               className="w-full"
+              showSelect={false}
             />
 
             <SelectComponent
@@ -184,6 +185,7 @@ export default function BeneficiaryView() {
               ]}
               value={filters?.voucherStatus || ''}
               className="w-full"
+              showSelect={false}
             />
 
             <SelectComponent
@@ -198,6 +200,7 @@ export default function BeneficiaryView() {
               ]}
               value={filters?.eyeCheckupStatus || ''}
               className="w-full"
+              showSelect={false}
             />
 
             <SelectComponent
@@ -210,6 +213,7 @@ export default function BeneficiaryView() {
               ]}
               value={filters?.voucherType || ''}
               className="w-full"
+              showSelect={false}
             />
 
             <Button

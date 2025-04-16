@@ -94,7 +94,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
             items={item.children}
           />
         ))}
-        <div className="w-full">
+        <div className="w-full h-full">
           <ProjectNav component={headerNav} />
           <ResizablePanelGroup direction="horizontal">
             {renderChildren()}

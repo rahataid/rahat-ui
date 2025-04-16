@@ -187,20 +187,23 @@ export const useListRpCommunicationStats = (projectUUID: UUID) => {
   });
 };
 
-export const useListRpCommunicationLogs = (projectUUID: UUID) => {
+export const useListRpCommunicationLogs = (
+  projectUUID: UUID,
+  payload: Pagination,
+) => {
   const action = useProjectAction();
 
   return useQuery({
-    queryKey: ['rpCommunicationLogs', projectUUID],
+    queryKey: ['rpCommunicationLogs', projectUUID, payload],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
           action: GET_ALL_COMMUNICATION_LOGS,
-          payload: {},
+          payload: payload,
         },
       });
-      return res.data;
+      return res;
     },
   });
 };

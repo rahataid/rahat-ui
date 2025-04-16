@@ -278,15 +278,6 @@ export default function AddCommunicationForm({
                     {fileUpload.isSuccess && (
                       <p className="text-green-600 text-xs">upload complete</p>
                     )}
-                    {/* {fileUpload.isPending && (
-                      <p className="text-green-600 text-xs">uploading...</p>
-                    )}
-                    {fileUpload.isSuccess && (
-                       <p className="text-green-600 text-xs">upload complete</p>
-                   )}
-                    {fileUpload.isError && (
-                      <p className="text-red-600 text-xs">upload error</p>
-                    )} */}
                   </div>
                   <FormMessage />
                 </FormItem>

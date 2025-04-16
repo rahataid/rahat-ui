@@ -225,12 +225,12 @@ export default function AddActivities() {
   const handleCreateActivities = async (data: z.infer<typeof FormSchema>) => {
     console.log('objectadd');
     const manager =
-      users?.data?.find((u) => u?.wallet === data.responsibility) || null;
+      users?.data?.find((u) => u?.uuid === data.responsibility) || null;
     const { responsibility, activityCommunication, ...rest } = data;
     const payloadData = {
       manager: manager
         ? {
-            id: manager.wallet?.toString(),
+            id: manager.uuid?.toString(),
             name: manager.name,
             email: manager.email,
             phone: manager.phone ?? '',
@@ -270,7 +270,7 @@ export default function AddActivities() {
       payload = payloadData;
     }
     try {
-      console.log('createactivity', payload);
+      console.log('checkPayloadcreateactivity', payload);
       await createActivity.mutateAsync({
         projectUUID: projectID as UUID,
         activityPayload: payload,
@@ -370,7 +370,7 @@ export default function AddActivities() {
                           {users?.data.map((item) => (
                             <SelectItem
                               key={item.id}
-                              value={item.wallet as string}
+                              value={item.uuid as string}
                             >
                               {item.name}
                             </SelectItem>

@@ -73,7 +73,7 @@ export default function VendorsDetail() {
       </div>
 
       {/* Responsive Grid Layout */}
-      <div className="p-5 rounded grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+      <div className="my-2 rounded grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
         <div className="border rounded-sm shadow flex items-center gap-4 p-5">
           <div className="rounded-full h-8 w-8 flex items-center justify-center">
             <Store />

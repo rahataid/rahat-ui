@@ -1,22 +1,19 @@
+import { useCambodiaVendorGet, useCambodiaVendorsStats } from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import { Copy, CopyCheck, User } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import React, { use } from 'react';
 import HeaderWithBack from '../../components/header.with.back';
-import TransactionHistoryView from './transaction.history.view';
 import ConversionListView from './conversion.list.view';
 import HealthWorkersView from './health.workers.view';
-import { Check, Copy, CopyCheck, User } from 'lucide-react';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import React from 'react';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { DialogComponent } from '../../../../components/dialog';
-import { useCambodiaVendorGet, useCambodiaVendorsStats } from '@rahat-ui/query';
+import TransactionHistoryView from './transaction.history.view';
 
 export default function VendorsDetail() {
   const { id, vendorId } = useParams();
@@ -57,21 +54,21 @@ export default function VendorsDetail() {
           onSubmit={() => console.log('submit')}
         /> */}
       </div>
-      <div className="flex space-x-4 mb-4">
+      <div className="flex space-x-4 mb-3 mt-1">
         <DataCard
-          className="w-full border-solid rounded-md"
+          className="w-full border-solid rounded h-28"
           title="Villagers Referred"
           Icon={User}
           number={vendorsStats?.data?.leadsRecieved}
         />
         <DataCard
-          className="w-full border-solid rounded-md"
+          className="w-full border-solid rounded h-28"
           title="Eye Checkup in VC"
           Icon={User}
           number={vendorsStats?.data?.leadsConverted}
         />
         <DataCard
-          className="w-full border-solid rounded-md"
+          className="w-full border-solid rounded h-28"
           title="Eyewear dispensed in VC"
           Icon={User}
           number={vendorsStats?.data?.footfalls}
@@ -83,7 +80,7 @@ export default function VendorsDetail() {
           number={vendorsStats?.data?.sales}
         /> */}
       </div>
-      <div className="p-5 rounded border grid grid-cols-3 gap-5 mb-5">
+      <div className="p-5 rounded border grid grid-cols-3 gap-5 mb-4">
         <div>
           <h1 className="text-md text-muted-foreground">Wallet Address</h1>
           <div

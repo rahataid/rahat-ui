@@ -57,7 +57,6 @@ export default function CommsActivitiesTable() {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  console.log(activitiesMeta);
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;

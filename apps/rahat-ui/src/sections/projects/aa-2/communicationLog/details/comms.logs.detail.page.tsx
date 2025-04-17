@@ -19,9 +19,11 @@ import {
   Download,
   Hash,
   LucideIcon,
+  Mail,
   MessageSquareMore,
   MessageSquareWarning,
   RefreshCcw,
+  Text,
   Timer,
   UsersRound,
 } from 'lucide-react';
@@ -44,6 +46,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import CommsLogsTable from '../table/comms.logs.table';
+import CardSkeleton from 'apps/rahat-ui/src/common/cardSkeleton';
 
 type IHeadCardProps = {
   title: string;
@@ -80,7 +83,7 @@ export default function CommsLogsDetailPage() {
   const { data: activityDetail, isLoading: isLoadingActivity } =
     useSingleActivity(projectID as UUID, activityId);
   const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
-    useListSessionLogs(sessionId, { ...pagination, filters });
+    useListSessionLogs(sessionId, { pagination, filters });
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
 
@@ -119,38 +122,6 @@ export default function CommsLogsDetailPage() {
     setPagination({ page: 1, perPage: 10 });
   }, []);
 
-  const headCardFields = [
-    {
-      title: 'Total Audience',
-      icon: Hash,
-      content: logsMeta?.total || 'N/A',
-    },
-    {
-      title: 'Triggered At',
-      icon: Timer,
-      content: renderDateTime(logs?.sessionDetails?.createdAt),
-    },
-    {
-      title: 'Group Name',
-      icon: UsersRound,
-      content: logsGroupName || 'N/A',
-    },
-    {
-      title: 'Group Type',
-      icon: Component,
-      content: logs?.communicationDetail?.groupType || 'N/A',
-    },
-    {
-      title: 'Status',
-      icon: MessageSquareWarning,
-      content: (
-        <Badge className="bg-orange-100 text-orange-600">
-          {logs?.sessionDetails?.status}
-        </Badge>
-      ),
-    },
-  ];
-
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
@@ -169,15 +140,21 @@ export default function CommsLogsDetailPage() {
 
   const onFailedExports = () => {};
 
-  console.log(activityDetail);
-  if (isLoading || isLoadingSessionLogs) {
-    return <Loader />;
-  }
+  console.log(
+    sessionLogs?.httpReponse?.data?.data?.filter(
+      (log: any) => log?.status === BroadcastStatus.FAIL,
+    ),
+  );
+  // if (isLoading || isLoadingSessionLogs) {
+  //   return <Loader />;
+  // }
 
   return (
     <div className="p-4">
       <div className="flex flex-col space-y-0">
-        <Back path={`/projects/aa/${projectID}/communication-logs`} />
+        <Back
+          path={`/projects/aa/${projectID}/communication-logs/details/${activityId}`}
+        />
 
         <div className="mt-1 flex flex-col pb-1 gap-2">
           <div className="flex justify-between">
@@ -195,18 +172,22 @@ export default function CommsLogsDetailPage() {
               <CloudDownload className="h-4 w-4" />
             </Button>
           </div>
-          <Card className="p-4 rounded-sm bg-white">
-            <CardTitle className="flex gap-2 pb-2">
-              <Badge>{activityDetail?.phase?.name}</Badge>
-              <Badge>{activityDetail?.status}</Badge>
-            </CardTitle>
-            <CardContent className="pl-1 pb-1 text-xl font-semibold ">
-              {activityDetail?.title}
-            </CardContent>
-            <CardFooter className="pl-1 pb-2 text-sm text-muted-foreground">
-              {activityDetail?.description}
-            </CardFooter>
-          </Card>
+          {isLoadingActivity ? (
+            <CardSkeleton />
+          ) : (
+            <Card className="p-4 rounded-sm bg-white">
+              <CardTitle className="flex gap-2 pb-2">
+                <Badge>{activityDetail?.phase?.name}</Badge>
+                <Badge>{activityDetail?.status}</Badge>
+              </CardTitle>
+              <CardContent className="pl-1 pb-1 text-xl font-semibold ">
+                {activityDetail?.title}
+              </CardContent>
+              <CardFooter className="pl-1 pb-2 text-sm text-muted-foreground">
+                {activityDetail?.description}
+              </CardFooter>
+            </Card>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 ">
             <Card className="w-full col-span-1 bg-white rounded-sm">
@@ -237,13 +218,28 @@ export default function CommsLogsDetailPage() {
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 flex items-center justify-center">
-                      <AudioLines />
+                      {logs?.sessionDetails?.Transport?.name === 'IVR' ? (
+                        <AudioLines />
+                      ) : logs?.sessionDetails?.Transport?.name === 'EMAIL' ? (
+                        <Mail />
+                      ) : (
+                        <Text />
+                      )}
                     </div>
                     <span className="font-medium">
                       {logs?.sessionDetails?.Transport?.name}
                     </span>
                   </div>
-                  <Badge className="bg-green-100 text-green-600 hover:bg-green-100 rounded-full px-3">
+
+                  <Badge
+                    className={`${
+                      logs?.sessionDetails?.status === 'COMPLETED'
+                        ? 'bg-green-100 text-green-600 hover:bg-green-100'
+                        : logs?.sessionDetails?.status === 'PENDING'
+                        ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-100'
+                        : 'bg-red-100 text-red-600 hover:bg-red-100'
+                    } rounded-full px-3`}
+                  >
                     {logs?.sessionDetails?.status}
                   </Badge>
                 </div>
@@ -268,13 +264,7 @@ export default function CommsLogsDetailPage() {
                 />
                 <SelectComponent
                   name="Status"
-                  options={[
-                    'ALL',
-                    'NOT_STARTED',
-                    'WORK_IN_PROGRESS',
-                    'COMPLETED',
-                    'DELAYED',
-                  ]}
+                  options={['ALL', 'SUCCESS', 'PENDING', 'FAILED']}
                   onChange={(value) =>
                     handleFilterChange({
                       target: { name: 'status', value },
@@ -284,7 +274,10 @@ export default function CommsLogsDetailPage() {
                 />
               </CardHeader>
               <CardContent className="pt-0 pb-0 px-2">
-                <CommsLogsTable table={table} />
+                <CommsLogsTable
+                  table={table}
+                  isLoading={isLoadingSessionLogs}
+                />
               </CardContent>
               <CardFooter className="justify-end pt-0 pb-0">
                 <CustomPagination
@@ -325,28 +318,14 @@ function renderDateTime(dateTime: string) {
 }
 
 function renderMessage(message: any) {
-  console.log('msf', message);
   if (typeof message === 'string') {
-    return message || 'dsadasdad';
+    return message;
   }
   return (
     <div className="bg-gray-50 p-3 rounded-sm">
-      <p className="text-center mb-2">{message?.fileName || 'dasdasdsasd'} </p>
+      <p className="text-center mb-2">{message?.fileName} </p>
 
       <audio src={message?.audioURL} controls className="w-full h-10 " />
     </div>
   );
 }
-
-// function renderBadgeBg(status: string) {
-//   if (status === SessionStatus.FAILED) {
-//     return 'bg-red-200';
-//   }
-//   if (status === SessionStatus.COMPLETED) {
-//     return 'bg-green-200';
-//   }
-//   if (status === SessionStatus.PENDING) {
-//     return;
-//   }
-//   return 'bg-gray-200';
-// }

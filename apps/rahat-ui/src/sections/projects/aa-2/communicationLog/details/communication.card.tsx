@@ -103,7 +103,7 @@ export function CommunicationDetailCard({
                 className={`ml-1 text-xs font-normal ${
                   activityCommunication?.sessionStatus === 'PENDING'
                     ? 'text-red-400 bg-yellow-100'
-                    : activityCommunication?.sessionStatus === 'COMPLETE'
+                    : activityCommunication?.sessionStatus === 'COMPLETED'
                     ? 'text-green-700 bg-green-200'
                     : 'text-red-700 bg-red-200'
                 }`}

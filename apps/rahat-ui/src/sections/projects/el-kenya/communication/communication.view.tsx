@@ -49,7 +49,7 @@ export default function CommunicationView() {
     setSelectedListItems,
     resetSelectedListItems,
   } = usePagination();
-  const { data, isLoading } = useListRpCommunicationLogs(id, {
+  const { data, isFetching } = useListRpCommunicationLogs(id, {
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
@@ -145,7 +145,7 @@ export default function CommunicationView() {
           <ElkenyaTable
             table={table}
             tableHeight="h-[calc(100vh-421px)]"
-            loading={isLoading}
+            loading={isFetching}
           />
         </div>
       </div>

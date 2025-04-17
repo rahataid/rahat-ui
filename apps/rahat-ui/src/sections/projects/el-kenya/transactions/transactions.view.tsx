@@ -14,7 +14,7 @@ import ClientSidePagination from '../../components/client.side.pagination';
 
 export default function TransactionsView() {
   const { id } = useParams() as { id: UUID };
-  const { data, error, isLoading } = useKenyaProjectTransactions();
+  const { data, error, isFetching } = useKenyaProjectTransactions();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [sorting, setSorting] = useState([{ id: 'timeStamp', desc: true }]);
@@ -46,7 +46,7 @@ export default function TransactionsView() {
           <ElkenyaTable
             table={table}
             tableHeight="h-[calc(100vh-251px)]"
-            loading={isLoading}
+            loading={isFetching}
           />
         </div>
       </div>

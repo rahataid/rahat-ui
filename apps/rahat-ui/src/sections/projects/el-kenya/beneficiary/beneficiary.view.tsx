@@ -65,7 +65,11 @@ export default function BeneficiaryView() {
     setFilters('');
   }, []);
 
-  const { data: beneficiaries, isLoading } = useProjectBeneficiaries({
+  const {
+    data: beneficiaries,
+    isLoading,
+    isFetching,
+  } = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
@@ -203,7 +207,7 @@ export default function BeneficiaryView() {
                   ? 'h-[calc(100vh-389px)]'
                   : 'h-[calc(100vh-323px)]'
               }
-              loading={isLoading}
+              loading={isFetching}
             />
           </div>
         </div>

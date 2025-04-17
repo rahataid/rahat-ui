@@ -16,11 +16,13 @@ import SearchInput from '../../components/search.input';
 interface BeneficiaryViewProps {
   disbursmentList: [];
   handleStepDataChange: (e) => void;
+  beneficiaryLoading: boolean;
 }
 
 export default function BeneficiaryView({
   disbursmentList,
   handleStepDataChange,
+  beneficiaryLoading,
 }: BeneficiaryViewProps) {
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
@@ -73,7 +75,11 @@ export default function BeneficiaryView({
             }
           />
         </div>
-        <ElkenyaTable table={table} tableHeight="h-[calc(100vh-520px)]" />
+        <ElkenyaTable
+          table={table}
+          loading={beneficiaryLoading}
+          tableHeight="h-[calc(100vh-520px)]"
+        />
       </div>
     </div>
   );

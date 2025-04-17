@@ -36,7 +36,7 @@ export default function VendorsDetail() {
     (state) => state.singleProject?.projectClosed,
   );
 
-  const { data, isLoading: isVendorLoading } = useGetOfflineSingleVendor(
+  const { data, isFetching: isVendorLoading } = useGetOfflineSingleVendor(
     id,
     Number(vendorId),
   );

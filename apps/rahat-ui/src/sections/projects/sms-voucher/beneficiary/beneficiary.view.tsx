@@ -164,19 +164,6 @@ export default function BeneficiaryView() {
             />
 
             <SelectComponent
-              onChange={(e) => setFilters({ ...filters, consentStatus: e })}
-              name="Consent"
-              options={[
-                { value: 'yes', label: 'Yes' },
-                { value: 'no', label: 'No' },
-                { value: 'skip', label: 'Skip' },
-              ]}
-              value={filters?.consentStatus || ''}
-              className="w-full"
-              showSelect={false}
-            />
-
-            <SelectComponent
               onChange={(e) => setFilters({ ...filters, voucherStatus: e })}
               name="Voucher Status"
               options={[

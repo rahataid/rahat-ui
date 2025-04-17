@@ -3,6 +3,7 @@ import {
   useListSessionLogs,
   usePagination,
   useRetryFailedBroadcast,
+  useSingleActivity,
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -75,14 +76,14 @@ export default function CommsLogsDetailPage() {
     communicationId,
     activityId,
   );
+
+  const { data: activityDetail, isLoading: isLoadingActivity } =
+    useSingleActivity(projectID as UUID, activityId);
   const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
     useListSessionLogs(sessionId, { ...pagination, filters });
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
 
-  console.log('comms', communicationId);
-  console.log('act', logs);
-  console.log('Session', sessionLogs);
   const mutateRetry = useRetryFailedBroadcast(
     projectID as UUID,
     communicationId,
@@ -168,6 +169,7 @@ export default function CommsLogsDetailPage() {
 
   const onFailedExports = () => {};
 
+  console.log(activityDetail);
   if (isLoading || isLoadingSessionLogs) {
     return <Loader />;
   }
@@ -195,16 +197,14 @@ export default function CommsLogsDetailPage() {
           </div>
           <Card className="p-4 rounded-sm bg-white">
             <CardTitle className="flex gap-2 pb-2">
-              <Badge>Preparedness</Badge>
-              <Badge>Not Started</Badge>
+              <Badge>{activityDetail?.phase?.name}</Badge>
+              <Badge>{activityDetail?.status}</Badge>
             </CardTitle>
             <CardContent className="pl-1 pb-1 text-xl font-semibold ">
-              Distributed educational materials about the aa plan to local
-              communities
+              {activityDetail?.title}
             </CardContent>
             <CardFooter className="pl-1 pb-2 text-sm text-muted-foreground">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat
-              accusamus, nemo ad sequi ea maxime quidem deserunt eum est.
+              {activityDetail?.description}
             </CardFooter>
           </Card>
 
@@ -325,6 +325,7 @@ function renderDateTime(dateTime: string) {
 }
 
 function renderMessage(message: any) {
+  console.log('msf', message);
   if (typeof message === 'string') {
     return message || 'dsadasdad';
   }

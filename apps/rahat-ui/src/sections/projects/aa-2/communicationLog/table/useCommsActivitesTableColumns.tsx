@@ -87,7 +87,7 @@ export default function useCommsActivitiesTableColumns() {
               strokeWidth={1.5}
               onClick={() =>
                 router.push(
-                  `/projects/aa/${id}/communication-logs/details/${row.original.uuid}`,
+                  `/projects/aa/${id}/communication-logs/details/${row.original.id}`,
                 )
               }
             />

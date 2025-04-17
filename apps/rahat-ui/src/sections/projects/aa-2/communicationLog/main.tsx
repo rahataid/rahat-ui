@@ -9,26 +9,43 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import React from 'react';
-import { usePagination } from '@rahat-ui/query';
+import {
+  useActivities,
+  useActivitiesStore,
+  useCommsStats,
+  usePagination,
+} from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 export default function CommunicationMainLogsView() {
+  const { id: ProjectId } = useParams();
+  const { data: commsStatsData } = useCommsStats(ProjectId as UUID);
+
+  console.log(commsStatsData);
   const commStats = [
     {
       componentType: 'DATACARD',
       title: 'SMS Recipients',
-      value: 0,
+      value:
+        commsStatsData?.stats?.recipientsByTransport.find(
+          (r) => r.name === 'SMS',
+        )?.totalRecipients || 0,
       icon: 'MessageSquare',
     },
     {
       componentType: 'DATACARD',
       title: 'IVR Recipients',
-      value: 0,
+      value:
+        commsStatsData?.stats?.recipientsByTransport.find(
+          (r) => r.name === 'IVR',
+        )?.totalRecipients || 0,
       icon: 'AudioLines',
     },
     {
       componentType: 'DATACARD',
       title: 'Total SMS sent to Beneficiaries',
-      value: 0,
+      value: commsStatsData?.stats?.messageStats?.totalMessages || 0,
       icon: 'MessageSquare',
     },
     {

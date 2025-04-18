@@ -30,7 +30,7 @@ export default function BeneficiaryGroupsView({
   const { id } = useParams() as { id: UUID };
   const [searchTerm, setSearchTerm] = React.useState<string>('');
 
-  const { data: benefGroups, isLoading } = useFindUnSyncedBeneficaryGroup(
+  const { data: benefGroups, isFetching } = useFindUnSyncedBeneficaryGroup(
     id as UUID,
     {
       page: 1,
@@ -167,7 +167,7 @@ export default function BeneficiaryGroupsView({
           </div>
         ) : null}
         <ScrollArea className="h-[calc(100vh-554px)]">
-          {isLoading ? (
+          {isFetching ? (
             <TableLoader />
           ) : paginatedGroups?.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">

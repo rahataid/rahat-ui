@@ -33,7 +33,7 @@ export default function BeneficiaryView() {
     React.useState<VisibilityState>({});
 
   const [defaultValue, setDefaultValue] = React.useState<string>('beneficiary');
-
+  const [enabled, setEnabled] = React.useState(false);
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab') || 'beneficiary';
 
@@ -70,10 +70,13 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...filters,
   });
-  const { data: consumerData } = useListConsentConsumer({
-    projectUUID: id,
-    ...filters,
-  });
+  const { data: consumerData, refetch } = useListConsentConsumer(
+    {
+      projectUUID: id,
+      ...filters,
+    },
+    enabled,
+  );
 
   const meta = beneficiaries?.response?.meta;
 
@@ -121,7 +124,13 @@ export default function BeneficiaryView() {
   };
 
   const handleDownload = () => {
-    generateExcel(consumerData.data, 'Consumer', 9);
+    if (!enabled) setEnabled(true);
+    else {
+      refetch();
+    }
+    if (consumerData?.data) {
+      generateExcel(consumerData.data, 'Consumer', 9);
+    }
   };
 
   const generateExcel = (data: any, title: string, numberOfColumns: number) => {

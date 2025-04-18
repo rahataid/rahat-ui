@@ -1,22 +1,15 @@
-import getIcon from 'apps/rahat-ui/src/utils/getIcon';
-import { LucideIcon } from 'lucide-react';
-import CommsActivitiesTable from './table/comms.activities.table';
-import { DataCard, Heading } from 'apps/rahat-ui/src/common';
+import { useCommsStats } from '@rahat-ui/query';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import React from 'react';
-import {
-  useActivities,
-  useActivitiesStore,
-  useCommsStats,
-  usePagination,
-} from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import { Heading } from 'apps/rahat-ui/src/common';
+import getIcon from 'apps/rahat-ui/src/utils/getIcon';
 import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
+import CommsActivitiesTable from './table/comms.activities.table';
 
 export default function CommunicationMainLogsView() {
   const { id: ProjectId } = useParams();

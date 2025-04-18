@@ -1,9 +1,6 @@
 'use client';
-import {
-  useCambodiaBeneficiaries,
-  usePagination,
-  useProjectBeneficiaries,
-} from '@rahat-ui/query';
+import { useCambodiaBeneficiaries, usePagination } from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -11,25 +8,24 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
-import React from 'react';
+import { CloudUpload, Download, UserRoundX } from 'lucide-react';
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import React, { useEffect } from 'react';
+import * as XLSX from 'xlsx';
 import SearchInput from '../../components/search.input';
 import SelectComponent from '../select.component';
 import CambodiaTable from '../table.component';
 import { useCambodiaBeneficiaryTableColumns } from './use.beneficiary.table.columns';
-import ViewColumns from '../../components/view.columns';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { CloudUpload, PlusIcon, UserRoundX } from 'lucide-react';
-import Link from 'next/link';
-import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 export default function BeneficiaryView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-
+  const router = useRouter();
   const {
     pagination,
     filters,
@@ -51,6 +47,20 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...(debouncedSearch as any),
   });
+  const { data: allData } = useCambodiaBeneficiaries({
+    page: pagination.page,
+    perPage: data?.response?.meta?.total,
+    order: 'desc',
+    sort: 'createdAt',
+    projectUUID: id,
+    ...(debouncedSearch as any),
+  });
+
+  useEffect(() => {
+    return () => {
+      router.refresh();
+    };
+  }, [router]);
 
   const processedData = {
     ...data,
@@ -70,6 +80,7 @@ export default function BeneficiaryView() {
       });
     }
   };
+
   const columns = useCambodiaBeneficiaryTableColumns();
   const table = useReactTable({
     manualPagination: true,
@@ -89,6 +100,22 @@ export default function BeneficiaryView() {
       rowSelection: selectedListItems,
     },
   });
+  const handleDownload = async () => {
+    const rowsToDownload = allData?.data || [];
+    const workbook = XLSX.utils.book_new();
+    const worksheetData = rowsToDownload?.map((item: any) => ({
+      Name: item.piiData?.name,
+      Phone: item.piiData?.phone,
+      Type: item.type,
+      Gender: item.projectData?.gender,
+      HealthWorker: item.healthWorker?.name,
+      TimeStamp: new Date(item.createdAt).toLocaleDateString(),
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Beneficiaries');
+
+    XLSX.writeFile(workbook, 'Beneficiaries.xlsx');
+  };
   return (
     <>
       <div className="p-4 bg-white ">
@@ -107,11 +134,15 @@ export default function BeneficiaryView() {
                 <UserRoundX className="mr-2 h-4 w-4" /> Discarded Beneficiaries
               </Button>
             </Link>
-            {/* <Link href={`/projects/el-cambodia/${id}/beneficiary/upload`}>
+            <Link href={`/projects/el-cambodia/${id}/beneficiary/upload`}>
               <Button variant="outline">
                 <CloudUpload className="mr-2 h-4 w-4" /> Upload Beneficiaries
               </Button>
-            </Link> */}
+            </Link>
+
+            <Button variant="outline" onClick={() => handleDownload()}>
+              <Download className="mr-2 h-4 w-4" /> Download Beneficiaries
+            </Button>
           </div>
         </div>
 

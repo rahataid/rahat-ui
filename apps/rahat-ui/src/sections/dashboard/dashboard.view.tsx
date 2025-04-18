@@ -55,7 +55,7 @@ export default function DashboardView() {
 
       <Tabs defaultValue="overview">
         {/* Scrollable Tabs for Mobile */}
-        <TabsList className="border bg-secondary rounded w-full sm:w-60 overflow-x-auto flex">
+        <TabsList className="border bg-secondary rounded w-full sm:w-60 flex">
           <TabsTrigger
             className="flex-1 data-[state=active]:bg-white px-4"
             value="overview"

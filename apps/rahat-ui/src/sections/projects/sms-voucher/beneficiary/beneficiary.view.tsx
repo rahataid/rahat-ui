@@ -207,7 +207,7 @@ export default function BeneficiaryView() {
               type="button"
               variant="outline"
               onClick={handleDownload}
-              className="w-full sm:w-auto"
+              className="w-full rounded-sm sm:w-auto"
             >
               <CloudDownload size={18} className="mr-1" />
               Download
@@ -234,8 +234,8 @@ export default function BeneficiaryView() {
             table={table}
             tableHeight={
               Object.keys(filters).length
-                ? 'h-[calc(100vh-339px)]'
-                : 'h-[calc(100vh-273px)]'
+                ? 'h-[calc(100vh-389px)]'
+                : 'h-[calc(100vh-320px)]'
             }
             loading={isLoading}
           />

@@ -47,7 +47,9 @@ export function Nav({ hasDefaultHeader = true }) {
           {/* <SearchInput name="" onSearch={() => {}} isDisabled /> */}
         </div>
         <div className="flex space-x-2 items-center">
-          <ConnectWallet />
+          <div className="hidden sm:block">
+            <ConnectWallet />
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar className="h-10 w-10">

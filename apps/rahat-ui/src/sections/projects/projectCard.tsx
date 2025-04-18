@@ -32,7 +32,7 @@ export default function CommonCard({
   return (
     <Card
       onClick={handleClick}
-      className={`cursor-pointer rounded-md border shadow`}
+      className={`cursor-pointer rounded-sm border shadow`}
     >
       <div className="p-4">
         <div className="rounded-md bg-secondary flex justify-center">

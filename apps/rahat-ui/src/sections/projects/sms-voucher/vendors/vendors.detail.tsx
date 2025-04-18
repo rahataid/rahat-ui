@@ -35,9 +35,9 @@ export default function VendorsDetail() {
   const vendorUUID = searchParams.get('vendorUUID') as UUID;
   const voucherReedeemed = searchParams.get('voucherReedeemed');
 
-  const projectClosed = useProjectStore(
-    (state) => state.singleProject?.projectClosed,
-  );
+  // const projectClosed = useProjectStore(
+  //   (state) => state.singleProject?.projectClosed,
+  // );
 
   const { data, isLoading: isVendorLoading } = useVendorBeneficiary(
     id,
@@ -73,8 +73,8 @@ export default function VendorsDetail() {
       </div>
 
       {/* Responsive Grid Layout */}
-      <div className="p-5 rounded grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mb-5">
-        <div className="border shadow flex items-center gap-4 p-5">
+      <div className="p-5 rounded grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+        <div className="border rounded-sm shadow flex items-center gap-4 p-5">
           <div className="rounded-full h-8 w-8 flex items-center justify-center">
             <Store />
           </div>
@@ -98,7 +98,7 @@ export default function VendorsDetail() {
           </div>
         </div>
 
-        <div className="border shadow flex flex-col justify-between gap-2 p-5">
+        <div className="border rounded-sm shadow flex flex-col justify-between gap-2 p-5">
           <p className="font-medium">Voucher Redeemed</p>
           <p className="text-4xl font-semibold text-primary truncate w-full sm:w-52">
             {voucherReedeemed}
@@ -108,7 +108,7 @@ export default function VendorsDetail() {
 
       {/* Tabs - Scrollable on Mobile */}
       <Tabs defaultValue="transactionHistory">
-        <TabsList className="border bg-secondary rounded mb-2 flex overflow-x-auto">
+        <TabsList className="border bg-secondary rounded mb-2 flex">
           <TabsTrigger
             className="w-full min-w-[140px] text-center data-[state=active]:bg-white"
             value="transactionHistory"

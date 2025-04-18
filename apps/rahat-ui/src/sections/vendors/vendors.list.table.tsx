@@ -78,14 +78,11 @@ export default function VendorsTable({
   selectedRow,
   loading,
 }: IProps) {
-  const projectList = useProjectList({});
+  const projectList = useProjectList();
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
-  const projectNames =
+  const projectNames: any =
     (projectList?.data?.data?.length > 0 &&
-      projectList?.data?.data?.map((project: any) => ({
-        label: project?.name,
-        value: project?.name,
-      }))) ||
+      projectList?.data?.data?.map((project: any) => project?.name)) ||
     [];
 
   return (
@@ -101,33 +98,29 @@ export default function VendorsTable({
         />
 
         {/* TODO: fix this */}
-        {/* <SelectComponent
+        <SelectComponent
           onChange={(event) => {
             table
               .getColumn('status')
               ?.setFilterValue(event === 'All' ? '' : event);
           }}
           name="Status"
-          options={[
-            { label: 'All', value: 'All' },
-            { label: 'Assigned', value: 'Assigned' },
-            { label: 'Pending', value: 'Pending' },
-          ]}
+          options={['All', 'Assigned', 'Pending']}
           value={(table.getColumn('status')?.getFilterValue() as string) || ''}
-        /> */}
+        />
 
-        {/* <SelectComponent
+        <SelectComponent
           onChange={(event) => {
             table
               .getColumn('projectName')
               ?.setFilterValue(event === 'All' ? '' : event);
           }}
           name="Project Name"
-          options={[{ label: 'All', value: 'All' }, ...projectNames]}
+          options={['All', ...projectNames]}
           value={
             (table.getColumn('projectName')?.getFilterValue() as string) || ''
           }
-        /> */}
+        />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

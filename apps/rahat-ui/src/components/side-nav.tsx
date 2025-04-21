@@ -1,31 +1,22 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from 'libs/shadcn/src/components/ui/collapsible';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from 'libs/shadcn/src/components/ui/sidebar';
-import { ChevronRight, Ellipsis, Settings } from 'lucide-react';
-import React, { act, createElement } from 'react';
+import { Ellipsis } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import React, { createElement } from 'react';
 import { useNavData } from '../app/config-nav';
 import getIcon from '../utils/getIcon';
-import Image from 'next/image';
 
 export default function SideNav() {
   const { data, subData } = useNavData();

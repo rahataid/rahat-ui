@@ -70,7 +70,11 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...filters,
   });
-  const { data: consumerData, refetch } = useListConsentConsumer(
+  const {
+    data: consumerData,
+    refetch,
+    isSuccess,
+  } = useListConsentConsumer(
     {
       projectUUID: id,
       ...filters,
@@ -128,10 +132,13 @@ export default function BeneficiaryView() {
     else {
       refetch();
     }
-    if (consumerData?.data) {
+  };
+
+  useEffect(() => {
+    if (isSuccess && consumerData?.data) {
       generateExcel(consumerData.data, 'Consumer', 9);
     }
-  };
+  }, [isSuccess, consumerData?.data]);
 
   const generateExcel = (data: any, title: string, numberOfColumns: number) => {
     const wb = XLSX.utils.book_new();
@@ -170,6 +177,18 @@ export default function BeneficiaryView() {
               onSearch={(event) =>
                 table.getColumn('phone')?.setFilterValue(event.target.value)
               }
+            />
+
+            <SelectComponent
+              onChange={(e) => setFilters({ ...filters, consentStatus: e })}
+              name="Consent"
+              options={[
+                { value: 'yes', label: 'Yes' },
+                { value: 'no', label: 'No' },
+              ]}
+              value={filters?.consentStatus || ''}
+              className="w-full"
+              showSelect={false}
             />
 
             <SelectComponent

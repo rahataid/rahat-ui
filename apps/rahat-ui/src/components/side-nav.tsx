@@ -9,6 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from 'libs/shadcn/src/components/ui/sidebar';
 import { Ellipsis } from 'lucide-react';
 import Image from 'next/image';
@@ -23,6 +24,7 @@ export default function SideNav() {
   const [more, setMore] = React.useState(false);
   const currentPath = usePathname();
   const activePath = currentPath.split('/')[1];
+  const { setOpenMobile, setOpen } = useSidebar();
 
   return (
     <Sidebar collapsible="icon">
@@ -38,7 +40,10 @@ export default function SideNav() {
               const isActive = item.path.split('/')[1] === activePath;
               return (
                 <SidebarMenuItem key={item.title}>
-                  <Link href={item.path as string}>
+                  <Link
+                    onClick={() => setOpenMobile(false)}
+                    href={item.path as string}
+                  >
                     <SidebarMenuButton
                       tooltip={item.title}
                       className={
@@ -76,7 +81,7 @@ export default function SideNav() {
                 text-muted-foreground hover:text-foreground hidden sm:block"
         >
           <Ellipsis
-            className="cursor-pointer"
+            className="cursor-pointer hidden sm:block"
             onClick={(e) => {
               setMore(!more);
             }}

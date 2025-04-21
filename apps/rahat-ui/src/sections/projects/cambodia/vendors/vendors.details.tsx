@@ -7,7 +7,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { Copy, CopyCheck, Ticket, User } from 'lucide-react';
+import { Coins, Copy, CopyCheck, Ticket, User } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { use } from 'react';
 import HeaderWithBack from '../../components/header.with.back';
@@ -31,7 +31,7 @@ export default function VendorsDetail() {
   };
 
   return (
-    <div className="h-[calc(100vh-95px)] m-4">
+    <div className="h-[calc(100vh-95px)] m-4 ">
       <div className="flex justify-between items-center">
         <HeaderWithBack
           title={data?.data?.User?.name}
@@ -56,52 +56,48 @@ export default function VendorsDetail() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-2">
         <DataCard
-          className="w-full border-solid rounded h-28"
-          title="Villagers Referred"
+          className="border-solid rounded h-24 pt-2"
+          title="Wearers"
           Icon={User}
-          number={vendorsStats?.data?.leadsRecieved}
+          number={vendorsStats?.data?.consumers || 0}
         />
+
         <DataCard
-          className="w-full border-solid rounded h-28"
+          className="border-solid rounded h-24 pt-2"
           title="Eye Checkup in VC"
-          Icon={User}
-          number={vendorsStats?.data?.leadsConverted}
+          Icon={Ticket}
+          number={vendorsStats?.data?.leadsConverted || 0}
         />
+
         <DataCard
-          className="w-full border-solid rounded h-28"
-          title="Eyewear dispensed in VC"
-          Icon={User}
-          number={vendorsStats?.data?.footfalls}
-        />
-        <DataCard
-          className="w-full border-solid rounded h-28"
+          className="border-solid rounded h-24 pt-2"
           title="Sales"
           Icon={Coins}
           number={vendorsStats?.data?.sales || 0}
         />
 
         <DataCard
-          className="w-full border-solid rounded h-28"
+          className="border-solid rounded h-24 pt-2"
           title="Health Workers"
           Icon={User}
           number={vendorsStats?.data?.healthWorkers || 0}
         />
 
         <DataCard
-          className="w-full border-solid rounded h-28"
+          className="border-solid rounded h-24 pt-2"
           title="Villagers Referred"
           Icon={User}
           number={vendorsStats?.data?.leadsRecieved || 0}
         />
 
         <DataCard
-          className="w-full border-solid rounded h-28"
+          className="border-solid rounded h-24 pt-2"
           title="Eyewear dispensed in VC"
           Icon={Ticket}
           number={vendorsStats?.data?.footfalls || 0}
         />
       </div>
-      <div className="p-5 rounded border grid grid-cols-3 gap-5 mb-4">
+      <div className="p-5 rounded border shadow-sm grid grid-cols-3 gap-5 mb-2 h-20">
         <div>
           <h1 className="text-md text-muted-foreground">Wallet Address</h1>
           <div
@@ -128,7 +124,7 @@ export default function VendorsDetail() {
         </div> */}
       </div>
       <Tabs defaultValue="transactionHistory">
-        <TabsList className="border bg-secondary rounded mb-4">
+        <TabsList className="border bg-secondary rounded mb-2">
           <TabsTrigger
             className="w-full data-[state=active]:bg-white"
             value="transactionHistory"

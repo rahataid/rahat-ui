@@ -621,7 +621,10 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   };
 };
 
-export const useListConsentConsumer = (payload: GetConsumerData) => {
+export const useListConsentConsumer = (
+  payload: GetConsumerData,
+  enabled = false,
+) => {
   const q = useProjectAction<Beneficiary[]>();
   const LIST_CONSENT = 'beneficiary.list_full_data_by_project';
   const { projectUUID, ...restPayload } = payload;
@@ -634,8 +637,9 @@ export const useListConsentConsumer = (payload: GetConsumerData) => {
   const query = useQuery({
     queryKey: [LIST_CONSENT, restPayloadString],
     placeholderData: keepPreviousData,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    enabled,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,

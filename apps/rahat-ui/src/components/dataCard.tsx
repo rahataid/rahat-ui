@@ -63,11 +63,11 @@ export default function DataCard({
           {Icon && (
             <div
               className={cn(
-                'bg-secondary rounded-full h-8 w-8 flex items-center justify-center text-primary',
+                'bg-secondary rounded-full h-7 w-7 flex items-center justify-center text-primary',
                 iconStyle,
               )}
             >
-              <Icon size={20} strokeWidth={2} />
+              <Icon size={18} strokeWidth={2} />
             </div>
           )}
         </div>

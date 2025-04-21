@@ -389,28 +389,31 @@ export default function AddBeneficiaryForm() {
               </div>
             </div>
           </div>
+          <div className="flex flex-col sm:flex-row justify-between sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2 py-2 px-4">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => router.push('/beneficiary')}
+              className="w-full sm:w-auto"
+            >
+              Cancel
+            </Button>
+            {addBeneficiary.isPending ? (
+              <Button disabled className="w-full sm:w-auto">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Please wait
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                className="text-white hover:text-blue-500 hover:border hover:border-blue-500 w-full sm:w-auto px-10"
+              >
+                Add
+              </Button>
+            )}
+          </div>
         </form>
       </Form>
-      <div className="flex flex-col sm:flex-row justify-between sm:justify-end space-y-2 sm:space-y-0 sm:space-x-2 py-2 px-4">
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() => router.push('/beneficiary')}
-          className="w-full sm:w-auto"
-        >
-          Cancel
-        </Button>
-        {addBeneficiary.isPending ? (
-          <Button disabled className="w-full sm:w-auto">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Please wait
-          </Button>
-        ) : (
-          <Button className="text-white hover:text-blue-500 hover:border hover:border-blue-500 w-full sm:w-auto px-10">
-            Add
-          </Button>
-        )}
-      </div>
     </>
   );
 }

@@ -16,7 +16,7 @@ export const useGetCommunicationLogs = (
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aa.activities.communication.sessionLogs',
+          action: 'ms.activities.communication.sessionLogs',
           payload: {
             communicationId,
             activityId,
@@ -67,7 +67,8 @@ export const useRetryFailedBroadcast = (
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'An error occured!';
+      const errorMessage =
+        error?.response?.data?.message || 'An error occured!';
       q.reset();
       toast.fire({
         title: 'Error while adding activity.',

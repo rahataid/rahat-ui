@@ -110,15 +110,27 @@ export const useActivities = (uuid: UUID, payload: any) => {
 
 export const useActivitiesHavingComms = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
-
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
   const query = useQuery({
     queryKey: ['activitiesHavingComms', uuid, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.activities.getHavingComms',
-          payload: payload,
+          action: 'ms.activities.getHavingComms',
+          payload: {
+            ...payload,
+            activeYear:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'active_year'
+              ],
+            riverBasin:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'river_basin'
+              ],
+          },
         },
       });
       return mutate.response;
@@ -132,7 +144,11 @@ export const useActivitiesHavingComms = (uuid: UUID, payload: any) => {
     status: d?.status,
     activityCommunication: d?.activityCommunication,
   }));
-  return { activitiesData, activitiesMeta: query?.data?.data?.meta };
+  return {
+    activitiesData,
+    activitiesMeta: query?.data?.meta,
+    isLoading: query?.isLoading,
+  };
 };
 
 export const useSingleActivity = (

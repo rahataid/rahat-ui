@@ -18,10 +18,15 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { useActivitiesHavingComms, usePagination } from '@rahat-ui/query';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+// import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { UUID } from 'crypto';
 import useCommsActivitiesTableColumns from './useCommsActivitesTableColumns';
-import { SearchInput } from 'apps/rahat-ui/src/common';
+import {
+  CustomPagination,
+  NoResult,
+  SearchInput,
+  SpinnerLoader,
+} from 'apps/rahat-ui/src/common';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 
 export default function CommsActivitiesTable() {
@@ -41,10 +46,8 @@ export default function CommsActivitiesTable() {
     setPagination({ page: 1, perPage: 10 });
   }, []);
 
-  const { activitiesData, activitiesMeta } = useActivitiesHavingComms(
-    projectId as UUID,
-    { ...pagination, filters },
-  );
+  const { activitiesData, activitiesMeta, isLoading } =
+    useActivitiesHavingComms(projectId as UUID, { ...pagination, filters });
   const columns = useCommsActivitiesTableColumns();
 
   const table = useReactTable({
@@ -119,7 +122,7 @@ export default function CommsActivitiesTable() {
         <div className="mt-1 bg-card border rounded">
           <Table>
             <ScrollArea className="h-[calc(100vh-430px)]">
-              <TableHeader className="sticky top-0">
+              <TableHeader className="sticky top-0 bg-card">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -160,7 +163,7 @@ export default function CommsActivitiesTable() {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {isLoading ? <SpinnerLoader /> : <NoResult />}
                     </TableCell>
                   </TableRow>
                 )}

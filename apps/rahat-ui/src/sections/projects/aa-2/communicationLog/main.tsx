@@ -1,34 +1,44 @@
-import getIcon from 'apps/rahat-ui/src/utils/getIcon';
-import { LucideIcon } from 'lucide-react';
-import CommsActivitiesTable from './table/comms.activities.table';
-import { DataCard, Heading } from 'apps/rahat-ui/src/common';
+import { useCommsStats } from '@rahat-ui/query';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import React from 'react';
-import { usePagination } from '@rahat-ui/query';
+import { Heading } from 'apps/rahat-ui/src/common';
+import getIcon from 'apps/rahat-ui/src/utils/getIcon';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
+import CommsActivitiesTable from './table/comms.activities.table';
 
 export default function CommunicationMainLogsView() {
+  const { id: ProjectId } = useParams();
+  const { data: commsStatsData } = useCommsStats(ProjectId as UUID);
+
+  console.log(commsStatsData);
   const commStats = [
     {
       componentType: 'DATACARD',
       title: 'SMS Recipients',
-      value: 0,
+      value:
+        commsStatsData?.stats?.recipientsByTransport.find(
+          (r) => r.name === 'SMS',
+        )?.totalRecipients || 0,
       icon: 'MessageSquare',
     },
     {
       componentType: 'DATACARD',
       title: 'IVR Recipients',
-      value: 0,
+      value:
+        commsStatsData?.stats?.recipientsByTransport.find(
+          (r) => r.name === 'IVR',
+        )?.totalRecipients || 0,
       icon: 'AudioLines',
     },
     {
       componentType: 'DATACARD',
       title: 'Total SMS sent to Beneficiaries',
-      value: 0,
+      value: commsStatsData?.stats?.messageStats?.totalMessages || 0,
       icon: 'MessageSquare',
     },
     {

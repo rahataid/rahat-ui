@@ -19,3 +19,4 @@ export * from './edit.btn';
 export * from './delete.btn';
 export * from './filtersTags';
 export * from './select.component';
+export * from './cardSkeleton';

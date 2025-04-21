@@ -10,8 +10,15 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { flexRender, Table } from '@tanstack/react-table';
+import { NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 
-export default function CommsLogsTable({ table }: { table: Table<any> }) {
+export default function CommsLogsTable({
+  table,
+  isLoading,
+}: {
+  table: Table<any>;
+  isLoading?: boolean;
+}) {
   return (
     <>
       <div className="mt-1">
@@ -58,7 +65,7 @@ export default function CommsLogsTable({ table }: { table: Table<any> }) {
                     colSpan={table.getAllColumns().length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {isLoading ? <SpinnerLoader /> : <NoResult />}
                   </TableCell>
                 </TableRow>
               )}

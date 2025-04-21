@@ -74,8 +74,8 @@ export default function RainfallWatchView() {
     <TableLoader />
   ) : (
     <div className="flex flex-col space-y-4">
-      {/* <div className="p-4 rounded-sm border shadow flex justify-between space-x-4"> */}
-      {/* <div className="w-full">
+      {/* <div className="p-4 rounded-sm border shadow flex justify-between space-x-4">
+        <div className="w-full">
           <div className="flex justify-between gap-4">
             <Heading
               title={rainfallWatch?.info?.name}
@@ -114,8 +114,8 @@ export default function RainfallWatchView() {
           <p className="text-sm/6 font-medium">Water Level</p>
           <p className="text-gray-500 text-sm/6">N/A</p>
           <Badge>{rainfallWatch?.info?.status}</Badge>
-        </div> */}
-      {/* </div> */}
+        </div>
+      </div> */}
 
       <RainFallMonitor
         name={rainfallWatch?.info?.name}

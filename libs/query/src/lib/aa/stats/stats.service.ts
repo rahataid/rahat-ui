@@ -62,7 +62,7 @@ export const useCommsStats = (uuid: UUID) => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aa.activities.communication.getStats',
+          action: 'ms.activities.communication.getStats',
           payload: {},
         },
       });

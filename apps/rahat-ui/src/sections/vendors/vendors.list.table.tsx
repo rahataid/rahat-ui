@@ -57,6 +57,8 @@ type IProps = {
   projectModal: ProjectModalType;
   selectedRow: any;
   loading: boolean;
+  filters?: any;
+  setFilters?: any;
 };
 
 export default function VendorsTable({
@@ -67,6 +69,8 @@ export default function VendorsTable({
   projectModal,
   selectedRow,
   loading,
+  filters,
+  setFilters,
 }: IProps) {
   const projectList = useProjectList();
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
@@ -90,26 +94,26 @@ export default function VendorsTable({
         {/* TODO: fix this */}
         <SelectComponent
           onChange={(event) => {
-            table
-              .getColumn('status')
-              ?.setFilterValue(event === 'All' ? '' : event);
+            setFilters({
+              ...filters,
+              status: event === 'All' ? '' : event,
+            });
           }}
           name="Status"
           options={['All', 'Assigned', 'Pending']}
-          value={(table.getColumn('status')?.getFilterValue() as string) || ''}
+          value={filters?.status || ''}
         />
 
         <SelectComponent
           onChange={(event) => {
-            table
-              .getColumn('projectName')
-              ?.setFilterValue(event === 'All' ? '' : event);
+            setFilters({
+              ...filters,
+              projectName: event === 'All' ? '' : event,
+            });
           }}
           name="Project Name"
           options={['All', ...projectNames]}
-          value={
-            (table.getColumn('projectName')?.getFilterValue() as string) || ''
-          }
+          value={filters?.projectName || ''}
         />
       </div>
       <div>

@@ -60,7 +60,7 @@ export default function AuthPage() {
 
   return (
     <div className="sm:h-screen flex items-center justify-center px-4">
-      <div className="max-w-md w-full bg-white shadow-md rounded-lg p-6">
+      <div className="max-w-md w-full bg-card border rounded-sm rounded-lg p-6">
         <div className="text-center">
           <h1 className="text-2xl font-semibold">
             {!optSent ? 'Sign in' : 'OTP has been sent'}

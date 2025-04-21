@@ -82,7 +82,7 @@ export default function SideNav() {
 
         <div
           className="flex h-9 w-9 items-center justify-center rounded-full transition-colors md:h-8 md:w-8 
-                text-muted-foreground hover:text-foreground"
+                text-muted-foreground hover:text-foreground hidden sm:block"
         >
           <Ellipsis
             className="cursor-pointer"

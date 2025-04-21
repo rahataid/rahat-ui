@@ -502,6 +502,47 @@ export const useAAProjectSettingsHazardType = (uuid: UUID) => {
   return query;
 };
 
+export const useAAProjectSettingsSCB = (uuid: UUID) => {
+  const q = useProjectAction([PROJECT_SETTINGS_KEYS.SCB]);
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+
+  const query = useQuery({
+    queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid, PROJECT_SETTINGS_KEYS.SCB],
+    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SCB]),
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: PROJECT_SETTINGS_KEYS.SCB,
+          },
+        },
+      });
+      return mutate.data.value;
+    },
+  });
+
+  useEffect(() => {
+    if (!isEmpty(query.data)) {
+      const settingsToUpdate = {
+        ...settings,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.SCB]: query?.data,
+        },
+      };
+      setSettings(settingsToUpdate);
+      window.location.reload();
+    }
+  }, [query.data]);
+
+  return query;
+};
+
 export const useProjectList = (
   payload?: Pagination,
 ): UseQueryResult<FormattedResponse<Project[]>, Error> => {
@@ -634,6 +675,7 @@ export const useListConsentConsumer = (
     () => [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, restPayloadString],
     [restPayloadString],
   );
+  //todo use mutation
   const query = useQuery({
     queryKey: [LIST_CONSENT, restPayloadString],
     placeholderData: keepPreviousData,

@@ -9,7 +9,7 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { useElkenyaTransactionsTableColumns } from './use.transactions.table.columns';
 import { useSmsVoucherProjectTransactions } from '@rahat-ui/query';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ElkenyaTable from '../table.component';
 import { TransactionPagination } from '../transactionPagination';
 
@@ -19,9 +19,14 @@ export default function TransactionsView() {
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(100);
   const first = pageSize;
-  const skip = page * first;
-
-  const { data, isLoading } = useSmsVoucherProjectTransactions(first, skip);
+  const [cursorStack, setCursorStack] = useState<number[]>([]);
+  const [lastTimestamp, setLastTimestamp] = useState<number>(
+    Math.floor(Date.now() / 1000),
+  );
+  const { data, isLoading } = useSmsVoucherProjectTransactions(
+    first,
+    lastTimestamp,
+  );
 
   // Check if there is more data
   const hasNextPage = data && data.length === pageSize;
@@ -33,6 +38,26 @@ export default function TransactionsView() {
   const columns = useElkenyaTransactionsTableColumns({
     setSorting: setSorting,
   });
+  const handlePageChange = (newPage: number) => {
+    if (newPage > page && data && data.length > 0) {
+      const lastTransaction = data[data.length - 1];
+      const date = new Date(lastTransaction.timeStamp);
+      const timestamp = Math.floor(date.getTime() / 1000);
+      setCursorStack((prev) => [...prev, lastTimestamp]);
+      setLastTimestamp(timestamp);
+    } else {
+      setCursorStack((prev) => {
+        const updatedStack = [...prev];
+        const prevTimestamp = updatedStack.pop();
+        if (prevTimestamp !== undefined) {
+          setLastTimestamp(prevTimestamp);
+        }
+        return updatedStack;
+      });
+    }
+    setPage(newPage);
+  };
+
   const table = useReactTable({
     data: data || [],
     columns,
@@ -70,6 +95,7 @@ export default function TransactionsView() {
         page={page}
         setPageSize={setPageSize}
         setPage={setPage}
+        handlePageChange={handlePageChange}
       />
     </>
   );

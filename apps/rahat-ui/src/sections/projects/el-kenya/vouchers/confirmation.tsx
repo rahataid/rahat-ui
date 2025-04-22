@@ -43,16 +43,16 @@ const InfoRow = ({ label, value }) => (
 );
 
 const BeneficiaryList = ({ data, beneficiaryGroupSelected }) => (
-  <div className="rounded-md p-4">
-    <ScrollArea className="h-[calc(100vh-580px)]">
-      <p className="text-base font-medium">
-        {beneficiaryGroupSelected ? 'Beneficiary Group' : 'Beneficiary'} List
-      </p>
-      <p className="text-sm text-muted-foreground mb-4">
-        {beneficiaryGroupSelected
-          ? `${data.length} Beneficiaries Groups`
-          : `${data.length} Selected`}
-      </p>
+  <div className="rounded-md px-4">
+    <p className="text-base font-medium">
+      {beneficiaryGroupSelected ? 'Beneficiary Group' : 'Beneficiary'} List
+    </p>
+    <p className="text-sm text-muted-foreground mb-4">
+      {beneficiaryGroupSelected
+        ? `${data.length} Beneficiaries Groups`
+        : `${data.length} Selected`}
+    </p>
+    <ScrollArea className="h-[calc(100vh-460px)]">
       <div className="flex flex-col gap-2">
         {data.map((ben) => (
           <BeneficiaryItem

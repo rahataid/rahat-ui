@@ -1,8 +1,5 @@
 import { useState } from 'react';
-import {
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Select,
@@ -17,14 +14,15 @@ export function TransactionPagination<TData>({
   pageSize,
   setPageSize,
   setPage,
-
   hasNextPage,
+  handlePageChange,
 }: {
   hasNextPage: boolean;
   pageSize: number;
   page: number;
   setPageSize: any;
   setPage: any;
+  handlePageChange?: any;
 }) {
   const handlePageSizeChange = (value: string) => {
     const newSize = Number(value);
@@ -43,7 +41,7 @@ export function TransactionPagination<TData>({
               <SelectValue placeholder={`${pageSize}`} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[10, 20, 50, 100].map((size) => (
+              {[10, 20, 50, 100, 1000].map((size) => (
                 <SelectItem key={size} value={`${size}`}>
                   {size}
                 </SelectItem>
@@ -63,7 +61,7 @@ export function TransactionPagination<TData>({
             variant="outline"
             className="h-8 w-8 p-0"
             onClick={() => {
-              setPage((prev: number) => Math.max(prev - 1, 0));
+              handlePageChange(page - 1);
             }}
             disabled={page === 0}
           >
@@ -75,7 +73,7 @@ export function TransactionPagination<TData>({
             variant="outline"
             className="h-8 w-8 p-0"
             onClick={() => {
-              setPage((prev: number) => prev + 1);
+              handlePageChange(page + 1);
             }}
             disabled={!hasNextPage}
           >

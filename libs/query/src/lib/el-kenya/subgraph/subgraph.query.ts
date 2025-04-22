@@ -12,7 +12,10 @@ import { useEffect } from 'react';
 import { useKenyaProjectSubgraphStore } from './stores/kenya-project.store';
 import { formatTransaction } from '../utils';
 
-export const useKenyaProjectTransactions = () => {
+export const useKenyaProjectTransactions = (
+  first: number,
+  timeStamp: number,
+) => {
   const { subgraphClient } = useKenyaSubgraph();
   const { queryClient } = useRSQuery();
   const setProjectTransactions = useKenyaProjectSubgraphStore(
@@ -21,10 +24,11 @@ export const useKenyaProjectTransactions = () => {
 
   const query = useQuery(
     {
-      queryKey: ['ProjectTransactions'],
+      queryKey: ['ProjectTransactions', first, timeStamp],
+
       queryFn: async () => {
         const { data } = await subgraphClient.query(
-          KenyaProjectTransactions,
+          KenyaProjectTransactions(first, timeStamp),
           {},
         );
         const transactionsType = [
@@ -36,10 +40,13 @@ export const useKenyaProjectTransactions = () => {
           'otpVerifieds',
           'walkInBeneficiaryAddeds',
         ];
-        const newData = transactionsType.reduce((acc, type) => {
+        const newData: any = transactionsType.reduce((acc, type) => {
           const transactions = data[type] || [];
           return acc.concat(transactions.map(formatTransaction));
         }, []);
+        newData.sort((a: any, b: any) => {
+          return b.timeStamp - a.timeStamp;
+        });
         return newData;
       },
     },
@@ -56,7 +63,10 @@ export const useKenyaProjectTransactions = () => {
   return query;
 };
 
-export const useSmsVoucherProjectTransactions = (first: number, skip: number) => {
+export const useSmsVoucherProjectTransactions = (
+  first: number,
+  timeStamp: number,
+) => {
   const { subgraphClient } = useKenyaSubgraph();
   const { queryClient } = useRSQuery();
   const setProjectTransactions = useKenyaProjectSubgraphStore(
@@ -65,15 +75,13 @@ export const useSmsVoucherProjectTransactions = (first: number, skip: number) =>
 
   const query = useQuery(
     {
-      queryKey: ['ProjectTransactions', first, skip],
+      queryKey: ['ProjectTransactions', first, timeStamp],
       queryFn: async () => {
         const { data } = await subgraphClient.query(
-          SmsVoucherProjectTransactions(first, skip),
+          SmsVoucherProjectTransactions(first, timeStamp),
           {},
         );
-        const transactionsType = [
-          'walkInBeneficiaryAddeds',
-        ];
+        const transactionsType = ['walkInBeneficiaryAddeds'];
         const newData = transactionsType.reduce((acc, type) => {
           const transactions = data[type] || [];
           return acc.concat(transactions.map(formatTransaction));

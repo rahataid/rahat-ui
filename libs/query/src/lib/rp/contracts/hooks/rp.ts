@@ -333,7 +333,7 @@ export const useContractRedeem = (projectUUID: UUID) => {
       await updateRedemption.mutateAsync({ uuid: variables?.uuid });
       alert.fire({
         icon: 'success',
-        title: 'Token redeemed successfully',
+        title: 'Voucher redeemed successfully',
       });
     },
     mutationFn: async ({

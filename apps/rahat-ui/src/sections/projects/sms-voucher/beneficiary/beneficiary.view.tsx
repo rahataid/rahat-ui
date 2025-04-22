@@ -74,13 +74,10 @@ export default function BeneficiaryView() {
     data: consumerData,
     refetch,
     isSuccess,
-  } = useListConsentConsumer(
-    {
-      projectUUID: id,
-      ...filters,
-    },
-    enabled,
-  );
+  } = useListConsentConsumer({
+    projectUUID: id,
+    ...filters,
+  });
 
   const meta = beneficiaries?.response?.meta;
 
@@ -128,17 +125,19 @@ export default function BeneficiaryView() {
   };
 
   const handleDownload = () => {
-    if (!enabled) setEnabled(true);
-    else {
-      refetch();
-    }
+    setEnabled(true);
   };
 
   useEffect(() => {
-    if (isSuccess && consumerData?.data) {
-      generateExcel(consumerData.data, 'Consumer', 9);
+    if (enabled) {
+      refetch().then(() => {
+        if (isSuccess) {
+          generateExcel(consumerData.data, 'Consumer', 9);
+          setEnabled(false);
+        }
+      });
     }
-  }, [isSuccess, consumerData?.data]);
+  }, [enabled, isSuccess]);
 
   const generateExcel = (data: any, title: string, numberOfColumns: number) => {
     const wb = XLSX.utils.book_new();
@@ -238,7 +237,7 @@ export default function BeneficiaryView() {
               className="w-full rounded-sm sm:w-auto"
             >
               <CloudDownload size={18} className="mr-1" />
-              Download
+              {enabled ? 'Downloading...' : 'Download'}
             </Button>
           </div>
 

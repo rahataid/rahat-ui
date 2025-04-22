@@ -52,14 +52,14 @@ export default function VouchersView() {
   const REDEMPTION_RATE = kenyaStats?.data?.find(
     (i: any) => i.name === 'REDEMPTION_RATE',
   )?.data;
+  const notRedeemStats =
+    kenyaStats?.data?.find((i: any) => i.name === 'NOT_REDEEM_STATS')?.data ||
+    [];
 
   const glassRequired =
-    kenyaStats?.data?.find((i: any) => i.name === 'NOT_REDEEM_STATS')?.data
-      ?.glassesRequired || 0;
-
+    notRedeemStats.find((item: any) => item.id === 'REQUIRED')?.count || 0;
   const glassNotRequired =
-    kenyaStats?.data?.find((i: any) => i.name === 'NOT_REDEEM_STATS')?.data
-      ?.glassesNotRequired || 0;
+    notRedeemStats.find((item: any) => item.id === 'NOT_REQUIRED')?.count || 0;
 
   const REDEMPTION_STATS = kenyaStats?.data?.find(
     (i: any) => i.name === 'REDEMPTION_STATS',

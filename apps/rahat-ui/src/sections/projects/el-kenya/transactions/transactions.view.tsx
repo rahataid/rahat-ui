@@ -1,6 +1,7 @@
 import {
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -11,10 +12,21 @@ import { useKenyaProjectTransactions } from '@rahat-ui/query';
 import React, { useState } from 'react';
 import ElkenyaTable from '../table.component';
 import ClientSidePagination from '../../components/client.side.pagination';
+import { TransactionPagination } from '../../sms-voucher/transactionPagination';
 
 export default function TransactionsView() {
   const { id } = useParams() as { id: UUID };
-  const { data, error, isFetching } = useKenyaProjectTransactions();
+  const [page, setPage] = useState<number>(0);
+  const [pageSize, setPageSize] = useState<number>(100);
+  const first = pageSize;
+  const [lastTimestamp, setLastTimestamp] = useState<number>(
+    Math.floor(Date.now() / 1000),
+  );
+  const [cursorStack, setCursorStack] = useState<number[]>([]);
+  const { data, error, isFetching } = useKenyaProjectTransactions(
+    first,
+    lastTimestamp,
+  );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [sorting, setSorting] = useState([{ id: 'timeStamp', desc: true }]);
@@ -22,15 +34,39 @@ export default function TransactionsView() {
   const columns = useElkenyaTransactionsTableColumns({
     setSorting: setSorting,
   });
+  const hasNextPage = data && data.length >= pageSize;
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage > page && data && data.length > 0) {
+      const lastTransaction = data[data.length - 1];
+      const date = new Date(lastTransaction.timeStamp);
+      const timestamp = Math.floor(date.getTime() / 1000);
+      setCursorStack((prev) => [...prev, lastTimestamp]);
+      setLastTimestamp(timestamp);
+    } else {
+      setCursorStack((prev) => {
+        const updatedStack = [...prev];
+        const prevTimestamp = updatedStack.pop();
+        if (prevTimestamp !== undefined) {
+          setLastTimestamp(prevTimestamp);
+        }
+        return updatedStack;
+      });
+    }
+    setPage(newPage);
+  };
+
   const table = useReactTable({
     data: data || [],
     columns,
+    manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    getSortedRowModel: getSortedRowModel(),
     state: {
-      sorting,
       columnVisibility,
+      sorting,
     },
   });
   return (
@@ -50,7 +86,14 @@ export default function TransactionsView() {
           />
         </div>
       </div>
-      <ClientSidePagination table={table} />
+      <TransactionPagination
+        hasNextPage={hasNextPage || false}
+        pageSize={pageSize}
+        page={page}
+        setPageSize={setPageSize}
+        setPage={setPage}
+        handlePageChange={handlePageChange}
+      />
     </>
   );
 }

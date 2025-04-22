@@ -1,6 +1,6 @@
-export const KenyaProjectTransactions = `
+export const KenyaProjectTransactions = (first: number, timeStamp: number) => `
 query ProjectTransactions{
-  walkInBeneficiaryAddeds{
+  walkInBeneficiaryAddeds (first: ${first}, where: { blockTimestamp_lt: ${timeStamp} },  orderBy: blockTimestamp,orderDirection: desc) {
     id,
     beneficiary,
     tokenAddress,
@@ -11,7 +11,7 @@ query ProjectTransactions{
     transactionHash,
     eventType
   }
-  claimCreateds {
+  claimCreateds (first: ${first}, where: { blockTimestamp_lt: ${timeStamp} },  orderBy: blockTimestamp,orderDirection: desc) {
     amount
     blockNumber
     blockTimestamp
@@ -24,7 +24,7 @@ query ProjectTransactions{
     transactionHash
     eventType
    }
-  claimProcesseds {
+  claimProcesseds (first: ${first}, where: { blockTimestamp_lt: ${timeStamp} },  orderBy: blockTimestamp,orderDirection: desc) {
     amount
     beneficiary
     blockNumber
@@ -35,7 +35,7 @@ query ProjectTransactions{
     transactionHash
     eventType
   }
-  tokensAllocateds {
+  tokensAllocateds (first: ${first}, where: { blockTimestamp_lt: ${timeStamp} },  orderBy: blockTimestamp,orderDirection: desc) {
     amount
     beneficiary
     blockNumber
@@ -45,7 +45,7 @@ query ProjectTransactions{
     transactionHash
     eventType
   }
-  offlineClaimProcesseds{
+  offlineClaimProcesseds (first: ${first}, where: { blockTimestamp_lt: ${timeStamp} },  orderBy: blockTimestamp,orderDirection: desc) {
     id
     amount
     beneficiary
@@ -57,7 +57,7 @@ query ProjectTransactions{
     eventType
 } 
     
-    otpAddeds{
+    otpAddeds (first: ${first}, where: { blockTimestamp_lt: ${timeStamp} },  orderBy: blockTimestamp,orderDirection: desc) {
   id
   beneficiary
   tokenAddress
@@ -69,7 +69,7 @@ query ProjectTransactions{
   eventType
   }
 
-  otpVerifieds{
+  otpVerifieds (first: ${first}, where: { blockTimestamp_lt: ${timeStamp} },  orderBy: blockTimestamp,orderDirection: desc) {
     id
     amount
     beneficiary
@@ -82,9 +82,12 @@ query ProjectTransactions{
 }
 `;
 
-export const SmsVoucherProjectTransactions = (first: number, skip: number) => `
+export const SmsVoucherProjectTransactions = (
+  first: number,
+  timeStamp: number,
+) => `
 query ProjectTransactions{
-  walkInBeneficiaryAddeds(first: ${first}, skip: ${skip}) {
+  walkInBeneficiaryAddeds(first: ${first}, where: { blockTimestamp_lt: ${timeStamp} },  orderBy: blockTimestamp,orderDirection: desc) {
     id,
     beneficiary,
     tokenAddress,

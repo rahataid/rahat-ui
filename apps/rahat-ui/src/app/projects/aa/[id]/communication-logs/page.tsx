@@ -1,9 +1,9 @@
 'use client';
 
-import { AACommunicationLogsView } from 'apps/rahat-ui/src/sections/projects/aa/communication-logs';
+import { AACommunicationMainLogsView } from 'apps/rahat-ui/src/sections/projects/aa-2/communicationLog';
 
 const Page = () => {
-  return <AACommunicationLogsView />;
+  return <AACommunicationMainLogsView />;
 };
 
 export default Page;

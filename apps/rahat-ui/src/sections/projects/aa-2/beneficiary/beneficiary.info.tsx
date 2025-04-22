@@ -1,13 +1,13 @@
-'use client';
-import { Coins, Copy, CopyCheck, User } from 'lucide-react';
-import { useParams } from 'next/navigation';
 import React from 'react';
+import { Coins, Copy, CopyCheck, User } from 'lucide-react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { DataCard, DataItem } from 'apps/rahat-ui/src/common';
 
-const BeneficiaryInfo = () => {
-  const { id } = useParams();
-  const isIdOne = id === '1'; // untill api is used
+type IProps = {
+  beneficiary: any;
+};
+
+const BeneficiaryInfo = ({ beneficiary }: IProps) => {
   const { clickToCopy, copyAction } = useCopy();
   return (
     <>
@@ -19,12 +19,10 @@ const BeneficiaryInfo = () => {
         <div className="flex flex-col ml-6">
           <div className="flex items-center">
             <div className="text-lg text-muted-foreground truncate w-48 overflow-hidden mr-2">
-              0xb81dA6366ab7dAb06151D55Af059e496F56170d5
+              {beneficiary?.walletAddress || 'N/A'}
             </div>
             <button
-              onClick={() =>
-                clickToCopy('0xb81dA6366ab7dAb06151D55Af059e496F56170d5', 1)
-              }
+              onClick={() => clickToCopy(beneficiary?.walletAddress || '', 1)}
               className="ml-2 text-sm text-gray-500"
             >
               {copyAction === 1 ? <CopyCheck /> : <Copy />}
@@ -38,17 +36,38 @@ const BeneficiaryInfo = () => {
         iconStyle="bg-white text-secondary-muted"
         title="Token Assigned"
         Icon={Coins}
-        number={'10'}
+        number={beneficiary?.benTokens || 0}
       />
 
       <div className="grid grid-cols-3 gap-6 px-6 py-4">
-        <DataItem label="Age" value={'10'} />
-        <DataItem label="Gender" value={'Male'} />
-        <DataItem label="Phone Number" value={'+9779845712531'} />
-        <DataItem label="Address " value={'Hadigau-5, Kathmandu '} />
-        <DataItem label="Banking Status" value={'Banked'} isBadge />
-        <DataItem label="Phone Type" value={'Feature Phone'} isBadge />
-        <DataItem label="Internet Type" value={'Mobile Internet'} isBadge />
+        <DataItem label="Age" value={beneficiary?.projectData?.age || 'N/A'} />
+        <DataItem
+          label="Gender"
+          value={beneficiary?.projectData?.gender || 'N/A'}
+        />
+        <DataItem
+          label="Phone Number"
+          value={beneficiary?.extras?.phone || 'N/A'}
+        />
+        <DataItem
+          label="Address"
+          value={beneficiary?.projectData?.location || 'N/A'}
+        />
+        <DataItem
+          label="Banking Status"
+          value={beneficiary?.projectData?.bankedStatus}
+          isBadge
+        />
+        <DataItem
+          label="Phone Type"
+          value={beneficiary?.projectData?.phoneStatus}
+          isBadge
+        />
+        <DataItem
+          label="Internet Type"
+          value={beneficiary?.projectData?.internetStatus}
+          isBadge
+        />
       </div>
     </>
   );

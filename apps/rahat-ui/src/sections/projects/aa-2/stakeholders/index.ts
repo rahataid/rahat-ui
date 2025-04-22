@@ -4,3 +4,4 @@ export { default as AAStakeholdersGroupsDetails } from './stakeholders.groups.de
 export { default as AAAddStakeholders } from './add.stakeholders';
 export { default as AAUpdateOrAddStakeholdersGroup } from './add.stakeholder.groups';
 export { default as AAImportStakeholders } from './import.stakeholders';
+export { default as AAEditStakeholdersView } from './edit.stakeholder';

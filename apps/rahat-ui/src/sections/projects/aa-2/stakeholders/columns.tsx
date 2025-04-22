@@ -65,15 +65,10 @@ export const useProjectStakeholdersTableColumns = () => {
                 )
               }
             />
-            <Edit2
+            {/* <Edit2
               className="hover:text-primary cursor-pointer"
               size={16}
               strokeWidth={1.5}
-              // onClick={() =>
-              //   router.push(
-              //     `/projects/el-cambodia/${id}/beneficiary/${row.original.uuid}`,
-              //   )
-              // }
             />
 
             <Trash2
@@ -81,12 +76,7 @@ export const useProjectStakeholdersTableColumns = () => {
               color="red"
               size={16}
               strokeWidth={1.5}
-              // onClick={() =>
-              //   router.push(
-              //     `/projects/el-cambodia/${id}/beneficiary/${row.original.uuid}`,
-              //   )
-              // }
-            />
+            /> */}
           </div>
         );
       },

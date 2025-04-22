@@ -1,10 +1,5 @@
 import * as React from 'react';
-import { useParams } from 'next/navigation';
 import { UseFormReturn } from 'react-hook-form';
-import {
-  PROJECT_SETTINGS_KEYS,
-  useProjectSettingsStore,
-} from '@rahat-ui/query';
 import {
   Form,
   FormControl,
@@ -21,42 +16,23 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { UUID } from 'crypto';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-import ConfirmAddTrigger from './confirm.add.trigger';
 
 type IProps = {
-  form: UseFormReturn<
-    {
-      title: string;
-      dataSource: string;
-      isMandatory?: boolean | undefined;
-      minLeadTimeDays: string;
-      maxLeadTimeDays: string;
-      probability: string;
-      notes?: string;
-    },
-    any,
-    undefined
-  >;
+  form: UseFormReturn<{
+    title: string;
+    source: string;
+    isMandatory?: boolean;
+    minLeadTimeDays: string;
+    maxLeadTimeDays: string;
+    probability: string;
+    notes?: string;
+  }>;
+  phase: any;
 };
 
-export default function AddAutomatedTriggerForm({ form }: IProps) {
-  // const params = useParams();
-  // const projectId = params.id as UUID;
-  const selectedPhase = JSON.parse(
-    localStorage.getItem('selectedPhase') as string,
-  );
-
-  // const dataSources = useProjectSettingsStore(
-  //   (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
-  // );
-
-  // const riverBasin = dataSources?.glofas?.location;
-
+export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
   return (
     <>
       <Form {...form}>
@@ -68,7 +44,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 <Input
                   className="bg-gray-300"
                   type="text"
-                  value={selectedPhase?.name}
+                  value={phase?.name}
                   disabled
                 />
               </FormControl>
@@ -80,7 +56,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 <Input
                   className="bg-gray-300"
                   type="text"
-                  value={'riverBasin'}
+                  value={phase?.riverBasin}
                   disabled
                 />
               </FormControl>
@@ -107,14 +83,11 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
             />
             <FormField
               control={form.control}
-              name="dataSource"
+              name="source"
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormLabel>Source</FormLabel>
                       <FormControl>
                         <SelectTrigger>
@@ -122,7 +95,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value={'GLOFAS'}>GloFAS</SelectItem>
+                        <SelectItem value="DHM">DHM</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

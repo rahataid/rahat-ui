@@ -131,7 +131,7 @@ function BeneficiaryView() {
             <div className="flex mb-2 gap-2">
               <SearchInput
                 className="w-full"
-                name="group"
+                name=""
                 onSearch={(e) => handleSearch(e.target.value)}
               />
             </div>

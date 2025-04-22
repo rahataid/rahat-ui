@@ -1,10 +1,12 @@
 import { DataItem } from 'apps/rahat-ui/src/common';
 import { User } from 'lucide-react';
-import { useParams } from 'next/navigation';
 // import DataCard from '../../common/dataCard';
 
-const StakeHolderInfo = () => {
-  const { id } = useParams();
+type IProps = {
+  stakeholder: any;
+};
+
+const StakeHolderInfo = ({ stakeholder }: IProps) => {
   return (
     <>
       <div className="flex items-center">
@@ -13,17 +15,17 @@ const StakeHolderInfo = () => {
         </div>
 
         <div className="flex flex-col ml-6">
-          <h1 className="text-2xl">Stake holders Name</h1>
+          <h1 className="text-2xl">{stakeholder?.name}</h1>
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-6 px-6 py-4">
-        <DataItem label="Phone Number" value={'+9779845712531'} />
-        <DataItem label="Email" value={'email@rumsan.net'} />
-        <DataItem label="Designation" value={'Officer'} />
-        <DataItem label="Organization" value={'Rumsan'} />
-        <DataItem label="District " value={' Kathmandu '} />
-        <DataItem label="Municipality" value={'Ktm'} />
+        <DataItem label="Phone Number" value={stakeholder?.phone} />
+        <DataItem label="Email" value={stakeholder?.email} />
+        <DataItem label="Designation" value={stakeholder?.designation} />
+        <DataItem label="Organization" value={stakeholder?.organization} />
+        <DataItem label="District " value={stakeholder?.district} />
+        <DataItem label="Municipality" value={stakeholder?.municipality} />
       </div>
     </>
   );

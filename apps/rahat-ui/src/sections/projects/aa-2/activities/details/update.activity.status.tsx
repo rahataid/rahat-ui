@@ -1,8 +1,19 @@
-import * as React from 'react';
+'use client';
+
+import React from 'react';
+
+import { Back, Heading } from 'apps/rahat-ui/src/common';
+import { UUID } from 'crypto';
+import { CloudUpload, File, LoaderCircle, X } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  useSingleActivity,
+  useUpdateActivityStatus,
+  useUploadFile,
+} from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
   FormControl,
@@ -11,63 +22,46 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from '@rahat-ui/shadcn/src/components/ui/radio-group';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { X, CloudUpload, Check, LoaderCircle, Pencil } from 'lucide-react';
-import { useUploadFile, useUpdateActivityStatus } from '@rahat-ui/query';
-import { UUID } from 'crypto';
-import { validateFile } from '../../file.validation';
-import { ACTIVITY_STATUS } from '../../aa.constants';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import { ACTIVITY_STATUS } from 'apps/rahat-ui/src/constants/aa.constants';
+import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
+import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-
-type IProps = {
-  activityDetail: any;
-  loading: boolean;
-  triggerTitle?: string;
-  iconStyle: string;
-};
-
+import { z } from 'zod';
 const { NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED } = ACTIVITY_STATUS;
 const statusList = [NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED];
 
-export default function UpdateActivityStatusDialog({
-  activityDetail,
-  loading,
-  triggerTitle = '',
-  iconStyle,
-}: IProps) {
-  const router = useRouter();
+export default function UpdateStatus() {
   const params = useParams();
-
   const projectId = params.id as UUID;
   const activityId = params.activityID as UUID;
+  const { data: activityDetail, isLoading = false } = useSingleActivity(
+    projectId,
+    activityId,
+  );
+
+  const router = useRouter();
 
   const activitiesListPath = `/projects/aa/${projectId}/activities`;
+  const uploadFile = useUploadFile();
 
-  const [showModal, setShowModal] = React.useState<boolean>(false);
+  const updateStatus = useUpdateActivityStatus();
+
   const [documents, setDocuments] = React.useState<
     { id: number; name: string }[]
   >([]);
   const [allFiles, setAllFiles] = React.useState<
     { mediaURL: string; fileName: string }[]
   >([]);
-
   const nextId = React.useRef(0);
-
-  const uploadFile = useUploadFile();
-  const updateStatus = useUpdateActivityStatus();
 
   const FormSchema = z.object({
     status: z.string().min(1, { message: 'Please select status' }),
@@ -124,7 +118,7 @@ export default function UpdateActivityStatusDialog({
   }, [allFiles, setAllFiles]);
 
   React.useEffect(() => {
-    if (activityDetail?.activityDocuments && !loading) {
+    if (activityDetail?.activityDocuments) {
       const files = activityDetail?.activityDocuments?.map((data: any) => data);
       const allDocs = activityDetail?.activityDocuments?.map(
         (data: any, index: number) => ({
@@ -135,9 +129,8 @@ export default function UpdateActivityStatusDialog({
       setAllFiles(files);
       setDocuments(allDocs);
     }
-  }, [activityDetail, loading]);
-
-  const handleDialogSubmit = async (data: z.infer<typeof FormSchema>) => {
+  }, [activityDetail]);
+  const handleUpdateStatus = async (data: z.infer<typeof FormSchema>) => {
     const payload = {
       uuid: activityId || activityDetail?.id,
       ...data,
@@ -147,61 +140,59 @@ export default function UpdateActivityStatusDialog({
         projectUUID: projectId,
         activityStatusPayload: payload,
       });
+      router.push(activitiesListPath);
     } catch (e) {
       console.error('Update Status Error::', e);
     } finally {
       form.reset();
       setAllFiles([]);
       setDocuments([]);
-      setShowModal(false);
     }
   };
 
   return (
-    <Dialog open={showModal} onOpenChange={() => setShowModal(!showModal)}>
-      <DialogTrigger asChild>
-        <Button
-          variant={'link'}
-          className="h-4 px-1"
-          onClick={() => setShowModal(true)}
-        >
-          <Pencil className={iconStyle} /> {triggerTitle}
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
+    <div className=" mx-auto p-4 md:p-6">
+      <div className="flex flex-col space-y-0">
+        <Back path={`/projects/aa/${projectId}/activities`} />
+
+        <div className="mt-4 flex justify-between items-center">
+          <Heading
+            title={`Update Status`}
+            description="Change the status of this activity"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-6 border rounded-sm p-4">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleDialogSubmit)}>
-            <DialogHeader>
-              <DialogTitle>Update Status</DialogTitle>
-            </DialogHeader>
-            <div className="mt-4 grid gap-4">
+          <form onSubmit={form.handleSubmit(handleUpdateStatus)}>
+            <div className="mt-4 flex flex-col gap-4">
               <FormField
                 control={form.control}
                 name="status"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
-                    <FormLabel>Status:</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={activityDetail?.status}
-                        className="flex flex-col space-y-1"
-                      >
+                    <FormLabel className="text-muted-foreground">
+                      Status:
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value || ''}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
                         {statusList.map((status) => (
-                          <FormItem
-                            className="flex items-center space-x-3 space-y-0"
-                            key={status}
-                          >
-                            <FormControl>
-                              <RadioGroupItem value={status} />
-                            </FormControl>
-                            <FormLabel className="font-normal">
-                              {status}
-                            </FormLabel>
-                          </FormItem>
+                          <SelectItem value={status} key={status}>
+                            {status.charAt(0).toUpperCase() +
+                              status.slice(1).toLowerCase()}
+                          </SelectItem>
                         ))}
-                      </RadioGroup>
-                    </FormControl>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -212,7 +203,9 @@ export default function UpdateActivityStatusDialog({
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <FormLabel>Add note</FormLabel>
+                      <FormLabel className="text-muted-foreground">
+                        Add note
+                      </FormLabel>
                       <FormControl>
                         <Textarea placeholder="Write note" {...field} />
                       </FormControl>
@@ -250,76 +243,80 @@ export default function UpdateActivityStatusDialog({
                         </div>
                       </FormControl>
                       <FormMessage />
-                      <p className="text-xs text-orange-500">
+                      <p className="text-xs text-orange-500 text-end">
                         *Files must be under 5 MB and of type JPEG, PNG, BMP,
                         PDF, XLSX, or CSV.
                       </p>
-                      {documents?.map((file) => (
-                        <div
-                          key={file.name}
-                          className="flex justify-between items-center"
-                        >
-                          <p className="text-sm flex gap-2 items-center">
+
+                      <div className="grid grid-cols-5 gap-4 p-2">
+                        {documents.map((doc, index) => (
+                          <div
+                            className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 flex items-center gap-3 hover:cursor-pointer hover:bg-gray-100"
+                            key={index}
+                          >
                             {uploadFile.isPending &&
                             documents?.[documents?.length - 1].name ===
-                              file.name ? (
+                              doc.name ? (
                               <LoaderCircle
                                 size={16}
                                 strokeWidth={2.5}
                                 className="text-green-600 animate-spin"
                               />
                             ) : (
-                              <Check
-                                size={16}
-                                strokeWidth={2.5}
-                                className="text-green-600"
-                              />
+                              <div className="bg-gray-100 p-2 rounded-sm">
+                                <File />
+                              </div>
                             )}
-                            {file.name}
-                          </p>
-                          <div className="p-0.5 rounded-full border-2 hover:border-red-500 text-muted-foreground  hover:text-red-500 cursor-pointer">
-                            <X
-                              size={16}
-                              strokeWidth={2.5}
-                              onClick={() => {
-                                const newDocuments = documents?.filter(
-                                  (doc) => doc.name !== file.name,
-                                );
-                                setDocuments(newDocuments);
-                                const newFiles = allFiles?.filter(
-                                  (f) => f.fileName !== file.name,
-                                );
-                                setAllFiles(newFiles);
-                              }}
-                            />
+                            <p className="text-xs flex gap-2 items-center">
+                              {doc.name}
+                            </p>
+                            <div>
+                              <div className="p-0.5 rounded-full border-2 hover:border-red-500 text-muted-foreground  hover:text-red-500 cursor-pointer">
+                                <X
+                                  size={16}
+                                  strokeWidth={2.5}
+                                  onClick={() => {
+                                    const newDocuments = documents?.filter(
+                                      (file) => file.name !== doc.name,
+                                    );
+                                    setDocuments(newDocuments);
+                                    const newFiles = allFiles?.filter(
+                                      (f) => f.fileName !== doc.name,
+                                    );
+                                    setAllFiles(newFiles);
+                                  }}
+                                />
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </FormItem>
                   );
                 }}
               />
-              <div className="flex justify-between gap-2">
+              <div className="flex justify-end gap-2">
                 <Button
                   type="button"
                   variant="secondary"
-                  className="bg-red-100 text-red-600 w-full"
-                  onClick={() => setShowModal(!showModal)}
+                  className="bg-red-100 text-red-600  w-48 rounded-sm"
+                  onClick={() => router.back()}
                 >
                   Cancel
                 </Button>
+
                 <Button
                   type="submit"
-                  className="w-full"
+                  className="w-48 rounded-sm"
                   disabled={uploadFile?.isPending || updateStatus?.isPending}
                 >
-                  Submit
+                  Update
                 </Button>
               </div>
             </div>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }

@@ -13,6 +13,7 @@ import {
   BadgeDollarSign,
   Landmark,
   SmartphoneNfc,
+  HandCoinsIcon,
 } from 'lucide-react';
 
 export type NavItem = {
@@ -77,10 +78,11 @@ export const useNavItems = () => {
           path: `/projects/aa/${params.id}/communication-logs`,
           icon: <SmartphoneNfc size={18} strokeWidth={1.5} />,
         },
-        // {
-        //   title: 'Transaction Log',
-        //   icon: <BadgeDollarSign size={18} strokeWidth={1.5} />,
-        // },
+        {
+          title: 'Payout',
+          path: `/projects/aa/${params.id}/payout`,
+          icon: <HandCoinsIcon size={18} strokeWidth={1.5} />,
+        },
         {
           title: 'Vendors',
           icon: <Landmark size={18} strokeWidth={1.5} />,

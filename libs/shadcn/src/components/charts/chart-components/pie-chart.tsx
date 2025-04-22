@@ -51,6 +51,7 @@ interface Props {
   donutSize?: string;
   width?: number;
   height?: number;
+  projectAA?: boolean;
 }
 
 export default function PieChart({
@@ -62,6 +63,7 @@ export default function PieChart({
   donutSize = '90%',
   width = 400,
   height = 320,
+  projectAA = false,
 }: Props) {
   const {
     colors = ['#00b67a', '#8BC34A', '#FFA726', '#007bb6', '#7a00b6'],
@@ -99,12 +101,12 @@ export default function PieChart({
         donut: {
           size: donutSize,
           labels: {
-            show: communityTool ? false : true,
+            show: communityTool || projectAA ? false : true,
             value: {
               formatter: (value: number | string) => fNumber(value),
             },
             total: {
-              show: communityTool ? false : true,
+              show: communityTool || projectAA ? false : true,
               formatter: (w: { globals: { seriesTotals: number[] } }) => {
                 const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
                 return fNumber(sum);
@@ -115,7 +117,7 @@ export default function PieChart({
       },
     },
     dataLabels: {
-      enabled: communityTool ? false : true,
+      enabled: communityTool || projectAA ? false : true,
     },
     ...options,
   });

@@ -1,0 +1,109 @@
+'use client';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { useState } from 'react';
+
+export type PaymentDialogProps = {
+  handleSubmit: () => void;
+  formState: {
+    method: 'FSP' | 'CVA';
+    group: string;
+    vendor: string;
+  };
+  token: string;
+  totalBeneficiaries: number;
+};
+export function PaymentDialog({
+  formState,
+  handleSubmit,
+  token,
+  totalBeneficiaries,
+}: PaymentDialogProps) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
+      <DialogTrigger>
+        <Button
+          className="rounded-sm"
+          disabled={!formState.method || !formState.group}
+          onClick={() => setOpen(true)}
+        >
+          Confirm
+        </Button>
+      </DialogTrigger>
+      <DialogContent
+        className="!rounded-sm"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
+        <DialogHeader className="!text-center">
+          <DialogTitle>Confirm Payout</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to confirm this payout?
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 p-6 rounded-sm bg-gray-200 border-gray-200">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="text-gray-600 font-medium">
+              Beneficiary Group Name
+            </div>
+            <div className="font-medium">{formState?.group}</div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <div className="text-gray-600 font-medium">Total Beneficiaries</div>
+            <div className="font-medium">{totalBeneficiaries}</div>
+          </div>
+          {formState.vendor !== '' && (
+            <>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="text-gray-600 font-medium">Vendor Name</div>
+                <div className="font-medium">{'vendorName'}</div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div className="text-gray-600 font-medium">
+                  Vendor Wallet ID
+                </div>
+                <div className="font-medium">{'vendorWalletId'}</div>
+              </div>
+            </>
+          )}
+
+          <div className="grid grid-cols-2 gap-2">
+            <div className="text-gray-600 font-medium">Tokens</div>
+            <div className="font-medium">{token}</div>
+          </div>
+        </div>
+        <DialogFooter className="flex justify-between">
+          <Button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="w-full rounded-sm"
+            variant="outline"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            onClick={handleSubmit}
+            className="w-full rounded-sm"
+          >
+            Payout
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

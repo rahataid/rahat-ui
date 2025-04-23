@@ -1,16 +1,4 @@
-// import { Button } from "@/components/ui/button"
-// import {
-// Dialog,
-// DialogContent,
-// DialogDescription,
-// DialogFooter,
-// DialogHeader,
-// DialogTitle,
-// DialogTrigger,
-// } from "@/components/ui/dialog"
-// import { Input } from "@/components/ui/input"
-// import { Label } from "@/components/ui/label"
-
+'use client';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
@@ -21,8 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { useState } from 'react';
 
 export type PaymentDialogProps = {
   handleSubmit: () => void;
@@ -40,24 +27,33 @@ export function PaymentDialog({
   token,
   totalBeneficiaries,
 }: PaymentDialogProps) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
+      <DialogTrigger>
         <Button
           className="rounded-sm"
           disabled={!formState.method || !formState.group}
+          onClick={() => setOpen(true)}
         >
           Confirm
         </Button>
       </DialogTrigger>
-      <DialogContent className="!rounded-sm">
-        <DialogHeader>
+      <DialogContent
+        className="!rounded-sm"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
+        <DialogHeader className="!text-center">
           <DialogTitle>Confirm Payout</DialogTitle>
           <DialogDescription>
             Are you sure you want to confirm this payout?
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 p-6 bg-gray-50 border-gray-200">
+
+        <div className="space-y-4 p-6 rounded-sm bg-gray-200 border-gray-200">
           <div className="grid grid-cols-2 gap-2">
             <div className="text-gray-600 font-medium">
               Beneficiary Group Name
@@ -90,11 +86,22 @@ export function PaymentDialog({
             <div className="font-medium">{token}</div>
           </div>
         </div>
-        <DialogFooter>
-          <Button type="submit" onClick={handleSubmit}>
+        <DialogFooter className="flex justify-between">
+          <Button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="w-full rounded-sm"
+            variant="outline"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            onClick={handleSubmit}
+            className="w-full rounded-sm"
+          >
             Payout
           </Button>
-          <Button type="submit">Cancel</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

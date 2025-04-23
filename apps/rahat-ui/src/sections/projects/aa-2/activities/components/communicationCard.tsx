@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Mail,
   MessageSquare,
@@ -11,53 +11,54 @@ import {
   Send,
   Play,
   Pause,
+  SendHorizonal,
+  LoaderCircle,
 } from 'lucide-react';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import { IconLabelBtn } from 'apps/rahat-ui/src/common';
+import { IconLabelBtn, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useTriggerCommunication } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import { SessionStatus } from '@rumsan/connect/src/types';
 
-type CommunicationType = 'SMS' | 'Email' | 'IVR';
-
-interface CommunicationCardProps {
+interface BaseCommunication {
+  groupId: string;
+  groupType: string;
+  transportId: string;
+  communicationId: string;
   groupName: string;
-  type: CommunicationType;
-  stakeholders: string;
-  status: 'Pending' | 'Sent' | 'Failed';
-  message?: string;
-  audioSrc?: string;
-  onEdit?: () => void;
+  sessionStatus: string;
   onSend?: () => void;
+  onEdit?: () => void;
 }
 
+interface EmailCommunication extends BaseCommunication {
+  transportName: 'EMAIL' | 'SMS';
+  message: string;
+}
+
+interface IVRCommunication extends BaseCommunication {
+  transportName: 'IVR';
+  message: Record<string, never>;
+}
+
+type ActivityCommunication = EmailCommunication | IVRCommunication;
+
+interface CommunicationCardProps {
+  activityCommunication: ActivityCommunication;
+}
 export function CommunicationCard({
-  groupName,
-  type,
-  stakeholders,
-  status,
-  message,
-  audioSrc,
-  onEdit,
-  onSend,
+  activityCommunication,
 }: CommunicationCardProps) {
-  const [expanded, setExpanded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState('00:00');
-  const [duration, setDuration] = useState('00:00');
-
-  const toggleExpand = () => {
-    setExpanded(!expanded);
-  };
-
-  const togglePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
 
   const getIcon = () => {
-    switch (type) {
+    switch (activityCommunication?.transportName) {
       case 'SMS':
         return <MessageSquare className="h-5 w-5 text-gray-500" />;
-      case 'Email':
+      case 'EMAIL':
         return <Mail className="h-5 w-5 text-gray-500" />;
       case 'IVR':
         return <Mic className="h-5 w-5 text-gray-500" />;
@@ -65,107 +66,143 @@ export function CommunicationCard({
         return <MessageSquare className="h-5 w-5 text-gray-500" />;
     }
   };
+  const { id: projectId, activityID } = useParams();
+  const [loadingButtons, setLoadingButtons] = React.useState<string[]>([]);
+  const trigger = useTriggerCommunication();
+  const activityId = activityID as string;
+  const triggerCommunication = async (
+    activityId: string,
+    communicationId: string,
+  ) => {
+    setLoadingButtons((prev) => [...prev, communicationId]);
+    try {
+      await trigger.mutateAsync({
+        projectUUID: projectId as UUID,
+        activityCommunicationPayload: { communicationId, activityId },
+      });
+    } finally {
+      setLoadingButtons((prev) => prev.filter((id) => id !== communicationId));
+    }
+  };
 
   return (
-    <Card className="mb-4">
-      <CardContent className="pt-1">
+    <Card className="mb-4 rounded-sm">
+      <CardContent className="pt-2 px-2 pb-2">
         <div className="flex items-start gap-4">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
             {getIcon()}
           </div>
           <div className="flex-1">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-gray-900">{groupName}</h3>
+              <h3 className="font-medium text-gray-900">
+                {activityCommunication?.groupName}
+              </h3>
               <div className="flex gap-2">
-                <IconLabelBtn
+                {/* <IconLabelBtn
                   Icon={Edit}
                   name="Edit"
                   handleClick={() => onEdit}
                   variant="ghost"
-                />
-                <IconLabelBtn
+                /> */}
+                {/* <IconLabelBtn
                   Icon={Send}
                   name="Send"
                   handleClick={() => onSend}
                   variant="ghost"
-                />
-              </div>
-            </div>
-            <div className="mt-1 flex items-center gap-2 text-sm text-gray-500">
-              <span>{type}</span>
-              <span>•</span>
-              <span>{stakeholders}</span>
-              <span>•</span>
-              <Badge
-                variant={
-                  status === 'Pending'
-                    ? 'outline'
-                    : status === 'Sent'
-                    ? 'default'
-                    : 'destructive'
-                }
-                className="ml-1"
-              >
-                {status}
-              </Badge>
-            </div>
+                /> */}
+                {/* <Button
+                  type="button"
+                  disabled={
+                    activityCommunication?.sessionStatus !== SessionStatus.NEW
+                  }
+                  className="h-7 w-24"
+                  onClick={() =>
+                    triggerCommunication(
+                      activityId,
+                      activityCommunication?.communicationId,
+                    )
+                  }
+                >
+                  {loadingButtons.includes(
+                    activityCommunication?.communicationId,
+                  ) ? (
+                    <SpinnerLoader />
+                  ) : activityCommunication?.sessionStatus ===
+                    SessionStatus.NEW ? (
+                    'Send'
+                  ) : (
+                    'Sent'
+                  )}
+                </Button> */}
 
-            {type !== 'IVR' && message && (
-              <div className="mt-3">
-                <p className="text-sm text-gray-700">
-                  {expanded
-                    ? message
-                    : message.length > 100
-                    ? `${message.substring(0, 100)}...`
-                    : message}
-                </p>
-                {message.length > 100 && (
+                {activityCommunication?.sessionStatus === SessionStatus.NEW && (
                   <Button
-                    variant="link"
-                    className="mt-1 h-auto p-0 text-primary"
-                    onClick={toggleExpand}
+                    className="items-center justify-center"
+                    variant="ghost"
+                    onClick={() =>
+                      triggerCommunication(
+                        activityId,
+                        activityCommunication?.communicationId,
+                      )
+                    }
+                    type="button"
                   >
-                    {expanded ? (
-                      <span className="flex items-center">
-                        View Less <ChevronUp className="ml-1 h-4 w-4" />
-                      </span>
+                    {loadingButtons.includes(
+                      activityCommunication?.communicationId,
+                    ) ? (
+                      <LoaderCircle size={20} className={`animate-spin `} />
                     ) : (
-                      <span className="flex items-center">
-                        View Full Message{' '}
-                        <ChevronDown className="ml-1 h-4 w-4" />
-                      </span>
+                      <SendHorizonal size={18} strokeWidth={1.5} />
                     )}
                   </Button>
                 )}
               </div>
-            )}
+            </div>
+            <div className="mt-1 flex items-center gap-2 text-sm text-gray-500">
+              <span>{activityCommunication?.groupType}</span>
+              <span>•</span>
+              <span>{activityCommunication?.groupName}</span>
+              <span>•</span>
+              <Badge
+                className={`ml-1 text-xs font-normal ${
+                  activityCommunication?.sessionStatus === 'PENDING'
+                    ? 'text-red-400 bg-yellow-100'
+                    : activityCommunication?.sessionStatus === 'COMPLETED'
+                    ? 'text-green-700 bg-green-200'
+                    : 'text-red-700 bg-red-200'
+                }`}
+              >
+                {activityCommunication?.sessionStatus.charAt(0).toUpperCase() +
+                  activityCommunication?.sessionStatus.slice(1).toLowerCase()}
+              </Badge>
+            </div>
 
-            {type === 'IVR' && audioSrc && (
+            {(activityCommunication?.transportName === 'EMAIL' ||
+              activityCommunication?.transportName === 'SMS') && (
               <div className="mt-3">
-                <p className="text-sm text-gray-700">Audiorecord.mp4</p>
-                <div className="mt-2 flex items-center gap-2">
-                  <div className="text-xs text-gray-500">{currentTime}</div>
-                  <div className="flex-1">
-                    <div className="h-2 w-full rounded-full bg-gray-200">
-                      <div className="h-2 w-1/5 rounded-full bg-primary"></div>
-                    </div>
-                  </div>
-                  <div className="text-xs text-gray-500">{duration}</div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 rounded-full bg-primary text-white hover:bg-primary/90"
-                    onClick={togglePlayPause}
-                  >
-                    {isPlaying ? (
-                      <Pause className="h-4 w-4" />
-                    ) : (
-                      <Play className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
+                <p className="text-sm text-gray-700">
+                  {activityCommunication?.message}w
+                </p>
               </div>
             )}
+
+            {activityCommunication?.transportName === 'IVR' &&
+              Object.keys(activityCommunication?.message).length !== 0 && (
+                <div className="mt-3">
+                  <div className="pt-2">
+                    <h3 className="text-sm font-medium mb-2">
+                      {activityCommunication?.message?.fileName}
+                    </h3>
+                    <audio
+                      src={activityCommunication?.message?.mediaURL}
+                      controls
+                      className="w-full h-10 "
+                      onPlay={() => setIsPlaying(true)}
+                      onPause={() => setIsPlaying(false)}
+                    />
+                  </div>
+                </div>
+              )}
           </div>
         </div>
       </CardContent>

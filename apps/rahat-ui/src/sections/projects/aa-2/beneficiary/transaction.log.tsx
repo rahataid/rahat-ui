@@ -77,7 +77,7 @@ const TransactionLogs = () => {
     <>
       <h2 className="text-xl font-semibold">Transaction Log</h2>
       <p className="text-sm text-muted-foreground">
-        List of all token transactions
+        List of all token transactions (dummy data)
       </p>
       <ScrollArea className="h-[calc(100vh-500px)] mt-4">
         {transactions.map((txn) => (

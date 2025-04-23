@@ -16,7 +16,7 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { IconLabelBtn } from 'apps/rahat-ui/src/common';
+import { IconLabelBtn, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { Plus } from 'lucide-react';
 
 // type IProps = {
@@ -127,60 +127,45 @@ import { Plus } from 'lucide-react';
 
 // import { CommunicationCard } from '@/components/communication-card';
 
-export default function CommunicationList() {
-  const communications = [
-    {
-      groupName: 'Stakeholders Group Name',
-      type: 'SMS' as const,
-      stakeholders: 'Stakeholders',
-      status: 'Pending' as const,
-      message:
-        'As part of the Anticipatory Action project, we would like to inform you about an upcoming meeting on disaster preparedness.',
-    },
-    {
-      groupName: 'Stakeholders Group Name2',
-      type: 'SMS' as const,
-      stakeholders: 'Stakeholders',
-      status: 'Sent' as const,
-      message:
-        'As part of the Anticipatory Action project, we would like to inform you about an upcoming meeting on disaster preparedness.',
-    },
-    {
-      groupName: 'Stakeholders Group Name',
-      type: 'Email' as const,
-      stakeholders: 'Stakeholders',
-      status: 'Pending' as const,
-      message:
-        'As part of the Anticipatory Action project, we would like to inform you about an upcoming meeting on disaster preparedness.',
-    },
-    {
-      groupName: 'Stakeholders Group Name',
-      type: 'IVR' as const,
-      stakeholders: 'Stakeholders',
-      status: 'Pending' as const,
-      audioSrc: '/audio.mp3',
-    },
-  ];
+type CommunicationData = {
+  groupId: string;
+  groupType: string;
+  transportId: string;
+  message: string | { fileName: string; mediaURL: string };
+  communicationId: string;
+  transportName: string;
+  sessionStatus: string;
+};
 
+type CommunicationList = {
+  activityCommunication: any[];
+  loading?: boolean;
+};
+
+export default function CommunicationList({
+  activityCommunication,
+  loading,
+}: CommunicationList) {
+  console.log('commlist', activityCommunication);
   return (
-    <div className="border px-4 pt-2 rounded-xl">
+    <div className="border px-4 pt-2 rounded-xl h-[calc(75vh)]">
       <div className="mb-4 flex items-center justify-between ">
         <div>
           <h1 className="text-xl font-semibold text-gray-900">
             Communication List
-          </h1>
+          </h1>{' '}
           <p className="text-sm text-gray-500">
             List of communications in this activity
           </p>
         </div>
-        <div className="flex mt-5">
+        {/* <div className="flex mt-5">
           <IconLabelBtn
             Icon={Plus}
             handleClick={() => console.log('add')}
             name="Add Commuication"
             className="h-7  text-sm"
           />
-        </div>
+        </div> */}
       </div>
 
       <Tabs defaultValue={'communications'}>
@@ -190,40 +175,20 @@ export default function CommunicationList() {
         </TabsList>
 
         <TabsContent value="communications">
-          <ScrollArea className="overflow-y-auto h-[calc(100vh-330px)] ">
-            {communications
-              ?.filter((d) => d.status === 'Pending')
-              .map((comm, index) => (
-                <CommunicationCard
-                  key={index}
-                  groupName={comm.groupName}
-                  type={comm.type}
-                  stakeholders={comm.stakeholders}
-                  status={comm.status}
-                  message={comm.message}
-                  audioSrc={comm.audioSrc}
-                  onEdit={() => console.log('Edit communication', index)}
-                  onSend={() => console.log('Send communication', index)}
-                />
-              ))}
+          {loading && <SpinnerLoader />}
+          <ScrollArea className="overflow-y-auto h-[calc(100vh-320px)] ">
+            {activityCommunication?.map((comm, index) => (
+              <CommunicationCard key={index} activityCommunication={comm} />
+            ))}
           </ScrollArea>
         </TabsContent>
 
         <TabsContent value="history">
-          {communications
+          {loading && <SpinnerLoader />}
+          {activityCommunication
             ?.filter((d) => d.status === 'Sent')
             .map((comm, index) => (
-              <CommunicationCard
-                key={index}
-                groupName={comm.groupName}
-                type={comm.type}
-                stakeholders={comm.stakeholders}
-                status={comm.status}
-                message={comm.message}
-                audioSrc={comm.audioSrc}
-                onEdit={() => console.log('Edit communication', index)}
-                onSend={() => console.log('Send communication', index)}
-              />
+              <CommunicationCard key={index} activityCommunication={comm} />
             ))}
         </TabsContent>
       </Tabs>

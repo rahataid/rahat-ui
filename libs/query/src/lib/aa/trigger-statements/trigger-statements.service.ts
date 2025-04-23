@@ -3,8 +3,10 @@ import { UUID } from 'crypto';
 import { useAAStationsStore } from './trigger-statements.store';
 import { useProjectAction } from '../../projects/projects.service';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSwal } from '../../../swal';
+import { useProjectSettingsStore } from '../../projects';
+import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
 export const useCreateTriggerStatement = () => {
   const q = useProjectAction();
@@ -26,13 +28,17 @@ export const useCreateTriggerStatement = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.triggers.add',
+          action: 'ms.triggers.add',
           payload: triggerStatementPayload,
         },
       });
     },
     onSuccess: () => {
       q.reset();
+      toast.fire({
+        title: 'Trigger statement added successfully.',
+        icon: 'success',
+      });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';
@@ -113,7 +119,7 @@ export const useDeleteTriggerStatement = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.triggers.remove',
+          action: 'ms.triggers.remove',
           payload: triggerStatementPayload,
         },
       });
@@ -170,20 +176,42 @@ export const useAAStations = (uuid: UUID) => {
   return query;
 };
 
-export const useDhmWaterLevels = (uuid: UUID) => {
+export const useDhmWaterLevels = (
+  uuid: UUID,
+  payload: any,
+  activeTab?: string,
+) => {
   const q = useProjectAction();
+  const { from, to } = payload;
 
   const query = useQuery({
-    queryKey: ['dhmwaterlevels', uuid],
+    queryKey: ['dhmwaterlevels', uuid, activeTab, from, to],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.waterLevels.getDhm',
-          payload: {
-            page: 1,
-            perPage: 15,
-          },
+          action: 'ms.waterLevels.getDhm',
+          payload: payload,
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};
+
+export const useDhmRainfallLevels = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['dhmrainfalllevels', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.rainfallLevels.getDhm',
+          payload: payload,
         },
       });
       return mutate.data;
@@ -215,22 +243,41 @@ export const useGlofasWaterLevels = (uuid: UUID) => {
 
 export const useAATriggerStatements = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
-
+  const { setTriggers } = useAAStationsStore((state) => ({
+    setTriggers: state.setTriggers,
+  }));
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
   const query = useQuery({
     queryKey: ['triggerstatements', uuid, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.triggers.getAll',
-          payload: payload,
+          action: 'ms.triggers.getAll',
+          payload: {
+            ...payload,
+            activeYear:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'active_year'
+              ],
+            riverBasin:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'river_basin'
+              ],
+          },
         },
       });
-      return mutate;
+      return mutate.data;
     },
   });
-
-  return query;
+  React.useEffect(() => {
+    if (query.data) {
+      setTriggers(query?.data);
+    }
+  }, [query.data]);
+  return query.data;
 };
 
 export const useSingleTriggerStatement = (
@@ -245,7 +292,7 @@ export const useSingleTriggerStatement = (
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.triggers.getOne',
+          action: 'ms.triggers.getOne',
           payload: {
             repeatKey: repeatKey,
           },
@@ -282,7 +329,7 @@ export const useActivateTrigger = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.triggers.activate',
+          action: 'ms.triggers.activate',
           payload: activatePayload,
         },
       });
@@ -300,6 +347,53 @@ export const useActivateTrigger = () => {
       q.reset();
       toast.fire({
         title: 'Trigger activation failed.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useUpdateTriggerStatement = () => {
+  const qc = useQueryClient();
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      triggerUpdatePayload,
+    }: {
+      projectUUID: UUID;
+      triggerUpdatePayload: any;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'ms.triggers.update',
+          payload: triggerUpdatePayload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['triggerStatements'] });
+      qc.invalidateQueries({ queryKey: ['triggerStatement'] });
+      toast.fire({
+        title: 'Trigger updated successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while updating trigger.',
         icon: 'error',
         text: errorMessage,
       });

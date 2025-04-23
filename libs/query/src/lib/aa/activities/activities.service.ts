@@ -6,10 +6,11 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { useProjectAction } from '../../projects';
+import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { useActivitiesStore } from './activities.store';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
+import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
 export const useActivitiesCategories = (uuid: UUID) => {
   const q = useProjectAction();
@@ -39,36 +40,11 @@ export const useActivitiesCategories = (uuid: UUID) => {
   return query;
 };
 
-export const useActivitiesPhase = (uuid: UUID) => {
-  const q = useProjectAction();
-  const { setPhase } = useActivitiesStore((state) => ({
-    setPhase: state.setPhases,
-  }));
-
-  const query = useQuery({
-    queryKey: ['phases', uuid],
-    queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: 'ms.phases.getAll',
-          payload: {},
-        },
-      });
-      return mutate.data;
-    },
-  });
-  useEffect(() => {
-    if (query.data) {
-      setPhase(query?.data);
-    }
-  }, [query.data]);
-  return query;
-};
-
 export const useActivities = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
-
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
   const { setActivities, setActivitiesMeta } = useActivitiesStore((state) => ({
     setActivities: state.setActivities,
     setActivitiesMeta: state.setActivitiesMeta,
@@ -81,7 +57,17 @@ export const useActivities = (uuid: UUID, payload: any) => {
         uuid,
         data: {
           action: 'ms.activities.getAll',
-          payload: payload,
+          payload: {
+            ...payload,
+            activeYear:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'active_year'
+              ],
+            riverBasin:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'river_basin'
+              ],
+          },
         },
       });
       return mutate.response;
@@ -124,15 +110,27 @@ export const useActivities = (uuid: UUID, payload: any) => {
 
 export const useActivitiesHavingComms = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
-
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
   const query = useQuery({
     queryKey: ['activitiesHavingComms', uuid, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.activities.getHavingComms',
-          payload: payload,
+          action: 'ms.activities.getHavingComms',
+          payload: {
+            ...payload,
+            activeYear:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'active_year'
+              ],
+            riverBasin:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'river_basin'
+              ],
+          },
         },
       });
       return mutate.response;
@@ -146,7 +144,11 @@ export const useActivitiesHavingComms = (uuid: UUID, payload: any) => {
     status: d?.status,
     activityCommunication: d?.activityCommunication,
   }));
-  return { activitiesData, activitiesMeta: query?.data?.data?.meta };
+  return {
+    activitiesData,
+    activitiesMeta: query?.data?.meta,
+    isLoading: query?.isLoading,
+  };
 };
 
 export const useSingleActivity = (
@@ -161,7 +163,7 @@ export const useSingleActivity = (
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.activities.getOne',
+          action: 'ms.activities.getOne',
           payload: {
             uuid: activityId,
           },
@@ -193,7 +195,7 @@ export const useCreateActivities = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.activities.add',
+          action: 'ms.activities.add',
           payload: activityPayload,
         },
       });
@@ -238,7 +240,7 @@ export const useUpdateActivities = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.activities.update',
+          action: 'ms.activities.update',
           payload: activityUpdatePayload,
         },
       });
@@ -288,7 +290,7 @@ export const useDeleteActivities = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.activities.remove',
+          action: 'ms.activities.remove',
           payload: activityPayload,
         },
       });
@@ -335,7 +337,7 @@ export const useTriggerCommunication = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.activities.communication.trigger',
+          action: 'ms.activities.communication.trigger',
           payload: activityCommunicationPayload,
         },
       });
@@ -381,12 +383,13 @@ export const useUpdateActivityStatus = () => {
         uuid: string;
         status: string;
         activityDocuments?: Array<{ fileName: string; mediaURL: string }>;
+        notes?: string;
       };
     }) => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.activities.updateStatus',
+          action: 'ms.activities.updateStatus',
           payload: activityStatusPayload,
         },
       });

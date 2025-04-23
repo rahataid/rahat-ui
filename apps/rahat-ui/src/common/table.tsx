@@ -25,7 +25,7 @@ export function DemoTable({ table, tableHeight, loading }: IProps) {
         <TableLoader />
       ) : (
         <TableComponent>
-          <TableHeader className="sticky top-0 bg-card">
+          <TableHeader className="sticky top-0 bg-gray-100">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {

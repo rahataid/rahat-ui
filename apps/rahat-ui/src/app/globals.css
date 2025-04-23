@@ -78,3 +78,17 @@
     font-feature-settings: 'rlig' 1, 'calt' 1;
   }
 }
+
+@layer utilities {
+  .scrollbar-hidden {
+    /* Firefox */
+    scrollbar-width: none;
+    /* IE/Edge */
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    /* Chrome, Safari, Opera */
+    display: none;
+  }
+}

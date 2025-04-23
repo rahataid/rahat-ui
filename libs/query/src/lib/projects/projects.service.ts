@@ -599,6 +599,26 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   };
 };
 
+export const useProjectBeneficiaryDetail = (payload: any) => {
+  const q = useProjectAction<Beneficiary>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const query = useQuery({
+    queryKey: ['beneficiary.get_one_beneficiary', restPayload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'beneficiary.get_one_beneficiary',
+          payload: restPayload,
+        },
+      });
+      return mutate?.data;
+    },
+  });
+  return query?.data;
+};
+
 export const useListELRedemption = (
   payload: Pagination & { uuid: UUID },
 ): any => {
@@ -1303,4 +1323,44 @@ export const useValidateHealthWorker = () => {
       });
     },
   });
+};
+
+export const useProjectInfo = (uuid: UUID) => {
+  const q = useProjectAction([PROJECT_SETTINGS_KEYS.PROJECT_INFO]);
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+
+  const query = useQuery({
+    queryKey: ['settings.get.project.info', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: PROJECT_SETTINGS_KEYS.PROJECT_INFO,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  useEffect(() => {
+    if (!isEmpty(query.data)) {
+      console.log('query data', query.data);
+      const settingsToUpdate = {
+        ...settings,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.PROJECT_INFO]: query?.data.value,
+        },
+      };
+      setSettings(settingsToUpdate);
+      // window.location.reload();
+    }
+  }, [query.data]);
+  return query;
 };

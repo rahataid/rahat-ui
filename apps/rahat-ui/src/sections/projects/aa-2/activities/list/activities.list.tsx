@@ -4,9 +4,10 @@ import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import {
   useActivities,
   useActivitiesCategories,
-  useActivitiesPhase,
   useActivitiesStore,
   usePagination,
+  usePhases,
+  usePhasesStore,
 } from '@rahat-ui/query';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
 import ActivitiesTable from './activities.table';
@@ -31,8 +32,9 @@ import FiltersTags from 'apps/rahat-ui/src/common/filtersTags';
 export default function ActivitiesList() {
   const { id: projectID, title } = useParams();
   const searchParams = useSearchParams();
+  const [filtersApplied, setFiltersApplied] = React.useState(false);
   useActivitiesCategories(projectID as UUID);
-  useActivitiesPhase(projectID as UUID);
+  usePhases(projectID as UUID);
   const [activitySearchText, setActivitySearchText] =
     React.useState<string>('');
   const [responsibilitySearchText, setResponsibilitySearchText] =
@@ -41,9 +43,11 @@ export default function ActivitiesList() {
   const [categoryFilterItem, setCategoryFilterItem] =
     React.useState<string>('');
   const [statusFilterItem, setStatusFilterItem] = React.useState<string>('');
-  const { phases, categories } = useActivitiesStore((state) => ({
-    phases: state.phases,
+  const { categories } = useActivitiesStore((state) => ({
     categories: state.categories,
+  }));
+  const { phases } = usePhasesStore((state) => ({
+    phases: state.phases,
   }));
   const {
     pagination,
@@ -56,8 +60,6 @@ export default function ActivitiesList() {
   } = usePagination();
 
   React.useEffect(() => {
-    if (!title || !phases) return;
-
     const titleStr = Array.isArray(title) ? title[0] : title;
     const formattedTitle = titleStr.toUpperCase();
 
@@ -66,23 +68,24 @@ export default function ActivitiesList() {
 
     setFilters((prev) => ({
       ...prev,
-      phase: phases.find((p) => p.name === formattedTitle)?.uuid || prev.phase,
+      phase: phases.find((p) => p.name === formattedTitle)?.uuid,
     }));
 
     setPagination(prevPagination);
-  }, []);
+    setFiltersApplied(true);
+  }, [phases, title]);
 
   const router = useRouter();
 
   const { activitiesData, activitiesMeta, isLoading } = useActivities(
     projectID as UUID,
-    { ...pagination, ...filters },
+    filtersApplied ? { ...pagination, ...filters } : null,
   );
 
-  console.log(activitiesData);
-  const { activitiesData: allData } = useActivities(projectID as UUID, {
-    perPage: 9999,
-  });
+  const { activitiesData: allData } = useActivities(
+    projectID as UUID,
+    filtersApplied ? { perPage: activitiesMeta?.total, ...filters } : null,
+  );
 
   const columns = useActivitiesTableColumn();
 
@@ -215,7 +218,7 @@ export default function ActivitiesList() {
         />
       )}
 
-      <div className="border  rounded border-gray-600">
+      <div className="rounded border border-gray-100">
         <ActivitiesTable table={table} />
         <CustomPagination
           meta={

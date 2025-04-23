@@ -1,10 +1,52 @@
+import {
+  useActivateTrigger,
+  useDeleteTriggerStatement,
+  useSingleTriggerStatement,
+} from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Back, Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
-import { Pencil, Trash2 } from 'lucide-react';
+import {
+  Back,
+  DeleteButton,
+  EditButton,
+  Heading,
+  TableLoader,
+} from 'apps/rahat-ui/src/common';
+import { UUID } from 'crypto';
+import { useParams, useRouter } from 'next/navigation';
 
 export default function TriggerStatementDetail() {
-  return (
+  const router = useRouter();
+  const { id } = useParams() as { id: UUID };
+
+  const triggerRepeatKey = window.location.href.split('/').slice(-1)[0];
+
+  const { data: trigger, isLoading } = useSingleTriggerStatement(
+    id,
+    triggerRepeatKey,
+  );
+
+  const activateTigger = useActivateTrigger();
+  const removeTrigger = useDeleteTriggerStatement();
+
+  const handleTrigger = async () => {
+    await activateTigger.mutateAsync({
+      projectUUID: id,
+      activatePayload: { repeatKey: triggerRepeatKey },
+    });
+    router.push(`/projects/aa/${id}/trigger-statements`);
+  };
+
+  const handleDelete = async () => {
+    await removeTrigger.mutateAsync({
+      projectUUID: id,
+      triggerStatementPayload: { repeatKey: triggerRepeatKey },
+    });
+    router.push(`/projects/aa/${id}/trigger-statements`);
+  };
+  return isLoading ? (
+    <TableLoader />
+  ) : (
     <div className="p-4">
       <Back />
       <div className="flex justify-between items-center mb-4">
@@ -13,72 +55,104 @@ export default function TriggerStatementDetail() {
           description="Detailed view of the selected trigger"
         />
         <div className="flex space-x-2">
-          <IconLabelBtn
-            variant="outline"
-            className="text-red-500 border-red-500 hover:bg-red-50 hover:text-red-600 hover:border-red-600"
-            Icon={Trash2}
-            name="Delete"
-            handleClick={() => {}}
+          <DeleteButton
+            className="rounded flex gap-1 items-center text-sm font-medium"
+            name="trigger"
+            label="Delete"
+            handleContinueClick={handleDelete}
+            disabled={trigger?.isTriggered}
           />
-          <IconLabelBtn
-            variant="outline"
-            className="text-gray-500"
-            Icon={Pencil}
-            name="Edit"
-            handleClick={() => {}}
+          <EditButton
+            className="rounded flex gap-1 items-center text-sm font-medium"
+            label="Edit"
+            onFallback={() =>
+              router.push(
+                `/projects/aa/${id}/trigger-statements/${triggerRepeatKey}/edit`,
+              )
+            }
+            disabled={trigger?.phase?.isActive || trigger?.isTriggered}
           />
-          <Button>Trigger</Button>
+          <Button
+            disabled={trigger?.source !== 'MANUAL' || trigger?.isTriggered}
+            onClick={handleTrigger}
+          >
+            Trigger
+          </Button>
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-4">
+      <div
+        className={`grid ${
+          trigger?.source !== 'MANUAL' ? 'grid-cols-2' : 'grid-cols-1'
+        } gap-4`}
+      >
         <div className="p-4 border rounded-sm">
           <Heading
-            title="Ensure the Distribution of Emergency Response Kits to All Identified
-            High-Risk and Vulnerable Households in the Affected Areas"
+            title={trigger?.title}
             titleStyle="text-lg/7"
-            description="Korem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
-            vulputate libero"
+            description=""
           />
-          <div className="grid grid-cols-4 text-sm/4 text-muted-foreground mt-6">
+          <div
+            className={`grid ${
+              trigger?.isTriggered ? 'grid-cols-5' : 'grid-cols-4'
+            } text-sm/4 text-muted-foreground mt-6`}
+          >
             <div>
               <p className="mb-1">River Basin</p>
-              <p>Karnali</p>
+              <p>{trigger?.phase?.source?.riverBasin || 'N/A'}</p>
             </div>
             <div>
               <p className="mb-1">Phase</p>
-              <Badge>Preparedness</Badge>
+              <Badge>{trigger?.phase?.name || 'N/A'}</Badge>
             </div>
             <div>
               <p className="mb-1">Trigger Type</p>
-              <Badge>Automated</Badge>
+              <Badge>
+                {trigger?.source === 'MANUAL' ? 'Manual' : 'Automated'}
+              </Badge>
             </div>
             <div>
               <p className="mb-1">Type</p>
-              <Badge>Optional</Badge>
+              <Badge>{trigger?.isMandatory ? 'Mandatory' : 'Optional'}</Badge>
             </div>
+            {trigger?.isTriggered && (
+              <div>
+                <p className="mb-1">Triggered At</p>
+                <p>{new Date(trigger?.triggeredAt).toLocaleString()}</p>
+              </div>
+            )}
           </div>
         </div>
-        <div className="p-4 border rounded-sm">
-          <Heading
-            title="Forecast Data"
-            titleStyle="text-sm/4"
-            description={`Source:${'Karnali'}`}
-          />
-          <div className="grid grid-cols-3 gap-4">
-            <div className="p-3 text-center border rounded">
-              <p className="font-semibold text-3xl/10 text-primary">3</p>
-              <p className="font-medium text-sm/6">Minimum Lead Time Days</p>
-            </div>
-            <div className="p-3 text-center border rounded">
-              <p className="font-semibold text-3xl/10 text-primary">5</p>
-              <p className="font-medium text-sm/6">Maximum Lead Time Days</p>
-            </div>
-            <div className="p-3 text-center border rounded">
-              <p className="font-semibold text-3xl/10 text-primary">0.98</p>
-              <p className="font-medium text-sm/6">Forecast Probability</p>
+        {trigger?.source !== 'MANUAL' && (
+          <div className="p-4 border rounded-sm">
+            <Heading
+              title="Forecast Data"
+              titleStyle="text-sm/4"
+              description={`Source:${
+                trigger?.phase?.source?.riverBasin || 'N/A'
+              }`}
+            />
+            <div className="grid grid-cols-3 gap-4">
+              <div className="p-3 text-center border rounded">
+                <p className="font-semibold text-3xl/10 text-primary">
+                  {trigger?.triggerStatement?.minLeadTimeDays}
+                </p>
+                <p className="font-medium text-sm/6">Minimum Lead Time Days</p>
+              </div>
+              <div className="p-3 text-center border rounded">
+                <p className="font-semibold text-3xl/10 text-primary">
+                  {trigger?.triggerStatement?.maxLeadTimeDays}
+                </p>
+                <p className="font-medium text-sm/6">Maximum Lead Time Days</p>
+              </div>
+              <div className="p-3 text-center border rounded">
+                <p className="font-semibold text-3xl/10 text-primary">
+                  {trigger?.triggerStatement?.probability}
+                </p>
+                <p className="font-medium text-sm/6">Forecast Probability</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

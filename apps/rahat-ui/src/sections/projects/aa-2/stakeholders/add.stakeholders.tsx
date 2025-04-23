@@ -82,6 +82,7 @@ export default function AddStakeholders() {
         projectUUID: id as UUID,
         stakeholderPayload: data,
       });
+      router.push(`/projects/aa/${id}/stakeholders`);
       form.reset();
     } catch (e) {
       console.error('Create Stakeholder Error::', e);

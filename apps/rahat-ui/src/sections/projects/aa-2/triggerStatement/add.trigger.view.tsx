@@ -22,6 +22,10 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useCreateTriggerStatement } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import { useRouter } from 'next/navigation';
 
 export default function AddTriggerView() {
   const [activeTab, setActiveTab] = React.useState<string>('automated');
@@ -31,6 +35,18 @@ export default function AddTriggerView() {
     React.useState<boolean>(false);
   const [isAutomatedDataValid, setIsAutomatedDataValid] =
     React.useState<boolean>(false);
+
+  const router = useRouter();
+  const params = useParams();
+  const projectId = params.id as UUID;
+
+  const triggerViewPath = `/projects/aa/${projectId}/trigger-statements`;
+
+  const selectedPhase = JSON.parse(
+    localStorage.getItem('selectedPhase') as string,
+  );
+
+  const addTriggers = useCreateTriggerStatement();
 
   const ManualFormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid title' }),
@@ -49,7 +65,7 @@ export default function AddTriggerView() {
 
   const AutomatedFormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid name' }),
-    dataSource: z.string().min(1, { message: 'Please select data source' }),
+    source: z.string().min(1, { message: 'Please select data source' }),
     isMandatory: z.boolean().optional(),
     minLeadTimeDays: z
       .string()
@@ -67,7 +83,7 @@ export default function AddTriggerView() {
     resolver: zodResolver(AutomatedFormSchema),
     defaultValues: {
       title: '',
-      dataSource: '',
+      source: '',
       maxLeadTimeDays: '',
       minLeadTimeDays: '',
       probability: '',
@@ -81,7 +97,14 @@ export default function AddTriggerView() {
   ) => {
     setAllTriggers([
       ...allTriggers,
-      { ...data, type: activeTab, time: new Date() },
+      {
+        ...data,
+        type: activeTab,
+        source: 'MANUAL',
+        time: new Date(),
+        phaseId: selectedPhase?.id,
+        riverBasin: selectedPhase?.riverBasin,
+      },
     ]);
   };
 
@@ -90,7 +113,13 @@ export default function AddTriggerView() {
   ) => {
     setAllTriggers([
       ...allTriggers,
-      { ...data, type: activeTab, time: new Date() },
+      {
+        ...data,
+        type: activeTab,
+        time: new Date(),
+        phaseId: selectedPhase?.id,
+        riverBasin: selectedPhase?.riverBasin,
+      },
     ]);
   };
 
@@ -130,6 +159,40 @@ export default function AddTriggerView() {
     }
 
     handleDelete(trigger);
+  };
+
+  const handleCreateTriggers = async () => {
+    const payload = allTriggers?.map(
+      ({
+        riverBasin,
+        maxLeadTimeDays,
+        minLeadTimeDays,
+        probability,
+        type,
+        time,
+        ...rest
+      }) => ({
+        ...rest,
+        triggerStatement: {
+          maxLeadTimeDays,
+          minLeadTimeDays,
+          probability,
+        },
+      }),
+    );
+    try {
+      await addTriggers.mutateAsync({
+        projectUUID: projectId,
+        triggerStatementPayload: { triggers: payload },
+      });
+      // router.push(triggerViewPath);
+      router.back();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setOpen(false);
+      setAllTriggers([]);
+    }
   };
 
   React.useEffect(() => {
@@ -178,15 +241,23 @@ export default function AddTriggerView() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="automated">
-              <AutomatedTriggerAddForm form={automatedForm} />
+              <AutomatedTriggerAddForm
+                form={automatedForm}
+                phase={selectedPhase}
+              />
             </TabsContent>
             <TabsContent value="manual">
-              <ManualTriggerAddForm form={manualForm} />
+              <ManualTriggerAddForm form={manualForm} phase={selectedPhase} />
             </TabsContent>
           </Tabs>
 
           <div className="flex justify-end mt-4">
-            <Button type="button" variant="outline" className="w-40 mr-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-40 mr-2"
+              onClick={() => router.push(triggerViewPath)}
+            >
               Cancel
             </Button>
             <ConfirmAddTrigger
@@ -194,6 +265,8 @@ export default function AddTriggerView() {
               setOpen={setOpen}
               handleStore={handleStoreTriggers}
               handleAddAnother={handleAddAnotherTrigger}
+              handleSave={handleCreateTriggers}
+              isSubmitting={addTriggers?.isPending}
             />
           </div>
         </div>
@@ -225,9 +298,9 @@ export default function AddTriggerView() {
                 </div>
                 <p className="text-sm/6 font-medium mb-2">{t.title}</p>
                 <p className="text-muted-foreground text-sm/4">
-                  {`${
-                    t.dataSource
-                  } . ${'riverBasin'} . ${t.time?.toLocaleString()}`}
+                  {`${t.source} . ${
+                    t.riverBasin
+                  } . ${t.time?.toLocaleString()}`}
                 </p>
               </div>
             );

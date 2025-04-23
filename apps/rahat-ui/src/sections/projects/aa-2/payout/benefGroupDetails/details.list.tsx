@@ -1,20 +1,23 @@
+'use client';
 import { usePagination } from '@rahat-ui/query';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
-import usePayoutTransactionLogTableColumn from './usePayoutTransactionLogTableColumn';
 
 import {
   Back,
   CustomPagination,
+  DataCard,
   Heading,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 
-import PayoutTable from './payoutTable';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import data from './dummyTransaction.json';
-export default function PayoutTransactionList() {
+import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
+import BeneficiariesGroupTable from './beneficiariesGroupTable';
+import data from './dummy.json';
+import { Ticket, Users } from 'lucide-react';
+export default function BeneficiaryGroupTransactionDetailsList() {
   const { id: projectID } = useParams();
   const searchParams = useSearchParams();
 
@@ -30,7 +33,7 @@ export default function PayoutTransactionList() {
 
   const router = useRouter();
 
-  const columns = usePayoutTransactionLogTableColumn();
+  const columns = useBeneficiaryGroupDetailsLogColumns();
   const isLoading = false;
   const table = useReactTable({
     manualPagination: true,
@@ -55,29 +58,59 @@ export default function PayoutTransactionList() {
     });
   };
 
+  const payoutStats = [
+    {
+      label: 'Total Beneficiaries',
+      value: '23000',
+      icon: Users,
+    },
+    {
+      label: 'Total Tokens',
+      value: '10000',
+      icon: Ticket,
+    },
+  ];
   return (
     <div className="p-4">
       <div className="flex flex-col space-y-0">
-        <Back path={`/projects/aa/${projectID}/payout`} />
+        <Back path={`/projects/aa/${projectID}/payout/list`} />
 
         <div className="mt-4 flex justify-between items-center">
           <div>
             <Heading
-              title={`Transaction Logs`}
-              description="List of all the payout transaction logs"
+              title={`Group Name`}
+              description="List of all the payout transaction logs of selected group"
             />
           </div>
         </div>
+
+        <div className="grid grid-cols-3 gap-4">
+          {payoutStats?.map((item) => (
+            <DataCard
+              key={item.label}
+              title={item.label}
+              Icon={item.icon}
+              number={item.value}
+              className="rounded-sm h-24"
+            />
+          ))}
+          <DataCard
+            title="Payout Mode"
+            Icon={Ticket}
+            smallNumber="Offline"
+            className="rounded-sm h-24"
+          />
+        </div>
       </div>
 
-      <div className="rounded-sm border border-gray-100 space-y-2 p-4">
+      <div className="rounded-sm border border-gray-100 space-y-2 p-4 mt-2">
         <div className="flex gap-2">
           <SearchInput
-            name="groupName"
+            name="walletAddress"
             className="w-full flex-[4]"
             value={
-              (table.getColumn('groupName')?.getFilterValue() as string) ??
-              filters?.groupName
+              (table.getColumn('walletAddress')?.getFilterValue() as string) ??
+              filters?.walletAddress
             }
             onSearch={(event) => handleFilterChange(event)}
           />
@@ -93,7 +126,7 @@ export default function PayoutTransactionList() {
             className="flex-[1]"
           />
         </div>
-        <PayoutTable table={table} loading={isLoading} />
+        <BeneficiariesGroupTable table={table} loading={isLoading} />
         <CustomPagination
           meta={{
             total: 0,

@@ -33,7 +33,7 @@ export function PaymentDialog({
     <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
       <DialogTrigger>
         <Button
-          className="rounded-sm"
+          className="rounded-sm w-48"
           disabled={!formState.method || !formState.group}
           onClick={() => setOpen(true)}
         >

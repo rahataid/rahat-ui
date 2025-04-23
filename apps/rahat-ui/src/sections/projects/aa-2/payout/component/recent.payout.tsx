@@ -1,12 +1,13 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import RecentPaymentCard from './recent.payment.card';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 
 const RecentPayout = () => {
+  const { id } = useParams();
   const route = useRouter();
   const recentPayments = Array.from({ length: 5 }, (_, i) => ({
     id: i,
@@ -23,7 +24,7 @@ const RecentPayout = () => {
         <Button
           // className={className}
           variant={'link'}
-          onClick={() => route.push('#')}
+          onClick={() => route.push(`/projects/aa/${id}/payout/list`)}
         >
           View all Transactions
           <ArrowRight className="ml-1" size={14} strokeWidth={1.5} />
@@ -39,7 +40,9 @@ const RecentPayout = () => {
               merchentName={payment.merchentName}
               beneficiariesCount={payment.beneficiariesCount}
               dateTime={payment.dateTime}
-              onView={() => console.log(`View clicked for card ${index + 1}`)}
+              onView={() =>
+                route.push(`/projects/aa/${id}/payout/details/${index + 1}`)
+              }
             />
             {index < recentPayments.length - 1 && (
               <Separator className="mt-2 mb-2" />

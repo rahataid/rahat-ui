@@ -1,111 +1,36 @@
 import { useParams } from 'next/navigation';
 
-import { Back, Heading } from 'apps/rahat-ui/src/common';
+import {
+  useBeneficiariesGroups,
+  usePagination,
+  useSingleBeneficiaryGroup,
+} from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import {
   RadioGroup,
   RadioGroupItem,
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { useState } from 'react';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import {
+  ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import {
+  Back,
+  ClientSidePagination,
+  Heading,
+  SearchInput,
+} from 'apps/rahat-ui/src/common';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { UUID } from 'crypto';
+import { useMemo, useState } from 'react';
+import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import { PaymentDialog } from './payment.dialog';
-
-// export default function PaymentInitiation() {
-//   const { id: projectID } = useParams();
-//   const [method, setMethod] = useState<'FSP' | 'CVA'>('CVA');
-//   const [offline, setOffline] = useState(false);
-//   const [group, setGroup] = useState('');
-//   const [vendor, setVendor] = useState('');
-
-//   const handleSubmit = () => {
-//     // onConfirm({ method, offline, group });
-//   };
-//   return (
-//     <div className="p-4">
-//       <div className="flex flex-col space-y-0">
-//         <Back path={`/projects/aa/${projectID}/payout`} />
-//         <div className="mt-4 flex justify-between items-center">
-//           <Heading
-//             title={`Payout`}
-//             description="Select beneficiary group to initiate payment"
-//           />
-//         </div>
-//         <div className="border rounded-sm p-6 space-y-6 bg-white w-full">
-//           {/* Method Toggle */}
-//           <RadioGroup
-//             defaultValue={method}
-//             onValueChange={(value) => setMethod(value as 'FSP' | 'CVA')}
-//             className="flex items-center space-x-6"
-//           >
-//             <Label
-//               htmlFor="method-cva"
-//               className={`flex cursor-pointer items-center border p-3 w-28 justify-center rounded-sm space-x-2 ${
-//                 method === 'CVA' ? 'border-blue-400' : ''
-//               }`}
-//             >
-//               <RadioGroupItem value="CVA" id="method-cva" />
-//               <span>CVA</span>
-//             </Label>
-//             <Label
-//               htmlFor="method-fsp"
-//               className={`flex cursor-pointer items-center border p-3 w-28 justify-center rounded-sm space-x-2 ${
-//                 method === 'FSP' ? 'border-blue-400' : ''
-//               }`}
-//             >
-//               <RadioGroupItem value="FSP" id="method-fsp" />
-//               <span>FSP</span>
-//             </Label>
-//           </RadioGroup>
-//           {/* Offline Toggle */}
-//           <div className="flex items-center space-x-3">
-//             <Switch
-//               checked={offline}
-//               onCheckedChange={setOffline}
-//               id="offline-switch"
-//             />
-//             <Label htmlFor="offline-switch">
-//               {offline ? 'Online' : 'Offline'}
-//             </Label>
-//           </div>
-
-//           {/* Beneficiary Group Select */}
-//           {offline && (
-//             <SelectComponent
-//               name="Vendor"
-//               options={[
-//                 'Rumsan Beneficiary Vendor',
-//                 'Kathmandu Vendor',
-//                 'Lalitpur Vendor',
-//               ]}
-//               value={vendor}
-//               onChange={setVendor}
-//             />
-//           )}
-//           <SelectComponent
-//             name="Beneficiary Group"
-//             options={[
-//               'Rumsan Beneficiary Group',
-//               'Kathmandu Group',
-//               'Lalitpur Group',
-//             ]}
-//             value={group}
-//             onChange={setGroup}
-//           />
-
-//           {/* Buttons */}
-//           <div className="flex justify-end space-x-2 pt-4">
-//             <Button variant="outline" onClick={() => {}} className="rounded-sm">
-//               Cancel
-//             </Button>
-//             <PaymentDialog />
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
+import useBeneficiariesGroupTableColumn from './useBeneficiariesGroupTablecolumn';
 
 type PaymentState = {
   method: 'FSP' | 'CVA';
@@ -116,25 +41,69 @@ type PaymentState = {
 
 export default function PaymentInitiation() {
   const { id: projectID } = useParams();
-
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const { data: beneficiaryGroups, isLoading } = useBeneficiariesGroups(
+    projectID as UUID,
+    {
+      perPage: '100',
+    },
+  );
+  const [groupId, setGroupId] = useState<UUID>();
   const [formState, setFormState] = useState<PaymentState>({
     method: 'CVA',
     offline: false,
     group: '',
     vendor: '',
   });
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+    setFilters,
+    filters,
+  } = usePagination();
 
+  const { data: groupDetails, isLoading: groupLoading } =
+    useSingleBeneficiaryGroup(projectID as UUID, groupId as UUID);
+
+  const columns = useBeneficiariesGroupTableColumn();
+  const tableData = useMemo(() => {
+    if (groupDetails) {
+      return groupDetails?.groupedBeneficiaries?.map((d: any) => ({
+        walletAddress: d?.Beneficiary?.walletAddress,
+        name: d?.Beneficiary?.pii?.name,
+        total: groupDetails?.groupedBeneficiaries?.length,
+      }));
+    } else return [];
+  }, [groupDetails]);
+  const table = useReactTable({
+    data: tableData,
+    columns: columns,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      columnFilters,
+    },
+  });
   const handleChange = <K extends keyof PaymentState>(
     key: K,
     value: PaymentState[K],
   ) => {
     setFormState((prev) => ({ ...prev, [key]: value }));
+    if (key === 'group')
+      return setGroupId(
+        beneficiaryGroups?.data?.find((g) => g.name === value)?.uuid,
+      );
   };
 
   const renderMethodOption = (value: 'FSP' | 'CVA') => (
     <Label
       htmlFor={`method-${value.toLowerCase()}`}
-      className={`flex cursor-pointer items-center border p-3 w-28 justify-center rounded-sm space-x-2 ${
+      className={`flex cursor-pointer items-center border p-3 w-32 justify-center rounded-sm space-x-2 ${
         formState.method === value ? 'border-blue-400' : ''
       }`}
     >
@@ -149,7 +118,7 @@ export default function PaymentInitiation() {
       group: formState.group,
       vendor: formState.vendor,
       token: '10',
-      totalBeneficiaries: 20,
+      totalBeneficiaries: groupDetails?.groupedBeneficiaries?.length,
     };
     console.log(data);
   };
@@ -164,69 +133,112 @@ export default function PaymentInitiation() {
           />
         </div>
 
-        <div className="border rounded-sm p-6 space-y-6 bg-white w-full">
-          {/* Payment Method */}
-          <RadioGroup
-            defaultValue={formState.method}
-            onValueChange={(value) =>
-              handleChange('method', value as 'FSP' | 'CVA')
-            }
-            className="flex items-center space-x-6"
-          >
-            {renderMethodOption('CVA')}
-            {renderMethodOption('FSP')}
-          </RadioGroup>
+        <div className="border rounded-sm p-4 space-y-4 bg-white w-full">
+          <div className="flex justify-between">
+            {/* Payment Method */}
+            <RadioGroup
+              defaultValue={formState.method}
+              onValueChange={(value) =>
+                handleChange('method', value as 'FSP' | 'CVA')
+              }
+              className="flex items-center space-x-6"
+            >
+              {renderMethodOption('CVA')}
+              {renderMethodOption('FSP')}
+            </RadioGroup>
 
-          {/* Online/Offline Toggle */}
-          <div className="flex items-center space-x-3">
-            <Switch
-              checked={formState.offline}
-              onCheckedChange={(checked) => handleChange('offline', checked)}
-              id="offline-switch"
-            />
-            <Label htmlFor="offline-switch">
-              {formState.offline ? 'Online' : 'Offline'}
-            </Label>
+            {/* Online/Offline Toggle */}
+            {formState.method === 'CVA' && (
+              <div className="flex items-center space-x-3">
+                <Switch
+                  checked={formState.offline}
+                  onCheckedChange={(checked) =>
+                    handleChange('offline', checked)
+                  }
+                  id="offline-switch"
+                />
+                <Label htmlFor="offline-switch">
+                  {formState.offline ? 'Online' : 'Offline'}
+                </Label>
+              </div>
+            )}
           </div>
 
-          {/* Vendor Select - only if offline */}
-          {formState.offline && (
-            <SelectComponent
-              name="Vendor"
-              options={[
-                'Rumsan Beneficiary Vendor',
-                'Kathmandu Vendor',
-                'Lalitpur Vendor',
-              ]}
-              value={formState.vendor}
-              onChange={(value) => handleChange('vendor', value)}
-            />
+          {/* Vendor Select - only if online */}
+          {formState.offline && formState.method === 'CVA' && (
+            <div className="">
+              <Label>Vendor</Label>
+              <SelectComponent
+                name="Vendor"
+                options={[
+                  'Rumsan Beneficiary Vendor',
+                  'Kathmandu Vendor',
+                  'Lalitpur Vendor',
+                ]}
+                value={formState.vendor}
+                onChange={(value) => handleChange('vendor', value)}
+              />
+            </div>
           )}
 
           {/* Beneficiary Group Select */}
-          <SelectComponent
-            name="Beneficiary Group"
-            options={[
-              'Rumsan Beneficiary Group',
-              'Kathmandu Group',
-              'Lalitpur Group',
-            ]}
-            value={formState.group}
-            onChange={(value) => handleChange('group', value)}
-          />
-
-          {/* Footer Buttons */}
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button variant="outline" className="rounded-sm">
-              Cancel
-            </Button>
-            <PaymentDialog
-              formState={formState}
-              handleSubmit={handleSubmit}
-              token={'100'}
-              totalBeneficiaries={100}
+          <div>
+            <Label>Beneficiary Group</Label>
+            <SelectComponent
+              name="Beneficiary Group"
+              options={beneficiaryGroups?.data?.map(
+                (group: any) => group?.name,
+              )}
+              value={formState.group}
+              onChange={(value) => handleChange('group', value)}
             />
           </div>
+          <div className="flex justify-between w-full ">
+            {groupId ? (
+              <div className="flex flex-col">
+                <h1 className="text-base">{groupDetails?.name}</h1>
+                <p className="text-sm text-muted-foreground">
+                  Total Beneficiaries{' '}
+                  {groupDetails?.groupedBeneficiaries?.length}
+                </p>
+              </div>
+            ) : (
+              <div />
+            )}
+            <div className="flex space-x-2 ">
+              <Button variant="outline" className="rounded-sm w-48">
+                Cancel
+              </Button>
+              <PaymentDialog
+                formState={formState}
+                handleSubmit={handleSubmit}
+                token={'100'}
+                totalBeneficiaries={
+                  groupDetails?.groupedBeneficiaries?.length ?? 0
+                }
+              />
+            </div>
+          </div>
+          {groupId && (
+            <div className="my-0 py-0">
+              <SearchInput
+                name="Beneficiary Wallet"
+                className="mb-2 w-full"
+                value={
+                  (table
+                    .getColumn('walletAddress')
+                    ?.getFilterValue() as string) ?? ''
+                }
+                onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+                  table
+                    .getColumn('walletAddress')
+                    ?.setFilterValue(event.target.value)
+                }
+              />
+              <BeneficiariesGroupTable table={table} loading={groupLoading} />
+              <ClientSidePagination table={table} />
+            </div>
+          )}
         </div>
       </div>
     </div>

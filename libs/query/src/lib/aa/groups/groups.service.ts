@@ -237,6 +237,7 @@ export const useSingleBeneficiaryGroup = (
       });
       return mutate.data;
     },
+    enabled: !!beneficiariesGroupID,
   });
   return query;
 };

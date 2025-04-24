@@ -1066,6 +1066,8 @@ export const useCambodiaCommisionCreate = () => {
       return mutate;
     },
     onSuccess: () => {
+      Swal.fire('Commission Scheme Saved Successfully', '', 'success');
+
       qc.invalidateQueries({
         queryKey: [MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.GET_CURRENT],
       });

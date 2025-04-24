@@ -37,15 +37,20 @@ export default function BeneficiaryView() {
     setSelectedListItems,
     resetSelectedListItems,
   } = usePagination();
-  const debouncedSearch = useDebounce(filters, 500);
-
+  console.log(filters);
+  const { name, ...otherFilters } = filters;
+  const debouncedSearch = useDebounce(name, 500);
+  const finalFilters = {
+    name: debouncedSearch,
+    otherFilters,
+  };
   const { data, isLoading } = useCambodiaBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...(debouncedSearch as any),
+    ...finalFilters,
   });
   const { data: allData } = useCambodiaBeneficiaries({
     page: pagination.page,
@@ -53,7 +58,7 @@ export default function BeneficiaryView() {
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...(debouncedSearch as any),
+    ...finalFilters,
   });
 
   useEffect(() => {

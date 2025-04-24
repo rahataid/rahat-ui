@@ -46,6 +46,7 @@ export default function PaymentInitiation() {
     projectID as UUID,
     {
       perPage: '100',
+      tokenAssigned: true,
     },
   );
   const [groupId, setGroupId] = useState<UUID>();

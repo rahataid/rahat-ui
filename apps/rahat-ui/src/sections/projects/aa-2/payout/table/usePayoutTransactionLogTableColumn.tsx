@@ -2,36 +2,28 @@ import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
-import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
-import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
 
-function getStatusBg(status: string) {
-  if (status === 'NOT_STARTED') {
-    return 'bg-gray-200';
+function getTransactionStatusColor(status: string) {
+  switch (status.toLowerCase()) {
+    case 'completed':
+      return 'bg-green-200 text-green-800';
+    case 'pending':
+      return 'bg-blue-200 text-blue-800';
+    case 'rejected':
+      return 'bg-red-200 text-red-800';
+    default:
+      return 'bg-gray-200 text-gray-800';
   }
-
-  if (status === 'WORK_IN_PROGRESS') {
-    return 'bg-orange-200';
-  }
-
-  if (status === 'COMPLETED') {
-    return 'bg-green-200';
-  }
-
-  if (status === 'DELAYED') {
-    return 'bg-red-200';
-  }
-
-  return '';
 }
 
 export default function usePayoutTransactionLogTableColumn() {
   const { id: projectID } = useParams();
   const router = useRouter();
 
-  const handleEyeClick = (activityId: any) => {
-    setPaginationToLocalStorage();
-    router.push(`/projects/aa/${projectID}/activities/${activityId}`);
+  const handleEyeClick = (beneficiaryGroupDetailsId: any) => {
+    router.push(
+      `/projects/aa/${projectID}/payout/details/${beneficiaryGroupDetailsId}`,
+    );
   };
 
   const columns: ColumnDef<any>[] = [
@@ -67,10 +59,15 @@ export default function usePayoutTransactionLogTableColumn() {
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => {
-        const status = row.getValue('status') as string;
-        const bgColor = getStatusBg(status);
+        const status = row?.original?.status;
         return (
-          <Badge className={`rounded-xl capitalize ${bgColor}`}>{status}</Badge>
+          <Badge
+            className={`rounded-xl capitalize ${getTransactionStatusColor(
+              status,
+            )}`}
+          >
+            {status}
+          </Badge>
         );
       },
     },
@@ -85,6 +82,7 @@ export default function usePayoutTransactionLogTableColumn() {
 
     {
       id: 'actions',
+      header: 'Actions',
       enableHiding: false,
       cell: ({ row }) => {
         return (

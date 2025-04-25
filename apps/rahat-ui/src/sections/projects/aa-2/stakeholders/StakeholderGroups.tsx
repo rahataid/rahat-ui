@@ -29,6 +29,7 @@ const StakeGoldersGroups = () => {
       stakeholdersGroups: state.stakeholdersGroups,
       stakeholdersGroupsMeta: state.stakeholdersGroupsMeta,
     }));
+  console.log(stakeholdersGroups);
   const handleSearch = (e) => {
     console.log(e);
   };
@@ -51,7 +52,7 @@ const StakeGoldersGroups = () => {
           {isLoading ? (
             <SpinnerLoader />
           ) : stakeholdersGroups.length > 0 ? (
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {stakeholdersGroups?.map((i: any, index: number) => {
                 return (
                   <div key={index} className="rounded-md border shadow p-4">
@@ -72,7 +73,7 @@ const StakeGoldersGroups = () => {
                       <p className="text-base mb-1">{i?.name ?? 'N/A'}</p>
                       <div className="flex gap-2 items-center">
                         <Users size={18} strokeWidth={2} />
-                        {i?._count?.groupedBeneficiaries || 0}
+                        {i?._count?.stakeholders || 0}
                       </div>
                     </div>
                   </div>

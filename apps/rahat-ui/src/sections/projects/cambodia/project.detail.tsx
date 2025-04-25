@@ -24,7 +24,6 @@ export default function ProjectDetail() {
   });
   const { id } = useParams() as { id: UUID };
   const { data: newDatasource, isLoading } = useGetProjectDatasource(id);
-  console.log(newDatasource);
 
   const handleSelect = (key: string, value: string) => {
     if (key === 'Months') {
@@ -62,14 +61,16 @@ export default function ProjectDetail() {
   }
   return (
     <>
-      {newDatasource?.data && newDatasource?.data[0]?.data?.ui.length && (
-        <>
-          <DynamicReports
-            dataSources={newDatasource?.data[0]?.data?.dataSources}
-            ui={newDatasource?.data[0]?.data?.ui}
-          />
-        </>
-      )}
+      {newDatasource &&
+        newDatasource[0]?.data &&
+        newDatasource[0]?.data?.ui.length && (
+          <>
+            <DynamicReports
+              dataSources={newDatasource[0]?.data?.dataSources}
+              ui={newDatasource[0]?.data?.ui}
+            />
+          </>
+        )}
 
       <div className="flex flex-row mt-4 mb-4 justify-between">
         <div>

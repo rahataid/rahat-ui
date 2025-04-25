@@ -37,6 +37,7 @@ export default function BeneficiaryView() {
     setSelectedListItems,
     resetSelectedListItems,
   } = usePagination();
+  // const { name, type, ...otherFilters } = filters;
   const debouncedSearch = useDebounce(filters, 500);
 
   const { data, isLoading } = useCambodiaBeneficiaries({
@@ -84,6 +85,7 @@ export default function BeneficiaryView() {
   const columns = useCambodiaBeneficiaryTableColumns();
   const table = useReactTable({
     manualPagination: true,
+    manualFiltering: true,
     data: processedData?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -168,11 +170,6 @@ export default function BeneficiaryView() {
                 }
                 value={filters?.type || ''}
               />
-              {/* <Button>
-                <PlusIcon />
-                Add Beneficiary
-              </Button>
-              <ViewColumns table={table} /> */}
             </div>
           </div>
           <CambodiaTable table={table} loading={isLoading} />

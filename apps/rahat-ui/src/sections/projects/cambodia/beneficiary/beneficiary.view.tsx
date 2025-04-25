@@ -37,20 +37,16 @@ export default function BeneficiaryView() {
     setSelectedListItems,
     resetSelectedListItems,
   } = usePagination();
-  console.log(filters);
-  const { name, ...otherFilters } = filters;
-  const debouncedSearch = useDebounce(name, 500);
-  const finalFilters = {
-    name: debouncedSearch,
-    otherFilters,
-  };
+  // const { name, type, ...otherFilters } = filters;
+  const debouncedSearch = useDebounce(filters, 500);
+
   const { data, isLoading } = useCambodiaBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...finalFilters,
+    ...(debouncedSearch as any),
   });
   const { data: allData } = useCambodiaBeneficiaries({
     page: pagination.page,
@@ -58,7 +54,7 @@ export default function BeneficiaryView() {
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
-    ...finalFilters,
+    ...(debouncedSearch as any),
   });
 
   useEffect(() => {
@@ -89,6 +85,7 @@ export default function BeneficiaryView() {
   const columns = useCambodiaBeneficiaryTableColumns();
   const table = useReactTable({
     manualPagination: true,
+    manualFiltering: true,
     data: processedData?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -173,11 +170,6 @@ export default function BeneficiaryView() {
                 }
                 value={filters?.type || ''}
               />
-              {/* <Button>
-                <PlusIcon />
-                Add Beneficiary
-              </Button>
-              <ViewColumns table={table} /> */}
             </div>
           </div>
           <CambodiaTable table={table} loading={isLoading} />

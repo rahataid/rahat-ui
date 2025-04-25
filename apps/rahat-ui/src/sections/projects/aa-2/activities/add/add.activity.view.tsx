@@ -556,7 +556,7 @@ export default function AddActivities() {
                         {documents?.map((file) => (
                           <div
                             key={file.name}
-                            className="flex justify-between border p-4 rounded-xl items-center"
+                            className="flex justify-between border p-4 rounded-xl items-center space-x-2"
                           >
                             {uploadFile.isPending &&
                             documents?.[documents?.length - 1].name ===
@@ -571,7 +571,7 @@ export default function AddActivities() {
                                 className="w-8 h-8 text-green-600"
                               />
                             )}
-                            <p className="text-sm ml-2 flex gap-2 items-center">
+                            <p className="text-sm  flex  items-center truncate w-28">
                               {file.name}
                             </p>
                             <X

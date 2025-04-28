@@ -46,7 +46,7 @@ export default function PhaseCard({
             {status}
           </Badge>
           <div
-            className="flex items-center gap-2 text-blue-500 hover:cursor-pointer hover:rounded-sm hover:bg-gray-50 hover:p-1 hover:text-sm "
+            className="flex items-center gap-2 text-blue-500 text-xs hover:cursor-pointer hover:rounded-sm hover:bg-gray-50 hover:p-1 hover:text-sm "
             onClick={(e) => {
               e.stopPropagation();
               onUpdateStatus();

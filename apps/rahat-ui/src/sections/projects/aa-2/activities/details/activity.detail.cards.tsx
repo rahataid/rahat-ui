@@ -17,6 +17,20 @@ export default function ActivityDetailCards({
   activityDetail,
   loading,
 }: ActivityDetailCardsProps) {
+  function formatToNepalTime(utcDateString) {
+    const utcDate = new Date(utcDateString);
+
+    const nepalTimeFormatter = new Intl.DateTimeFormat('en-NP', {
+      timeZone: 'Asia/Kathmandu',
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    return nepalTimeFormatter.format(utcDate);
+  }
+
   if (loading) {
     <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 h-[calc(29vh)]">
       <SpinnerLoader />
@@ -44,9 +58,9 @@ export default function ActivityDetailCards({
           </div>
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger asChild className="hover:cursor-pointer">
-                <h3 className="text-lg font-semibold text-gray-900 truncate ">
-                  {activityDetail?.title}
+              <TooltipTrigger asChild className="hover:cursor-pointer py-0">
+                <h3 className="text-lg font-semibold text-gray-900 leading-tight truncate ">
+                  {activityDetail?.title}...
                 </h3>
               </TooltipTrigger>
               <TooltipContent
@@ -59,8 +73,8 @@ export default function ActivityDetailCards({
 
             <Tooltip>
               <TooltipTrigger asChild className="hover:cursor-pointer">
-                <p className="text-gray-600 text-sm mt-1 truncate w-48 ">
-                  {activityDetail?.description}
+                <p className="text-gray-600 text-sm mt-1  leading-tight">
+                  {activityDetail?.description?.substring(0, 100)}...
                 </p>
               </TooltipTrigger>
               <TooltipContent
@@ -76,7 +90,7 @@ export default function ActivityDetailCards({
             <span>&bull;</span>
             <span>{activityDetail?.leadTime}</span>
           </div>
-          <div className="flex items-center text-gray-500 text-sm mt-2">
+          <div className="flex items-center text-gray-500 text-sm mt-1">
             <UserCircle className="w-4 h-4 mr-2 ml-1" />
             <span>Assigned to: {activityDetail?.manager?.name}</span>
           </div>
@@ -84,7 +98,7 @@ export default function ActivityDetailCards({
             <div className="flex items-center text-green-700 text-xs mt-2">
               <>
                 <CheckCircle className="w-4 h-4 mr-2 ml-1" />
-                <span>NPT: {activityDetail?.completedBy}</span>
+                <span>{activityDetail?.completedBy}</span>
               </>
             </div>
           )}
@@ -92,7 +106,9 @@ export default function ActivityDetailCards({
             <div className="flex items-center text-green-700 text-xs mt-2">
               <>
                 <Clock className="w-4 h-4 mr-2 ml-1" />
-                <span>Completed at: {activityDetail?.completedAt}</span>
+                <span>
+                  Completed at: {formatToNepalTime(activityDetail?.completedAt)}
+                </span>
               </>
             </div>
           )}

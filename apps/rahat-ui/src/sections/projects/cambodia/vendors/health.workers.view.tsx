@@ -37,7 +37,6 @@ export default function HealthWorkersView() {
     ...pagination,
     ...filters,
   }) as any;
-  console.log(healthWorkers);
   const columns = useHealthWorkersTableColumns();
   const table = useReactTable({
     manualPagination: true,

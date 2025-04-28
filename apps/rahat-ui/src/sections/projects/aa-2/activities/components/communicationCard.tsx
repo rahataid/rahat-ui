@@ -22,6 +22,7 @@ import { useTriggerCommunication } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { SessionStatus } from '@rumsan/connect/src/types';
+import MessageWithToggle from './messageWithToggle';
 
 interface BaseCommunication {
   groupId: string;
@@ -70,6 +71,9 @@ export function CommunicationCard({
   const [loadingButtons, setLoadingButtons] = React.useState<string[]>([]);
   const trigger = useTriggerCommunication();
   const activityId = activityID as string;
+
+  const [showFull, setShowFull] = useState(false);
+  const maxLength = 150;
   const triggerCommunication = async (
     activityId: string,
     communicationId: string,
@@ -98,43 +102,6 @@ export function CommunicationCard({
                 {activityCommunication?.groupName}
               </h3>
               <div className="flex gap-2">
-                {/* <IconLabelBtn
-                  Icon={Edit}
-                  name="Edit"
-                  handleClick={() => onEdit}
-                  variant="ghost"
-                /> */}
-                {/* <IconLabelBtn
-                  Icon={Send}
-                  name="Send"
-                  handleClick={() => onSend}
-                  variant="ghost"
-                /> */}
-                {/* <Button
-                  type="button"
-                  disabled={
-                    activityCommunication?.sessionStatus !== SessionStatus.NEW
-                  }
-                  className="h-7 w-24"
-                  onClick={() =>
-                    triggerCommunication(
-                      activityId,
-                      activityCommunication?.communicationId,
-                    )
-                  }
-                >
-                  {loadingButtons.includes(
-                    activityCommunication?.communicationId,
-                  ) ? (
-                    <SpinnerLoader />
-                  ) : activityCommunication?.sessionStatus ===
-                    SessionStatus.NEW ? (
-                    'Send'
-                  ) : (
-                    'Sent'
-                  )}
-                </Button> */}
-
                 {activityCommunication?.sessionStatus === SessionStatus.NEW && (
                   <Button
                     className="items-center justify-center"
@@ -159,9 +126,9 @@ export function CommunicationCard({
               </div>
             </div>
             <div className="mt-1 flex items-center gap-2 text-sm text-gray-500">
-              <span>{activityCommunication?.groupType}</span>
+              <span>{activityCommunication?.transportName}</span>
               <span>•</span>
-              <span>{activityCommunication?.groupName}</span>
+              <span>{activityCommunication?.groupType}</span>
               <span>•</span>
               <Badge
                 className={`ml-1 text-xs font-normal ${
@@ -180,9 +147,9 @@ export function CommunicationCard({
             {(activityCommunication?.transportName === 'EMAIL' ||
               activityCommunication?.transportName === 'SMS') && (
               <div className="mt-3">
-                <p className="text-sm text-gray-700">
-                  {activityCommunication?.message}w
-                </p>
+                <MessageWithToggle
+                  message={activityCommunication?.message ?? ''}
+                />
               </div>
             )}
 

@@ -18,7 +18,7 @@ interface PhaseCardProps {
   location: string;
   leadTime: string;
   responsibility: string;
-  onUpdateStatus?: () => void;
+  onUpdateStatus: () => void;
   className?: string;
 }
 
@@ -34,6 +34,7 @@ export default function PhaseCard({
 }: PhaseCardProps) {
   const router = useRouter();
   const { id: ProjectId } = useParams();
+
   return (
     <Card
       className={(cn(' border-gray-300 shadow-sm p-4 rounded-xl '), className)}
@@ -45,13 +46,16 @@ export default function PhaseCard({
             {status}
           </Badge>
           <div
-            className="flex items-center gap-2 text-blue-500 hover:cursor-pointer"
-            onClick={onUpdateStatus}
+            className="flex items-center gap-2 text-blue-500 text-xs hover:cursor-pointer hover:rounded-sm hover:bg-gray-50 hover:p-1 hover:text-sm "
+            onClick={(e) => {
+              e.stopPropagation();
+              onUpdateStatus();
+            }}
           >
             Update Status <RefreshCw className="w-4 h-4" />
           </div>
         </div>
-        <p className="text-sm font-medium text-gray-900 truncate w-96">
+        <p className="text-sm font-medium text-gray-900 truncate  w-52  xxl:w-96">
           {title}
         </p>
         <p className="text-sm text-gray-500">

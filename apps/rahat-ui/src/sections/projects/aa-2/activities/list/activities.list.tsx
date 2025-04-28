@@ -21,6 +21,7 @@ import { getPaginationFromLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagi
 import {
   Back,
   CustomPagination,
+  DemoTable,
   Heading,
   IconLabelBtn,
   TableLoader,
@@ -176,7 +177,7 @@ export default function ActivitiesList() {
           <div>
             <Heading
               title={`${title[0].charAt(0).toUpperCase() + title.slice(1)}`}
-              description="Track all the trigger reports here"
+              description="List of all the activities in the selected phase "
             />
           </div>
           <div className="flex space-x-3">
@@ -218,7 +219,8 @@ export default function ActivitiesList() {
         />
       )}
 
-      <div className="rounded border border-gray-100">
+      <div className="rounded border border-gray-100 ">
+        {/* <DemoTable table={table} tableHeight="h-[calc(100vh-370px)]" /> */}
         <ActivitiesTable table={table} />
         <CustomPagination
           meta={

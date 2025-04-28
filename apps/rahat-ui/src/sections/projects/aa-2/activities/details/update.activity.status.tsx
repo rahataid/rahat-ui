@@ -149,7 +149,11 @@ export default function UpdateStatus() {
       setDocuments([]);
     }
   };
-
+  const formatStatus = (status: string) => {
+    return status
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  };
   return (
     <div className=" mx-auto p-4 md:p-6">
       <div className="flex flex-col space-y-0">
@@ -187,8 +191,7 @@ export default function UpdateStatus() {
                       <SelectContent>
                         {statusList.map((status) => (
                           <SelectItem value={status} key={status}>
-                            {status.charAt(0).toUpperCase() +
-                              status.slice(1).toLowerCase()}
+                            {formatStatus(status)}
                           </SelectItem>
                         ))}
                       </SelectContent>

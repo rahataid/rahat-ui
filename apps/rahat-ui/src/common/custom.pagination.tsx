@@ -17,7 +17,10 @@ import {
 } from 'lucide-react';
 type IProps = {
   handleNextPage: () => void;
+
   handlePrevPage: () => void;
+  handleForwardPage?: () => void;
+  handleBackwardPage?: () => void;
   handlePageSizeChange?: (value: string | number) => void;
   meta: PaginatedResult<any>['meta'];
   total?: number;
@@ -30,6 +33,8 @@ const pageSizes = ['5', '10', '20', '30', '40', '50', '100'];
 export function CustomPagination({
   handleNextPage,
   handlePageSizeChange,
+  handleBackwardPage,
+  handleForwardPage,
   handlePrevPage,
   meta,
   currentPage,
@@ -71,7 +76,7 @@ export function CustomPagination({
         <Button
           variant="outline"
           size="sm"
-          onClick={handlePrevPage}
+          onClick={handleBackwardPage}
           disabled={currentPage === 1}
         >
           <ChevronsLeft />
@@ -92,14 +97,6 @@ export function CustomPagination({
           variant="outline"
           size="sm"
           onClick={handleNextPage}
-          disabled={meta?.lastPage == 0 || currentPage === meta?.lastPage}
-        >
-          <ChevronsRight />
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleNextPage}
           type="button"
           // disabled={!table.getCanNextPage()}
           // disabled={
@@ -108,6 +105,14 @@ export function CustomPagination({
           disabled={meta?.lastPage == 0 || currentPage === meta?.lastPage}
         >
           <ChevronRight />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleForwardPage}
+          disabled={meta?.lastPage == 0 || currentPage === meta?.lastPage}
+        >
+          <ChevronsRight />
         </Button>
       </div>
     </div>

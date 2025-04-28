@@ -56,7 +56,7 @@ export const useDailyMonitoring = (uuid: UUID, payload: any) => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.dailyMonitoring.getAll',
+          action: 'ms.dailyMonitoring.getAll',
           payload: payload,
         },
       });

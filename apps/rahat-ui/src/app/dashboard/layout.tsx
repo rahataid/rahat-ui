@@ -4,9 +4,9 @@ import * as React from 'react';
 import { Nav } from '../../components/nav';
 import AuthGuard from '../../guards/auth-guard';
 import SideNav from '../../components/side-nav';
+import { SidebarProvider } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 
 export default function DashboardLayout({
-  margin = 'mt-14',
   children,
   hasDefaultHeader = true,
 }: {
@@ -16,13 +16,13 @@ export default function DashboardLayout({
 }) {
   return (
     <AuthGuard>
-      <div className="flex">
-        <SideNav />
-        <div className="w-full h-screen">
+      <SidebarProvider>
+        {hasDefaultHeader && <SideNav />}
+        <div className="w-full">
           <Nav hasDefaultHeader={hasDefaultHeader} />
-          <div className={margin}>{children}</div>
+          {children}
         </div>
-      </div>
+      </SidebarProvider>
     </AuthGuard>
   );
 }

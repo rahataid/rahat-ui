@@ -2,14 +2,6 @@
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
-import {
   TableBody,
   TableCell,
   Table as TableComponent,
@@ -19,7 +11,6 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Table, flexRender } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
 
 import { useProjectList } from '@rahat-ui/query';
 import {
@@ -32,18 +23,17 @@ import {
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { UUID } from 'crypto';
-import TableLoader from '../../components/table.loader';
 import Image from 'next/image';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import TableLoader from '../../components/table.loader';
 import SelectComponent from '../projects/el-kenya/select.component';
 
 export type IVendor = {
@@ -66,6 +56,7 @@ type IProps = {
   handleAssignProject: VoidFunction;
   projectModal: ProjectModalType;
   selectedRow: any;
+  loading: boolean;
 };
 
 export default function VendorsTable({
@@ -75,6 +66,7 @@ export default function VendorsTable({
   handleAssignProject,
   projectModal,
   selectedRow,
+  loading,
 }: IProps) {
   const projectList = useProjectList({});
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
@@ -85,7 +77,6 @@ export default function VendorsTable({
         value: project?.name,
       }))) ||
     [];
-  console.log(projectNames);
 
   return (
     <div className="border rounded shadow p-3">
@@ -109,7 +100,6 @@ export default function VendorsTable({
           options={[
             { label: 'All', value: 'All' },
             { label: 'Assigned', value: 'Assigned' },
-            { label: 'Not Assigned', value: 'Not Assigned' },
             { label: 'Pending', value: 'Pending' },
           ]}
           value={(table.getColumn('status')?.getFilterValue() as string) || ''}
@@ -122,94 +112,78 @@ export default function VendorsTable({
               ?.setFilterValue(event === 'All' ? '' : event);
           }}
           name="Project Name"
-          options={['All', ...projectNames]}
+          options={[{ label: 'All', value: 'All' }, ...projectNames]}
           value={
             (table.getColumn('projectName')?.getFilterValue() as string) || ''
           }
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              <Settings2 className="mr-2 h-4 w-5" />
-              View
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
       <div>
-        {table.getRowModel().rows?.length ? (
-          <>
-            <ScrollArea className="h-[calc(100vh-285px)]">
-              <TableComponent>
-                <TableHeader className="sticky top-0 bg-card">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => {
-                        return (
-                          <TableHead key={header.id}>
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext(),
-                                )}
-                          </TableHead>
-                        );
-                      })}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </TableComponent>
-            </ScrollArea>
-          </>
+        {loading ? (
+          <TableLoader />
         ) : (
-          <div className="w-full h-[calc(100vh-290px)]">
-            <div className="flex flex-col items-center justify-center">
-              <Image src="/noData.png" height={250} width={250} alt="no data" />
-              <p className="text-medium text-base mb-1">No Data Available</p>
-              <p className="text-sm mb-4 text-gray-500">
-                There are no vendors to display at the moment
-              </p>
-            </div>
-          </div>
+          <>
+            {table.getRowModel().rows?.length ? (
+              <>
+                <ScrollArea className="h-[calc(100vh-285px)]">
+                  <TableComponent>
+                    <TableHeader className="sticky top-0 bg-card">
+                      {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow key={headerGroup.id}>
+                          {headerGroup.headers.map((header) => {
+                            return (
+                              <TableHead key={header.id}>
+                                {header.isPlaceholder
+                                  ? null
+                                  : flexRender(
+                                      header.column.columnDef.header,
+                                      header.getContext(),
+                                    )}
+                              </TableHead>
+                            );
+                          })}
+                        </TableRow>
+                      ))}
+                    </TableHeader>
+                    <TableBody>
+                      {table.getRowModel().rows.map((row) => (
+                        <TableRow
+                          key={row.id}
+                          data-state={row.getIsSelected() && 'selected'}
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell key={cell.id}>
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              )}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </TableComponent>
+                </ScrollArea>
+              </>
+            ) : (
+              <div className="w-full h-[calc(100vh-290px)]">
+                <div className="flex flex-col items-center justify-center">
+                  <Image
+                    src="/noData.png"
+                    height={250}
+                    width={250}
+                    alt="no data"
+                  />
+                  <p className="text-medium text-base mb-1">
+                    No Data Available
+                  </p>
+                  <p className="text-sm mb-4 text-gray-500">
+                    There are no vendors to display at the moment
+                  </p>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -234,7 +208,9 @@ export default function VendorsTable({
                   projectList.data?.data.map((project: any) => {
                     return (
                       <SelectItem
-                        disabled={selectedRow?.projectName === project.name} //TODO FROM ID
+                        disabled={selectedRow?.projectName?.includes(
+                          project.name,
+                        )}
                         key={project.id}
                         value={project.uuid}
                       >

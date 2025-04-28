@@ -121,7 +121,7 @@ export default function BeneficiaryView() {
   };
 
   const handleDownload = () => {
-    generateExcel(consumerData.data, 'Consumer', 8);
+    generateExcel(consumerData.data, 'Consumer', 9);
   };
 
   const generateExcel = (data: any, title: string, numberOfColumns: number) => {
@@ -138,7 +138,7 @@ export default function BeneficiaryView() {
   };
 
   return (
-    <div>
+    <div className="mt-6">
       <div className="flex justify-between items-center mb-4 ml-4">
         <div>
           <h1 className="font-semibold text-2xl mb-">Consumers</h1>
@@ -149,7 +149,9 @@ export default function BeneficiaryView() {
       </div>
       <div className="p-4 pt-2">
         <div className="rounded border bg-card p-4">
-          <div className="flex justify-between gap-2 mb-2">
+          {/* Filters Section */}
+
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-nowrap sm:justify-between sm:gap-2 mb-4">
             <SearchInput
               className="w-full"
               name="phone number"
@@ -170,7 +172,9 @@ export default function BeneficiaryView() {
                 { value: 'skip', label: 'Skip' },
               ]}
               value={filters?.consentStatus || ''}
+              className="w-full"
             />
+
             <SelectComponent
               onChange={(e) => setFilters({ ...filters, voucherStatus: e })}
               name="Voucher Status"
@@ -179,16 +183,23 @@ export default function BeneficiaryView() {
                 { value: 'NOT_REDEEMED', label: 'Not Redeemed' },
               ]}
               value={filters?.voucherStatus || ''}
+              className="w-full"
             />
+
             <SelectComponent
               onChange={(e) => setFilters({ ...filters, eyeCheckupStatus: e })}
               name="Voucher Usage"
               options={[
                 { value: 'CHECKED', label: 'Eye Checkup' },
-                { value: 'PURCHASE_OF_GLASSES', label: 'Purchase of Glasses' },
+                {
+                  value: 'PURCHASE_OF_GLASSES',
+                  label: 'Purchase of Glasses',
+                },
               ]}
               value={filters?.eyeCheckupStatus || ''}
+              className="w-full"
             />
+
             <SelectComponent
               onChange={(e) => setFilters({ ...filters, voucherType: e })}
               name="Glass Type"
@@ -198,13 +209,22 @@ export default function BeneficiaryView() {
                 { value: 'PRESCRIBED_LENSES', label: 'Prescribed Lenses' },
               ]}
               value={filters?.voucherType || ''}
+              className="w-full"
             />
-            <Button type="button" variant="outline" onClick={handleDownload}>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleDownload}
+              className="w-full rounded-sm sm:w-auto"
+            >
               <CloudDownload size={18} className="mr-1" />
               Download
             </Button>
           </div>
-          {Object.keys(filters).length != 0 && (
+
+          {/* Filters Tags Section */}
+          {Object.keys(filters).length !== 0 && (
             <SmsVoucherFiltersTags
               filters={filters}
               setFilters={setFilters}
@@ -217,12 +237,14 @@ export default function BeneficiaryView() {
               }}
             />
           )}
+
+          {/* Table Section */}
           <ElkenyaTable
             table={table}
             tableHeight={
               Object.keys(filters).length
                 ? 'h-[calc(100vh-389px)]'
-                : 'h-[calc(100vh-323px)]'
+                : 'h-[calc(100vh-320px)]'
             }
             loading={isLoading}
           />

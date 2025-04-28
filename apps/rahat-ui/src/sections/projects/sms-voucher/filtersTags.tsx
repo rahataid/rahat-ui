@@ -25,8 +25,10 @@ const SmsVoucherFiltersTags = ({
 
   return (
     <div className="rounded-md border bg-card py-2 px-4 text-sm mb-2">
-      <div className="flex items-center gap-6 w-full">
-        <p className="text-primary min-w-max">{total} results found</p>
+      <div className="flex flex-col sm:flex-row items-center gap-6 w-full">
+        <p className="hidden sm:block text-primary min-w-max">
+          {total} results found
+        </p>
         <ScrollArea className="w-full py-2">
           <div className="flex gap-4 items-center">
             {filterArray.map((filter) => {
@@ -57,7 +59,13 @@ const SmsVoucherFiltersTags = ({
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
-        <Button onClick={() => setFilters({})}>Clear filter</Button>
+        <Button
+          className="text-white hidden sm:block"
+          size={'sm'}
+          onClick={() => setFilters({})}
+        >
+          Clear filter
+        </Button>
       </div>
     </div>
   );

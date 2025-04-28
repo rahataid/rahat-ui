@@ -3,6 +3,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { formatDateFromBloackChain } from 'apps/rahat-ui/src/utils';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { mapTopic } from '../../const';
+import Link from 'next/link';
 
 export const useElkenyaVendorsTransactionsTableColumns = () => {
   const columns: ColumnDef<any>[] = [
@@ -15,7 +16,13 @@ export const useElkenyaVendorsTransactionsTableColumns = () => {
       accessorKey: 'txHash',
       header: 'TxHash',
       cell: ({ row }) => (
-        <div>{truncateEthAddress(row.getValue('txHash'))}</div>
+        <Link
+          target="_blank"
+          href={`https://sepolia.basescan.org/tx/${row.getValue('txHash')}`}
+          className="text-blue-500 hover:underline"
+        >
+          {truncateEthAddress(row.getValue('txHash'))}
+        </Link>
       ),
     },
     {

@@ -32,7 +32,7 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
     const icon = getIcon(component?.icon);
     return (
       <DataCard
-        className="border-solid rounded-md"
+        className="border-solid rounded-sm"
         iconStyle="bg-white text-black"
         title={component.title}
         // number={cardDataValue?.count === 0 ? 0 : cardDataValue?.count}

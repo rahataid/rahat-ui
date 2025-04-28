@@ -42,10 +42,12 @@ export default function CustomPagination({
 }: IProps) {
   const lastPage = meta?.lastPage || 1;
   return (
-    <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2 border-t bg-card">
+    <div className="flex items-center justify-between sm:justify-end space-x-4 p-1 pl-2 pr-2 border-t bg-card">
       {handlePageSizeChange && (
         <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
+          <div className="text-sm font-medium hidden sm:block">
+            Rows per page
+          </div>
           <Select
             defaultValue={String(perPage)}
             onValueChange={handlePageSizeChange}

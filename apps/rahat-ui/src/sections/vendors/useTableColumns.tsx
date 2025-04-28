@@ -7,20 +7,28 @@ import VendorsDetailSplitView from './vendors.detail.split.view';
 import { IVendor } from './vendors.list.table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import TooltipComponent from '../../components/tooltip';
+import { useParams, useRouter } from 'next/navigation';
 
 export const useTableColumns = (handleAssignClick: any) => {
+  const { id } = useParams();
+  const router = useRouter();
+
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
   const handleAssign = (row: any) => {
     handleAssignClick(row);
   };
 
   const openSplitDetailView = (rowDetail: IVendor) => {
-    setSecondPanelComponent(
-      <VendorsDetailSplitView
-        closeSecondPanel={closeSecondPanel}
-        vendorsDetail={rowDetail}
-      />,
-    );
+    if (window.innerWidth <= 768) {
+      router.push(`/vendors/${rowDetail.id}`);
+    } else {
+      setSecondPanelComponent(
+        <VendorsDetailSplitView
+          closeSecondPanel={closeSecondPanel}
+          vendorsDetail={rowDetail}
+        />,
+      );
+    }
   };
 
   const columns: ColumnDef<IVendor>[] = [
@@ -49,11 +57,19 @@ export const useTableColumns = (handleAssignClick: any) => {
       cell: ({ row }) => {
         return (
           <div className="font-medium flex flex-col">
-            {row.original.projectName?.map((name) => (
-              <Badge className="mb-2">{name}</Badge>
+            {row.original.projectName?.map((name: any, index: number) => (
+              <Badge key={index} className="w-fit mb-2 rounded-md">
+                {name}
+              </Badge>
             ))}
           </div>
         );
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        return row
+          .getValue(columnId)
+          ?.some((name: string) => name === filterValue);
       },
     },
 

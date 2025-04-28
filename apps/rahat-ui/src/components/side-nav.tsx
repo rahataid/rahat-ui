@@ -2,14 +2,27 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { Ellipsis, Settings } from 'lucide-react';
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from 'libs/shadcn/src/components/ui/collapsible';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  useSidebar,
+} from 'libs/shadcn/src/components/ui/sidebar';
+import { ChevronRight, Ellipsis, Settings } from 'lucide-react';
 import React, { act, createElement } from 'react';
 import { useNavData } from '../app/config-nav';
 import getIcon from '../utils/getIcon';
@@ -18,109 +31,95 @@ import Image from 'next/image';
 export default function SideNav() {
   const { data, subData } = useNavData();
   const [more, setMore] = React.useState(false);
-
   const currentPath = usePathname();
   const activePath = currentPath.split('/')[1];
+  const { setOpenMobile, setOpen } = useSidebar();
 
   return (
-    <TooltipProvider>
-      <aside className="inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-secondary sm:flex">
-        <header className="mt-4 mb-6 flex justify-center">
-          <Image src="/rahat-logo.png" alt="logo" height={20} width={30} />
-        </header>
-        <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
-          {data.map((item) => {
-            const isActive = item.path.split('/')[1] === activePath;
-            return (
-              <Tooltip key={item.title}>
-                <TooltipTrigger asChild>
-                  <Link
-                    key={item.title}
-                    href={item.path}
-                    className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors md:h-8 md:w-8 ${
-                      isActive
-                        ? 'bg-gray-700 text-white'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    {item?.icon ? (
-                      createElement(getIcon(item.icon))
-                    ) : (
-                      <span className="text-2xl">{item.title[0]}</span>
-                    )}
-                    <span className="sr-only">{item.title}</span>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent side="right">{item.title}</TooltipContent>
-              </Tooltip>
-            );
-          })}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div
-                className="flex h-9 w-9 items-center justify-center rounded-full transition-colors md:h-8 md:w-8 
-                text-muted-foreground hover:text-foreground"
-              >
-                <Ellipsis
-                  className="cursor-pointer"
-                  onClick={(e) => {
-                    setMore(!more);
-                  }}
-                />
-                <span className="sr-only">more</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="right">More</TooltipContent>
-          </Tooltip>
-          {more &&
-            subData.map((item) => {
+    <Sidebar collapsible="icon">
+      {/* SIDEBAR HEADER */}
+      <SidebarHeader>
+        <Image src="/rahat-logo.png" alt="logo" height={42} width={42} />
+      </SidebarHeader>
+      {/* SIDEBAR CONTENT */}
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarMenu>
+            {data.map((item) => {
               const isActive = item.path.split('/')[1] === activePath;
               return (
-                <Tooltip key={item.title}>
-                  <TooltipTrigger asChild>
-                    <Link
-                      key={item.title}
-                      href={item.path}
-                      className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors md:h-8 md:w-8 ${
+                <SidebarMenuItem key={item.title}>
+                  <Link
+                    onClick={() => setOpenMobile(false)}
+                    href={item.path as string}
+                  >
+                    <SidebarMenuButton
+                      tooltip={item.title}
+                      className={
                         isActive
-                          ? 'bg-gray-700 text-white'
-                          : 'text-muted-foreground hover:text-foreground'
-                      }`}
+                          ? 'bg-blue-500 text-white rounded'
+                          : 'text-muted-foreground rounded hover:text-foreground'
+                      }
                     >
-                      {item?.icon ? (
-                        createElement(getIcon(item.icon))
-                      ) : (
-                        <span className="text-2xl">{item.title[0]}</span>
-                      )}
-                      <span className="sr-only">{item.title}</span>
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">{item.title}</TooltipContent>
-                </Tooltip>
+                      {createElement(getIcon(item.icon))}
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
               );
             })}
-        </nav>
+          </SidebarMenu>
+        </SidebarGroup>
+      </SidebarContent>
+      {/* SIDEBAR FOOTER */}
+      <SidebarFooter>
+        {/* <Link
+          href="/settings"
+          className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors md:h-8 md:w-8 ${
+            activePath === 'settings'
+              ? 'bg-primary text-white'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          <Settings className="h-5 w-5" />
+          <span className="sr-only">Settings</span>
+        </Link> */}
 
-        {/* Settings icon at the bottom */}
-        <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
-          <Tooltip>
-            <TooltipTrigger asChild>
+        <div
+          className="flex h-9 w-9 items-center justify-center rounded-full transition-colors md:h-8 md:w-8 
+                text-muted-foreground hover:text-foreground hidden sm:block"
+        >
+          <Ellipsis
+            className="cursor-pointer hidden sm:block"
+            onClick={(e) => {
+              setMore(!more);
+            }}
+          />
+          <span className="sr-only">more</span>
+        </div>
+        {more &&
+          subData.map((item) => {
+            const isActive = item.path.split('/')[1] === activePath;
+            return (
               <Link
-                href="/settings"
+                key={item.title}
+                href={item.path}
                 className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors md:h-8 md:w-8 ${
-                  activePath === 'settings'
-                    ? 'bg-primary text-white'
+                  isActive
+                    ? 'bg-gray-700 text-white'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <Settings className="h-5 w-5" />
-                <span className="sr-only">Settings</span>
+                {item?.icon ? (
+                  createElement(getIcon(item.icon))
+                ) : (
+                  <span className="text-2xl">{item.title[0]}</span>
+                )}
+                <span className="sr-only">{item.title}</span>
               </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">Settings</TooltipContent>
-          </Tooltip>
-        </nav>
-      </aside>
-    </TooltipProvider>
+            );
+          })}
+      </SidebarFooter>
+    </Sidebar>
   );
 }

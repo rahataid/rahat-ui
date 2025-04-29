@@ -21,7 +21,12 @@ const BeneficiaryGroups = () => {
   const searchParams = useSearchParams();
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const router = useRouter();
-  const { isLoading } = useBeneficiariesGroups(id as UUID, { ...pagination });
+  const { isLoading } = useBeneficiariesGroups(id as UUID, {
+    page: pagination.page,
+    perPage: pagination.perPage,
+    sort: pagination.sort,
+    order: 'desc',
+  });
   const { beneficiariesGroups, beneficiariesGroupsMeta } =
     useBeneficiariesGroupStore((state) => ({
       beneficiariesGroups: state.beneficiariesGroups,

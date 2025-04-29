@@ -29,9 +29,9 @@ export default function VouchersView() {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
-  // const { data: tokenAllocated } = useReadRahatCvaKenyaBeneficiaryCount({
-  //   address: contractSettings?.rahatcvakenya?.address as `0x${string}`,
-  // });
+  const { data: tokenAllocated } = useReadRahatCvaKenyaBeneficiaryCount({
+    address: contractSettings?.rahatcvakenya?.address as `0x${string}`,
+  });
 
   const { data: tokenBalance } = useReadRahatTokenTotalSupply({
     address: contractSettings?.rahattoken?.address as `0x${string}`,
@@ -40,10 +40,6 @@ export default function VouchersView() {
   const projectClosed = useProjectStore(
     (state) => state.singleProject?.projectClosed,
   );
-
-  const tokenAllocated = kenyaStats?.data?.find(
-    (i: any) => i.name === 'BENEFICIARY_TOTAL',
-  )?.data;
 
   const REIMBURSEMENT_STATS = kenyaStats?.data?.find(
     (i: any) => i.name === 'REIMBURSEMENT_STATS',

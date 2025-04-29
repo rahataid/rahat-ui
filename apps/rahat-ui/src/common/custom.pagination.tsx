@@ -110,7 +110,7 @@ export function CustomPagination({
           variant="outline"
           size="sm"
           onClick={handleForwardPage}
-          disabled={meta?.lastPage == 0 || currentPage === meta?.lastPage}
+          disabled={currentPage === meta?.lastPage}
         >
           <ChevronsRight />
         </Button>

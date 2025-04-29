@@ -211,6 +211,7 @@ export const useStakeholderDetails = (
       });
       return mutate.data;
     },
+    enabled: !!payload?.uuid,
   });
   return query?.data;
 };

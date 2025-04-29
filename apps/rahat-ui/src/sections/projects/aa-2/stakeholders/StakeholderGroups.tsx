@@ -20,7 +20,14 @@ const StakeGoldersGroups = () => {
   const { id } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    filters,
+    setFilters,
+  } = usePagination();
 
   const { isLoading } = useStakeholdersGroups(id as UUID, { ...pagination });
 
@@ -29,7 +36,7 @@ const StakeGoldersGroups = () => {
       stakeholdersGroups: state.stakeholdersGroups,
       stakeholdersGroupsMeta: state.stakeholdersGroupsMeta,
     }));
-  console.log(stakeholdersGroups);
+
   const handleSearch = (e) => {
     console.log(e);
   };

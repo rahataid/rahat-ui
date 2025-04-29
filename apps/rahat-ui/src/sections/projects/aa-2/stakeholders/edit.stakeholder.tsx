@@ -1,11 +1,7 @@
-import React from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { isValidPhoneNumber } from 'react-phone-number-input';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { UUID } from 'crypto';
-import { HeaderWithBack, Heading } from 'apps/rahat-ui/src/common';
+import { useStakeholderDetails, useUpdateStakeholders } from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
   FormControl,
@@ -13,26 +9,17 @@ import {
   FormItem,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
-import { DISTRICTS_OF_NEPAL } from 'apps/rahat-ui/src/common/data/district';
-import { MUNICIPALITIES_OF_NEPAL } from 'apps/rahat-ui/src/common/data/municipality';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  useCreateStakeholders,
-  useStakeholderDetails,
-  useStakeholders,
-  useUpdateStakeholders,
-} from '@rahat-ui/query';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import { Heading } from 'apps/rahat-ui/src/common';
+import { UUID } from 'crypto';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { isValidPhoneNumber } from 'react-phone-number-input';
+import { z } from 'zod';
 
 export default function EditStakeholders() {
   const router = useRouter();
@@ -40,10 +27,10 @@ export default function EditStakeholders() {
   const projectId = params.id as UUID;
   const stakeholdersId = params.stakeholdersId as UUID;
   const searchParams = useSearchParams();
-
   const stakeholder = useStakeholderDetails(projectId, {
     uuid: stakeholdersId,
   });
+  console.log(' stakeholders', stakeholder);
   const updateStakeholder = useUpdateStakeholders();
 
   const isValidPhoneNumberRefinement = (value: string | undefined) => {
@@ -85,6 +72,19 @@ export default function EditStakeholders() {
     },
   });
 
+  useEffect(() => {
+    if (stakeholder) {
+      form.reset({
+        name: stakeholder.name || '',
+        phone: stakeholder.phone || '',
+        email: stakeholder.email || '',
+        designation: stakeholder.designation || '',
+        organization: stakeholder.organization || '',
+        district: stakeholder.district || '',
+        municipality: stakeholder.municipality || '',
+      });
+    }
+  }, [stakeholder, form]);
   const handleEditStakeholders = async (data: z.infer<typeof FormSchema>) => {
     try {
       await updateStakeholder.mutateAsync({
@@ -97,10 +97,27 @@ export default function EditStakeholders() {
       console.error('Error updating stakeholder', e);
     }
   };
-
+  if (!stakeholder) {
+    return (
+      <div className="space-y-4 p-4 rounded-sm shadow border bg-card gap-3">
+        <Skeleton className="h-10 w-full" />
+        <div className="grid grid-cols-2 gap-4 mb-4 mt-5">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="p-4">
-      <Heading title="Edit Stakeholder" description="" />
+      <Heading
+        title="Edit Stakeholder"
+        description="Edit the form below  to update a stakeholder"
+      />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleEditStakeholders)}>
           <div className="p-4 rounded-sm shadow border bg-card gap-3">
@@ -200,7 +217,7 @@ export default function EditStakeholders() {
                 }}
               />
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="district"
                 render={({ field }) => {
@@ -234,8 +251,27 @@ export default function EditStakeholders() {
                     </FormItem>
                   );
                 }}
-              />
+              /> */}
               <FormField
+                control={form.control}
+                name="district"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Label>District</Label>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Enter a District"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              {/* <FormField
                 control={form.control}
                 name="municipality"
                 render={({ field }) => {
@@ -265,6 +301,25 @@ export default function EditStakeholders() {
                           </SelectGroup>
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              /> */}
+              <FormField
+                control={form.control}
+                name="municipality"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Label>Municipality</Label>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Enter a Municipality"
+                          {...field}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   );

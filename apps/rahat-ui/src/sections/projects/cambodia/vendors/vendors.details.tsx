@@ -19,7 +19,7 @@ export default function VendorsDetail() {
   const { id, vendorId } = useParams();
   const { data } = useCambodiaVendorGet({ projectUUID: id, vendorId }) as any;
   const [walletAddressCopied, setWalletAddressCopied] =
-    React.useState<number>();
+    React.useState<number>(0);
   const { data: vendorsStats } = useCambodiaVendorsStats({
     projectUUID: id,
     vendorId,
@@ -28,6 +28,9 @@ export default function VendorsDetail() {
   const clickToCopy = (walletAddress: string, id: number) => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(id);
+    setTimeout(() => {
+      setWalletAddressCopied(0);
+    }, 1000);
   };
 
   return (
@@ -103,14 +106,17 @@ export default function VendorsDetail() {
           <div
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() =>
-              clickToCopy(`${data?.data?.User?.wallet}`, data?.User?.wallet)
+              clickToCopy(
+                `${data?.data?.User?.wallet}`,
+                data?.data?.User?.wallet,
+              )
             }
           >
             <p>{truncateEthAddress(data?.data?.User?.wallet)}</p>
             {walletAddressCopied ? (
-              <CopyCheck size={15} strokeWidth={1.5} />
+              <CopyCheck size={20} strokeWidth={1.5} />
             ) : (
-              <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              <Copy className="text-slate-500" size={20} strokeWidth={1.5} />
             )}
           </div>
         </div>

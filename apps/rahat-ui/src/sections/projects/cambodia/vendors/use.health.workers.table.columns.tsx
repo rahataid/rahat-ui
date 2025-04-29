@@ -23,7 +23,7 @@ export const useHealthWorkersTableColumns = () => {
     setWalletAddressCopied(cellKey);
     setTimeout(() => {
       setWalletAddressCopied(null);
-    }, 3000);
+    }, 500);
   };
   const columns: ColumnDef<any>[] = [
     {

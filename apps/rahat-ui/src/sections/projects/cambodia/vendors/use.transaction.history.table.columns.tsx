@@ -27,7 +27,7 @@ export const useTransactionHistoryTableColumns = () => {
     setWalletAddressCopied(cellKey);
     setTimeout(() => {
       setWalletAddressCopied(null);
-    }, 3000);
+    }, 500);
   };
   const columns: ColumnDef<any>[] = [
     {

@@ -28,7 +28,7 @@ export const useConversionListTableColumns = () => {
     setWalletAddressCopied(cellKey);
     setTimeout(() => {
       setWalletAddressCopied(null);
-    }, 3000);
+    }, 500);
   };
   const columns: ColumnDef<any>[] = [
     {
@@ -49,21 +49,21 @@ export const useConversionListTableColumns = () => {
         const cellKey = `${row.index}-${columnKey}`;
         return (
           <>
-            {row?.original?.walletAddress ? (
+            {row?.original?.beneficiary?.walletAddress ? (
               <TooltipProvider delayDuration={100}>
                 <Tooltip>
                   <TooltipTrigger
                     className="flex gap-3 cursor-pointer"
                     onClick={() =>
                       clickToCopy(
-                        row?.original?.walletAddress,
+                        row?.original?.beneficiary?.walletAddress,
                         row.index,
                         columnKey,
                       )
                     }
                   >
                     <p className="truncate w-16">
-                      {row?.original?.walletAddress}
+                      {row?.original?.beneficiary?.walletAddress}
                     </p>
                     {walletAddressCopied === cellKey ? (
                       <CopyCheck size={20} strokeWidth={1.5} />

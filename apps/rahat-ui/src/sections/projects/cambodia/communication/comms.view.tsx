@@ -144,6 +144,7 @@ export default function CommunicationView() {
       );
 
       setFilters({
+        ...filters,
         startDate: startOfDay.toISOString(), // this will represent 00:00 local time in UTC
         endDate: endOfDay.toISOString(), // this will represent 23:59 local time in UTC
       });
@@ -180,6 +181,7 @@ export default function CommunicationView() {
       endDate: undefined,
     });
   };
+
   return (
     <>
       <div className="p-4">

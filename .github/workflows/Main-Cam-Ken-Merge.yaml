@@ -111,5 +111,5 @@ jobs:
           git config user.name "sandab-rumsan"
           git config user.email "sandab@rumsan.net"
           git add ${{ env.MANIFEST_FILE }}
-          git commit -m "runner: Update Rahat AA Stage UI image tag to main-cam-ken-merge-${{ needs.rahat-ui.outputs.sha_short }}"
+          git commit -m "runner: Update Main Cam Ken Merge UI image tag to main-cam-ken-merge-${{ needs.rahat-ui.outputs.sha_short }}"
           git push origin main

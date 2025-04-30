@@ -1,9 +1,34 @@
-import React from 'react';
-import { FMTokensOverviewData, FMTransactionsData } from '../static';
+import React, { useEffect, useState } from 'react';
+// import { dFMTransactionsData } from '../static';
 import { BarChart, PieChart } from 'libs/shadcn/src/components/charts';
 import { DataCard, Heading, TransactionCard } from 'apps/rahat-ui/src/common';
+import { useParams } from 'next/navigation';
+import { useProjectAction } from '@rahat-ui/query';
 
 export default function TokensOverview() {
+  const projectBalance = useProjectAction();
+
+  const uuid = useParams().id;
+
+  const [data, setData] = useState<any>();
+  const [transactions, setTransactions] = useState<any>();
+
+  const fetchTokenStats = async () => {
+    const response = await projectBalance.mutateAsync({
+      uuid: uuid as '${string}-${string}-${string}-${string}-${string}',
+      data: {
+        action: 'aa.stellar.getStellarStats',
+        payload: {},
+      },
+    });
+    setData(response.data.tokenStats);
+    setTransactions(response.data.transactionStats);
+  };
+
+  useEffect(() => {
+    fetchTokenStats();
+  }, []);
+
   return (
     <>
       <Heading
@@ -12,14 +37,15 @@ export default function TokensOverview() {
         description="Overview of your tokens"
       />
       <div className="grid grid-cols-4 gap-4 mb-4">
-        {FMTokensOverviewData?.map((i) => (
-          <DataCard
-            key={i.name}
-            className="rounded-md"
-            title={i.name}
-            number={i.amount}
-          />
-        ))}
+        {data &&
+          data.map((i: any) => (
+            <DataCard
+              key={i.name}
+              className="rounded-md"
+              title={i.name}
+              number={i.amount}
+            />
+          ))}
       </div>
       <div className="grid grid-cols-3 gap-4">
         <PieChart
@@ -43,7 +69,7 @@ export default function TokensOverview() {
         />
         <TransactionCard
           cardTitle="Recent Transactions"
-          cardData={FMTransactionsData}
+          cardData={transactions}
         />
         {/* <TransactionCard cardTitle="Recent Transactions" cardData={[]} /> */}
       </div>

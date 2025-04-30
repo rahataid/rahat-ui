@@ -3,6 +3,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useBeneficiariesGroups,
   useBeneficiariesGroupStore,
+  useBeneficiaryGroups,
   useFundAssignmentStore,
   useProjectSettingsStore,
   useReservationStats,
@@ -50,6 +51,9 @@ export default function AssignFundsForm() {
     beneficiaryGroup: z
       .string()
       .min(1, { message: 'Select a beneficiary group' }),
+    beneficiaryName: z
+      .string()
+      .min(1, { message: 'Select a beneficiary group' }),
     tokenAmount: z.string().min(1, { message: 'Enter valid amount' }),
     totalTokensReserved: z.number(),
   });
@@ -73,26 +77,30 @@ export default function AssignFundsForm() {
     defaultValues: {
       title: '',
       beneficiaryGroup: '',
+      beneficiaryName: '',
       tokenAmount: '',
       totalTokensReserved: 0,
     },
   });
 
-  const { beneficiariesGroups, beneficiariesGroupsMeta } =
-    useBeneficiariesGroupStore((state) => ({
-      beneficiariesGroups: state.beneficiariesGroups,
-      beneficiariesGroupsMeta: state.beneficiariesGroupsMeta,
-    }));
+  const benGroups = useBeneficiaryGroups(projectId, {});
+
+  // const { beneficiariesGroups } = useBeneficiariesGroupStore((state) => ({
+  //   beneficiariesGroups: state.beneficiariesGroups,
+  //   beneficiariesGroupsMeta: state.beneficiariesGroupsMeta,
+  // }));
 
   const { setAssignedFundData } = useFundAssignmentStore((state) => ({
     setAssignedFundData: state.setAssignedFundData,
   }));
+
   const handleAssignFunds = async (data: z.infer<typeof FormSchema>) => {
     const reserveTokenPayload = {
       beneficiaryGroupId: data.beneficiaryGroup,
       numberOfTokens: Number(data.tokenAmount),
       title: data.title,
-      totalTokensReserved: data.totalTokensReserved,
+      totalTokensReserved: data.tokenAmount,
+      beneficiaryName: data.beneficiaryName,
     };
     const fundData = {
       projectUUID: projectId,
@@ -146,10 +154,10 @@ export default function AssignFundsForm() {
                           )}
                         >
                           {field.value
-                            ? beneficiariesGroups.find(
-                                (group) => group.value === field.value,
-                              )?.label
-                            : 'Select beneficiary group'}
+                            ? benGroups.data?.data.find(
+                                (group) => group.uuid === field.value,
+                              )?.name
+                            : 'Select Ben Groups'}
                           <ChevronDown className="opacity-50" />
                         </Button>
                       </FormControl>
@@ -163,7 +171,7 @@ export default function AssignFundsForm() {
                         <CommandList>
                           <CommandEmpty>No group found.</CommandEmpty>
                           <CommandGroup>
-                            {beneficiariesGroups.map((group) => (
+                            {benGroups?.data?.data.map((group) => (
                               <CommandItem
                                 value={group?.uuid}
                                 key={group?.uuid}
@@ -172,6 +180,7 @@ export default function AssignFundsForm() {
                                     'beneficiaryGroup',
                                     group?.uuid,
                                   );
+                                  form.setValue('beneficiaryName', group?.name);
                                 }}
                               >
                                 {group?.name}

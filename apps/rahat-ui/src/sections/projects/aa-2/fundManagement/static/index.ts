@@ -20,7 +20,7 @@ export const FMTokensOverviewData = [
   },
 ];
 
-export const FMTransactionsData: ITransactions[] = [
+export const dFMTransactionsData: ITransactions[] = [
   {
     title: 'Salary Received',
     subTitle: 'Company XYZ',

@@ -2,23 +2,31 @@
 import { DataCard, HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { useParams } from 'next/navigation';
 import { AssignFundsForm } from './components';
+import { useProjectAction } from '@rahat-ui/query';
+import { useEffect, useState } from 'react';
 
-const data = [
-  {
-    name: 'Project Balance',
-    amount: '23,000',
-  },
-  {
-    name: 'Assigned Balance',
-    amount: '10,000',
-  },
-  {
-    name: 'Available Balance',
-    amount: '5,000',
-  },
-];
 export default function AssignFundsView() {
-  const { id } = useParams();
+  const projectBalance = useProjectAction();
+
+  const id = useParams().id;
+
+  const [data, setData] = useState<any>();
+
+  const fetchVendors = async () => {
+    const response = await projectBalance.mutateAsync({
+      uuid: id as '${string}-${string}-${string}-${string}-${string}',
+      data: {
+        action: 'aa.stellar.getStellarStats',
+        payload: {},
+      },
+    });
+    setData(response.data);
+  };
+
+  useEffect(() => {
+    fetchVendors();
+  }, []);
+
   return (
     <div className="p-4">
       <HeaderWithBack
@@ -27,7 +35,7 @@ export default function AssignFundsView() {
         subtitle="Fill the form below to assign funds to beneficiaries"
       />
       <div className="grid grid-cols-4 gap-4 mb-4">
-        {data?.map((i) => (
+        {data?.tokenStats.map((i) => (
           <DataCard
             key={i.name}
             className="rounded-md"

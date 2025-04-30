@@ -13,6 +13,7 @@ import {
 } from './groups.store';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
+import { useBeneficiaryGroupsStore } from '../../beneficiary/beneficiary-groups.store';
 
 export const useCreateStakeholdersGroups = () => {
   const q = useProjectAction();
@@ -113,6 +114,7 @@ export const useCreateBenficiariesGroups = () => {
 };
 
 export const useReserveTokenForGroups = () => {
+  console.log('reached here');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -187,6 +189,35 @@ export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
     if (query?.data) {
       setStakeholdersGroups(query?.data?.data);
       setStakeholdersGroupsMeta(query?.data?.meta);
+    }
+  }, [query.data]);
+
+  return { ...query, stakeholdersGroupsMeta: query?.data?.meta };
+};
+
+export const useBeneficiaryGroups = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+  const { setBeneficiaryGroups } = useBeneficiaryGroupsStore((state) => ({
+    setBeneficiaryGroups: state.setBeneficiaryGroups,
+  }));
+
+  const query = useQuery({
+    queryKey: ['stakeholdersGroups', uuid, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.beneficiary.getAllGroups',
+          payload: payload,
+        },
+      });
+      return mutate.response;
+    },
+  });
+
+  useEffect(() => {
+    if (query?.data) {
+      setBeneficiaryGroups(query?.data?.data);
     }
   }, [query.data]);
 

@@ -7,7 +7,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
-  useReadRahatTokenTotalSupply,
+  useReadRahatTokenBalanceOf,
 } from '@rahat-ui/query';
 
 interface ConfirmSelectionProps {
@@ -105,8 +105,9 @@ export default function ConfirmSelection({
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
 
-  const { data: tokenBalance } = useReadRahatTokenTotalSupply({
-    address: contractSettings?.rahattoken?.address as `0x${string}`,
+  const { data: tokenBalance } = useReadRahatTokenBalanceOf({
+    address: contractSettings?.rahattoken?.address,
+    args: [contractSettings?.rahatcvakenya?.address],
   });
   return (
     <>

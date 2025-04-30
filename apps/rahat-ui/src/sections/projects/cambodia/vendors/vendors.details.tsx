@@ -1,19 +1,22 @@
-import { useCambodiaVendorGet, useCambodiaVendorsStats } from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
-import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { Coins, Copy, CopyCheck, Ticket, User } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import React from 'react';
 import HeaderWithBack from '../../components/header.with.back';
+import TransactionHistoryView from './transaction.history.view';
 import ConversionListView from './conversion.list.view';
 import HealthWorkersView from './health.workers.view';
-import TransactionHistoryView from './transaction.history.view';
+import { Check, Copy, CopyCheck, User } from 'lucide-react';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import React from 'react';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import { DialogComponent } from '../../../../components/dialog';
+import { useCambodiaVendorGet, useCambodiaVendorsStats } from '@rahat-ui/query';
 
 export default function VendorsDetail() {
   const { id, vendorId } = useParams();
@@ -32,7 +35,7 @@ export default function VendorsDetail() {
 
   console.log(vendorsStats);
   return (
-    <div className="h-[calc(100vh-95px)] m-2">
+    <div className="h-[calc(100vh-95px)] m-4">
       <div className="flex justify-between items-center">
         <HeaderWithBack
           title={data?.data?.User?.name}
@@ -55,52 +58,33 @@ export default function VendorsDetail() {
           onSubmit={() => console.log('submit')}
         /> */}
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-2">
+      <div className="flex space-x-4 mb-4">
         <DataCard
-          className="border-solid rounded-md"
-          title="Wearers"
-          Icon={User}
-          number={vendorsStats?.data?.consumers || 0}
-        />
-
-        <DataCard
-          className="border-solid rounded-md"
-          title="Eye Checkup in VC"
-          Icon={Ticket}
-          number={vendorsStats?.data?.leadsConverted || 0}
-        />
-
-        <DataCard
-          className="border-solid rounded-md"
-          title="Sales"
-          Icon={Coins}
-          number={vendorsStats?.data?.sales || 0}
-        />
-
-        <DataCard
-          className="border-solid rounded-md"
-          title="Health Workers"
-          Icon={User}
-          number={vendorsStats?.data?.healthWorkers || 0}
-        />
-
-        <DataCard
-          className="border-solid rounded-md"
+          className="w-full border-solid rounded-md"
           title="Villagers Referred"
           Icon={User}
-          number={vendorsStats?.data?.leadsRecieved || 0}
+          number={vendorsStats?.data?.leadsRecieved}
         />
-
         <DataCard
-          className="border-solid rounded-md"
-          title="Eyewear dispensed in VC"
-          Icon={Ticket}
-          number={vendorsStats?.data?.footfalls || 0}
+          className="w-full border-solid rounded-md"
+          title="Eye Checkup in VC"
+          Icon={User}
+          number={vendorsStats?.data?.leadsConverted}
         />
+        <DataCard
+          className="w-full border-solid rounded-md"
+          title="Eyewear dispensed in VC"
+          Icon={User}
+          number={vendorsStats?.data?.footfalls}
+        />
+        {/* <DataCard
+          className="w-full border-solid rounded-md"
+          title="Sales"
+          Icon={User}
+          number={vendorsStats?.data?.sales}
+        /> */}
       </div>
-
-      <div className="p-5 rounded border grid grid-cols-3 gap-3 mb-2">
+      <div className="p-5 rounded border grid grid-cols-3 gap-5 mb-5">
         <div>
           <h1 className="text-md text-muted-foreground">Wallet Address</h1>
           <div
@@ -127,7 +111,7 @@ export default function VendorsDetail() {
         </div> */}
       </div>
       <Tabs defaultValue="transactionHistory">
-        <TabsList className="border bg-secondary rounded mb-1">
+        <TabsList className="border bg-secondary rounded mb-4">
           <TabsTrigger
             className="w-full data-[state=active]:bg-white"
             value="transactionHistory"

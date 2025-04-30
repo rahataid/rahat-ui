@@ -16,14 +16,16 @@ type DataCardData = {
   actualData: any;
 };
 
-const Total_Villagers_Referred = 'Total Villagers Referred';
-
 const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
+  const pathName = usePathname();
   const { pagination, filters, setFilters } = usePagination();
+  const slug = pathName.split('/')[2];
   const projectSlug = 'el-cambodia';
-
+  // if (projectSlug === slug) filters.type = 'Lead';
+  // const encodedFilters = encodeURIComponent(JSON.stringify(filters));
+  // const encodedPagination = encodeURIComponent(JSON.stringify(pagination));
   // Split the dataMap to extract the name and the path within the object
   const [name, ...pathParts] = component.dataMap.split('.');
   const path = pathParts.join('.');
@@ -39,7 +41,6 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
   //     ? getValueFromPath(relevantData.data, path)
   //     : null;
 
-  console.log(component);
   const cardDataValue =
     component.type === 'dataCard' && relevantData ? relevantData.data : '-';
 
@@ -48,7 +49,7 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
     const icon = getIcon(component?.icon);
 
     const handleClick = () => {
-      if (component?.title === Total_Villagers_Referred) {
+      if (component?.title === 'Total Villagers Referred') {
         setFilters({});
         const targetUrl = `/projects/${projectSlug}/${id}/beneficiary`;
         setFilters({
@@ -59,10 +60,7 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
     };
 
     return (
-      <div
-        onClick={handleClick}
-        className={component?.isHref ? 'hover:cursor-pointer' : ''}
-      >
+      <div onClick={handleClick} className="hover:cursor-pointer">
         <DataCard
           className="border-solid rounded-md"
           iconStyle="bg-white text-black"

@@ -10,7 +10,7 @@ on:
 
 env:
   CI: false
-  env_dev: ${{ secrets.ENV_DEV_AA }}
+  env_dev: ${{ secrets.ENV_AA_DEV }}
   # env_npmrc: ${{ secrets.ENV_NPMRC }}
 
 jobs:
@@ -29,18 +29,18 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20.10.0
-
+    
       - name: Install pnpm
         run: |
-          npm install -g pnpm@8.14.1
+          npm install -g pnpm@8.14.1 
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install     
 
       - name: install dependencies and build apps
         run: |
           pnpm build:all
-
+      
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -59,7 +59,7 @@ jobs:
           file: Dockerfile.rahat-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           tags: esatya/rahat-ui:aa-dev
-
+  
   community-tool-ui:
     name: community-tool-ui
     runs-on: ubuntu-latest
@@ -75,18 +75,18 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20.10.0
-
+    
       - name: Install pnpm
         run: |
-          npm install -g pnpm@8.14.1
+          npm install -g pnpm@8.14.1 
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install     
 
       - name: install dependencies and build apps
         run: |
           pnpm build:all
-
+      
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -95,7 +95,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
+          
       # Community-Tool-UI Image
       - name: build && push community-tool-ui
         id: build-push-community-tool-ui

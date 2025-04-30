@@ -183,9 +183,7 @@ export const useBeneficiaryList = (payload: any): any => {
 };
 
 const listBeneficiaryStatus = async () => {
-  const response = await api.get(
-    '/beneficiaries/stats?projectId=bb90cc69-fb40-4daf-84e9-fe01c83117c9',
-  );
+  const response = await api.get('/beneficiaries/stats');
   return response?.data;
 };
 

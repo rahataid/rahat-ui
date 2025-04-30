@@ -59,12 +59,7 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
           children: [
             {
               title: 'Text',
-              path: `/projects/c2c/${id}/communication/text`,
-              icon: <MessageSquareText size={18} strokeWidth={1.5} />,
-            },
-            {
-              title: 'Email',
-              path: `/projects/c2c/${id}/communication/email`,
+              path: `/projects/c2c/${id}/communication`,
               icon: <MessageSquareText size={18} strokeWidth={1.5} />,
             },
           ],

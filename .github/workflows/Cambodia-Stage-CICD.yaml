@@ -2,10 +2,10 @@ name: Cambodia Stage CICD
 on:
   push:
     branches:
-      - 'cambodia-stage'
+      - 'dev'
   pull_request:
     branches:
-      - 'cambodia-stage'
+      - 'dev'
   workflow_dispatch:
 
 env:

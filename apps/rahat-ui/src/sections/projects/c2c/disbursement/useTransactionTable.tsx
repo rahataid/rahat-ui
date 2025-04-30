@@ -9,17 +9,15 @@ import {
 import { useState } from 'react';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import { Copy, CopyCheck } from 'lucide-react';
-import { useInfoByCurrentChain } from 'apps/rahat-ui/src/hooks/use-info-by-current-chain';
 
 export const useTransactionTable = () => {
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
   const [toAddressCopied, setToAddressCopied] = useState<number>(); // New state for To column
-  const chainInfo = useInfoByCurrentChain();
 
   const clickToCopy = (
     walletAddress: string,
     index: number,
-    isToColumn = false,
+    isToColumn: boolean = false,
   ) => {
     navigator.clipboard.writeText(walletAddress);
     if (isToColumn) {
@@ -95,7 +93,7 @@ export const useTransactionTable = () => {
         <div className="capitalize text-blue-500">
           <Link
             target="_blank"
-            href={`${chainInfo.blockExplorers?.default.url}/tx/${row.original.transactionHash}`}
+            href={`https://sepolia.basescan.org/tx/${row.original.transactionHash}`}
           >
             {row.original.transactionHash}
           </Link>

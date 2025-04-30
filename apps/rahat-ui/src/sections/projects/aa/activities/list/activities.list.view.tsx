@@ -136,7 +136,7 @@ export default function ActivitiesList() {
         category={categoryFilterItem}
         status={statusFilterItem}
       />
-      <div className="border bg-card rounded overflow-y-auto">
+      <div className="border bg-card rounded">
         <ActivitiesTable table={table} />
         <CustomPagination
           meta={

@@ -34,7 +34,7 @@ import {
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import Image from 'next/image';
-import DataTableServerSidePagination from '../transactions/dataTableServerSidePagination';
+import { DataTablePagination } from '../transactions/dataTablePagination';
 
 const BeneficiaryDetailTableView = () => {
   const uuid = useParams().id as UUID;
@@ -50,8 +50,6 @@ const BeneficiaryDetailTableView = () => {
     filters,
     setNextPage,
     setPrevPage,
-    setFirstPage,
-    setLastPage,
     setPerPage,
     selectedListItems,
     setSelectedListItems,
@@ -86,7 +84,6 @@ const BeneficiaryDetailTableView = () => {
       rowSelection: selectedListItems,
     },
   });
-  const meta = projectBeneficiaries.data.response?.meta;
   return (
     <>
       <div className="p-2 bg-secondary">
@@ -198,17 +195,7 @@ const BeneficiaryDetailTableView = () => {
           </Table>
         </div>
       </div>
-      <DataTableServerSidePagination
-        meta={meta || { total: 0, currentPage: 0 }}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handleFirstPage={setFirstPage}
-        handleLastPage={setLastPage}
-        handlePageSizeChange={setPerPage}
-        currentPage={pagination.page}
-        perPage={pagination.perPage}
-        total={0}
-      />
+      <DataTablePagination table={table} />
     </>
   );
 };

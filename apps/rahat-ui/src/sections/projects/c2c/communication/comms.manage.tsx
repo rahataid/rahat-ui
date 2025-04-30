@@ -1,14 +1,10 @@
 import { UUID } from 'crypto';
 import { Pencil } from 'lucide-react';
-import AddButton from '../../../components/add.btn';
+import AddButton from '../../components/add.btn';
 import { useParams, useRouter } from 'next/navigation';
-import HeaderWithBack from '../../../components/header.with.back';
+import HeaderWithBack from '../../components/header.with.back';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import {
-  useListc2cCampaign,
-  useListRpTransport,
-  usePagination,
-} from '@rahat-ui/query';
+import { useListc2cCampaign, usePagination } from '@rahat-ui/query';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
@@ -25,17 +21,10 @@ export default function ManageTexts() {
     setPerPage,
   } = usePagination();
 
-  const { data: transportData } = useListRpTransport(id as UUID);
-
-  const transportId = transportData?.find(
-    (transport) => transport.name === 'Prabhu SMS',
-  )?.cuid;
-
   const { data: campaignData, meta } = useListc2cCampaign(id as UUID, {
     ...pagination,
     ...(filters as any),
     order: 'desc',
-    transportId: transportId,
   });
   return (
     <div className="p-4">
@@ -43,12 +32,9 @@ export default function ManageTexts() {
         <HeaderWithBack
           title="Manage Texts"
           subtitle="Here is list of all the text messages"
-          path={`/projects/c2c/${id}/communication/text`}
+          path={`/projects/c2c/${id}/communication`}
         />
-        <AddButton
-          name="SMS"
-          path={`/projects/c2c/${id}/communication/text/add`}
-        />
+        <AddButton name="SMS" path={`/projects/c2c/${id}/communication/add`} />
       </div>
       <ScrollArea className="h-[calc(100vh-230px)]">
         <div className="grid grid-cols-4 gap-4">
@@ -58,9 +44,7 @@ export default function ManageTexts() {
                 key={index}
                 className="border rounded-sm p-4 cursor-pointer"
                 onClick={() =>
-                  router.push(
-                    `/projects/c2c/${id}/communication/text/${i.uuid}`,
-                  )
+                  router.push(`/projects/c2c/${id}/communication/${i.uuid}`)
                 }
               >
                 <div className="flex justify-between items-center z-100">
@@ -70,7 +54,7 @@ export default function ManageTexts() {
                       handleOnClick={(event) => {
                         event.stopPropagation(); // Prevent triggering the main div's onClick
                         router.push(
-                          `/projects/c2c/${id}/communication/text/edit/${i.uuid}`,
+                          `/projects/c2c/${id}/communication/edit/${i.uuid}`,
                         );
                       }}
                       Icon={Pencil}

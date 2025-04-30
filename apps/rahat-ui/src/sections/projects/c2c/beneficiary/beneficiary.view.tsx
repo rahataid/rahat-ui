@@ -63,12 +63,12 @@ export default function BeneficiaryView() {
             Beneficiary Groups
           </TabsTrigger>
         </TabsList>
-        {/* <Button
+        <Button
           variant="outline"
           onClick={() => router.push(`/projects/c2c/${id}/beneficiary/import`)}
         >
           <CloudDownload className="mr-1" /> Import beneficiaries
-        </Button> */}
+        </Button>
       </div>
       <TabsContent value="beneficiary">
         <BeneficiaryTable />

@@ -2,7 +2,6 @@ import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
   useRecentTransactionsList,
-  useTokenDetails,
 } from '@rahat-ui/query';
 import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
 import {
@@ -17,7 +16,7 @@ import { shortenAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { UUID } from 'crypto';
 import { Banknote, ReceiptText } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { formatEther, formatUnits } from 'viem';
+import { formatEther } from 'viem';
 import { useReadContract } from 'wagmi';
 import { QrModal } from './qr.moda';
 import RecentTransaction from './recent.transaction';
@@ -41,7 +40,6 @@ const FundManagementView = () => {
 
   const { data: transactionList, isLoading: isFetchingTransactionList } =
     useRecentTransactionsList(c2cProjectAddress);
-  const tokenDetails = useTokenDetails();
 
   const { data: projectBalance, isLoading } = useReadContract({
     address: rahatTokenAddress,
@@ -50,13 +48,10 @@ const FundManagementView = () => {
     args: [c2cProjectAddress],
     query: {
       select(data: unknown) {
-        return data
-          ? formatUnits(data as bigint, tokenDetails.data as number)
-          : '0';
+        return data ? formatEther(data as bigint) : '0';
       },
     },
   });
-
   const mySeries = [
     {
       name: 'Recent Deposits',

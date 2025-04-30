@@ -115,10 +115,10 @@ export const useProjectBeneficiaryTableColumns = () => {
         let amount = 0;
         if (disbursementBeneficiary?.length > 0) {
           disbursementBeneficiary.forEach((beneficiary: any) => {
-            amount += Number(beneficiary.amount);
+            amount += beneficiary.amount;
           });
         }
-        return <div className="font-medium">{amount.toFixed(2) || 0} USDC</div>;
+        return <div className="font-medium">{amount || 0}</div>;
       },
     },
     {

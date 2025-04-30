@@ -4,9 +4,9 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 export const useElkenyaSMSTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'address',
+      accessorKey: 'to',
       header: 'Sent To',
-      cell: ({ row }) => <div>{row.getValue('address') || 'N/A'}</div>,
+      cell: ({ row }) => <div>{row.getValue('to') || 'N/A'}</div>,
     },
     {
       accessorKey: 'createdAt',

@@ -11,6 +11,7 @@ on:
 env:
   CI: false
   env_stage: ${{ secrets.ENV_STAGE_AA }}
+  env_npmrc: ${{ secrets.ENV_NPMRC }}
 
 jobs:
   rahat-ui:
@@ -23,7 +24,8 @@ jobs:
 
       - name: import env file
         run: |
-          touch ./.env && echo "$env_stage" >> ./.env
+          touch ./.env && echo "$env_stage" >> ./.env && \
+          touch ./.npmrc && echo "$env_npmrc" >> ./.npmrc
 
       - uses: actions/setup-node@v3
         with:

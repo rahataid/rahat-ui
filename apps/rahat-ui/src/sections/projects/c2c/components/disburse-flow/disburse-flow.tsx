@@ -13,7 +13,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import React, { FC, useEffect, useState } from 'react';
-import { parseEther, parseUnits } from 'viem';
+import { parseEther } from 'viem';
 import Step1DisburseMethod from './1-disburse-method';
 import Step2DisburseAmount from './2-disburse-amount';
 import Step3DisburseSummary from './3-disburse-summary';
@@ -99,7 +99,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       return;
     }
 
-    const disburseAmount = parseUnits(stepData.disburseAmount, 6);
+    const disburseAmount = parseEther(stepData.disburseAmount);
     const beneficiaryAddresses = selectedBeneficiaries as `0x${string}`[];
     const { rahattoken, c2cproject } = contractSettings || {};
 
@@ -116,12 +116,12 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
         c2cProjectAddress: c2cproject?.address,
       });
       route.push(
-        `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&from=${safeWallet}&&disbursementUuid=${data?.uuid}`,
+        `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&from=${safeWallet}`,
       );
       return;
     }
 
-    const disbursement = await disburseToken.mutateAsync({
+    await disburseToken.mutateAsync({
       amount: disburseAmount,
       beneficiaryAddresses,
       rahatTokenAddress: rahattoken?.address,
@@ -129,10 +129,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       disburseMethod: stepData.treasurySource,
       projectUUID: id,
     });
-    console.log('SUCCESS', disbursement);
 
     route.push(
-      `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&disbursementUuid=${disbursement?.uuid}`,
+      `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}`,
     );
   };
 
@@ -286,9 +285,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
                   disburseMultiSig.isPending ||
                   disburseToken.isPending ||
                   (currentStep === 0 && !stepData.treasurySource) ||
-                  (currentStep === 1 &&
-                    (!stepData.disburseAmount ||
-                      Number(stepData.disburseAmount) <= 0))
+                  (currentStep === 1 && !stepData.disburseAmount)
                 }
               >
                 {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}

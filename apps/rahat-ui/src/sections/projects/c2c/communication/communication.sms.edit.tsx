@@ -7,7 +7,7 @@ import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useRouter } from 'next/navigation';
-import HeaderWithBack from '../../../components/header.with.back';
+import HeaderWithBack from '../../components/header.with.back';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 
@@ -80,7 +80,7 @@ export default function EditSMSForm() {
     };
     updateCampaign.mutate(updateCampagin);
     form.reset();
-    router.push(`/projects/c2c/${id}/communication/text/manage`);
+    router.push(`/projects/c2c/${id}/communication/manage`);
   };
 
   return (
@@ -91,7 +91,7 @@ export default function EditSMSForm() {
             <HeaderWithBack
               title="Edit SMS"
               subtitle="edit a SMS text"
-              path={`/projects/c2c/${id}/communication/text`}
+              path={`/projects/c2c/${id}/communication`}
             />
             <div className="grid grid-cols-2 gap-4 mb-4 border rounded shadow-md p-4">
               <FormField
@@ -174,7 +174,7 @@ export default function EditSMSForm() {
               type="button"
               variant="secondary"
               onClick={() =>
-                router.push(`/projects/c2c/${id}/communication/text/manage`)
+                router.push(`/projects/c2c/${id}/communication/manage`)
               }
             >
               Cancel

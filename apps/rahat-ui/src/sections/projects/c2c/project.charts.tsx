@@ -2,7 +2,6 @@ import {
   PROJECT_SETTINGS_KEYS,
   useFindAllC2cStats,
   useGetBeneficiaryStats,
-  useGetProjectBeneficiaryStats,
   useProjectSettingsStore,
   useRecentTransactionsList,
 } from '@rahat-ui/query';
@@ -25,18 +24,18 @@ const ProjectCharts = () => {
   const c2cProjectAddress = contractSettings?.c2cproject?.address;
   const { data: transactionList, isLoading: isFetchingTransactionList } =
     useRecentTransactionsList(c2cProjectAddress);
-  const { data } = useGetProjectBeneficiaryStats(id as UUID);
+  const { data } = useGetBeneficiaryStats();
   const { data: projectStats } = useFindAllC2cStats(id as UUID);
   console.log(data, projectStats);
   const genderSeries = data?.data
-    ?.find((stats: any) => stats.name === `BENEFICIARY_GENDER_ID_${id}`)
+    ?.find((stats: any) => stats.name === 'BENEFICIARY_GENDER')
     ?.data?.map((gender: IStats) => ({
       label: gender.id,
       value: gender.count,
     }));
 
   const ageSeries = data?.data
-    ?.find((stats: any) => stats.name === `BENEFICIARY_AGE_RANGE_ID_${id}`)
+    ?.find((stats: any) => stats.name === 'BENEFICIARY_AGE_RANGE')
     ?.data?.map((age: IStats) => ({
       label: age.id,
       value: age.count,

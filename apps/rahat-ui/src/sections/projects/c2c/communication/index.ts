@@ -1,11 +1,7 @@
-export { default as C2CAddSMSView } from './text/communication.sms.add';
-export { default as C2CEditSMSView } from './text/communication.sms.edit';
-export { default as C2CSmsView } from './text/communication.view';
-export { default as C2CManageSms } from './text/comms.manage';
-export { default as C2CSMSDetail } from './text/sms.detail';
-
-export { default as C2CAddEmailView } from './email/communication.sms.add';
-export { default as C2CEditEmailView } from './email/communication.sms.edit';
-export { default as C2CEmailView } from './email/communication.view';
-export { default as C2CManageEmail } from './email/comms.manage';
-export { default as C2CEmailDetail } from './email/sms.detail';
+// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+export { default as C2CAddSMSView } from './communication.sms.add';
+export { default as C2CEditSMSView } from './communication.sms.edit';
+export { default as C2CCommunicationView } from './communication.view';
+export { default as C2CManageText } from './comms.manage';
+export { default as C2CSMSDetail } from './sms.detail';

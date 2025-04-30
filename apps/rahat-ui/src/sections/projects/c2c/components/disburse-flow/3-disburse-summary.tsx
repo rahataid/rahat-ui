@@ -1,13 +1,11 @@
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
-  useReadRahatTokenDecimals,
-  useTokenDetails,
 } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { User } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { formatEther, formatUnits } from 'viem';
+import { formatEther } from 'viem';
 import { useReadContract } from 'wagmi';
 
 type Step3DisburseSummaryProps = {
@@ -39,11 +37,8 @@ export default function Step3DisburseSummary({
     functionName: 'balanceOf',
     args: [contractSettings?.c2cproject?.address],
   });
-  const decimals = useTokenDetails();
 
-  const projectBalance = data
-    ? formatUnits(data, decimals.data as number)
-    : '0';
+  const projectBalance = data ? formatEther(BigInt(data)) : '0';
 
   return (
     <div className="bg-card rounded-lg m-6 p-4">
@@ -83,9 +78,7 @@ export default function Step3DisburseSummary({
                 </h2>
                 <p className="text-lg font-semibold text-gray-800">
                   {selectedBeneficiaries &&
-                    Math.round(
-                      Number(value) * selectedBeneficiaries?.length * 100,
-                    ) / 100}{' '}
+                    Number(value) * selectedBeneficiaries?.length}{' '}
                   USDC
                 </p>
               </div>

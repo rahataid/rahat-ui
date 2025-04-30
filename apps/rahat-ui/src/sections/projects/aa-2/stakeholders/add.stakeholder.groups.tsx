@@ -169,49 +169,6 @@ const UpdateOrAddStakeholdersGroup = () => {
           />
         </div>
 
-        {/* <div className="flex justify-between space-x-2 items-center mb-1 mt-1">
-          <SearchInput
-            className="w-full"
-            name="stakeholders name"
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) => {
-              table.getColumn('name')?.setFilterValue(event.target.value);
-              setFilters({ ...filters, name: event.target.value });
-              setPagination({
-                ...pagination,
-                page: 1,
-              });
-            }}
-          />
-
-          <SearchInput
-            className="w-full"
-            name="organization"
-            value={
-              (table.getColumn('organization')?.getFilterValue() as string) ??
-              ''
-            }
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-              table
-                .getColumn('organization')
-                ?.setFilterValue(event.target.value)
-            }
-          />
-
-          <SearchInput
-            className="w-full"
-            name="municipality"
-            value={
-              (table.getColumn('municipality')?.getFilterValue() as string) ??
-              ''
-            }
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-              table
-                .getColumn('municipality')
-                ?.setFilterValue(event.target.value)
-            }
-          />
-        </div> */}
         <StakeholdersTableFilters
           projectID={projectId}
           filters={filters}
@@ -236,6 +193,7 @@ const UpdateOrAddStakeholdersGroup = () => {
           handlePageSizeChange={setPerPage}
           currentPage={pagination.page}
           perPage={pagination.perPage}
+          setPagination={setPagination}
           total={stakeholdersMeta?.lastPage || 0}
         />
 

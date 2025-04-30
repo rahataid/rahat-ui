@@ -248,8 +248,7 @@ export default function ActivitiesList() {
           }
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
-          // handleBackwardPage={setBackwardPage}
-          // handleForwardPage={setForwardPage}
+          setPagination={setPagination}
           handlePageSizeChange={setPerPage}
           currentPage={pagination.page}
           perPage={pagination.perPage}

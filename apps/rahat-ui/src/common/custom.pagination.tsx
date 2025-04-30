@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+import React, { useCallback } from 'react';
 import {
   Select,
   SelectContent,
@@ -7,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from 'libs/shadcn/src/components/ui/select';
-import { PaginatedResult } from '@rumsan/sdk/types';
+import { PaginatedResult, Pagination } from '@rumsan/sdk/types';
 import { Button } from 'libs/shadcn/src/components/ui/button';
 import {
   ChevronLeft,
@@ -26,6 +27,7 @@ type IProps = {
   total?: number;
   perPage: number;
   currentPage: number;
+  setPagination?: (pagination: any) => void;
 };
 
 const pageSizes = ['5', '10', '20', '30', '40', '50', '100'];
@@ -40,8 +42,23 @@ export function CustomPagination({
   currentPage,
   perPage,
   total,
+  setPagination,
 }: IProps) {
   const lastPage = meta?.lastPage || 1;
+  const setForwardPage = useCallback(() => {
+    setPagination?.((prev: Pagination) => ({
+      ...prev,
+      page: lastPage, // Directly move to the last page
+    }));
+  }, [lastPage]);
+
+  const setBackwardPage = useCallback(() => {
+    setPagination?.((prev: Pagination) => ({
+      ...prev,
+      page: 1, // Directly move to the first page
+    }));
+  }, []);
+
   return (
     <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2  bg-card">
       {/* <div className="flex-1 text-sm text-muted-foreground">
@@ -76,7 +93,7 @@ export function CustomPagination({
         <Button
           variant="outline"
           size="sm"
-          onClick={handleBackwardPage}
+          onClick={setBackwardPage}
           disabled={currentPage === 1}
         >
           <ChevronsLeft />
@@ -109,7 +126,7 @@ export function CustomPagination({
         <Button
           variant="outline"
           size="sm"
-          onClick={handleForwardPage}
+          onClick={setForwardPage}
           disabled={currentPage === meta?.lastPage}
         >
           <ChevronsRight />

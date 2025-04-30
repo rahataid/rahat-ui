@@ -80,7 +80,6 @@ const StakeholdersGroupsDetails = (props: Props) => {
               table.getColumn('name')?.setFilterValue(event.target.value)
             }
           />
-
           <SearchInput
             className="w-full"
             name="organization"
@@ -94,7 +93,6 @@ const StakeholdersGroupsDetails = (props: Props) => {
                 ?.setFilterValue(event.target.value)
             }
           />
-
           <SearchInput
             className="w-full"
             name="municipality"
@@ -108,7 +106,6 @@ const StakeholdersGroupsDetails = (props: Props) => {
                 ?.setFilterValue(event.target.value)
             }
           />
-
           <AddButton
             path={`/projects/aa/${projectId}/stakeholders/groups/edit/${groupId}`}
             name="Stakeholder"

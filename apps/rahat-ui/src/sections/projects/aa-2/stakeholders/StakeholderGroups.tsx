@@ -8,7 +8,7 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { Users } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   usePagination,
   useStakeholdersGroups,
@@ -26,10 +26,17 @@ const StakeGoldersGroups = () => {
     setPrevPage,
     setPerPage,
     filters,
+    setPagination,
     setFilters,
   } = usePagination();
 
-  const { isLoading } = useStakeholdersGroups(id as UUID, { ...pagination });
+  const { isLoading } = useStakeholdersGroups(id as UUID, {
+    page: pagination.page,
+    perPage: pagination.perPage,
+    sort: 'createdAt',
+    order: 'desc',
+    ...filters,
+  });
 
   const { stakeholdersGroups, stakeholdersGroupsMeta } =
     useStakeholdersGroupsStore((state) => ({
@@ -37,17 +44,22 @@ const StakeGoldersGroups = () => {
       stakeholdersGroupsMeta: state.stakeholdersGroupsMeta,
     }));
 
-  const handleSearch = (e) => {
-    console.log(e);
-  };
+  const handleSearch = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
+      const value = event?.target?.value ?? '';
+      setFilters({ ...filters, [key]: value });
+    },
+    [filters],
+  );
   return (
     <>
       <div className="p-4 rounded-sm border">
         <div className="flex justify-between space-x-2 items-center mb-4">
           <SearchInput
             className="w-full"
-            name="group"
-            onSearch={(e) => handleSearch(e.target.value)}
+            name="stakeholders group"
+            onSearch={(e) => handleSearch(e, 'search')}
+            value={filters?.search || ''}
           />
 
           <AddButton
@@ -109,6 +121,7 @@ const StakeGoldersGroups = () => {
           currentPage={pagination.page}
           perPage={pagination.perPage}
           total={0}
+          setPagination={setPagination}
         />
       </div>
     </>

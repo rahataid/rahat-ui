@@ -43,6 +43,7 @@ function BeneficiaryView() {
     selectedListItems,
     setSelectedListItems,
     setFilters,
+    setPagination,
   } = usePagination();
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -54,7 +55,7 @@ function BeneficiaryView() {
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
-    order: 'asc',
+    order: 'desc',
     sort: 'createdAt',
     projectUUID: uuid,
     ...filters,
@@ -81,8 +82,9 @@ function BeneficiaryView() {
   });
 
   const handleSearch = React.useCallback(
-    (event, key) => {
-      setFilters({ ...filters, [key]: event.target.value });
+    (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
+      const value = event?.target?.value ?? '';
+      setFilters({ ...filters, [key]: value });
     },
     [filters],
   );
@@ -135,8 +137,9 @@ function BeneficiaryView() {
             <div className="flex mb-2 gap-2">
               <SearchInput
                 className="w-full"
-                name="wallet"
-                onSearch={(e) => handleSearch(e, 'wallet')}
+                name="walletAddress"
+                onSearch={(e) => handleSearch(e, 'search')}
+                value={filters?.search || ''}
               />
             </div>
             <DemoTable table={table} loading={projectBeneficiaries.isLoading} />
@@ -146,6 +149,7 @@ function BeneficiaryView() {
               handleNextPage={setNextPage}
               handlePrevPage={setPrevPage}
               handlePageSizeChange={setPerPage}
+              setPagination={setPagination}
               meta={
                 (projectBeneficiaries?.data?.response?.meta as any) || {
                   total: 0,

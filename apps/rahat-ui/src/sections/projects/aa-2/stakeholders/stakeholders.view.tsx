@@ -89,8 +89,9 @@ function StakeholdersView() {
   });
 
   const handleSearch = useCallback(
-    (event, key) => {
-      setFilters({ ...filters, [key]: event.target.value });
+    (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
+      const value = event?.target?.value ?? '';
+      setFilters({ ...filters, [key]: value });
     },
     [filters],
   );
@@ -147,6 +148,7 @@ function StakeholdersView() {
                 className="w-full"
                 name="name"
                 onSearch={(e) => handleSearch(e, 'name')}
+                value={filters?.name || ''}
               />
               <AddButton
                 path={`/projects/aa/${projectId}/stakeholders/add`}
@@ -171,6 +173,7 @@ function StakeholdersView() {
               handlePageSizeChange={setPerPage}
               currentPage={pagination.page}
               perPage={pagination.perPage}
+              setPagination={setPagination}
               total={stakeholdersMeta?.lastPage || 0}
             />
           </div>

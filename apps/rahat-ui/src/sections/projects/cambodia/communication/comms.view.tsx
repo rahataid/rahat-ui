@@ -3,6 +3,7 @@ import {
   useCambodiaCommsList,
   usePagination,
 } from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -10,25 +11,19 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
-import React, { useEffect, useMemo } from 'react';
-import SearchInput from '../../components/search.input';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import getIcon from 'apps/rahat-ui/src/utils/getIcon';
-import ViewColumns from '../../components/view.columns';
+import { UUID } from 'crypto';
+import { Download } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import React, { useMemo } from 'react';
+import SelectComponent from '../select.component';
 import CambodiaTable from '../table.component';
 import { useTableColumns } from './use.table.columns';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Download } from 'lucide-react';
-import { DatePicker } from 'apps/rahat-ui/src/components/datePicker';
-import SelectComponent from '../select.component';
 
-import AddSMSView from './add.sms.view';
-import * as XLSX from 'xlsx';
-import { DateRange } from 'react-day-picker';
 import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { DateRange } from 'react-day-picker';
+import * as XLSX from 'xlsx';
 
 export default function CommunicationView() {
   const { id } = useParams() as { id: UUID };
@@ -60,6 +55,7 @@ export default function CommunicationView() {
     perPage: data?.response?.meta?.total,
     ...filters,
   });
+
   const tableData = useMemo(() => {
     if (data?.data) {
       return data?.data;
@@ -107,7 +103,12 @@ export default function CommunicationView() {
     if (event && event.target) {
       const { name, value } = event.target;
       const filterValue =
-        value === 'ALL' ? filters.status === undefined : value;
+        value === 'ALL'
+          ? setFilters({
+              ...filters,
+              status: {},
+            })
+          : value;
       table.getColumn(name)?.setFilterValue(filterValue);
       setFilters({
         ...filters,
@@ -162,9 +163,9 @@ export default function CommunicationView() {
     XLSX.writeFile(workbook, 'Communication Report.xlsx');
   };
 
-  useEffect(() => {
-    setFilters({});
-  }, []);
+  // useEffect(() => {
+  //   setFilters({});
+  // }, []);
 
   const handleClearDate = () => {
     console.log(filters.status);
@@ -216,7 +217,7 @@ export default function CommunicationView() {
                   target: { name: 'status', value },
                 })
               }
-              value={table.getColumn('name')?.getFilterValue() as string}
+              // value={table.getColumn('sendTo')?.getFilterValue() as string}
             />
 
             <Button

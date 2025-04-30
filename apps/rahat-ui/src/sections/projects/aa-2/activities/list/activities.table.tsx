@@ -16,7 +16,7 @@ type IProps = {
 export default function ActivitiesTable({ table }: IProps) {
   return (
     <TableComponent>
-      <ScrollArea className="h-[calc(100vh-380px)]">
+      <ScrollArea className="h-[calc(100vh-390px)]">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>

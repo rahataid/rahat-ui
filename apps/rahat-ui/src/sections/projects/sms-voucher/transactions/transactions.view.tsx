@@ -59,7 +59,7 @@ export default function TransactionsView() {
         <div className="rounded border bg-card p-4">
           <ElkenyaTable
             table={table}
-            tableHeight="h-[calc(100vh-251px)]"
+            tableHeight="h-[calc(100vh-258px)]"
             loading={isLoading}
           />
         </div>

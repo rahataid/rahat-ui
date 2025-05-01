@@ -37,15 +37,14 @@ export default function TokensOverview() {
         description="Overview of your tokens"
       />
       <div className="grid grid-cols-4 gap-4 mb-4">
-        {data &&
-          data.map((i: any) => (
-            <DataCard
-              key={i.name}
-              className="rounded-md"
-              title={i.name}
-              number={i.amount}
-            />
-          ))}
+        {data?.map((i: any) => (
+          <DataCard
+            key={i.name}
+            className="rounded-sm"
+            title={i.name}
+            number={i.amount}
+          />
+        ))}
       </div>
       <div className="grid grid-cols-3 gap-4">
         <PieChart

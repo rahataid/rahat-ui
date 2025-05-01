@@ -29,13 +29,14 @@ export default function FundManagementList() {
     filters,
   } = usePagination();
 
-  const { data: groupsFundsData, isLoading } = useGroupsReservedFunds(
-    projectId,
-    {
-      ...pagination,
-      ...filters,
-    },
-  );
+  const {
+    data: groupsFundsData,
+    isLoading,
+    isFetching,
+  } = useGroupsReservedFunds(projectId, {
+    ...pagination,
+    ...filters,
+  });
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
@@ -49,6 +50,7 @@ export default function FundManagementList() {
       columnVisibility,
     },
   });
+  console.log(groupsFundsData?.response?.data);
   return (
     <div className="">
       <Heading
@@ -66,12 +68,13 @@ export default function FundManagementList() {
       />
       <DemoTable
         table={table}
-        tableHeight={
-          groupsFundsData?.response?.data?.length > 0
-            ? 'h-[calc(100vh-420px)]'
-            : 'h-[calc(100vh-800px)]'
-        }
-        loading={isLoading}
+        // tableHeight={
+        //   groupsFundsData?.response?.data?.length > 0
+        //     ? 'h-[calc(100vh-420px)]'
+        //     : 'h-[calc(100vh-800px)]'
+        // }
+        tableHeight="h-[calc(100vh-420px)]"
+        loading={isFetching}
       />
       <CustomPagination
         meta={

@@ -1,9 +1,14 @@
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
+import { useInfoByCurrentChain } from 'apps/rahat-ui/src/hooks/use-info-by-current-chain';
 import { formatDateFromBloackChain } from 'apps/rahat-ui/src/utils';
+import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { ArrowDown, ArrowUp } from 'lucide-react';
+import Link from 'next/link';
 
 export const useElkenyaTransactionsTableColumns = ({ setSorting }: any) => {
+  const chainInfo = useInfoByCurrentChain();
+
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'beneficiary',
@@ -21,7 +26,15 @@ export const useElkenyaTransactionsTableColumns = ({ setSorting }: any) => {
       accessorKey: 'txHash',
       header: 'TxHash',
       cell: ({ row }) => (
-        <div>{truncateEthAddress(row.getValue('txHash'))}</div>
+        <Link
+          target="_blank"
+          href={`${chainInfo.blockExplorers?.default.url}/tx/${row.getValue(
+            'txHash',
+          )}`}
+          className="capitalize text-blue-500"
+        >
+          {shortenTxHash(row.getValue('txHash'))}
+        </Link>
       ),
     },
     {

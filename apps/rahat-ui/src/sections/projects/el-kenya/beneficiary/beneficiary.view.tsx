@@ -82,7 +82,19 @@ export default function BeneficiaryView() {
 
   const handleViewClick = (rowData: any) => {
     router.push(
-      `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${rowData.name}&&walletAddress=${rowData.walletAddress}&&gender=${rowData.gender}&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${rowData.eyeCheckupStatus}&&glassesStatus=${rowData.glassesStatus}&&voucherType=${rowData.voucherType}&&phone=${rowData.phone}&&type=${rowData.type}&&location=${rowData?.projectData?.location}&&serialNumber=${rowData?.extras?.serialNumber}`,
+      `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${
+        rowData.name
+      }&&walletAddress=${rowData.walletAddress}&&gender=${
+        rowData.gender
+      }&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${
+        rowData.eyeCheckupStatus
+      }&&glassesStatus=${rowData.glassesStatus}&&voucherType=${
+        rowData.voucherType
+      }&&phone=${encodeURIComponent(rowData.phone)}&&type=${
+        rowData.type
+      }&&location=${rowData?.projectData?.location}&&serialNumber=${
+        rowData?.extras?.serialNumber
+      }`,
     );
   };
 
@@ -164,12 +176,14 @@ export default function BeneficiaryView() {
                 name="Voucher Type"
                 options={['SINGLE_VISION', 'READING_GLASSES']}
                 value={filters?.voucherType || ''}
+                showSelect={false}
               />
               <SelectComponent
                 onChange={(e) => setFilters({ ...filters, type: e })}
                 name="Beneficiary Type"
                 options={['PRE_DETERMINED', 'WALK_IN']}
                 value={filters?.type || ''}
+                showSelect={false}
               />
               <SelectComponent
                 onChange={(e) =>
@@ -178,18 +192,21 @@ export default function BeneficiaryView() {
                 name="Eye Checkup Status"
                 options={['CHECKED', 'NOT_CHECKED']}
                 value={filters?.eyeCheckupStatus || ''}
+                showSelect={false}
               />
               <SelectComponent
                 onChange={(e) => setFilters({ ...filters, glassesStatus: e })}
                 name="Glasses Status"
                 options={['  REQUIRED', 'NOT_REQUIRED']}
                 value={filters?.glassesStatus || ''}
+                showSelect={false}
               />
               <SelectComponent
                 onChange={(e) => setFilters({ ...filters, voucherStatus: e })}
                 name="Voucher Status"
                 options={['REDEEMED', 'NOT_REDEEMED']}
                 value={filters?.voucherStatus || ''}
+                showSelect={false}
               />
               <SelectComponent
                 onChange={(e) =>
@@ -198,8 +215,8 @@ export default function BeneficiaryView() {
                 name="Voucher Assignment Status"
                 options={['ASSIGNED', 'NOT_ASSIGNED']}
                 value={filters?.voucherAssignmentStatus || ''}
+                showSelect={false}
               />
-              <ViewColumns table={table} />
             </div>
             {Object.keys(filters).length != 0 && (
               <FiltersTags

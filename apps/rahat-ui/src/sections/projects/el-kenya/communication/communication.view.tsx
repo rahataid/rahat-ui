@@ -55,7 +55,6 @@ export default function CommunicationView() {
     order: 'desc',
     sort: 'createdAt',
   });
-  console.log({ data });
   const meta = data?.response.meta;
   const logs = data?.response.data;
   const commsAppId = useSettingsStore((state) => state.commsSettings)?.APP_ID;
@@ -127,9 +126,11 @@ export default function CommunicationView() {
             <SearchInput
               className="w-full"
               name=""
-              value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
+              value={
+                (table.getColumn('address')?.getFilterValue() as string) ?? ''
+              }
               onSearch={(event) =>
-                table.getColumn('to')?.setFilterValue(event.target.value)
+                table.getColumn('address')?.setFilterValue(event.target.value)
               }
             />
             <ViewColumns table={table} />
@@ -144,7 +145,7 @@ export default function CommunicationView() {
           </div>
           <ElkenyaTable
             table={table}
-            tableHeight="h-[calc(100vh-421px)]"
+            tableHeight="h-[calc(100vh-280px)]"
             loading={isFetching}
           />
         </div>

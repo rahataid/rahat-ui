@@ -28,11 +28,13 @@ export type Payment = {
 interface BeneficiaryViewProps {
   handleStepDataChange: (e) => void;
   handleNext: any;
+  disabledBulkAssign: boolean;
 }
 
 export default function BeneficiaryView({
   handleNext,
   handleStepDataChange,
+  disabledBulkAssign,
 }: BeneficiaryViewProps) {
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
@@ -148,7 +150,10 @@ export default function BeneficiaryView({
             <Button
               type="button"
               onClick={() => handleNext()}
-              disabled={table.getSelectedRowModel().rows.length === 0}
+              disabled={
+                table.getSelectedRowModel().rows.length === 0 ||
+                disabledBulkAssign
+              }
             >
               <Plus size={18} className="mr-1" />
               Bulk Assign

@@ -149,7 +149,7 @@ export default function VouchersView() {
     {
       title: 'Vendor Voucher Claimed',
       icon: 'Ticket',
-      subtitle: 'Total vouchers claimed by beneficiaries',
+      subtitle: 'Total vouchers claimed by vendors',
       total: voucherReimbursedCount ?? '-',
     },
     {

@@ -97,12 +97,14 @@ export default function VouchersManage({
           </div>
           <TabsContent value="beneficiary">
             <BeneficiaryView
+              disabledBulkAssign={!tokenBalance || Number(tokenBalance) === 0}
               handleStepDataChange={handleStepDataChange}
               handleNext={handleNext}
             />
           </TabsContent>
           <TabsContent value="beneficiaryGroups">
             <BeneficiaryGroupsView
+              disabledBulkAssign={!tokenBalance || Number(tokenBalance) === 0}
               handleStepDataChange={handleStepDataChange}
               handleNext={handleNext}
               setBeneficiaryGroupSelected={setBeneficiaryGroupSelected}

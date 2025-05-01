@@ -29,20 +29,15 @@ export const useBeneficiaryTableColumns = () => {
       enableSorting: false,
       enableHiding: false,
     },
-    // {
-    //   accessorKey: 'name',
-    //   header: 'Name',
-    //   cell: ({ row }) => <div>{row.getValue('name')}</div>,
-    // },
+    {
+      accessorKey: 'walletAddress',
+      header: 'WalletAddress',
+      cell: ({ row }) => <div>{row.getValue('walletAddress')}</div>,
+    },
     {
       accessorKey: 'phone',
       header: 'Phone',
       cell: ({ row }) => <div>{row.getValue('phone')}</div>,
-    },
-    {
-      accessorKey: 'voucherType',
-      header: 'Voucher Type',
-      cell: ({ row }) => <div>{row.getValue('voucherType')}</div>,
     },
   ];
   return columns;

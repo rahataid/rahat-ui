@@ -39,6 +39,8 @@ export default function RainfallWatchView() {
     };
   });
 
+  console.log(rainfallWatch?.info);
+
   const cardData = React.useMemo(
     () => [
       {
@@ -116,7 +118,6 @@ export default function RainfallWatchView() {
           <Badge>{rainfallWatch?.info?.status}</Badge>
         </div>
       </div> */}
-
       <RainFallMonitor
         name={rainfallWatch?.info?.name}
         description={rainfallWatch?.info?.description}

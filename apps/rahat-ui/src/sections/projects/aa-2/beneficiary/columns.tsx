@@ -131,11 +131,11 @@ export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
               className="hover:text-primary cursor-pointer"
               size={16}
               strokeWidth={1.5}
-              // onClick={() =>
-              //   router.push(
-              //     `/projects/aa/${id}/beneficiary/groupDetails/${row.original.uuid}`,
-              //   )
-              // }
+              onClick={() =>
+                router.push(
+                  `/projects/aa/${id}/beneficiary/${row.original.uuid}`,
+                )
+              }
             />
           </div>
         );

@@ -55,7 +55,6 @@ export default function RiverWatchView() {
     ],
     [riverWatch],
   );
-  console.log(riverWatch?.info);
   return isLoading ? (
     <TableLoader />
   ) : (

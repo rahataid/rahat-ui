@@ -43,7 +43,7 @@ import {
   Plus,
   X,
 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -54,6 +54,9 @@ export default function AddActivities() {
   const createActivity = useCreateActivities();
   const uploadFile = useUploadFile();
   const { id: projectID } = useParams();
+  const searchParams = useSearchParams();
+  const phaseId = searchParams.get('phaseId');
+
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const { data: users, isSuccess } = useUserList({
@@ -93,8 +96,14 @@ export default function AddActivities() {
 
   const [audioUploading, setAudioUploading] = React.useState<boolean>(false);
 
-  useStakeholdersGroups(projectID as UUID, {});
-  useBeneficiariesGroups(projectID as UUID, {});
+  useStakeholdersGroups(projectID as UUID, {
+    page: 1,
+    perPage: 100,
+  });
+  useBeneficiariesGroups(projectID as UUID, {
+    page: 1,
+    perPage: 100,
+  });
   const appTransports = useListAllTransports();
 
   const FormSchema = z.object({
@@ -143,7 +152,7 @@ export default function AddActivities() {
       title: '',
       responsibility: '',
       source: '',
-      phaseId: '',
+      phaseId: phaseId || '',
       categoryId: '',
       leadTime: '',
       description: '',
@@ -411,6 +420,7 @@ export default function AddActivities() {
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                         value={field.value}
+                        disabled={phaseId ? true : false}
                       >
                         <FormControl>
                           <SelectTrigger>

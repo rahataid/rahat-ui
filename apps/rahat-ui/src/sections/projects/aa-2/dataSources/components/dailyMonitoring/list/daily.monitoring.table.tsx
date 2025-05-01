@@ -1,8 +1,4 @@
-import React from 'react';
 import { Table, flexRender } from '@tanstack/react-table';
-import { TableLoader } from './table.loader';
-import { NoResult } from './noResults';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Table as TableComponent,
   TableBody,
@@ -10,20 +6,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@rahat-ui/shadcn/src/components/ui/table';
-import { SpinnerLoader } from './spinner.loader';
+} from '@rahat-ui/shadcn/components/table';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 type IProps = {
   table: Table<any>;
-  tableHeight?: string;
-  loading?: boolean;
 };
 
-export function DemoTable({ table, tableHeight, loading }: IProps) {
+export default function DailyMonitoringTable({ table }: IProps) {
   return (
-    <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
-      <TableComponent>
-        <TableHeader className="sticky top-0 bg-gray-100">
+    <TableComponent>
+      <ScrollArea className="h-[calc(100vh-322px)]">
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -61,12 +55,12 @@ export function DemoTable({ table, tableHeight, loading }: IProps) {
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                {loading ? <SpinnerLoader /> : <NoResult />}
+                No results.
               </TableCell>
             </TableRow>
           )}
         </TableBody>
-      </TableComponent>
-    </ScrollArea>
+      </ScrollArea>
+    </TableComponent>
   );
 }

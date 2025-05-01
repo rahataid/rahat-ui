@@ -191,6 +191,14 @@ export default function BeneficiaryView() {
                 options={['REDEEMED', 'NOT_REDEEMED']}
                 value={filters?.voucherStatus || ''}
               />
+              <SelectComponent
+                onChange={(e) =>
+                  setFilters({ ...filters, voucherAssignmentStatus: e })
+                }
+                name="Voucher Assignment Status"
+                options={['ASSIGNED', 'NOT_ASSIGNED']}
+                value={filters?.voucherAssignmentStatus || ''}
+              />
               <ViewColumns table={table} />
             </div>
             {Object.keys(filters).length != 0 && (

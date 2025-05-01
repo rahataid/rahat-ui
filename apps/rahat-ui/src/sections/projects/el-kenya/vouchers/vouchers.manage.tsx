@@ -13,7 +13,7 @@ import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
-  useReadRahatTokenTotalSupply,
+  useReadRahatTokenBalanceOf,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useAccount } from 'wagmi';
@@ -38,8 +38,9 @@ export default function VouchersManage({
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
 
-  const { data: tokenBalance } = useReadRahatTokenTotalSupply({
-    address: contractSettings?.rahattoken?.address as `0x${string}`,
+  const { data: tokenBalance } = useReadRahatTokenBalanceOf({
+    address: contractSettings?.rahattoken?.address,
+    args: [contractSettings?.rahatcvakenya?.address],
   });
   return (
     <div className="p-4 pb-0">

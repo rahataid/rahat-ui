@@ -298,6 +298,12 @@ export const useSendFundToProject = () => {
         tokenAddress: `0x${string}`;
         treasuryAddress: `0x${string}`;
       }) => {
+        console.log('first', {
+          amount,
+          projectAddress,
+          tokenAddress,
+          treasuryAddress,
+        });
         return sendFundProject.writeContractAsync({
           // @ts-ignore
           args: [tokenAddress, projectAddress, formatUnits(amount, 0)],

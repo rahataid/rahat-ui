@@ -11,7 +11,7 @@ export default function FundManagementTabs() {
   return (
     <div className="rounded-md p-4 border">
       <Tabs defaultValue="tokenOverview">
-        <TabsList className="border bg-secondary rounded mb-2">
+        <TabsList className="border bg-secondary rounded">
           <TabsTrigger
             className="w-full data-[state=active]:bg-white"
             value="tokenOverview"

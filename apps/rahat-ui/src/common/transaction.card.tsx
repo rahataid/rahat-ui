@@ -3,17 +3,20 @@ import { ArrowLeftRight, Info } from 'lucide-react';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { Heading } from './page.heading';
 import { ITransactions } from '../types/transactions';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 
 interface IProps {
   cardTitle: string;
   cardDesc?: string;
   cardData: ITransactions[];
+  loading?: boolean;
 }
 
 export function TransactionCard({
   cardData,
   cardTitle,
   cardDesc = '',
+  loading = false,
 }: IProps) {
   return (
     <div className="border rounded-md p-4">
@@ -23,7 +26,28 @@ export function TransactionCard({
         description={cardDesc}
       />
       <ScrollArea className="p-3 h-[calc(100vh-570px)]">
-        {cardData?.length ? (
+        {loading ? (
+          <div className="space-y-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="flex justify-between space-x-4 items-center"
+              >
+                <div className="flex space-x-4 items-center">
+                  <Skeleton className="h-12 w-12 rounded-full" />
+
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" /> {/* Title */}
+                    <Skeleton className="h-3 w-32" /> {/* Subtitle */}
+                    <Skeleton className="h-3 w-20" /> {/* Date */}
+                  </div>
+                </div>
+
+                <Skeleton className="h-6 w-16" />
+              </div>
+            ))}
+          </div>
+        ) : cardData?.length ? (
           <div className="flex flex-col space-y-2">
             {cardData.map((i) => (
               <div

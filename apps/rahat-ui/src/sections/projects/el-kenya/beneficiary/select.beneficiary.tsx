@@ -51,7 +51,6 @@ export default function SelectBeneficiaryView() {
   const groupedBeneficiariesIds = data?.groupedBeneficiaries?.map((ben) => ({
     uuid: ben?.Beneficiary?.uuid,
   }));
-  console.log({ groupedBeneficiariesIds }, data);
 
   const beneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -101,13 +100,13 @@ export default function SelectBeneficiaryView() {
   const updateBeneficiaryGroup = useUpdateBeneficiaryGroup();
 
   const handleUpdateBeneficiaryGroup = async () => {
-    const members = table
-      .getSelectedRowModel()
-      .rows?.map((data) => ({ uuid: data?.original?.uuid }));
     const payload = {
       uuid: groupid,
       name,
-      beneficiaries: [...members, ...groupedBeneficiariesIds],
+      beneficiaries: [
+        ...Object.keys(selectedListItems).map((uuid) => ({ uuid })),
+        ...groupedBeneficiariesIds,
+      ],
     };
     try {
       await updateBeneficiaryGroup.mutateAsync(payload);

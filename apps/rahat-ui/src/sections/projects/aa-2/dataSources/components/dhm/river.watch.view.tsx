@@ -82,7 +82,7 @@ export default function RiverWatchView() {
             {cardData?.map((d) => {
               const Icon = d.icon;
               return (
-                <div className="flex space-x-3 items-center">
+                <div className="flex space-x-3 items-center" key={d.label}>
                   <div>
                     <Icon className="text-gray-500" size={20} />
                   </div>
@@ -98,7 +98,7 @@ export default function RiverWatchView() {
         <div
           className={`p-4 rounded-sm border shadow text-center w-64 ${
             riverWatch?.info?.status === 'BELOW WARNING LEVEL'
-              ? 'bg-green-500'
+              ? 'bg-green-400'
               : ''
           }`}
         >

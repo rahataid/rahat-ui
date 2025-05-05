@@ -67,16 +67,12 @@ export default function AddTriggerView() {
     title: z.string().min(2, { message: 'Please enter valid name' }),
     source: z.string().min(1, { message: 'Please select data source' }),
     isMandatory: z.boolean().optional(),
-    minLeadTimeDays: z
-      .string()
-      .min(1, { message: 'Please enter minimum lead time days' }),
-    maxLeadTimeDays: z
-      .string()
-      .min(1, { message: 'Please enter maximum lead time days' }),
-    probability: z
-      .string()
-      .min(1, { message: 'Please enter forecast probability' }),
+    minLeadTimeDays: z.string().optional(),
+    maxLeadTimeDays: z.string().optional(),
+    probability: z.string().optional(),
     notes: z.string().optional(),
+    warningLevel: z.string().optional(),
+    dangerLevel: z.string().optional(),
   });
 
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({
@@ -89,6 +85,8 @@ export default function AddTriggerView() {
       probability: '',
       isMandatory: true,
       notes: '',
+      warningLevel: '',
+      dangerLevel: '',
     },
   });
 
@@ -170,6 +168,8 @@ export default function AddTriggerView() {
         probability,
         type,
         time,
+        warningLevel,
+        dangerLevel,
         ...rest
       }) => ({
         ...rest,
@@ -177,6 +177,8 @@ export default function AddTriggerView() {
           maxLeadTimeDays,
           minLeadTimeDays,
           probability,
+          warningLevel,
+          dangerLevel,
         },
       }),
     );

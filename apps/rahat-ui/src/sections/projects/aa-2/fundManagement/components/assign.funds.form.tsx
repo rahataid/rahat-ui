@@ -83,8 +83,14 @@ export default function AssignFundsForm() {
     },
   });
 
-  const benGroups = useBeneficiaryGroups(projectId, {});
-
+  const benGroups = useBeneficiaryGroups(projectId, {
+    page: '1',
+    perPage: '100',
+    sort: 'updatedAt',
+    order: 'desc',
+    tokenAssigned: false,
+  });
+  console.log(benGroups);
   // const { beneficiariesGroups } = useBeneficiariesGroupStore((state) => ({
   //   beneficiariesGroups: state.beneficiariesGroups,
   //   beneficiariesGroupsMeta: state.beneficiariesGroupsMeta,

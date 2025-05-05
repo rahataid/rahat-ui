@@ -58,7 +58,7 @@ export default function AddTriggerView() {
     resolver: zodResolver(ManualFormSchema),
     defaultValues: {
       title: '',
-      isMandatory: true,
+      isMandatory: false,
       notes: '',
     },
   });
@@ -83,7 +83,7 @@ export default function AddTriggerView() {
       maxLeadTimeDays: '',
       minLeadTimeDays: '',
       probability: '',
-      isMandatory: true,
+      isMandatory: false,
       notes: '',
       warningLevel: '',
       dangerLevel: '',
@@ -97,6 +97,7 @@ export default function AddTriggerView() {
       ...allTriggers,
       {
         ...data,
+        isMandatory: !data?.isMandatory,
         type: activeTab,
         source: 'MANUAL',
         time: new Date(),
@@ -113,6 +114,7 @@ export default function AddTriggerView() {
       ...allTriggers,
       {
         ...data,
+        isMandatory: !data?.isMandatory,
         type: activeTab,
         time: new Date(),
         phaseId: selectedPhase?.id,

@@ -40,7 +40,7 @@ export default function EditTrigger() {
     resolver: zodResolver(ManualFormSchema),
     defaultValues: {
       title: '',
-      isMandatory: true,
+      isMandatory: false,
       notes: '',
     },
   });
@@ -65,7 +65,7 @@ export default function EditTrigger() {
       maxLeadTimeDays: '',
       minLeadTimeDays: '',
       probability: '',
-      isMandatory: true,
+      isMandatory: false,
       notes: '',
       warningLevel: '',
       dangerLevel: '',
@@ -92,6 +92,7 @@ export default function EditTrigger() {
       riverBasin,
       warningLevel,
       dangerLevel,
+      isMandatory,
       ...rest
     } = data;
 
@@ -101,6 +102,7 @@ export default function EditTrigger() {
         ...rest,
         phaseId: trigger?.phaseId,
         uuid: trigger?.uuid,
+        isMandatory: !data?.isMandatory,
         triggerStatement: {
           minLeadTimeDays,
           maxLeadTimeDays,
@@ -131,13 +133,13 @@ export default function EditTrigger() {
       manualForm.reset({
         title: trigger?.title,
         notes: trigger?.notes,
-        isMandatory: trigger?.isMandatory,
+        isMandatory: !trigger?.isMandatory,
       });
     } else if (triggerType === 'automated') {
       automatedForm.reset({
         title: trigger?.title,
         source: trigger?.source,
-        isMandatory: trigger?.isMandatory,
+        isMandatory: !trigger?.isMandatory,
         maxLeadTimeDays: trigger?.triggerStatement?.maxLeadTimeDays,
         minLeadTimeDays: trigger?.triggerStatement?.maxLeadTimeDays,
         notes: trigger?.notes || '',

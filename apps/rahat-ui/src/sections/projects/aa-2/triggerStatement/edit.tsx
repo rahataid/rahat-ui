@@ -49,16 +49,12 @@ export default function EditTrigger() {
     title: z.string().min(2, { message: 'Please enter valid name' }),
     source: z.string().min(1, { message: 'Please select data source' }),
     isMandatory: z.boolean().optional(),
-    minLeadTimeDays: z
-      .string()
-      .min(1, { message: 'Please enter minimum lead time days' }),
-    maxLeadTimeDays: z
-      .string()
-      .min(1, { message: 'Please enter maximum lead time days' }),
-    probability: z
-      .string()
-      .min(1, { message: 'Please enter forecast probability' }),
+    minLeadTimeDays: z.string().optional(),
+    maxLeadTimeDays: z.string().optional(),
+    probability: z.string().optional(),
     notes: z.string().optional(),
+    warningLevel: z.string().optional(),
+    dangerLevel: z.string().optional(),
   });
 
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({
@@ -71,6 +67,8 @@ export default function EditTrigger() {
       probability: '',
       isMandatory: true,
       notes: '',
+      warningLevel: '',
+      dangerLevel: '',
     },
   });
 
@@ -92,6 +90,8 @@ export default function EditTrigger() {
       maxLeadTimeDays,
       probability,
       riverBasin,
+      warningLevel,
+      dangerLevel,
       ...rest
     } = data;
 
@@ -101,11 +101,12 @@ export default function EditTrigger() {
         ...rest,
         phaseId: trigger?.phaseId,
         uuid: trigger?.uuid,
-        source: trigger?.source === 'MANUAL' ? 'MANUAL' : 'DHM',
         triggerStatement: {
           minLeadTimeDays,
           maxLeadTimeDays,
           probability,
+          warningLevel,
+          dangerLevel,
         },
       },
     });
@@ -141,6 +142,8 @@ export default function EditTrigger() {
         minLeadTimeDays: trigger?.triggerStatement?.maxLeadTimeDays,
         notes: trigger?.notes || '',
         probability: trigger?.triggerStatement?.probability,
+        warningLevel: trigger?.triggerStatement?.warningLevel,
+        dangerLevel: trigger?.triggerStatement?.dangerLevel,
       });
     }
   }, [trigger]);

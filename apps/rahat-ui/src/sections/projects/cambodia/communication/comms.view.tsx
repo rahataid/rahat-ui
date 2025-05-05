@@ -44,7 +44,7 @@ export default function CommunicationView() {
     projectUUID: id,
   }) as any;
 
-  const { data, isLoading } = useCambodiaCommsList({
+  const { data, isLoading, isFetching } = useCambodiaCommsList({
     projectUUID: id,
     page: pagination.page,
     perPage: pagination.perPage,
@@ -107,7 +107,6 @@ export default function CommunicationView() {
         value === 'ALL'
           ? setFilters({
               ...filters,
-              status: {},
             })
           : value;
       table.getColumn(name)?.setFilterValue(filterValue);
@@ -242,7 +241,7 @@ export default function CommunicationView() {
           <CambodiaTable
             table={table}
             tableHeight="h-[calc(100vh-376px)]"
-            loading={isLoading}
+            loading={isFetching}
           />
         </div>
       </div>

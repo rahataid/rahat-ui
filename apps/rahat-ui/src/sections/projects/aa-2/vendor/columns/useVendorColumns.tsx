@@ -3,12 +3,21 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { IProjectVendor } from '../types';
+import { useAAVendorsStore } from '@rahat-ui/query';
 
 export const useProjectVendorTableColumns = () => {
   const { id } = useParams();
   const router = useRouter();
-
+  const { vendors, setVendorDetails } = useAAVendorsStore((state) => ({
+    vendors: state.vendors,
+    setVendorDetails: state.setVendorDetails,
+  }));
   const handleViewClick = (vendorId: string) => {
+    vendors?.find((vendor) => {
+      if (vendor.uuid === vendorId) {
+        setVendorDetails(vendor);
+      }
+    });
     router.push(`/projects/aa/${id}/vendors/${vendorId}`);
   };
   const columns: ColumnDef<IProjectVendor>[] = [
@@ -25,7 +34,7 @@ export const useProjectVendorTableColumns = () => {
     {
       accessorKey: 'location',
       header: 'Location',
-      cell: ({ row }) => <div>{row.getValue('location')}</div>,
+      cell: ({ row }) => <div>{row.getValue('location') || 'N/A'}</div>,
     },
     {
       id: 'actions',

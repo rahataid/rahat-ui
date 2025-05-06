@@ -15,7 +15,7 @@ export default function Detail() {
         title="Vendor Details"
         description="Detailed view of the selected vendor"
       />
-      <div className="grid grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-1  lg:grid-cols-2 xl:grid-cols-3 gap-4 mb-4">
         <ProfileCard />
         <OverviewCard />
         <TransactionCard />

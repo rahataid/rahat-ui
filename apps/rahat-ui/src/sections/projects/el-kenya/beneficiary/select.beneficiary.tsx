@@ -112,7 +112,7 @@ export default function SelectBeneficiaryView() {
     try {
       await updateBeneficiaryGroup.mutateAsync(payload);
     } catch (e) {
-      console.error('Error while updating consumer group::', e);
+      console.error('Error while updating beneficiary group::', e);
     }
   };
 
@@ -124,8 +124,8 @@ export default function SelectBeneficiaryView() {
     <>
       <div className="p-4">
         <HeaderWithBack
-          title="Select Consumer"
-          subtitle="Select consumer from the list below to them assign to the selected group"
+          title="Select Beneficiary"
+          subtitle="Select beneficiaries from the list below to them assign to the selected group"
           path={`/projects/el-kenya/${id}/beneficiary/group/${groupid}`}
         />
         <div className="border rounded shadow p-3">
@@ -142,7 +142,11 @@ export default function SelectBeneficiaryView() {
             />
             <ViewColumns table={table} />
           </div>
-          <DemoTable table={table} tableHeight="h-[calc(100vh-354px)]" />
+          <DemoTable
+            loading={beneficiaries.isFetching}
+            table={table}
+            tableHeight="h-[calc(100vh-354px)]"
+          />
           <CustomPagination
             currentPage={pagination.page}
             handleNextPage={setNextPage}
@@ -172,7 +176,7 @@ export default function SelectBeneficiaryView() {
             className="px-10"
             onClick={() => handleUpdateBeneficiaryGroup()}
           >
-            Add ({Object.keys(selectedListItems).length ?? 0} Consumers )
+            Add ({Object.keys(selectedListItems).length ?? 0} Beneficiaries )
           </Button>
         </div>
       </div>

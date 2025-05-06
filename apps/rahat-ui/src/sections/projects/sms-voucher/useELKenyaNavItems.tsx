@@ -1,11 +1,7 @@
 import {
   ArrowRightLeft,
-  CloudOff,
-  Gift,
   HandCoins,
   LayoutDashboard,
-  Speech,
-  Ticket,
   UsersRound,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';

@@ -1,27 +1,29 @@
-import { ColumnDef } from '@tanstack/react-table';
-import React, { useState } from 'react';
-import { Transaction } from './types';
 import {
   Tooltip,
   TooltipProvider,
   TooltipTrigger,
 } from '@radix-ui/react-tooltip';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { TooltipContent } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
-import { Copy, CopyCheck, ArrowUpDown } from 'lucide-react';
-import Link from 'next/link';
-import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
-import { formatEther } from 'viem';
+import { ColumnDef } from '@tanstack/react-table';
 import { formatdbDate } from 'apps/rahat-ui/src/utils';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-
+import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
+import { ArrowUpDown, Copy, CopyCheck } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+import { formatEther, parseUnits } from 'viem';
+import { Transaction } from './types';
+import { useTokenDetails } from '@rahat-ui/query';
+import { useInfoByCurrentChain } from 'apps/rahat-ui/src/hooks/use-info-by-current-chain';
 const useTransactionColumn = () => {
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
-
   const clickToCopy = (walletAddress: string, index: number) => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(index);
   };
+  const chainInfo = useInfoByCurrentChain();
+  const tokenDetails = useTokenDetails();
 
   const columns: ColumnDef<Transaction>[] = [
     {
@@ -70,7 +72,9 @@ const useTransactionColumn = () => {
         return (
           <Button
             variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === 'desc')
+            }
           >
             Timestamp
             <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -94,7 +98,7 @@ const useTransactionColumn = () => {
       cell: ({ row }) => (
         <Link
           target="_blank"
-          href={`https://sepolia.basescan.org/tx/${row.getValue(
+          href={`${chainInfo.blockExplorers?.default.url}/tx/${row.getValue(
             'transactionHash',
           )}`}
           className="capitalize text-blue-500"
@@ -107,15 +111,11 @@ const useTransactionColumn = () => {
       accessorKey: 'amount',
       header: () => <div className="text-right">Amount</div>,
       cell: ({ row }) => {
-        const amount = parseFloat(formatEther(BigInt(row.getValue('amount'))));
-
-        // Format the amount as a dollar amount
-        const formatted = new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
-        }).format(amount);
-
-        return <div className="text-right font-medium">{formatted}</div>;
+        return (
+          <div className="text-right font-medium">
+            {row.getValue('amount')} USDC
+          </div>
+        );
       },
     },
   ];

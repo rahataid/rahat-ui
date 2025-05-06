@@ -57,6 +57,8 @@ type IProps = {
   projectModal: ProjectModalType;
   selectedRow: any;
   loading: boolean;
+  filters?: any;
+  setFilters?: any;
 };
 
 export default function VendorsTable({
@@ -67,15 +69,14 @@ export default function VendorsTable({
   projectModal,
   selectedRow,
   loading,
+  filters,
+  setFilters,
 }: IProps) {
-  const projectList = useProjectList({});
+  const projectList = useProjectList();
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
-  const projectNames =
+  const projectNames: any =
     (projectList?.data?.data?.length > 0 &&
-      projectList?.data?.data?.map((project: any) => ({
-        label: project?.name,
-        value: project?.name,
-      }))) ||
+      projectList?.data?.data?.map((project: any) => project?.name)) ||
     [];
 
   return (
@@ -90,32 +91,29 @@ export default function VendorsTable({
           className="rounded w-full"
         />
 
+        {/* TODO: fix this */}
         <SelectComponent
           onChange={(event) => {
-            table
-              .getColumn('status')
-              ?.setFilterValue(event === 'All' ? '' : event);
+            setFilters({
+              ...filters,
+              status: event === 'All' ? '' : event,
+            });
           }}
           name="Status"
-          options={[
-            { label: 'All', value: 'All' },
-            { label: 'Assigned', value: 'Assigned' },
-            { label: 'Pending', value: 'Pending' },
-          ]}
-          value={(table.getColumn('status')?.getFilterValue() as string) || ''}
+          options={['All', 'Assigned', 'Pending']}
+          value={filters?.status || ''}
         />
 
         <SelectComponent
           onChange={(event) => {
-            table
-              .getColumn('projectName')
-              ?.setFilterValue(event === 'All' ? '' : event);
+            setFilters({
+              ...filters,
+              projectName: event === 'All' ? '' : event,
+            });
           }}
           name="Project Name"
-          options={[{ label: 'All', value: 'All' }, ...projectNames]}
-          value={
-            (table.getColumn('projectName')?.getFilterValue() as string) || ''
-          }
+          options={['All', ...projectNames]}
+          value={filters?.projectName || ''}
         />
       </div>
       <div>

@@ -1,9 +1,4 @@
-import * as React from 'react';
-import CoreBtnComponent from 'apps/rahat-ui/src/components/core.btn';
-import { FolderPlus, UsersRound } from 'lucide-react';
-import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import MembersTable from './members.table';
-import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import { useRpSingleBeneficiaryGroup } from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -11,12 +6,15 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { useRpSingleBeneficiaryGroup } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { UUID } from 'crypto';
+import { UsersRound } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import * as React from 'react';
 import ClientSidePagination from '../../components/client.side.pagination';
-import { useKenyaGroupedBeneficiaryTableColumns } from './use.grouped.beneficiary.table.columns';
 import HeaderWithBack from '../../components/header.with.back';
+import MembersTable from './members.table';
+import { useKenyaGroupedBeneficiaryTableColumns } from './use.grouped.beneficiary.table.columns';
 
 export default function GroupDetailView() {
   const { groupid, id } = useParams() as { groupid: UUID; id: UUID };
@@ -61,12 +59,26 @@ export default function GroupDetailView() {
         <div className="flex flex-wrap justify-between items-center gap-4">
           <HeaderWithBack
             title={data?.name || 'N/A'}
-            subtitle="Here is a detailed view of the selected consumer group"
+            subtitle="Here is a detailed view of the selected beneficiary group"
             path={`/projects/el-kenya/${id}/beneficiary?tab=beneficiaryGroups`}
           />
         </div>
+        <DataCard
+          className="border-solid w-1/3 rounded-md"
+          iconStyle="bg-white text-secondary-muted"
+          title="Total Beneficiaries"
+          Icon={UsersRound}
+          number={data?.groupedBeneficiaries?.length || 0}
+        />
+        <MembersTable
+          table={table}
+          groupedBeneficiaries={data?.groupedBeneficiaries}
+          groupUUID={groupid}
+          name={data?.name}
+          loading={isLoading}
+        />
 
-        <div className="mt-4">
+        {/* <div className="mt-4">
           <DataCard
             className="border-solid w-full sm:w-1/3 rounded-md"
             iconStyle="bg-white text-secondary-muted"
@@ -74,17 +86,17 @@ export default function GroupDetailView() {
             Icon={UsersRound}
             number={data?.groupedBeneficiaries?.length || 0}
           />
-        </div>
+        </div> */}
 
-        <div className="overflow-auto mt-4">
+        {/* <div className="overflow-auto mt-4">
           <MembersTable
             table={table}
             groupedBeneficiaries={data?.groupedBeneficiaries}
             groupUUID={groupid}
             name={data?.name}
             loading={isLoading}
-          />
-        </div>
+          /> */}
+        {/* </div> */}
       </div>
 
       <ClientSidePagination table={table} />

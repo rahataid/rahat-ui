@@ -33,7 +33,7 @@ export default function BeneficiaryView() {
     React.useState<VisibilityState>({});
 
   const [defaultValue, setDefaultValue] = React.useState<string>('beneficiary');
-
+  const [enabled, setEnabled] = React.useState(false);
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab') || 'beneficiary';
 
@@ -70,7 +70,11 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...filters,
   });
-  const { data: consumerData } = useListConsentConsumer({
+  const {
+    data: consumerData,
+    refetch,
+    isSuccess,
+  } = useListConsentConsumer({
     projectUUID: id,
     ...filters,
   });
@@ -121,8 +125,19 @@ export default function BeneficiaryView() {
   };
 
   const handleDownload = () => {
-    generateExcel(consumerData.data, 'Consumer', 9);
+    setEnabled(true);
   };
+
+  useEffect(() => {
+    if (enabled) {
+      refetch().then(() => {
+        if (isSuccess) {
+          generateExcel(consumerData.data, 'Consumer', 9);
+          setEnabled(false);
+        }
+      });
+    }
+  }, [enabled, isSuccess]);
 
   const generateExcel = (data: any, title: string, numberOfColumns: number) => {
     const wb = XLSX.utils.book_new();
@@ -169,10 +184,10 @@ export default function BeneficiaryView() {
               options={[
                 { value: 'yes', label: 'Yes' },
                 { value: 'no', label: 'No' },
-                { value: 'skip', label: 'Skip' },
               ]}
               value={filters?.consentStatus || ''}
               className="w-full"
+              showSelect={false}
             />
 
             <SelectComponent
@@ -184,6 +199,7 @@ export default function BeneficiaryView() {
               ]}
               value={filters?.voucherStatus || ''}
               className="w-full"
+              showSelect={false}
             />
 
             <SelectComponent
@@ -198,6 +214,7 @@ export default function BeneficiaryView() {
               ]}
               value={filters?.eyeCheckupStatus || ''}
               className="w-full"
+              showSelect={false}
             />
 
             <SelectComponent
@@ -210,6 +227,7 @@ export default function BeneficiaryView() {
               ]}
               value={filters?.voucherType || ''}
               className="w-full"
+              showSelect={false}
             />
 
             <Button
@@ -219,7 +237,7 @@ export default function BeneficiaryView() {
               className="w-full rounded-sm sm:w-auto"
             >
               <CloudDownload size={18} className="mr-1" />
-              Download
+              {enabled ? 'Downloading...' : 'Download'}
             </Button>
           </div>
 

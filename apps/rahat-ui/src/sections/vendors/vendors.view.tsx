@@ -23,13 +23,23 @@ import VendorsTable from './vendors.list.table';
 import CustomPagination from '../../components/customPagination';
 
 function VendorsView() {
-  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    filters,
+    setFilters,
+  } = usePagination();
 
   const projectModal = useBoolean();
   const [refetch, setRefetch] = React.useState(false);
 
   const addVendor = useAssignVendorToProject();
-  const { data: vendorData, isLoading } = useVendorList(pagination, refetch);
+  const { data: vendorData, isLoading } = useVendorList(
+    { ...pagination, ...filters },
+    refetch,
+  );
   const [selectedProject, setSelectedProject] = React.useState<UUID>();
   const [selectedRow, setSelectedRow] = React.useState(null) as any;
 
@@ -92,6 +102,8 @@ function VendorsView() {
           projectModal={projectModal}
           selectedRow={selectedRow}
           loading={isLoading}
+          setFilters={setFilters}
+          filters={filters}
         />
       </div>
       <CustomPagination

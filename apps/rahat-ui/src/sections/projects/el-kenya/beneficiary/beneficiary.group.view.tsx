@@ -39,7 +39,7 @@ function BeneficiaryGroupsView({ projectClosed }: IProps) {
   const {
     data: groups,
     meta,
-    isLoading,
+    isFetching,
   } = useFindAllBeneficiaryGroups(id as UUID, {
     page: pagination.page,
     perPage: pagination.perPage,
@@ -77,7 +77,7 @@ function BeneficiaryGroupsView({ projectClosed }: IProps) {
           />
         </div>
         <ScrollArea className="h-[calc(100vh-230px)]">
-          {isLoading ? (
+          {isFetching ? (
             <TableLoader />
           ) : groups?.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">

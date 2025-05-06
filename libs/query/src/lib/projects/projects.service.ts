@@ -20,6 +20,7 @@ import { MS_CAM_ACTIONS, PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
 import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
+import Swal from 'sweetalert2';
 import { mapStatus } from '../el-kenya';
 
 interface ExtendedProject extends Project {
@@ -501,6 +502,47 @@ export const useAAProjectSettingsHazardType = (uuid: UUID) => {
   return query;
 };
 
+export const useAAProjectSettingsSCB = (uuid: UUID) => {
+  const q = useProjectAction([PROJECT_SETTINGS_KEYS.SCB]);
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+
+  const query = useQuery({
+    queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid, PROJECT_SETTINGS_KEYS.SCB],
+    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SCB]),
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: PROJECT_SETTINGS_KEYS.SCB,
+          },
+        },
+      });
+      return mutate.data.value;
+    },
+  });
+
+  useEffect(() => {
+    if (!isEmpty(query.data)) {
+      const settingsToUpdate = {
+        ...settings,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.SCB]: query?.data,
+        },
+      };
+      setSettings(settingsToUpdate);
+      window.location.reload();
+    }
+  }, [query.data]);
+
+  return query;
+};
+
 export const useProjectList = (
   payload?: Pagination,
 ): UseQueryResult<FormattedResponse<Project[]>, Error> => {
@@ -575,7 +617,6 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
 
   const query = useQuery({
     queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, restPayloadString],
-    placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {
@@ -631,11 +672,12 @@ export const useListConsentConsumer = (payload: GetConsumerData) => {
     () => [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, restPayloadString],
     [restPayloadString],
   );
+  //todo use mutation
   const query = useQuery({
     queryKey: [LIST_CONSENT, restPayloadString],
     placeholderData: keepPreviousData,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -737,14 +779,29 @@ export const useUpdateElRedemption = () => {
 export const useProjectEdit = () => {
   const { queryClient, rumsanService } = useRSQuery();
   // const projectClient = getProjectClient(rumsanService.client);
-
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
   return useMutation(
     {
-      onError(error, variables, context) {
-        console.error('Error', error, variables, context);
+      onSuccess: () => {
+        toast.fire({
+          title: 'Project edited successfully',
+          icon: 'success',
+        });
+        queryClient.invalidateQueries({
+          queryKey: [TAGS.GET_PROJECT_DETAILS],
+        });
       },
-      onSuccess(data, variables, context) {
-        console.log('Success', data, variables, context);
+      onError: () => {
+        toast.fire({
+          title: 'Error while editing project.',
+          icon: 'error',
+        });
       },
       mutationKey: ['projectEdit'],
       mutationFn: async ({ uuid, data }: { uuid: UUID; data: any }) => {
@@ -1009,6 +1066,8 @@ export const useCambodiaCommisionCreate = () => {
       return mutate;
     },
     onSuccess: () => {
+      Swal.fire('Commission Scheme Saved Successfully', '', 'success');
+
       qc.invalidateQueries({
         queryKey: [MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.GET_CURRENT],
       });
@@ -1277,29 +1336,6 @@ export const useCambodiaCommisionStats = (payload: any) => {
           if (b.name === 'TOTAL_LEAD_CONVERTED') return 1;
           return 0;
         });
-    },
-  });
-  return query;
-};
-
-export const useCambodiaProjectSettings = (payload: any) => {
-  const q = useProjectAction<any[]>();
-  const { projectUUID, ...restPayload } = payload;
-  const restPayloadString = JSON.stringify(restPayload);
-  const query = useQuery({
-    queryKey: [MS_CAM_ACTIONS.CAMBODIA.PROJECT_SETTINGS, restPayloadString],
-    placeholderData: keepPreviousData,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: MS_CAM_ACTIONS.CAMBODIA.PROJECT_SETTINGS,
-          payload: restPayload,
-        },
-      });
-      return mutate;
     },
   });
   return query;

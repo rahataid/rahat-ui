@@ -3,28 +3,48 @@
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import GrievanceDetail from './grievance.detail';
+import { mapStatus } from '../const';
 // import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
 
-export const useGrievanceTableColumns = () => {
-  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
+export const useGrievanceTableColumns = ({
+  data,
+  rowDetails,
+  setRowDetails,
+}: any) => {
+  const { setSecondPanelComponent, closeSecondPanel, secondPanel } =
+    useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
-
   const clickToCopy = (walletAddress: string, index: number) => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(index);
   };
 
-  const openSplitDetailView = (rowDetail: any) => {
-    setSecondPanelComponent(
-      <GrievanceDetail
-        closeSecondPanel={closeSecondPanel}
-        details={rowDetail}
-      />,
-    );
+  const openSplitDetailView = (row: any) => {
+    setRowDetails(row);
   };
+
+  useEffect(() => {
+    const details = secondPanel?.props?.details;
+    if (details && data?.length > 0) {
+      const updatedRow = data.find((row) => row.id == details.id);
+
+      setRowDetails(updatedRow);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (rowDetails) {
+      setSecondPanelComponent(
+        <GrievanceDetail
+          closeSecondPanel={closeSecondPanel}
+          details={rowDetails}
+        />,
+      );
+    }
+  }, [rowDetails]);
 
   const columns: ColumnDef<any>[] = [
     {
@@ -75,12 +95,13 @@ export const useGrievanceTableColumns = () => {
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <div> {row.getValue('status')}</div>,
+      cell: ({ row }) => <div> {mapStatus(row.getValue('status'))}</div>,
     },
 
     {
       id: 'actions',
       enableHiding: false,
+      header: 'Actions',
       cell: ({ row }) => {
         return (
           <Eye

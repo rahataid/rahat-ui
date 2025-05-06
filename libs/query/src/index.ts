@@ -15,8 +15,6 @@ export * from './lib/reports';
 export * from './lib/auth-apps';
 export * from './lib/el-kenya';
 export * from './lib/el-cambodia';
-export * from './lib/comms';
-
 // export * from './lib/aa/trigger-statements';
 // export * from './lib/aa/activities';
 
@@ -27,3 +25,4 @@ export * from './lib/cva';
 export * from './lib/grievance';
 export * from './lib/rp';
 export * from './lib/new-comms';
+export * from './lib/scb';

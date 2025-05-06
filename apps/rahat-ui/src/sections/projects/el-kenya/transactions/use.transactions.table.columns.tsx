@@ -1,62 +1,26 @@
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@radix-ui/react-tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
+import { useInfoByCurrentChain } from 'apps/rahat-ui/src/hooks/use-info-by-current-chain';
 import { formatDateFromBloackChain } from 'apps/rahat-ui/src/utils';
 import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
-import { ArrowDown, ArrowUp, ArrowUpDown, Copy, CopyCheck } from 'lucide-react';
+import { ArrowDown, ArrowUp } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
-import { mapTopic } from '../const';
 
-export const useElkenyaTransactionsTableColumns = () => {
-  const [walletAddressCopied, setWalletAddressCopied] = useState<string>();
+export const useElkenyaTransactionsTableColumns = ({ setSorting }: any) => {
+  const chainInfo = useInfoByCurrentChain();
 
-  const clickToCopy = (walletAddress: string, uuid: string) => {
-    navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(uuid);
-  };
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'beneficiary',
       header: 'Wallet Address',
       cell: ({ row }) => (
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger
-              className="flex items-center gap-3 cursor-pointer"
-              onClick={() =>
-                clickToCopy(row.getValue('beneficiary'), row?.original?.uuid)
-              }
-            >
-              <p>{truncateEthAddress(row.getValue('beneficiary'))}</p>
-              {walletAddressCopied &&
-              walletAddressCopied === row?.original?.uuid ? (
-                <CopyCheck size={15} strokeWidth={1.5} />
-              ) : (
-                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
-              )}
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary" side="bottom">
-              <p className="text-xs font-medium">
-                {walletAddressCopied &&
-                walletAddressCopied === row?.original?.uuid
-                  ? 'copied'
-                  : 'click to copy'}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <div>{truncateEthAddress(row.getValue('beneficiary'))}</div>
       ),
     },
     {
       accessorKey: 'topic',
       header: 'Topic',
-      cell: ({ row }) => <div>{mapTopic(row.getValue('topic'))}</div>,
+      cell: ({ row }) => <div>{row.getValue('topic')}</div>,
     },
     {
       accessorKey: 'txHash',
@@ -64,7 +28,9 @@ export const useElkenyaTransactionsTableColumns = () => {
       cell: ({ row }) => (
         <Link
           target="_blank"
-          href={`https://sepolia.basescan.org/tx/${row.getValue('txHash')}`}
+          href={`${chainInfo.blockExplorers?.default.url}/tx/${row.getValue(
+            'txHash',
+          )}`}
           className="capitalize text-blue-500"
         >
           {shortenTxHash(row.getValue('txHash'))}
@@ -73,21 +39,32 @@ export const useElkenyaTransactionsTableColumns = () => {
     },
     {
       accessorKey: 'timeStamp',
-      header: ({ column }) => (
-        <div
-          className="flex items-center gap-2 cursor-pointer"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Timestamp
-          {column.getIsSorted() === 'asc' ? (
-            <ArrowUp size={16} />
-          ) : column.getIsSorted() === 'desc' ? (
-            <ArrowDown size={16} />
-          ) : (
-            <ArrowUpDown size={16} />
-          )}
-        </div>
-      ),
+      header: ({ column }) => {
+        const isSorted = column.getIsSorted();
+
+        const handleSort = () => {
+          setSorting((prevSorting: any) => {
+            const currentSort = prevSorting.find(
+              (s: any) => s.id === 'timeStamp',
+            );
+            return [{ id: 'timeStamp', desc: !currentSort?.desc }];
+          });
+        };
+
+        return (
+          <div
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={handleSort}
+          >
+            Timestamp
+            {isSorted === 'asc' ? (
+              <ArrowUp size={16} />
+            ) : (
+              <ArrowDown size={16} />
+            )}
+          </div>
+        );
+      },
       enableSorting: true,
       cell: ({ row }) => (
         <div>{formatDateFromBloackChain(row.getValue('timeStamp'))}</div>
@@ -98,7 +75,6 @@ export const useElkenyaTransactionsTableColumns = () => {
 
         return dateA - dateB;
       },
-      sortDescFirst: true,
     },
   ];
   return columns;

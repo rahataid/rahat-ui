@@ -249,6 +249,7 @@ export const useAddDisbursement = () => {
       transactionHash: string;
       from: string;
       timestamp: string;
+      status?: DisbursementStatus;
     }) => {
       const { projectUUID, ...restData } = data;
       const response = await projectActions.mutateAsync({
@@ -301,21 +302,13 @@ export const useDisburseTokenUsingMultisig = () => {
 
   return useMutation({
     mutationKey: ['disburse-token-using-multisig'],
-    async onSuccess(data, variables, context) {
-      await addDisbursement.mutateAsync({
-        amount: variables.amount,
-        projectUUID: variables.projectUUID,
-        type: DisbursementType.MULTISIG,
-        beneficiaries: variables.beneficiaryAddresses,
-        transactionHash: data.safeTxHash,
-        from: variables.c2cProjectAddress,
-        timestamp: String(Math.floor(Date.now() / 1000)), // Convert to seconds timestamp
-      });
-      console.log('onSuccess', data, variables, context);
-    },
     mutationFn: async ({
       amount,
       projectUUID,
+      beneficiaryAddresses,
+      disburseMethod,
+      rahatTokenAddress,
+      c2cProjectAddress,
     }: {
       amount: string;
       projectUUID: UUID;
@@ -324,6 +317,7 @@ export const useDisburseTokenUsingMultisig = () => {
       rahatTokenAddress: string;
       c2cProjectAddress: string;
     }) => {
+      // Step 1: Create Safe Transaction
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
@@ -333,7 +327,21 @@ export const useDisburseTokenUsingMultisig = () => {
           },
         },
       });
-      return response.data;
+
+      const safeTxHash = response.data.safeTxHash;
+
+      // Step 2: Add Disbursement
+      const disbursementResult = await addDisbursement.mutateAsync({
+        amount: String(+amount / beneficiaryAddresses.length),
+        projectUUID,
+        type: DisbursementType.MULTISIG,
+        beneficiaries: beneficiaryAddresses,
+        transactionHash: safeTxHash,
+        from: c2cProjectAddress,
+        timestamp: String(Math.floor(Date.now() / 1000)), // Convert to seconds timestamp
+      });
+
+      return { ...disbursementResult, safeTxHash: safeTxHash };
     },
   });
 };
@@ -356,4 +364,98 @@ export const useGetSafePendingTransactions = (projectUUID: UUID) => {
   });
 
   return query;
+};
+
+export const useFindC2CBeneficiaryGroups = (
+  projectUUID: UUID,
+  payload?: any,
+) => {
+  const action = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['beneficiary_groups', projectUUID, payload],
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'c2cProject.beneficiary.getAllGroups',
+          payload: payload || {},
+        },
+      });
+      return { data: res.data, meta: res.response.meta };
+    },
+  });
+
+  const data = query?.data || [];
+
+  return {
+    ...query,
+    data: query?.data?.data || [],
+    meta: query?.data?.meta,
+  };
+};
+
+export const useC2CSingleBeneficiaryGroup = (
+  uuid: UUID,
+  beneficiariesGroupID: UUID,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['beneficiaryGroup', uuid, beneficiariesGroupID],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'c2cProject.beneficiary.getOneGroup',
+          payload: {
+            uuid: beneficiariesGroupID,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+  return query;
+};
+
+export const useC2CSingleBeneficiaryGroupMutation = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  return useMutation({
+    mutationFn: async (beneficiariesGroupID: UUID) => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'c2cProject.beneficiary.getOneGroup',
+          payload: {
+            uuid: beneficiariesGroupID,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+};
+
+const GET_ALL_C2C_STATS = 'c2cProject.reporting.list';
+
+export const useFindAllC2cStats = (projectUUID: UUID) => {
+  const action = useProjectAction(['findAllc2cStats-rpProject']);
+
+  return useQuery({
+    queryKey: ['c2cStats', projectUUID],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: GET_ALL_C2C_STATS,
+          payload: {},
+        },
+      });
+      return res.data;
+    },
+  });
 };

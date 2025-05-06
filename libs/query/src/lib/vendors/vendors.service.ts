@@ -27,8 +27,21 @@ export const useVendorList = (
   }));
 
   const memoizedKey = useMemo(
-    () => [TAGS.GET_VENDORS, payload.page, payload.perPage, refetch],
-    [payload.page, payload.perPage, refetch],
+    () => [
+      TAGS.GET_VENDORS,
+      payload.page,
+      payload.perPage,
+      payload.status,
+      payload.projectName,
+      refetch,
+    ],
+    [
+      payload.page,
+      payload.perPage,
+      payload.status,
+      payload.projectName,
+      refetch,
+    ],
   );
 
   const vendor = useQuery(
@@ -61,7 +74,7 @@ export const useVendorList = (
 
   useEffect(() => {
     if (vendor.isSuccess) {
-      setVendors(vendor.data.data as any[]);
+      setVendors((vendor.data.data as any[]) || []);
       setMeta(vendor.data.response.meta);
     }
   }, [vendor.isSuccess, setVendors]);

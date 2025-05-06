@@ -53,7 +53,7 @@ export default function CommonCard({
         >
           {badge}
         </Badge>
-        <p className="text-sm text-gray-500">{subTitle}</p>
+        <p className="text-sm text-gray-500 line-clamp-2">{subTitle}</p>
       </CardContent>
     </Card>
   );

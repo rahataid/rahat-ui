@@ -1,7 +1,5 @@
 import {
-  useGetOfflineSingleVendor,
   useKenyaVendorTransactions,
-  useProjectStore,
   useRemoveVendor,
   useVendorBeneficiary,
 } from '@rahat-ui/query';
@@ -13,14 +11,12 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { UUID } from 'crypto';
-import { Copy, CopyCheck, Store, User } from 'lucide-react';
+import { Copy, CopyCheck, Store } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 import HeaderWithBack from '../../components/header.with.back';
 import VendorsBeneficiaryList from './vendors.beneficiary.list';
 import VendorsTransactionsHistory from './vendors.transactions.history';
-import EditButton from 'apps/rahat-ui/src/components/edit.btn';
-import DeleteButton from 'apps/rahat-ui/src/components/delete.btn';
 
 export default function VendorsDetail() {
   const { id } = useParams() as { id: UUID };

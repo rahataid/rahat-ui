@@ -64,7 +64,7 @@ export default function SimpleDataCardsContainer({
     query: GetTotalFundDistributed,
   });
 
-  const totalDistributed = totalFundDistributed?.data?.benTokensAssigneds?.reduce((accumulator: number,d: any, ) => {
+  const totalDistributed = totalFundDistributed?.data?.benTokensAssigneds?.reduce((accumulator: number, d: any,) => {
     return Number(d.amount) + accumulator
   }, 0) ?? 0;
 
@@ -73,23 +73,17 @@ export default function SimpleDataCardsContainer({
 
   const projectBalance = parsedProjectBudget - Number(totalDistributed);
 
-  const formattedBudget = new Intl.NumberFormat('en-US', {
-    style: 'decimal',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(parsedProjectBudget);
+  const formatToEnglishNumberSystem = (number: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'decimal',
+      minimumFractionDigits: number % 1 === 0 ? 0 : 2, // No decimals if whole number,
+      maximumFractionDigits: 2,
+    }).format(number);
+  }
 
-  const formattedTotalDistributed = new Intl.NumberFormat('en-US', {
-    style: 'decimal',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(totalDistributed);
-
-  const formattedProjectBalance = new Intl.NumberFormat('en-US', {
-    style: 'decimal',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(projectBalance);
+  const tempDashboardStats = allStats?.filter(
+    (data: any) => data.name === 'TEMP_DASHBOARD_STATS',
+  )[0]?.data;
 
   const totalBeneficiaries = allStats?.filter(
     (data: any) => data.name === 'BENEFICIARY_TOTAL',
@@ -108,22 +102,22 @@ export default function SimpleDataCardsContainer({
     {
       title: 'Household Receiving Cash Support',
       Icon: Home,
-      number: totalHouseholdReceivingCashSupport ?? 0,
+      number: tempDashboardStats ? tempDashboardStats.HOUSEHOLD_RECEIVING_CASH : totalHouseholdReceivingCashSupport ?? 0,
     },
     {
       title: 'Budget',
       Icon: Coins,
-      number: `NRs. ${formattedBudget ?? 0}`,
+      number: `NRs. ${formatToEnglishNumberSystem(parsedProjectBudget) ?? 0}`,
     },
     {
       title: 'Balance',
       Icon: Coins,
-      number: `NRs. ${formattedProjectBalance ?? 0}`,
+      number: tempDashboardStats ? `NRs. ${formatToEnglishNumberSystem(tempDashboardStats.BALANCE)}` : `NRs. ${formatToEnglishNumberSystem(projectBalance) ?? 0}`,
     },
     {
       title: 'Fund Distributed',
       Icon: HandCoins,
-      number: `NRs. ${formattedTotalDistributed ?? 0}`,
+      number: tempDashboardStats ? `NRs. ${formatToEnglishNumberSystem(tempDashboardStats.FUND_DISTRIBUTED)}` : `NRs. ${formatToEnglishNumberSystem(totalDistributed) ?? 0}`,
     },
     {
       title: 'Number of Communication Project',

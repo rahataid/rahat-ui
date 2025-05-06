@@ -181,6 +181,21 @@ export interface ICampaignItemApiResponse {
   communicationLogs: any[];
 }
 
+export type ICampaignList = ICampaign[];
+export interface ICampaign {
+  id: number;
+  uuid: string;
+  name: string;
+  message: string;
+  transportId: string;
+  sessionId: any;
+  groupUID: any;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  addresses: string[];
+}
+
 export interface ITransportItemApiResponse {
   map(
     arg0: (transport: any) => import('react').JSX.Element,

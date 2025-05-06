@@ -1,10 +1,8 @@
 import {
-  useActivateTrigger,
   useDeleteTriggerStatement,
   useSingleTriggerStatement,
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Back,
   DeleteButton,
@@ -14,6 +12,7 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
+import { ActivateTriggerDialog } from './components';
 
 export default function TriggerStatementDetail() {
   const router = useRouter();
@@ -26,16 +25,7 @@ export default function TriggerStatementDetail() {
     triggerRepeatKey,
   );
 
-  const activateTigger = useActivateTrigger();
   const removeTrigger = useDeleteTriggerStatement();
-
-  const handleTrigger = async () => {
-    await activateTigger.mutateAsync({
-      projectUUID: id,
-      activatePayload: { repeatKey: triggerRepeatKey },
-    });
-    router.push(`/projects/aa/${id}/trigger-statements`);
-  };
 
   const handleDelete = async () => {
     await removeTrigger.mutateAsync({
@@ -72,12 +62,12 @@ export default function TriggerStatementDetail() {
             }
             disabled={trigger?.phase?.isActive || trigger?.isTriggered}
           />
-          <Button
-            disabled={trigger?.source !== 'MANUAL' || trigger?.isTriggered}
-            onClick={handleTrigger}
-          >
-            Trigger
-          </Button>
+          {trigger?.source === 'MANUAL' && !trigger?.isTriggered && (
+            <ActivateTriggerDialog
+              projectId={id}
+              repeatKey={triggerRepeatKey}
+            />
+          )}
         </div>
       </div>
       <div

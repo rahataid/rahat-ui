@@ -5,3 +5,5 @@ export { default as AutomatedTriggerAddForm } from './automated.trigger.add.form
 export { default as ManualTriggerAddForm } from './manual.trigger.add.form';
 export { default as ConfirmAddTrigger } from './confirm.add.trigger';
 export { default as ActivateTriggerDialog } from './activate.trigger.dialog';
+export * from './detail.forecast.data';
+export * from './detail.documents';

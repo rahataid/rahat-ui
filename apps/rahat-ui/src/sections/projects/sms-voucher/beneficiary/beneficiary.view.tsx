@@ -74,10 +74,13 @@ export default function BeneficiaryView() {
     data: consumerData,
     refetch,
     isSuccess,
-  } = useListConsentConsumer({
-    projectUUID: id,
-    ...filters,
-  });
+  } = useListConsentConsumer(
+    {
+      projectUUID: id,
+      ...filters,
+    },
+    enabled,
+  );
 
   const meta = beneficiaries?.response?.meta;
 
@@ -129,13 +132,9 @@ export default function BeneficiaryView() {
   };
 
   useEffect(() => {
-    if (enabled) {
-      refetch().then(() => {
-        if (isSuccess) {
-          generateExcel(consumerData.data, 'Consumer', 9);
-          setEnabled(false);
-        }
-      });
+    if (enabled && isSuccess) {
+      generateExcel(consumerData.data, 'Consumer', 9);
+      setEnabled(false);
     }
   }, [enabled, isSuccess]);
 

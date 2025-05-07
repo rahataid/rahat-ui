@@ -98,13 +98,13 @@ query ProjectTransactions{
     transactionHash,
     eventType
   }
-  
 }
 `;
 
 export const KenyaVendorTransactions = `
 query VendorTransactions($vendor:String!) {
-  claimCreateds (where:{claimer:$vendor}){
+  claimCreateds (orderBy: blockTimestamp
+    orderDirection: desc,where:{claimer:$vendor}){
     amount
     blockNumber
     blockTimestamp
@@ -117,7 +117,8 @@ query VendorTransactions($vendor:String!) {
     transactionHash
     eventType
    }
-  claimProcesseds(where:{claimer:$vendor}) {
+  claimProcesseds(orderBy: blockTimestamp
+    orderDirection: desc,where:{claimer:$vendor}) {
     amount
     beneficiary
     blockNumber
@@ -128,7 +129,8 @@ query VendorTransactions($vendor:String!) {
     transactionHash
     eventType
   }
-  offlineClaimProcesseds(where:{vendor:$vendor}){
+  offlineClaimProcesseds(orderBy: blockTimestamp
+    orderDirection: desc,where:{vendor:$vendor}){
     id
     amount
     beneficiary
@@ -139,7 +141,8 @@ query VendorTransactions($vendor:String!) {
     transactionHash
     eventType
   }
-  walkInBeneficiaryAddeds(where:{vendor:$vendor}){
+  walkInBeneficiaryAddeds(orderBy: blockTimestamp
+    orderDirection: desc,where:{vendor:$vendor}){
     id,
     beneficiary,
     tokenAddress,

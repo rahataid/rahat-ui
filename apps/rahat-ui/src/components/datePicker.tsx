@@ -18,14 +18,12 @@ type DatePickerType = {
   placeholder: string;
   type: string;
   handleDateChange: any;
-  className?: string;
 };
 
 export function DatePicker({
   placeholder,
   handleDateChange,
   type,
-  className,
 }: DatePickerType) {
   const [date, setDate] = useState<Date>();
   return (
@@ -34,9 +32,8 @@ export function DatePicker({
         <Button
           variant={'outline'}
           className={cn(
-            'w-[280px] justify-start text-left font-normal',
+            'w-[280px] justify-start text-left rounded-sm font-normal',
             !date && 'text-muted-foreground',
-            className,
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />

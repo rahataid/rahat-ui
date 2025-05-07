@@ -32,9 +32,9 @@ export const useBeneficiaryTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('phone')}</div>,
     },
     {
-      accessorKey: 'voucherStatus',
-      header: 'Voucher Status',
-      cell: ({ row }) => <Badge>{row.getValue('voucherStatus')}</Badge>,
+      accessorKey: 'walletAddress',
+      header: 'WalletAddress',
+      cell: ({ row }) => <Badge>{row.getValue('walletAddress')}</Badge>,
     },
     // {
     //   id: 'actions',

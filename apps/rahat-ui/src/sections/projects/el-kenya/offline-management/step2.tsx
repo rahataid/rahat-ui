@@ -86,10 +86,6 @@ export default function Confirmation({
               </p>
               <p className="text-base font-medium">{totalVouchersAssigned}</p>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Voucher Numbers</p>
-              <p className="text-base font-medium">400</p>
-            </div>
           </div>
           <div className="rounded-md p-4">
             <p className="text-base font-medium">Beneficiary List</p>

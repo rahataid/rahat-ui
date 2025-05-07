@@ -22,6 +22,7 @@ export const TransactionDetails = `
       blockTimestamp
       transactionHash
       _to
+      _from
       _amount
       _tokenAddress
       blockNumber

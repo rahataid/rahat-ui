@@ -1,6 +1,4 @@
-'use client';
-
-import { CommsBeneficiaryView } from 'apps/rahat-ui/src/sections/projects/comms/beneficiary';
+import { CommsBeneficiaryView } from "apps/rahat-ui/src/sections/projects/comms/beneficiary";
 
 const Page = () => {
   return <CommsBeneficiaryView />;

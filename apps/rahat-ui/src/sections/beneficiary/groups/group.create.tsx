@@ -97,7 +97,9 @@ export default function GroupCreateView() {
             </Button>
           ) : 
           ( */}
-          <Button className="px-10">Add</Button>
+          <Button className="px-10 text-white hover:text-blue-500 hover:border hover:border-blue-500">
+            Add
+          </Button>
           {/* )} */}
         </div>
       </form>

@@ -22,13 +22,18 @@ import Link from 'next/link';
 type IProps = {
   path: string;
   className?: string;
+  disabled?: boolean;
 };
 
-export default function EditButton({ path, className }: IProps) {
+export default function EditButton({
+  path,
+  className,
+  disabled = false,
+}: IProps) {
   return (
     <TooltipProvider delayDuration={100}>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger disabled={disabled}>
           <AlertDialog>
             <AlertDialogTrigger className="flex items-center">
               <div

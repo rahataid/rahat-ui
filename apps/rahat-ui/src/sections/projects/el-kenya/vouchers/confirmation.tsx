@@ -7,7 +7,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
-  useReadRahatTokenTotalSupply,
+  useReadRahatTokenBalanceOf,
 } from '@rahat-ui/query';
 
 interface ConfirmSelectionProps {
@@ -43,16 +43,16 @@ const InfoRow = ({ label, value }) => (
 );
 
 const BeneficiaryList = ({ data, beneficiaryGroupSelected }) => (
-  <div className="rounded-md p-4">
-    <ScrollArea className="h-[calc(100vh-580px)]">
-      <p className="text-base font-medium">
-        {beneficiaryGroupSelected ? 'Beneficiary Group' : 'Beneficiary'} List
-      </p>
-      <p className="text-sm text-muted-foreground mb-4">
-        {beneficiaryGroupSelected
-          ? `${data.length} Beneficiaries Groups`
-          : `${data.length} Selected`}
-      </p>
+  <div className="rounded-md px-4">
+    <p className="text-base font-medium">
+      {beneficiaryGroupSelected ? 'Beneficiary Group' : 'Beneficiary'} List
+    </p>
+    <p className="text-sm text-muted-foreground mb-4">
+      {beneficiaryGroupSelected
+        ? `${data.length} Beneficiaries Groups`
+        : `${data.length} Selected`}
+    </p>
+    <ScrollArea className="h-[calc(100vh-460px)]">
       <div className="flex flex-col gap-2">
         {data.map((ben) => (
           <BeneficiaryItem
@@ -105,8 +105,9 @@ export default function ConfirmSelection({
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
 
-  const { data: tokenBalance } = useReadRahatTokenTotalSupply({
-    address: contractSettings?.rahattoken?.address as `0x${string}`,
+  const { data: tokenBalance } = useReadRahatTokenBalanceOf({
+    address: contractSettings?.rahattoken?.address,
+    args: [contractSettings?.rahatcvakenya?.address],
   });
   return (
     <>
@@ -132,7 +133,11 @@ export default function ConfirmSelection({
           <Button onClick={handleBack} variant="secondary" className="px-12">
             Close
           </Button>
-          <Button className="px-12" onClick={handleNext}>
+          <Button
+            disabled={!tokenBalance || Number(tokenBalance) === 0}
+            className="px-12"
+            onClick={handleNext}
+          >
             Finish
           </Button>
         </div>

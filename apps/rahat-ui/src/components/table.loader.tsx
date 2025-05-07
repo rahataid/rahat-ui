@@ -1,13 +1,16 @@
+import Image from 'next/image';
 import React from 'react';
-
 const TableLoader = () => {
   return (
-    <div className="flex items-center justify-center space-x-2 h-full">
-      <div className="h-3 w-3 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-      <div className="h-3 w-3 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-      <div className="h-3 w-3 animate-bounce rounded-full bg-primary"></div>
+    <div className="h-table flex items-center justify-center">
+      <Image
+        className="animate-pulse opacity-10"
+        alt="rahat logo"
+        src={'/rahat_logo_standard.png'}
+        height={150}
+        width={350}
+      />
     </div>
   );
 };
-
 export default TableLoader;

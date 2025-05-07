@@ -19,9 +19,9 @@ type IProps = {
 
 export default function CambodiaTable({ table, tableHeight, loading }: IProps) {
   return (
-    <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
-      <TableComponent>
-        <TableHeader className="sticky top-0 bg-card">
+    <TableComponent>
+      <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
+        <TableHeader className="sticky top-0 bg-card z-0">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -73,7 +73,7 @@ export default function CambodiaTable({ table, tableHeight, loading }: IProps) {
             </TableRow>
           )}
         </TableBody>
-      </TableComponent>
-    </ScrollArea>
+      </ScrollArea>
+    </TableComponent>
   );
 }

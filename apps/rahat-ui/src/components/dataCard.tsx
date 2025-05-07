@@ -63,11 +63,11 @@ export default function DataCard({
           {Icon && (
             <div
               className={cn(
-                'bg-secondary rounded-full h-8 w-8 flex items-center justify-center text-primary',
+                'bg-secondary rounded-full h-7 w-7 flex items-center justify-center text-primary',
                 iconStyle,
               )}
             >
-              <Icon size={20} strokeWidth={2} />
+              <Icon size={18} strokeWidth={2} />
             </div>
           )}
         </div>
@@ -92,6 +92,10 @@ export default function DataCard({
                     <TooltipContent>{number}</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
+              ) : Array.isArray(number) ? (
+                <div className="text-4xl font-semibold text-primary truncate w-52">
+                  {number.reduce((sum, item) => sum + item.count, 0)}
+                </div>
               ) : (
                 <div className="text-4xl font-semibold text-primary truncate w-52">
                   {number}

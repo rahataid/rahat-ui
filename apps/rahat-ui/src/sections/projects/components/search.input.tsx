@@ -25,7 +25,7 @@ export default function SearchInput({
       <Search
         size={18}
         strokeWidth={2.5}
-        className="absolute left-2 top-3 text-muted-foreground"
+        className="absolute left-2 top-3 text-muted-foreground rounded-sm"
       />
       <Input
         name={name}

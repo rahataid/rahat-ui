@@ -44,8 +44,6 @@ export default function DashboardView() {
   };
   transformedWardNumber.unshift({ label: 'All', value: '' });
 
-  console.log('data', data);
-
   return (
     <div>
       <div className="grid grid-cols grid-cols-2 gap-4 px-4 pt-2 place-content-between">

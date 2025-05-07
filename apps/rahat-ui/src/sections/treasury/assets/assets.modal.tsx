@@ -23,12 +23,17 @@ import { useState } from 'react';
 export function AssetsModal(tokenAddress: any) {
   const [amount, setAmount] = useState<string>('');
   const [selectedProject, setSelectedProject] = useState<`0x${string}`>('');
-  const[selectedToken,setSelectedToken] = useState<`0x${string}`>('');
+  const [selectedToken, setSelectedToken] = useState<`0x${string}`>('');
   const sendFundToProject = useSendFundToProject();
   const appContracts = useSettingsStore((state) => state.contracts);
   const projects = useProjectList();
 
   const { contractAddress } = useParams();
+  console.log('appContracts', appContracts);
+  console.log('first', {
+    selectedProject,
+    selectedToken,
+  });
 
   const handleSendFunds = async () => {
     if (selectedProject) {
@@ -43,17 +48,19 @@ export function AssetsModal(tokenAddress: any) {
         amount,
         projectAddress: selectedProject,
         tokenAddress: selectedToken,
-        treasuryAddress: appContracts?.RAHATTREASURY?.ADDRESS,
+        treasuryAddress: appContracts?.RAHATTREASURY?.address,
       });
     } else {
       console.log('No project selected');
     }
   };
 
-  const handleSelectProject = (contractAddress: `0x${string}`,tokenAddress: `0x${string}`) => {
+  const handleSelectProject = (
+    contractAddress: `0x${string}`,
+    tokenAddress: `0x${string}`,
+  ) => {
     setSelectedProject(contractAddress);
     setSelectedToken(tokenAddress);
-
   };
 
   return (
@@ -134,7 +141,10 @@ export function AssetsModal(tokenAddress: any) {
                     key={project?.id}
                     onSelect={() =>
                       //@ts-ignore
-                      handleSelectProject(project?.contractAddress,project?.extras?.tokenAddress)
+                      handleSelectProject(
+                        project?.contractAddress,
+                        project?.extras?.tokenAddress,
+                      )
                     }
                     className="p-2 hover:bg-gray-100 cursor-pointer"
                   >

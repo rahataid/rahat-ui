@@ -4,6 +4,7 @@ import {
   useGetRedemption,
   usePagination,
   useProjectSettingsStore,
+  useProjectStore,
 } from '@rahat-ui/query';
 import {
   getCoreRowModel,
@@ -49,7 +50,7 @@ export default function ClaimDetailView() {
     resetSelectedListItems,
   } = usePagination();
 
-  const { data, refetch, isLoading } = useGetRedemption(id, Id);
+  const { data, refetch, isFetching } = useGetRedemption(id, Id);
 
   React.useEffect(() => {
     if (data) {
@@ -95,6 +96,10 @@ export default function ClaimDetailView() {
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
+
+  const projectClosed = useProjectStore(
+    (state) => state.singleProject?.projectClosed,
   );
 
   const handleSubmit = () => {
@@ -143,7 +148,7 @@ export default function ClaimDetailView() {
           />
           <Button
             type="submit"
-            disabled={data?.status != 'REQUESTED'}
+            disabled={data?.status != 'REQUESTED' || projectClosed}
             onClick={handleSubmit}
           >
             Approve
@@ -176,7 +181,7 @@ export default function ClaimDetailView() {
           <ElkenyaTable
             table={table}
             tableHeight="h-[calc(100vh-399px)]"
-            loading={isLoading}
+            loading={isFetching}
           />
         </div>
       </div>

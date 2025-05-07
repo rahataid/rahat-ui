@@ -1,15 +1,13 @@
 'use client';
 
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
   useProjectList,
   useSendFundToProject,
   useSettingsStore,
 } from '@rahat-ui/query';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { useTreasuryTokenDetail } from 'libs/query/src/lib/treasury/treasury.service';
-import { Banknote, Plus } from 'lucide-react';
+import { Banknote } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { AssetsModal } from './assets.modal';
@@ -82,7 +80,7 @@ const AssetsDetails = () => {
       </div>
       <div className="mt-2">
         <div className="bg-card h-[calc(100vh-500px)] w-full flex flex-col justify-center items-center">
-          <AssetsModal tokenAddress = {contractAddress}/>
+          <AssetsModal tokenAddress={contractAddress} />
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useAAProjectSettingsDatasource,
   useAAProjectSettingsHazardType,
+  useAAProjectSettingsSCB,
   useProjectContractSettings,
   useProjectSettingsStore,
   useProjectSubgraphSettings,
@@ -28,6 +29,7 @@ export default function ProjectLayoutRoot({
   useProjectContractSettings(uuid);
   useAAProjectSettingsHazardType(uuid);
   useProjectSubgraphSettings(uuid);
+  useAAProjectSettingsSCB(uuid);
 
   // const dataSources = useProjectSettingsStore(
   //   (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]);

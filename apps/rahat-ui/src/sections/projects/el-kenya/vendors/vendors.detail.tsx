@@ -1,6 +1,7 @@
 import {
   useGetOfflineSingleVendor,
   useKenyaVendorTransactions,
+  useProjectStore,
   useRemoveVendor,
 } from '@rahat-ui/query';
 import {
@@ -25,13 +26,17 @@ export default function VendorsDetail() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const phone = searchParams.get('phone');
+  const phone = decodeURIComponent(searchParams.get('phone') || '');
   const name = searchParams.get('name');
   const vendorWallet = searchParams.get('walletAddress') || '';
   const vendorId = searchParams.get('vendorId');
   const vendorUUID = searchParams.get('vendorUUID') as UUID;
 
-  const { data, isLoading: isVendorLoading } = useGetOfflineSingleVendor(
+  const projectClosed = useProjectStore(
+    (state) => state.singleProject?.projectClosed,
+  );
+
+  const { data, isFetching: isVendorLoading } = useGetOfflineSingleVendor(
     id,
     Number(vendorId),
   );
@@ -61,17 +66,6 @@ export default function VendorsDetail() {
           subtitle="Here is the detailed view of selected vendor"
           path={`/projects/el-kenya/${id}/vendors`}
         />
-        <div className="flex space-x-2">
-          <EditButton
-            className="border-none bg-sky-50 shadow-none"
-            path={`/projects/el-kenya/${id}/vendors/${vendorUUID}/edit`}
-          />
-          <DeleteButton
-            className="border-none bg-red-100 shadow-none"
-            name="vendor"
-            handleContinueClick={deleteVendor}
-          />
-        </div>
       </div>
       <div className="p-5 rounded border grid grid-cols-4 gap-5 mb-5">
         <div>

@@ -30,11 +30,10 @@ export function TriggerConfirmModal({ campaignId, completed }: IProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          // disabled={completed}
+          disabled={completed}
           className="flex items-center gap-2 w-36 h-9"
         >
-          {/* completed ? 'Triggered' : */}
-          {'Trigger'}
+          {completed ? 'Triggered' : 'Trigger'}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">

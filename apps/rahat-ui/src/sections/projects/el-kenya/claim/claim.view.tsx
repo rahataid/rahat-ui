@@ -64,7 +64,7 @@ export default function ClaimView() {
 
   const columns = useTableColumn();
 
-  const { data, isSuccess, isLoading } = useListRedemptions(id, {
+  const { data, isSuccess, isFetching } = useListRedemptions(id, {
     page: pagination.page,
     perPage: pagination.perPage,
     ...debouncedFilters,
@@ -141,7 +141,7 @@ export default function ClaimView() {
                 ? 'h-[calc(100vh-351px)]'
                 : 'h-[calc(100vh-285px)]'
             }
-            loading={isLoading}
+            loading={isFetching}
           />
           <CustomPagination
             meta={data?.meta || { total: 0, currentPage: 0 }}

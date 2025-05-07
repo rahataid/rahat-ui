@@ -1,3 +1,5 @@
+import { formatdbDate } from '.';
+
 const formatKey = (key: string) => {
   // Replace underscores with spaces
   let formattedKey = key.replace(/_/g, ' ');
@@ -18,12 +20,30 @@ export const renderProjectDetailsExtras = (
   extras: JSON | string | Record<string, any>,
 ) => {
   if (typeof extras === 'string') {
+    // If the string is a valid date, format it
+    if (!Number.isNaN(Date.parse(extras))) {
+      return (
+        <p className="font-light">
+          {new Intl.DateTimeFormat('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          }).format(new Date(extras))}
+        </p>
+      );
+    }
+    // Return nothing if the string is empty
+    if (extras.trim() === '') return null;
     return <p className="font-light">{extras}</p>;
   }
   return Object.keys(extras).map((key) => {
     const value = (extras as Record<string, any>)[key];
 
-    if (key === 'treasury') {
+    if (
+      key === 'treasury' ||
+      value == null ||
+      (typeof value === 'string' && value.trim() === '')
+    ) {
       return null;
     }
 
@@ -35,8 +55,17 @@ export const renderProjectDetailsExtras = (
           renderProjectDetailsExtras(value)
         ) : (
           <>
-            <p className="font-medium text-primary">{String(value)}</p>
-
+            {typeof value === 'string' && !Number.isNaN(Date.parse(value)) ? (
+              <p className="font-medium text-primary">
+                {new Intl.DateTimeFormat('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                }).format(new Date(value))}
+              </p>
+            ) : (
+              <p className="font-medium text-primary">{String(value)}</p>
+            )}
             <p className="font-light">{formattedKey}</p>
           </>
         )}

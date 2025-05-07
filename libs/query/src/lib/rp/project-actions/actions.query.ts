@@ -18,6 +18,9 @@ const GET_UNSYNCED_BENEFICIARY_GROUP =
   'rpProject.beneficiary.group.get_unsynced';
 
 const GET_ALL_BENEFICIARY_GROUPS = 'rpProject.beneficiary.getAllGroups';
+const LIST_EYE_CHECKEUP_LINE = 'rpProject.reporting.list_eye_checkup_line';
+const LIST_PURCHASE_OF_GLASSESS_LINE =
+  'rpProject.reporting.list_purchase_of_glassess';
 
 // Hooks for Disbursement Plan
 export const useCreateDisbursementPlan = (projectUUID: UUID) => {
@@ -342,7 +345,7 @@ export const useFindAllBeneficiaryGroups = (
   const action = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['beneficiary_groups', projectUUID,payload],
+    queryKey: ['beneficiary_groups', projectUUID, payload],
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {
@@ -353,7 +356,7 @@ export const useFindAllBeneficiaryGroups = (
           payload: payload || {},
         },
       });
-      return {data:res.data,meta:res.response.meta};
+      return { data: res.data, meta: res.response.meta };
     },
   });
 
@@ -361,8 +364,8 @@ export const useFindAllBeneficiaryGroups = (
 
   return {
     ...query,
-    data: query?.data?.data||[], 
-    meta: query?.data?.meta, 
+    data: query?.data?.data || [],
+    meta: query?.data?.meta,
   };
 };
 
@@ -428,4 +431,48 @@ export const useRpSingleBeneficiaryGroupMutation = (projectUUID: UUID) => {
       return mutate.data;
     },
   });
+};
+
+export const useEyeCheckupLineChartsReports = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: [LIST_EYE_CHECKEUP_LINE, restPayloadString],
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: LIST_EYE_CHECKEUP_LINE,
+          payload: restPayload?.filters,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
+export const usePurchaseOfGlassLineChartsReports = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+  const query = useQuery({
+    queryKey: [LIST_PURCHASE_OF_GLASSESS_LINE, restPayloadString],
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: LIST_PURCHASE_OF_GLASSESS_LINE,
+          payload: restPayload?.filters,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
 };

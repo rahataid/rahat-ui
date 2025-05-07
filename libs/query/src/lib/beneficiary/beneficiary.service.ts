@@ -183,7 +183,9 @@ export const useBeneficiaryList = (payload: any): any => {
 };
 
 const listBeneficiaryStatus = async () => {
-  const response = await api.get('/beneficiaries/stats');
+  const response = await api.get(
+    '/beneficiaries/stats?projectId=bb90cc69-fb40-4daf-84e9-fe01c83117c9',
+  );
   return response?.data;
 };
 
@@ -414,22 +416,22 @@ const uploadBeneficiaryBulkQueue = async (
   client: any,
   projectId?: UUID,
   automatedGroupOption?: {
-    createAutomatedGroup?: boolean;
-    groupKey?: string;
+    createAutomatedGroup: boolean;
+    groupKey: string;
   },
 ) => {
   const formData = new FormData();
   formData.append('file', selectedFile);
   formData.append('doctype', doctype);
   if (projectId) formData.append('projectId', projectId);
-  formData.append(
-    'automatedGroupOption[createAutomatedGroup]',
-    Boolean(automatedGroupOption?.createAutomatedGroup).toString(),
-  );
   if (automatedGroupOption?.createAutomatedGroup) {
     formData.append(
+      'automatedGroupOption[createAutomatedGroup]',
+      automatedGroupOption.createAutomatedGroup.toString(),
+    );
+    formData.append(
       'automatedGroupOption[groupKey]',
-      automatedGroupOption.groupKey as string,
+      automatedGroupOption.groupKey,
     );
   }
   const response = await client.post('/beneficiaries/upload-queue', formData);

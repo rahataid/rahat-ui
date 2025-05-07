@@ -15,6 +15,7 @@ import ViewColumns from '../../components/view.columns';
 import AddButton from '../../components/add.btn';
 import { useParams } from 'next/navigation';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import { useProjectStore } from '@rahat-ui/query';
 
 type IProps = {
   table: Table<any>;
@@ -32,6 +33,10 @@ export default function MembersTable({
   loading,
 }: IProps) {
   const { id } = useParams();
+  const projectClosed = useProjectStore(
+    (state) => state.singleProject?.projectClosed,
+  );
+
   return (
     <>
       <div className="p-4 border rounded-md mt-5">
@@ -51,6 +56,7 @@ export default function MembersTable({
               className="border-primary text-primary"
               name="Beneficiary"
               path={`/projects/el-kenya/${id}/beneficiary/group/${groupUUID}/select?name=${name}`}
+              disabled={projectClosed}
             />
           ) : null}
         </div>

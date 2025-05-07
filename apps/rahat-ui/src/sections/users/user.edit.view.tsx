@@ -100,10 +100,10 @@ export default function EditUser() {
         <div className="p-4 h-[calc(100vh-130px)]">
           <HeaderWithBack
             title="Edit User"
-            subtitle="Edit user detail"
+            subtitle="Edit user detailsss"
             path="/users"
           />
-          <div className="grid grid-cols-2 gap-4 border p-4 rounded-md">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border p-4 rounded-md">
             <>
               <FormField
                 name="name"
@@ -201,30 +201,28 @@ export default function EditUser() {
                   );
                 }}
               />
-              <div className="col-span-2">
-                <FormField
-                  control={form.control}
-                  name="wallet"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Wallet Address</FormLabel>
-                        <FormControl>
-                          <div className="relative w-full">
-                            <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              type="text"
-                              placeholder="Enter wallet address"
-                              {...field}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="wallet"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Wallet Address</FormLabel>
+                      <FormControl>
+                        <div className="relative w-full">
+                          <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="text"
+                            placeholder="Enter wallet address"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
               <FormField
                 control={form.control}
                 name="roles"
@@ -263,9 +261,9 @@ export default function EditUser() {
             </>
           </div>
         </div>
-        <div className="flex justify-end space-x-2 p-4 border-t">
+        <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-2 p-4 border-t">
           <Button
-            className="px-14"
+            className="w-full md:w-auto px-14"
             type="button"
             variant="secondary"
             onClick={() => router.push('/users')}
@@ -278,7 +276,10 @@ export default function EditUser() {
               Please wait
             </Button>
           ) : (
-            <Button type="submit" className="px-10">
+            <Button
+              type="submit"
+              className="text-white hover:border hover:border-blue-500 hover:text-blue-500w-full md:w-auto px-14"
+            >
               Update
             </Button>
           )}

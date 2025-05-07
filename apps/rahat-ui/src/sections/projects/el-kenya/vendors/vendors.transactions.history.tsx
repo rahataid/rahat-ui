@@ -1,5 +1,6 @@
 import {
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -8,6 +9,7 @@ import { useParams } from 'next/navigation';
 import { useElkenyaVendorsTransactionsTableColumns } from './columns/use.vendors.transactions.table.columns';
 import React from 'react';
 import ElkenyaTable from '../table.component';
+import ClientSidePagination from '../../components/client.side.pagination';
 
 export default function VendorsTransactionsHistory({
   tableData,
@@ -23,11 +25,11 @@ export default function VendorsTransactionsHistory({
 
   const columns = useElkenyaVendorsTransactionsTableColumns();
   const table = useReactTable({
-    manualPagination: true,
     data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    getPaginationRowModel: getPaginationRowModel(),
     state: {
       columnVisibility,
     },
@@ -39,6 +41,7 @@ export default function VendorsTransactionsHistory({
         tableHeight="h-[calc(100vh-380px)]"
         loading={loading}
       />
+      <ClientSidePagination table={table} />
     </div>
   );
 }

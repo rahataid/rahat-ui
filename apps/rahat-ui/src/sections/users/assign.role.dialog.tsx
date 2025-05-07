@@ -108,7 +108,7 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
     <Dialog>
       <DialogTrigger>
         <CoreBtnComponent
-          className="text-primary hover:text-primary"
+          className="text-primary hover:text-primary border border-blue-500 w-full"
           variant="ghost"
           name="Assign Role"
           Icon={Plus}
@@ -168,7 +168,12 @@ export default function AssignRoleDialog({ userDetails }: IProps) {
                   </Button>
                 </DialogClose>
                 <DialogClose asChild>
-                  <Button type="submit">Submit</Button>
+                  <Button
+                    className="text-white hover:text-blue-500 hover:border hover:border-blue-500"
+                    type="submit"
+                  >
+                    Submit
+                  </Button>
                 </DialogClose>
               </div>
             </DialogFooter>

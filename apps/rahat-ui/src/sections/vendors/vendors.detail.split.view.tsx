@@ -112,19 +112,10 @@ export default function VendorsDetailSplitView({
           />
 
           <TooltipComponent
-            handleOnClick={() =>
-              router.push(`/vendors/${vendorsDetail?.id}/edit`)
-            }
-            Icon={Pencil}
-            tip="Edit"
+            handleOnClick={assignVoucher}
+            Icon={FolderPlus}
+            tip="Assign Project"
           />
-          {vendorsDetail?.projectName === 'N/A' && (
-            <TooltipComponent
-              handleOnClick={assignVoucher}
-              Icon={FolderPlus}
-              tip="Assign Project"
-            />
-          )}
           <TooltipComponent
             handleOnClick={() => router.push(`/vendors/${vendorsDetail?.id}`)}
             Icon={Expand}
@@ -166,9 +157,11 @@ export default function VendorsDetailSplitView({
             <FolderDot size={20} strokeWidth={1.5} />
             <p>Project Name</p>
           </div>
-          <p className="text-muted-foreground text-base">
-            {vendorsDetail?.projectName || '-'}
-          </p>
+          <div className="flex flex-col">
+            {vendorsDetail?.projectName.map((name: string) => (
+              <Badge className="mb-2">{name}</Badge>
+            )) || '-'}
+          </div>
         </div>
 
         <div className="flex justify-between items-center">
@@ -236,7 +229,13 @@ export default function VendorsDetailSplitView({
                 {projectList.data?.data.length ? (
                   projectList.data?.data.map((project: any) => {
                     return (
-                      <SelectItem key={project.id} value={project.uuid}>
+                      <SelectItem
+                        disabled={vendorsDetail?.projectName?.includes(
+                          project.name,
+                        )}
+                        key={project.id}
+                        value={project.uuid}
+                      >
                         {project?.name}
                       </SelectItem>
                     );

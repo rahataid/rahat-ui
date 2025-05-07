@@ -1,7 +1,7 @@
 'use client';
 
 import { Table, flexRender } from '@tanstack/react-table';
-import { CircleEllipsisIcon, Settings2 } from 'lucide-react';
+import { Settings2 } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
@@ -23,14 +23,12 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Pagination } from '@rumsan/sdk/types';
-import { Label } from '@radix-ui/react-label';
 type IProps = {
   table: Table<any>;
   setFilters: (fiters: Record<string, any>) => void;
   filters: Record<string, any>;
   setPagination: (pagination: Pagination) => void;
   pagination: Pagination;
-  loading: boolean;
 };
 
 export default function ListView({
@@ -39,7 +37,6 @@ export default function ListView({
   setFilters,
   setPagination,
   pagination,
-  loading,
 }: IProps) {
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
@@ -145,16 +142,7 @@ export default function ListView({
                       colSpan={table.getAllColumns().length}
                       className="h-24 text-center"
                     >
-                      {loading ? (
-                        <div className="flex items-center justify-center mt-4">
-                          <div className="text-center">
-                            <CircleEllipsisIcon className="animate-spin h-8 w-8 ml-4" />
-                            <Label className="text-base">Loading ...</Label>
-                          </div>
-                        </div>
-                      ) : (
-                        'No result found'
-                      )}
+                      No results.
                     </TableCell>
                   </TableRow>
                 )}

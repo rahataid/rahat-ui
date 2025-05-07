@@ -169,7 +169,7 @@ export default function ExcelUploader() {
         </Button>
         ) : ( */}
           <Button
-            className="w-40 bg-primary hover:ring-2 ring-primary"
+            className="w-40 bg-primary hover:ring-2 ring-primary text-white"
             onClick={handleUpload}
             disabled={uploadBeneficiary?.isPending || !data?.length}
           >

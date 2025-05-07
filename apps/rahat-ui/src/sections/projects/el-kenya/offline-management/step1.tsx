@@ -15,6 +15,7 @@ interface SelectBeneficiaryProps {
   handleStepDataChange: (e) => void;
   stepData: typeof initialStepData;
   pagination: any;
+  beneficiaryLoading: boolean;
 }
 
 export default function SelectBeneficiary({
@@ -23,6 +24,7 @@ export default function SelectBeneficiary({
   benificiaryGroups,
   stepData,
   pagination,
+  beneficiaryLoading,
 }: SelectBeneficiaryProps) {
   return (
     <Tabs defaultValue="beneficiary">
@@ -47,6 +49,7 @@ export default function SelectBeneficiary({
           <BeneficiaryView
             disbursmentList={disbursmentList}
             handleStepDataChange={handleStepDataChange}
+            beneficiaryLoading={beneficiaryLoading}
           />
           <CustomPagination
             currentPage={pagination?.pagination?.page}

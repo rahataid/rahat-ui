@@ -80,7 +80,18 @@ type CountrySelectProps = {
   options: CountrySelectOption[];
 };
 
-const allowedCountries = ['NP', 'KE', 'MW', 'PK', 'KH', 'SG'];
+const allowedCountries = [
+  'NP',
+  'KE',
+  'MW',
+  'PK',
+  'KH',
+  'SG',
+  'ZA',
+  'ZM',
+  'NG',
+  'BD',
+];
 
 const CountrySelect = ({
   disabled,

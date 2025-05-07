@@ -1,5 +1,6 @@
 'use client';
 
+
 import {
   Table,
   TableBody,
@@ -10,8 +11,8 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import {
-  useGetCommsCampaign,
-  useListCommsCampaignLog,
+  useGetRpCampaign,
+  useListRpCampaignLog,
   usePagination,
 } from '@rahat-ui/query';
 import {
@@ -43,7 +44,7 @@ import { Button } from '@rahat-ui/shadcn/components/button';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import CommsTable from '../../table.component';
+
 
 export type Ivr = {
   id: number;
@@ -54,7 +55,12 @@ export type Ivr = {
 };
 
 export default function IvrLogDetails() {
-  const { pagination, setNextPage, setPrevPage, filters } = usePagination();
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    filters,
+  } = usePagination();
   const { id, campaignId } = useParams();
   const columns = useIvrTableColumn();
   const router = useRouter();
@@ -66,11 +72,11 @@ export default function IvrLogDetails() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data: campginData } = useGetCommsCampaign(
+  const { data: campginData } = useGetRpCampaign(
     id as UUID,
     campaignId as string,
   );
-  const { data, isSuccess, isLoading } = useListCommsCampaignLog(id as UUID, {
+  const { data, isSuccess, isLoading } = useListRpCampaignLog(id as UUID, {
     uuid: campaignId as string,
     query: {
       ...pagination,
@@ -147,7 +153,110 @@ export default function IvrLogDetails() {
           className="max-w-mx"
         />
       </div>
-      <CommsTable table={table} tableHeight="h-[calc(100vh-421px)]" />
+      <div className="rounded border bg-card">
+        <Table>
+          <ScrollArea className="h-[calc(100vh-370px)]">
+            <TableHeader className="bg-card sticky top-0">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length > 0 ? (
+                table.getRowModel().rows.map((row, key) => (
+                  <TableRow
+                    key={key}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map((cell, index) => (
+                      <TableCell key={index}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={table.getAllColumns().length}
+                    className="h-24 text-center"
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center justify-center mt-4">
+                        <div className="text-center">
+                          <CircleEllipsisIcon className="animate-spin h-8 w-8 ml-4" />
+                          <Label className="text-base">Loading ...</Label>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center">
+                        <Image
+                          src="/noData.png"
+                          height={250}
+                          width={250}
+                          alt="no data"
+                        />
+                        <p className="text-medium text-base mb-1">
+                          No Data Available
+                        </p>
+                        <p className="text-sm mb-4 text-gray-500">
+                          There are no logs at the moment.
+                        </p>
+
+                      </div>
+                    )}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </ScrollArea>
+          <TableFooter>
+            <div className="flex items-center justify-end space-x-2 p-2 border-t bg-card">
+              <div className="flex-1 text-sm text-muted-foreground">
+                {table.getFilteredSelectedRowModel().rows.length} of{' '}
+                {table.getFilteredRowModel().rows.length} row(s) selected.
+              </div>
+              <div className="space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={setPrevPage}
+                  disabled={pagination.page === 1}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={setNextPage}
+                  disabled={
+                    data?.response?.meta?.lastPage === pagination.page ||
+                    data === undefined
+                  }
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          </TableFooter>
+        </Table>
+      </div>
     </div>
   );
 }

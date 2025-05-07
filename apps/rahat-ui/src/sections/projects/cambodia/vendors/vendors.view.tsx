@@ -95,7 +95,7 @@ export default function VendorsView() {
           </div>
           <CambodiaTable
             table={table}
-            tableHeight="h-[calc(100vh-300px)]"
+            tableHeight="h-[calc(100vh-340px)]"
             loading={isLoading}
           />
         </div>

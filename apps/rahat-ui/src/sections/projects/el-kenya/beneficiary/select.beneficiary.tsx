@@ -10,7 +10,7 @@ import {
   useRpSingleBeneficiaryGroup,
   useUpdateBeneficiaryGroup,
 } from '@rahat-ui/query';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -48,10 +48,17 @@ export default function SelectBeneficiaryView() {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
   }, []);
   const { data } = useRpSingleBeneficiaryGroup(id, groupid);
+
   const groupedBeneficiariesIds = data?.groupedBeneficiaries?.map((ben) => ({
     uuid: ben?.Beneficiary?.uuid,
   }));
-  console.log({ groupedBeneficiariesIds }, data);
+
+  useEffect(() => {
+    setFilters({
+      ...filters,
+      uuids: groupedBeneficiariesIds?.map((ben: any) => ben.uuid) || [],
+    });
+  }, [data]);
 
   const beneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -65,16 +72,13 @@ export default function SelectBeneficiaryView() {
 
   const tableData = React.useMemo(() => {
     if (beneficiaries) {
-      return beneficiaries?.data?.data.filter((ben) => {
-        if (!groupedBeneficiariesIds?.find((b) => b.uuid === ben.uuid)) {
-          return {
-            uuid: ben?.uuid,
-            phone: ben?.extras?.phone,
-            walletAddress: ben?.walletAddress,
-            location: ben?.projectData?.location || ben?.extras?.location,
-          };
-        }
-      });
+      return beneficiaries?.data?.data.map((ben) => ({
+        uuid: ben?.uuid,
+        phone: ben?.piiData.phone || ben?.extras?.phone,
+        gender: ben?.gender || ben?.extras?.gender,
+        walletAddress: ben?.walletAddress,
+        location: ben?.projectData?.location || ben?.extras?.location,
+      }));
     } else return [];
   }, [beneficiaries, data]);
   const [columnVisibility, setColumnVisibility] =
@@ -101,13 +105,13 @@ export default function SelectBeneficiaryView() {
   const updateBeneficiaryGroup = useUpdateBeneficiaryGroup();
 
   const handleUpdateBeneficiaryGroup = async () => {
-    const members = table
-      .getSelectedRowModel()
-      .rows?.map((data) => ({ uuid: data?.original?.uuid }));
     const payload = {
       uuid: groupid,
       name,
-      beneficiaries: [...members, ...groupedBeneficiariesIds],
+      beneficiaries: [
+        ...Object.keys(selectedListItems).map((uuid) => ({ uuid })),
+        ...groupedBeneficiariesIds,
+      ],
     };
     try {
       await updateBeneficiaryGroup.mutateAsync(payload);

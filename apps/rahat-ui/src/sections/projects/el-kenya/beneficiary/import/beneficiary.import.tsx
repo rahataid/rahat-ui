@@ -45,7 +45,7 @@ export default function ExcelUploader() {
         const url = window.URL.createObjectURL(new Blob([blob]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', 'kenya-beneficiary-upload-sample.xlsx');
+        link.setAttribute('download', 'beneficiary-upload-sample.xlsx');
         document.body.appendChild(link);
         link.click();
       })

@@ -20,7 +20,7 @@ const FiltersTags = ({ filters, setFilters, total }: any) => {
   };
 
   return (
-    <div className="rounded bg-card py-2 px-4 text-sm mb-2">
+    <div className="rounded bg-card  px-4 text-sm mb-2">
       <div className="flex items-center gap-6 w-full">
         <p className="text-primary min-w-max">{total} results found</p>
         <ScrollArea className="w-full py-2">

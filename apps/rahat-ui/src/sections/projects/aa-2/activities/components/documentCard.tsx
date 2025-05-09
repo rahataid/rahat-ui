@@ -22,7 +22,7 @@ export default function DocumentCard({
         <File />
       </div>
       <div>
-        <h4 className="text-gray-900 font-medium truncate w-56 text-sm">
+        <h4 className="text-gray-900 font-medium truncate w-48 text-sm">
           {fileName}
         </h4>
         <p className="text-gray-500 text-xs">{date}</p>
@@ -38,19 +38,19 @@ interface DocumentListProps {
 
 export function DocumentList({ documents, loading }: DocumentListProps) {
   return (
-    <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 h-[45vh]">
+    <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 ">
       <h3 className="text-lg font-semibold text-gray-900">Documents</h3>
       <p className="text-gray-600 text-sm mb-4">
         List of all the uploaded documents
       </p>
-      <ScrollArea className="h-[calc(100vh-600px)]">
+      <div className="overflow-y-auto  scrollbar-hidden h-[calc(100vh-550px)] ">
         {loading && <SpinnerLoader />}
         <div className="grid grid-cols-2 gap-4 p-4">
           {documents?.map((doc, index) => (
             <DocumentCard key={index} {...doc} />
           ))}
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }

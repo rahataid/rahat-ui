@@ -39,8 +39,8 @@ export function RainFallMonitor({
                   : 'bg-red-100 text-red-500'
               }`}
             >
-              {warningStatus.charAt(0).toUpperCase() +
-                warningStatus.slice(1).toLowerCase() || 'N/A'}
+              {warningStatus?.charAt(0).toUpperCase() +
+                warningStatus?.slice(1).toLowerCase() || 'N/A'}
             </Badge>
           </div>
         </div>

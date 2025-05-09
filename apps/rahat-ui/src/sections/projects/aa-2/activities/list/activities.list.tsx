@@ -21,6 +21,7 @@ import { getPaginationFromLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagi
 import {
   Back,
   CustomPagination,
+  DemoTable,
   Heading,
   IconLabelBtn,
   TableLoader,
@@ -57,8 +58,9 @@ export default function ActivitiesList() {
     setPagination,
     setFilters,
     filters,
+    setBackwardPage,
+    setForwardPage,
   } = usePagination();
-
   React.useEffect(() => {
     const titleStr = Array.isArray(title) ? title[0] : title;
     const formattedTitle = titleStr.toUpperCase();
@@ -164,6 +166,7 @@ export default function ActivitiesList() {
         return [key, value];
       }),
   );
+
   if (isLoading) {
     return <TableLoader />;
   }
@@ -176,7 +179,7 @@ export default function ActivitiesList() {
           <div>
             <Heading
               title={`${title[0].charAt(0).toUpperCase() + title.slice(1)}`}
-              description="Track all the trigger reports here"
+              description="List of all the activities in the selected phase "
             />
           </div>
           <div className="flex space-x-3">
@@ -190,7 +193,13 @@ export default function ActivitiesList() {
             <IconLabelBtn
               Icon={Plus}
               handleClick={() =>
-                router.push(`/projects/aa/${projectID}/activities/add`)
+                router.push(
+                  `/projects/aa/${projectID}/activities/add?phaseId=${
+                    phases.find(
+                      (p) => p.name === (title as string).toUpperCase(),
+                    )?.uuid
+                  }`,
+                )
               }
               name="Add Activity"
               className="rounded w-full"
@@ -207,7 +216,6 @@ export default function ActivitiesList() {
         category={categoryFilterItem}
         status={statusFilterItem}
       />
-
       {Object.keys(filters).length > 1 && (
         <FiltersTags
           filters={formattedFilters}
@@ -218,8 +226,15 @@ export default function ActivitiesList() {
         />
       )}
 
-      <div className="rounded border border-gray-100">
-        <ActivitiesTable table={table} />
+      <div className="rounded border border-gray-100 ">
+        <ActivitiesTable
+          table={table}
+          tableheight={
+            Object.keys(filters).length === 1
+              ? 'h-[calc(100vh-320px)]'
+              : 'h-[calc(100vh-380px)]'
+          }
+        />
         <CustomPagination
           meta={
             activitiesMeta || {
@@ -233,12 +248,19 @@ export default function ActivitiesList() {
           }
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
+          setPagination={setPagination}
           handlePageSizeChange={setPerPage}
           currentPage={pagination.page}
           perPage={pagination.perPage}
           total={activitiesMeta?.lastPage || 0}
         />
       </div>
+
+      {/* <div
+        className={`${
+          Object.keys(filters).length === 1 ? 'flex h-10' : 'hidden'
+        } px-4  py-2 mt-2`}
+      ></div> */}
     </div>
   );
 }

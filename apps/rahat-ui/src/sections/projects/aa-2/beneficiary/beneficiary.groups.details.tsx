@@ -82,7 +82,7 @@ const BeneficiaryGroupsDetails = (props: Props) => {
           iconStyle="bg-white text-secondary-muted"
           title="Total Beneficiaries"
           Icon={User}
-          number={'10'}
+          number={groupDetails?.groupedBeneficiaries?.length || 0}
         />
         <DataCard
           className="border-solid w-1/4 rounded-md"
@@ -95,12 +95,10 @@ const BeneficiaryGroupsDetails = (props: Props) => {
       <div className="p-4 rounded-sm border">
         <SearchInput
           className="w-full"
-          name="group"
-          value={
-            (table.getColumn('walletAddress')?.getFilterValue() as string) ?? ''
-          }
+          name="name"
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-            table.getColumn('walletAddress')?.setFilterValue(event.target.value)
+            table.getColumn('name')?.setFilterValue(event.target.value)
           }
         />
         <DemoTable table={table} tableHeight="h-[calc(100vh-500px)]" />

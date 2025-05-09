@@ -68,7 +68,7 @@ export function Info({ riverWatch }: any) {
       <div
         className={`p-4 rounded-sm border shadow text-center w-64 ${
           riverWatch?.info?.status === 'BELOW WARNING LEVEL'
-            ? 'bg-green-500'
+            ? 'bg-green-100 border-green-500'
             : ''
         }`}
       >

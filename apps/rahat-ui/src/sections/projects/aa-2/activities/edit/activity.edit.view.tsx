@@ -258,6 +258,8 @@ export default function EditActivity() {
             }),
           )
           .optional(),
+        sessionId: z.string().optional(),
+        communicationId: z.string().optional(),
       }),
     ),
   });
@@ -355,10 +357,10 @@ export default function EditActivity() {
             groupId: comms.groupId,
             transportId: comms.transportId,
             message: comms.audioURL,
-            // ...(comms.sessionId && { sessionId: comms.sessionId }),
-            // ...(comms.communicationId && {
-            //   communicationId: comms.communicationId,
-            // }),
+            ...(comms.sessionId && { sessionId: comms.sessionId }),
+            ...(comms.communicationId && {
+              communicationId: comms.communicationId,
+            }),
           });
           delete comms.audioURL;
         } else {
@@ -367,10 +369,10 @@ export default function EditActivity() {
             groupId: comms.groupId,
             transportId: comms.transportId,
             message: comms.message,
-            // ...(comms.sessionId && { sessionId: comms.sessionId }),
-            // ...(comms.communicationId && {
-            //   communicationId: comms.communicationId,
-            // }),
+            ...(comms.sessionId && { sessionId: comms.sessionId }),
+            ...(comms.communicationId && {
+              communicationId: comms.communicationId,
+            }),
           });
         }
       }
@@ -379,12 +381,10 @@ export default function EditActivity() {
         ...data,
         activityCommunication: activityCommunicationPayload,
       };
-      console.log('payload, after', payload);
     } else {
       payload = { uuid: activityID, ...data };
     }
     try {
-      console.log(payload);
       await updateActivity.mutateAsync({
         projectUUID: projectID as UUID,
         activityUpdatePayload: payload,
@@ -666,7 +666,7 @@ export default function EditActivity() {
                         {documents?.map((file) => (
                           <div
                             key={file.name}
-                            className="flex justify-between border p-4 rounded-xl items-center"
+                            className="flex justify-between border p-4 rounded-xl items-center space-x-2"
                           >
                             {uploadFile.isPending &&
                             documents?.[documents?.length - 1].name ===
@@ -675,7 +675,7 @@ export default function EditActivity() {
                             ) : (
                               <FileCheck className="w-9 h-9 text-green-600" />
                             )}
-                            <p className="text-sm ml-2 flex gap-2 items-center">
+                            <p className="text-sm  flex  items-center truncate w-28">
                               {file.name}
                             </p>
                             <X

@@ -66,11 +66,7 @@ export default function FundManagementList() {
       />
       <DemoTable
         table={table}
-        tableHeight={
-          groupsFundsData?.response?.data?.length > 0
-            ? 'h-[calc(100vh-420px)]'
-            : 'h-[calc(100vh-800px)]'
-        }
+        tableHeight="h-[calc(100vh-420px)]"
         loading={isLoading}
       />
       <CustomPagination

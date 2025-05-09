@@ -8,7 +8,7 @@ type IProps = {
 
 export default function DynamicTriggersList({ projectId, triggers }: IProps) {
   return (
-    <ScrollArea className="h-[calc(100vh-550px)]">
+    <ScrollArea className="h-[calc(100vh-550px)] min-h-[300px]">
       <div className="flex flex-col space-y-3 pr-2.5">
         {triggers?.length ? (
           triggers?.map((t: any) => (

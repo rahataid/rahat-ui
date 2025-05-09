@@ -1,0 +1,56 @@
+[
+  {
+    "id": "1",
+    "beneficiaryWallet": "1A1z66g7dg..gG6",
+    "transactionWalletId": "87uheduh7883hd",
+    "bankTransactionId": "1A1z66g7dg..gG6",
+    "tokensAssigned": "100",
+    "status": "Completed",
+    "timestamp": "21 July, 2025, 00:12:35 PM"
+  },
+  {
+    "id": "2",
+    "beneficiaryWallet": "1A1z66g7dg..gG6",
+    "transactionWalletId": "87uheduh7883hd",
+    "bankTransactionId": "1A1z66g7dg..gG6",
+    "tokensAssigned": "100",
+    "status": "Pending",
+    "timestamp": "21 July, 2025, 00:12:35 PM"
+  },
+  {
+    "id": "3",
+    "beneficiaryWallet": "1A1z66g7dg..gG6",
+    "transactionWalletId": "87uheduh7883hd",
+    "bankTransactionId": "1A1z66g7dg..gG6",
+    "tokensAssigned": "100",
+    "status": "Rejected",
+    "timestamp": "21 July, 2025, 00:12:35 PM"
+  },
+  {
+    "id": "4",
+    "beneficiaryWallet": "1A1z66g7dg..gG6",
+    "transactionWalletId": "87uheduh7883hd",
+    "bankTransactionId": "1A1z66g7dg..gG6",
+    "tokensAssigned": "100",
+    "status": "Completed",
+    "timestamp": "21 July, 2025, 00:12:35 PM"
+  },
+  {
+    "id": "5",
+    "beneficiaryWallet": "1A1z66g7dg..gG6",
+    "transactionWalletId": "87uheduh7883hd",
+    "bankTransactionId": "1A1z66g7dg..gG6",
+    "tokensAssigned": "100",
+    "status": "Pending",
+    "timestamp": "21 July, 2025, 00:12:35 PM"
+  },
+  {
+    "id": "6",
+    "beneficiaryWallet": "1A1z66g7dg..gG6",
+    "transactionWalletId": "87uheduh7883hd",
+    "bankTransactionId": "1A1z66g7dg..gG6",
+    "tokensAssigned": "100",
+    "status": "Rejected",
+    "timestamp": "21 July, 2025, 00:12:35 PM"
+  }
+]

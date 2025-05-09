@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Input } from 'libs/shadcn/src/components/ui/input';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { cn } from 'libs/shadcn/src';
 
 type IProps = {
@@ -20,6 +20,12 @@ export function SearchInput({
   isDisabled = false,
   value,
 }: IProps) {
+  const handleClear = () => {
+    const event = {
+      target: { value: '' },
+    } as React.ChangeEvent<HTMLInputElement>;
+    onSearch(event);
+  };
   return (
     <div className={cn('relative', className)}>
       <Search
@@ -35,6 +41,15 @@ export function SearchInput({
         onChange={onSearch}
         disabled={isDisabled}
       />
+      {value && (
+        <X
+          size={18}
+          strokeWidth={2.5}
+          color="black"
+          className="absolute right-2 top-3 text-muted-foreground cursor-pointer border rounded-full "
+          onClick={handleClear}
+        />
+      )}
     </div>
   );
 }

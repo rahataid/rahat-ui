@@ -1,9 +1,17 @@
-import React from 'react';
-import { FMTokensOverviewData, FMTransactionsData } from '../static';
+import React, { useEffect, useState } from 'react';
+// import { dFMTransactionsData } from '../static';
 import { BarChart, PieChart } from 'libs/shadcn/src/components/charts';
 import { DataCard, Heading, TransactionCard } from 'apps/rahat-ui/src/common';
+import { useParams } from 'next/navigation';
+import { useFetchTokenStatsStellar, useProjectAction } from '@rahat-ui/query';
+import TokenOverviewSkeleton from './token.overview.skeleton';
 
 export default function TokensOverview() {
+  const uuid = useParams().id;
+
+  const { data, isLoading } = useFetchTokenStatsStellar({
+    projectUUID: uuid as '${string}-${string}-${string}-${string}-${string}',
+  });
   return (
     <>
       <Heading
@@ -11,17 +19,21 @@ export default function TokensOverview() {
         titleStyle="text-lg"
         description="Overview of your tokens"
       />
-      <div className="grid grid-cols-4 gap-4 mb-4">
-        {FMTokensOverviewData?.map((i) => (
-          <DataCard
-            key={i.name}
-            className="rounded-md"
-            title={i.name}
-            number={i.amount}
-          />
-        ))}
-      </div>
-      <div className="grid grid-cols-3 gap-4">
+      {!isLoading ? (
+        <div className="grid lg:grid-cols-3 grid-cols-1 gap-4 mb-4">
+          {data?.data?.tokenStats.map((i: any) => (
+            <DataCard
+              key={i.name}
+              className="rounded-sm"
+              title={i.name}
+              number={i.amount}
+            />
+          ))}
+        </div>
+      ) : (
+        <TokenOverviewSkeleton number={[1, 2, 3]} />
+      )}
+      <div className="grid grid-cols-1 lg:grid-cols-1 xl:grid-cols-3 gap-4">
         <PieChart
           title="Token Status"
           chart={{
@@ -31,7 +43,7 @@ export default function TokensOverview() {
               { label: 'Not Redemeed', value: 4 },
             ],
           }}
-          height={385}
+          height={360}
         />
         <BarChart
           custom
@@ -43,9 +55,9 @@ export default function TokensOverview() {
         />
         <TransactionCard
           cardTitle="Recent Transactions"
-          cardData={FMTransactionsData}
+          cardData={data?.data?.transactionStats}
+          loading={isLoading}
         />
-        {/* <TransactionCard cardTitle="Recent Transactions" cardData={[]} /> */}
       </div>
     </>
   );

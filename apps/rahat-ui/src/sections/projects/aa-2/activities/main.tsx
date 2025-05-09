@@ -26,7 +26,6 @@ export default function ActivitiesView() {
   const activationData =
     activitiesData?.filter((d) => d.phase === 'ACTIVATION') || [];
 
-  console.log(readinesssData);
   const handleDownloadReport = () => {
     if (activitiesData.length < 1) return toast.error('No data to download.');
     const mappedData = activitiesData?.map((item: Record<string, any>) => {
@@ -55,7 +54,7 @@ export default function ActivitiesView() {
     generateExcel(mappedData, 'Activities_Report', 10);
   };
   return (
-    <div className="p-4">
+    <div className="p-4 ">
       <div className="flex justify-between items-center space-x-4">
         <Heading
           title="Activities"
@@ -79,7 +78,7 @@ export default function ActivitiesView() {
           />
         </div>
       </div>
-      <div className="grid  lg:grid-cols-1 xl:grid-cols-3  gap-4  items-center   ">
+      <div className="grid  lg:grid-cols-1 xl:grid-cols-3  gap-4">
         <PhaseContent
           title="Preparedness"
           description="Overview of preparedness phase"

@@ -6,6 +6,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { Heading } from 'apps/rahat-ui/src/common';
 import { DHMSection } from './components';
+import { DailyMonitoringListView } from './components/dailyMonitoring';
 
 export default function DataSources() {
   return (
@@ -33,7 +34,7 @@ export default function DataSources() {
           <DHMSection />
         </TabsContent>
         <TabsContent value="Daily Monitoring">
-          Daily Monitoring Section
+          <DailyMonitoringListView />
         </TabsContent>
       </Tabs>
     </div>

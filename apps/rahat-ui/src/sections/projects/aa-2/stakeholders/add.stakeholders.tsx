@@ -93,8 +93,8 @@ export default function AddStakeholders() {
     <div className="p-4">
       <div className="flex justify-between items-center">
         <HeaderWithBack
-          title={'Add Stakeholders'}
-          subtitle="Fill the form below  to create a new stakeholder details"
+          title={'Add Stakeholder'}
+          subtitle="Fill the form below  to create a new stakeholder"
           path={`/projects/aa/${id}/stakeholders`}
         />
       </div>
@@ -203,65 +203,34 @@ export default function AddStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <Select
-                        value={field.value || ''}
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                        }}
-                      >
-                        <Label>District</Label>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select District" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectGroup>
-                            {Object.values(DISTRICTS_OF_NEPAL).map(
-                              (district) => (
-                                <SelectItem value={district} key={district}>
-                                  {district}
-                                </SelectItem>
-                              ),
-                            )}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                      <Label>District</Label>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Enter a District"
+                          {...field}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   );
                 }}
               />
+
               <FormField
                 control={form.control}
                 name="municipality"
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <Select
-                        value={field.value || ''}
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                        }}
-                      >
-                        <Label>Municipality</Label>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a municipality" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectGroup>
-                            {MUNICIPALITIES_OF_NEPAL.map(
-                              (municipality, index) => (
-                                <SelectItem value={municipality} key={index}>
-                                  {municipality}
-                                </SelectItem>
-                              ),
-                            )}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                      <Label>Municipality</Label>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Enter a Municipality"
+                          {...field}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   );

@@ -32,16 +32,10 @@ export default function TransactionCard() {
         titleStyle="text-lg"
         description="List of recently made transactions"
       />
-      <ScrollArea className="p-3 h-[calc(100vh-700px)]">
-        <div className="flex flex-col space-y-2">
-          <Transaction />
-          <Transaction />
-          <Transaction />
-          <Transaction />
-          <Transaction />
-          <Transaction />
-          <Transaction />
-        </div>
+      <ScrollArea className="p-3 h-[calc(100vh-600px)]">
+        {Array.from({ length: 10 }, (_, i) => i).map((i) => (
+          <Transaction key={i} />
+        ))}
       </ScrollArea>
     </div>
   );

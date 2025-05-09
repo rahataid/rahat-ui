@@ -44,7 +44,10 @@ export default function AddCommunicationForm({
   communicationData,
   onRemove,
 }: IProps) {
-  const [audioFile, setAudioFile] = React.useState({});
+  const [audioFile, setAudioFile] = React.useState({
+    fileName: '',
+    mediaURL: '',
+  });
   const [contentType, setContentType] = React.useState<ValidationContent | ''>(
     '',
   );
@@ -150,13 +153,16 @@ export default function AddCommunicationForm({
     form.setValue(fieldName('message'), '');
     form.setValue(fieldName('transportId'), '');
     form.setValue(fieldName('audioURL'), '');
-    setAudioFile({});
+    setAudioFile({
+      fileName: '',
+      mediaURL: '',
+    });
     fileUpload.reset();
     // form.setValue('activityCommunication', {});
   };
 
   const handleEditClick = (itemData: any) => {
-    setAudioFile(itemData?.audioFile);
+    setAudioFile(itemData?.audioURL);
     // for setting the group id
     setTimeout(() => {
       form.setValue(fieldName('groupId'), itemData.groupId);
@@ -164,12 +170,13 @@ export default function AddCommunicationForm({
     form.setValue(fieldName('groupType'), itemData?.groupType);
     form.setValue(fieldName('message'), itemData?.message);
     form.setValue(fieldName('transportId'), itemData?.transportId);
-    form.setValue(fieldName('audioURL'), itemData?.audioFile);
+    form.setValue(fieldName('audioURL'), audioFile);
   };
 
   // Handle the edit button click
   const editButtonClickHandler = (i: number) => {
     // e.preventDefault();
+    form.watch('activityCommunication');
     const itemData = communicationData[i];
     handleEditClick(itemData);
     onRemove(i);
@@ -279,13 +286,29 @@ export default function AddCommunicationForm({
                       <p className="text-green-600 text-xs">upload complete</p>
                     )}
                   </div>
+
                   <FormMessage />
                 </FormItem>
               );
             }}
           />
         )}
-
+        {contentType === ValidationContent.URL &&
+          audioFile?.fileName &&
+          audioFile?.mediaURL && (
+            <div className="pt-2">
+              <h3 className="text-sm font-medium mb-2">
+                {audioFile?.fileName}
+              </h3>
+              <audio
+                src={audioFile?.mediaURL}
+                controls
+                className="w-full h-10 "
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+              />
+            </div>
+          )}
         {contentType === ValidationContent.TEXT && (
           <FormField
             control={form.control}

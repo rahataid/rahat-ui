@@ -40,7 +40,7 @@ export default function EditTrigger() {
     resolver: zodResolver(ManualFormSchema),
     defaultValues: {
       title: '',
-      isMandatory: true,
+      isMandatory: false,
       notes: '',
     },
   });
@@ -49,16 +49,12 @@ export default function EditTrigger() {
     title: z.string().min(2, { message: 'Please enter valid name' }),
     source: z.string().min(1, { message: 'Please select data source' }),
     isMandatory: z.boolean().optional(),
-    minLeadTimeDays: z
-      .string()
-      .min(1, { message: 'Please enter minimum lead time days' }),
-    maxLeadTimeDays: z
-      .string()
-      .min(1, { message: 'Please enter maximum lead time days' }),
-    probability: z
-      .string()
-      .min(1, { message: 'Please enter forecast probability' }),
+    minLeadTimeDays: z.string().optional(),
+    maxLeadTimeDays: z.string().optional(),
+    probability: z.string().optional(),
     notes: z.string().optional(),
+    warningLevel: z.string().optional(),
+    dangerLevel: z.string().optional(),
   });
 
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({
@@ -69,8 +65,10 @@ export default function EditTrigger() {
       maxLeadTimeDays: '',
       minLeadTimeDays: '',
       probability: '',
-      isMandatory: true,
+      isMandatory: false,
       notes: '',
+      warningLevel: '',
+      dangerLevel: '',
     },
   });
 
@@ -92,6 +90,9 @@ export default function EditTrigger() {
       maxLeadTimeDays,
       probability,
       riverBasin,
+      warningLevel,
+      dangerLevel,
+      isMandatory,
       ...rest
     } = data;
 
@@ -101,11 +102,13 @@ export default function EditTrigger() {
         ...rest,
         phaseId: trigger?.phaseId,
         uuid: trigger?.uuid,
-        source: trigger?.source === 'MANUAL' ? 'MANUAL' : 'DHM',
+        isMandatory: !data?.isMandatory,
         triggerStatement: {
           minLeadTimeDays,
           maxLeadTimeDays,
           probability,
+          warningLevel,
+          dangerLevel,
         },
       },
     });
@@ -130,17 +133,19 @@ export default function EditTrigger() {
       manualForm.reset({
         title: trigger?.title,
         notes: trigger?.notes,
-        isMandatory: trigger?.isMandatory,
+        isMandatory: !trigger?.isMandatory,
       });
     } else if (triggerType === 'automated') {
       automatedForm.reset({
         title: trigger?.title,
         source: trigger?.source,
-        isMandatory: trigger?.isMandatory,
+        isMandatory: !trigger?.isMandatory,
         maxLeadTimeDays: trigger?.triggerStatement?.maxLeadTimeDays,
         minLeadTimeDays: trigger?.triggerStatement?.maxLeadTimeDays,
         notes: trigger?.notes || '',
         probability: trigger?.triggerStatement?.probability,
+        warningLevel: trigger?.triggerStatement?.warningLevel,
+        dangerLevel: trigger?.triggerStatement?.dangerLevel,
       });
     }
   }, [trigger]);

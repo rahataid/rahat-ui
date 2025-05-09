@@ -74,11 +74,7 @@ export default function VendorsBeneficiaryList({
       />
       <DemoTable
         table={table}
-        tableHeight={
-          tableData?.length > 0
-            ? 'h-[calc(100vh-380px)]'
-            : 'h-[calc(100vh-800px)]'
-        }
+        tableHeight={'h-[calc(100vh-380px)]'}
         loading={loading}
       />
       <ClientSidePagination table={table} />

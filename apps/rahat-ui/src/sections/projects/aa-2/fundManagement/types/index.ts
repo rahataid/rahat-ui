@@ -2,7 +2,11 @@ export interface IFundManagement {
   id: string;
   uuid: string;
   title: string;
-  beneficiaryGroup: string;
-  tokens: number;
+  group: beneficiaryGroup;
+  numberOfTokens: number;
   createdBy: string;
+}
+
+interface beneficiaryGroup {
+  name: string;
 }

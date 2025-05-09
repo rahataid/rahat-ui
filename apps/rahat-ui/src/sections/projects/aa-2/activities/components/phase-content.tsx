@@ -49,7 +49,7 @@ export default function PhaseContent({
     router.push(`/projects/aa/${projectID}/activities/${id}/update-status`);
   };
   return (
-    <Card className="flex flex-col rounded-xl h-[80vh] w-full p-0">
+    <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full p-0">
       <CardHeader className="flex flex-col justify-between ">
         <div className="flex flex-col space-y-1">
           <CardTitle className="flex flex-row justify-between">
@@ -72,27 +72,29 @@ export default function PhaseContent({
           onSearch={(e) => setSearchQuery(e.target.value)}
         />
       </CardHeader>
-      <CardContent className="flex flex-col gap-2 overflow-y-scroll overflow-x-hidden scrollbar-hidden ">
+      <CardContent className="flex flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden scrollbar-hidden ">
         {loading ? (
           <SpinnerLoader />
         ) : filteredPhases?.length > 0 ? (
-          filteredPhases.map((phase, index) => (
-            <PhaseCard
-              key={index}
-              id={phase.id}
-              title={phase?.title}
-              location={phase.source}
-              responsibility={phase.responsibility}
-              onUpdateStatus={() => handleUpdateStatus(phase.id)}
-              status={phase.status}
-              leadTime={phase.leadTime}
-              className={`${
-                (phase.phase === 'PREPAREDNESS' && 'border-green-500') ||
-                (phase.phase === 'READINESS' && 'border-yellow-500') ||
-                (phase.phase === 'ACTIVATION' && 'border-red-500')
-              } shadow-sm rounded-xl p-0 hover:cursor-pointer hover:bg-gray-100`}
-            />
-          ))
+          <div className="flex flex-1 flex-col gap-2">
+            {filteredPhases.map((phase, index) => (
+              <PhaseCard
+                key={index}
+                id={phase.id}
+                title={phase?.title}
+                location={phase.source}
+                responsibility={phase.responsibility}
+                onUpdateStatus={() => handleUpdateStatus(phase.id)}
+                status={phase.status}
+                leadTime={phase.leadTime}
+                className={`${
+                  (phase.phase === 'PREPAREDNESS' && 'border-green-500') ||
+                  (phase.phase === 'READINESS' && 'border-yellow-500') ||
+                  (phase.phase === 'ACTIVATION' && 'border-red-500')
+                } shadow-sm rounded-xl p-0 hover:cursor-pointer hover:bg-gray-100`}
+              />
+            ))}
+          </div>
         ) : (
           <NoResult />
         )}

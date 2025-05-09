@@ -1,0 +1,52 @@
+[
+  {
+    "id": "1",
+    "groupName": "Rumsan Beneficiary Group",
+    "totalBeneficiaries": 10,
+    "totalTokenAssigned": 1000,
+    "payoutType": "FSP",
+    "payoutMode": "Online",
+    "status": "Completed",
+    "timestamp": "2025-04-23 10:15 AM"
+  },
+  {
+    "id": "2",
+    "groupName": "Alpha Test Group",
+    "totalBeneficiaries": 25,
+    "totalTokenAssigned": 2500,
+    "payoutType": "CVA",
+    "payoutMode": "Online",
+    "status": "Pending",
+    "timestamp": "2025-04-21 03:42 PM"
+  },
+  {
+    "id": "3",
+    "groupName": "Community Round A",
+    "totalBeneficiaries": 50,
+    "totalTokenAssigned": 5000,
+    "payoutType": "CVA",
+    "payoutMode": "Online",
+    "status": "Failed",
+    "timestamp": "2025-04-19 08:00 AM"
+  },
+  {
+    "id": "4",
+    "groupName": "NGO Outreach",
+    "totalBeneficiaries": 15,
+    "totalTokenAssigned": 1500,
+    "payoutType": "FSP",
+    "payoutMode": "Online",
+    "status": "Completed",
+    "timestamp": "2025-04-17 02:18 PM"
+  },
+  {
+    "id": "5",
+    "groupName": "Field Pilot Group",
+    "totalBeneficiaries": 20,
+    "totalTokenAssigned": 2000,
+    "payoutType": "CVA",
+    "payoutMode": "Offline",
+    "status": "Completed",
+    "timestamp": "2025-04-15 11:23 AM"
+  }
+]

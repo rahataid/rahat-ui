@@ -7,6 +7,7 @@ import CommunicationList from './activity.communication.list.card';
 import ActivityDetailCards from './activity.detail.cards';
 import { useDeleteActivities, useSingleActivity } from '@rahat-ui/query';
 import React from 'react';
+import { DialogComponent } from './dialog.reuse';
 
 export default function ActivitiesDetailView() {
   const router = useRouter();
@@ -47,28 +48,38 @@ export default function ActivitiesDetailView() {
           <div>
             <Heading
               title={`Activity Details`}
-              description="Track all the trigger reports here"
+              description="Detailed view of selected activity"
             />
           </div>
           <div className="flex space-x-3">
-            <IconLabelBtn
-              Icon={Trash}
+            <DialogComponent
+              buttonIcon={Trash}
+              buttonText="Delete"
+              dialogTitle="Delete Activity"
+              dialogDescription="Are you sure you want to delete this activity?"
+              confirmButtonText="Remove"
               handleClick={() => removeActivity()}
-              name="Delete"
+              buttonClassName="rounded-sm w-full text-red-500 border-red-500"
+              confirmButtonClassName="rounded-sm w-full bg-red-500"
               variant="outline"
-              className="rounded-sm w-full text-red-500 border-red-500"
             />
-            <IconLabelBtn
-              Icon={Pencil}
+
+            <DialogComponent
+              buttonIcon={Pencil}
+              buttonText="Edit"
+              dialogTitle="Edit Activity"
+              dialogDescription="Are you sure you want to edit this activity?"
+              confirmButtonText="Edit"
               handleClick={() =>
                 router.push(
                   `/projects/aa/${projectId}/activities/${activityId}/edit`,
                 )
               }
-              name="Edit"
+              buttonClassName="rounded-sm w-full"
+              confirmButtonClassName="rounded-sm w-full bg-primary"
               variant="outline"
-              className="rounded-sm w-full"
             />
+
             <IconLabelBtn
               Icon={RefreshCcw}
               handleClick={() =>
@@ -82,7 +93,7 @@ export default function ActivitiesDetailView() {
           </div>
         </div>
       </div>
-      <div className="grid lg:grid-cols-2 h-[calc(100vh-200px)] gap-3">
+      <div className="grid lg:grid-cols-2 gap-3">
         <div className="flex flex-col gap-2 w-full">
           <ActivityDetailCards
             activityDetail={activityDetail}

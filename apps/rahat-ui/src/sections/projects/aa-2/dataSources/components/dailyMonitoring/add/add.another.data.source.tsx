@@ -170,6 +170,17 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           </>
         );
         break;
+      case 'Gauge Reading':
+        fields = (
+          <InputFormField
+            form={form}
+            name={fieldName('gaugeReading')}
+            label="Gauge Reading (mm)"
+            placeholder="Enter gauge reading"
+          />
+        );
+        break;
+
       default:
         break;
     }

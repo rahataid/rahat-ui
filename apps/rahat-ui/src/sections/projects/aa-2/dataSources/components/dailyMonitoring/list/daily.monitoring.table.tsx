@@ -8,12 +8,14 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 
 type IProps = {
   table: Table<any>;
+  loading: boolean;
 };
 
-export default function DailyMonitoringTable({ table }: IProps) {
+export default function DailyMonitoringTable({ table, loading }: IProps) {
   return (
     <TableComponent>
       <ScrollArea className="h-[calc(100vh-322px)]">
@@ -55,7 +57,7 @@ export default function DailyMonitoringTable({ table }: IProps) {
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                No results.
+                {loading ? <SpinnerLoader /> : <NoResult />}
               </TableCell>
             </TableRow>
           )}

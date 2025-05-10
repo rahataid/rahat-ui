@@ -18,6 +18,11 @@ export default function useDailyMonitoringTableColumn() {
     {
       accessorKey: 'createdAt',
       header: 'Created At',
+      filterFn: (row, columnId, filterValue) => {
+        const rowDate = new Date(row.getValue(columnId));
+        const filterDate = new Date(filterValue);
+        return rowDate.toDateString() === filterDate.toDateString();
+      },
       cell: ({ row }) => {
         const createdAt = row.getValue('createdAt') as string;
         if (createdAt) {
@@ -37,10 +42,10 @@ export default function useDailyMonitoringTableColumn() {
       },
     },
     {
-      accessorKey: 'location',
+      accessorKey: 'riverBasin',
       header: 'River Basin',
       cell: ({ row }) => {
-        return row.getValue('location');
+        return row.getValue('riverBasin');
       },
     },
     {
@@ -54,7 +59,7 @@ export default function useDailyMonitoringTableColumn() {
               className="cursor-pointer hover:text-primary"
               size={20}
               strokeWidth={1.5}
-              onClick={() => handleEyeClick(row.original.uuid)}
+              onClick={() => handleEyeClick(row.original.groupKey)}
             />
           </div>
         );

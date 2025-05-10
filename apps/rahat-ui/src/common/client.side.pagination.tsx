@@ -37,7 +37,7 @@ export function ClientSidePagination({ table }: IProps) {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {['5', '10', '20', '30', '40', '50'].map((size) => (
+              {['2', '10', '20', '30', '40', '50'].map((size) => (
                 <SelectItem key={size} value={size}>
                   {size}
                 </SelectItem>

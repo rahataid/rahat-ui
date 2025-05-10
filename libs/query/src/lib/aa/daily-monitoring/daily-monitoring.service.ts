@@ -182,3 +182,28 @@ export const useRemoveMonitoring = () => {
     },
   });
 };
+
+export const useRemoveMonitoringWhileUpdating = () => {
+  const qc = useQueryClient();
+  const q = useProjectAction();
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      removePayload,
+    }: {
+      projectUUID: UUID;
+      removePayload: {
+        uuid: UUID;
+        id: number;
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'ms.dailyMonitoring.delete',
+          payload: removePayload,
+        },
+      });
+    },
+  });
+};

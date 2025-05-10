@@ -17,6 +17,7 @@ export const useSelectItems = () => {
       value: 'NCMRWF Deterministic & Probabilistic',
       label: 'NCMRWF Deterministic & Probabilistic',
     },
+    { label: 'Gauge Reading', value: 'Gauge Reading' },
   ];
 
   const dhmForecastSelectItems = [

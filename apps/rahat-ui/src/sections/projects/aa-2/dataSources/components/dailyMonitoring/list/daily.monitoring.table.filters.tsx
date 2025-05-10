@@ -24,24 +24,29 @@ type IProps = {
   location: string;
   date: string;
   handleSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  handleFilter: (key: string, value: any) => void;
+  handleFilterChange: (
+    event: React.ChangeEvent<HTMLInputElement> | { key: string; value: any },
+  ) => void;
 };
 
 type ISelectComponent = {
   name: string;
   options: Array<any>;
   value: string;
-  handleFilter: (key: string, value: string) => void;
+  handleFilterChange: (payload: { key: string; value: any }) => void;
 };
 
 const SelectComponent = ({
   name,
   options,
   value,
-  handleFilter,
+  handleFilterChange,
 }: ISelectComponent) => {
   return (
-    <Select value={value} onValueChange={(value) => handleFilter(name, value)}>
+    <Select
+      value={value}
+      onValueChange={(val) => handleFilterChange({ key: name, value: val })}
+    >
       <SelectTrigger>
         <SelectValue placeholder={`Select a ${name}`} />
       </SelectTrigger>
@@ -64,23 +69,23 @@ export default function DailyMonitoringTableFilters({
   location,
   date,
   handleSearch,
-  handleFilter,
+  handleFilterChange,
 }: IProps) {
   const { riverBasins } = useSelectItems();
   return (
     <div className="flex items-center gap-2 w-full">
       <SearchInput
         className="w-full"
-        name="user"
+        name="dataEntryBy"
         value={user}
         onSearch={handleSearch}
       />
       {/* Filter River Basin  */}
       <SelectComponent
-        name="location"
+        name="riverBasin"
         value={location}
         options={riverBasins}
-        handleFilter={handleFilter}
+        handleFilterChange={handleFilterChange}
       />
       {/* Filter Date  */}
       <Popover>
@@ -100,13 +105,23 @@ export default function DailyMonitoringTableFilters({
           <Calendar
             mode="single"
             selected={new Date(date)}
-            onSelect={(date) => handleFilter('createdAt', date)}
+            // onSelect={(date) => handleFilterChange('createdAt', date)}
+            onSelect={(val) =>
+              handleFilterChange({ key: 'createdAt', value: val })
+            }
             initialFocus
           />
         </PopoverContent>
       </Popover>
       {date && (
-        <Button type="button" onClick={() => handleFilter('createdAt', '')}>
+        <Button
+          type="button"
+          onClick={(val) =>
+            handleFilterChange({ key: 'createdAt', value: val })
+          }
+
+          //  onClick={() => handleFilter('createdAt', '')}
+        >
           Clear date
         </Button>
       )}

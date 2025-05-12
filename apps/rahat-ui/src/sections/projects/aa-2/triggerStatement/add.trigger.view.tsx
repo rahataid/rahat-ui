@@ -73,6 +73,9 @@ export default function AddTriggerView() {
     notes: z.string().optional(),
     warningLevel: z.string().optional(),
     dangerLevel: z.string().optional(),
+    forecast: z.string().optional(),
+    daysToConsiderPrior: z.string().optional(),
+    forecastStatus: z.string().optional(),
   });
 
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({
@@ -87,6 +90,9 @@ export default function AddTriggerView() {
       notes: '',
       warningLevel: '',
       dangerLevel: '',
+      forecast: '',
+      daysToConsiderPrior: '',
+      forecastStatus: '',
     },
   });
 
@@ -172,6 +178,9 @@ export default function AddTriggerView() {
         time,
         warningLevel,
         dangerLevel,
+        forecast,
+        daysToConsiderPrior,
+        forecastStatus,
         ...rest
       }) => ({
         ...rest,
@@ -181,6 +190,9 @@ export default function AddTriggerView() {
           probability,
           warningLevel,
           dangerLevel,
+          forecast,
+          daysToConsiderPrior,
+          forecastStatus,
         },
       }),
     );

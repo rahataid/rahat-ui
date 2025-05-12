@@ -1,39 +1,170 @@
+import * as React from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
-import { useParams, useRouter } from 'next/navigation';
-import * as React from 'react';
 
-import { useCreateDailyMonitoring } from '@rahat-ui/query';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { HeaderWithBack } from 'apps/rahat-ui/src/common';
-import { UUID } from 'crypto';
-import { Plus } from 'lucide-react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import SelectFormField from '../select.form.field';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@rahat-ui/shadcn/src/components/ui/card';
+import { UUID } from 'crypto';
+import {
+  useRemoveMonitoringWhileUpdating,
+  useSingleMonitoring,
+  useUpdateMonitoring,
+} from '@rahat-ui/query';
+import { Plus } from 'lucide-react';
+import AddAnotherDataSource from '../add/add.another.data.source';
+// import SelectFormField from '../../../../../../components/select.form.field';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+// import InputFormField from '../../../../../../components/input.form.field';
 import { useSelectItems } from '../useSelectItems';
-import AddAnotherDataSource from './add.another.data.source';
+import Loader from 'apps/rahat-ui/src/components/table.loader';
+import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import InputFormField from '../input.form.field';
+import SelectFormField from '../select.form.field';
 
-export default function AddDailyMonitoring() {
+export default function EditDailyMonitoring() {
   const params = useParams();
   const projectId = params.id as UUID;
-  const router = useRouter();
-
-  const dailyMonitoringListPath = `/projects/aa/${projectId}/data-sources`;
+  const monitoringId = params.monitoringId as UUID;
 
   const { riverBasins } = useSelectItems();
+  const { data, isLoading } = useSingleMonitoring(projectId, monitoringId);
+  const details = React.useMemo(() => {
+    return data?.data;
+  }, [data]);
 
-  const createDailyMonitoring = useCreateDailyMonitoring();
-
+  const updateDailyMonitoring = useUpdateMonitoring();
+  const removeDailyMonitoringWhileUpdating = useRemoveMonitoringWhileUpdating();
   const anotherDataSourceSchema = {
     source: '',
   };
+  const normalizedDataSource = React.useMemo(() => {
+    return (
+      details?.[0].data?.map((item: any) => {
+        switch (item.source) {
+          case 'DHM':
+            switch (item.forecast) {
+              case '3 Days Flood Forecast Bulletin':
+                return {
+                  source: item.source,
+                  forecast: item.forecast,
+                  today: item.today || '',
+                  tomorrow: item.tomorrow || '',
+                  dayAfterTomorrow: item.dayAfterTomorrow || '',
+                  id: item.id,
+                };
+              case '3 Days Rainfall Forecast Bulletin':
+                return {
+                  source: item.source,
+                  forecast: item.forecast,
+                  todayAfternoon: item.todayAfternoon || '',
+                  todayNight: item.todayNight || '',
+                  tomorrowAfternoon: item.tomorrowAfternoon || '',
+                  tomorrowNight: item.tomorrowNight || '',
+                  dayAfterTomorrowAfternoon:
+                    item.dayAfterTomorrowAfternoon || '',
+                  dayAfterTomorrowNight: item.dayAfterTomorrowNight || '',
+                  id: item.id,
+                };
+              case 'Realtime Monitoring (River Watch)':
+                return {
+                  source: item.source,
+                  forecast: item.forecast,
+                  waterLevel: item.waterLevel || '',
+                  id: item.id,
+                };
+              case 'Realtime Rainfall':
+                return {
+                  source: item.source,
+                  forecast: item.forecast,
+                  chisapaniKarnali: item.chisapaniKarnali || '',
+                  daulatpurStation: item.daulatpurStation || '',
+                  bachilaStation: item.bachilaStation || '',
+                  gurbaDurbar: item.gurbaDurbar || '',
+                  id: item.id,
+                };
+              case 'NWP':
+                return {
+                  source: item.source,
+                  forecast: item.forecast,
+                  hours24NWP: item.hours24NWP || '',
+                  hours48: item.hours48 || '',
+                  hours72NWP: item.hours72NWP || '',
+                  id: item.id,
+                };
+              default:
+                return {
+                  source: item.source,
+                  forecast: item.forecast || '',
+                  id: item.id,
+                };
+            }
+          case 'NCMRWF Accumulated':
+            return {
+              source: item.source,
+              heavyRainfallForecastInKarnaliBasin:
+                item.heavyRainfallForecastInKarnaliBasin || '',
+              hours24: item.hours24 || '',
+              hours72: item.hours72 || '',
+              hours168: item.hours168 || '',
+              id: item.id,
+            };
+          case 'NCMRWF Deterministic & Probabilistic':
+            return {
+              source: item.source,
+              extremeWeatherOutlook: item.extremeWeatherOutlook || '',
+              deterministicsPredictionSystem:
+                item.deterministicsPredictionSystem || '',
+              probabilisticPredictionSystem:
+                item.probabilisticPredictionSystem || '',
+              id: item.id,
+            };
+          case 'GLOFAS':
+            return {
+              source: item.source,
+              todayGLOFAS: item.todayGLOFAS || '',
+              days3: item.days3 || '',
+              days5: item.days5 || '',
+              inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak:
+                item.inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak || '',
+              id: item.id,
+            };
+          case 'Flash Flood Risk Monitoring':
+            return {
+              source: item.source,
+              status: item.status || '',
+              id: item.id,
+            };
+          case 'Gauge Reading':
+            return {
+              source: item.source,
+              gaugeReading: item.gaugeReading || '',
+              id: item.id,
+            };
+          default:
+            return {
+              source: item.source,
+              id: item.id,
+            };
+        }
+      }) || []
+    );
+  }, [details]);
 
   const FormSchema = z.object({
-    riverBasin: z.string().min(1, { message: 'Please select river basin.' }),
+    dataEntryBy: z.string().min(2, { message: 'Please enter name.' }),
+    riverBasin: z.string().min(1, { message: 'Please select a river basin.' }),
     dataSource: z.array(
       z.object({
+        id: z.number().optional(),
         source: z.string().min(1, { message: 'Please select a source.' }),
         //DHM
         forecast: z.string().optional(),
@@ -87,11 +218,12 @@ export default function AddDailyMonitoring() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      riverBasin: '',
+      dataEntryBy: '',
+      riverBasin: data?.data?.[0].riverBasin || '',
       dataSource: [],
     },
   });
-
+  console.log('normalizedDataSource', data?.data);
   const {
     fields: anotherDataSourceFields,
     append: anotherDataSourceAppend,
@@ -101,7 +233,9 @@ export default function AddDailyMonitoring() {
     name: 'dataSource',
   });
 
-  const handleCreateBulletin = async (data: z.infer<typeof FormSchema>) => {
+  const handleEditDailyMonitoring = async (
+    data: z.infer<typeof FormSchema>,
+  ) => {
     const dataPayload = [];
     for (const item of data.dataSource) {
       switch (item.source) {
@@ -114,6 +248,7 @@ export default function AddDailyMonitoring() {
                 today: item?.today,
                 tomorrow: item?.tomorrow,
                 dayAfterTomorrow: item?.dayAfterTomorrow,
+                id: item?.id,
               });
               break;
             case '3 Days Rainfall Forecast Bulletin':
@@ -126,6 +261,7 @@ export default function AddDailyMonitoring() {
                 tomorrowNight: item?.tomorrowNight,
                 dayAfterTomorrowAfternoon: item?.dayAfterTomorrowAfternoon,
                 dayAfterTomorrowNight: item?.dayAfterTomorrowNight,
+                id: item?.id,
               });
               break;
             case 'Realtime Monitoring (River Watch)':
@@ -133,16 +269,16 @@ export default function AddDailyMonitoring() {
                 source: item.source,
                 forecast: item?.forecast,
                 waterLevel: item?.waterLevel,
+                id: item?.id,
               });
               break;
             case 'Realtime Rainfall':
               dataPayload.push({
-                source: item.source,
-                forecast: item?.forecast,
                 chisapaniKarnali: item.chisapaniKarnali,
                 daulatpurStation: item.daulatpurStation,
                 bachilaStation: item.bachilaStation,
                 gurbaDurbar: item.gurbaDurbar,
+                id: item?.id,
               });
               break;
             case 'NWP':
@@ -152,6 +288,7 @@ export default function AddDailyMonitoring() {
                 hours24NWP: item?.hours24NWP,
                 hours48: item?.hours48,
                 hours72NWP: item?.hours72NWP,
+                id: item?.id,
               });
               break;
             default:
@@ -166,6 +303,7 @@ export default function AddDailyMonitoring() {
             hours24: item?.hours24,
             hours72: item?.hours72,
             hours168: item?.hours168,
+            id: item?.id,
           });
           break;
         case 'NCMRWF Deterministic & Probabilistic':
@@ -175,6 +313,7 @@ export default function AddDailyMonitoring() {
             deterministicsPredictionSystem:
               item?.deterministicsPredictionSystem,
             probabilisticPredictionSystem: item?.probabilisticPredictionSystem,
+            id: item?.id,
           });
           break;
         case 'GLOFAS':
@@ -185,18 +324,14 @@ export default function AddDailyMonitoring() {
             days5: item?.days5,
             inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak:
               item?.inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak,
+            id: item?.id,
           });
           break;
         case 'Flash Flood Risk Monitoring':
           dataPayload.push({
             source: item.source,
             status: item?.status,
-          });
-          break;
-        case 'Gauge Reading':
-          dataPayload.push({
-            source: item.source,
-            gaugeReading: item?.gaugeReading,
+            id: item?.id,
           });
           break;
         default:
@@ -204,60 +339,86 @@ export default function AddDailyMonitoring() {
       }
     }
     const payload = {
+      uuid: monitoringId,
+      dataEntryBy: data.dataEntryBy,
       riverBasin: data.riverBasin,
       data: dataPayload,
     };
     try {
-      await createDailyMonitoring.mutateAsync({
+      console.log('payload', payload);
+      await updateDailyMonitoring.mutateAsync({
         projectUUID: projectId,
         monitoringPayload: payload,
       });
     } catch (e) {
-      console.error('Create Bulletin Error::', e);
+      console.error('Edit Daily Monitoring Error::', e);
     }
   };
 
   React.useEffect(() => {
-    if (createDailyMonitoring.isSuccess) {
-      form.reset();
-      router.push(dailyMonitoringListPath);
+    if (data?.data?.length > 0) {
+      form.reset({
+        dataEntryBy: data?.data?.[0].dataEntryBy,
+        riverBasin: data?.data?.[0]?.riverBasin,
+        dataSource: normalizedDataSource,
+      });
     }
-  }, [createDailyMonitoring.isSuccess]);
+  }, [data?.data]);
 
-  return (
+  const handleRemove = (data: any) => {
+    console.log('Closing item:', data);
+    removeDailyMonitoringWhileUpdating.mutate({
+      projectUUID: projectId,
+      removePayload: {
+        uuid: monitoringId,
+        id: data.id,
+      },
+    });
+  };
+  return isLoading ? (
+    <Loader />
+  ) : (
     <div className="px-4 py-2">
       <HeaderWithBack
-        title={'Add Daily Monitoring'}
-        subtitle="Fill the form below  to add daily monitoring"
+        title={'Edit Daily Monitoring'}
+        subtitle="Edit the form below  to update daily monitoring"
         path={`/projects/aa/${projectId}/data-sources`}
       />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleCreateBulletin)}>
+        <form onSubmit={form.handleSubmit(handleEditDailyMonitoring)}>
           <ScrollArea className="h-[calc(100vh-240px)]">
             <div className="grid grid-cols-2 gap-4">
+              <InputFormField
+                form={form}
+                name="dataEntryBy"
+                label="Created By"
+                placeholder="Enter Data Entry Personnel"
+              />
               <SelectFormField
+                key={form.watch('riverBasin')}
                 form={form}
                 name="riverBasin"
                 label="River Basin"
                 placeholder="Select river basin"
                 selectItems={riverBasins}
-                className="mx-2"
               />
             </div>
-            {anotherDataSourceFields.map((_, index) => (
+            {anotherDataSourceFields.map((k, index) => (
               <AddAnotherDataSource
                 key={index}
                 form={form}
                 index={index}
                 onClose={() => {
+                  handleRemove(form.getValues(`dataSource.${index}`));
                   anotherDataSourceRemove(index);
                 }}
               />
             ))}
+
             <Button
               type="button"
               variant="outline"
-              className="border-dashed border-primary text-primary text-sm w-full mt-2"
+              className="border-dashed border-primary text-primary text-sm w-full mt-4"
               onClick={() => anotherDataSourceAppend(anotherDataSourceSchema)}
             >
               Add Data Source
@@ -272,13 +433,12 @@ export default function AddDailyMonitoring() {
               className="bg-red-100 text-red-600 w-36"
               onClick={() => {
                 form.reset();
-                router.push(dailyMonitoringListPath);
               }}
             >
               Cancel
             </Button>
             <Button type="submit" className="w-32">
-              Add
+              Update
             </Button>
           </div>
         </form>

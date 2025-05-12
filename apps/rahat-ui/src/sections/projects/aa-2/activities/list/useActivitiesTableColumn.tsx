@@ -38,13 +38,13 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: ({ row }) => <div className="w-80">{row.getValue('title')}</div>,
+      cell: ({ row }) => <div>{row.getValue('title')}</div>,
     },
     {
       accessorKey: 'category',
       header: 'Category',
       cell: ({ row }) => (
-        <Badge className="rounded-xl capitalize w-max text-muted-foreground">
+        <Badge className="rounded-xl capitalize text-xs font-normal text-muted-foreground">
           {row.getValue('category')}
         </Badge>
       ),
@@ -54,7 +54,7 @@ export default function useActivitiesTableColumn() {
       accessorKey: 'isAutomated',
       header: 'Type',
       cell: ({ row }) => (
-        <Badge className="rounded-xl capitalize text-muted-foreground">
+        <Badge className="rounded-xl capitalize  text-xs font-normal text-muted-foreground">
           {row.getValue('isAutomated') ? 'Automated' : 'Manual'}
         </Badge>
       ),
@@ -76,7 +76,11 @@ export default function useActivitiesTableColumn() {
         const status = row.getValue('status') as string;
         const bgColor = getStatusBg(status);
         return (
-          <Badge className={`rounded-xl capitalize ${bgColor}`}>{status}</Badge>
+          <Badge
+            className={`rounded-xl capitalize text-xs font-normal ${bgColor}`}
+          >
+            {status}
+          </Badge>
         );
       },
     },
@@ -85,7 +89,7 @@ export default function useActivitiesTableColumn() {
       header: 'Completed By',
       cell: ({ row }) => {
         const completedBy = row.getValue('completedBy') as string;
-        return <div className="flex gap-1">{completedBy || 'N/A'}</div>;
+        return <div className="">{completedBy || 'N/A'}</div>;
       },
     },
     {

@@ -2,7 +2,12 @@
 import { SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { CheckCircle, Clock, UserCircle } from 'lucide-react';
 import * as React from 'react';
-
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/components/tooltip';
 type ActivityDetailCardsProps = {
   activityDetail?: any;
   loading?: boolean;
@@ -12,6 +17,20 @@ export default function ActivityDetailCards({
   activityDetail,
   loading,
 }: ActivityDetailCardsProps) {
+  function formatToNepalTime(utcDateString) {
+    const utcDate = new Date(utcDateString);
+
+    const nepalTimeFormatter = new Intl.DateTimeFormat('en-NP', {
+      timeZone: 'Asia/Kathmandu',
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    return nepalTimeFormatter.format(utcDate);
+  }
+
   if (loading) {
     <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 h-[calc(29vh)]">
       <SpinnerLoader />
@@ -23,7 +42,7 @@ export default function ActivityDetailCards({
         <SpinnerLoader />
       ) : (
         <>
-          <div className="flex flex-wrap items-center gap-2 mb-2">
+          <div className="flex flex-wrap items-center gap-2 mb-1">
             <span className="bg-green-100 text-green-700 text-xs font-normal px-2 py-1 rounded-sm">
               {activityDetail?.phase?.name}
             </span>
@@ -37,34 +56,59 @@ export default function ActivityDetailCards({
               {activityDetail?.status}
             </span>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900">
-            {activityDetail?.title}
-          </h3>
-          <p className="text-gray-600 text-sm mt-1">
-            {activityDetail?.description}
-          </p>
-          <div className="text-gray-500 text-sm mt-3 flex flex-wrap gap-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild className="hover:cursor-pointer py-0">
+                <h3 className="text-lg font-semibold text-gray-900 leading-tight truncate ">
+                  {activityDetail?.title}...
+                </h3>
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                className="w-80 rounded-sm text-justify "
+              >
+                <p>{activityDetail?.title}</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild className="hover:cursor-pointer">
+                <p className="text-gray-600 text-sm mt-1  leading-tight">
+                  {activityDetail?.description?.substring(0, 100)}...
+                </p>
+              </TooltipTrigger>
+              <TooltipContent
+                side="right"
+                className="w-80 rounded-sm text-justify"
+              >
+                <p>{activityDetail?.description}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <div className="text-gray-500 text-sm mt-2 flex flex-wrap gap-2">
             <span>{activityDetail?.phase?.riverBasin}</span>
             <span>&bull;</span>
             <span>{activityDetail?.leadTime}</span>
           </div>
-          <div className="flex items-center text-gray-500 text-sm mt-2">
-            <UserCircle className="mr-2" />
+          <div className="flex items-center text-gray-500 text-sm mt-1">
+            <UserCircle className="w-4 h-4 mr-2 ml-1" />
             <span>Assigned to: {activityDetail?.manager?.name}</span>
           </div>
           {activityDetail?.completedBy && (
-            <div className="flex items-center text-green-700 text-sm mt-2">
+            <div className="flex items-center text-green-700 text-xs mt-2">
               <>
-                <CheckCircle className="w-5 h-5 mr-2" />
-                <span>Completed by: {activityDetail?.completedBy}</span>
+                <CheckCircle className="w-4 h-4 mr-2 ml-1" />
+                <span>{activityDetail?.completedBy}</span>
               </>
             </div>
           )}
           {activityDetail?.completedAt && (
-            <div className="flex items-center text-green-700 text-sm mt-2">
+            <div className="flex items-center text-green-700 text-xs mt-2">
               <>
-                <Clock className="w-5 h-5 mr-2" />
-                <span>Completed by: {activityDetail?.completedAt}</span>
+                <Clock className="w-4 h-4 mr-2 ml-1" />
+                <span>
+                  Completed at: {formatToNepalTime(activityDetail?.completedAt)}
+                </span>
               </>
             </div>
           )}

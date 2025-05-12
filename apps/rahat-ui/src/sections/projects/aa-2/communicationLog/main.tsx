@@ -21,18 +21,16 @@ export default function CommunicationMainLogsView() {
       componentType: 'DATACARD',
       title: 'SMS Recipients',
       value:
-        commsStatsData?.stats?.recipientsByTransport.find(
-          (r) => r.name === 'SMS',
-        )?.totalRecipients || 0,
+        commsStatsData?.stats?.transportStats.find((r) => r.name === 'SMS')
+          ?.totalRecipients || 0,
       icon: 'MessageSquare',
     },
     {
       componentType: 'DATACARD',
       title: 'IVR Recipients',
       value:
-        commsStatsData?.stats?.recipientsByTransport.find(
-          (r) => r.name === 'IVR',
-        )?.totalRecipients || 0,
+        commsStatsData?.stats?.transportStats.find((r) => r.name === 'IVR')
+          ?.totalRecipients || 0,
       icon: 'AudioLines',
     },
     {

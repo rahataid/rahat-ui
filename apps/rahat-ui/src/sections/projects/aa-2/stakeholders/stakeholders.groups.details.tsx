@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import {
   AddButton,
@@ -35,8 +35,8 @@ const StakeholdersGroupsDetails = (props: Props) => {
     projectId,
     groupId,
   );
+
   const table = useReactTable({
-    manualPagination: true,
     data: groupDetails?.stakeholders || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -52,16 +52,13 @@ const StakeholdersGroupsDetails = (props: Props) => {
     },
   });
 
-  const handleSearch = (e) => {
-    console.log(e.target.value);
-  };
   return (
     <div className="p-4 ">
       <div className="flex justify-between items-center">
         <HeaderWithBack
           title={groupDetails?.name}
           subtitle="Detailed view of the selected stakeholders group"
-          path={`/projects/aa/${projectId}/stakeholders`}
+          path={`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`}
         />
       </div>
       <div className="flex gap-6 mb-3">
@@ -70,7 +67,7 @@ const StakeholdersGroupsDetails = (props: Props) => {
           iconStyle="bg-white text-secondary-muted"
           title="Total Stakeholders"
           Icon={User}
-          number={'10'}
+          number={groupDetails?.stakeholders?.length}
         />
       </div>
       <div className="p-4 rounded-sm border">
@@ -78,21 +75,37 @@ const StakeholdersGroupsDetails = (props: Props) => {
           <SearchInput
             className="w-full"
             name="stakeholders name"
-            onSearch={(e) => handleSearch(e.target.value)}
+            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+              table.getColumn('name')?.setFilterValue(event.target.value)
+            }
           />
-
           <SearchInput
             className="w-full"
             name="organization"
-            onSearch={(e) => handleSearch(e.target.value)}
+            value={
+              (table.getColumn('organization')?.getFilterValue() as string) ??
+              ''
+            }
+            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+              table
+                .getColumn('organization')
+                ?.setFilterValue(event.target.value)
+            }
           />
-
           <SearchInput
             className="w-full"
             name="municipality"
-            onSearch={(e) => handleSearch(e.target.value)}
+            value={
+              (table.getColumn('municipality')?.getFilterValue() as string) ??
+              ''
+            }
+            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+              table
+                .getColumn('municipality')
+                ?.setFilterValue(event.target.value)
+            }
           />
-
           <AddButton
             path={`/projects/aa/${projectId}/stakeholders/groups/edit/${groupId}`}
             name="Stakeholder"

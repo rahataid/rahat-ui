@@ -5,9 +5,11 @@ import { UserRound } from 'lucide-react';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
 import {
   useFundAssignmentStore,
+  useGetBeneficiaryGroup,
   useReserveTokenForGroups,
 } from '@rahat-ui/query';
 import { useRouter } from 'next/navigation';
+import { truncatedText } from 'apps/community-tool-ui/src/utils';
 
 export default function Confirmation() {
   const router = useRouter();
@@ -16,29 +18,43 @@ export default function Confirmation() {
   }));
 
   const { projectUUID, reserveTokenPayload } = assignedFundData;
+
+  const { data: group } = useGetBeneficiaryGroup(
+    reserveTokenPayload.beneficiaryGroupId,
+  );
+
+  console.log(reserveTokenPayload);
+
   const reserveTokenForGroups = useReserveTokenForGroups();
   const cardData = [
-    { label: 'Title', value: 'Demo Title Name' },
-    { label: 'Beneficiary Group Name', value: 'Demo Group Name' },
-    { label: 'Total Beneficiaries', value: '25' },
-    { label: 'Token Assigned Per Beneficiary', value: '1,000' },
-    { label: 'Total Token Amount', value: '25,000' },
+    { label: 'Title', value: reserveTokenPayload.title },
+    {
+      label: 'Beneficiary Group Name',
+      value: reserveTokenPayload.beneficiaryName,
+    },
+    {
+      label: 'Total Beneficiaries',
+      value: group?.data?.groupedBeneficiaries.length,
+    },
+    {
+      label: 'Token Assigned Per Beneficiary',
+      value: reserveTokenPayload.numberOfTokens,
+    },
+    {
+      label: 'Total Token Amount',
+      value:
+        group?.data?.groupedBeneficiaries.length *
+        reserveTokenPayload.numberOfTokens,
+    },
   ];
 
-  const benefData = [
-    { label: 'John Doe', value: '+1000' },
-    { label: 'John Doe', value: '+1000' },
-    { label: 'John Doe', value: '+1000' },
-    { label: 'John Doe', value: '+1000' },
-    { label: 'John Doe', value: '+1000' },
-    { label: 'John Doe', value: '+1000' },
-    { label: 'John Doe', value: '+1000' },
-    { label: 'John Doe', value: '+1000' },
-    { label: 'John Doe', value: '+1000' },
-    { label: 'John Doe', value: '+1000' },
-  ];
+  const benefData = group?.data?.groupedBeneficiaries.map((i: any) => ({
+    label: truncatedText(i.Beneficiary.walletAddress, 10),
+    value: reserveTokenPayload.numberOfTokens,
+  }));
 
   const handleSubmit = async () => {
+    reserveTokenPayload.totalTokensReserved = cardData[4].value;
     try {
       await reserveTokenForGroups.mutateAsync({
         projectUUID,

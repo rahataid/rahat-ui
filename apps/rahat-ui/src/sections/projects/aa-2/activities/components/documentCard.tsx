@@ -22,7 +22,7 @@ export default function DocumentCard({
         <File />
       </div>
       <div>
-        <h4 className="text-gray-900 font-medium truncate w-48 text-sm">
+        <h4 className="text-gray-900 font-medium truncate w-48  lg:w-24 text-sm">
           {fileName}
         </h4>
         <p className="text-gray-500 text-xs">{date}</p>
@@ -45,7 +45,7 @@ export function DocumentList({ documents, loading }: DocumentListProps) {
       </p>
       <div className="overflow-y-auto  scrollbar-hidden h-[calc(100vh-550px)] ">
         {loading && <SpinnerLoader />}
-        <div className="grid grid-cols-2 gap-4 p-4">
+        <div className="grid  grid-cols-1 lg:grid-cols-2 gap-4 p-4">
           {documents?.map((doc, index) => (
             <DocumentCard key={index} {...doc} />
           ))}

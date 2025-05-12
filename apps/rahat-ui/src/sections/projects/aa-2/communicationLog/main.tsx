@@ -36,39 +36,54 @@ export default function CommunicationMainLogsView() {
     {
       componentType: 'DATACARD',
       title: 'Total SMS sent to Beneficiaries',
-      value: commsStatsData?.stats?.messageStats?.totalMessages || 0,
+      value:
+        commsStatsData?.stats?.transportStats.find((r) => r.name === 'SMS')
+          ?.broadcasts?.total || 0,
       icon: 'MessageSquare',
     },
     {
       componentType: 'DATACARD',
       title: 'Total IVR sent to Beneficiaries',
-      value: 0,
+      value:
+        commsStatsData?.stats?.transportStats.find((r) => r.name === 'IVR')
+          ?.broadcasts?.total || 0,
       icon: 'AudioLines',
     },
     {
       componentType: 'DATACARD',
       title: 'Total EMAIL sent to Beneficiaries',
-      value: 0,
+      value: commsStatsData?.stats?.transportStats.find(
+        (r) => r.name === 'EMAIL',
+      )?.broadcasts?.total,
       icon: 'AudioLines',
     },
     {
       componentType: 'DATACARD',
       title: 'IVR Success Rate',
-      value: 0,
+      value:
+        (
+          (commsStatsData?.stats?.transportStats.find((r) => r.name === 'IVR')
+            ?.broadcasts?.success /
+            commsStatsData?.stats?.transportStats.find((r) => r.name === 'IVR')
+              ?.broadcasts?.total) *
+          100
+        ).toFixed(2) + '%' || 0,
       icon: 'AudioLines',
     },
     {
       componentType: 'DATACARD',
       title: 'Average IVR Attempts',
-      value: 0,
+      value:
+        commsStatsData?.stats?.transportStats.find((r) => r.name === 'IVR')
+          ?.broadcasts?.averageAttempts + '%' || 0,
       icon: 'AudioLines',
     },
-    {
-      componentType: 'DATACARD',
-      title: 'Average Duration of IVR',
-      value: 0,
-      icon: 'AudioLines',
-    },
+    // {
+    //   componentType: 'DATACARD',
+    //   title: 'Average Duration of IVR',
+    //   value: 0,
+    //   icon: 'AudioLines',
+    // },
   ];
 
   return (
@@ -105,7 +120,7 @@ export default function CommunicationMainLogsView() {
           })}
       </div>
 
-      <div className="grid grid-cols-6 gap-2 mt-2">
+      <div className="grid grid-cols-5 gap-2 mt-2">
         {commStats
           ?.filter(
             (d) =>

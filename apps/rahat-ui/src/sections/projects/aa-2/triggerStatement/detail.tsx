@@ -95,11 +95,7 @@ export default function TriggerStatementDetail() {
           />
           <div
             className={`grid ${
-              trigger?.isTriggered && trigger?.transactionHash
-                ? 'grid-cols-6'
-                : trigger?.isTriggered || trigger?.transactionHash
-                ? 'grid-cols-5'
-                : 'grid-cols-4'
+              trigger?.isTriggered ? 'grid-cols-6' : 'grid-cols-5'
             } text-sm/4 text-muted-foreground mt-6`}
           >
             <div>
@@ -119,9 +115,9 @@ export default function TriggerStatementDetail() {
               <Badge>{trigger?.isMandatory ? 'Mandatory' : 'Optional'}</Badge>
             </div>
 
-            {trigger?.transactionHash && (
-              <div className="flex-1 min-w-0">
-                <p className="mb-1">TxHash</p>
+            <div className="flex-1 min-w-0">
+              <p className="mb-1">TxHash</p>
+              {trigger?.transactionHash ? (
                 <Link
                   href={`https://stellar.expert/explorer/testnet/tx/${trigger.transactionHash}`}
                   target="_blank"
@@ -129,9 +125,10 @@ export default function TriggerStatementDetail() {
                 >
                   {trigger.transactionHash}
                 </Link>
-              </div>
-            )}
-
+              ) : (
+                <p className="text-red-500">N/A</p>
+              )}
+            </div>
             {trigger?.isTriggered && (
               <div>
                 <p className="mb-1">Triggered At</p>

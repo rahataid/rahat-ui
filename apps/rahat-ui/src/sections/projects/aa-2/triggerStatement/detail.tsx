@@ -1,8 +1,14 @@
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import { UUID } from 'crypto';
+
 import {
   useDeleteTriggerStatement,
   useSingleTriggerStatement,
 } from '@rahat-ui/query';
+
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+
 import {
   Back,
   DeleteButton,
@@ -10,8 +16,7 @@ import {
   Heading,
   TableLoader,
 } from 'apps/rahat-ui/src/common';
-import { UUID } from 'crypto';
-import { useParams, useRouter } from 'next/navigation';
+
 import {
   ActivateTriggerDialog,
   DocumentsSection,
@@ -90,7 +95,7 @@ export default function TriggerStatementDetail() {
           />
           <div
             className={`grid ${
-              trigger?.isTriggered ? 'grid-cols-5' : 'grid-cols-4'
+              trigger?.isTriggered ? 'grid-cols-6' : 'grid-cols-5'
             } text-sm/4 text-muted-foreground mt-6`}
           >
             <div>
@@ -108,6 +113,21 @@ export default function TriggerStatementDetail() {
             <div>
               <p className="mb-1">Type</p>
               <Badge>{trigger?.isMandatory ? 'Mandatory' : 'Optional'}</Badge>
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <p className="mb-1">TxHash</p>
+              {trigger?.transactionHash ? (
+                <Link
+                  href={`https://stellar.expert/explorer/testnet/tx/${trigger.transactionHash}`}
+                  target="_blank"
+                  className="block overflow-hidden text-ellipsis whitespace-nowrap text-blue-500 hover:underline"
+                >
+                  {trigger.transactionHash}
+                </Link>
+              ) : (
+                <p className="text-red-500">N/A</p>
+              )}
             </div>
             {trigger?.isTriggered && (
               <div>

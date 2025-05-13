@@ -50,11 +50,7 @@ export default function AddDailyMonitoring() {
         dayAfterTomorrowNight: z.string().optional(),
         //DHM - Realtime Monitoring (River Watch)
         waterLevel: z.string().optional(),
-        //DHM - Realtime Rainfall
-        chisapaniKarnali: z.string().optional(),
-        daulatpurStation: z.string().optional(),
-        bachilaStation: z.string().optional(),
-        gurbaDurbar: z.string().optional(),
+
         //DHM - NWP
         hours24NWP: z.string().optional(),
         hours48: z.string().optional(),
@@ -80,6 +76,7 @@ export default function AddDailyMonitoring() {
 
         //gauge Reading
         gaugeReading: z.string().optional(),
+        station: z.string().optional(),
       }),
     ),
   });
@@ -135,16 +132,6 @@ export default function AddDailyMonitoring() {
                 waterLevel: item?.waterLevel,
               });
               break;
-            case 'Realtime Rainfall':
-              dataPayload.push({
-                source: item.source,
-                forecast: item?.forecast,
-                chisapaniKarnali: item.chisapaniKarnali,
-                daulatpurStation: item.daulatpurStation,
-                bachilaStation: item.bachilaStation,
-                gurbaDurbar: item.gurbaDurbar,
-              });
-              break;
             case 'NWP':
               dataPayload.push({
                 source: item.source,
@@ -197,6 +184,7 @@ export default function AddDailyMonitoring() {
           dataPayload.push({
             source: item.source,
             gaugeReading: item?.gaugeReading,
+            station: item?.station,
           });
           break;
         default:
@@ -229,7 +217,7 @@ export default function AddDailyMonitoring() {
       <HeaderWithBack
         title={'Add Daily Monitoring'}
         subtitle="Fill the form below  to add daily monitoring"
-        path={`/projects/aa/${projectId}/data-sources`}
+        path={`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`}
       />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleCreateBulletin)}>

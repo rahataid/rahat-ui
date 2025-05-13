@@ -20,6 +20,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
     rainfallForecastSelectItems,
     rainfallSelectItems,
     floodForecastSelectItems,
+    gauageReadingStationSelectItems,
   } = useSelectItems();
 
   const selectedDataSourceObjArray = form.watch('dataSource');
@@ -172,12 +173,21 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
         break;
       case 'Gauge Reading':
         fields = (
-          <InputFormField
-            form={form}
-            name={fieldName('gaugeReading')}
-            label="Gauge Reading (mm)"
-            placeholder="Enter gauge reading"
-          />
+          <>
+            <SelectFormField
+              form={form}
+              name={fieldName('station')}
+              label="station"
+              placeholder="Select station"
+              selectItems={gauageReadingStationSelectItems}
+            />
+            <InputFormField
+              form={form}
+              name={fieldName('gaugeReading')}
+              label="Gauge Reading (mm)"
+              placeholder="Enter gauge reading"
+            />
+          </>
         );
         break;
 
@@ -275,36 +285,6 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
             subLabel="Danger Level 10.8m"
             placeholder="Enter Water Level"
           />
-        );
-        break;
-      case 'Realtime Rainfall':
-        fields = (
-          <>
-            <InputFormField
-              form={form}
-              name={fieldName('chisapaniKarnali')}
-              label="Chisapani Karnali"
-              placeholder="Enter status"
-            />
-            <InputFormField
-              form={form}
-              name={fieldName('daulatpurStation')}
-              label="Daulatpur Station"
-              placeholder="Enter status"
-            />
-            <InputFormField
-              form={form}
-              name={fieldName('bachilaStation')}
-              label="Bachila Station"
-              placeholder="Enter status"
-            />
-            <InputFormField
-              form={form}
-              name={fieldName('gurbaDurbar')}
-              label="Gurba Durbar"
-              placeholder="Enter status"
-            />
-          </>
         );
         break;
       case 'NWP':

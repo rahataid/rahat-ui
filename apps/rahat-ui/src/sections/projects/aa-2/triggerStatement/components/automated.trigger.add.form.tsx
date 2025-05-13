@@ -255,7 +255,7 @@ export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
                   name="daysToConsiderPrior"
                   render={({ field }) => {
                     return (
-                      <FormItem className="col-span-2 w-1/2">
+                      <FormItem>
                         <FormLabel>No. of days to consider prior</FormLabel>
                         <FormControl>
                           <Input

@@ -15,7 +15,10 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {
+  ScrollArea,
+  ScrollBar,
+} from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { useActivitiesHavingComms, usePagination } from '@rahat-ui/query';
 // import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
@@ -120,8 +123,8 @@ export default function CommsActivitiesTable() {
           />
         </div>
         <div className="mt-1 bg-card border rounded">
-          <Table>
-            <ScrollArea className="h-[calc(100vh-430px)]">
+          <ScrollArea className="h-[calc(100vh-430px)]">
+            <Table>
               <TableHeader className="sticky top-0 bg-card">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
@@ -168,8 +171,9 @@ export default function CommsActivitiesTable() {
                   </TableRow>
                 )}
               </TableBody>
-            </ScrollArea>
-          </Table>
+            </Table>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
           <CustomPagination
             meta={
               activitiesMeta || {

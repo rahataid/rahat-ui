@@ -19,7 +19,7 @@ export function Back({ path }: IProps) {
 
   return (
     <div
-      className="inline-flex gap-2 mb-4 cursor-pointer"
+      className="inline-flex gap-2 mb-4 cursor-pointer w-16"
       onClick={handleClick}
     >
       <ArrowLeft

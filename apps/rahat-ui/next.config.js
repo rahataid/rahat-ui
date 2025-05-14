@@ -4,11 +4,13 @@ const { composePlugins, withNx } = require('@nx/next');
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
-
+const nonce = Array.from(crypto.getRandomValues(new Uint8Array(16)))
+  .map((b) => b.toString(16).padStart(2, '0'))
+  .join('');
 // Define the Content Security Policy
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' https: http: 'strict-dynamic' 'unsafe-inline';
+   script-src 'self' https: http: 'strict-dynamic' 'nonce-${nonce}';
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data:;
   font-src 'self';

@@ -9,9 +9,6 @@ const nonce = Array.from(crypto.getRandomValues(new Uint8Array(16)))
   .join('');
 // Define the Content Security Policy
 const ContentSecurityPolicy = `
-  default-src 'self';
-   script-src 'self' https: http: 'strict-dynamic' 'nonce-${nonce}';
-  style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data:;
   font-src 'self';
   object-src 'none';

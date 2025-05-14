@@ -1,11 +1,47 @@
-//@ts-check
-
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { composePlugins, withNx } = require('@nx/next');
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
+
+// Define the Content Security Policy
+const ContentSecurityPolicy = `
+  default-src 'self';
+  script-src 'self' https: http: 'strict-dynamic' 'unsafe-inline';
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' blob: data:;
+  font-src 'self';
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+  frame-ancestors 'none';
+  upgrade-insecure-requests;
+`;
+
+const securityHeaders = [
+  {
+    key: 'Content-Security-Policy',
+    value: ContentSecurityPolicy.replace(/\s{2,}/g, ' ').trim(),
+  },
+  {
+    key: 'X-Content-Type-Options',
+    value: 'nosniff',
+  },
+  {
+    key: 'X-Frame-Options',
+    value: 'DENY',
+  },
+  {
+    key: 'Referrer-Policy',
+    value: 'strict-origin-when-cross-origin',
+  },
+  {
+    key: 'Permissions-Policy',
+    value: 'camera=(), microphone=(), geolocation=()',
+  },
+];
+
 const nextConfig = {
   nx: {
     // Set this to true if you would like to use SVGR
@@ -54,6 +90,14 @@ const nextConfig = {
     ];
   },
   // This is required to support PostHog trailing slash API requests
+  async headers() {
+    return [
+      {
+        source: '/(.*)', // Apply to all routes
+        headers: securityHeaders,
+      },
+    ];
+  },
   skipTrailingSlashRedirect: true,
 };
 

@@ -26,6 +26,9 @@ export default function ActivityDetailCards({
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
     });
 
     return nepalTimeFormatter.format(utcDate);

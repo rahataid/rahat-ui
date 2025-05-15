@@ -31,6 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head nonce={nonce}></head>
+      <style nonce={nonce}></style>
       <body>
         <title>Welcome to Rahat</title>
         <PostHogProvider>

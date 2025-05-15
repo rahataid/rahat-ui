@@ -1,4 +1,5 @@
 'use client';
+import { useCommuicationStatsforBeneficiaryandStakeHolders } from '@rahat-ui/query';
 import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import {
   Card,
@@ -7,11 +8,30 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
+
+type ChannelType = 'EMAIL' | 'SMS' | 'IVR';
+
+type CommunicationStats = {
+  SUCCESS?: number;
+  TOTAL?: number;
+  FAIL?: number; // Optional, only present if there are failures
+};
+
+type RoleType = 'beneficiary' | 'stakeholder';
+
+type CommunicationBeneficiaryStakeholdersReport = {
+  [role in RoleType]: {
+    [channel in ChannelType]?: CommunicationStats;
+  };
+};
+
 type CommunicationsChartsStatsProps = {
   commsStatsData: any;
+  statsBenefStakeholders?: CommunicationBeneficiaryStakeholdersReport;
 };
 export default function CommunicationsChartsStats({
   commsStatsData,
+  statsBenefStakeholders,
 }: CommunicationsChartsStatsProps) {
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -23,11 +43,8 @@ export default function CommunicationsChartsStats({
               Total SMS Sent
             </CardTitle>
             <CardDescription className="text-lg text-sky-500 font-bold">
-              {
-                commsStatsData?.stats?.transportStats.find(
-                  (r) => r.name === 'SMS',
-                )?.broadcasts?.total
-              }
+              {(statsBenefStakeholders?.beneficiary?.SMS?.TOTAL || 0) +
+                (statsBenefStakeholders?.stakeholder?.SMS?.TOTAL || 0)}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex justify-between flex-col xl:flex-row  ">
@@ -38,16 +55,16 @@ export default function CommunicationsChartsStats({
                     {
                       label: 'Successfully Delivered SMS',
                       value:
-                        commsStatsData?.stats?.transportStats.find(
-                          (r) => r.name === 'SMS',
-                        )?.broadcasts?.success || 0,
+                        (statsBenefStakeholders?.beneficiary?.SMS?.SUCCESS ||
+                          0) +
+                        (statsBenefStakeholders?.stakeholder?.SMS?.SUCCESS ||
+                          0),
                     },
                     {
                       label: 'SMS Delivery Failures',
                       value:
-                        commsStatsData?.stats?.transportStats.find(
-                          (r) => r.name === 'SMS',
-                        )?.broadcasts?.failed || 0,
+                        (statsBenefStakeholders?.beneficiary?.SMS?.FAIL || 0) +
+                        (statsBenefStakeholders?.stakeholder?.SMS?.FAIL || 0),
                     },
                   ],
                   colors: ['#F4A462', '#2A9D90'],
@@ -58,35 +75,29 @@ export default function CommunicationsChartsStats({
                 height={300}
               />
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-1">
+            <div className="grid grid-cols-2 xl:grid-cols-1">
               {[
                 {
                   label: 'Successfully Delivered',
                   value:
-                    commsStatsData?.stats?.transportStats.find(
-                      (r) => r.name === 'SMS',
-                    )?.broadcasts?.success || 0,
+                    (statsBenefStakeholders?.beneficiary?.SMS?.SUCCESS || 0) +
+                      (statsBenefStakeholders?.stakeholder?.SMS?.SUCCESS ||
+                        0) || 0,
                 },
                 {
                   label: 'SMS Delivery Failures',
                   value:
-                    commsStatsData?.stats?.transportStats.find(
-                      (r) => r.name === 'SMS',
-                    )?.broadcasts?.failed || 0,
+                    (statsBenefStakeholders?.beneficiary?.SMS?.FAIL || 0) +
+                      (statsBenefStakeholders?.stakeholder?.SMS?.FAIL || 0) ||
+                    0,
                 },
                 {
                   label: 'SMS Successfully sent to Beneficiaries',
-                  value:
-                    commsStatsData?.stats?.transportStats.find(
-                      (r) => r.name === 'SMS',
-                    )?.broadcasts?.total || 0,
+                  value: statsBenefStakeholders?.beneficiary?.SMS?.SUCCESS || 0,
                 },
                 {
                   label: 'SMS Successfully sent to Stakeholders',
-                  value:
-                    commsStatsData?.stats?.transportStats.find(
-                      (r) => r.name === 'SMS',
-                    )?.broadcasts?.total || 0,
+                  value: statsBenefStakeholders?.stakeholder?.SMS?.SUCCESS || 0,
                 },
               ].map(({ label, value }) => (
                 <div key={label} className="flex flex-col flex-wrap bg-white">
@@ -98,8 +109,9 @@ export default function CommunicationsChartsStats({
           </CardContent>
         </Card>
 
+        {/* the comment part is for the email which may be useed in feature  */}
         {/* Email Card */}
-        <Card className="shadow-sm rounded-sm flex-1 w-full">
+        {/* <Card className="shadow-sm rounded-sm flex-1 w-full">
           <CardHeader className="pb-0 pt-1">
             <CardTitle className="text-xl font-semibold text-gray-600">
               Total Email Sent
@@ -179,41 +191,39 @@ export default function CommunicationsChartsStats({
             </div>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
 
-      {/* AVC Card */}
-      <div className="w-full">
-        <Card className="shadow-sm rounded-sm px-0 w-full flex flex-col">
+        {/* AVC Card */}
+        {/* <div className="w-full"> */}
+        <Card className="shadow-sm rounded-sm flex-1 w-full">
           <CardHeader className="pb-0 pt-1">
             <CardTitle className="text-xl font-semibold text-gray-600">
               Total AVC Sent
             </CardTitle>
             <CardDescription className="text-lg text-sky-500 font-bold">
-              {
-                commsStatsData?.stats?.transportStats.find(
-                  (r) => r.name === 'IVR',
-                )?.broadcasts?.total
-              }
+              {(statsBenefStakeholders?.beneficiary?.IVR?.TOTAL || 0) +
+                (statsBenefStakeholders?.stakeholder?.IVR?.TOTAL || 0)}
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid  grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className=" flex justify-center items-center lg:items-start lg:justify-normal">
+          <CardContent className="flex justify-between flex-col xl:flex-row  ">
+            <div className=" flex justify-center items-center xl:items-start xl:justify-normal ">
               <PieChart
                 chart={{
                   series: [
                     {
                       label: 'Successfully Delivered AVC',
                       value:
-                        commsStatsData?.stats?.transportStats.find(
-                          (r) => r.name === 'IVR',
-                        )?.broadcasts?.success || 0,
+                        (statsBenefStakeholders?.beneficiary?.IVR?.SUCCESS ||
+                          0) +
+                          (statsBenefStakeholders?.stakeholder?.IVR?.SUCCESS ||
+                            0) || 0,
                     },
                     {
                       label: 'AVC Delivery Failures',
                       value:
-                        commsStatsData?.stats?.transportStats.find(
-                          (r) => r.name === 'IVR',
-                        )?.broadcasts?.failed || 0,
+                        (statsBenefStakeholders?.beneficiary?.IVR?.FAIL || 0) +
+                          (statsBenefStakeholders?.stakeholder?.IVR?.FAIL ||
+                            0) || 0,
                     },
                   ],
                   colors: ['#F4A462', '#2A9D90'],
@@ -224,35 +234,37 @@ export default function CommunicationsChartsStats({
                 height={300}
               />
             </div>
-            <div className="grid grid-cols-1 ">
+            <div className="grid grid-cols-2 xl:grid-cols-1 gap-2 ">
               {[
+                {
+                  label: 'Unique AVC Recipients',
+                  value:
+                    commsStatsData?.stats?.transportStats.find(
+                      (r) => r.name === 'IVR',
+                    )?.totalRecipients || 0,
+                },
                 {
                   label: 'Successfully Delivered',
                   value:
-                    commsStatsData?.stats?.transportStats.find(
-                      (r) => r.name === 'IVR',
-                    )?.broadcasts?.success || 0,
+                    (statsBenefStakeholders?.beneficiary?.IVR?.SUCCESS || 0) +
+                      (statsBenefStakeholders?.stakeholder?.IVR?.SUCCESS ||
+                        0) || 0,
                 },
+
                 {
                   label: 'AVC Delivery Failures',
                   value:
-                    commsStatsData?.stats?.transportStats.find(
-                      (r) => r.name === 'IVR',
-                    )?.broadcasts?.failed || 0,
+                    (statsBenefStakeholders?.beneficiary?.IVR?.FAIL || 0) +
+                      (statsBenefStakeholders?.stakeholder?.IVR?.FAIL || 0) ||
+                    0,
                 },
                 {
                   label: 'AVC Successfully sent to Beneficiaries',
-                  value:
-                    commsStatsData?.stats?.transportStats.find(
-                      (r) => r.name === 'IVR',
-                    )?.broadcasts?.total || 0,
+                  value: statsBenefStakeholders?.beneficiary?.IVR?.SUCCESS || 0,
                 },
                 {
                   label: 'AVC Successfully sent to Stakeholders',
-                  value:
-                    commsStatsData?.stats?.transportStats.find(
-                      (r) => r.name === 'IVR',
-                    )?.broadcasts?.total || 0,
+                  value: statsBenefStakeholders?.stakeholder?.IVR?.SUCCESS,
                 },
               ].map(({ label, value }) => (
                 <div key={label} className="flex flex-col flex-wrap bg-white">

@@ -28,6 +28,13 @@ export default function useCommsLogsTableColumns() {
       },
     },
     {
+      accessorKey: 'duration',
+      header: 'Duration',
+      cell: ({ row }) => (
+        <div>{row?.original?.disposition?.cdr?.billableseconds || 'N/A'}</div>
+      ),
+    },
+    {
       accessorKey: 'timeStamp',
       header: 'Timestamp',
       cell: ({ row }) => <div>{renderDateTime(row?.original?.createdAt)}</div>,

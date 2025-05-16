@@ -172,39 +172,35 @@ export default function ActivitiesList() {
   }
   return (
     <div className="p-4">
-      <div className="flex flex-col space-y-0">
-        <Back path={`/projects/aa/${projectID}/activities`} />
-
-        <div className="mt-4 flex justify-between items-center">
-          <div>
-            <Heading
-              title={`${title[0].charAt(0).toUpperCase() + title.slice(1)}`}
-              description="List of all the activities in the selected phase "
-            />
-          </div>
-          <div className="flex space-x-3">
-            <IconLabelBtn
-              Icon={CloudDownloadIcon}
-              handleClick={handleDownloadReport}
-              name="Download"
-              variant="outline"
-              className="rounded w-full"
-            />
-            <IconLabelBtn
-              Icon={Plus}
-              handleClick={() =>
-                router.push(
-                  `/projects/aa/${projectID}/activities/add?phaseId=${
-                    phases.find(
-                      (p) => p.name === (title as string).toUpperCase(),
-                    )?.uuid
-                  }`,
-                )
-              }
-              name="Add Activity"
-              className="rounded w-full"
-            />
-          </div>
+      <div className="flex gap-2 justify-between">
+        <div className="flex flex-col gap-2">
+          <Back path={`/projects/aa/${projectID}/activities`} />
+          <Heading
+            title={`${title[0].charAt(0).toUpperCase() + title.slice(1)}`}
+            description="List of all the activities in the selected phase "
+          />
+        </div>
+        <div className="flex flex-col gap-2 lg:flex-row items-center justify-center">
+          <IconLabelBtn
+            Icon={CloudDownloadIcon}
+            handleClick={handleDownloadReport}
+            name="Download"
+            variant="outline"
+            className="rounded w-full"
+          />
+          <IconLabelBtn
+            Icon={Plus}
+            handleClick={() =>
+              router.push(
+                `/projects/aa/${projectID}/activities/add?phaseId=${
+                  phases.find((p) => p.name === (title as string).toUpperCase())
+                    ?.uuid
+                }`,
+              )
+            }
+            name="Add Activity"
+            className="rounded w-full"
+          />
         </div>
       </div>
       <ActivitiesTableFilters
@@ -226,7 +222,7 @@ export default function ActivitiesList() {
         />
       )}
 
-      <div className="rounded border border-gray-100 ">
+      <div className=" border-gray-100 overflow-hidden rounded-lg border ">
         <ActivitiesTable
           table={table}
           tableheight={
@@ -255,12 +251,6 @@ export default function ActivitiesList() {
           total={activitiesMeta?.lastPage || 0}
         />
       </div>
-
-      {/* <div
-        className={`${
-          Object.keys(filters).length === 1 ? 'flex h-10' : 'hidden'
-        } px-4  py-2 mt-2`}
-      ></div> */}
     </div>
   );
 }

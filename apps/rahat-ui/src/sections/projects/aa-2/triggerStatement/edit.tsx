@@ -55,6 +55,9 @@ export default function EditTrigger() {
     notes: z.string().optional(),
     warningLevel: z.string().optional(),
     dangerLevel: z.string().optional(),
+    forecast: z.string().optional(),
+    daysToConsiderPrior: z.string().optional(),
+    forecastStatus: z.string().optional(),
   });
 
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({
@@ -69,6 +72,9 @@ export default function EditTrigger() {
       notes: '',
       warningLevel: '',
       dangerLevel: '',
+      forecast: '',
+      daysToConsiderPrior: '',
+      forecastStatus: '',
     },
   });
 
@@ -93,6 +99,9 @@ export default function EditTrigger() {
       warningLevel,
       dangerLevel,
       isMandatory,
+      forecast,
+      daysToConsiderPrior,
+      forecastStatus,
       ...rest
     } = data;
 
@@ -109,6 +118,9 @@ export default function EditTrigger() {
           probability,
           warningLevel,
           dangerLevel,
+          forecast,
+          daysToConsiderPrior,
+          forecastStatus,
         },
       },
     });
@@ -146,6 +158,9 @@ export default function EditTrigger() {
         probability: trigger?.triggerStatement?.probability,
         warningLevel: trigger?.triggerStatement?.warningLevel,
         dangerLevel: trigger?.triggerStatement?.dangerLevel,
+        forecast: trigger?.triggerStatement?.forecast,
+        daysToConsiderPrior: trigger?.triggerStatement?.daysToConsiderPrior,
+        forecastStatus: trigger?.triggerStatement?.forecastStatus,
       });
     }
   }, [trigger]);

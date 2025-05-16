@@ -1,5 +1,12 @@
-import React from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useDailyMonitoring, usePagination } from '@rahat-ui/query';
+import { cn } from '@rahat-ui/shadcn/src';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/popover';
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -7,31 +14,19 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useDailyMonitoring, usePagination } from '@rahat-ui/query';
-import DailyMonitoringTable from './daily.monitoring.table';
-import useDailyMonitoringTableColumn from '../useDailyMonitoringTableColumn';
-import DailyMonitoringTableFilters from './daily.monitoring.table.filters';
-import { UUID } from 'crypto';
-import { getPaginationFromLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
 import {
   ClientSidePagination,
-  CustomPagination,
   IconLabelBtn,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/popover';
-import { Plus } from 'lucide-react';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import { useSelectItems } from '../useSelectItems';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { cn } from '@rahat-ui/shadcn/src';
+import { UUID } from 'crypto';
 import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
-import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
+import { CalendarIcon, Plus } from 'lucide-react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import React from 'react';
+import useDailyMonitoringTableColumn from '../useDailyMonitoringTableColumn';
+import DailyMonitoringTable from './daily.monitoring.table';
 
 export default function DailyMonitoringListView() {
   const params = useParams();
@@ -78,12 +73,75 @@ export default function DailyMonitoringListView() {
     <div className="p-1 pt-0 ">
       <div className="flex gap-2 items-center mb-2">
         {/* <DailyMonitoringTableFilters
+        {/* <DailyMonitoringTableFilters
           user={userSearchText}
           location={locationFilterItem}
           date={dateFilterItem}
           handleSearch={handleFilterChange}
           handleFilterChange={handleFilterChange}
         /> */}
+
+        {/* <SearchInput
+          className="w-full"
+          name="dataEntryBy"
+          value={
+            (table.getColumn('dataEntryBy')?.getFilterValue() as string) ?? ''
+          }
+          onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+            table.getColumn('dataEntryBy')?.setFilterValue(event.target.value)
+          }
+        />
+        <SelectComponent
+          name="riverBasin"
+          options={['ALL', 'MAHAKALI', 'KARNALI', 'BHERI']}
+          value={
+            (table.getColumn('riverBasin')?.getFilterValue() as string) ?? ''
+          }
+          onChange={(value) =>
+            table
+              .getColumn('riverBasin')
+              ?.setFilterValue(value === 'ALL' ? undefined : value)
+          }
+        />
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant={'outline'}
+              className={cn(
+                'text-left font-normal',
+                !date && 'text-muted-foreground',
+              )}
+            >
+              {date ? format(date, 'PPP') : <span>Pick a date</span>}
+              <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={date || undefined}
+              onSelect={(val) => {
+                if (!val) return;
+                setDate(val);
+                table.getColumn('createdAt')?.setFilterValue(val);
+              }}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+
+        {date && (
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setDate(null);
+              table.getColumn('createdAt')?.setFilterValue(undefined);
+            }}
+          >
+            Clear date
+          </Button>
+        )} */}
 
         <SearchInput
           className="w-full"

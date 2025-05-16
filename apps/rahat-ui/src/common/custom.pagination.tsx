@@ -89,7 +89,7 @@ export function CustomPagination({
       <div className="text-sm">
         Page {currentPage} of {lastPage}
       </div>
-      <div className="space-x-2">
+      <div className="space-x-2 items-center justify-center">
         <Button
           variant="outline"
           size="sm"

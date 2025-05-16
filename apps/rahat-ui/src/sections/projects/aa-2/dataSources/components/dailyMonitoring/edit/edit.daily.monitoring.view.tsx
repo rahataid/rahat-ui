@@ -1,40 +1,31 @@
-import * as React from 'react';
-import { useParams, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
+import { useParams, useRouter } from 'next/navigation';
+import * as React from 'react';
 
-import { useFieldArray, useForm } from 'react-hook-form';
-import { z } from 'zod';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@rahat-ui/shadcn/src/components/ui/card';
-import { UUID } from 'crypto';
 import {
   useRemoveMonitoringWhileUpdating,
   useSingleMonitoring,
   useUpdateMonitoring,
 } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 import { Plus } from 'lucide-react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { z } from 'zod';
 import AddAnotherDataSource from '../add/add.another.data.source';
-// import SelectFormField from '../../../../../../components/select.form.field';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-// import InputFormField from '../../../../../../components/input.form.field';
-import { useSelectItems } from '../useSelectItems';
-import Loader from 'apps/rahat-ui/src/components/table.loader';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import Loader from 'apps/rahat-ui/src/components/table.loader';
 import InputFormField from '../input.form.field';
 import SelectFormField from '../select.form.field';
+import { useSelectItems } from '../useSelectItems';
 
 export default function EditDailyMonitoring() {
   const params = useParams();
   const projectId = params.id as UUID;
   const monitoringId = params.monitoringId as UUID;
-
+  const route = useRouter();
   const { riverBasins } = useSelectItems();
   const { data, isLoading } = useSingleMonitoring(projectId, monitoringId);
   const details = React.useMemo(() => {
@@ -79,16 +70,6 @@ export default function EditDailyMonitoring() {
                   source: item.source,
                   forecast: item.forecast,
                   waterLevel: item.waterLevel || '',
-                  id: item.id,
-                };
-              case 'Realtime Rainfall':
-                return {
-                  source: item.source,
-                  forecast: item.forecast,
-                  chisapaniKarnali: item.chisapaniKarnali || '',
-                  daulatpurStation: item.daulatpurStation || '',
-                  bachilaStation: item.bachilaStation || '',
-                  gurbaDurbar: item.gurbaDurbar || '',
                   id: item.id,
                 };
               case 'NWP':
@@ -147,6 +128,7 @@ export default function EditDailyMonitoring() {
             return {
               source: item.source,
               gaugeReading: item.gaugeReading || '',
+              station: item.station,
               id: item.id,
             };
           default:
@@ -181,11 +163,6 @@ export default function EditDailyMonitoring() {
         dayAfterTomorrowNight: z.string().optional(),
         //DHM - Realtime Monitoring (River Watch)
         waterLevel: z.string().optional(),
-        //DHM - Realtime Rainfall
-        chisapaniKarnali: z.string().optional(),
-        daulatpurStation: z.string().optional(),
-        bachilaStation: z.string().optional(),
-        gurbaDurbar: z.string().optional(),
         //DHM - NWP
         hours24NWP: z.string().optional(),
         hours48: z.string().optional(),
@@ -211,6 +188,7 @@ export default function EditDailyMonitoring() {
 
         //gauge Reading
         gaugeReading: z.string().optional(),
+        station: z.string().optional(),
       }),
     ),
   });
@@ -223,7 +201,6 @@ export default function EditDailyMonitoring() {
       dataSource: [],
     },
   });
-  console.log('normalizedDataSource', data?.data);
   const {
     fields: anotherDataSourceFields,
     append: anotherDataSourceAppend,
@@ -269,15 +246,6 @@ export default function EditDailyMonitoring() {
                 source: item.source,
                 forecast: item?.forecast,
                 waterLevel: item?.waterLevel,
-                id: item?.id,
-              });
-              break;
-            case 'Realtime Rainfall':
-              dataPayload.push({
-                chisapaniKarnali: item.chisapaniKarnali,
-                daulatpurStation: item.daulatpurStation,
-                bachilaStation: item.bachilaStation,
-                gurbaDurbar: item.gurbaDurbar,
                 id: item?.id,
               });
               break;
@@ -334,6 +302,14 @@ export default function EditDailyMonitoring() {
             id: item?.id,
           });
           break;
+        case 'Gauge Reading':
+          dataPayload.push({
+            source: item.source,
+            gaugeReading: item?.gaugeReading,
+            station: item?.station,
+            id: item?.id,
+          });
+          break;
         default:
           break;
       }
@@ -345,11 +321,11 @@ export default function EditDailyMonitoring() {
       data: dataPayload,
     };
     try {
-      console.log('payload', payload);
       await updateDailyMonitoring.mutateAsync({
         projectUUID: projectId,
         monitoringPayload: payload,
       });
+      route.push(`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`);
     } catch (e) {
       console.error('Edit Daily Monitoring Error::', e);
     }
@@ -382,7 +358,7 @@ export default function EditDailyMonitoring() {
       <HeaderWithBack
         title={'Edit Daily Monitoring'}
         subtitle="Edit the form below  to update daily monitoring"
-        path={`/projects/aa/${projectId}/data-sources`}
+        path={`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`}
       />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleEditDailyMonitoring)}>

@@ -65,6 +65,31 @@ export function ForecastDataSection({
           </p>
         </div>
       )}
+
+      {source === 'DAILY_MONITORING' && (
+        <div className="grid grid-cols-3 gap-4">
+          <div className="p-3 text-center border rounded">
+            <p className="font-semibold text-3xl/10 text-primary">
+              {triggerStatement?.forecast}
+            </p>
+            <p className="font-medium text-sm/6">Forecast</p>
+          </div>
+          <div className="p-3 text-center border rounded">
+            <p className="font-semibold text-3xl/10 text-primary">
+              {triggerStatement?.daysToConsiderPrior}
+            </p>
+            <p className="font-medium text-sm/6">
+              No. of days to consider prior
+            </p>
+          </div>
+          <div className="p-3 text-center border rounded">
+            <p className="font-semibold text-3xl/10 text-primary">
+              {triggerStatement?.forecastStatus}
+            </p>
+            <p className="font-medium text-sm/6">Forecast Status</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

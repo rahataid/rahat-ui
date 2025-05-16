@@ -33,7 +33,7 @@ export const useSelectItems = () => {
       value: 'Realtime Monitoring (River Watch)',
       label: 'Realtime Monitoring (River Watch)',
     },
-    { value: 'Realtime Rainfall', label: 'Realtime Rainfall' },
+
     { value: 'NWP', label: 'NWP' },
   ];
 
@@ -69,6 +69,11 @@ export const useSelectItems = () => {
     { value: 'Extremely Heavy Rain', label: 'Extremely Heavy Rain' },
   ];
 
+  const gauageReadingStationSelectItems = [
+    { value: 'Rangoon Ridge', label: 'Rangoon Ridge' },
+    { value: 'Kolmoda Satyas ', label: 'Kolmoda Satyas ' },
+  ];
+
   return {
     riverBasins,
     dataSourceSelectItems,
@@ -77,5 +82,6 @@ export const useSelectItems = () => {
     rainfallSelectItems,
     floodForecastSelectItems,
     rainfallForecastSelectItems,
+    gauageReadingStationSelectItems,
   };
 };

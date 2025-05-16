@@ -39,19 +39,19 @@ export default function ActivitiesDetailView() {
 
   return (
     <div className="h-[calc(100vh-65px)] p-4">
-      <div className="flex flex-col space-y-0">
-        <Back
-          path={`/projects/aa/${projectId}/activities/list/${activityDetail?.phase?.name.toLowerCase()}`}
-        />
-
-        <div className="mt-4 flex justify-between items-center">
-          <div>
-            <Heading
-              title={`Activity Details`}
-              description="Detailed view of selected activity"
-            />
-          </div>
-          <div className="flex space-x-3">
+      <div className="flex gap-2 justify-between">
+        <div className="flex flex-col gap-2">
+          <Back
+            path={`/projects/aa/${projectId}/activities/list/${activityDetail?.phase?.name.toLowerCase()}`}
+          />
+          <Heading
+            title={`Activity Details`}
+            description="Detailed view of selected activity"
+            titleStyle="text-xl sm:text-4xl "
+          />
+        </div>
+        <div className="flex flex-col gap-2 lg:flex-row items-center justify-center">
+          <div className="flex space-x-2">
             <DialogComponent
               buttonIcon={Trash}
               buttonText="Delete"
@@ -59,7 +59,7 @@ export default function ActivitiesDetailView() {
               dialogDescription="Are you sure you want to delete this activity?"
               confirmButtonText="Remove"
               handleClick={() => removeActivity()}
-              buttonClassName="rounded-sm w-full text-red-500 border-red-500"
+              buttonClassName="rounded-sm w-full text-red-500 border-red-500 sm"
               confirmButtonClassName="rounded-sm w-full bg-red-500"
               variant="outline"
             />
@@ -79,21 +79,21 @@ export default function ActivitiesDetailView() {
               confirmButtonClassName="rounded-sm w-full bg-primary"
               variant="outline"
             />
-
-            <IconLabelBtn
-              Icon={RefreshCcw}
-              handleClick={() =>
-                router.push(
-                  `/projects/aa/${projectId}/activities/${activityId}/update-status`,
-                )
-              }
-              name="Update Status"
-              className="rounded-sm w-full"
-            />
           </div>
+
+          <IconLabelBtn
+            Icon={RefreshCcw}
+            handleClick={() =>
+              router.push(
+                `/projects/aa/${projectId}/activities/${activityId}/update-status`,
+              )
+            }
+            name="Update Status"
+            className="rounded-sm w-full "
+          />
         </div>
       </div>
-      <div className="grid lg:grid-cols-2 gap-3">
+      <div className="grid lg:grid-cols-2 gap-3 w-full">
         <div className="flex flex-col gap-2 w-full">
           <ActivityDetailCards
             activityDetail={activityDetail}

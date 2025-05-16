@@ -30,6 +30,9 @@ type IProps = {
     notes?: string;
     warningLevel?: string;
     dangerLevel?: string;
+    forecast?: string;
+    daysToConsiderPrior?: string;
+    forecastStatus?: string;
   }>;
   phase: any;
 };
@@ -100,6 +103,9 @@ export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
                       <SelectContent>
                         <SelectItem value="DHM">DHM</SelectItem>
                         <SelectItem value="GLOFAS">GLOFAS</SelectItem>
+                        <SelectItem value="DAILY_MONITORING">
+                          Daily Monitoring
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -208,6 +214,89 @@ export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
                             {...field}
                           />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              </>
+            )}
+            {source === 'DAILY_MONITORING' && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="forecast"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormLabel>Forecast</FormLabel>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select forecast" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="3 Days Rainfall Forecast Bulletin">
+                              3 Days Rainfall Forecast Bulletin
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="daysToConsiderPrior"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>No. of days to consider prior</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="Enter the number of days to consider prior"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="forecastStatus"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormLabel>Forecast Status</FormLabel>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Steady">Steady</SelectItem>
+                            <SelectItem value="Minor Fluctuations">
+                              Minor Fluctuations
+                            </SelectItem>
+                            <SelectItem value="Increase">Increase</SelectItem>
+                            <SelectItem value="Increase">Decrease</SelectItem>
+                            <SelectItem value="Increase">
+                              Minor Increase
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     );

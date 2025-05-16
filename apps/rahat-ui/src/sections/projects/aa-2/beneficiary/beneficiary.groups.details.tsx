@@ -48,7 +48,7 @@ const BeneficiaryGroupsDetails = (props: Props) => {
     } else return [];
   }, [groupDetails]);
   const table = useReactTable({
-    manualPagination: true,
+    // manualPagination: true,
     data: tableData ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -73,7 +73,7 @@ const BeneficiaryGroupsDetails = (props: Props) => {
         <HeaderWithBack
           title={groupDetails?.name}
           subtitle="Detailed view of the selected beneficiary group"
-          path={`/projects/aa/${projectId}/beneficiary`}
+          path={`/projects/aa/${projectId}/beneficiary?tab=beneficiaryGroups`}
         />
       </div>
       <div className="flex gap-6 mb-5">
@@ -89,16 +89,23 @@ const BeneficiaryGroupsDetails = (props: Props) => {
           iconStyle="bg-white text-secondary-muted"
           title="Total Token Assigned"
           Icon={Coins}
-          number={'10'}
+          number={
+            groupDetails?.groupedBeneficiaries?.reduce(
+              (sum, item) => sum + item.tokensReserved,
+              0,
+            ) || 0
+          }
         />
       </div>
       <div className="p-4 rounded-sm border">
         <SearchInput
-          className="w-full"
-          name="name"
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          className="w-full m-1"
+          name="walletAddress"
+          value={
+            (table.getColumn('walletAddress')?.getFilterValue() as string) ?? ''
+          }
           onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
+            table.getColumn('walletAddress')?.setFilterValue(event.target.value)
           }
         />
         <DemoTable table={table} tableHeight="h-[calc(100vh-500px)]" />

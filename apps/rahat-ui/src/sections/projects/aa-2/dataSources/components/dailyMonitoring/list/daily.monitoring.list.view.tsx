@@ -73,6 +73,7 @@ export default function DailyMonitoringListView() {
     <div className="p-1 pt-0 ">
       <div className="flex gap-2 items-center mb-2">
         {/* <DailyMonitoringTableFilters
+        {/* <DailyMonitoringTableFilters
           user={userSearchText}
           location={locationFilterItem}
           date={dateFilterItem}
@@ -80,7 +81,7 @@ export default function DailyMonitoringListView() {
           handleFilterChange={handleFilterChange}
         /> */}
 
-        <SearchInput
+        {/* <SearchInput
           className="w-full"
           name="dataEntryBy"
           value={
@@ -140,10 +141,7 @@ export default function DailyMonitoringListView() {
           >
             Clear date
           </Button>
-        )}
-          handleSearch={handleFilterChange}
-          handleFilterChange={handleFilterChange}
-        /> */}
+        )} */}
 
         <SearchInput
           className="w-full"
@@ -218,9 +216,6 @@ export default function DailyMonitoringListView() {
         />
       </div>
       <div className="border bg-card rounded">
-        <DailyMonitoringTable table={table} loading={isLoading} />
-
-        <ClientSidePagination table={table} />
         <DailyMonitoringTable table={table} loading={isLoading} />
 
         <ClientSidePagination table={table} />

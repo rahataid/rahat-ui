@@ -20,7 +20,7 @@ export default function AddDailyMonitoring() {
   const projectId = params.id as UUID;
   const router = useRouter();
 
-  const dailyMonitoringListPath = `/projects/aa/${projectId}/data-sources`;
+  const dailyMonitoringListPath = `/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`;
 
   const { riverBasins } = useSelectItems();
 
@@ -229,7 +229,6 @@ export default function AddDailyMonitoring() {
                 label="River Basin"
                 placeholder="Select river basin"
                 selectItems={riverBasins}
-                className="mx-2"
                 className="mx-2"
               />
             </div>

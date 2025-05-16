@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
 import {
@@ -25,7 +25,7 @@ export default function EditDailyMonitoring() {
   const params = useParams();
   const projectId = params.id as UUID;
   const monitoringId = params.monitoringId as UUID;
-
+  const route = useRouter();
   const { riverBasins } = useSelectItems();
   const { data, isLoading } = useSingleMonitoring(projectId, monitoringId);
   const details = React.useMemo(() => {
@@ -201,7 +201,6 @@ export default function EditDailyMonitoring() {
       dataSource: [],
     },
   });
-  console.log('normalizedDataSource', data?.data);
   const {
     fields: anotherDataSourceFields,
     append: anotherDataSourceAppend,
@@ -326,6 +325,7 @@ export default function EditDailyMonitoring() {
         projectUUID: projectId,
         monitoringPayload: payload,
       });
+      route.push(`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`);
     } catch (e) {
       console.error('Edit Daily Monitoring Error::', e);
     }

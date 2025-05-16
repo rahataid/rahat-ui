@@ -230,6 +230,7 @@ export default function AddDailyMonitoring() {
                 placeholder="Select river basin"
                 selectItems={riverBasins}
                 className="mx-2"
+                className="mx-2"
               />
             </div>
             {anotherDataSourceFields.map((_, index) => (

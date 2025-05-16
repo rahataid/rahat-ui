@@ -141,6 +141,71 @@ export default function DailyMonitoringListView() {
             Clear date
           </Button>
         )}
+          handleSearch={handleFilterChange}
+          handleFilterChange={handleFilterChange}
+        /> */}
+
+        <SearchInput
+          className="w-full"
+          name="dataEntryBy"
+          value={
+            (table.getColumn('dataEntryBy')?.getFilterValue() as string) ?? ''
+          }
+          onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+            table.getColumn('dataEntryBy')?.setFilterValue(event.target.value)
+          }
+        />
+        <SelectComponent
+          name="riverBasin"
+          options={['ALL', 'MAHAKALI', 'KARNALI', 'BHERI']}
+          value={
+            (table.getColumn('riverBasin')?.getFilterValue() as string) ?? ''
+          }
+          onChange={(value) =>
+            table
+              .getColumn('riverBasin')
+              ?.setFilterValue(value === 'ALL' ? undefined : value)
+          }
+        />
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant={'outline'}
+              className={cn(
+                'text-left font-normal',
+                !date && 'text-muted-foreground',
+              )}
+            >
+              {date ? format(date, 'PPP') : <span>Pick a date</span>}
+              <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={date || undefined}
+              onSelect={(val) => {
+                if (!val) return;
+                setDate(val);
+                table.getColumn('createdAt')?.setFilterValue(val);
+              }}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+
+        {date && (
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setDate(null);
+              table.getColumn('createdAt')?.setFilterValue(undefined);
+            }}
+          >
+            Clear date
+          </Button>
+        )}
 
         <IconLabelBtn
           handleClick={() =>
@@ -153,6 +218,9 @@ export default function DailyMonitoringListView() {
         />
       </div>
       <div className="border bg-card rounded">
+        <DailyMonitoringTable table={table} loading={isLoading} />
+
+        <ClientSidePagination table={table} />
         <DailyMonitoringTable table={table} loading={isLoading} />
 
         <ClientSidePagination table={table} />

@@ -92,3 +92,25 @@ export const useSingleStat = (uuid: UUID, name: string) => {
 
   return query;
 };
+
+export const useCommuicationStatsforBeneficiaryandStakeHolders = (
+  uuid: UUID,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['commsStatsForBeneficiaryandStakeHolders', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.triggers.getTransportSessionStatsByGroup',
+          payload: {},
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};

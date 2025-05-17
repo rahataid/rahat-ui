@@ -25,7 +25,14 @@ export function ProjectSidebar(menuItems: ProjectNavViewProps) {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <Image src="/rahat-logo.png" alt="logo" height={20} width={30} />
+        <Image
+          src="/rahat-logo.png"
+          alt="logo"
+          height={20}
+          width={30}
+          onClick={() => router.push('/dashboard')}
+          className="hover:cursor-pointer"
+        />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={menuItems?.items} />

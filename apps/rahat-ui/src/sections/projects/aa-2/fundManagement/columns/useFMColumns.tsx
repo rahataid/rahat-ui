@@ -14,8 +14,9 @@ export const useFundManagementTableColumns = () => {
   const columns: ColumnDef<IFundManagement>[] = [
     {
       accessorKey: 'title',
+      accessorFn: (row) => row?.title,
       header: 'Title',
-      cell: ({ row }) => <div>{row.getValue('title') || 'N/A'}</div>,
+      cell: ({ row }) => <div>{row?.original?.title || 'N/A'}</div>,
     },
     {
       accessorKey: 'beneficiaryGroup',

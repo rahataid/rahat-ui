@@ -33,9 +33,15 @@ import { useSecondPanel } from '../../providers/second-panel-provider';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
 import BeneficiaryGroupsView from './groups/beneficiary-groups.view';
-import { CloudDownload, Download } from 'lucide-react';
+import { ChevronDownIcon, CloudDownload, Download } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import AddButton from '../projects/components/add.btn';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 
 function BeneficiaryView() {
   const router = useRouter();
@@ -195,12 +201,31 @@ function BeneficiaryView() {
             Beneficiary Groups
           </TabsTrigger>
         </TabsList>
-        <Button
-          variant="outline"
-          onClick={() => router.push('/beneficiary/import')}
-        >
-          <CloudDownload className="mr-1" /> Import beneficiaries
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild className="space-x-2">
+            <Button variant="outline">
+              <CloudDownload className="mr-1" />
+              Import beneficiaries
+              <ChevronDownIcon
+                className="-me-1 opacity-60"
+                size={16}
+                aria-hidden="true"
+              />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="min-w-(--radix-dropdown-menu-trigger-width)">
+            <DropdownMenuItem
+              onClick={() => router.push('/community-beneficiary')}
+            >
+              Import from Community Tool
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => router.push('/beneficiary/import')}
+            >
+              Import from Excel
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <TabsContent value="beneficiary">
         <div className="p-4">

@@ -222,7 +222,7 @@ function BeneficiaryView() {
             <DropdownMenuItem
               onClick={() => router.push('/beneficiary/import')}
             >
-              Import from Excel
+              Import from Excel Sheet
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

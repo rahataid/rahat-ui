@@ -81,12 +81,9 @@ export default function AddBeneficiary() {
       ),
     phone: z
       .string()
-      .min(10, { message: 'Phone number must be 10 digits' })
+      .min(10, { message: 'Phone number must be at least 10 digits' })
       .refine((value) => !/\s/.test(value), {
         message: 'Phone must not contain whitespace',
-      })
-      .refine((value) => /^[0-9]*$/.test(value), {
-        message: 'Phone must only numbers',
       }),
     email: z.string().optional(),
     birthDate: z.date().optional(),

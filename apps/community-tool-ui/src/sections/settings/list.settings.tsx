@@ -155,8 +155,8 @@ export default function ListSetting() {
         </DropdownMenu>
       </div>
       <div className="rounded border bg-white">
-        <TableComponent>
-          <ScrollArea className="h-[calc(100vh-190px)]">
+        <ScrollArea className="h-[calc(100vh-190px)]">
+          <TableComponent>
             <TableHeader className="bg-card sticky top-0">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -212,17 +212,17 @@ export default function ListSetting() {
                 </TableRow>
               )}
             </TableBody>
-          </ScrollArea>
-          <CustomPagination
-            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-            handleNextPage={setNextPage}
-            handlePrevPage={setPrevPage}
-            handlePageSizeChange={setPerPage}
-            currentPage={pagination.page}
-            perPage={pagination.perPage}
-            total={data?.response?.meta.total || 0}
-          />
-        </TableComponent>
+            <CustomPagination
+              meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+              handleNextPage={setNextPage}
+              handlePrevPage={setPrevPage}
+              handlePageSizeChange={setPerPage}
+              currentPage={pagination.page}
+              perPage={pagination.perPage}
+              total={data?.response?.meta.total || 0}
+            />
+          </TableComponent>
+        </ScrollArea>
       </div>
     </div>
   );

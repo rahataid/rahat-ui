@@ -4,11 +4,13 @@ export function middleware(request: NextRequest) {
   const url = new URL(request.url);
   const _rsc = url.searchParams.get('_rsc') || '';
 
-  const isMalicious =
-    /utl_inaddr|get_host_name|select|union|dual|\(\s*select/i.test(_rsc);
+  const maliciousPattern =
+    /utl_inaddr|get_host_name|select|union|dual|\(\s*select|\/\s*\(select/i;
 
-  if (isMalicious) {
-    return new Response('Bad Request', { status: 400 });
+  for (const [key, value] of url.searchParams.entries()) {
+    if (maliciousPattern.test(value)) {
+      return new Response('Bad Request', { status: 400 });
+    }
   }
 
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64');

@@ -1,6 +1,16 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export function middleware() {
+export function middleware(request: NextRequest) {
+  const url = new URL(request.url);
+  const _rsc = url.searchParams.get('_rsc') || '';
+
+  const isMalicious =
+    /utl_inaddr|get_host_name|select|union|dual|\(\s*select/i.test(_rsc);
+
+  if (isMalicious) {
+    return new Response('Bad Request', { status: 400 });
+  }
+
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
   const dev = process.env.NEXT_PUBLIC_ENVIRONMENT === 'development';
 
@@ -38,3 +48,22 @@ export function middleware() {
     },
   });
 }
+
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    {
+      source: '/((?!api|_next/static|_next/image|favicon.ico).*)',
+      missing: [
+        { type: 'header', key: 'next-router-prefetch' },
+        { type: 'header', key: 'purpose', value: 'prefetch' },
+      ],
+    },
+  ],
+};

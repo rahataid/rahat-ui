@@ -240,8 +240,8 @@ export default function VoiceTable() {
       <div className="rounded border bg-card">
         {table.getRowModel().rows?.length ? (
           <>
-            <Table>
-              <ScrollArea className="w-full h-[calc(100vh-320px)]">
+            <ScrollArea className="w-full h-[calc(100vh-320px)]">
+              <Table>
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
@@ -294,8 +294,8 @@ export default function VoiceTable() {
                     </TableRow>
                   )}
                 </TableBody>
-              </ScrollArea>
-            </Table>
+              </Table>
+            </ScrollArea>
             <div className="flex items-center justify-end space-x-2 p-2 border-t bg-card">
               <div className="flex-1 text-sm text-muted-foreground">
                 {table.getFilteredSelectedRowModel().rows.length} of{' '}

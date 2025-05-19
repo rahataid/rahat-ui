@@ -30,7 +30,6 @@ export default function EditDailyMonitoring() {
   const projectId = params.id as UUID;
   const monitoringId = params.monitoringId as UUID;
 
-
   const route = useRouter();
 
   const { riverBasins } = useSelectItems();
@@ -201,7 +200,6 @@ export default function EditDailyMonitoring() {
 
         station: z.string().optional(),
 
-
       }),
     ),
   });
@@ -344,7 +342,9 @@ export default function EditDailyMonitoring() {
       });
 
 
+
       route.push(`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`);
+
 
 
     } catch (e) {

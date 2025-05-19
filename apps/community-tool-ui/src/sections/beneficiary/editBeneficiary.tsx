@@ -95,9 +95,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       .min(10, { message: 'Phone number must be 10 digits' })
       .refine((value) => !/\s/.test(value), {
         message: 'Phone must not contain whitespace',
-      })
-      .refine((value) => /^[0-9]*$/.test(value), {
-        message: 'Phone must only numbers',
       }),
     location: z.string().optional(),
     latitude: z

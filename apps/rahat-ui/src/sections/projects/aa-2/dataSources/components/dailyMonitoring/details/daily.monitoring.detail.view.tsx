@@ -114,9 +114,6 @@ export default function DailyMonitoringDetailView() {
         .filter((item: any) => item.data);
     } else return [];
   }, [dataDetails]);
-
-  console.log('gaugeReading', data);
-
   const dailyMonitoringListPath = `/projects/aa/${projectId}/data-sources/#monitoring`;
   const dailyMonitoringEditPath = `/projects/aa/${projectId}/data-sources/daily-monitoring/${monitoringId}/edit`;
 

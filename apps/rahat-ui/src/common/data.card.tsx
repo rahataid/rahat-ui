@@ -81,7 +81,12 @@ export function DataCard({
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <div className="text-4xl font-semibold text-primary truncate w-52">
+                      <div
+                        // className="text-4xl font-semibold text-primary truncate w-52"
+                        className={`${
+                          title === 'Created By' ? 'text-xl ' : 'text-3xl'
+                        } font-semibold text-primary truncate w-52`}
+                      >
                         {number}
                       </div>
                     </TooltipTrigger>
@@ -89,7 +94,11 @@ export function DataCard({
                   </Tooltip>
                 </TooltipProvider>
               ) : (
-                <div className="text-3xl font-semibold text-primary truncate w-52">
+                <div
+                  className={`${
+                    title === 'Created By' ? 'text-xl' : 'text-3xl'
+                  }  font-semibold text-primary truncate w-52`}
+                >
                   {number}
                 </div>
               )}

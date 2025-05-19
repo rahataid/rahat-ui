@@ -17,6 +17,7 @@ export default function GaugereadingMonitoringCard({ data }: IProps) {
 
   return (
 
+
     <div className="grid  border grid-cols-1 md:grid-cols-2 rounded-sm">
 
       <div className="p-4 flex gap-2">

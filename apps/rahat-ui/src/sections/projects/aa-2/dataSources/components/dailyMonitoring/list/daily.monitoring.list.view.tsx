@@ -1,4 +1,6 @@
+
 "use client"
+
 import { useDailyMonitoring, usePagination } from '@rahat-ui/query';
 import { cn } from '@rahat-ui/shadcn/src';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -75,9 +77,6 @@ export default function DailyMonitoringListView() {
   return (
     <div className="p-1 pt-0 ">
       <div className="flex gap-2 items-center mb-2">
-   
-
-
 
 
         <SearchInput

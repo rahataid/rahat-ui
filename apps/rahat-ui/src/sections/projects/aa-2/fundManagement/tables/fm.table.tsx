@@ -2,6 +2,9 @@ import React from 'react';
 import { useGroupsReservedFunds, usePagination } from '@rahat-ui/query';
 import {
   getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -26,9 +29,12 @@ export default function FundManagementList() {
     setPrevPage,
     setPerPage,
     setPagination,
+    setFilters,
     filters,
   } = usePagination();
-
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
   const { data: groupsFundsData, isLoading } = useGroupsReservedFunds(
     projectId,
     {
@@ -43,12 +49,19 @@ export default function FundManagementList() {
   const table = useReactTable({
     data: groupsFundsData?.response?.data || [],
     columns,
-    getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+
     state: {
       columnVisibility,
+      columnFilters,
     },
   });
+
   return (
     <div className="">
       <Heading
@@ -57,13 +70,14 @@ export default function FundManagementList() {
         description="List of all the funds created"
       />
       <SearchInput
-        className="w-full"
-        name=""
-        value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+        className="w-full mb-2"
+        name="title"
+        value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
         onSearch={(event) =>
-          table.getColumn('name')?.setFilterValue(event.target.value)
+          table.getColumn('title')?.setFilterValue(event.target.value)
         }
       />
+
       <DemoTable
         table={table}
         tableHeight="h-[calc(100vh-420px)]"

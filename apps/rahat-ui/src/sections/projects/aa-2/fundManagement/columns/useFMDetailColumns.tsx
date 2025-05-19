@@ -9,19 +9,14 @@ export const useFMDetailTableColumns = () => {
   const router = useRouter();
   const { clickToCopy, copyAction } = useCopy();
   const handleViewClick = (fmId: string) => {
-    router.push(`/projects/aa/${id}/vendors/${fmId}`);
+    console.log('benefwallet', fmId);
+    router.push(`/projects/aa/${id}/beneficiary/${fmId}`);
   };
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'beneficiaries',
-      header: 'Beneficiaries',
-      cell: ({ row }) => (
-        <div>{row.original?.Beneficiary?.pii?.name || 'N/A'}</div>
-      ),
-    },
-    {
       accessorKey: 'walletAddress',
       header: 'Wallet Address',
+      accessorFn: (row) => row.Beneficiary?.walletAddress ?? 'N/A',
       cell: ({ row }) => (
         <div
           onClick={() =>
@@ -63,7 +58,7 @@ export const useFMDetailTableColumns = () => {
               className="hover:text-primary cursor-pointer"
               size={16}
               strokeWidth={1.5}
-              onClick={() => handleViewClick(row.original.uuid)}
+              onClick={() => handleViewClick(row.original.beneficiaryId)}
             />
           </div>
         );

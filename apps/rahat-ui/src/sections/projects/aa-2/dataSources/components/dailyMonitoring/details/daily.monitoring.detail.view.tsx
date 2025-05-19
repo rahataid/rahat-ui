@@ -115,8 +115,6 @@ export default function DailyMonitoringDetailView() {
     } else return [];
   }, [dataDetails]);
 
-
-
   const dailyMonitoringListPath = `/projects/aa/${projectId}/data-sources/#monitoring`;
   const dailyMonitoringEditPath = `/projects/aa/${projectId}/data-sources/daily-monitoring/${monitoringId}/edit`;
 

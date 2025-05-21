@@ -11,6 +11,7 @@ import {
   useBeneficiariesGroups,
   useCreatePayout,
   usePagination,
+  usePaymentProviders,
 } from '@rahat-ui/query';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -49,29 +50,31 @@ export interface PaymentState {
   mode: PayoutMode;
   group: Record<string, any>;
   vendor: Record<string, any>;
-  paymentProvider: string;
+  paymentProvider: Record<string, any>;
 }
 
 const initialFormState: PaymentState = {
   method: PayoutType.FSP,
-  mode: PayoutMode.OFFLINE,
+  mode: PayoutMode.ONLINE,
   group: {},
   vendor: {},
-  paymentProvider: '',
+  paymentProvider: {},
 };
 
 export default function PaymentInitiation() {
-  const { id: projectID } = useParams();
+  const params = useParams();
+  const projectID = params.id as UUID;
+
   const router = useRouter();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const { data: beneficiaryGroups } = useBeneficiariesGroups(
-    projectID as UUID,
-    {
-      perPage: '100',
-      tokenAssigned: true,
-      hasPayout: false,
-    },
-  );
+
+  const { data: paymentProviders } = usePaymentProviders(projectID);
+
+  const { data: beneficiaryGroups } = useBeneficiariesGroups(projectID, {
+    perPage: '100',
+    tokenAssigned: true,
+    hasPayout: false,
+  });
   const [formState, setFormState] = useState<PaymentState>(initialFormState);
   const {
     pagination,
@@ -84,7 +87,7 @@ export default function PaymentInitiation() {
   } = usePagination();
 
   const { data: vendors } = useAAVendorsList({
-    projectUUID: projectID as UUID,
+    projectUUID: projectID,
     page: 1,
     perPage: 100,
     order: 'desc',
@@ -167,7 +170,11 @@ export default function PaymentInitiation() {
           type: PayoutType.FSP,
           mode: PayoutMode.ONLINE,
           groupId: formState?.group?.tokensReserved?.uuid,
-          payoutProcessorId: formState.paymentProvider,
+          payoutProcessorId: formState?.paymentProvider?.id,
+          extras: {
+            paymentProviderName: formState?.paymentProvider?.name,
+            paymentProviderType: formState?.paymentProvider?.type,
+          },
         };
         break;
       case PayoutType.VENDOR:
@@ -177,12 +184,6 @@ export default function PaymentInitiation() {
               type: PayoutType.VENDOR,
               mode: PayoutMode.ONLINE,
               groupId: formState?.group?.tokensReserved?.uuid,
-              extras: {
-                vendorName: formState?.vendor?.name,
-                location: formState?.vendor?.location,
-                contactPerson: '',
-                contactNumber: formState?.vendor?.phone,
-              },
             };
             break;
           case PayoutMode.OFFLINE:
@@ -190,15 +191,23 @@ export default function PaymentInitiation() {
               type: PayoutType.VENDOR,
               mode: PayoutMode.OFFLINE,
               groupId: formState?.group?.tokensReserved?.uuid,
+              payoutProcessorId: formState?.vendor?.uuid,
+              extras: {
+                vendorName: formState?.vendor?.name,
+                location: formState?.vendor?.location,
+                contactNumber: formState?.vendor?.phone,
+              },
             };
             break;
         }
     }
 
-    console.log({ payload });
+    if (!payload) {
+      return;
+    }
 
     await initiatePayout.mutateAsync({
-      projectUUID: projectID as UUID,
+      projectUUID: projectID,
       payload: payload,
     });
     router.push(`/projects/aa/${projectID}/payout`);
@@ -247,14 +256,14 @@ export default function PaymentInitiation() {
           )}
 
           {/* Vendor Select - only if online */}
-          {formState.mode === PayoutMode.ONLINE &&
+          {formState.mode === PayoutMode.OFFLINE &&
             formState.method === PayoutType.VENDOR && (
               <div className="flex flex-col space-y-1">
                 <Label className="font-medium text-sm/6">Vendor</Label>
                 <SelectComponent
                   name="Vendor"
                   options={vendors?.data?.map((vendor: any) => vendor?.name)}
-                  value={formState.vendor?.name}
+                  value={formState.vendor?.name || ''}
                   onChange={(value) => {
                     const selectedVendor = vendors?.data?.find(
                       (vendor: any) => vendor.name === value,
@@ -298,9 +307,15 @@ export default function PaymentInitiation() {
                 </Label>
                 <SelectComponent
                   name="payment provider"
-                  options={['eSewa', 'Khalti', 'ConnectIPS']}
-                  value={formState.paymentProvider}
-                  onChange={(value) => handleChange('paymentProvider', value)}
+                  options={paymentProviders?.data?.map((p: any) => p?.name)}
+                  value={formState.paymentProvider?.name || ''}
+                  onChange={(value) => {
+                    const selectedPaymentProvider =
+                      paymentProviders?.data?.find(
+                        (p: any) => p.name === value,
+                      );
+                    handleChange('paymentProvider', selectedPaymentProvider);
+                  }}
                 />
               </div>
             )}

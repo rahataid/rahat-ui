@@ -1,7 +1,11 @@
 import { UUID } from 'crypto';
-import { useProjectAction } from '../../projects';
+import axios from 'axios';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
 import { useSwal } from 'libs/query/src/swal';
+import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
+import { useProjectAction, useProjectSettingsStore } from '../../projects';
 
 export enum PayoutType {
   FSP = 'FSP',
@@ -158,5 +162,25 @@ export const useUpdatePayout = () => {
         text: errorMessage,
       });
     },
+  });
+};
+
+export const usePaymentProviders = (projectUUID: UUID) => {
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
+
+  const url = settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS?.OFFRAMP]?.url;
+
+  return useQuery({
+    queryKey: ['paymentProviders', projectUUID],
+    queryFn: async () => {
+      if (!url) throw new Error('Missing OFFRAMP URL');
+      const response = await axios.get(url);
+      return response.data;
+    },
+    enabled: !!url,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 };

@@ -244,6 +244,7 @@ export const useSingleStakeholdersGroup = (
       });
       return mutate.data;
     },
+    enabled: !!stakeholdersGroupId,
   });
   return query;
 };

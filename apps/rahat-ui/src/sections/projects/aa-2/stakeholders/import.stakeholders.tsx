@@ -21,8 +21,11 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/src/components/ui/table';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
-import { Repeat2, Share } from 'lucide-react';
+import { CloudDownload, Repeat2, Share } from 'lucide-react';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
+const DOWNLOAD_FILE_URL = '/files/stakeholder-sample.xlsx';
+
 export default function ImportStakeholder() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
@@ -48,9 +51,10 @@ export default function ImportStakeholder() {
             (cell) => cell !== null && cell !== undefined && cell !== '',
           ),
         );
+
         if (filteredData.length > 100)
           return toast.error(
-            'Maximum 100 beneficiaries can be uploaded at a time',
+            'Maximum 100 stakeholders can be uploaded at a time',
           );
 
         setData(filteredData as any[][]);
@@ -67,9 +71,10 @@ export default function ImportStakeholder() {
   };
 
   const handleUpload = async () => {
-    if (data?.length === 1)
-      return toast.error('No beneficiary found in excel file');
-
+    if (data?.length === 1) {
+      await Swal.fire('No Stakeholder found in excel file');
+      return;
+    }
     if (!selectedFile) return toast.error('Please select a file to upload');
 
     // Determine doctype based on file extension
@@ -77,6 +82,21 @@ export default function ImportStakeholder() {
     const doctype = extension ? allowedExtensions[extension] : '';
   };
 
+  const handleSampleDownload = (e) => {
+    fetch(DOWNLOAD_FILE_URL)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'stakeholder.xlsx');
+        document.body.appendChild(link);
+        link.click();
+      })
+      .catch((error) => {
+        toast.error('Error downloading file!' + error);
+      });
+  };
   return (
     <>
       <div className="p-4  h-[calc(100vh-120px)]">
@@ -118,11 +138,22 @@ export default function ImportStakeholder() {
               </div>
             </div>
           </div>
+
+          <div className="flex mt-4">
+            <Button
+              onClick={handleSampleDownload}
+              type="button"
+              variant="outline"
+            >
+              <CloudDownload size={22} className="mr-1" />
+              Download Sample
+            </Button>
+          </div>
         </div>
 
         <>
-          {data.length > 0 && (
-            <div className="border-2 border-dashed border-black mt-6 mx-auto sm:w-[1500px] w-[1600px]">
+          {data.length > 1 && (
+            <div className="border-2 border-dashed border-black mt-6 mx-auto w-full">
               <ScrollArea className="h-[calc(100vh-450px)] w-full">
                 <Table className=" table-auto">
                   <TableHeader>
@@ -130,7 +161,7 @@ export default function ImportStakeholder() {
                       {data[0].map((header, index) => (
                         <TableHead
                           key={index}
-                          className="truncate max-w-[150px] "
+                          className="truncate max-w-[150px]  sticky top-0 bg-card"
                         >
                           {header}
                         </TableHead>
@@ -186,7 +217,7 @@ export default function ImportStakeholder() {
             onClick={handleUpload}
             disabled={data?.length === 0}
           >
-            Add
+            Import
           </Button>
         </div>
       </div>

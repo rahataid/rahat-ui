@@ -48,7 +48,7 @@ import { UUID } from 'crypto';
 import EditCommunicationForm from './edit.communication.form';
 import { ValidationContent } from '@rumsan/connect/src/types';
 import { toast } from 'react-toastify';
-import { Back, Heading } from 'apps/rahat-ui/src/common';
+import { Back, Heading, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { useUserList } from '@rumsan/react-query';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 
@@ -394,6 +394,31 @@ export default function EditActivity() {
       console.error('Error::', e);
     }
   };
+
+  React.useEffect(() => {
+    if (activityDetail) {
+      form.reset({
+        title: activityDetail?.title,
+        responsibility: activityDetail?.manager?.id,
+        source: activityDetail?.phase?.source?.source[0],
+        phaseId: activityDetail?.phaseId,
+        categoryId: activityDetail?.categoryId,
+        leadTime: activityDetail?.leadTime,
+        description: activityDetail?.description,
+        activityDocuments: activityDetail?.activityDocuments,
+        activityCommunication: activityDetail?.activityCommunication,
+        isAutomated: activityDetail?.isAutomated,
+      });
+    }
+  }, [activityDetail, isLoading]);
+
+  if (isLoading) {
+    return (
+      <>
+        <SpinnerLoader />
+      </>
+    );
+  }
 
   return (
     <Form {...form}>

@@ -20,7 +20,7 @@ export default function AddDailyMonitoring() {
   const projectId = params.id as UUID;
   const router = useRouter();
 
-  const dailyMonitoringListPath = `/projects/aa/${projectId}/data-sources`;
+  const dailyMonitoringListPath = `/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`;
 
   const { riverBasins } = useSelectItems();
 

@@ -1,14 +1,17 @@
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
+
 
 import {
   useRemoveMonitoringWhileUpdating,
   useSingleMonitoring,
   useUpdateMonitoring,
 } from '@rahat-ui/query';
+
 import { UUID } from 'crypto';
 import { Plus } from 'lucide-react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -21,10 +24,14 @@ import InputFormField from '../input.form.field';
 import SelectFormField from '../select.form.field';
 import { useSelectItems } from '../useSelectItems';
 
+
 export default function EditDailyMonitoring() {
   const params = useParams();
   const projectId = params.id as UUID;
   const monitoringId = params.monitoringId as UUID;
+
+
+  const route = useRouter();
 
   const { riverBasins } = useSelectItems();
   const { data, isLoading } = useSingleMonitoring(projectId, monitoringId);
@@ -72,6 +79,7 @@ export default function EditDailyMonitoring() {
                   waterLevel: item.waterLevel || '',
                   id: item.id,
                 };
+
               case 'NWP':
                 return {
                   source: item.source,
@@ -163,6 +171,7 @@ export default function EditDailyMonitoring() {
         dayAfterTomorrowNight: z.string().optional(),
         //DHM - Realtime Monitoring (River Watch)
         waterLevel: z.string().optional(),
+
         //DHM - NWP
         hours24NWP: z.string().optional(),
         hours48: z.string().optional(),
@@ -188,7 +197,11 @@ export default function EditDailyMonitoring() {
 
         //gauge Reading
         gaugeReading: z.string().optional(),
+
+
         station: z.string().optional(),
+
+
       }),
     ),
   });
@@ -201,7 +214,7 @@ export default function EditDailyMonitoring() {
       dataSource: [],
     },
   });
-  console.log('normalizedDataSource', data?.data);
+
   const {
     fields: anotherDataSourceFields,
     append: anotherDataSourceAppend,
@@ -250,6 +263,7 @@ export default function EditDailyMonitoring() {
                 id: item?.id,
               });
               break;
+
             case 'NWP':
               dataPayload.push({
                 source: item.source,
@@ -303,6 +317,7 @@ export default function EditDailyMonitoring() {
             id: item?.id,
           });
           break;
+
         case 'Gauge Reading':
           dataPayload.push({
             source: item.source,
@@ -322,10 +337,16 @@ export default function EditDailyMonitoring() {
       data: dataPayload,
     };
     try {
+
       await updateDailyMonitoring.mutateAsync({
         projectUUID: projectId,
         monitoringPayload: payload,
       });
+
+
+      route.push(`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`);
+
+
     } catch (e) {
       console.error('Edit Daily Monitoring Error::', e);
     }
@@ -358,7 +379,10 @@ export default function EditDailyMonitoring() {
       <HeaderWithBack
         title={'Edit Daily Monitoring'}
         subtitle="Edit the form below  to update daily monitoring"
+
+
         path={`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`}
+
       />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleEditDailyMonitoring)}>

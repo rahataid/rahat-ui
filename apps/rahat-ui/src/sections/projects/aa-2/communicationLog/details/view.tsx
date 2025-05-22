@@ -156,7 +156,7 @@ const CommunicationDetailsView = () => {
           <SpinnerLoader className="w-10 h-10" />
         ) : (
           <ScrollArea className="h-[calc(100vh-280px)]">
-            <div className="grid lg:grid-cols-3 gap-3">
+            <div className="grid  grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
               {activityDetail?.activityCommunication?.map((comm: any) => (
                 <CommunicationDetailCard
                   key={comm.communicationId}

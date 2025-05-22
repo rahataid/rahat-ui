@@ -31,6 +31,7 @@ import {
 import { UUID } from 'crypto';
 import BeneficiaryGroups from './BeneficiaryGroups';
 import { useProjectBeneficiaryTableColumns } from './columns';
+import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 function BeneficiaryView() {
   const { id } = useParams();
   const uuid = id as UUID;
@@ -45,6 +46,7 @@ function BeneficiaryView() {
     setFilters,
     setPagination,
   } = usePagination();
+  const { activeTab, setActiveTab } = useActiveTab('beneficiary');
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -89,7 +91,7 @@ function BeneficiaryView() {
     [filters],
   );
   return (
-    <Tabs defaultValue="beneficiary">
+    <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
       <TabsContent value="beneficiary">
         <div>
           <h1 className="font-bold text-2xl text-label pl-4">Beneficiary</h1>

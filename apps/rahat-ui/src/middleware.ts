@@ -1,61 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const url = new URL(request.url);
-  const _rsc = url.searchParams.get('_rsc') || '';
-
-  const maliciousPattern =
-    /utl_inaddr|get_host_name|select|union|dual|\(\s*select|\/\s*\(select/i;
-  const SQL_INJECTION_PATTERNS = [
-    // Generic SQL patterns
-    /(['"\\;()]|(\b(select|union|insert|update|delete|drop|alter|truncate|exec|declare|create|replace)\b))/i,
-
-    // Database-specific functions
-    /(utl_inaddr|get_host_name|dbms_|pg_sleep|waitfor\sdelay|benchmark|sleep\(|\/\*!\d+)/i,
-
-    // Common SQLi techniques
-    /from\s+[\w\.]*(dual|sys|information_schema|pg_catalog)/i,
-    /\(\s*select/i,
-    /union[\s\/]+select/i,
-    /--\s|\/\*|\*\/|#/,
-
-    // Time-based attack indicators
-    /(sleep\(|benchmark\(|waitfor\sdelay|pg_sleep\()/i,
-
-    // Obfuscation attempts
-    /(\w+\s*=\s*\w+\s*(--|#|\/\*))/i,
-    /(char|concat|substr)\s*\(/i,
-  ];
-
-  function containsSQLInjection(value: string): boolean {
-    if (typeof value !== 'string') return false;
-    return SQL_INJECTION_PATTERNS.some((pattern) => pattern.test(value));
-  }
-
-  // 1. Check URL components
-  const nextUrl = request.nextUrl;
-
-  // Check path segments
-  if (
-    nextUrl.pathname.split('/').some((segment) => containsSQLInjection(segment))
-  ) {
-    return new Response('Bad Request', { status: 400 });
-  }
-
-  // Check query parameters
-  for (const [_, value] of nextUrl.searchParams.entries()) {
-    if (containsSQLInjection(value)) {
-      return new Response('Bad Request', { status: 400 });
-    }
-  }
-
-  // 2. Check all headers generically
-  request.headers.forEach((value, header) => {
-    if (containsSQLInjection(header) || containsSQLInjection(value)) {
-      return new Response('Bad Request', { status: 400 });
-    }
-  });
-
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
   const dev = process.env.NEXT_PUBLIC_ENVIRONMENT === 'development';
 

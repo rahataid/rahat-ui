@@ -1,30 +1,25 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import RecentPaymentCard from './recent.payment.card';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 
-const RecentPayout = () => {
+interface RecentPayoutProps {
+  payouts: Array<Record<string, any>>;
+}
+
+const RecentPayout = ({ payouts }: RecentPayoutProps) => {
   const { id } = useParams();
   const route = useRouter();
-  const recentPayments = Array.from({ length: 5 }, (_, i) => ({
-    id: i,
-    beneficiaryGroupName: 'Rumsan Beneficiary Group',
-    actions: 'FSP',
-    merchentName: 'NIC Asia',
-    beneficiariesCount: 25 + i, // just to slightly vary the data
-    dateTime: '21 July, 2025, 00:12:35 PM',
-  }));
   return (
     <>
       <div className="flex justify-between mb-2">
         <h1 className="text-lg font-medium">Recent Payout</h1>
         <Button
-          // className={className}
           variant={'link'}
           onClick={() => route.push(`/projects/aa/${id}/payout/list`)}
+          disabled={!payouts?.length}
         >
           View all Transactions
           <ArrowRight className="ml-1" size={14} strokeWidth={1.5} />
@@ -32,23 +27,34 @@ const RecentPayout = () => {
       </div>
 
       <div className="h-[calc(100vh-400px)] overflow-y-scroll overflow-x-hidden scrollbar-hidden">
-        {recentPayments.map((payment, index) => (
-          <div key={payment.id}>
-            <RecentPaymentCard
-              beneficiaryGroupName={payment.beneficiaryGroupName}
-              actions={payment.actions}
-              merchentName={payment.merchentName}
-              beneficiariesCount={payment.beneficiariesCount}
-              dateTime={payment.dateTime}
-              onView={() =>
-                route.push(`/projects/aa/${id}/payout/details/${index + 1}`)
-              }
-            />
-            {index < recentPayments.length - 1 && (
-              <Separator className="mt-2 mb-2" />
-            )}
-          </div>
-        ))}
+        {payouts?.length ? (
+          payouts?.map((item, index) => (
+            <div key={item.id}>
+              <RecentPaymentCard
+                beneficiaryGroupName={
+                  item?.beneficiaryGroupToken?.beneficiaryGroup?.name
+                }
+                actions={item?.type}
+                merchentName={item?.extras?.paymentProviderName ?? 'N/A'}
+                beneficiariesCount={
+                  item?.beneficiaryGroupToken?.beneficiaryGroup?._count
+                    ?.beneficiaries
+                }
+                dateTime={new Date(item?.updatedAt)?.toLocaleString()}
+                onView={() =>
+                  route.push(`/projects/aa/${id}/payout/details/${item?.uuid}`)
+                }
+              />
+              {index < payouts.length - 1 && (
+                <Separator className="mt-2 mb-2" />
+              )}
+            </div>
+          ))
+        ) : (
+          <p className="text-sm font-medium text-muted-foreground">
+            No payouts found
+          </p>
+        )}
       </div>
     </>
   );

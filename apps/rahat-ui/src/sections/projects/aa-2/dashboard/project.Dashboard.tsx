@@ -1,4 +1,4 @@
-import { useProjectInfo } from '@rahat-ui/query';
+import { useOfframp, useProjectInfo } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 
@@ -17,5 +17,6 @@ export default function ProjectDashboard() {
   // const fundsModal = useBoolean();
   // const onDelete = () => {};
   useProjectInfo(projectId);
+  useOfframp(projectId);
   return <div>DASHBOARD</div>;
 }

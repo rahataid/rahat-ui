@@ -1350,7 +1350,6 @@ export const useProjectInfo = (uuid: UUID) => {
 
   useEffect(() => {
     if (!isEmpty(query.data)) {
-      console.log('query data', query.data);
       const settingsToUpdate = {
         ...settings,
         [uuid]: {
@@ -1359,7 +1358,44 @@ export const useProjectInfo = (uuid: UUID) => {
         },
       };
       setSettings(settingsToUpdate);
-      // window.location.reload();
+    }
+  }, [query.data]);
+  return query;
+};
+
+export const useOfframp = (uuid: UUID) => {
+  const q = useProjectAction([PROJECT_SETTINGS_KEYS.OFFRAMP]);
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+
+  const query = useQuery({
+    queryKey: ['settings.get.offramp', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: PROJECT_SETTINGS_KEYS.OFFRAMP,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  useEffect(() => {
+    if (!isEmpty(query.data)) {
+      const settingsToUpdate = {
+        ...settings,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.OFFRAMP]: query?.data.value,
+        },
+      };
+      setSettings(settingsToUpdate);
     }
   }, [query.data]);
   return query;

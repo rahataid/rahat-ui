@@ -10,23 +10,13 @@ import {
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { useState } from 'react';
+import { PaymentState } from './payment';
 
 export type PaymentDialogProps = {
   handleSubmit: () => void;
-  formState: {
-    method: 'FSP' | 'CVA';
-    group: string;
-    vendor: string;
-  };
-  token: string;
-  totalBeneficiaries: number;
+  formState: PaymentState;
 };
-export function PaymentDialog({
-  formState,
-  handleSubmit,
-  token,
-  totalBeneficiaries,
-}: PaymentDialogProps) {
+export function PaymentDialog({ formState, handleSubmit }: PaymentDialogProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -34,7 +24,9 @@ export function PaymentDialog({
       <DialogTrigger>
         <Button
           className="rounded-sm w-48"
-          disabled={!formState.method || !formState.group}
+          disabled={
+            !formState.method || Object.keys(formState.group).length === 0
+          }
           onClick={() => setOpen(true)}
         >
           Confirm
@@ -58,32 +50,38 @@ export function PaymentDialog({
             <div className="text-gray-600 font-medium">
               Beneficiary Group Name
             </div>
-            <div className="font-medium">{formState?.group}</div>
+            <div className="font-medium">{formState?.group?.name}</div>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <div className="text-gray-600 font-medium">Total Beneficiaries</div>
-            <div className="font-medium">{totalBeneficiaries}</div>
+            <div className="font-medium">
+              {formState?.group?.groupedBeneficiaries?.length}
+            </div>
           </div>
-          {formState.vendor !== '' && (
+          {Object.keys(formState.vendor).length !== 0 && (
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div className="text-gray-600 font-medium">Vendor Name</div>
-                <div className="font-medium">{'vendorName'}</div>
+                <div className="font-medium">{formState?.vendor?.name}</div>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="text-gray-600 font-medium">
                   Vendor Wallet ID
                 </div>
-                <div className="font-medium">{'vendorWalletId'}</div>
+                <div className="font-medium truncate">
+                  {formState?.vendor?.walletAddress}
+                </div>
               </div>
             </>
           )}
 
           <div className="grid grid-cols-2 gap-2">
             <div className="text-gray-600 font-medium">Tokens</div>
-            <div className="font-medium">{token}</div>
+            <div className="font-medium">
+              {formState?.group?.tokensReserved?.numberOfTokens}
+            </div>
           </div>
         </div>
         <DialogFooter className="flex justify-between">

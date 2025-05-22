@@ -1,6 +1,4 @@
-import { useParams, useRouter } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye } from 'lucide-react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 function getTransactionStatusColor(status: string) {
@@ -17,20 +15,13 @@ function getTransactionStatusColor(status: string) {
 }
 
 export default function useBeneficiaryGroupDetailsLogColumns() {
-  const { id: projectId } = useParams();
-  const router = useRouter();
-
-  const handleViewClick = (id: string) => {
-    router.push(`/projects/${projectId}/beneficiary-transactions/${id}`);
-  };
-
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'beneficiaryWallet',
+      accessorKey: 'walletAddress',
       header: 'Beneficiary Wallet Address',
       cell: ({ row }) => (
         <div className="truncate max-w-[180px]">
-          {row.getValue('beneficiaryWallet')}
+          {row.getValue('walletAddress')}
         </div>
       ),
     },
@@ -66,9 +57,11 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
       },
     },
     {
-      accessorKey: 'timestamp',
+      accessorKey: 'timeStamp',
       header: 'Timestamp',
-      cell: ({ row }) => <div>{row.getValue('timestamp') || 'N/A'}</div>,
+      cell: ({ row }) => (
+        <div>{new Date(row.getValue('timeStamp')).toLocaleString()}</div>
+      ),
     },
   ];
 

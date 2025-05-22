@@ -1,11 +1,13 @@
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
+  useReadRahatTokenDecimals,
+  useTokenDetails,
 } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { User } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { formatEther } from 'viem';
+import { formatEther, formatUnits } from 'viem';
 import { useReadContract } from 'wagmi';
 
 type Step3DisburseSummaryProps = {
@@ -14,6 +16,7 @@ type Step3DisburseSummaryProps = {
   token: string;
   projectSubgraphDetails: any;
   tokenName?: string;
+  treasurySource: string;
 };
 
 export default function Step3DisburseSummary({
@@ -22,6 +25,7 @@ export default function Step3DisburseSummary({
   token,
   projectSubgraphDetails,
   tokenName = 'USDC',
+  treasurySource,
 }: Step3DisburseSummaryProps) {
   const { id } = useParams();
 
@@ -35,8 +39,11 @@ export default function Step3DisburseSummary({
     functionName: 'balanceOf',
     args: [contractSettings?.c2cproject?.address],
   });
+  const decimals = useTokenDetails();
 
-  const projectBalance = data ? formatEther(BigInt(data)) : '0';
+  const projectBalance = data
+    ? formatUnits(data, decimals.data as number)
+    : '0';
 
   return (
     <div className="bg-card rounded-lg m-6 p-4">
@@ -60,21 +67,25 @@ export default function Step3DisburseSummary({
                   {selectedBeneficiaries?.length}
                 </p>
               </div>
-              <div>
-                <h2 className="text-sm font-medium text-gray-500">
-                  Project Balance
-                </h2>
-                <p className="text-lg font-semibold text-gray-800">
-                  {projectBalance} USDC
-                </p>
-              </div>
+              {treasurySource === 'PROJECT' && (
+                <div>
+                  <h2 className="text-sm font-medium text-gray-500">
+                    Project Balance
+                  </h2>
+                  <p className="text-lg font-semibold text-gray-800">
+                    {projectBalance} USDC
+                  </p>
+                </div>
+              )}
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
                   Send amount among beneficiaries
                 </h2>
                 <p className="text-lg font-semibold text-gray-800">
                   {selectedBeneficiaries &&
-                    Number(value) / selectedBeneficiaries?.length}{' '}
+                    Math.round(
+                      Number(value) * selectedBeneficiaries?.length * 100,
+                    ) / 100}{' '}
                   USDC
                 </p>
               </div>

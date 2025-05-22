@@ -46,6 +46,7 @@ export const PROJECT_SETTINGS_KEYS = {
   DATASOURCE: 'DATASOURCE',
   HAZARD_TYPE: 'HAZARD_TYPE',
   SAFE_WALLET: 'SAFE_WALLET',
+  SCB: 'SCB',
 };
 
 export const TREASURY_SOURCES = [
@@ -145,6 +146,5 @@ export const MS_CAM_ACTIONS = {
       BROAD_CAST_STATUS_COUNT: 'cambodia.app.broadcast_status_count',
     },
     LINE_STATS: 'cambodia.app.line_stats',
-    PROJECT_SETTINGS: 'cambodia.app.project_settings',
   },
 };

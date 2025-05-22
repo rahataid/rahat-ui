@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useGrievanceAdd } from '@rahat-ui/query';
+import { useEffect, useRef } from 'react';
 
 // Step 1: Update the Form Schema
 const FormSchema = z.object({
@@ -104,25 +105,32 @@ function GrievanceSelectField({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
-        <FormItem>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder="Select an option" />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              {options.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <FormMessage />
-        </FormItem>
-      )}
+      render={({ field }) => {
+        return (
+          <FormItem>
+            <Select
+              onValueChange={(val) => {
+                if (val) field.onChange(val);
+              }}
+              value={field.value && field.value}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select an option" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {options.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
     />
   );
 }
@@ -132,6 +140,8 @@ function GrievanceForm({
   handleSubmit,
   handleGoBack,
 }: GrievanceFormProps) {
+  console.log('value', form.getValues('grievanceType'));
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)}>
@@ -164,12 +174,12 @@ function GrievanceForm({
                 name="description"
                 placeholder="Description"
               />
-              {/* Step 3: Add the Status Dropdown */}
+              {/* Step 3: Add the Status Dropdown
               <GrievanceSelectField
                 control={form.control}
                 name="status"
-                options={statusOptions}
-              />
+                options={statusOptions} */}
+              {/* /> */}
             </div>
             <div className="flex justify-between">
               <Button
@@ -189,10 +199,11 @@ function GrievanceForm({
   );
 }
 
-export default function GrievanceAdd() {
+export default function GrievanceAdd({ details }: any) {
   const router = useRouter();
   const addGrievance = useGrievanceAdd();
   const { id } = useParams();
+  const hasReset = useRef(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
@@ -224,6 +235,20 @@ export default function GrievanceAdd() {
     router.back();
     await addGrievance.mutateAsync(grievance);
   };
+
+  useEffect(() => {
+    if (details && !hasReset.current) {
+      form.reset({
+        reportedBy: details?.reportedBy || '',
+        contactInfo: details?.reporterContact || '',
+        grievanceTitle: details?.title || '',
+        grievanceType: details?.type || '',
+        description: details?.description || '',
+        status: details?.status || '',
+      });
+      hasReset.current = true; // Prevent re-resetting
+    }
+  }, [details]);
 
   return (
     <GrievanceForm

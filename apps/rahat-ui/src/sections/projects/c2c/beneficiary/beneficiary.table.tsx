@@ -31,9 +31,9 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import Image from 'next/image';
+import DataTableServerSidePagination from '../transactions/dataTableServerSidePagination';
 
 const BeneficiaryDetailTableView = () => {
   const uuid = useParams().id as UUID;
@@ -47,13 +47,13 @@ const BeneficiaryDetailTableView = () => {
   const {
     pagination,
     filters,
-    setFilters,
     setNextPage,
     setPrevPage,
+    setFirstPage,
+    setLastPage,
     setPerPage,
     selectedListItems,
     setSelectedListItems,
-    resetSelectedListItems,
   } = usePagination();
   const selectedRowAddresses = Object.keys(selectedListItems);
   const queryString = selectedRowAddresses.join(',');
@@ -85,6 +85,7 @@ const BeneficiaryDetailTableView = () => {
       rowSelection: selectedListItems,
     },
   });
+  const meta = projectBeneficiaries.data.response?.meta;
   return (
     <>
       <div className="p-2 bg-secondary">
@@ -104,17 +105,24 @@ const BeneficiaryDetailTableView = () => {
           {selectedRowAddresses.length ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  onClick={() =>
-                    route.push(
-                      `/projects/c2c/${uuid}/beneficiary/disburse-flow?selectedBeneficiaries=${encodeURIComponent(
-                        queryString,
-                      )}`,
+                <div className="flex items-center space-x-4 p-2">
+                  <Button
+                    className="bg-blue-600 text-white hover:bg-blue-700 transition-colors rounded"
+                    onClick={() =>
+                      route.push(
+                        `/projects/c2c/${uuid}/beneficiary/disburse-flow?selectedBeneficiaries=${encodeURIComponent(
+                          queryString,
+                        )}`,
+                      )
+                    }
+                  >
+                    Disburse USDC (
+                    <span className="text-sm text-gray-50 ml-2">
+                      {selectedRowAddresses.length} selected
+                    </span>
                     )
-                  }
-                >
-                  Disburse USDC
-                </Button>
+                  </Button>
+                </div>
               </DropdownMenuTrigger>
             </DropdownMenu>
           ) : null}
@@ -196,13 +204,16 @@ const BeneficiaryDetailTableView = () => {
           </Table>
         </div>
       </div>
-      <CustomPagination
-        currentPage={pagination.page}
+      <DataTableServerSidePagination
+        meta={meta || { total: 0, currentPage: 0 }}
         handleNextPage={setNextPage}
-        handlePageSizeChange={setPerPage}
         handlePrevPage={setPrevPage}
-        meta={projectBeneficiaries?.data?.response?.meta || {}}
+        handleFirstPage={setFirstPage}
+        handleLastPage={setLastPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
         perPage={pagination.perPage}
+        total={0}
       />
     </>
   );

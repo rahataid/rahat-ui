@@ -7,8 +7,8 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 
 import {
-  useListCommsCampaign,
-  useListCommsTransport,
+  useListRpCampaign,
+  useListRpTransport,
   usePagination,
 } from '@rahat-ui/query';
 
@@ -17,25 +17,25 @@ import { useParams, useRouter } from 'next/navigation';
 import IvrCampaignAddDrawer from './campaign.ivr.add';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
+
 const IvrCampaignDetails = () => {
   const { pagination, filters } = usePagination();
   const router = useRouter();
   const { id } = useParams();
 
-  const { data: campaignData } = useListCommsCampaign(id as UUID, {
+  const { data: campaignData } = useListRpCampaign(id as UUID, {
     ...pagination,
     ...(filters as any),
     order: 'desc',
   });
-  const { data: transportData } = useListCommsTransport(id as UUID);
+  const { data: transportData } = useListRpTransport(id as UUID);
 
   const ivrTransportCuids = transportData
     ?.filter((transport: any) => transport.name.toLowerCase() === 'ivr')
     .map((transport: any) => transport.cuid);
-  const filteredComs = campaignData;
-  // campaignData?.filter((com: any) =>
-  //   ivrTransportCuids?.includes(com.transportId),
-  // );
+  const filteredComs = campaignData?.filter((com: any) =>
+    ivrTransportCuids?.includes(com.transportId),
+  );
   console.log(filteredComs, ivrTransportCuids);
   return (
     <div className="h-[calc(100vh-80px)] p-2">
@@ -50,7 +50,7 @@ const IvrCampaignDetails = () => {
                 key={ivrCampaign.uuid}
                 onClick={() =>
                   router.push(
-                    `/projects/comms/${id}/campaigns/ivr/manage/${ivrCampaign.uuid}`,
+                    `/projects/comms/${id}/campaigns/text/manage/${ivrCampaign.uuid}`,
                   )
                 }
                 className="flex flex-col rounded justify-center shadow bg-card cursor-pointer hover:shadow-md hover:border-1 hover:border-blue-500 ease-in duration-200"

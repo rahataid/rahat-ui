@@ -109,26 +109,21 @@ export const useProjectBeneficiaryTableColumns = () => {
     },
     {
       accessorKey: 'balance',
-      header: () => <div>Balance</div>,
+      header: () => <div>Disbursed Amount</div>,
       cell: ({ row }) => {
-        const balanceValue = row.getValue('balance');
-
-        if (balanceValue && !isNaN(balanceValue)) {
-          const balance = parseFloat(formatEther(BigInt(balanceValue)));
-
-          const formatted = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-          }).format(balance);
-
-          return <div className="font-medium">{formatted}</div>;
-        } else {
-          return <div className="font-medium">N/A</div>;
+        const disbursementBeneficiary = row.original?.DisbursementBeneficiary;
+        let amount = 0;
+        if (disbursementBeneficiary?.length > 0) {
+          disbursementBeneficiary.forEach((beneficiary: any) => {
+            amount += Number(beneficiary.amount);
+          });
         }
+        return <div className="font-medium">{amount.toFixed(2) || 0} USDC</div>;
       },
     },
     {
       id: 'actions',
+      header: () => <div>Actions</div>,
       enableHiding: false,
       cell: ({ row }) => {
         return (

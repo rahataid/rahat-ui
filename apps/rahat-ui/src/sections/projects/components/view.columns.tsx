@@ -17,7 +17,10 @@ export default function ViewColumns({ table }: IProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="ml-auto text-muted-foreground">
+        <Button
+          variant="outline"
+          className="ml-auto text-muted-foreground rounded-sm"
+        >
           View
           <Settings2 className="ml-2 h-4 w-5" />
         </Button>

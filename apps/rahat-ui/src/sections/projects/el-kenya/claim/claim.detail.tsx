@@ -50,7 +50,7 @@ export default function ClaimDetailView() {
     resetSelectedListItems,
   } = usePagination();
 
-  const { data, refetch, isLoading } = useGetRedemption(id, Id);
+  const { data, refetch, isFetching } = useGetRedemption(id, Id);
 
   React.useEffect(() => {
     if (data) {
@@ -181,7 +181,7 @@ export default function ClaimDetailView() {
           <ElkenyaTable
             table={table}
             tableHeight="h-[calc(100vh-399px)]"
-            loading={isLoading}
+            loading={isFetching}
           />
         </div>
       </div>

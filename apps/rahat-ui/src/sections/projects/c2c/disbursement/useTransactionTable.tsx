@@ -9,15 +9,17 @@ import {
 import { useState } from 'react';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import { Copy, CopyCheck } from 'lucide-react';
+import { useInfoByCurrentChain } from 'apps/rahat-ui/src/hooks/use-info-by-current-chain';
 
 export const useTransactionTable = () => {
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
   const [toAddressCopied, setToAddressCopied] = useState<number>(); // New state for To column
+  const chainInfo = useInfoByCurrentChain();
 
   const clickToCopy = (
     walletAddress: string,
     index: number,
-    isToColumn: boolean = false,
+    isToColumn = false,
   ) => {
     navigator.clipboard.writeText(walletAddress);
     if (isToColumn) {
@@ -38,7 +40,7 @@ export const useTransactionTable = () => {
               className="flex items-center gap-3 cursor-pointer"
               onClick={() => clickToCopy(row.getValue('from'), row.index)}
             >
-              <p>{truncateEthAddress(row.getValue('from'))}</p>
+              <p>{row.getValue('from')}</p>
               {walletAddressCopied === row.index ? (
                 <CopyCheck size={15} strokeWidth={1.5} />
               ) : (
@@ -70,7 +72,7 @@ export const useTransactionTable = () => {
                 )
               }
             >
-              <p>{truncateEthAddress(row.original.beneficiaryWalletAddress)}</p>
+              <p>{row.original.beneficiaryWalletAddress}</p>
               {toAddressCopied === row.index ? (
                 <CopyCheck size={15} strokeWidth={1.5} />
               ) : (
@@ -86,20 +88,26 @@ export const useTransactionTable = () => {
         </TooltipProvider>
       ),
     },
-    {
-      accessorKey: 'transactionHash',
-      header: 'Transaction Hash',
-      cell: ({ row }) => (
-        <div className="capitalize text-blue-500">
-          <Link
-            target="_blank"
-            href={`https://sepolia.basescan.org/tx/${row.original.transactionHash}`}
-          >
-            {row.original.transactionHash}
-          </Link>
-        </div>
-      ),
-    },
+    // {
+    //   accessorKey: 'transactionHash',
+    //   header: 'Transaction Hash',
+    //   cell: ({ row }) => (
+    //     <div className="capitalize text-blue-500">
+    //       {row?.original?.transactionHash ? (
+    //         <Link
+    //           target="_blank"
+    //           href={`${
+    //             chainInfo.blockExplorers?.default.url
+    //           }/tx/${row?.original?.transactionHash.toLowerCase()}`}
+    //         >
+    //           {truncateEthAddress(row.original.transactionHash)}
+    //         </Link>
+    //       ) : (
+    //         'Waiting for approval'
+    //       )}
+    //     </div>
+    //   ),
+    // },
     {
       accessorKey: 'amount',
       header: () => <div>Amount</div>,

@@ -26,7 +26,7 @@ export default function VendorsDetail() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const phone = searchParams.get('phone');
+  const phone = decodeURIComponent(searchParams.get('phone') || '');
   const name = searchParams.get('name');
   const vendorWallet = searchParams.get('walletAddress') || '';
   const vendorId = searchParams.get('vendorId');
@@ -36,7 +36,7 @@ export default function VendorsDetail() {
     (state) => state.singleProject?.projectClosed,
   );
 
-  const { data, isLoading: isVendorLoading } = useGetOfflineSingleVendor(
+  const { data, isFetching: isVendorLoading } = useGetOfflineSingleVendor(
     id,
     Number(vendorId),
   );
@@ -66,23 +66,6 @@ export default function VendorsDetail() {
           subtitle="Here is the detailed view of selected vendor"
           path={`/projects/el-kenya/${id}/vendors`}
         />
-        <div
-          className={`flex space-x-2 ${
-            projectClosed && 'pointer-events-none opacity-70'
-          }`}
-        >
-          <EditButton
-            className="border-none bg-sky-50 shadow-none"
-            path={`/projects/el-kenya/${id}/vendors/${vendorUUID}/edit`}
-            disabled={projectClosed}
-          />
-          <DeleteButton
-            className="border-none bg-red-100 shadow-none"
-            name="vendor"
-            handleContinueClick={deleteVendor}
-            disabled={projectClosed}
-          />
-        </div>
       </div>
       <div className="p-5 rounded border grid grid-cols-4 gap-5 mb-5">
         <div>

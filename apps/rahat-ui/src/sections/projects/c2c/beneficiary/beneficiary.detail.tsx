@@ -40,7 +40,7 @@ import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { UUID } from 'crypto';
 import { Copy, CopyCheck, Minus, MoreVertical, Trash2 } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import EditBeneficiary from './beneficiary.edit';
 import TransactionTable from './beneficiary.transaction.table';
 
@@ -60,6 +60,7 @@ export default function BeneficiaryDetail({
 
   const { data: transactionList, isLoading } =
     useBeneficiaryTransaction(walletAddress);
+  console.log('transactionList', transactionList);
 
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
@@ -87,6 +88,18 @@ export default function BeneficiaryDetail({
       console.error('Error::', e);
     }
   };
+
+  const disbursementBeneficiary = beneficiaryDetails?.DisbursementBeneficiary;
+  let amount = 0;
+  if (disbursementBeneficiary?.length > 0) {
+    disbursementBeneficiary.forEach((beneficiary: any) => {
+      amount += Number(beneficiary.amount);
+    });
+  }
+
+  useEffect(() => {
+    setWalletAddressCopied(false);
+  }, [beneficiaryDetails]);
 
   return (
     <>
@@ -258,15 +271,17 @@ export default function BeneficiaryDetail({
                         </div>
                         <div className="grid grid-cols-3 gap-3 mt-3">
                           <div>
-                            <p className="font-light text-base">{'N/A'}</p>
+                            <p className="font-light text-base">
+                              {amount.toFixed(2) + ' USDC' || 'N/A'}
+                            </p>
                             <p className="text-sm font-normal text-muted-foreground">
-                              Balance
+                              Disbursed Amount
                             </p>
                           </div>
                           <div>
                             <p className="font-light text-base">Verified </p>
                             <p className="text-sm font-normal text-muted-foreground">
-                              Verificatoin Status
+                              Verification Status
                             </p>
                           </div>
                         </div>

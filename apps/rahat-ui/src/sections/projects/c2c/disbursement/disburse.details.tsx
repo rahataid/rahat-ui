@@ -21,6 +21,10 @@ import { useParams } from 'next/navigation';
 import DataCard from '../../../../components/dataCard';
 import { ApprovalTable } from './approvals.table';
 import { TransactionTable } from './transactions.table';
+import { useChains } from 'connectkit';
+import { useChainId, useConnect, useConnections } from 'wagmi';
+import { useInfoByCurrentChain } from 'apps/rahat-ui/src/hooks/use-info-by-current-chain';
+import { formatdbDate } from 'apps/rahat-ui/src/utils';
 
 export default function DisburseDetails() {
   const { id: projectUUID, uuid } = useParams() as {
@@ -28,10 +32,7 @@ export default function DisburseDetails() {
     uuid: UUID;
   };
   const { data } = useGetDisbursement(projectUUID, uuid);
-  console.log('data', data);
-  const date = new Date(data?.createdAt);
-  const datePart = date.toDateString().split(' ').slice(1).join(' ');
-  const timePart = date.toTimeString().split(' ')[0].slice(0, 5);
+  const chainInfo = useInfoByCurrentChain();
 
   const amount = data?.amount;
   const formatted = new Intl.NumberFormat('en-US', {
@@ -47,7 +48,10 @@ export default function DisburseDetails() {
           <div className="mt-3">
             <CardContent>
               <p className="text-primary">
-                {datePart} - {timePart}
+                {formatdbDate(data?.createdAt || data?.updatedAt)
+                  .split(' ')
+                  .slice(0, 5)
+                  .join(' ')}
               </p>
               <CardDescription>Disbursed on</CardDescription>
             </CardContent>
@@ -86,18 +90,20 @@ export default function DisburseDetails() {
                 )}
               </TabsList>
               {/* //TODO get safe wallet from backend */}
-              <div className="mr-2">
-                <Button asChild>
-                  <Link
-                    className="flex items-center gap-2"
-                    href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
-                    target="_blank"
-                  >
-                    <WalletCards strokeWidth={1.5} size={18} />
-                    SafeWallet
-                  </Link>
-                </Button>
-              </div>
+              {data?.type === 'MULTISIG' && (
+                <div className="mr-2">
+                  <Button asChild>
+                    <Link
+                      className="flex items-center gap-2"
+                      href={chainInfo.safeURL}
+                      target="_blank"
+                    >
+                      <WalletCards strokeWidth={1.5} size={18} />
+                      SafeWallet
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </Card>
           </div>
           <TabsContent value="transactions">

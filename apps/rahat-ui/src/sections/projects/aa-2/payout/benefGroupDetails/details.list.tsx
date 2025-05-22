@@ -1,5 +1,5 @@
 'use client';
-import { usePagination } from '@rahat-ui/query';
+import { usePagination, useSinglePayout } from '@rahat-ui/query';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
@@ -10,15 +10,20 @@ import {
   DataCard,
   Heading,
   SearchInput,
+  TableLoader,
 } from 'apps/rahat-ui/src/common';
 
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
-import data from './dummy.json';
 import { Ticket, Users } from 'lucide-react';
+import { UUID } from 'crypto';
+import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
+
 export default function BeneficiaryGroupTransactionDetailsList() {
-  const { id: projectID } = useParams();
+  const params = useParams();
+  const projectId = params.id as UUID;
+  const payoutId = params.detailID as UUID;
   const searchParams = useSearchParams();
 
   const {
@@ -33,11 +38,31 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
   const router = useRouter();
 
+  const { data: payout, isLoading } = useSinglePayout(projectId, {
+    uuid: payoutId,
+  });
+
   const columns = useBeneficiaryGroupDetailsLogColumns();
-  const isLoading = false;
+
+  const tableData = React.useMemo(() => {
+    const benefs =
+      payout?.beneficiaryGroupToken?.beneficiaryGroup?.beneficiaries ?? [];
+    const data = benefs?.length
+      ? benefs?.map((b: any) => ({
+          walletAddress: 'N/A',
+          transactionWalletId: 'N/A',
+          bankTransactionId: 'N/A',
+          tokensAssigned: 'N/A',
+          status: 'N/A',
+          timeStamp: b?.updatedAt,
+        }))
+      : [];
+    return data;
+  }, [payout]);
+
   const table = useReactTable({
     manualPagination: true,
-    data: data || [],
+    data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -61,19 +86,22 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const payoutStats = [
     {
       label: 'Total Beneficiaries',
-      value: '23000',
+      value:
+        payout?.beneficiaryGroupToken?.beneficiaryGroup?._count?.beneficiaries,
       icon: Users,
     },
     {
       label: 'Total Tokens',
-      value: '10000',
+      value: payout?.beneficiaryGroupToken?.numberOfTokens,
       icon: Ticket,
     },
   ];
-  return (
+  return isLoading ? (
+    <TableLoader />
+  ) : (
     <div className="p-4">
       <div className="flex flex-col space-y-0">
-        <Back path={`/projects/aa/${projectID}/payout/list`} />
+        <Back path={`/projects/aa/${projectId}/payout/list`} />
 
         <div className="mt-4 flex justify-between items-center">
           <div>
@@ -91,14 +119,14 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               title={item.label}
               Icon={item.icon}
               number={item.value}
-              className="rounded-sm h-24"
+              className="rounded-sm"
             />
           ))}
           <DataCard
             title="Payout Mode"
             Icon={Ticket}
-            smallNumber="Offline"
-            className="rounded-sm h-24"
+            smallNumber={capitalizeFirstLetter(payout?.mode)}
+            className="rounded-sm"
           />
         </div>
       </div>

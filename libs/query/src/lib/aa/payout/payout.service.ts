@@ -99,7 +99,7 @@ export const usePayouts = (projectUUID: UUID, payload: Payout) => {
   return query;
 };
 
-export const useSinglePayout = (projectUUID: UUID, payload: Payout) => {
+export const useSinglePayout = (projectUUID: UUID, payload: { uuid: UUID }) => {
   const q = useProjectAction();
 
   const query = useQuery({

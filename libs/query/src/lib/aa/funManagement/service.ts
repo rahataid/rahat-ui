@@ -31,7 +31,6 @@ export const useFetchTokenStatsStellar = (payload: any) => {
   });
   useEffect(() => {
     if (query?.data) {
-      console.log('store', query?.data?.data);
       setStellarTokenStats(query?.data?.data?.tokenStats);
       setStellarTransaction(query?.data?.data?.transactionStats);
     }

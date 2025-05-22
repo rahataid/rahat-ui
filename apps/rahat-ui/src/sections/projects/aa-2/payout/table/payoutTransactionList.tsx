@@ -1,6 +1,6 @@
-import { usePagination } from '@rahat-ui/query';
+import { usePagination, usePayouts } from '@rahat-ui/query';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import * as React from 'react';
 import usePayoutTransactionLogTableColumn from './usePayoutTransactionLogTableColumn';
 
@@ -13,10 +13,9 @@ import {
 
 import PayoutTable from './payoutTable';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import data from './dummyTransaction.json';
+import { UUID } from 'crypto';
 export default function PayoutTransactionList() {
   const { id: projectID } = useParams();
-  const searchParams = useSearchParams();
 
   const {
     pagination,
@@ -28,13 +27,34 @@ export default function PayoutTransactionList() {
     filters,
   } = usePagination();
 
-  const router = useRouter();
+  const { data: payouts } = usePayouts(projectID as UUID, {
+    page: 1,
+    perPage: 999,
+  });
 
   const columns = usePayoutTransactionLogTableColumn();
   const isLoading = false;
+
+  const tableData = React.useMemo(
+    () =>
+      payouts?.length
+        ? payouts?.map((d: any) => ({
+            uuid: d?.uuid,
+            groupName: d?.beneficiaryGroupToken?.beneficiaryGroup?.name,
+            totalBeneficiaries:
+              d?.beneficiaryGroupToken?.beneficiaryGroup?._count?.beneficiaries,
+            totalTokenAssigned: d?.beneficiaryGroupToken?.numberOfTokens,
+            payoutType: d?.type,
+            payoutMode: d?.mode,
+            status: d?.status ?? 'N/A',
+            timeStamp: d?.updatedAt,
+          }))
+        : [],
+    [payouts],
+  );
   const table = useReactTable({
     manualPagination: true,
-    data: data || [],
+    data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });

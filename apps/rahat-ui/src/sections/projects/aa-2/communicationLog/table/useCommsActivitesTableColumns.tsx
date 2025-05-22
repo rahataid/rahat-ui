@@ -4,23 +4,19 @@ import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
 function getStatusBg(status: string) {
-  if (status === 'NOT_STARTED') {
-    return 'bg-gray-200 text-black';
+  if (status === 'Not started') {
+    return 'bg-red-200 text-red-600';
   }
 
-  if (status === 'WORK_IN_PROGRESS') {
-    return 'bg-orange-200 text-yellow-500';
+  if (status === 'Work in Progress') {
+    return 'bg-orange-200 text-yellow-600';
   }
 
-  if (status === 'COMPLETED') {
+  if (status === 'Completed') {
     return 'bg-green-200 text-green-500';
   }
 
-  if (status === 'DELAYED') {
-    return 'bg-red-200 text-red-500';
-  }
-
-  return '';
+  return 'bg-gray-200 text-black';
 }
 
 function getPhaseColor(phase: string) {
@@ -69,9 +65,8 @@ export default function useCommsActivitiesTableColumns() {
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => {
-        const status = row.getValue('status') as string;
-        const className = getStatusBg(status);
-        return <Badge className={className}>{status}</Badge>;
+        const className = getStatusBg(row.original?.commStatus);
+        return <Badge className={className}>{row.original?.commStatus}</Badge>;
       },
     },
     {

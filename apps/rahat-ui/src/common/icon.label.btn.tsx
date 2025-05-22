@@ -5,7 +5,7 @@ import { LucideIcon } from 'lucide-react';
 type IProps = {
   Icon: LucideIcon;
   name: string;
-  handleClick: VoidFunction;
+  handleClick?: VoidFunction;
   className?: string;
   variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost';
   disabled?: boolean;
@@ -13,7 +13,7 @@ type IProps = {
 export function IconLabelBtn({
   Icon,
   name,
-  handleClick,
+  handleClick = () => {},
   className = '',
   variant = 'default',
   disabled = false,

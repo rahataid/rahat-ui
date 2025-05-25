@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -46,7 +47,10 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import EditCommunicationForm from './edit.communication.form';
-import { ValidationContent } from '@rumsan/connect/src/types';
+import {
+  ValidationAddress,
+  ValidationContent,
+} from '@rumsan/connect/src/types';
 import { toast } from 'react-toastify';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { useUserList } from '@rumsan/react-query';
@@ -169,7 +173,6 @@ export default function EditActivity() {
   const uploadFile = useUploadFile();
   const updateActivity = useUpdateActivities();
   const { id: projectID, activityID } = useParams();
-  const [open, setOpen] = React.useState(false);
   const { data: users, isSuccess } = useUserList({
     page: 1,
     perPage: 9999,
@@ -181,10 +184,8 @@ export default function EditActivity() {
     activityID,
   );
 
-  const { categories, hazardTypes } = useActivitiesStore((state) => ({
+  const { categories } = useActivitiesStore((state) => ({
     categories: state.categories,
-
-    hazardTypes: state.hazardTypes,
   }));
 
   const { phases } = usePhasesStore((state) => ({
@@ -215,6 +216,7 @@ export default function EditActivity() {
     groupId: '',
     transportId: '',
     message: '',
+    subject: '',
     audioURL: { mediaURL: '', fileName: '' },
   };
   const FormSchema = z.object({
@@ -249,6 +251,7 @@ export default function EditActivity() {
           .string()
           .min(1, { message: 'Please select communication type' }),
         message: z.string().or(z.object({})).optional(),
+        subject: z.string().optional(),
         audioURL: z
           .string()
           .or(
@@ -263,11 +266,12 @@ export default function EditActivity() {
       }),
     ),
   });
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: activityDetail?.title,
-      responsibility: activityDetail?.manager?.id,
+      responsibility: activityDetail?.managerId,
       source: activityDetail?.phase?.source?.source[0],
       phaseId: activityDetail?.phaseId,
       categoryId: activityDetail?.categoryId,
@@ -363,6 +367,20 @@ export default function EditActivity() {
             }),
           });
           delete comms.audioURL;
+        } else if (
+          selectedTransport?.validationAddress === ValidationAddress.EMAIL
+        ) {
+          activityCommunicationPayload.push({
+            groupType: comms.groupType,
+            groupId: comms.groupId,
+            transportId: comms.transportId,
+            subject: comms.subject,
+            message: comms.message,
+            ...(comms.sessionId && { sessionId: comms.sessionId }),
+            ...(comms.communicationId && {
+              communicationId: comms.communicationId,
+            }),
+          });
         } else {
           activityCommunicationPayload.push({
             groupType: comms.groupType,
@@ -394,6 +412,21 @@ export default function EditActivity() {
       console.error('Error::', e);
     }
   };
+
+  React.useEffect(() => {
+    form.reset({
+      title: activityDetail?.title,
+      responsibility: activityDetail?.managerId,
+      source: activityDetail?.phase?.source?.source[0],
+      phaseId: activityDetail?.phaseId,
+      categoryId: activityDetail?.categoryId,
+      leadTime: activityDetail?.leadTime,
+      description: activityDetail?.description,
+      activityDocuments: activityDetail?.activityDocuments,
+      activityCommunication: activityDetail?.activityCommunication,
+      isAutomated: activityDetail?.isAutomated,
+    });
+  }, [activityDetail, form]);
 
   return (
     <Form {...form}>
@@ -479,7 +512,7 @@ export default function EditActivity() {
                         <SelectContent>
                           {users?.data.map((item) => (
                             <SelectItem
-                              key={item.id}
+                              key={item.uuid}
                               value={item.uuid as string}
                             >
                               {item.name}
@@ -519,7 +552,7 @@ export default function EditActivity() {
                       <FormLabel>Phase</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        // defaultValue={field.value}
                         value={field.value}
                       >
                         <FormControl>
@@ -547,7 +580,7 @@ export default function EditActivity() {
                       <FormLabel>Category</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        // defaultValue={field.value}
                         value={field.value}
                       >
                         <FormControl>

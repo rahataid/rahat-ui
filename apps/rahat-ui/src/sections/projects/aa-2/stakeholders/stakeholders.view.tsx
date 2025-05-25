@@ -150,6 +150,18 @@ function StakeholdersView() {
                 onSearch={(e) => handleSearch(e, 'name')}
                 value={filters?.name || ''}
               />
+              <SearchInput
+                className="w-full"
+                name="municipality"
+                onSearch={(e) => handleSearch(e, 'municipality')}
+                value={filters?.municipality || ''}
+              />
+              <SearchInput
+                className="w-full"
+                name="organization"
+                onSearch={(e) => handleSearch(e, 'organization')}
+                value={filters?.organization || ''}
+              />
               <AddButton
                 path={`/projects/aa/${projectId}/stakeholders/add`}
                 name="Stakeholder"

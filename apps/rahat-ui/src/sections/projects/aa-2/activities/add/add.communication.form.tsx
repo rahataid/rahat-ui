@@ -56,6 +56,7 @@ export default function AddCommunicationForm({
   const [contentType, setContentType] = React.useState<ValidationContent | ''>(
     '',
   );
+  const [address, setAddress] = React.useState(false);
   const [isPlaying, setIsPlaying] = React.useState(false);
   const fileUpload = useUploadFile();
 
@@ -144,8 +145,12 @@ export default function AddCommunicationForm({
       (t) => t.cuid === selectedTransport,
     );
     setContentType(transportData?.validationContent as ValidationContent);
+    if (transportData?.validationAddress === 'EMAIL') {
+      setAddress(true);
+    } else {
+      setAddress(false);
+    }
   }, [selectedTransport]);
-
   const renderGroups = () => {
     const selectedGroupType = form.watch(fieldName('groupType'));
     let groups = <SelectLabel>Please select group type</SelectLabel>;
@@ -375,6 +380,23 @@ export default function AddCommunicationForm({
               />
             </div>
           )}
+
+        {address && (
+          <FormField
+            control={form.control}
+            name={fieldName('subject')}
+            render={({ field }) => (
+              <FormItem className="col-span-2">
+                <FormLabel>Subject</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter subject" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
         {contentType === ValidationContent.TEXT && (
           <FormField
             control={form.control}
@@ -456,7 +478,9 @@ export default function AddCommunicationForm({
                       <span>•</span>
                     </div>
                   </div>
-
+                  {t?.subject && (
+                    <p className="text-sm text-gray-700 mt-1">{t?.subject}</p>
+                  )}
                   <p className="text-sm text-gray-700 mt-1">{t?.message}</p>
                   {t?.audioURL?.mediaURL && (
                     <div className="pt-2">

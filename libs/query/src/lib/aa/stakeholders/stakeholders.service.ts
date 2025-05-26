@@ -10,6 +10,8 @@ import { useProjectAction } from '../../projects';
 import { useStakeholdersStore } from './stakeholders.store';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
+import { useRSQuery } from '@rumsan/react-query';
+import { TAGS } from 'libs/query/src/config';
 
 interface IStakeholdersUpdatePayload {
   uuid: string;
@@ -214,4 +216,66 @@ export const useStakeholderDetails = (
     enabled: !!payload?.uuid,
   });
   return query?.data;
+};
+
+export const useUploadStakeholders = () => {
+  const queryClient = useQueryClient();
+  const { rumsanService } = useRSQuery();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-right',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async ({
+      selectedFile,
+      doctype,
+      projectId,
+    }: {
+      selectedFile: File;
+      doctype: string;
+      projectId?: UUID;
+    }) => {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('doctype', doctype);
+      formData.append('action', 'aaProject.stakeholders.bulkAdd');
+      // if (projectId) formData.append('projectId', projectId);
+
+      const response = await rumsanService.client.post(
+        `/projects/${projectId}/upload`,
+        formData,
+      );
+      return response?.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [TAGS.GET_STAKEHOLDERS] });
+      toast.fire({
+        icon: 'success',
+        title: 'Stakeholders uploaded successfully',
+      });
+    },
+    onError: (error: any) => {
+      console.error('Upload error', error);
+      const message: string =
+        error?.response?.data?.message || error?.message || '';
+      const match = message.match(/Phone number must be unique,?\s*(.+)/i);
+      if (match) {
+        toast.fire({
+          icon: 'error',
+          title: ' Unique contraints',
+          text: 'Duplicate phone numbers found in the file!',
+        });
+      } else {
+        toast.fire({
+          icon: 'error',
+          title: 'Something went wrong',
+          text: message,
+        });
+      }
+    },
+  });
 };

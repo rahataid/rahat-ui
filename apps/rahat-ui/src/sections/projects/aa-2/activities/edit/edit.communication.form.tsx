@@ -45,6 +45,7 @@ export default function EditCommunicationForm({
   const [contentType, setContentType] = React.useState<ValidationContent | ''>(
     '',
   );
+  const [address, setAddress] = React.useState(false);
   const [isPlaying, setIsPlaying] = React.useState(false);
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
@@ -68,7 +69,13 @@ export default function EditCommunicationForm({
     if (transportData?.validationContent === ValidationContent.URL) {
       setAudioFile(message);
     }
-  }, [selectedTransport, contentType, setContentType]);
+
+    if (transportData?.validationAddress === 'EMAIL') {
+      setAddress(true);
+    } else {
+      setAddress(false);
+    }
+  }, [selectedTransport, appTransports, message]);
 
   const fileUpload = useUploadFile();
   const activityCommunication = form.watch('activityCommunication') || {};
@@ -255,7 +262,21 @@ export default function EditCommunicationForm({
             }}
           />
         )}
-
+        {address && (
+          <FormField
+            control={form.control}
+            name={fieldName('subject')}
+            render={({ field }) => (
+              <FormItem className="col-span-2">
+                <FormLabel>Subject</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter subject" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
         {contentType === ValidationContent.TEXT && (
           <FormField
             control={form.control}

@@ -21,7 +21,6 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/src/components/ui/table';
 
-
 import { ClientSidePagination, HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { CloudDownload, Repeat2, Share } from 'lucide-react';
 import { toast } from 'react-toastify';
@@ -135,7 +134,6 @@ export default function ImportStakeholder() {
           ),
         );
 
-
         // Get header count to pad shorter rows
         const columnCount = filteredData[0]?.length || 0;
 
@@ -232,6 +230,7 @@ export default function ImportStakeholder() {
       toast.error('Fill all required fields first');
     }
   }, [data]);
+  console.log(selectedFile);
 
   return (
     <>
@@ -284,22 +283,10 @@ export default function ImportStakeholder() {
               </div>
             </div>
           </div>
-
-          <div className="flex mt-4">
-            <Button
-              onClick={handleSampleDownload}
-              type="button"
-              variant="outline"
-            >
-              <CloudDownload size={22} className="mr-1" />
-              Download Sample
-            </Button>
-          </div>
         </div>
 
         <>
           {data.length > 1 && (
-
             <>
               <div className="border-2 border-dashed border-black mt-6 mx-auto w-full">
                 <ScrollArea className="h-[calc(100vh-430px)] w-full">
@@ -321,7 +308,6 @@ export default function ImportStakeholder() {
                             </TableHead>
                           ))}
                         </TableRow>
-
                       ))}
                     </TableHeader>
                     <TableBody>

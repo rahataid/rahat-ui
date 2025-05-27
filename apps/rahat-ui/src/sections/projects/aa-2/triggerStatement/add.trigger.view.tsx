@@ -196,37 +196,37 @@ export default function AddTriggerView() {
     const payload = allTriggers?.map(
       ({
         riverBasin,
-        maxLeadTimeDays,
-        minLeadTimeDays,
-        probability,
         type,
         time,
-        warningLevel,
-        dangerLevel,
-        forecast,
-        daysToConsiderPrior,
-        forecastStatus,
+        phaseId,
+        isMandatory,
+        title,
+        source,
+        notes,
         ...rest
-      }) => ({
-        ...rest,
-        triggerStatement: {
-          maxLeadTimeDays,
-          minLeadTimeDays,
-          probability,
-          warningLevel,
-          dangerLevel,
-          forecast,
-          daysToConsiderPrior,
-          forecastStatus,
-        },
-      }),
+      }) => {
+        // Only include non-empty fields in triggerStatement
+        const triggerStatement = Object.fromEntries(
+          Object.entries(rest).filter(
+            ([, value]) =>
+              value !== undefined && value !== null && value !== '',
+          ),
+        );
+        return {
+          phaseId,
+          isMandatory,
+          title,
+          source,
+          notes,
+          triggerStatement,
+        };
+      },
     );
     try {
       await addTriggers.mutateAsync({
         projectUUID: projectId,
         triggerStatementPayload: { triggers: payload },
       });
-      // router.push(triggerViewPath);
       router.back();
     } catch (e) {
       console.error(e);

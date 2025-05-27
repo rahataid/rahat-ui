@@ -5,7 +5,11 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import DynamicTriggersList from './dynamic.triggers.list';
-import { useAAStationsStore, usePhaseHistory } from '@rahat-ui/query';
+import {
+  useAAStationsStore,
+  useAATriggerStatements,
+  usePhaseHistory,
+} from '@rahat-ui/query';
 import React from 'react';
 import { UUID } from 'crypto';
 
@@ -15,6 +19,7 @@ type IProps = {
 };
 
 export default function TriggersListTabs({ projectId, phaseId }: IProps) {
+  useAATriggerStatements(projectId as UUID, {});
   const triggers = useAAStationsStore((state) => state.triggers);
 
   const { data: phaseHistory } = usePhaseHistory(projectId as UUID, {

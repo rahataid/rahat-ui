@@ -20,7 +20,7 @@ export default function TokensOverview() {
         description="Overview of your tokens"
       />
       {!isLoading ? (
-        <div className="grid lg:grid-cols-3 grid-cols-1 gap-4 mb-4">
+        <div className="grid xl:grid-cols-4  md:grid-cols-2 grid-cols-1 gap-4 mb-4">
           {data?.data?.tokenStats.map((i: any) => (
             <DataCard
               key={i.name}

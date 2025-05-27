@@ -52,7 +52,7 @@ import {
   ValidationContent,
 } from '@rumsan/connect/src/types';
 import { toast } from 'react-toastify';
-import { Back, Heading } from 'apps/rahat-ui/src/common';
+import { Back, Heading, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { useUserList } from '@rumsan/react-query';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 
@@ -414,6 +414,7 @@ export default function EditActivity() {
   };
 
   React.useEffect(() => {
+
     form.reset({
       title: activityDetail?.title,
       responsibility: activityDetail?.managerId,
@@ -427,6 +428,7 @@ export default function EditActivity() {
       isAutomated: activityDetail?.isAutomated,
     });
   }, [activityDetail, form]);
+
 
   return (
     <Form {...form}>

@@ -20,6 +20,8 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/src/components/ui/table';
+
+
 import { ClientSidePagination, HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { CloudDownload, Repeat2, Share } from 'lucide-react';
 import { toast } from 'react-toastify';
@@ -32,6 +34,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+
 const DOWNLOAD_FILE_URL = '/files/stakeholder-sample.xlsx';
 
 export default function ImportStakeholder() {
@@ -132,6 +135,7 @@ export default function ImportStakeholder() {
           ),
         );
 
+
         // Get header count to pad shorter rows
         const columnCount = filteredData[0]?.length || 0;
 
@@ -146,7 +150,7 @@ export default function ImportStakeholder() {
 
         if (normalizedData.length > 100)
           return toast.error(
-            'Maximum 100 beneficiaries can be uploaded at a time',
+            'Maximum 100 stakeholders can be uploaded at a time',
           );
 
         setData(normalizedData);
@@ -163,9 +167,10 @@ export default function ImportStakeholder() {
   };
 
   const handleUpload = async () => {
-    if (data?.length === 1)
-      return toast.error('No beneficiary found in excel file');
-
+    if (data?.length === 1) {
+      await Swal.fire('No Stakeholder found in excel file');
+      return;
+    }
     if (!selectedFile) return toast.error('Please select a file to upload');
 
     // Determine doctype based on file extension
@@ -221,11 +226,13 @@ export default function ImportStakeholder() {
         toast.error('Error downloading file!' + error);
       });
   };
+
   React.useEffect(() => {
     if (data.length > 1 && hasEmptyRequiredFields()) {
       toast.error('Fill all required fields first');
     }
   }, [data]);
+
   return (
     <>
       <div className="p-4  h-[calc(100vh-120px)]">
@@ -277,10 +284,22 @@ export default function ImportStakeholder() {
               </div>
             </div>
           </div>
+
+          <div className="flex mt-4">
+            <Button
+              onClick={handleSampleDownload}
+              type="button"
+              variant="outline"
+            >
+              <CloudDownload size={22} className="mr-1" />
+              Download Sample
+            </Button>
+          </div>
         </div>
 
         <>
           {data.length > 1 && (
+
             <>
               <div className="border-2 border-dashed border-black mt-6 mx-auto w-full">
                 <ScrollArea className="h-[calc(100vh-430px)] w-full">
@@ -302,6 +321,7 @@ export default function ImportStakeholder() {
                             </TableHead>
                           ))}
                         </TableRow>
+
                       ))}
                     </TableHeader>
                     <TableBody>
@@ -353,7 +373,7 @@ export default function ImportStakeholder() {
             onClick={handleUpload}
             disabled={data?.length === 0 || hasEmptyRequiredFields()}
           >
-            Add
+            Import
           </Button>
         </div>
       </div>

@@ -13,6 +13,7 @@ type IProps = {
   riverBasin: string;
   time: string;
   triggerType?: string;
+  version?: number;
 };
 
 export default function TriggerCard({
@@ -26,6 +27,7 @@ export default function TriggerCard({
   riverBasin,
   time,
   triggerType,
+  version,
 }: IProps) {
   const router = useRouter();
   const renderPhaseBadgeColor = (phase: string) => {
@@ -55,6 +57,7 @@ export default function TriggerCard({
             {phase ? phase : triggerType}
           </Badge>
           <Badge className="font-medium">{capitalizeFirstLetter(type)}</Badge>
+          {!!version && <Badge className="font-medium">V{version}</Badge>}
         </div>
         <Badge
           className={`font-medium ${

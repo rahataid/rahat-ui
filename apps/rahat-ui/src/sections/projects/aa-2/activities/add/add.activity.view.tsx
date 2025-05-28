@@ -30,7 +30,10 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { ValidationContent } from '@rumsan/connect/src/types';
+import {
+  ValidationAddress,
+  ValidationContent,
+} from '@rumsan/connect/src/types';
 import { useUserList } from '@rumsan/react-query';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
@@ -71,6 +74,7 @@ export default function AddActivities() {
       groupId: string;
       transportId: string;
       message?: string;
+      subject?: string;
       audioURL?: { mediaURL?: string; fileName?: string };
     }[]
   >([]);
@@ -136,6 +140,7 @@ export default function AddActivities() {
         groupId: z.string().optional(),
         transportId: z.string().optional(),
         message: z.string().optional(),
+        subject: z.string().optional(),
         audioURL: z
           .object({
             mediaURL: z.string().optional(),
@@ -212,6 +217,7 @@ export default function AddActivities() {
       groupId: activityCommunications?.groupId || '',
       transportId: activityCommunications?.transportId || '',
       message: activityCommunications?.message || '',
+      subject: activityCommunications?.subject || '',
       audioURL: {
         mediaURL: activityCommunications?.audioURL?.mediaURL || '',
         fileName: activityCommunications?.audioURL?.fileName || '',
@@ -261,6 +267,16 @@ export default function AddActivities() {
             groupId: comms.groupId,
             transportId: comms.transportId,
             message: comms.audioURL,
+          });
+        } else if (
+          selectedTransport?.validationAddress === ValidationAddress.EMAIL
+        ) {
+          activityCommunicationPayload.push({
+            groupType: comms.groupType,
+            groupId: comms.groupId,
+            transportId: comms.transportId,
+            subject: comms.subject,
+            message: comms.message,
           });
         } else {
           activityCommunicationPayload.push({

@@ -48,7 +48,10 @@ const FormSchema = z.object({
   phone: z.string(),
   wallet: z
     .string()
-    .min(42, { message: 'The Ethereum address must be 42 characters long' }),
+    .optional()
+    .refine((val) => val === undefined || val === '' || val.length === 42, {
+      message: 'The Ethereum address must be empty or 42 characters long',
+    }),
 });
 
 // Component
@@ -235,6 +238,10 @@ export default function AddUser() {
                               placeholder="Enter wallet address"
                               {...field}
                             />
+                            <p className="text-xs text-amber-500 mt-2">
+                              * Wallet address is required. If not entered, it
+                              will be automatically filled.
+                            </p>
                           </div>
                         </FormControl>
                         <FormMessage />

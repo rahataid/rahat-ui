@@ -4,4 +4,5 @@ export interface ITransactions {
   date: string;
   amount: string;
   amtColor: string;
+  hash: string;
 }

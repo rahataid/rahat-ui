@@ -131,7 +131,7 @@ const UpdateOrAddStakeholdersGroup = () => {
     } else {
       await createStakeholdersGroup.mutateAsync(data);
     }
-    router.push(`/projects/aa/${projectId}/stakeholders/groups/${groupId}`);
+    router.push(`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`);
   };
 
   return (
@@ -144,7 +144,7 @@ const UpdateOrAddStakeholdersGroup = () => {
           subtitle={`Fill the form below to ${
             isEditing ? 'update' : 'create a new'
           } stakeholder group`}
-          path={`/projects/aa/${projectId}/stakeholders/groups/${groupId}`}
+          path={`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`}
         />
         <div className="ml-1 mb-1">
           <Label className="mb-2"> Stake Holder Group Name</Label>
@@ -208,7 +208,9 @@ const UpdateOrAddStakeholdersGroup = () => {
           <Button
             className="w-48 rounded-md"
             onClick={handleCreateGroup}
-            disabled={!Object.keys(selectedListItems).length}
+            disabled={
+              !Object.keys(selectedListItems).length || !stakeholdersGroupName
+            }
           >
             Add
             {Object.keys(selectedListItems).length

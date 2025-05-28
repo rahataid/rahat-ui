@@ -22,7 +22,7 @@ export function SearchInput({
 }: IProps) {
   const handleClear = () => {
     const event = {
-      target: { value: '' },
+      target: { name, value: '' },
     } as React.ChangeEvent<HTMLInputElement>;
     onSearch(event);
   };

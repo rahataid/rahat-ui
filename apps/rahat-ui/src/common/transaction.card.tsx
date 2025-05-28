@@ -50,18 +50,20 @@ export function TransactionCard({
         ) : cardData?.length ? (
           <div className="flex flex-col space-y-2">
             {cardData.map((i) => (
-              <div
+              <a
                 key={i.title}
-                className="flex justify-between space-x-4 items-center"
+                href={`https://stellar.expert/explorer/testnet/tx/${i.hash}`}
+                target='_blank'
+                className="flex justify-between space-x-4 items-center group"
               >
                 <div className="flex space-x-4 items-center">
                   <div className="p-4 rounded-full bg-muted">
                     <ArrowLeftRight />
                   </div>
                   <div>
-                    <p className="text-sm/6 font-medium">{i.title}</p>
-                    <p className="text-sm/4 text-gray-500">{i.subTitle}</p>
-                    <p className="text-sm/4 text-muted-foreground">{i.date}</p>
+                    <p className="text-sm/6 font-medium group-hover:underline group-hover:underline-offset-2">{i.title}</p>
+                    <p className="text-sm/4 text-gray-500 group-hover:underline group-hover:underline-offset-2">{i.subTitle}</p>
+                    <p className="text-sm/4 text-muted-foreground group-hover:underline group-hover:underline-offset-2">{i.date}</p>
                   </div>
                 </div>
                 <div>
@@ -69,7 +71,7 @@ export function TransactionCard({
                     {i.amount}
                   </p>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         ) : (

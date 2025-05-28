@@ -20,7 +20,7 @@ export default function TokensOverview() {
         description="Overview of your tokens"
       />
       {!isLoading ? (
-        <div className="grid lg:grid-cols-3 grid-cols-1 gap-4 mb-4">
+        <div className="grid xl:grid-cols-4  md:grid-cols-2 grid-cols-1 gap-4 mb-4">
           {data?.data?.tokenStats.map((i: any) => (
             <DataCard
               key={i.name}
@@ -29,9 +29,16 @@ export default function TokensOverview() {
               number={i.amount}
             />
           ))}
+          <a target='_blank' href={`https://stellar.expert/explorer/testnet/asset/RAHAT-GCVLRQHGZYG32HZE3PKZ52NX5YFCNFDBUZDLUXQYMRS6WVBWSUOP5IYE-2`} className='cursor-pointer'>
+            <DataCard
+                className="rounded-sm "
+                title={"Token"}
+                number={"Rahat"}
+            />
+          </a>
         </div>
       ) : (
-        <TokenOverviewSkeleton number={[1, 2, 3]} />
+        <TokenOverviewSkeleton number={[1, 2, 3, 4, 5]} />
       )}
       <div className="grid grid-cols-1 lg:grid-cols-1 xl:grid-cols-3 gap-4">
         <PieChart

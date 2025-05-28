@@ -1,5 +1,7 @@
 import {
   useBeneficiariesGroupStore,
+  useSingleBeneficiaryGroup,
+  useSingleStakeholdersGroup,
   useStakeholdersGroupsStore,
   useUploadFile,
 } from '@rahat-ui/query';
@@ -24,7 +26,9 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { Transport, ValidationContent } from '@rumsan/connect/src/types';
+import { UUID } from 'crypto';
 import { Mail, MessageSquare, PencilIcon, Phone, Trash2 } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import * as React from 'react';
 
 type IProps = {
@@ -44,6 +48,7 @@ export default function AddCommunicationForm({
   communicationData,
   onRemove,
 }: IProps) {
+  const { id: projectId } = useParams();
   const [audioFile, setAudioFile] = React.useState({
     fileName: '',
     mediaURL: '',
@@ -51,6 +56,7 @@ export default function AddCommunicationForm({
   const [contentType, setContentType] = React.useState<ValidationContent | ''>(
     '',
   );
+  const [address, setAddress] = React.useState(false);
   const [isPlaying, setIsPlaying] = React.useState(false);
   const fileUpload = useUploadFile();
 
@@ -82,16 +88,69 @@ export default function AddCommunicationForm({
   const fieldName = (name: string) => `activityCommunication.${name}`; // Dynamic field name generator
 
   const selectedTransport = form.watch(fieldName('transportId'));
-
+  const groupType = form.watch(fieldName('groupType'));
   const groupId = form.watch(fieldName('groupId'));
 
+  const stakeholderId = groupType === 'STAKEHOLDERS' && groupId;
+  const beneficiaryId = groupType === 'BENEFICIARY' && groupId;
+
+  const { data: stakeholdersGroup, isLoading } = useSingleStakeholdersGroup(
+    projectId as UUID,
+    stakeholderId,
+  );
+
+  const { data: beneficiaryGroup, isLoading: isLoadingss } =
+    useSingleBeneficiaryGroup(projectId as UUID, beneficiaryId);
+
+  React.useEffect(() => {
+    if (stakeholdersGroup && Array.isArray(stakeholdersGroup.stakeholders)) {
+      const hasValidEmail = stakeholdersGroup.stakeholders.some(
+        (s) => s?.email?.trim() !== '',
+      );
+
+      if (!hasValidEmail) {
+        form.setError(fieldName('groupId'), {
+          type: 'manual',
+          message:
+            'Email address is missing for some stakeholders in this group.',
+        });
+      } else {
+        form.clearErrors(fieldName('groupId'));
+      }
+    }
+  }, [stakeholdersGroup]);
+
+  React.useEffect(() => {
+    if (
+      beneficiaryGroup &&
+      Array.isArray(beneficiaryGroup?.groupedBeneficiaries)
+    ) {
+      const hasValidEmail = beneficiaryGroup?.groupedBeneficiaries?.some(
+        (s) => s?.Beneficiary?.pii?.email.trim() !== '',
+      );
+      console.log(hasValidEmail);
+      if (!hasValidEmail) {
+        form.setError(fieldName('groupId'), {
+          type: 'manual',
+          message:
+            'Email address is missing for some beneficiaries in this group.',
+        });
+      } else {
+        form.clearErrors(fieldName('groupId'));
+      }
+    }
+  }, [beneficiaryGroup]);
   React.useEffect(() => {
     const transportData = appTransports?.find(
       (t) => t.cuid === selectedTransport,
     );
     setContentType(transportData?.validationContent as ValidationContent);
+    if (transportData?.validationAddress === 'EMAIL') {
+      setAddress(true);
+    } else {
+      setAddress(false);
+    }
   }, [selectedTransport]);
-
   const renderGroups = () => {
     const selectedGroupType = form.watch(fieldName('groupType'));
     let groups = <SelectLabel>Please select group type</SelectLabel>;
@@ -180,6 +239,18 @@ export default function AddCommunicationForm({
     const itemData = communicationData[i];
     handleEditClick(itemData);
     onRemove(i);
+  };
+
+  const clearCommunicationForm = () => {
+    form.setValue(fieldName('groupId'), '');
+    form.setValue(fieldName('groupType'), '');
+    form.setValue(fieldName('message'), '');
+    form.setValue(fieldName('transportId'), '');
+    form.setValue(fieldName('audioURL'), '');
+    setAudioFile({
+      fileName: '',
+      mediaURL: '',
+    });
   };
   return (
     <div className="border border-dashed rounded p-4 my-8">
@@ -309,6 +380,23 @@ export default function AddCommunicationForm({
               />
             </div>
           )}
+
+        {address && (
+          <FormField
+            control={form.control}
+            name={fieldName('subject')}
+            render={({ field }) => (
+              <FormItem className="col-span-2">
+                <FormLabel>Subject</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter subject" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
         {contentType === ValidationContent.TEXT && (
           <FormField
             control={form.control}
@@ -329,7 +417,13 @@ export default function AddCommunicationForm({
       </div>
 
       <div className="flex justify-end mt-4 gap-4">
-        <Button variant="outline">Remove</Button>
+        <Button
+          variant="outline"
+          onClick={clearCommunicationForm}
+          type="button"
+        >
+          Remove
+        </Button>
         <Button
           variant="outline"
           onClick={handleSave}
@@ -384,7 +478,9 @@ export default function AddCommunicationForm({
                       <span>•</span>
                     </div>
                   </div>
-
+                  {t?.subject && (
+                    <p className="text-sm text-gray-700 mt-1">{t?.subject}</p>
+                  )}
                   <p className="text-sm text-gray-700 mt-1">{t?.message}</p>
                   {t?.audioURL?.mediaURL && (
                     <div className="pt-2">

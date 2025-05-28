@@ -185,7 +185,6 @@ export default function AddDailyMonitoring() {
             source: item.source,
             gaugeReading: item?.gaugeReading,
             station: item?.station,
-
           });
           break;
         default:

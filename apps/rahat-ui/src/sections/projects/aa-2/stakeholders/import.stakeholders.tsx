@@ -20,9 +20,22 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/src/components/ui/table';
-import { HeaderWithBack } from 'apps/rahat-ui/src/common';
-import { Repeat2, Share } from 'lucide-react';
+
+import { ClientSidePagination, HeaderWithBack } from 'apps/rahat-ui/src/common';
+import { CloudDownload, Repeat2, Share } from 'lucide-react';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
+import { useUploadStakeholders } from '@rahat-ui/query';
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+
+const DOWNLOAD_FILE_URL = '/files/stakeholder-sample.xlsx';
+
 export default function ImportStakeholder() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
@@ -30,9 +43,78 @@ export default function ImportStakeholder() {
   const [fileName, setFileName] = useState<string>('No File Choosen');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const uploadStakeholders = useUploadStakeholders();
+  const [duplicatePhonesFromServer, setDuplicatePhonesFromServer] = useState<
+    Set<string>
+  >(new Set());
+  const hasEmptyRequiredFields = () => {
+    if (data.length < 2) return true; // Only header, no data
+
+    return data
+      .slice(1)
+      .some((row) =>
+        row.some((cell) => cell === '' || cell === null || cell === undefined),
+      );
+  };
+
+  const columns = React.useMemo<ColumnDef<any>[]>(
+    () =>
+      data[0]?.map((header: any, index: number) => ({
+        accessorFn: (row: any) => row[index],
+        id: `col-${index}`,
+        header: () => header || `Column ${index + 1}`,
+        cell: ({ getValue, column }) => {
+          const value = getValue();
+          const colIndex = parseInt(column.id.replace('col-', ''), 10);
+          const headerText =
+            data[0]?.[colIndex]?.toString().toLowerCase() ?? '';
+
+          const isMissing =
+            value === '' || value === null || value === undefined;
+
+          return (
+            <TableCell
+              className={`
+                truncate max-w-[150px]
+                ${
+                  isMissing
+                    ? 'bg-red-500 text-yellow-800'
+                    : headerText === 'phone number' &&
+                      duplicatePhonesFromServer.has(value?.toString().trim())
+                    ? 'bg-yellow-500 text-red-800'
+                    : ''
+                }
+              `}
+            >
+              {value as React.ReactNode}
+            </TableCell>
+          );
+        },
+      })) ?? [],
+    [data, duplicatePhonesFromServer],
+  );
+
+  const tableData = React.useMemo(() => data.slice(1), [data]);
+
+  const table = useReactTable({
+    data: tableData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 10,
+        pageIndex: 0,
+      },
+    },
+  });
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    setDuplicatePhonesFromServer(new Set());
+    setData([]);
+    setFileName(file?.name || 'No File Choosen');
+    setSelectedFile(file || null);
 
     setFileName(file?.name as string);
     if (file) {
@@ -42,18 +124,34 @@ export default function ImportStakeholder() {
         const wb = XLSX.read(bstr, { type: 'binary' });
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
-        const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-        const filteredData = (data as any[][]).filter((row) =>
+
+        const rawData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as any[][];
+
+        // Filter out completely empty rows
+        const filteredData = rawData.filter((row) =>
           row.some(
             (cell) => cell !== null && cell !== undefined && cell !== '',
           ),
         );
-        if (filteredData.length > 100)
+
+        // Get header count to pad shorter rows
+        const columnCount = filteredData[0]?.length || 0;
+
+        // Ensure each row has the same number of columns
+        const normalizedData = filteredData.map((row) => {
+          const newRow = [...row];
+          while (newRow.length < columnCount) {
+            newRow.push('');
+          }
+          return newRow;
+        });
+
+        if (normalizedData.length > 100)
           return toast.error(
-            'Maximum 100 beneficiaries can be uploaded at a time',
+            'Maximum 100 stakeholders can be uploaded at a time',
           );
 
-        setData(filteredData as any[][]);
+        setData(normalizedData);
       };
       reader.readAsBinaryString(file);
       setSelectedFile(file);
@@ -67,29 +165,96 @@ export default function ImportStakeholder() {
   };
 
   const handleUpload = async () => {
-    if (data?.length === 1)
-      return toast.error('No beneficiary found in excel file');
-
+    if (data?.length === 1) {
+      await Swal.fire('No Stakeholder found in excel file');
+      return;
+    }
     if (!selectedFile) return toast.error('Please select a file to upload');
 
     // Determine doctype based on file extension
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
-    const doctype = extension ? allowedExtensions[extension] : '';
+    if (
+      !extension ||
+      !Object.prototype.hasOwnProperty.call(allowedExtensions, extension)
+    ) {
+      return toast.error(
+        'Unsupported file format. Please upload an Excel, JSON, or CSV file.',
+      );
+    }
+
+    const doctype = allowedExtensions[extension];
+
+    try {
+      await uploadStakeholders.mutateAsync({
+        selectedFile,
+        doctype,
+        projectId: id,
+      });
+
+      // Clear duplicates if successful
+      setDuplicatePhonesFromServer(new Set());
+      toast.success('Stakeholders imported successfully!');
+      router.push(`/projects/aa/${id}/stakeholders?tab=stakeholders`);
+    } catch (error: any) {
+      const message: string =
+        error?.response?.data?.message || error?.message || '';
+      const match = message.match(/Phone number must be unique,?\s*(.+)/i);
+      if (match) {
+        const phoneList = match[1]
+          .split(',')
+          .map((p) => p.trim())
+          .filter((p) => p);
+        setDuplicatePhonesFromServer(new Set(phoneList));
+      }
+    }
   };
+
+  const handleSampleDownload = (e) => {
+    fetch(DOWNLOAD_FILE_URL)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'stakeholder.xlsx');
+        document.body.appendChild(link);
+        link.click();
+      })
+      .catch((error) => {
+        toast.error('Error downloading file!' + error);
+      });
+  };
+
+  React.useEffect(() => {
+    if (data.length > 1 && hasEmptyRequiredFields()) {
+      toast.error('Fill all required fields first');
+    }
+  }, [data]);
+  console.log(selectedFile);
 
   return (
     <>
       <div className="p-4  h-[calc(100vh-120px)]">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-2">
           <HeaderWithBack
             title="Import Stakeholders"
             subtitle="List of all stakeholders you can import"
             path={`/projects/aa/${id}/stakeholders`}
           />
+          <div className="flex mt-4">
+            <Button
+              onClick={handleSampleDownload}
+              type="button"
+              variant="outline"
+            >
+              <CloudDownload size={22} className="mr-1" />
+              Download Sample
+            </Button>
+          </div>
         </div>
 
-        <div className="rounded-lg p-4 border bg-card">
-          <div className="flex justify-between space-x-2 mb-2">
+        <div className=" p-4 border bg-card rounded-sm">
+          <div className="flex justify-between space-x-2">
             <div className="relative w-full">
               <Input
                 type="file"
@@ -121,45 +286,53 @@ export default function ImportStakeholder() {
         </div>
 
         <>
-          {data.length > 0 && (
-            <div className="border-2 border-dashed border-black mt-6 mx-auto sm:w-[1500px] w-[1600px]">
-              <ScrollArea className="h-[calc(100vh-450px)] w-full">
-                <Table className=" table-auto">
-                  <TableHeader>
-                    <TableRow>
-                      {data[0].map((header, index) => (
-                        <TableHead
-                          key={index}
-                          className="truncate max-w-[150px] "
-                        >
-                          {header}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data.slice(1).map((row, rowIndex) => {
-                      return (
-                        <TableRow key={rowIndex}>
-                          {row.map((cell, cellIndex) => {
-                            return (
-                              <TableCell
-                                key={cellIndex}
-                                className={`truncate max-w-[150px] `}
-                              >
-                                {cell}
-                              </TableCell>
-                            );
-                          })}
+          {data.length > 1 && (
+            <>
+              <div className="border-2 border-dashed border-black mt-6 mx-auto w-full">
+                <ScrollArea className="h-[calc(100vh-430px)] w-full">
+                  <Table className="table-auto w-full">
+                    <TableHeader>
+                      {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow key={headerGroup.id}>
+                          {headerGroup.headers.map((header) => (
+                            <TableHead
+                              key={header.id}
+                              className="truncate max-w-[150px] sticky top-0 bg-card"
+                            >
+                              {
+                                flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                ) as React.ReactNode
+                              }
+                            </TableHead>
+                          ))}
                         </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
+                      ))}
+                    </TableHeader>
+                    <TableBody>
+                      {table.getRowModel().rows.map((row) => (
+                        <TableRow key={row.id}>
+                          {row.getVisibleCells().map((cell) => (
+                            <React.Fragment key={cell.id}>
+                              {
+                                flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext(),
+                                ) as React.ReactNode
+                              }
+                            </React.Fragment>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
 
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-            </div>
+                  <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+              </div>
+              <ClientSidePagination table={table} />
+            </>
           )}
         </>
       </div>
@@ -184,9 +357,9 @@ export default function ImportStakeholder() {
           <Button
             className="w-48 bg-primary hover:ring-2 ring-primary"
             onClick={handleUpload}
-            disabled={data?.length === 0}
+            disabled={data?.length === 0 || hasEmptyRequiredFields()}
           >
-            Add
+            Import
           </Button>
         </div>
       </div>

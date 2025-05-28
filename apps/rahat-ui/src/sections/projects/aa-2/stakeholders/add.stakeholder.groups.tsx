@@ -165,7 +165,7 @@ const UpdateOrAddStakeholdersGroup = () => {
             description={`Select stakeholders from the list below to ${
               isEditing ? 'update' : 'create'
             } group`}
-            titleStyle="2xl"
+            titleStyle="text-xl"
           />
         </div>
 

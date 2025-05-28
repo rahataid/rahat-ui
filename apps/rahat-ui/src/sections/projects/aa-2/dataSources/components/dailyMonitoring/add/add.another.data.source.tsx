@@ -173,7 +173,6 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
         break;
       case 'Gauge Reading':
         fields = (
-
           <>
             <SelectFormField
               form={form}

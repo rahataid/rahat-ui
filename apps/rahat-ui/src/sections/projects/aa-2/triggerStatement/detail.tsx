@@ -1,10 +1,14 @@
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import { UUID } from 'crypto';
+
 import {
-  useActivateTrigger,
   useDeleteTriggerStatement,
   useSingleTriggerStatement,
 } from '@rahat-ui/query';
+
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+
 import {
   Back,
   DeleteButton,
@@ -12,8 +16,12 @@ import {
   Heading,
   TableLoader,
 } from 'apps/rahat-ui/src/common';
-import { UUID } from 'crypto';
-import { useParams, useRouter } from 'next/navigation';
+
+import {
+  ActivateTriggerDialog,
+  DocumentsSection,
+  ForecastDataSection,
+} from './components';
 
 export default function TriggerStatementDetail() {
   const router = useRouter();
@@ -26,16 +34,10 @@ export default function TriggerStatementDetail() {
     triggerRepeatKey,
   );
 
-  const activateTigger = useActivateTrigger();
-  const removeTrigger = useDeleteTriggerStatement();
+  const phase = trigger?.phase?.name;
+  const source = trigger?.source;
 
-  const handleTrigger = async () => {
-    await activateTigger.mutateAsync({
-      projectUUID: id,
-      activatePayload: { repeatKey: triggerRepeatKey },
-    });
-    router.push(`/projects/aa/${id}/trigger-statements`);
-  };
+  const removeTrigger = useDeleteTriggerStatement();
 
   const handleDelete = async () => {
     await removeTrigger.mutateAsync({
@@ -72,20 +74,20 @@ export default function TriggerStatementDetail() {
             }
             disabled={trigger?.phase?.isActive || trigger?.isTriggered}
           />
-          <Button
-            disabled={trigger?.source !== 'MANUAL' || trigger?.isTriggered}
-            onClick={handleTrigger}
-          >
-            Trigger
-          </Button>
+          {source === 'MANUAL' && !trigger?.isTriggered && (
+            <ActivateTriggerDialog
+              projectId={id}
+              repeatKey={triggerRepeatKey}
+            />
+          )}
         </div>
       </div>
       <div
         className={`grid ${
-          trigger?.source !== 'MANUAL' ? 'grid-cols-2' : 'grid-cols-1'
+          source !== 'MANUAL' ? 'grid-cols-2' : 'grid-cols-1'
         } gap-4`}
       >
-        <div className="p-4 border rounded-sm">
+        <div className="p-4 border rounded-sm shadow">
           <Heading
             title={trigger?.title}
             titleStyle="text-lg/7"
@@ -93,7 +95,7 @@ export default function TriggerStatementDetail() {
           />
           <div
             className={`grid ${
-              trigger?.isTriggered ? 'grid-cols-5' : 'grid-cols-4'
+              trigger?.isTriggered ? 'grid-cols-6' : 'grid-cols-5'
             } text-sm/4 text-muted-foreground mt-6`}
           >
             <div>
@@ -106,13 +108,26 @@ export default function TriggerStatementDetail() {
             </div>
             <div>
               <p className="mb-1">Trigger Type</p>
-              <Badge>
-                {trigger?.source === 'MANUAL' ? 'Manual' : 'Automated'}
-              </Badge>
+              <Badge>{source === 'MANUAL' ? 'Manual' : 'Automated'}</Badge>
             </div>
             <div>
               <p className="mb-1">Type</p>
               <Badge>{trigger?.isMandatory ? 'Mandatory' : 'Optional'}</Badge>
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <p className="mb-1">TxHash</p>
+              {trigger?.transactionHash ? (
+                <Link
+                  href={`https://stellar.expert/explorer/testnet/tx/${trigger.transactionHash}`}
+                  target="_blank"
+                  className="block overflow-hidden text-ellipsis whitespace-nowrap text-blue-500 hover:underline"
+                >
+                  {trigger.transactionHash}
+                </Link>
+              ) : (
+                <p className="text-red-500">N/A</p>
+              )}
             </div>
             {trigger?.isTriggered && (
               <div>
@@ -122,34 +137,35 @@ export default function TriggerStatementDetail() {
             )}
           </div>
         </div>
-        {trigger?.source !== 'MANUAL' && (
-          <div className="p-4 border rounded-sm">
+        {source !== 'MANUAL' && (
+          <ForecastDataSection
+            phase={phase}
+            source={source}
+            triggerStatement={trigger?.triggerStatement}
+          />
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 mt-4">
+        {source === 'MANUAL' && trigger?.triggerDocuments && (
+          <DocumentsSection
+            triggerDocuments={trigger?.triggerDocuments}
+            date={trigger?.updatedAt}
+          />
+        )}
+
+        {trigger?.notes && (
+          <div className="p-4 border rounded-sm shadow">
             <Heading
-              title="Forecast Data"
-              titleStyle="text-sm/4"
-              description={`Source:${
-                trigger?.phase?.source?.riverBasin || 'N/A'
-              }`}
+              title="Trigger Notes"
+              titleStyle="text-lg/7"
+              description=""
             />
-            <div className="grid grid-cols-3 gap-4">
-              <div className="p-3 text-center border rounded">
-                <p className="font-semibold text-3xl/10 text-primary">
-                  {trigger?.triggerStatement?.minLeadTimeDays}
-                </p>
-                <p className="font-medium text-sm/6">Minimum Lead Time Days</p>
-              </div>
-              <div className="p-3 text-center border rounded">
-                <p className="font-semibold text-3xl/10 text-primary">
-                  {trigger?.triggerStatement?.maxLeadTimeDays}
-                </p>
-                <p className="font-medium text-sm/6">Maximum Lead Time Days</p>
-              </div>
-              <div className="p-3 text-center border rounded">
-                <p className="font-semibold text-3xl/10 text-primary">
-                  {trigger?.triggerStatement?.probability}
-                </p>
-                <p className="font-medium text-sm/6">Forecast Probability</p>
-              </div>
+            <div className="bg-gray-100 rounded-sm p-4">
+              <p className="text-sm/4 mb-1">{trigger?.notes}</p>
+              <p className="text-gray-500 text-sm/4">
+                {new Date(trigger?.updatedAt).toLocaleString()}
+              </p>
             </div>
           </div>
         )}

@@ -43,13 +43,13 @@ export const useRevertPhase = () => {
     }: {
       projectUUID: UUID;
       payload: {
-        phaseId: UUID;
+        phaseUuid: UUID;
       };
     }) => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'ms.phases.revertPhase',
+          action: 'ms.revertPhase.create',
           payload,
         },
       });
@@ -57,7 +57,9 @@ export const useRevertPhase = () => {
     onSuccess: () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['phase'] });
+      qc.invalidateQueries({ queryKey: ['phases'] });
       qc.invalidateQueries({ queryKey: ['triggerstatements'] });
+      qc.invalidateQueries({ queryKey: ['phaseHistory'] });
       toast.fire({
         title: 'Phase reverted successfully.',
         icon: 'success',
@@ -73,6 +75,25 @@ export const useRevertPhase = () => {
       });
     },
   });
+};
+
+export const usePhaseHistory = (uuid: UUID, payload: { phaseUuid: UUID }) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['phaseHistory', uuid, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.revertPhase.getAll',
+          payload: payload,
+        },
+      });
+      return mutate.data;
+    },
+  });
+  return query;
 };
 
 export const usePhases = (uuid: UUID) => {

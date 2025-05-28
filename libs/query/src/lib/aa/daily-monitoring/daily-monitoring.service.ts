@@ -23,7 +23,7 @@ export const useCreateDailyMonitoring = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.dailyMonitoring.add',
+          action: 'ms.dailyMonitoring.add',
           payload: monitoringPayload,
         },
       });
@@ -56,7 +56,7 @@ export const useDailyMonitoring = (uuid: UUID, payload: any) => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.dailyMonitoring.getAll',
+          action: 'ms.dailyMonitoring.getAll',
           payload: payload,
         },
       });
@@ -75,7 +75,7 @@ export const useSingleMonitoring = (uuid: UUID, monitoringId: UUID) => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.dailyMonitoring.getOne',
+          action: 'ms.dailyMonitoring.getOne',
           payload: {
             uuid: monitoringId,
           },
@@ -108,7 +108,7 @@ export const useUpdateMonitoring = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.dailyMonitoring.update',
+          action: 'ms.dailyMonitoring.update',
           payload: monitoringPayload,
         },
       });
@@ -158,7 +158,7 @@ export const useRemoveMonitoring = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.dailyMonitoring.remove',
+          action: 'ms.dailyMonitoring.remove',
           payload: monitoringPayload,
         },
       });
@@ -178,6 +178,31 @@ export const useRemoveMonitoring = () => {
         title: 'Error while removing.',
         icon: 'error',
         text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useRemoveMonitoringWhileUpdating = () => {
+  const qc = useQueryClient();
+  const q = useProjectAction();
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      removePayload,
+    }: {
+      projectUUID: UUID;
+      removePayload: {
+        uuid: UUID;
+        id: number;
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'ms.dailyMonitoring.delete',
+          payload: removePayload,
+        },
       });
     },
   });

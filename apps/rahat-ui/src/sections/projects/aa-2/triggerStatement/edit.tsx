@@ -40,26 +40,50 @@ export default function EditTrigger() {
     resolver: zodResolver(ManualFormSchema),
     defaultValues: {
       title: '',
-      isMandatory: true,
+      isMandatory: false,
       notes: '',
     },
   });
 
-  const AutomatedFormSchema = z.object({
-    title: z.string().min(2, { message: 'Please enter valid name' }),
-    source: z.string().min(1, { message: 'Please select data source' }),
-    isMandatory: z.boolean().optional(),
-    minLeadTimeDays: z
-      .string()
-      .min(1, { message: 'Please enter minimum lead time days' }),
-    maxLeadTimeDays: z
-      .string()
-      .min(1, { message: 'Please enter maximum lead time days' }),
-    probability: z
-      .string()
-      .min(1, { message: 'Please enter forecast probability' }),
-    notes: z.string().optional(),
-  });
+  const AutomatedFormSchema = z
+    .object({
+      title: z.string().min(2, { message: 'Please enter valid name' }),
+      source: z.string().min(1, { message: 'Please select data source' }),
+      isMandatory: z.boolean().optional(),
+      minLeadTimeDays: z.string().optional(),
+      maxLeadTimeDays: z.string().optional(),
+      probability: z.string().optional(),
+      notes: z.string().optional(),
+      warningLevel: z.string().optional(),
+      dangerLevel: z.string().optional(),
+      forecast: z.string().optional(),
+      daysToConsiderPrior: z.string().optional(),
+      forecastStatus: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+      if (
+        data.source === 'DHM' &&
+        trigger?.phase?.name === 'ACTIVATION' &&
+        (!data.dangerLevel || data.dangerLevel.trim() === '')
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['dangerLevel'],
+          message: 'Danger Level is required',
+        });
+      }
+      if (
+        data.source === 'DHM' &&
+        trigger?.phase?.name === 'READINESS' &&
+        (!data.warningLevel || data.warningLevel.trim() === '')
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['warningLevel'],
+          message: 'Warning Level is required',
+        });
+      }
+    });
 
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({
     resolver: zodResolver(AutomatedFormSchema),
@@ -69,8 +93,13 @@ export default function EditTrigger() {
       maxLeadTimeDays: '',
       minLeadTimeDays: '',
       probability: '',
-      isMandatory: true,
+      isMandatory: false,
       notes: '',
+      warningLevel: '',
+      dangerLevel: '',
+      forecast: '',
+      daysToConsiderPrior: '',
+      forecastStatus: '',
     },
   });
 
@@ -87,27 +116,27 @@ export default function EditTrigger() {
   };
 
   const handleUpdate = async (data: any) => {
-    const {
-      minLeadTimeDays,
-      maxLeadTimeDays,
-      probability,
-      riverBasin,
-      ...rest
-    } = data;
+    const { isMandatory, notes, title, source, ...rest } = data;
+    // Only include non-empty fields in triggerStatement
+    const triggerStatement = Object.fromEntries(
+      Object.entries(rest).filter(
+        ([, value]) => value !== undefined && value !== null && value !== '',
+      ),
+    );
+
+    const payload = {
+      title,
+      source,
+      notes,
+      triggerStatement,
+      phaseId: trigger?.phaseId,
+      uuid: trigger?.uuid,
+      isMandatory: !data?.isMandatory,
+    };
 
     await updateTrigger.mutateAsync({
       projectUUID: projectId,
-      triggerUpdatePayload: {
-        ...rest,
-        phaseId: trigger?.phaseId,
-        uuid: trigger?.uuid,
-        source: trigger?.source === 'MANUAL' ? 'MANUAL' : 'DHM',
-        triggerStatement: {
-          minLeadTimeDays,
-          maxLeadTimeDays,
-          probability,
-        },
-      },
+      triggerUpdatePayload: payload,
     });
     router.push(triggerDetailPage);
   };
@@ -130,17 +159,22 @@ export default function EditTrigger() {
       manualForm.reset({
         title: trigger?.title,
         notes: trigger?.notes,
-        isMandatory: trigger?.isMandatory,
+        isMandatory: !trigger?.isMandatory,
       });
     } else if (triggerType === 'automated') {
       automatedForm.reset({
         title: trigger?.title,
         source: trigger?.source,
-        isMandatory: trigger?.isMandatory,
+        isMandatory: !trigger?.isMandatory,
         maxLeadTimeDays: trigger?.triggerStatement?.maxLeadTimeDays,
         minLeadTimeDays: trigger?.triggerStatement?.maxLeadTimeDays,
         notes: trigger?.notes || '',
         probability: trigger?.triggerStatement?.probability,
+        warningLevel: trigger?.triggerStatement?.warningLevel,
+        dangerLevel: trigger?.triggerStatement?.dangerLevel,
+        forecast: trigger?.triggerStatement?.forecast,
+        daysToConsiderPrior: trigger?.triggerStatement?.daysToConsiderPrior,
+        forecastStatus: trigger?.triggerStatement?.forecastStatus,
       });
     }
   }, [trigger]);

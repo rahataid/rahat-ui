@@ -3,32 +3,15 @@ import React, { useEffect, useState } from 'react';
 import { BarChart, PieChart } from 'libs/shadcn/src/components/charts';
 import { DataCard, Heading, TransactionCard } from 'apps/rahat-ui/src/common';
 import { useParams } from 'next/navigation';
-import { useProjectAction } from '@rahat-ui/query';
+import { useFetchTokenStatsStellar, useProjectAction } from '@rahat-ui/query';
+import TokenOverviewSkeleton from './token.overview.skeleton';
 
 export default function TokensOverview() {
-  const projectBalance = useProjectAction();
-
   const uuid = useParams().id;
 
-  const [data, setData] = useState<any>();
-  const [transactions, setTransactions] = useState<any>();
-
-  const fetchTokenStats = async () => {
-    const response = await projectBalance.mutateAsync({
-      uuid: uuid as '${string}-${string}-${string}-${string}-${string}',
-      data: {
-        action: 'aa.stellar.getStellarStats',
-        payload: {},
-      },
-    });
-    setData(response.data.tokenStats);
-    setTransactions(response.data.transactionStats);
-  };
-
-  useEffect(() => {
-    fetchTokenStats();
-  }, []);
-
+  const { data, isLoading } = useFetchTokenStatsStellar({
+    projectUUID: uuid as '${string}-${string}-${string}-${string}-${string}',
+  });
   return (
     <>
       <Heading
@@ -36,18 +19,21 @@ export default function TokensOverview() {
         titleStyle="text-lg"
         description="Overview of your tokens"
       />
-      <div className="grid grid-cols-4 gap-4 mb-4">
-        {data &&
-          data.map((i: any) => (
+      {!isLoading ? (
+        <div className="grid xl:grid-cols-4  md:grid-cols-2 grid-cols-1 gap-4 mb-4">
+          {data?.data?.tokenStats.map((i: any) => (
             <DataCard
               key={i.name}
-              className="rounded-md"
+              className="rounded-sm"
               title={i.name}
               number={i.amount}
             />
           ))}
-      </div>
-      <div className="grid grid-cols-3 gap-4">
+        </div>
+      ) : (
+        <TokenOverviewSkeleton number={[1, 2, 3]} />
+      )}
+      <div className="grid grid-cols-1 lg:grid-cols-1 xl:grid-cols-3 gap-4">
         <PieChart
           title="Token Status"
           chart={{
@@ -57,7 +43,7 @@ export default function TokensOverview() {
               { label: 'Not Redemeed', value: 4 },
             ],
           }}
-          height={385}
+          height={360}
         />
         <BarChart
           custom
@@ -69,9 +55,9 @@ export default function TokensOverview() {
         />
         <TransactionCard
           cardTitle="Recent Transactions"
-          cardData={transactions}
+          cardData={data?.data?.transactionStats}
+          loading={isLoading}
         />
-        {/* <TransactionCard cardTitle="Recent Transactions" cardData={[]} /> */}
       </div>
     </>
   );

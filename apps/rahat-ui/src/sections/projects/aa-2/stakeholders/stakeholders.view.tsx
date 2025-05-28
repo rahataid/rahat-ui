@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 
 import {
   VisibilityState,
@@ -29,6 +29,7 @@ import {
 import {
   AddButton,
   ClientSidePagination,
+  CustomPagination,
   DemoTable,
   IconLabelBtn,
   SearchInput,
@@ -36,13 +37,15 @@ import {
 import { UUID } from 'crypto';
 import { CloudDownload } from 'lucide-react';
 import StakeGoldersGroups from './StakeholderGroups';
+import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
+import { getPaginationFromLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
 
 function StakeholdersView() {
   const router = useRouter();
   const params = useParams();
 
   const searchParams = useSearchParams();
-
+  const { activeTab, setActiveTab } = useActiveTab('stakeholders');
   const projectId = params.id as UUID;
   const {
     pagination,
@@ -53,6 +56,11 @@ function StakeholdersView() {
     setFilters,
     filters,
   } = usePagination();
+  const showStoredPagination = searchParams.get('storePagination') === 'true';
+  useEffect(() => {
+    const prevPagination = getPaginationFromLocalStorage(showStoredPagination);
+    setPagination(prevPagination);
+  }, [showStoredPagination]);
 
   useStakeholders(projectId, { ...pagination, ...filters });
 
@@ -80,17 +88,21 @@ function StakeholdersView() {
     },
   });
 
-  const handleSearch = (e) => {
-    console.log(e);
-  };
+  const handleSearch = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
+      const value = event?.target?.value ?? '';
+      setFilters({ ...filters, [key]: value });
+    },
+    [filters],
+  );
   return (
-    <Tabs defaultValue="beneficiary">
-      <TabsContent value="beneficiary">
+    <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+      <TabsContent value="stakeholders">
         <div>
           <h1 className="font-bold text-2xl text-label pl-4">Stakeholders</h1>
         </div>
       </TabsContent>
-      <TabsContent value="beneficiaryGroups">
+      <TabsContent value="stakeholdersGroup">
         <div>
           <h1 className="font-bold text-2xl text-label pl-4">
             Stakeholders Groups
@@ -104,28 +116,20 @@ function StakeholdersView() {
       <div className="flex justify-between items-center p-4">
         <TabsList className="border bg-secondary rounded">
           <TabsTrigger
-            id="beneficiary"
+            id="stakeholders"
             className="w-full data-[state=active]:bg-white"
-            value="beneficiary"
+            value="stakeholders"
           >
             Stakeholders
           </TabsTrigger>
           <TabsTrigger
-            id="beneficiaryGroups"
+            id="stakeholdersGroup"
             className="w-full data-[state=active]:bg-white"
-            value="beneficiaryGroups"
+            value="stakeholdersGroup"
           >
             Stakeholders Groups
           </TabsTrigger>
         </TabsList>
-
-        {/* <Link
-          href={`/projects/aa/${projectId}/stakeholders/import`}
-          type="button"
-          className="flex items-center justify-center gap-3 rounded-md w-48 border-2 border-primary text-primary hover:bg-primary hover:text-white focus:outline-none focus:ring-2 focus:ring-primary"
-        >
-          <CloudDownload className="mr-1" /> <span>Import Stakeholders</span>
-        </Link> */}
 
         <IconLabelBtn
           name="Import Stakeholders"
@@ -136,14 +140,27 @@ function StakeholdersView() {
           variant="outline"
         />
       </div>
-      <TabsContent value="beneficiary">
+      <TabsContent value="stakeholders">
         <div className="px-4">
           <div className="p-4 rounded-sm border">
             <div className="flex mb-2 gap-2">
               <SearchInput
                 className="w-full"
-                name="group"
-                onSearch={(e) => handleSearch(e.target.value)}
+                name="name"
+                onSearch={(e) => handleSearch(e, 'name')}
+                value={filters?.name || ''}
+              />
+              <SearchInput
+                className="w-full"
+                name="municipality"
+                onSearch={(e) => handleSearch(e, 'municipality')}
+                value={filters?.municipality || ''}
+              />
+              <SearchInput
+                className="w-full"
+                name="organization"
+                onSearch={(e) => handleSearch(e, 'organization')}
+                value={filters?.organization || ''}
               />
               <AddButton
                 path={`/projects/aa/${projectId}/stakeholders/add`}
@@ -152,11 +169,29 @@ function StakeholdersView() {
             </div>
             <DemoTable table={table} />
 
-            <ClientSidePagination table={table} />
+            <CustomPagination
+              meta={
+                stakeholdersMeta || {
+                  total: 0,
+                  currentPage: 0,
+                  lastPage: 0,
+                  perPage: 0,
+                  next: null,
+                  prev: null,
+                }
+              }
+              handleNextPage={setNextPage}
+              handlePrevPage={setPrevPage}
+              handlePageSizeChange={setPerPage}
+              currentPage={pagination.page}
+              perPage={pagination.perPage}
+              setPagination={setPagination}
+              total={stakeholdersMeta?.lastPage || 0}
+            />
           </div>
         </div>
       </TabsContent>
-      <TabsContent value="beneficiaryGroups">
+      <TabsContent value="stakeholdersGroup">
         <div className="px-4">
           <StakeGoldersGroups />
         </div>

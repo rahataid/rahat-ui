@@ -1,9 +1,9 @@
 'use client';
 
-import { AADataSourcesDailyMonitoringAddView } from '../../../../../../../sections/projects/aa/data-sources/daily-monitoring';
+import { AddDailyMonitoring } from 'apps/rahat-ui/src/sections/projects/aa-2/dataSources/components/dailyMonitoring';
 
 const Page = () => {
-  return <AADataSourcesDailyMonitoringAddView />;
+  return <AddDailyMonitoring />;
 };
 
 export default Page;

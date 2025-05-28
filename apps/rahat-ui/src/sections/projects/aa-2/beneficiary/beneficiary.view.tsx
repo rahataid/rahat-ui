@@ -31,6 +31,7 @@ import {
 import { UUID } from 'crypto';
 import BeneficiaryGroups from './BeneficiaryGroups';
 import { useProjectBeneficiaryTableColumns } from './columns';
+import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 function BeneficiaryView() {
   const { id } = useParams();
   const uuid = id as UUID;
@@ -42,7 +43,10 @@ function BeneficiaryView() {
     setPerPage,
     selectedListItems,
     setSelectedListItems,
+    setFilters,
+    setPagination,
   } = usePagination();
+  const { activeTab, setActiveTab } = useActiveTab('beneficiary');
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -79,11 +83,15 @@ function BeneficiaryView() {
     },
   });
 
-  const handleSearch = (e) => {
-    console.log(e);
-  };
+  const handleSearch = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
+      const value = event?.target?.value ?? '';
+      setFilters({ ...filters, [key]: value });
+    },
+    [filters],
+  );
   return (
-    <Tabs defaultValue="beneficiary">
+    <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
       <TabsContent value="beneficiary">
         <div>
           <h1 className="font-bold text-2xl text-label pl-4">Beneficiary</h1>
@@ -131,17 +139,19 @@ function BeneficiaryView() {
             <div className="flex mb-2 gap-2">
               <SearchInput
                 className="w-full"
-                name=""
-                onSearch={(e) => handleSearch(e.target.value)}
+                name="walletAddress"
+                onSearch={(e) => handleSearch(e, 'search')}
+                value={filters?.search || ''}
               />
             </div>
-            <DemoTable table={table} />
+            <DemoTable table={table} loading={projectBeneficiaries.isLoading} />
 
             <CustomPagination
               currentPage={pagination.page}
               handleNextPage={setNextPage}
               handlePrevPage={setPrevPage}
               handlePageSizeChange={setPerPage}
+              setPagination={setPagination}
               meta={
                 (projectBeneficiaries?.data?.response?.meta as any) || {
                   total: 0,

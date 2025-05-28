@@ -24,15 +24,21 @@ type IProps = {
     title: string;
     source: string;
     isMandatory?: boolean;
-    minLeadTimeDays: string;
-    maxLeadTimeDays: string;
-    probability: string;
+    minLeadTimeDays?: string;
+    maxLeadTimeDays?: string;
+    probability?: string;
     notes?: string;
+    warningLevel?: string;
+    dangerLevel?: string;
+    forecast?: string;
+    daysToConsiderPrior?: string;
+    forecastStatus?: string;
   }>;
   phase: any;
 };
 
 export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
+  const source = form.watch('source');
   return (
     <>
       <Form {...form}>
@@ -96,6 +102,10 @@ export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="DHM">DHM</SelectItem>
+                        <SelectItem value="GLOFAS">GLOFAS</SelectItem>
+                        <SelectItem value="DAILY_MONITORING">
+                          Daily Monitoring
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -103,6 +113,197 @@ export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
                 );
               }}
             />
+            {source === 'DHM' && phase?.name === 'READINESS' && (
+              <FormField
+                control={form.control}
+                name="warningLevel"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Warning Level (m)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          inputMode="decimal"
+                          placeholder="Write warning level in m"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            )}
+            {source === 'DHM' && phase?.name === 'ACTIVATION' && (
+              <FormField
+                control={form.control}
+                name="dangerLevel"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Danger Level (m)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          inputMode="decimal"
+                          placeholder="Write danger level in m"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            )}
+            {source === 'GLOFAS' && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="minLeadTimeDays"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>Minimum Lead Time Days</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            inputMode="decimal"
+                            placeholder="Enter minimum lead time days"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="maxLeadTimeDays"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>Maximum Lead Time Days</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            inputMode="decimal"
+                            placeholder="Enter maximum lead time days"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="probability"
+                  render={({ field }) => {
+                    return (
+                      <FormItem className="col-span-2 w-1/2">
+                        <FormLabel>Forecast Probability</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            inputMode="decimal"
+                            placeholder="Enter forecast probability"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              </>
+            )}
+            {source === 'DAILY_MONITORING' && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="forecast"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormLabel>Forecast</FormLabel>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select forecast" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="3 Days Rainfall Forecast Bulletin">
+                              3 Days Rainfall Forecast Bulletin
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="daysToConsiderPrior"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>No. of days to consider prior</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="Enter the number of days to consider prior"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="forecastStatus"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormLabel>Forecast Status</FormLabel>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Steady">Steady</SelectItem>
+                            <SelectItem value="Minor Fluctuations">
+                              Minor Fluctuations
+                            </SelectItem>
+                            <SelectItem value="Increase">Increase</SelectItem>
+                            <SelectItem value="Increase">Decrease</SelectItem>
+                            <SelectItem value="Increase">
+                              Minor Increase
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              </>
+            )}
             <FormField
               control={form.control}
               name="notes"
@@ -113,72 +314,6 @@ export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
                     <FormControl>
                       <Textarea
                         placeholder="Write trigger notes here"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="minLeadTimeDays"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>Minimum Lead Time Days</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        inputMode="decimal"
-                        // pattern="[0-9]*[.,]?[0-9]*"
-                        // title="Please enter positive number"
-                        placeholder="Enter minimum lead time days"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="maxLeadTimeDays"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>Maximum Lead Time Days</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        inputMode="decimal"
-                        // pattern="[0-9]*[.,]?[0-9]*"
-                        // title="Please enter positive number"
-                        placeholder="Enter maximum lead time days"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="probability"
-              render={({ field }) => {
-                return (
-                  <FormItem className="col-span-2 w-1/2">
-                    <FormLabel>Forecast Probability</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        inputMode="decimal"
-                        // pattern="[0-9]*[.,]?[0-9]*"
-                        // title="Please enter positive number"
-                        placeholder="Enter forecast probability"
                         {...field}
                       />
                     </FormControl>

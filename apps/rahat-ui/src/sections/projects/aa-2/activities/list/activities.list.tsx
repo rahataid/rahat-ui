@@ -58,8 +58,9 @@ export default function ActivitiesList() {
     setPagination,
     setFilters,
     filters,
+    setBackwardPage,
+    setForwardPage,
   } = usePagination();
-
   React.useEffect(() => {
     const titleStr = Array.isArray(title) ? title[0] : title;
     const formattedTitle = titleStr.toUpperCase();
@@ -165,38 +166,41 @@ export default function ActivitiesList() {
         return [key, value];
       }),
   );
+
   if (isLoading) {
     return <TableLoader />;
   }
   return (
     <div className="p-4">
-      <div className="flex flex-col space-y-0">
-        <Back path={`/projects/aa/${projectID}/activities`} />
-
-        <div className="mt-4 flex justify-between items-center">
-          <div>
-            <Heading
-              title={`${title[0].charAt(0).toUpperCase() + title.slice(1)}`}
-              description="List of all the activities in the selected phase "
-            />
-          </div>
-          <div className="flex space-x-3">
-            <IconLabelBtn
-              Icon={CloudDownloadIcon}
-              handleClick={handleDownloadReport}
-              name="Download"
-              variant="outline"
-              className="rounded w-full"
-            />
-            <IconLabelBtn
-              Icon={Plus}
-              handleClick={() =>
-                router.push(`/projects/aa/${projectID}/activities/add`)
-              }
-              name="Add Activity"
-              className="rounded w-full"
-            />
-          </div>
+      <div className="flex gap-2 justify-between">
+        <div className="flex flex-col gap-2">
+          <Back path={`/projects/aa/${projectID}/activities`} />
+          <Heading
+            title={`${title[0].charAt(0).toUpperCase() + title.slice(1)}`}
+            description="List of all the activities in the selected phase "
+          />
+        </div>
+        <div className="flex flex-col gap-2 lg:flex-row items-center justify-center">
+          <IconLabelBtn
+            Icon={CloudDownloadIcon}
+            handleClick={handleDownloadReport}
+            name="Download"
+            variant="outline"
+            className="rounded w-full"
+          />
+          <IconLabelBtn
+            Icon={Plus}
+            handleClick={() =>
+              router.push(
+                `/projects/aa/${projectID}/activities/add?phaseId=${
+                  phases.find((p) => p.name === (title as string).toUpperCase())
+                    ?.uuid
+                }`,
+              )
+            }
+            name="Add Activity"
+            className="rounded w-full"
+          />
         </div>
       </div>
       <ActivitiesTableFilters
@@ -208,7 +212,6 @@ export default function ActivitiesList() {
         category={categoryFilterItem}
         status={statusFilterItem}
       />
-
       {Object.keys(filters).length > 1 && (
         <FiltersTags
           filters={formattedFilters}
@@ -219,9 +222,15 @@ export default function ActivitiesList() {
         />
       )}
 
-      <div className="rounded border border-gray-100 ">
-        {/* <DemoTable table={table} tableHeight="h-[calc(100vh-370px)]" /> */}
-        <ActivitiesTable table={table} />
+      <div className=" border-gray-100 overflow-hidden rounded-lg border ">
+        <ActivitiesTable
+          table={table}
+          tableheight={
+            Object.keys(filters).length === 1
+              ? 'h-[calc(100vh-320px)]'
+              : 'h-[calc(100vh-380px)]'
+          }
+        />
         <CustomPagination
           meta={
             activitiesMeta || {
@@ -235,6 +244,7 @@ export default function ActivitiesList() {
           }
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
+          setPagination={setPagination}
           handlePageSizeChange={setPerPage}
           currentPage={pagination.page}
           perPage={pagination.perPage}

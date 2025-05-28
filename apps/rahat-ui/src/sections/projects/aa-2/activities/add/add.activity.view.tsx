@@ -30,7 +30,10 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { ValidationContent } from '@rumsan/connect/src/types';
+import {
+  ValidationAddress,
+  ValidationContent,
+} from '@rumsan/connect/src/types';
 import { useUserList } from '@rumsan/react-query';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
@@ -43,7 +46,7 @@ import {
   Plus,
   X,
 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -54,6 +57,9 @@ export default function AddActivities() {
   const createActivity = useCreateActivities();
   const uploadFile = useUploadFile();
   const { id: projectID } = useParams();
+  const searchParams = useSearchParams();
+  const phaseId = searchParams.get('phaseId');
+
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const { data: users, isSuccess } = useUserList({
@@ -68,6 +74,7 @@ export default function AddActivities() {
       groupId: string;
       transportId: string;
       message?: string;
+      subject?: string;
       audioURL?: { mediaURL?: string; fileName?: string };
     }[]
   >([]);
@@ -93,8 +100,14 @@ export default function AddActivities() {
 
   const [audioUploading, setAudioUploading] = React.useState<boolean>(false);
 
-  useStakeholdersGroups(projectID as UUID, {});
-  useBeneficiariesGroups(projectID as UUID, {});
+  useStakeholdersGroups(projectID as UUID, {
+    page: 1,
+    perPage: 100,
+  });
+  useBeneficiariesGroups(projectID as UUID, {
+    page: 1,
+    perPage: 100,
+  });
   const appTransports = useListAllTransports();
 
   const FormSchema = z.object({
@@ -127,6 +140,7 @@ export default function AddActivities() {
         groupId: z.string().optional(),
         transportId: z.string().optional(),
         message: z.string().optional(),
+        subject: z.string().optional(),
         audioURL: z
           .object({
             mediaURL: z.string().optional(),
@@ -143,7 +157,7 @@ export default function AddActivities() {
       title: '',
       responsibility: '',
       source: '',
-      phaseId: '',
+      phaseId: phaseId || '',
       categoryId: '',
       leadTime: '',
       description: '',
@@ -203,6 +217,7 @@ export default function AddActivities() {
       groupId: activityCommunications?.groupId || '',
       transportId: activityCommunications?.transportId || '',
       message: activityCommunications?.message || '',
+      subject: activityCommunications?.subject || '',
       audioURL: {
         mediaURL: activityCommunications?.audioURL?.mediaURL || '',
         fileName: activityCommunications?.audioURL?.fileName || '',
@@ -252,6 +267,16 @@ export default function AddActivities() {
             groupId: comms.groupId,
             transportId: comms.transportId,
             message: comms.audioURL,
+          });
+        } else if (
+          selectedTransport?.validationAddress === ValidationAddress.EMAIL
+        ) {
+          activityCommunicationPayload.push({
+            groupType: comms.groupType,
+            groupId: comms.groupId,
+            transportId: comms.transportId,
+            subject: comms.subject,
+            message: comms.message,
           });
         } else {
           activityCommunicationPayload.push({
@@ -411,6 +436,7 @@ export default function AddActivities() {
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                         value={field.value}
+                        disabled={phaseId ? true : false}
                       >
                         <FormControl>
                           <SelectTrigger>

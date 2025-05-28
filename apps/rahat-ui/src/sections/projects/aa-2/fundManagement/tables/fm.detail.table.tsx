@@ -1,6 +1,10 @@
 import React from 'react';
 import {
+  ColumnFiltersState,
   getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -17,36 +21,52 @@ import {
 interface IProps {
   group: any[];
   loading?: boolean;
+  title: string;
 }
 
-export default function FundManagementDetailTable({ group, loading }: IProps) {
+export default function FundManagementDetailTable({
+  group,
+  loading,
+  title,
+}: IProps) {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
   const columns = useFMDetailTableColumns();
   const table = useReactTable({
     data: group || [],
     columns,
-    getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     state: {
       columnVisibility,
+      columnFilters,
     },
   });
+  console.log('single', group);
+
   return (
     <div className="border rounded-sm p-4">
       <Heading
-        title="Group Name"
+        title={title}
         titleStyle="text-lg"
         description="List of all the beneficiaries in the group"
       />
       <SearchInput
-        className="w-full"
-        name=""
-        value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+        className="w-full mb-2"
+        name="walletAddress"
+        value={
+          (table.getColumn('walletAddress')?.getFilterValue() as string) ?? ''
+        }
         onSearch={(event) =>
-          table.getColumn('name')?.setFilterValue(event.target.value)
+          table.getColumn('walletAddress')?.setFilterValue(event.target.value)
         }
       />
       <DemoTable

@@ -14,30 +14,50 @@ import {
 import { UUID } from 'crypto';
 import { Users } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback } from 'react';
 
 const BeneficiaryGroups = () => {
   const { id } = useParams();
   const uuid = id as UUID;
   const searchParams = useSearchParams();
-  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+    filters,
+    setFilters,
+  } = usePagination();
   const router = useRouter();
-  const { isLoading } = useBeneficiariesGroups(id as UUID, { ...pagination });
+  const { data, isLoading } = useBeneficiariesGroups(id as UUID, {
+    page: pagination.page,
+    perPage: pagination.perPage,
+    sort: 'updatedAt',
+    order: 'desc',
+    ...filters,
+  });
   const { beneficiariesGroups, beneficiariesGroupsMeta } =
     useBeneficiariesGroupStore((state) => ({
       beneficiariesGroups: state.beneficiariesGroups,
       beneficiariesGroupsMeta: state.beneficiariesGroupsMeta,
     }));
-  const handleSearch = (e) => {
-    console.log(e);
-  };
+  const handleSearch = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
+      const value = event?.target?.value ?? '';
+      setFilters({ ...filters, [key]: value });
+    },
+    [filters],
+  );
   return (
     <>
       <div className="p-4 rounded-sm border">
         <div className="flex justify-between space-x-2 items-center mb-4">
           <SearchInput
             className="w-full"
-            name="group"
-            onSearch={(e) => handleSearch(e.target.value)}
+            name="beneficary group"
+            onSearch={(e) => handleSearch(e, 'search')}
+            value={filters?.search || ''}
           />
         </div>
         <ScrollArea className="h-[calc(100vh-360px)] mb-2">
@@ -45,7 +65,7 @@ const BeneficiaryGroups = () => {
             <SpinnerLoader />
           ) : beneficiariesGroups.length > 0 ? (
             <div className="grid grid-cols-4 gap-4">
-              {beneficiariesGroups?.map((i: any, index: number) => {
+              {beneficiariesGroups.map((i: any, index: number) => {
                 return (
                   <div key={index} className="rounded-md border shadow p-4">
                     <div className="flex flex-col space-y-2">
@@ -94,6 +114,7 @@ const BeneficiaryGroups = () => {
           currentPage={pagination.page}
           perPage={pagination.perPage}
           total={0}
+          setPagination={setPagination}
         />
       </div>
     </>

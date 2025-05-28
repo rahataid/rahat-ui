@@ -6,34 +6,38 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { Heading } from 'apps/rahat-ui/src/common';
 import { DHMSection } from './components';
+import { DailyMonitoringListView } from './components/dailyMonitoring';
+import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 
 export default function DataSources() {
+  const { activeTab, setActiveTab } = useActiveTab('dhm');
+
   return (
     <div className="p-4">
       <Heading
         title="Forecast Data"
         description="Trach all the data sources reports here"
       />
-      <Tabs defaultValue="DHM">
+      <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
         <TabsList className="border bg-secondary rounded mb-2">
           <TabsTrigger
             className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
-            value="DHM"
+            value="dhm"
           >
             DHM
           </TabsTrigger>
           <TabsTrigger
             className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
-            value="Daily Monitoring"
+            value="dailyMonitoring"
           >
             Daily Monitoring
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="DHM">
+        <TabsContent value="dhm">
           <DHMSection />
         </TabsContent>
-        <TabsContent value="Daily Monitoring">
-          Daily Monitoring Section
+        <TabsContent value="dailyMonitoring">
+          <DailyMonitoringListView />
         </TabsContent>
       </Tabs>
     </div>

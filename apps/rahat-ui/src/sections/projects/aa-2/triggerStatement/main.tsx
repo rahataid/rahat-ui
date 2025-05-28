@@ -1,3 +1,4 @@
+import React from 'react';
 import { Heading } from 'apps/rahat-ui/src/common';
 import { TriggersListCard, TriggersPhaseCard } from './components';
 import { useParams, useRouter } from 'next/navigation';
@@ -20,6 +21,11 @@ export default function TriggerStatementView() {
 
   useAATriggerStatements(projectId, {});
   const triggers = useAAStationsStore((state) => state.triggers);
+
+  const triggeredTriggers = React.useMemo(
+    () => triggers?.filter((t) => t.isTriggered),
+    [triggers],
+  );
 
   const setPhase = (phase: any) => {
     localStorage.setItem(
@@ -73,7 +79,7 @@ export default function TriggerStatementView() {
               handleViewDetails={() => handleViewDetails(d)}
             />
           ))}
-        <TriggersListCard projectId={projectId} triggers={triggers} />
+        <TriggersListCard projectId={projectId} triggers={triggeredTriggers} />
       </div>
     </div>
   );

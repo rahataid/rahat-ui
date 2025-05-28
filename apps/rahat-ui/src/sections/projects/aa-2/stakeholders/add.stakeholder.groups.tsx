@@ -11,6 +11,7 @@ import {
 import { useProjectSelectStakeholdersTableColumns } from './columns';
 import { mockData } from 'apps/rahat-ui/src/common/data/data';
 import {
+  ClientSidePagination,
   CustomPagination,
   DemoTable,
   HeaderWithBack,
@@ -30,6 +31,7 @@ import {
   useStakeholdersStore,
   useUpdateStakeholdersGroups,
 } from '@rahat-ui/query';
+import StakeholdersTableFilters from './component/stakeholders.table.filters';
 
 const UpdateOrAddStakeholdersGroup = () => {
   const params = useParams();
@@ -48,6 +50,7 @@ const UpdateOrAddStakeholdersGroup = () => {
     selectedListItems,
     setSelectedListItems,
     resetSelectedListItems,
+    setPagination,
   } = usePagination();
 
   useStakeholders(projectId, { ...pagination, ...filters });
@@ -128,7 +131,7 @@ const UpdateOrAddStakeholdersGroup = () => {
     } else {
       await createStakeholdersGroup.mutateAsync(data);
     }
-    router.push(`/projects/aa/${projectId}/stakeholders`);
+    router.push(`/projects/aa/${projectId}/stakeholders/groups/${groupId}`);
   };
 
   return (
@@ -138,8 +141,10 @@ const UpdateOrAddStakeholdersGroup = () => {
           title={
             isEditing ? 'Add Stakeholder Group' : 'Create Stakeholder Group'
           }
-          subtitle="Fill the form below to create a new stakeholder group"
-          path={`/projects/aa/${projectId}/stakeholders`}
+          subtitle={`Fill the form below to ${
+            isEditing ? 'update' : 'create a new'
+          } stakeholder group`}
+          path={`/projects/aa/${projectId}/stakeholders/groups/${groupId}`}
         />
         <div className="ml-1 mb-1">
           <Label className="mb-2"> Stake Holder Group Name</Label>
@@ -157,30 +162,18 @@ const UpdateOrAddStakeholdersGroup = () => {
         <div className="">
           <Heading
             title=" Select Stakeholders"
-            description="Select stakeholders from the list below to create group"
-            titleStyle="2xl"
+            description={`Select stakeholders from the list below to ${
+              isEditing ? 'update' : 'create'
+            } group`}
+            titleStyle="text-xl"
           />
         </div>
 
-        <div className="flex justify-between space-x-2 items-center mb-1 mt-1">
-          <SearchInput
-            className="w-full"
-            name="stakeholders name"
-            onSearch={(e) => handleSearch(e, 'name')}
-          />
-
-          <SearchInput
-            className="w-full"
-            name="organization"
-            onSearch={(e) => handleSearch(e, 'organization')}
-          />
-
-          <SearchInput
-            className="w-full"
-            name="municipality"
-            onSearch={(e) => handleSearch(e, 'municipality')}
-          />
-        </div>
+        <StakeholdersTableFilters
+          projectID={projectId}
+          filters={filters}
+          setFilters={setFilters}
+        />
 
         <DemoTable table={table} tableHeight="h-[calc(100vh-520px)]" />
 
@@ -200,6 +193,7 @@ const UpdateOrAddStakeholdersGroup = () => {
           handlePageSizeChange={setPerPage}
           currentPage={pagination.page}
           perPage={pagination.perPage}
+          setPagination={setPagination}
           total={stakeholdersMeta?.lastPage || 0}
         />
 

@@ -26,6 +26,9 @@ export default function ActivityDetailCards({
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
     });
 
     return nepalTimeFormatter.format(utcDate);
@@ -37,7 +40,7 @@ export default function ActivityDetailCards({
     </div>;
   }
   return (
-    <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 h-[calc(29vh)]">
+    <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 h-[calc(29vh)] w-full">
       {loading ? (
         <SpinnerLoader />
       ) : (
@@ -78,7 +81,7 @@ export default function ActivityDetailCards({
                 </p>
               </TooltipTrigger>
               <TooltipContent
-                side="right"
+                side="bottom"
                 className="w-80 rounded-sm text-justify"
               >
                 <p>{activityDetail?.description}</p>

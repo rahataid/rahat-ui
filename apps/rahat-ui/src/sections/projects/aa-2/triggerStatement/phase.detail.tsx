@@ -1,5 +1,6 @@
 import {
   Back,
+  CustomAlertDialog,
   Heading,
   IconLabelBtn,
   TableLoader,
@@ -27,7 +28,7 @@ export default function PhaseDetail() {
   const handleRevertPhase = async () => {
     await revertPhase.mutateAsync({
       projectUUID: projectId,
-      payload: { phaseId: phaseId },
+      payload: { phaseUuid: phaseId },
     });
   };
   return isLoading ? (
@@ -48,11 +49,19 @@ export default function PhaseDetail() {
             name="Add Trigger"
             handleClick={handleAddTriggerClick}
           />
-          <IconLabelBtn
-            disabled={true}
-            Icon={Undo2}
-            name="Revert"
-            handleClick={handleRevertPhase}
+          <CustomAlertDialog
+            dialogTrigger={
+              <IconLabelBtn
+                disabled={
+                  !phase?.isActive || !phase?.canRevert || revertPhase.isPending
+                }
+                Icon={Undo2}
+                name="Revert"
+              />
+            }
+            title="Revert Phase"
+            description="Are you sure you want to revert this phase?"
+            handleContinueClick={handleRevertPhase}
           />
         </div>
       </div>

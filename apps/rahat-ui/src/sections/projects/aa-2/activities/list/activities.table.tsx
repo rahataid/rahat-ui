@@ -7,16 +7,20 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {
+  ScrollArea,
+  ScrollBar,
+} from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 type IProps = {
   table: Table<any>;
+  tableheight?: string;
 };
 
-export default function ActivitiesTable({ table }: IProps) {
+export default function ActivitiesTable({ table, tableheight }: IProps) {
   return (
-    <TableComponent>
-      <ScrollArea className="h-[calc(100vh-390px)]">
+    <ScrollArea className={`${tableheight ?? 'h-[calc(100vh-390px)]'}`}>
+      <TableComponent>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -60,7 +64,8 @@ export default function ActivitiesTable({ table }: IProps) {
             </TableRow>
           )}
         </TableBody>
-      </ScrollArea>
-    </TableComponent>
+      </TableComponent>
+      <ScrollBar orientation="horizontal" />
+    </ScrollArea>
   );
 }

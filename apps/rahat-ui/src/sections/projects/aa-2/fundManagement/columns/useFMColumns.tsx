@@ -14,18 +14,21 @@ export const useFundManagementTableColumns = () => {
   const columns: ColumnDef<IFundManagement>[] = [
     {
       accessorKey: 'title',
+      accessorFn: (row) => row?.title,
       header: 'Title',
-      cell: ({ row }) => <div>{row.getValue('title') || 'N/A'}</div>,
+      cell: ({ row }) => <div>{row?.original?.title || 'N/A'}</div>,
     },
     {
       accessorKey: 'beneficiaryGroup',
       header: 'Beneficiary Group',
-      cell: ({ row }) => <div>{row.getValue('beneficiaryGroup') || 'N/A'}</div>,
+      cell: ({ row }) => {
+        return <div>{row.original?.group?.name || 'N/A'}</div>;
+      },
     },
     {
       accessorKey: 'tokens',
       header: 'Tokens',
-      cell: ({ row }) => <div>{row.getValue('tokens') || 'N/A'}</div>,
+      cell: ({ row }) => <div>{row?.original?.numberOfTokens}</div>,
     },
     {
       accessorKey: 'createdBy',

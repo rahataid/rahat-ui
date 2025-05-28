@@ -308,7 +308,6 @@ export default function AddActivities() {
       setDocuments([]);
     }
   };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>

@@ -27,9 +27,11 @@ import {
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { Transport, ValidationContent } from '@rumsan/connect/src/types';
 import { UUID } from 'crypto';
+import { isValid } from 'date-fns';
 import { Mail, MessageSquare, PencilIcon, Phone, Trash2 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
+import { get } from 'react-hook-form';
 
 type IProps = {
   form: any;
@@ -75,7 +77,8 @@ export default function AddCommunicationForm({
     !activityCommunication.groupType ||
     !activityCommunication.groupId ||
     fileUpload.isPending ||
-    !form.formState.isValid;
+    !!get(form.formState.errors, fieldName('groupId'));
+
   // const stakeholdersGroups = [
   //   { id: '1', uuid: 'stkh-123', name: 'Health Workers' },
   //   { id: '2', uuid: 'stkh-456', name: 'NGO Representatives' },

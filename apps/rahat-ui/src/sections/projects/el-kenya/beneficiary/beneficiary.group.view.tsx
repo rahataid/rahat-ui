@@ -16,7 +16,11 @@ import AddButton from '../../components/add.btn';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
-function BeneficiaryGroupsView() {
+type IProps = {
+  projectClosed: boolean;
+};
+
+function BeneficiaryGroupsView({ projectClosed }: IProps) {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
   const [searchTerm, setSearchTerm] = React.useState<string>('');
@@ -32,7 +36,11 @@ function BeneficiaryGroupsView() {
     filters,
   } = usePagination();
 
-  const { data: groups,meta, isLoading, } = useFindAllBeneficiaryGroups(id as UUID,{    
+  const {
+    data: groups,
+    meta,
+    isFetching,
+  } = useFindAllBeneficiaryGroups(id as UUID, {
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
@@ -56,22 +64,23 @@ function BeneficiaryGroupsView() {
           <SearchInput
             className="w-full"
             name="group"
-            onSearch={(e) => setFilters({
-              name: e.target.value,
-            })}
+            onSearch={(e) =>
+              setFilters({
+                name: e.target.value,
+              })
+            }
           />
           <AddButton
             name="Group"
             path={`/projects/el-kenya/${id}/beneficiary/group/add`}
+            disabled={projectClosed}
           />
         </div>
-        <ScrollArea 
-        className="h-[calc(100vh-230px)]"
-        >
-          {isLoading ? (
+        <ScrollArea className="h-[calc(100vh-230px)]">
+          {isFetching ? (
             <TableLoader />
           ) : groups?.length > 0 ? (
-          <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-4 gap-4">
               {groups?.map((i: any, index: number) => {
                 return (
                   <div
@@ -106,8 +115,8 @@ function BeneficiaryGroupsView() {
             </p>
           )}
         </ScrollArea>
-         {/* pagination  */}
-         <CustomPagination
+        {/* pagination  */}
+        <CustomPagination
           meta={meta || { total: 0, currentPage: 0 }}
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}

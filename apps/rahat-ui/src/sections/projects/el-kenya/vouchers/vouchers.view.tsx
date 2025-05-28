@@ -2,6 +2,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useFindAllKenyaStats,
   useProjectSettingsStore,
+  useProjectStore,
 } from '@rahat-ui/query';
 import {
   ChartColumnStacked,
@@ -28,17 +29,17 @@ export default function VouchersView() {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
-  // const { data: tokenAllocated } = useReadRahatCvaKenyaBeneficiaryCount({
-  //   address: contractSettings?.rahatcvakenya?.address as `0x${string}`,
-  // });
+  const { data: tokenAllocated } = useReadRahatCvaKenyaBeneficiaryCount({
+    address: contractSettings?.rahatcvakenya?.address as `0x${string}`,
+  });
 
   const { data: tokenBalance } = useReadRahatTokenTotalSupply({
     address: contractSettings?.rahattoken?.address as `0x${string}`,
   });
 
-  const tokenAllocated = kenyaStats?.data?.find(
-    (i: any) => i.name === 'BENEFICIARY_TOTAL',
-  )?.data;
+  const projectClosed = useProjectStore(
+    (state) => state.singleProject?.projectClosed,
+  );
 
   const REIMBURSEMENT_STATS = kenyaStats?.data?.find(
     (i: any) => i.name === 'REIMBURSEMENT_STATS',
@@ -47,14 +48,14 @@ export default function VouchersView() {
   const REDEMPTION_RATE = kenyaStats?.data?.find(
     (i: any) => i.name === 'REDEMPTION_RATE',
   )?.data;
+  const notRedeemStats =
+    kenyaStats?.data?.find((i: any) => i.name === 'NOT_REDEEM_STATS')?.data ||
+    [];
 
   const glassRequired =
-    kenyaStats?.data?.find((i: any) => i.name === 'NOT_REDEEM_STATS')?.data
-      ?.glassesRequired || 0;
-
+    notRedeemStats.find((item: any) => item.id === 'REQUIRED')?.count || 0;
   const glassNotRequired =
-    kenyaStats?.data?.find((i: any) => i.name === 'NOT_REDEEM_STATS')?.data
-      ?.glassesNotRequired || 0;
+    notRedeemStats.find((item: any) => item.id === 'NOT_REQUIRED')?.count || 0;
 
   const REDEMPTION_STATS = kenyaStats?.data?.find(
     (i: any) => i.name === 'REDEMPTION_STATS',
@@ -148,7 +149,7 @@ export default function VouchersView() {
     {
       title: 'Vendor Voucher Claimed',
       icon: 'Ticket',
-      subtitle: 'Total vouchers claimed by beneficiaries',
+      subtitle: 'Total vouchers claimed by vendors',
       total: voucherReimbursedCount ?? '-',
     },
     {
@@ -173,6 +174,7 @@ export default function VouchersView() {
             onClick={() =>
               router.push(`/projects/el-kenya/${id}/vouchers/manage`)
             }
+            disabled={projectClosed}
           >
             <Plus size={18} className="mr-1" />
             Manage Voucher

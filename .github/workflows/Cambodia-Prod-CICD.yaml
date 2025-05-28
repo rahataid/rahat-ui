@@ -24,7 +24,7 @@ jobs:
 
       - name: import env file
         run: |
-          touch ./.env && echo "$env_dev" >> ./.env
+          touch ./.env && echo "$env_cambodia" >> ./.env
 
       - uses: actions/setup-node@v3
         with:
@@ -70,7 +70,7 @@ jobs:
 
       - name: import env file
         run: |
-          touch ./.env && echo "$env_dev" >> ./.env
+          touch ./.env && echo "$env_cambodia" >> ./.env
 
       - uses: actions/setup-node@v3
         with:

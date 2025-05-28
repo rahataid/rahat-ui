@@ -1,5 +1,3 @@
-//TODO: remove after merge
-
 'use client';
 import Image from 'next/image';
 import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
@@ -16,8 +14,8 @@ export function ExternalProjectCard({ project }) {
       console.log('Magic link:', magicLink);
       window.open(magicLink, '_blank'); // Open the magic link in a new tab
     } catch (error) {
-      console.error("Error constructing magic link:", error);
-      alert("Failed to construct magic link");
+      console.error('Error constructing magic link:', error);
+      alert('Failed to construct magic link');
     }
   };
 

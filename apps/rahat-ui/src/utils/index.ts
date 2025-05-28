@@ -114,3 +114,22 @@ export function formatDT(date: Date) {
 
   return formattedDate;
 }
+
+export const formatDateFromBloackChain = (dateString: string) => {
+  let date = new Date(dateString);
+
+  // Get the components of the date
+  const day = date.getDate();
+  const month = date.toLocaleString('default', { month: 'short' });
+  const year = date.getFullYear();
+  const hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const period = hours >= 12 ? 'PM' : 'AM';
+
+  // Convert hours to 12-hour format
+  const hours12 = hours % 12 || 12;
+
+  // Form the date string
+  const formattedDate = `${month} ${day}, ${year} ${hours12}:${minutes} ${period}`;
+  return formattedDate;
+};

@@ -24,7 +24,7 @@ export default function UserView() {
   const loggedUserRoles = React.useMemo(() => user?.data?.roles, [user]);
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const columns = useUserTableColumns();
-  const { data: users, isSuccess } = useUserList(pagination);
+  const { data: users, isSuccess, isLoading } = useUserList(pagination);
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -61,17 +61,17 @@ export default function UserView() {
               Here is the list of all the users
             </p>
           </div>
-          {(loggedUserRoles?.includes('Admin') ||
+          {/* {(loggedUserRoles?.includes('Admin') ||
             loggedUserRoles?.includes('Manager')) && (
             <CoreBtnComponent
-              className="hover:text-primary"
+              className="hover:text-primary text-white"
               Icon={UserCog}
               name="Manage Roles"
               handleClick={() => router.push('/users/roles')}
             />
-          )}
+          )} */}
         </div>
-        <UsersTable table={table} />
+        <UsersTable loading={isLoading} table={table} />
       </div>
       <CustomPagination
         currentPage={pagination.page}

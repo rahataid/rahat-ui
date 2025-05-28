@@ -26,12 +26,14 @@ type IProps = {
   title: string;
   handleSelect: (key: string, value: string) => void;
   current?: number | string;
+  className?: string;
 };
 export default function DropdownComponent({
   transformedData,
   title,
   handleSelect,
   current,
+  className = 'w-[200px]',
 }: IProps) {
   const [open, setOpen] = React.useState<boolean>(false);
   const [value, setValue] = React.useState<string>('');
@@ -48,7 +50,7 @@ export default function DropdownComponent({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between mx-1 text-gray-400"
+          className={`${className} justify-between mx-1 text-gray-400`}
         >
           {value
             ? transformedData.find((d) => d.value === value)?.label
@@ -56,10 +58,8 @@ export default function DropdownComponent({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] h-[200px] ">
+      <PopoverContent className={`${className} h-[200px]`}>
         <Command>
-          {/* <CommandInput placeholder="--Select Field--" /> */}
-          {/* <ScrollArea> */}
           <CommandEmpty>No field found.</CommandEmpty>
           <CommandList>
             <CommandGroup>
@@ -76,7 +76,6 @@ export default function DropdownComponent({
               ))}
             </CommandGroup>
           </CommandList>
-          {/* </ScrollArea> */}
         </Command>
       </PopoverContent>
     </Popover>

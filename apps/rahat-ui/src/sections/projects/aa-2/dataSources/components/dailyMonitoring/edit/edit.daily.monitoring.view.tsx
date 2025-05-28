@@ -344,9 +344,10 @@ export default function EditDailyMonitoring() {
       });
 
 
+
+
       route.push(`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`);
-
-
+      
     } catch (e) {
       console.error('Edit Daily Monitoring Error::', e);
     }

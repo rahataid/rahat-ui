@@ -45,20 +45,45 @@ export default function EditTrigger() {
     },
   });
 
-  const AutomatedFormSchema = z.object({
-    title: z.string().min(2, { message: 'Please enter valid name' }),
-    source: z.string().min(1, { message: 'Please select data source' }),
-    isMandatory: z.boolean().optional(),
-    minLeadTimeDays: z.string().optional(),
-    maxLeadTimeDays: z.string().optional(),
-    probability: z.string().optional(),
-    notes: z.string().optional(),
-    warningLevel: z.string().optional(),
-    dangerLevel: z.string().optional(),
-    forecast: z.string().optional(),
-    daysToConsiderPrior: z.string().optional(),
-    forecastStatus: z.string().optional(),
-  });
+  const AutomatedFormSchema = z
+    .object({
+      title: z.string().min(2, { message: 'Please enter valid name' }),
+      source: z.string().min(1, { message: 'Please select data source' }),
+      isMandatory: z.boolean().optional(),
+      minLeadTimeDays: z.string().optional(),
+      maxLeadTimeDays: z.string().optional(),
+      probability: z.string().optional(),
+      notes: z.string().optional(),
+      warningLevel: z.string().optional(),
+      dangerLevel: z.string().optional(),
+      forecast: z.string().optional(),
+      daysToConsiderPrior: z.string().optional(),
+      forecastStatus: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+      if (
+        data.source === 'DHM' &&
+        trigger?.phase?.name === 'ACTIVATION' &&
+        (!data.dangerLevel || data.dangerLevel.trim() === '')
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['dangerLevel'],
+          message: 'Danger Level is required',
+        });
+      }
+      if (
+        data.source === 'DHM' &&
+        trigger?.phase?.name === 'READINESS' &&
+        (!data.warningLevel || data.warningLevel.trim() === '')
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['warningLevel'],
+          message: 'Warning Level is required',
+        });
+      }
+    });
 
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({
     resolver: zodResolver(AutomatedFormSchema),
@@ -91,38 +116,27 @@ export default function EditTrigger() {
   };
 
   const handleUpdate = async (data: any) => {
-    const {
-      minLeadTimeDays,
-      maxLeadTimeDays,
-      probability,
-      riverBasin,
-      warningLevel,
-      dangerLevel,
-      isMandatory,
-      forecast,
-      daysToConsiderPrior,
-      forecastStatus,
-      ...rest
-    } = data;
+    const { isMandatory, notes, title, source, ...rest } = data;
+    // Only include non-empty fields in triggerStatement
+    const triggerStatement = Object.fromEntries(
+      Object.entries(rest).filter(
+        ([, value]) => value !== undefined && value !== null && value !== '',
+      ),
+    );
+
+    const payload = {
+      title,
+      source,
+      notes,
+      triggerStatement,
+      phaseId: trigger?.phaseId,
+      uuid: trigger?.uuid,
+      isMandatory: !data?.isMandatory,
+    };
 
     await updateTrigger.mutateAsync({
       projectUUID: projectId,
-      triggerUpdatePayload: {
-        ...rest,
-        phaseId: trigger?.phaseId,
-        uuid: trigger?.uuid,
-        isMandatory: !data?.isMandatory,
-        triggerStatement: {
-          minLeadTimeDays,
-          maxLeadTimeDays,
-          probability,
-          warningLevel,
-          dangerLevel,
-          forecast,
-          daysToConsiderPrior,
-          forecastStatus,
-        },
-      },
+      triggerUpdatePayload: payload,
     });
     router.push(triggerDetailPage);
   };

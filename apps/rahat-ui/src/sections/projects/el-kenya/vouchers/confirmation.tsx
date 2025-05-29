@@ -133,7 +133,11 @@ export default function ConfirmSelection({
           <Button onClick={handleBack} variant="secondary" className="px-12">
             Close
           </Button>
-          <Button className="px-12" onClick={handleNext}>
+          <Button
+            disabled={!tokenBalance || Number(tokenBalance) === 0}
+            className="px-12"
+            onClick={handleNext}
+          >
             Finish
           </Button>
         </div>

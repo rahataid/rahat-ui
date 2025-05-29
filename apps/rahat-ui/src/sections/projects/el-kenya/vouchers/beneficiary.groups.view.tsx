@@ -18,6 +18,7 @@ interface BeneficiaryGroupsView {
   handleNext: any;
   setBeneficiaryGroupSelected: any;
   stepData: any;
+  disabledBulkAssign: boolean;
 }
 
 export default function BeneficiaryGroupsView({
@@ -25,6 +26,7 @@ export default function BeneficiaryGroupsView({
   handleNext,
   setBeneficiaryGroupSelected,
   stepData,
+  disabledBulkAssign,
 }: BeneficiaryGroupsView) {
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
@@ -145,7 +147,7 @@ export default function BeneficiaryGroupsView({
 
           <Button
             type="button"
-            disabled={selectedGroup?.length === 0}
+            disabled={selectedGroup?.length === 0 || disabledBulkAssign}
             onClick={() => {
               setBeneficiaryGroupSelected(true);
               handleNext();

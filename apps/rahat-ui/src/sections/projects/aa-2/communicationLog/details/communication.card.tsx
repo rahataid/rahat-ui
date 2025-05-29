@@ -74,7 +74,6 @@ export function CommunicationDetailCard({
     }
   };
 
-  const onFailedExports = () => {};
   const onViewDetails = () => {
     router.push(
       `/projects/aa/${projectId}/communication-logs/commsdetails/${activityCommunication?.communicationId}@${activityId}@${activityCommunication?.sessionId}`,
@@ -140,11 +139,7 @@ export function CommunicationDetailCard({
       </CardContent>
       <CardFooter className="pt-0 pb-4 flex justify-end">
         <div className="flex gap-3">
-          <Button
-            variant="outline"
-            className="flex-1 gap-2"
-            onClick={onFailedExports}
-          >
+          <Button variant="outline" className="flex-1 gap-2" disabled={true}>
             Failed Exports
             <CloudDownload className="h-4 w-4" />
           </Button>

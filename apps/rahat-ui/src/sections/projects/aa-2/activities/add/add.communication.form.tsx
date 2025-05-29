@@ -77,7 +77,8 @@ export default function AddCommunicationForm({
     !activityCommunication.groupType ||
     !activityCommunication.groupId ||
     fileUpload.isPending ||
-    !!get(form.formState.errors, fieldName('groupId'));
+    !!get(form.formState.errors, fieldName('groupId')) ||
+    !activityCommunication.transportId;
 
   // const stakeholdersGroups = [
   //   { id: '1', uuid: 'stkh-123', name: 'Health Workers' },

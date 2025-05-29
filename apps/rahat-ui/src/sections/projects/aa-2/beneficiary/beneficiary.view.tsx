@@ -14,7 +14,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
@@ -35,6 +35,7 @@ import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 function BeneficiaryView() {
   const { id } = useParams();
   const uuid = id as UUID;
+
   const {
     pagination,
     filters,
@@ -90,6 +91,12 @@ function BeneficiaryView() {
     },
     [filters],
   );
+  React.useEffect(() => {
+    setFilters({
+      search: '',
+    });
+  }, [activeTab]);
+
   return (
     <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
       <TabsContent value="beneficiary">

@@ -30,6 +30,7 @@ export default function EditStakeholders() {
   const stakeholder = useStakeholderDetails(projectId, {
     uuid: stakeholdersId,
   });
+  const redirectTo = searchParams?.get('from');
   console.log(' stakeholders', stakeholder);
   const updateStakeholder = useUpdateStakeholders();
 
@@ -85,13 +86,17 @@ export default function EditStakeholders() {
       });
     }
   }, [stakeholder, form]);
+
+  const routeNav = redirectTo
+    ? `/projects/aa/${projectId}/stakeholders?tab=stakeholders`
+    : `/projects/aa/${projectId}/stakeholders/${stakeholdersId}`;
   const handleEditStakeholders = async (data: z.infer<typeof FormSchema>) => {
     try {
       await updateStakeholder.mutateAsync({
         projectUUID: projectId,
         stakeholderPayload: { uuid: stakeholdersId, ...data },
       });
-      router.push(`/projects/aa/${projectId}/stakeholders/${stakeholdersId}`);
+      router.push(routeNav);
       form.reset();
     } catch (e) {
       console.error('Error updating stakeholder', e);

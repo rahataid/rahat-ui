@@ -59,7 +59,8 @@ export default function AddActivities() {
   const { id: projectID } = useParams();
   const searchParams = useSearchParams();
   const phaseId = searchParams.get('phaseId');
-
+  const navPae = searchParams.get('nav');
+  console.log(navPae);
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const { data: users, isSuccess } = useUserList({
@@ -313,7 +314,15 @@ export default function AddActivities() {
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
         <div className="p-4">
           <div className=" mb-2 flex flex-col space-y-0">
-            <Back path={`/projects/aa/${projectID}/activities`} />
+            <Back
+              path={
+                navPae === 'mainPage'
+                  ? `/projects/aa/${projectID}/activities`
+                  : `/projects/aa/${projectID}/activities/list/${phases
+                      .find((p) => p.uuid === phaseId)
+                      ?.name.toLowerCase()}`
+              }
+            />
 
             <div className="mt-4 flex justify-between items-center">
               <div>

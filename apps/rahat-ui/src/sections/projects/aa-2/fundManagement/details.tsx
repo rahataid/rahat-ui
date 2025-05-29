@@ -54,7 +54,7 @@ export default function FundManagementDetail() {
     <div className="p-4">
       <div className="flex justify-between items-center">
         <HeaderWithBack
-          path={`/projects/aa/${projectID}/fund-management`}
+          path={`/projects/aa/${projectID}/fund-management?tab=fundManagementList`}
           title="Assign Funds"
           subtitle="Fill the form below to assign funds to beneficiaries"
         />

@@ -8,6 +8,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
+import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 type ActivityDetailCardsProps = {
   activityDetail?: any;
   loading?: boolean;
@@ -55,8 +56,17 @@ export default function ActivityDetailCards({
             <span className="bg-gray-100 text-gray-700 text-xs font-normal px-2 py-1 rounded-sm">
               {activityDetail?.category?.name}
             </span>
-            <span className="ml-auto bg-gray-100 text-gray-700 text-xs font-normal px-2 py-1 rounded-sm">
-              {activityDetail?.status}
+            {/* getStatusBg(status) */}
+            <span
+              className={`ml-auto ${getStatusBg(
+                activityDetail?.status,
+              )} text-xs font-normal px-2 py-1 rounded-sm`}
+            >
+              {activityDetail?.status
+                .toLowerCase()
+                .split('_')
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ')}
             </span>
           </div>
           <TooltipProvider>

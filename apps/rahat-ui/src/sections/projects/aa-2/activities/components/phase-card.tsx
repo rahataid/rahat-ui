@@ -8,6 +8,7 @@ import {
   CardContent,
   CardFooter,
 } from '@rahat-ui/shadcn/src/components/ui/card';
+import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { RefreshCw, User } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
@@ -35,6 +36,25 @@ export default function PhaseCard({
   const router = useRouter();
   const { id: ProjectId } = useParams();
 
+  // const getStatusBg = (status: string) => {
+  //   if (status === 'NOT_STARTED') {
+  //     return 'bg-red-200';
+  //   }
+
+  //   if (status === 'WORK_IN_PROGRESS') {
+  //     return 'bg-orange-200';
+  //   }
+
+  //   if (status === 'COMPLETED') {
+  //     return 'bg-green-200';
+  //   }
+
+  //   if (status === 'DELAYED') {
+  //     return 'bg-gray-200';
+  //   }
+
+  //   return '';
+  // };
   return (
     <Card
       className={(cn(' border-gray-300 shadow-sm p-4 rounded-xl '), className)}
@@ -46,8 +66,12 @@ export default function PhaseCard({
     >
       <CardContent className="space-y-2 p-2">
         <div className="flex items-center justify-between ">
-          <Badge className="bg-gray-200 text-gray-700 font-normal">
-            {status}
+          <Badge className={getStatusBg(status)}>
+            {status
+              .toLowerCase()
+              .split('_')
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(' ')}
           </Badge>
           <div
             className="flex items-center gap-2 text-blue-500 text-xs hover:cursor-pointer hover:rounded-sm hover:bg-gray-50 hover:p-1 hover:text-sm "

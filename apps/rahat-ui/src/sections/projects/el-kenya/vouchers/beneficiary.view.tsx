@@ -53,7 +53,7 @@ export default function BeneficiaryView({
 
   const {
     data: benData,
-    isLoading,
+    isFetching,
     isSuccess,
   } = useFindUnSyncedBenefiicaries(id, {
     page: pagination.page,
@@ -157,7 +157,7 @@ export default function BeneficiaryView({
           <ElkenyaTable
             table={table}
             tableHeight="h-[calc(100vh-571px)]"
-            loading={isLoading}
+            loading={isFetching}
           />
         </div>
       </div>

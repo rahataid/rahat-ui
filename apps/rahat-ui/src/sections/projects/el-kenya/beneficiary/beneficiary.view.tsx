@@ -1,4 +1,8 @@
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
+import {
+  usePagination,
+  useProjectBeneficiaries,
+  useProjectStore,
+} from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -38,6 +42,10 @@ export default function BeneficiaryView() {
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab') || 'beneficiary';
 
+  const projectClosed = useProjectStore(
+    (state) => state.singleProject?.projectClosed,
+  );
+
   useEffect(() => {
     setDefaultValue(tab);
   }, [tab]);
@@ -57,7 +65,11 @@ export default function BeneficiaryView() {
     setFilters('');
   }, []);
 
-  const { data: beneficiaries, isLoading } = useProjectBeneficiaries({
+  const {
+    data: beneficiaries,
+    isLoading,
+    isFetching,
+  } = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
@@ -121,6 +133,7 @@ export default function BeneficiaryView() {
           onClick={() =>
             router.push(`/projects/el-kenya/${id}/beneficiary/import`)
           }
+          disabled={projectClosed}
         >
           <CloudDownload className="mr-1" /> Import beneficiaries
         </Button>
@@ -142,6 +155,7 @@ export default function BeneficiaryView() {
               <AddButton
                 name="Beneficiary"
                 path={`/projects/el-kenya/${id}/beneficiary/add`}
+                disabled={projectClosed}
               />
             </div>
             <div className="flex justify-between gap-2 mb-2">
@@ -168,7 +182,7 @@ export default function BeneficiaryView() {
               <SelectComponent
                 onChange={(e) => setFilters({ ...filters, glassesStatus: e })}
                 name="Glasses Status"
-                options={['REQUIRED', 'NOT_REQUIRED']}
+                options={['  REQUIRED', 'NOT_REQUIRED']}
                 value={filters?.glassesStatus || ''}
               />
               <SelectComponent
@@ -177,13 +191,21 @@ export default function BeneficiaryView() {
                 options={['REDEEMED', 'NOT_REDEEMED']}
                 value={filters?.voucherStatus || ''}
               />
+              <SelectComponent
+                onChange={(e) =>
+                  setFilters({ ...filters, voucherAssignmentStatus: e })
+                }
+                name="Voucher Assignment Status"
+                options={['ASSIGNED', 'NOT_ASSIGNED']}
+                value={filters?.voucherAssignmentStatus || ''}
+              />
               <ViewColumns table={table} />
             </div>
             {Object.keys(filters).length != 0 && (
               <FiltersTags
                 filters={filters}
                 setFilters={setFilters}
-                total={meta?.total || 0}
+                total={beneficiaries?.data?.length}
               />
             )}
             <ElkenyaTable
@@ -193,7 +215,7 @@ export default function BeneficiaryView() {
                   ? 'h-[calc(100vh-389px)]'
                   : 'h-[calc(100vh-323px)]'
               }
-              loading={isLoading}
+              loading={isFetching}
             />
           </div>
         </div>
@@ -209,7 +231,7 @@ export default function BeneficiaryView() {
       </TabsContent>
       <TabsContent value="beneficiaryGroups">
         <div className="p-4 pt-2">
-          <BeneficiaryGroupView />
+          <BeneficiaryGroupView projectClosed={projectClosed} />
         </div>
       </TabsContent>
     </Tabs>

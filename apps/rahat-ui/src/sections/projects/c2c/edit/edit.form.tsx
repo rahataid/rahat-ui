@@ -37,11 +37,10 @@ import {
   useProject,
   useProjectEdit,
   useProjectSettingsStore,
-  useProjectStore,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { CalendarIcon } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -52,6 +51,8 @@ import { enumToObjectArray } from '@rumsan/sdk/utils';
 
 export default function EditProject() {
   const { id } = useParams() as { id: UUID };
+  const router = useRouter();
+
   const projectContract = useProjectSettingsStore(
     (state) =>
       state?.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT]?.c2cproject
@@ -63,15 +64,15 @@ export default function EditProject() {
 
   const FormSchema = z.object({
     name: z.string(),
-    projectType: z.string(),
-    location: z.string(),
-    longitude: z.string(),
-    latitude: z.string(),
-    projectManager: z.string(),
+    type: z.string(),
     description: z.string(),
-    startDate: z.date().optional(),
-    endDate: z.date().optional(),
     extras: z.object({
+      location: z.string().optional(),
+      longitude: z.string().optional(),
+      latitude: z.string().optional(),
+      projectManager: z.string().optional(),
+      startDate: z.date().optional(),
+      endDate: z.date().optional(),
       treasury: z.object({
         network: z.string(),
         multiSigWalletAddress: z.string(),
@@ -86,6 +87,12 @@ export default function EditProject() {
     defaultValues: {
       description: '',
       extras: {
+        projectManager: '',
+        startDate: undefined,
+        endDate: undefined,
+        latitude: '',
+        location: '',
+        longitude: '',
         treasury: {
           treasurySources: [],
           contractAddress: projectContract,
@@ -93,40 +100,29 @@ export default function EditProject() {
           network: '',
         },
       },
-      latitude: '',
-      location: '',
-      longitude: '',
       name: '',
-      projectManager: '',
-      projectType: project?.data?.type,
+      type: '',
     },
   });
-
-  useEffect(() => {
-    form.setValue('extras.treasury.contractAddress', projectContract);
-  }, [form, projectContract]);
 
   useEffect(() => {
     if (project && project?.data) {
       const projectData = JSON.parse(JSON.stringify(project?.data));
       form.reset({
         ...projectData,
-        ...(projectData?.extras?.treasury
-          ? {
-              extras: {
-                ...projectData.extras,
-              },
-            }
-          : {
-              extras: {
-                treasury: {
-                  network: '',
-                  multiSigWalletAddress: '',
-                  contractAddress: projectContract,
-                  treasurySources: [],
-                },
-              },
-            }),
+        extras: {
+          ...projectData.extras,
+          startDate: projectData?.extras?.startDate
+            ? new Date(new Date(projectData.extras.startDate))
+            : undefined,
+          endDate: projectData?.extras?.endDate
+            ? new Date(new Date(projectData.extras.endDate))
+            : undefined,
+          treasury: {
+            ...projectData.extras?.treasury,
+            contractAddress: projectContract,
+          },
+        },
       });
     }
   }, [form, project, projectContract]);
@@ -143,31 +139,35 @@ export default function EditProject() {
   return (
     <ScrollArea>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onAdvancedFormSubmit)}>
+        <form
+          onSubmit={form.handleSubmit(onAdvancedFormSubmit, (errors) => {
+            console.error('Form errors:', errors);
+          })}
+        >
           <div className="p-4 h-add bg-card">
             <div className="shadow-md p-4 rounded-sm">
               <h1 className="text-lg font-semibold mb-6">Edit Project</h1>
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <FormField
                   name="name"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormControl>
-                          <Input type="text" placeholder="Name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="text" placeholder="Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
                 <FormField
-                  name="projectType"
+                  name="type"
                   render={({ field }) => (
                     <FormItem>
                       <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        onValueChange={(val) => {
+                          if (val) field.onChange(val);
+                        }}
+                        value={field.value.toLocaleLowerCase() || ''}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -185,9 +185,6 @@ export default function EditProject() {
                               </SelectItem>
                             );
                           })}
-                          {/* // <SelectItem value="CVA">CVA</SelectItem>
-                          // <SelectItem value="AA">AA</SelectItem>
-                          // <SelectItem value="EL">EL</SelectItem> */}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -195,181 +192,153 @@ export default function EditProject() {
                   )}
                 />
                 <FormField
-                  name="location"
-                  render={({ field }) => {
-                    return (
+                  name="extras.location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="text" placeholder="Location" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <FormField
+                    name="extras.longitude"
+                    render={({ field }) => (
                       <FormItem>
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Location"
+                            placeholder="Longitude"
                             {...field}
                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
-                    );
-                  }}
-                />
-                <div className="grid grid-cols-2 gap-2">
-                  <FormField
-                    name="longitude"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              placeholder="Longitude"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
+                    )}
                   />
                   <FormField
-                    name="latitude"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              placeholder="Latitude"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
+                    name="extras.latitude"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder="Latitude"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
                 <FormField
-                  name="projectManager"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="Project Manager"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
+                  name="extras.projectManager"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Project Manager"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-
                 <FormField
                   name="description"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="Description"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Description"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <FormField
-                    name="startDate"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={'outline'}
-                                  className={cn(
-                                    'w-full pl-3 text-left font-normal',
-                                    !field.value && 'text-muted-foreground',
-                                  )}
-                                >
-                                  {field.value ? (
-                                    format(field.value, 'PPP')
-                                  ) : (
-                                    <span>Start Date</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className="w-auto p-0"
-                              align="start"
-                            >
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) =>
-                                  date > new Date() ||
-                                  date < new Date('1900-01-01')
-                                }
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </FormItem>
-                      );
-                    }}
+                    name="extras.startDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={'outline'}
+                                className={cn(
+                                  'w-full pl-3 text-left font-normal',
+                                  !field.value && 'text-muted-foreground',
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, 'PPP')
+                                ) : (
+                                  <span>Start Date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date > new Date() ||
+                                date < new Date('1900-01-01')
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </FormItem>
+                    )}
                   />
                   <FormField
-                    name="endDate"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={'outline'}
-                                  className={cn(
-                                    'w-full pl-3 text-left font-normal',
-                                    !field.value && 'text-muted-foreground',
-                                  )}
-                                >
-                                  {field.value ? (
-                                    format(field.value, 'PPP')
-                                  ) : (
-                                    <span>End Date</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className="w-auto p-0"
-                              align="start"
-                            >
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) =>
-                                  date > new Date() ||
-                                  date < new Date('1900-01-01')
-                                }
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </FormItem>
-                      );
-                    }}
+                    name="extras.endDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={'outline'}
+                                className={cn(
+                                  'w-full pl-3 text-left font-normal',
+                                  !field.value && 'text-muted-foreground',
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, 'PPP')
+                                ) : (
+                                  <span>End Date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) => date < new Date()}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </FormItem>
+                    )}
                   />
                 </div>
               </div>
@@ -384,10 +353,15 @@ export default function EditProject() {
                 </AccordionItem>
               </Accordion>
               <div className="flex justify-between mt-4">
-                <Button variant="ghost" className="text-primary" type="submit">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="text-primary"
+                  onClick={() => router.back()}
+                >
                   Go Back
                 </Button>
-                <Button disabled={projectEdit.isPending}>
+                <Button type="submit" disabled={projectEdit.isPending}>
                   {projectEdit.isPending ? 'Editing' : 'Edit Project'}
                 </Button>
               </div>

@@ -51,7 +51,7 @@ export default function CommunicationView() {
   } = usePagination();
 
   const { data: campginData } = useGetRpCampaign(id as UUID, cid);
-  const { data, isSuccess, isLoading } = useListRpCampaignLog(id as UUID, {
+  const { data, isSuccess, isFetching } = useListRpCampaignLog(id as UUID, {
     uuid: cid as string,
     query: {
       page: 1,
@@ -100,7 +100,7 @@ export default function CommunicationView() {
         return {
           createdAt: new Date(item.createdAt).toLocaleString(),
           status: item?.status,
-          to: item?.address,
+          address: item?.address,
         };
       });
     } else {
@@ -183,7 +183,7 @@ export default function CommunicationView() {
           <ElkenyaTable
             table={table}
             tableHeight="h-[calc(100vh-573px)]"
-            loading={isLoading}
+            loading={isFetching}
           />
         </div>
       </div>

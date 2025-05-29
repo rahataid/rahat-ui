@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardContent,
@@ -23,7 +24,6 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import {
   useCreateCampaign,
-  useFindAllCommsBeneficiaryGroups,
   useListRpTransport,
   useUploadFile,
 } from '@rahat-ui/query';
@@ -45,21 +45,10 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { AudioRecorder } from '@rahat-ui/shadcn/src/components/ui/audioRecorder';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
 
 const FormSchema = z.object({
   campaignName: z.string({
     required_error: 'Campaign Name is required.',
-  }),
-  group: z.string({
-    required_error: 'Please select a group.',
   }),
   file: z.any().optional(),
 });
@@ -70,16 +59,7 @@ const VoiceCampaignAddDrawer = () => {
   const uploadFile = useUploadFile();
 
   const [isOpen, setIsOpen] = useState(false);
-  const { data: benificiaryGroups } = useFindAllCommsBeneficiaryGroups(
-    id as UUID,
-    {
-      page: 1,
-      perPage: 1000,
-      order: 'desc',
-      sort: 'createdAt',
-      projectUUID: id,
-    },
-  );
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {},
@@ -87,15 +67,15 @@ const VoiceCampaignAddDrawer = () => {
   });
   const createCampaign = useCreateCampaign(id as UUID);
 
+
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
     const transportId = transportData?.find(
-      (t) => t?.type?.toLowerCase() === 'voice',
+      (t) => t?.name?.toLowerCase() === 'ivr',
     )?.cuid;
 
     const createCampagin = {
       name: data.campaignName,
       message: data.file.mediaURL,
-      groupUID: data.group,
       transportId,
     };
     createCampaign.mutate(createCampagin);
@@ -145,35 +125,6 @@ const VoiceCampaignAddDrawer = () => {
                       />
                     </FormControl>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="group"
-                render={({ field }) => (
-                  <FormItem className="space-y-3 mt-4">
-                    <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <SelectTrigger className="text-muted-foreground">
-                          <SelectValue placeholder="Select group" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {benificiaryGroups?.length > 0 &&
-                              benificiaryGroups.map((group) => (
-                                <SelectItem key={group.uuid} value={group.uuid}>
-                                  {group.name}
-                                </SelectItem>
-                              ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

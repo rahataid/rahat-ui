@@ -142,7 +142,11 @@ export default function SelectBeneficiaryView() {
             />
             <ViewColumns table={table} />
           </div>
-          <DemoTable table={table} tableHeight="h-[calc(100vh-354px)]" />
+          <DemoTable
+            loading={beneficiaries.isFetching}
+            table={table}
+            tableHeight="h-[calc(100vh-354px)]"
+          />
           <CustomPagination
             currentPage={pagination.page}
             handleNextPage={setNextPage}

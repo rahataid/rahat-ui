@@ -29,10 +29,10 @@ const TextCampaignDetails = () => {
   const { data: transportData } = useListRpTransport(id as UUID);
 
   const ivrTransportCuids = transportData
-    ?.filter((transport: any) => transport.name.toLowerCase() === 'prabhu sms')
+    ?.filter((transport: any) => transport.name.toLowerCase() === 'ivr')
     .map((transport: any) => transport.cuid);
-  const filteredComs = campaignData?.filter((com: any) =>
-    ivrTransportCuids?.includes(com.transportId),
+  const filteredComs = campaignData?.filter(
+    (com: any) => !ivrTransportCuids?.includes(com.transportId),
   );
   return (
     <div className="h-[calc(100vh-80px)] p-2">

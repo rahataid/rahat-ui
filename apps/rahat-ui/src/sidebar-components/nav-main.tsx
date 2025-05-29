@@ -67,7 +67,9 @@ export function NavMain(items: IProps) {
                 <CollapsibleContent>
                   <SidebarMenuSub>
                     {item.children?.map((subItem, subIndex) => (
-                      <SidebarMenuSubItem key={subItem.title || `subitem-${subIndex}`}>
+                      <SidebarMenuSubItem
+                        key={subItem.title || `subitem-${subIndex}`}
+                      >
                         <SidebarMenuSubButton asChild>
                           {subItem?.path ? (
                             <Link

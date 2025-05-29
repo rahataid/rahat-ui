@@ -47,10 +47,10 @@ export default function VouchersManage({
       <HeaderWithBack
         title="Create Voucher Disbursement"
         path={`/projects/el-kenya/${id}/vouchers`}
-        subtitle="Create a disbursement plan"
+        subtitle=""
       />
       <DataCard
-        className="border-solid rounded-sm w-96 mb-4"
+        className="border-solid rounded-sm w-96 mb-2"
         title="Voucher Balance"
         Icon={Ticket}
         number={tokenBalance?.toString() ?? '-'}
@@ -65,18 +65,14 @@ export default function VouchersManage({
         <Tabs defaultValue="beneficiary">
           <TabsContent value="beneficiary">
             <div className="pl-4">
-              <h1 className=" font-semibold text-xl ">Beneficiary</h1>
-              <p className="text-muted-foreground text-base">
-                List of all the beneficiaries assigned to the vendors
-              </p>
+              <h1 className=" font-semibold text-xl ">Select Beneficiary</h1>
             </div>
           </TabsContent>
           <TabsContent value="beneficiaryGroups">
             <div className="pl-4">
-              <h1 className=" font-semibold text-xl ">Beneficiary Groups</h1>
-              <p className="text-muted-foreground text-base">
-                List of all the beneficiaries groups assigned to the vendors
-              </p>
+              <h1 className=" font-semibold text-xl ">
+                Select Beneficiary Groups
+              </h1>
             </div>
           </TabsContent>
           <div className="flex justify-between items-center p-4 pt-3 pb-0">

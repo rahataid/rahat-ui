@@ -27,9 +27,11 @@ import {
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { Transport, ValidationContent } from '@rumsan/connect/src/types';
 import { UUID } from 'crypto';
+import { isValid } from 'date-fns';
 import { Mail, MessageSquare, PencilIcon, Phone, Trash2 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
+import { get } from 'react-hook-form';
 
 type IProps = {
   form: any;
@@ -69,10 +71,14 @@ export default function AddCommunicationForm({
   );
 
   const activityCommunication = form.watch('activityCommunication') || {};
+  const fieldName = (name: string) => `activityCommunication.${name}`; // Dynamic field name generator
+
   const isSaveDisabled =
     !activityCommunication.groupType ||
     !activityCommunication.groupId ||
-    fileUpload.isPending;
+    fileUpload.isPending ||
+    !!get(form.formState.errors, fieldName('groupId'));
+
   // const stakeholdersGroups = [
   //   { id: '1', uuid: 'stkh-123', name: 'Health Workers' },
   //   { id: '2', uuid: 'stkh-456', name: 'NGO Representatives' },
@@ -84,8 +90,6 @@ export default function AddCommunicationForm({
   //   { id: '2', uuid: 'benf-202', name: 'Pregnant Women' },
   //   { id: '3', uuid: 'benf-303', name: 'Disabled Individuals' },
   // ];
-
-  const fieldName = (name: string) => `activityCommunication.${name}`; // Dynamic field name generator
 
   const selectedTransport = form.watch(fieldName('transportId'));
   const groupType = form.watch(fieldName('groupType'));
@@ -102,44 +106,64 @@ export default function AddCommunicationForm({
   const { data: beneficiaryGroup, isLoading: isLoadingss } =
     useSingleBeneficiaryGroup(projectId as UUID, beneficiaryId);
 
-  React.useEffect(() => {
-    if (stakeholdersGroup && Array.isArray(stakeholdersGroup.stakeholders)) {
-      const hasValidEmail = stakeholdersGroup.stakeholders.some(
-        (s) => s?.email?.trim() !== '',
-      );
+  /* validate group email is to check if there are any missing  emails in beneficiaries group and stakeholders group before adding any  data 
+   for the communication type email
+  */
+  const validateGroupEmails = ({
+    group,
+    type,
+    extractEmail,
+    form,
+    fieldName,
+  }: {
+    group: any;
+    type: 'stakeholders' | 'beneficiaries';
+    extractEmail: (item: any) => string | undefined;
+    form: any;
+    fieldName: (key: string) => string;
+  }) => {
+    if (group && Array.isArray(group)) {
+      const hasValidEmail = group.some((item) => {
+        const email = extractEmail(item);
+        return email?.trim() !== '';
+      });
 
       if (!hasValidEmail) {
         form.setError(fieldName('groupId'), {
           type: 'manual',
-          message:
-            'Email address is missing for some stakeholders in this group.',
+          message: `Email address is missing for some ${
+            type === 'stakeholders' ? 'stakeholders' : 'beneficiaries'
+          } in this group.`,
         });
       } else {
         form.clearErrors(fieldName('groupId'));
       }
     }
-  }, [stakeholdersGroup]);
+  };
 
   React.useEffect(() => {
-    if (
-      beneficiaryGroup &&
-      Array.isArray(beneficiaryGroup?.groupedBeneficiaries)
-    ) {
-      const hasValidEmail = beneficiaryGroup?.groupedBeneficiaries?.some(
-        (s) => s?.Beneficiary?.pii?.email.trim() !== '',
-      );
-      console.log(hasValidEmail);
-      if (!hasValidEmail) {
-        form.setError(fieldName('groupId'), {
-          type: 'manual',
-          message:
-            'Email address is missing for some beneficiaries in this group.',
-        });
-      } else {
-        form.clearErrors(fieldName('groupId'));
-      }
+    if (!address) {
+      // Clear any previous errors if transport doesn't require email
+      form.clearErrors(fieldName('groupId'));
+      return;
     }
-  }, [beneficiaryGroup]);
+    validateGroupEmails({
+      group: stakeholdersGroup?.stakeholders,
+      type: 'stakeholders',
+      extractEmail: (s) => s?.email,
+      form,
+      fieldName,
+    });
+
+    validateGroupEmails({
+      group: beneficiaryGroup?.groupedBeneficiaries,
+      type: 'beneficiaries',
+      extractEmail: (s) => s?.Beneficiary?.pii?.email,
+      form,
+      fieldName,
+    });
+  }, [address, stakeholdersGroup, beneficiaryGroup]);
+
   React.useEffect(() => {
     const transportData = appTransports?.find(
       (t) => t.cuid === selectedTransport,
@@ -212,6 +236,8 @@ export default function AddCommunicationForm({
     form.setValue(fieldName('message'), '');
     form.setValue(fieldName('transportId'), '');
     form.setValue(fieldName('audioURL'), '');
+    form.clearErrors(fieldName('groupId'));
+
     setAudioFile({
       fileName: '',
       mediaURL: '',
@@ -252,6 +278,7 @@ export default function AddCommunicationForm({
       mediaURL: '',
     });
   };
+
   return (
     <div className="border border-dashed rounded p-4 my-8">
       <div className="flex justify-between items-center mb-6">

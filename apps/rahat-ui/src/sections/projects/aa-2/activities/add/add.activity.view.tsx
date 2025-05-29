@@ -229,7 +229,6 @@ export default function AddActivities() {
     // Update form state
     setCommunicationData(updatedCommunications);
   };
-
   // Handle to remove the communication data from the array stored in a local state
   const handleRemove = (index: number) => {
     const updatedCommunications = communicationData.filter(
@@ -309,7 +308,6 @@ export default function AddActivities() {
       setDocuments([]);
     }
   };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>

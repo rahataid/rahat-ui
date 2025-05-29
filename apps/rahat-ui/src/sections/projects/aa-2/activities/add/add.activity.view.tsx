@@ -48,7 +48,7 @@ import {
 } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 import AddCommunicationForm from './add.communication.form';
@@ -309,6 +309,7 @@ export default function AddActivities() {
       setDocuments([]);
     }
   };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
@@ -339,7 +340,7 @@ export default function AddActivities() {
                     variant="outline"
                     className="w-36"
                     onClick={() => {
-                      router.push(activitiesListPath);
+                      form.reset();
                     }}
                   >
                     Cancel

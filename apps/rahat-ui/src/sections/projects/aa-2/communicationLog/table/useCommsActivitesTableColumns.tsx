@@ -4,7 +4,7 @@ import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
 function getStatusBg(status: string) {
-  if (status === 'Not started') {
+  if (status === 'Not Started') {
     return 'bg-red-200 text-red-600';
   }
 

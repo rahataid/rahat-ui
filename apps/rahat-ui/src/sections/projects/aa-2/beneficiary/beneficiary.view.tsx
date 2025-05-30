@@ -14,7 +14,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
@@ -32,64 +32,12 @@ import { UUID } from 'crypto';
 import BeneficiaryGroups from './BeneficiaryGroups';
 import { useProjectBeneficiaryTableColumns } from './columns';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
+import BeneficiaryTable from './beneficiary.table';
 function BeneficiaryView() {
   const { id } = useParams();
   const uuid = id as UUID;
-  const {
-    pagination,
-    filters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    setFilters,
-    setPagination,
-  } = usePagination();
   const { activeTab, setActiveTab } = useActiveTab('beneficiary');
 
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const columns = useProjectBeneficiaryTableColumns();
-  const projectBeneficiaries = useProjectBeneficiaries({
-    page: pagination.page,
-    perPage: pagination.perPage,
-    order: 'desc',
-    sort: 'createdAt',
-    projectUUID: uuid,
-    ...filters,
-  });
-
-  const table = useReactTable({
-    manualPagination: true,
-    data: projectBeneficiaries?.data?.data || [],
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setSelectedListItems,
-    onSortingChange: setSorting,
-    getRowId: (row) => row.uuid,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection: selectedListItems,
-    },
-  });
-
-  const handleSearch = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
-      const value = event?.target?.value ?? '';
-      setFilters({ ...filters, [key]: value });
-    },
-    [filters],
-  );
   return (
     <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
       <TabsContent value="beneficiary">
@@ -135,7 +83,7 @@ function BeneficiaryView() {
       </div>
       <TabsContent value="beneficiary">
         <div className="px-4">
-          <div className="p-4 rounded-sm border">
+          {/* <div className="p-4 rounded-sm border">
             <div className="flex mb-2 gap-2">
               <SearchInput
                 className="w-full"
@@ -161,7 +109,8 @@ function BeneficiaryView() {
               perPage={pagination?.perPage}
               total={projectBeneficiaries?.data?.response?.meta?.total || 0}
             />
-          </div>
+          </div> */}
+          <BeneficiaryTable />
         </div>
       </TabsContent>
       <TabsContent value="beneficiaryGroups">

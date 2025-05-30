@@ -6,11 +6,13 @@ import {
 } from 'libs/shadcn/src/components/ui/tabs';
 import FundManagementList from '../tables/fm.table';
 import TokensOverview from './token.overview';
+import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 
 export default function FundManagementTabs() {
+  const { activeTab, setActiveTab } = useActiveTab('tokenOverview');
   return (
     <div className="rounded-md p-4 border">
-      <Tabs defaultValue="tokenOverview">
+      <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
         <TabsList className="border bg-secondary rounded">
           <TabsTrigger
             className="w-full data-[state=active]:bg-white"

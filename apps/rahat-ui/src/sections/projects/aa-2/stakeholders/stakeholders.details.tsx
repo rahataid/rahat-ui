@@ -7,7 +7,7 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { Edit2, Trash2 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import StakeHolderInfo from './staholders.info';
 import { useDeleteStakeholders, useStakeholderDetails } from '@rahat-ui/query';
 const StakeholdersDetail = () => {
@@ -15,17 +15,19 @@ const StakeholdersDetail = () => {
   const params = useParams();
   const projectId = params.id as UUID;
   const stakeholderId = params.stakeholdersId as UUID;
-
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('groupId');
   const details = useStakeholderDetails(projectId, { uuid: stakeholderId });
-
   const removeStakeholder = useDeleteStakeholders();
-
+  const routeNav = redirectTo
+    ? `/projects/aa/${projectId}/stakeholders/groups/${redirectTo}`
+    : `/projects/aa/${projectId}/stakeholders`;
   const handleDelete = async () => {
     await removeStakeholder.mutateAsync({
       projectUUID: projectId,
       stakeholderPayload: { uuid: stakeholderId },
     });
-    router.push(`/projects/aa/${projectId}/stakeholders`);
+    router.push(routeNav);
   };
   return (
     <div className="p-4 ">
@@ -33,7 +35,7 @@ const StakeholdersDetail = () => {
         <HeaderWithBack
           title={'Stakeholders Details'}
           subtitle="Detailed view of the selected stakeholder"
-          path={`/projects/aa/${projectId}/stakeholders`}
+          path={routeNav}
         />
         <div className=" flex flex-end justify-end gap-3 mt-auto">
           {/* <Button

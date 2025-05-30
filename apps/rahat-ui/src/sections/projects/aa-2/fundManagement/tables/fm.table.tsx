@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGroupsReservedFunds, usePagination } from '@rahat-ui/query';
 import {
+  ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,

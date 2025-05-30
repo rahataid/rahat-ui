@@ -71,13 +71,29 @@ export default function AddCommunicationForm({
   );
 
   const activityCommunication = form.watch('activityCommunication') || {};
-  const fieldName = (name: string) => `activityCommunication.${name}`; // Dynamic field name generator
 
+  const fieldName = (name: string) => `activityCommunication.${name}`; // Dynamic field name generator
+  const selectedTransport = form.watch(fieldName('transportId'));
+  const groupType = form.watch(fieldName('groupType'));
+  const groupId = form.watch(fieldName('groupId'));
+
+  const transportData = appTransports?.find(
+    (t) => t.cuid === selectedTransport,
+  );
+  const isMessageRequired =
+    transportData?.name === 'EMAIL' || transportData?.name === 'SMS';
+
+  const isMessage =
+    isMessageRequired &&
+    (!activityCommunication.message ||
+      activityCommunication.message.trim() === '');
   const isSaveDisabled =
     !activityCommunication.groupType ||
     !activityCommunication.groupId ||
     fileUpload.isPending ||
-    !!get(form.formState.errors, fieldName('groupId'));
+    !!get(form.formState.errors, fieldName('groupId')) ||
+    !activityCommunication.transportId ||
+    isMessage;
 
   // const stakeholdersGroups = [
   //   { id: '1', uuid: 'stkh-123', name: 'Health Workers' },
@@ -90,10 +106,6 @@ export default function AddCommunicationForm({
   //   { id: '2', uuid: 'benf-202', name: 'Pregnant Women' },
   //   { id: '3', uuid: 'benf-303', name: 'Disabled Individuals' },
   // ];
-
-  const selectedTransport = form.watch(fieldName('transportId'));
-  const groupType = form.watch(fieldName('groupType'));
-  const groupId = form.watch(fieldName('groupId'));
 
   const stakeholderId = groupType === 'STAKEHOLDERS' && groupId;
   const beneficiaryId = groupType === 'BENEFICIARY' && groupId;
@@ -165,12 +177,13 @@ export default function AddCommunicationForm({
   }, [address, stakeholdersGroup, beneficiaryGroup]);
 
   React.useEffect(() => {
-    const transportData = appTransports?.find(
-      (t) => t.cuid === selectedTransport,
-    );
+    // const transportData = appTransports?.find(
+    //   (t) => t.cuid === selectedTransport,
+    // );
     setContentType(transportData?.validationContent as ValidationContent);
     if (transportData?.validationAddress === 'EMAIL') {
       setAddress(true);
+      form.setValue(fieldName('audioURL'), '');
     } else {
       setAddress(false);
     }

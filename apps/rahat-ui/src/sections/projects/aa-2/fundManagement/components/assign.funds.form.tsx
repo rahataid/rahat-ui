@@ -71,7 +71,7 @@ export default function AssignFundsForm() {
   const totalReservedTokens =
     reservationStats?.data?.totalReservedTokens?._sum?.benTokens || 0;
   const availableBudget = parsedProjectBudget - totalReservedTokens;
-
+  console.log(projectBudget);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -84,13 +84,12 @@ export default function AssignFundsForm() {
   });
 
   const benGroups = useBeneficiaryGroups(projectId, {
-    page: '1',
-    perPage: '100',
-    sort: 'updatedAt',
-    order: 'desc',
-    tokenAssigned: false,
+    page: 1,
+    perPage: 100,
+    // sort: 'updatedAt',
+    // order: 'desc',
+    tokenAssigned: true,
   });
-  console.log(benGroups);
   // const { beneficiariesGroups } = useBeneficiariesGroupStore((state) => ({
   //   beneficiariesGroups: state.beneficiariesGroups,
   //   beneficiariesGroupsMeta: state.beneficiariesGroupsMeta,
@@ -163,7 +162,7 @@ export default function AssignFundsForm() {
                             ? benGroups.data?.data.find(
                                 (group) => group.uuid === field.value,
                               )?.name
-                            : 'Select Ben Groups'}
+                            : 'Select Beneficiary Group'}
                           <ChevronDown className="opacity-50" />
                         </Button>
                       </FormControl>

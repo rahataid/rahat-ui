@@ -5,7 +5,7 @@ import React from 'react';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { CloudUpload, File, LoaderCircle, X } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -48,9 +48,14 @@ export default function UpdateStatus() {
     activityId,
   );
 
+  const searchParams = useSearchParams();
+
+  const redirectTo = searchParams.get('from');
   const router = useRouter();
 
-  const activitiesListPath = `/projects/aa/${projectId}/activities`;
+  const activitiesListPath = redirectTo
+    ? `/projects/aa/${projectId}/activities/${activityId}`
+    : `/projects/aa/${projectId}/activities`;
   const uploadFile = useUploadFile();
 
   const updateStatus = useUpdateActivityStatus();
@@ -157,7 +162,7 @@ export default function UpdateStatus() {
   return (
     <div className=" mx-auto p-4 md:p-6">
       <div className="flex flex-col space-y-0">
-        <Back path={`/projects/aa/${projectId}/activities`} />
+        <Back path={activitiesListPath} />
 
         <div className="mt-4 flex justify-between items-center">
           <Heading

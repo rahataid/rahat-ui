@@ -23,8 +23,6 @@ export default function Confirmation() {
     reserveTokenPayload.beneficiaryGroupId,
   );
 
-  console.log(reserveTokenPayload);
-
   const reserveTokenForGroups = useReserveTokenForGroups();
   const cardData = [
     { label: 'Title', value: reserveTokenPayload.title },
@@ -85,7 +83,7 @@ export default function Confirmation() {
         </div>
         <div className="p-4 rounded-md bg-gray-50">
           <p className="font-semibold text-lg mb-4">Beneficiaries List</p>
-          <ScrollArea className="h-[calc(100vh-700px)] pr-4">
+          <ScrollArea className="h-[calc(300px)] pr-4">
             <div className="flex flex-col space-y-4">
               {benefData?.length > 0 ? (
                 benefData?.map((i) => (

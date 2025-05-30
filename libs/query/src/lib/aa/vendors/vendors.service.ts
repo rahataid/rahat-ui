@@ -35,3 +35,29 @@ export const useAAVendorsList = (payload: any) => {
   }, [query?.data?.data]);
   return query;
 };
+
+export const useGetVendorStellarStats = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: ['aa.stellar.getVendorStats', restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.stellar.getVendorStats',
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return query;
+};

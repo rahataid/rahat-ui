@@ -99,10 +99,12 @@ export default function CommsLogsDetailPage() {
   };
 
   const failedCount = useMemo(() => {
-    return sessionLogs?.httpReponse?.data?.data?.filter(
-      (log: any) => log?.status === BroadcastStatus.FAIL,
+    return (
+      sessionLogs?.httpReponse?.data?.data?.filter(
+        (log: any) => log?.status === BroadcastStatus.SUCCESS,
+      ) ?? []
     );
-  }, [logs]);
+  }, [sessionLogs]);
 
   const logsGroupName = useMemo(() => {
     if (logs?.groupName.length > 20) {

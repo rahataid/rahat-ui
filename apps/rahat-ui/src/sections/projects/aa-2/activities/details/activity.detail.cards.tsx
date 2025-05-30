@@ -41,7 +41,7 @@ export default function ActivityDetailCards({
     </div>;
   }
   return (
-    <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 h-[calc(29vh)] w-full">
+    <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200  w-full">
       {loading ? (
         <SpinnerLoader />
       ) : (
@@ -72,8 +72,8 @@ export default function ActivityDetailCards({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild className="hover:cursor-pointer py-0">
-                <h3 className="text-lg font-semibold text-gray-900 leading-tight truncate ">
-                  {activityDetail?.title}...
+                <h3 className="text-lg font-semibold text-gray-900 leading-tight truncate w-[420px]">
+                  {activityDetail?.title}
                 </h3>
               </TooltipTrigger>
               <TooltipContent

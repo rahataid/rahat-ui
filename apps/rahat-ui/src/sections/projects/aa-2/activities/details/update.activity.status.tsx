@@ -49,7 +49,6 @@ export default function UpdateStatus() {
   );
 
   const searchParams = useSearchParams();
-
   const redirectTo = searchParams.get('from');
   const router = useRouter();
 
@@ -159,6 +158,13 @@ export default function UpdateStatus() {
       .replace(/_/g, ' ')
       .replace(/\b\w/g, (char) => char.toUpperCase());
   };
+
+  React.useEffect(() => {
+    if (activityDetail) {
+      form.setValue('status', activityDetail?.status);
+      form.setValue('notes', activityDetail?.notes);
+    }
+  }, [activityDetail]);
   return (
     <div className=" mx-auto p-4 md:p-6">
       <div className="flex flex-col space-y-0">

@@ -298,6 +298,12 @@ export const useSendFundToProject = () => {
         tokenAddress: `0x${string}`;
         treasuryAddress: `0x${string}`;
       }) => {
+        console.log('first', {
+          amount,
+          projectAddress,
+          tokenAddress,
+          treasuryAddress,
+        });
         return sendFundProject.writeContractAsync({
           // @ts-ignore
           args: [tokenAddress, projectAddress, formatUnits(amount, 0)],
@@ -333,7 +339,7 @@ export const useContractRedeem = (projectUUID: UUID) => {
       await updateRedemption.mutateAsync({ uuid: variables?.uuid });
       alert.fire({
         icon: 'success',
-        title: 'Token redeemed successfully',
+        title: 'Voucher redeemed successfully',
       });
     },
     mutationFn: async ({

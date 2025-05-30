@@ -60,6 +60,7 @@ export default function BeneficiaryDetail({
 
   const { data: transactionList, isLoading } =
     useBeneficiaryTransaction(walletAddress);
+  console.log('transactionList', transactionList);
 
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
@@ -92,7 +93,7 @@ export default function BeneficiaryDetail({
   let amount = 0;
   if (disbursementBeneficiary?.length > 0) {
     disbursementBeneficiary.forEach((beneficiary: any) => {
-      amount += beneficiary.amount;
+      amount += Number(beneficiary.amount);
     });
   }
 
@@ -271,7 +272,7 @@ export default function BeneficiaryDetail({
                         <div className="grid grid-cols-3 gap-3 mt-3">
                           <div>
                             <p className="font-light text-base">
-                              {amount || 'N/A'}
+                              {amount.toFixed(2) + ' USDC' || 'N/A'}
                             </p>
                             <p className="text-sm font-normal text-muted-foreground">
                               Disbursed Amount

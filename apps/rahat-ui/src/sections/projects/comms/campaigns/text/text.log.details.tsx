@@ -33,7 +33,7 @@ import Image from 'next/image';
 import { useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { TriggerConfirmModal } from './confirm.modal';
-import useTextTableColumn from '../../useTableColumn';
+import useTextTableColumn from './useTextTableColumn';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -110,6 +110,7 @@ export default function TextLogDetails() {
       </div>
 
       <div className="w-full -mt-2 p-2 bg-secondary">
+      
         <div className="rounded border bg-card">
           <TableComponent>
             <ScrollArea className="h-[calc(100vh-370px)]">

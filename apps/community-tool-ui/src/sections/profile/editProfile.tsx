@@ -23,10 +23,10 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Gender } from '@rahataid/community-tool-sdk/enums';
 import { User } from '@rumsan/sdk/types';
-import { use, useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 
 type Iprops = {
-  userDetail: User;
+  userDetail: User | undefined;
 };
 export default function EditProfile({ userDetail }: Iprops) {
   const updateUser = useUpdateMe();
@@ -39,21 +39,29 @@ export default function EditProfile({ userDetail }: Iprops) {
       .enum([Gender.MALE, Gender.FEMALE, Gender.OTHER, Gender.UKNOWN])
       .optional(),
   });
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: useMemo(
-      () => ({
-        name: userDetail?.name || '',
-        email: userDetail?.email || '',
-        phone: userDetail?.phone || '',
-        walletAddress: userDetail?.wallet || '',
-        gender: userDetail?.gender || Gender.UKNOWN,
-      }),
-      [userDetail],
-    ),
+    defaultValues: {
+      name: userDetail?.name || '',
+      email: userDetail?.email || '',
+      phone: userDetail?.phone || '',
+      walletAddress: userDetail?.wallet || '',
+      gender: userDetail?.gender,
+    },
   });
 
+  useEffect(() => {
+    form.reset({
+      name: userDetail?.name || '',
+      email: userDetail?.email || '',
+      phone: userDetail?.phone || '',
+      walletAddress: userDetail?.wallet || '',
+      gender: userDetail?.gender,
+    });
+  }, [form, userDetail]);
   const handleEditUser = async (data: any) => {
+    console.log(data);
     await updateUser.mutateAsync({
       payload: {
         ...data,
@@ -156,7 +164,7 @@ export default function EditProfile({ userDetail }: Iprops) {
                   <FormItem>
                     <Label>Gender</Label>
                     <Select
-                      onValueChange={(value) => field.onChange(value as Gender)}
+                      onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
@@ -181,7 +189,7 @@ export default function EditProfile({ userDetail }: Iprops) {
           </div>
 
           <div className="flex justify-end mt-3">
-            <Button type="submit">Update Profile</Button>
+            <Button>Update Profile</Button>
           </div>
         </div>
       </form>

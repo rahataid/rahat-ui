@@ -3,17 +3,13 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, Copy, CopyCheck } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { useCambodiaProjectSettings } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
-import { UUID } from 'crypto';
-import Link from 'next/link';
 export type Transaction = {
   id: string;
   topic: string;
@@ -24,11 +20,6 @@ export type Transaction = {
   processedBy: string;
 };
 export const useTableColumns = () => {
-  const { id } = useParams() as { id: UUID };
-  const { data: settings } = useCambodiaProjectSettings({
-    projectUUID: id,
-    name: 'EXPLORER_URL',
-  }) as any;
   const [copiedCells, setCopiedCells] = useState<string | null>(null);
 
   const clickToCopy = (value: string, rowIndex: number, columnKey: string) => {
@@ -117,58 +108,41 @@ export const useTableColumns = () => {
         return <div className="lowercase ml-4">{formattedDate}</div>;
       },
     },
-    // {
-    //   accessorKey: 'txHash',
-    //   header: 'TxHash',
-    //   cell: ({ row }) => {
-    //     const columnKey = 'txHash';
-    //     const cellKey = `${row.index}-${columnKey}`;
-    //     return (
-    //       <div className="lowercase">
-    //         {row.getValue('txHash') ? (
-    //           <TooltipProvider delayDuration={100}>
-    //             <Tooltip>
-    //               <TooltipTrigger
-    //                 className="flex gap-3 cursor-pointer"
-    //                 onClick={() =>
-    //                   clickToCopy(row.getValue('txHash'), row.index, columnKey)
-    //                 }
-    //               >
-    //                 <p>{truncateEthAddress(row.getValue('txHash'))}</p>
-    //                 {copiedCells === cellKey ? (
-    //                   <CopyCheck size={20} strokeWidth={1.5} />
-    //                 ) : (
-    //                   <Copy size={20} strokeWidth={1.5} />
-    //                 )}
-    //               </TooltipTrigger>
-    //               <TooltipContent className="bg-secondary" side="bottom">
-    //                 <p className="text-xs font-medium">
-    //                   {copiedCells === cellKey ? 'Copied' : 'Click to copy'}
-    //                 </p>
-    //               </TooltipContent>
-    //             </Tooltip>
-    //           </TooltipProvider>
-    //         ) : (
-    //           '-'
-    //         )}
-    //       </div>
-    //     );
-    //   },
-    // },
     {
-      id: 'actions',
-      header: 'Tx Details',
-      enableHiding: false,
+      accessorKey: 'txHash',
+      header: 'TxHash',
       cell: ({ row }) => {
+        const columnKey = 'txHash';
+        const cellKey = `${row.index}-${columnKey}`;
         return (
-          <Link
-            href={`${settings?.data?.value?.url}/tx/${row.original?.txHash}`}
-            target="_blank"
-          >
-            <Button className="flex items-center gap-2" variant={'ghost'}>
-              View
-            </Button>
-          </Link>
+          <div className="lowercase">
+            {row.getValue('txHash') ? (
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger
+                    className="flex gap-3 cursor-pointer"
+                    onClick={() =>
+                      clickToCopy(row.getValue('txHash'), row.index, columnKey)
+                    }
+                  >
+                    <p>{truncateEthAddress(row.getValue('txHash'))}</p>
+                    {copiedCells === cellKey ? (
+                      <CopyCheck size={20} strokeWidth={1.5} />
+                    ) : (
+                      <Copy size={20} strokeWidth={1.5} />
+                    )}
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-secondary" side="bottom">
+                    <p className="text-xs font-medium">
+                      {copiedCells === cellKey ? 'Copied' : 'Click to copy'}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              '-'
+            )}
+          </div>
         );
       },
     },

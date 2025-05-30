@@ -66,16 +66,6 @@ export default function SelectVendorMultiStepForm() {
   const getVendors = useProjectAction();
   const pagination = usePagination();
 
-  const { data: disbursmentList, isSuccess } = useFindAllDisbursements(
-    id as UUID,
-    {
-      hideAssignedBeneficiaries: true,
-    },
-  );
-  // const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID, {
-  //   disableSync: true,
-  // });
-
   const { data: benGroups } = useFindUnSyncedBeneficaryGroup(id as UUID, {
     page: 1,
     perPage: 100,
@@ -198,7 +188,6 @@ export default function SelectVendorMultiStepForm() {
   const handleSyncBen = async () => {
     setIsSyncing(true);
     const vendorId = stepData.vendor.id;
-    console.log(stepData.disbursements);
     let selectedDisbursementId = stepData.disbursements.map(
       (disbursement: any) => {
         return { id: disbursement.disbursmentId, phone: disbursement.phone };
@@ -335,6 +324,7 @@ export default function SelectVendorMultiStepForm() {
               handleStepDataChange={handleStepDataChange}
               stepData={stepData}
               pagination={pagination}
+              beneficiaryLoading={benData.isFetching}
             />
           )}
           {activeStep === 2 && (

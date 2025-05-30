@@ -6,6 +6,7 @@ import { Eye } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import GrievanceDetail from './grievance.detail';
+import { mapStatus } from '../const';
 // import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
 
 export const useGrievanceTableColumns = ({
@@ -94,7 +95,7 @@ export const useGrievanceTableColumns = ({
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <div> {row.getValue('status')}</div>,
+      cell: ({ row }) => <div> {mapStatus(row.getValue('status'))}</div>,
     },
 
     {

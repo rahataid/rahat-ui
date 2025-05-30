@@ -60,7 +60,7 @@ export default function AddActivities() {
   const searchParams = useSearchParams();
   const phaseId = searchParams.get('phaseId');
   const navPae = searchParams.get('nav');
-  console.log(navPae);
+  // console.log(navPae);
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const { data: users, isSuccess } = useUserList({
@@ -80,8 +80,6 @@ export default function AddActivities() {
     }[]
   >([]);
 
-  const activitiesListPath = `/projects/aa/${projectID}/activities`;
-
   const { categories, hazardTypes } = useActivitiesStore((state) => ({
     categories: state.categories,
     hazardTypes: state.hazardTypes,
@@ -100,7 +98,12 @@ export default function AddActivities() {
   const nextId = React.useRef(0);
 
   const [audioUploading, setAudioUploading] = React.useState<boolean>(false);
-
+  const activitiesListPath =
+    navPae === 'mainPage'
+      ? `/projects/aa/${projectID}/activities`
+      : `/projects/aa/${projectID}/activities/list/${phases
+          .find((p) => p.uuid === phaseId)
+          ?.name.toLowerCase()}`;
   useStakeholdersGroups(projectID as UUID, {
     page: 1,
     perPage: 100,
@@ -315,15 +318,7 @@ export default function AddActivities() {
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
         <div className="p-4">
           <div className=" mb-2 flex flex-col space-y-0">
-            <Back
-              path={
-                navPae === 'mainPage'
-                  ? `/projects/aa/${projectID}/activities`
-                  : `/projects/aa/${projectID}/activities/list/${phases
-                      .find((p) => p.uuid === phaseId)
-                      ?.name.toLowerCase()}`
-              }
-            />
+            <Back path={activitiesListPath} />
 
             <div className="mt-4 flex justify-between items-center">
               <div>

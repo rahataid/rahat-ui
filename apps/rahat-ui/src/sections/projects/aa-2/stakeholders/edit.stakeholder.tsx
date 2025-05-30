@@ -13,7 +13,7 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
-import { Heading } from 'apps/rahat-ui/src/common';
+import { HeaderWithBack, Heading } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
@@ -119,9 +119,10 @@ export default function EditStakeholders() {
   }
   return (
     <div className="p-4">
-      <Heading
-        title="Edit Stakeholder"
-        description="Edit the form below  to update a stakeholder"
+      <HeaderWithBack
+        title={'Edit Stakeholder'}
+        subtitle="Fill the form below  to create a new stakeholder"
+        path={routeNav}
       />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleEditStakeholders)}>

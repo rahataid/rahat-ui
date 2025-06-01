@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGroupsReservedFunds, usePagination } from '@rahat-ui/query';
 import {
+  ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -16,7 +17,10 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams, useSearchParams } from 'next/navigation';
-import { useFundManagementTableColumns } from '../columns/useFMColumns';
+import {
+  FundStatus,
+  useFundManagementTableColumns,
+} from '../columns/useFMColumns';
 
 export default function FundManagementList() {
   const params = useParams();
@@ -46,8 +50,19 @@ export default function FundManagementList() {
     React.useState<VisibilityState>({});
 
   const columns = useFundManagementTableColumns();
+  const tableData = React.useMemo(() => {
+    const statuses = Object.values(FundStatus);
+
+    return (
+      groupsFundsData?.response?.data?.map((item: any) => ({
+        ...item,
+        status: statuses[Math.floor(Math.random() * statuses.length)],
+      })) || []
+    );
+  }, [groupsFundsData?.response?.data]);
+
   const table = useReactTable({
-    data: groupsFundsData?.response?.data || [],
+    data: tableData,
     columns,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),

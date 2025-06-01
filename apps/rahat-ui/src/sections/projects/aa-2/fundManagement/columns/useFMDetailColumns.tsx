@@ -5,12 +5,12 @@ import { useParams, useRouter } from 'next/navigation';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 
 export const useFMDetailTableColumns = () => {
-  const { id } = useParams();
+  const { id, fundId } = useParams();
   const router = useRouter();
   const { clickToCopy, copyAction } = useCopy();
   const handleViewClick = (fmId: string) => {
     console.log('benefwallet', fmId);
-    router.push(`/projects/aa/${id}/beneficiary/${fmId}`);
+    router.push(`/projects/aa/${id}/beneficiary/${fmId}?fundId=${fundId}`);
   };
   const columns: ColumnDef<any>[] = [
     {

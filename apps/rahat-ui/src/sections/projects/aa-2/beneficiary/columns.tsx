@@ -84,7 +84,7 @@ export const useProjectBeneficiaryTableColumns = () => {
 
 export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
   const router = useRouter();
-  const { id } = useParams();
+  const { id, groupId } = useParams();
 
   const { clickToCopy, copyAction } = useCopy();
 
@@ -125,6 +125,8 @@ export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
       header: 'Action',
       enableHiding: false,
       cell: ({ row }) => {
+        console.log(row);
+
         return (
           <div className="flex items-center gap-2">
             <Eye
@@ -133,7 +135,7 @@ export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
               strokeWidth={1.5}
               onClick={() =>
                 router.push(
-                  `/projects/aa/${id}/beneficiary/${row.original.uuid}`,
+                  `/projects/aa/${id}/beneficiary/${row?.original?.benefId}?groupId=${groupId}`,
                 )
               }
             />

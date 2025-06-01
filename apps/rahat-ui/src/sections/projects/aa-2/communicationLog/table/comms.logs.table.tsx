@@ -23,7 +23,7 @@ export default function CommsLogsTable({
     <>
       <div className="mt-1">
         <TableComponent>
-          <ScrollArea className="h-[calc(100vh-450px)]">
+          <ScrollArea className="h-[calc(400px)]">
             <TableHeader className="top-0 sticky bg-gray-100">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>

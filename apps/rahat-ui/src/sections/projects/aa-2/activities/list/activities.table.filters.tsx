@@ -83,7 +83,11 @@ export default function ActivitiesTableFilters({
             <SelectItem value="all">All Status</SelectItem>
             {statusList.map((status) => (
               <SelectItem key={status} value={status}>
-                {status}
+                {status
+                  .toLowerCase()
+                  .split('_')
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(' ')}
               </SelectItem>
             ))}
           </SelectGroup>

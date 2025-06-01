@@ -76,7 +76,7 @@ export const useProjectStakeholdersTableColumns = () => {
               handleClick={() =>
                 setTimeout(() => {
                   router.push(
-                    `/projects/aa/${id}/stakeholders/${row.original.uuid}/edit`,
+                    `/projects/aa/${id}/stakeholders/${row.original.uuid}/edit?from="listPage"`,
                   );
                 }, 500)
               }
@@ -115,7 +115,7 @@ export const useProjectStakeholdersTableColumns = () => {
 
 export const useProjectStakeholdersGroupTableColumns = () => {
   const router = useRouter();
-  const { id } = useParams();
+  const { id, groupId } = useParams();
 
   const columns: ColumnDef<any>[] = [
     {
@@ -169,7 +169,7 @@ export const useProjectStakeholdersGroupTableColumns = () => {
               strokeWidth={1.5}
               onClick={() =>
                 router.push(
-                  `/projects/aa/${id}/stakeholders/${row.original.uuid}`,
+                  `/projects/aa/${id}/stakeholders/${row.original.uuid}?groupId=${groupId}`,
                 )
               }
             />

@@ -48,7 +48,7 @@ import {
 } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 import AddCommunicationForm from './add.communication.form';
@@ -59,7 +59,8 @@ export default function AddActivities() {
   const { id: projectID } = useParams();
   const searchParams = useSearchParams();
   const phaseId = searchParams.get('phaseId');
-
+  const navPae = searchParams.get('nav');
+  // console.log(navPae);
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const { data: users, isSuccess } = useUserList({
@@ -79,8 +80,6 @@ export default function AddActivities() {
     }[]
   >([]);
 
-  const activitiesListPath = `/projects/aa/${projectID}/activities`;
-
   const { categories, hazardTypes } = useActivitiesStore((state) => ({
     categories: state.categories,
     hazardTypes: state.hazardTypes,
@@ -99,7 +98,12 @@ export default function AddActivities() {
   const nextId = React.useRef(0);
 
   const [audioUploading, setAudioUploading] = React.useState<boolean>(false);
-
+  const activitiesListPath =
+    navPae === 'mainPage'
+      ? `/projects/aa/${projectID}/activities`
+      : `/projects/aa/${projectID}/activities/list/${phases
+          .find((p) => p.uuid === phaseId)
+          ?.name.toLowerCase()}`;
   useStakeholdersGroups(projectID as UUID, {
     page: 1,
     perPage: 100,
@@ -308,12 +312,13 @@ export default function AddActivities() {
       setDocuments([]);
     }
   };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
         <div className="p-4">
           <div className=" mb-2 flex flex-col space-y-0">
-            <Back path={`/projects/aa/${projectID}/activities`} />
+            <Back path={activitiesListPath} />
 
             <div className="mt-4 flex justify-between items-center">
               <div>
@@ -330,7 +335,7 @@ export default function AddActivities() {
                     variant="outline"
                     className="w-36"
                     onClick={() => {
-                      router.push(activitiesListPath);
+                      form.reset();
                     }}
                   >
                     Cancel

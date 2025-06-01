@@ -36,7 +36,7 @@ export default function CommunicationList({
   loading,
 }: CommunicationList) {
   return (
-    <div className="border px-4 pt-2 rounded-xl h-[calc(100vh-200px)]">
+    <div className="border px-4 pt-2 rounded-xl ">
       <div className="mb-4 flex items-center justify-between ">
         <div>
           <h1 className="text-xl font-semibold text-gray-900">
@@ -64,7 +64,7 @@ export default function CommunicationList({
 
         <TabsContent value="communications">
           {loading && <SpinnerLoader />}
-          <div className="overflow-y-auto  scrollbar-hidden h-[calc(100vh-320px)] ">
+          <div className="overflow-y-auto  scrollbar-hidden xl:h-[calc(100vh-320px)] h-[calc(100vh-200px)]   ">
             {activityCommunication
               ?.filter(
                 (d) =>
@@ -78,7 +78,7 @@ export default function CommunicationList({
 
         <TabsContent value="history">
           {loading && <SpinnerLoader />}
-          <div className="overflow-y-auto  scrollbar-hidden h-[calc(100vh-320px)] ">
+          <div className="overflow-y-auto  scrollbar-hidden xl:h-[calc(100vh-320px)]  h-[calc(100vh-200px)]  ">
             {activityCommunication
               ?.filter((d) => d.sessionStatus === 'COMPLETED')
               .map((comm, index) => (

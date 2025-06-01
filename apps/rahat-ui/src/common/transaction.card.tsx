@@ -25,7 +25,7 @@ export function TransactionCard({
         titleStyle="text-sm/6 text-muted-foreground font-semibold"
         description={cardDesc}
       />
-      <ScrollArea className="p-3 h-[calc(100vh-570px)]">
+      <ScrollArea className="h-[calc(340px)] scrollbar-hidden">
         {loading ? (
           <div className="space-y-4">
             {Array.from({ length: 4 }).map((_, index) => (
@@ -48,12 +48,12 @@ export function TransactionCard({
             ))}
           </div>
         ) : cardData?.length ? (
-          <div className="flex flex-col space-y-2">
+          <div className="px-3 pt-3 flex flex-col space-y-2">
             {cardData.map((i) => (
               <a
                 key={i.title}
                 href={`https://stellar.expert/explorer/testnet/tx/${i.hash}`}
-                target='_blank'
+                target="_blank"
                 className="flex justify-between space-x-4 items-center group"
               >
                 <div className="flex space-x-4 items-center">
@@ -61,9 +61,15 @@ export function TransactionCard({
                     <ArrowLeftRight />
                   </div>
                   <div>
-                    <p className="text-sm/6 font-medium group-hover:underline group-hover:underline-offset-2">{i.title}</p>
-                    <p className="text-sm/4 text-gray-500 group-hover:underline group-hover:underline-offset-2">{i.subTitle}</p>
-                    <p className="text-sm/4 text-muted-foreground group-hover:underline group-hover:underline-offset-2">{i.date}</p>
+                    <p className="text-sm/6 font-medium group-hover:underline group-hover:underline-offset-2">
+                      {i.title}
+                    </p>
+                    <p className="text-sm/4 text-gray-500 group-hover:underline group-hover:underline-offset-2">
+                      {i.subTitle}
+                    </p>
+                    <p className="text-sm/4 text-muted-foreground group-hover:underline group-hover:underline-offset-2">
+                      {i.date}
+                    </p>
                   </div>
                 </div>
                 <div>

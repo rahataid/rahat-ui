@@ -71,7 +71,9 @@ export default function ActivitiesView() {
           <IconLabelBtn
             Icon={Plus}
             handleClick={() =>
-              router.push(`/projects/aa/${projectID}/activities/add`)
+              router.push(
+                `/projects/aa/${projectID}/activities/add?nav=mainPage`,
+              )
             }
             name="Add Activity"
             variant="default"

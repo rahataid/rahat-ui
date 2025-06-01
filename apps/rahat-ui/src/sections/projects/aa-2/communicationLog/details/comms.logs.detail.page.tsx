@@ -47,7 +47,8 @@ import {
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import CommsLogsTable from '../table/comms.logs.table';
 import CardSkeleton from 'apps/rahat-ui/src/common/cardSkeleton';
-
+import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
+import * as XLSX from 'xlsx';
 type IHeadCardProps = {
   title: string;
   icon: LucideIcon;
@@ -83,7 +84,7 @@ export default function CommsLogsDetailPage() {
   const { data: activityDetail, isLoading: isLoadingActivity } =
     useSingleActivity(projectID as UUID, activityId);
   const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
-    useListSessionLogs(sessionId, { pagination, filters });
+    useListSessionLogs(sessionId, { ...pagination, ...filters });
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
 
@@ -98,10 +99,12 @@ export default function CommsLogsDetailPage() {
   };
 
   const failedCount = useMemo(() => {
-    return logs?.sessionLogs?.filter(
-      (log: any) => log?.status === BroadcastStatus.FAIL,
-    )?.length;
-  }, [logs]);
+    return (
+      sessionLogs?.httpReponse?.data?.data?.filter(
+        (log: any) => log?.status === BroadcastStatus.SUCCESS,
+      ) ?? []
+    );
+  }, [sessionLogs]);
 
   const logsGroupName = useMemo(() => {
     if (logs?.groupName.length > 20) {
@@ -138,13 +141,25 @@ export default function CommsLogsDetailPage() {
     });
   };
 
-  const onFailedExports = () => {};
-
-  console.log(
-    sessionLogs?.httpReponse?.data?.data?.filter(
+  const onFailedExports = () => {
+    const logs = sessionLogs?.httpReponse?.data?.data?.filter(
       (log: any) => log?.status === BroadcastStatus.FAIL,
-    ),
-  );
+    );
+
+    if (!logs?.length) return;
+
+    const rowsToDownload = logs || [];
+    const workbook = XLSX.utils.book_new();
+    const worksheetData = rowsToDownload?.map((log: any) => ({
+      Address: log.address,
+      Status: log.status,
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');
+
+    XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
+  };
+
   // if (isLoading || isLoadingSessionLogs) {
   //   return <Loader />;
   // }
@@ -167,6 +182,7 @@ export default function CommsLogsDetailPage() {
               variant="outline"
               className=" gap-2"
               onClick={onFailedExports}
+              disabled={failedCount.length === 0}
             >
               Failed Exports
               <CloudDownload className="h-4 w-4" />
@@ -178,7 +194,17 @@ export default function CommsLogsDetailPage() {
             <Card className="p-4 rounded-sm bg-white">
               <CardTitle className="flex gap-2 pb-2">
                 <Badge>{activityDetail?.phase?.name}</Badge>
-                <Badge>{activityDetail?.status}</Badge>
+                <Badge
+                  className={`rounded-xl capitalize text-xs font-normal ${getStatusBg(
+                    activityDetail?.status,
+                  )}`}
+                >
+                  {activityDetail?.status
+                    .toLowerCase()
+                    .split('_')
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ')}
+                </Badge>
               </CardTitle>
               <CardContent className="pl-1 pb-1 text-xl font-semibold ">
                 {activityDetail?.title}
@@ -195,7 +221,9 @@ export default function CommsLogsDetailPage() {
                 {/* Beneficiary Group */}
                 <div className="space-y-1">
                   <p className="text-sm text-gray-500">
-                    {logs?.communicationDetail?.groupType || 'N/A'}
+                    {logs?.communicationDetail?.groupType
+                      ? logs?.communicationDetail?.groupType + ' ' + 'GROUP'
+                      : 'N/A'}
                   </p>
                   <p className="font-medium">{logsGroupName}</p>
                 </div>

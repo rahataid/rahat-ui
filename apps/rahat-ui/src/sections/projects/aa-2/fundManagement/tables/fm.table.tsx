@@ -18,7 +18,6 @@ import {
 import { UUID } from 'crypto';
 import { useParams, useSearchParams } from 'next/navigation';
 import {
-  FundStatus,
   useFundManagementTableColumns,
 } from '../columns/useFMColumns';
 
@@ -50,19 +49,9 @@ export default function FundManagementList() {
     React.useState<VisibilityState>({});
 
   const columns = useFundManagementTableColumns();
-  const tableData = React.useMemo(() => {
-    const statuses = Object.values(FundStatus);
-
-    return (
-      groupsFundsData?.response?.data?.map((item: any) => ({
-        ...item,
-        status: statuses[Math.floor(Math.random() * statuses.length)],
-      })) || []
-    );
-  }, [groupsFundsData?.response?.data]);
 
   const table = useReactTable({
-    data: tableData,
+    data: groupsFundsData?.response?.data || [],
     columns,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),

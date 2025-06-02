@@ -34,10 +34,13 @@ export const useFundManagementTableColumns = () => {
     if (status === FundStatus.DISBURSED) {
       return 'bg-green-100 text-green-500';
     }
+    if (status === FundStatus.STARTED) {
+      return 'bg-blue-100 text-blue-500';
+    }
     return 'bg-gray-200';
   }
 
-  const columns: ColumnDef<IFundManagement>[] = [
+  const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'title',
       accessorFn: (row) => row?.title,
@@ -84,7 +87,7 @@ export const useFundManagementTableColumns = () => {
                     </span>
                   </div>
                   <p className="text-gray-500 text-sm mt-1">
-                    This transaction couldn't process because of the reason
+                    {row.original?.info?.error ?? 'Something went wrong!!'}
                   </p>
                 </TooltipContent>
               </Tooltip>

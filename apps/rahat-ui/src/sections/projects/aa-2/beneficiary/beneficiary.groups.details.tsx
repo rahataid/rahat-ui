@@ -39,11 +39,13 @@ const BeneficiaryGroupsDetails = (props: Props) => {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+  console.log(groupDetails?.groupedBeneficiaries);
   const tableData = React.useMemo(() => {
     if (groupDetails) {
       return groupDetails?.groupedBeneficiaries?.map((d: any) => ({
         walletAddress: d?.Beneficiary?.walletAddress,
         name: d?.Beneficiary?.pii?.name,
+        benefId: d?.beneficiaryId,
       }));
     } else return [];
   }, [groupDetails]);

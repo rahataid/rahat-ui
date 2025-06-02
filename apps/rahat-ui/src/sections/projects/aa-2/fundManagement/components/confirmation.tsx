@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from 'libs/shadcn/src/components/ui/button';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { UserRound } from 'lucide-react';
-import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import { HeaderWithBack, NoResult } from 'apps/rahat-ui/src/common';
 import {
   useFundAssignmentStore,
   useGetBeneficiaryGroup,
@@ -22,8 +22,6 @@ export default function Confirmation() {
   const { data: group } = useGetBeneficiaryGroup(
     reserveTokenPayload.beneficiaryGroupId,
   );
-
-  console.log(reserveTokenPayload);
 
   const reserveTokenForGroups = useReserveTokenForGroups();
   const cardData = [
@@ -85,20 +83,24 @@ export default function Confirmation() {
         </div>
         <div className="p-4 rounded-md bg-gray-50">
           <p className="font-semibold text-lg mb-4">Beneficiaries List</p>
-          <ScrollArea className="h-[calc(100vh-700px)] pr-4">
+          <ScrollArea className="h-[calc(300px)] pr-4">
             <div className="flex flex-col space-y-4">
-              {benefData?.map((i) => (
-                <div
-                  key={i.label}
-                  className="flex justify-between items-center space-x-4"
-                >
-                  <div className="font-medium text-sm/6 flex space-x-2 items-center">
-                    <UserRound />
-                    <p>{i.label}</p>
+              {benefData?.length > 0 ? (
+                benefData?.map((i) => (
+                  <div
+                    key={i.label}
+                    className="flex justify-between items-center space-x-4"
+                  >
+                    <div className="font-medium text-sm/6 flex space-x-2 items-center">
+                      <UserRound />
+                      <p>{i.label}</p>
+                    </div>
+                    <p>+ {i.value}</p>
                   </div>
-                  <p>{i.value}</p>
-                </div>
-              ))}
+                ))
+              ) : (
+                <NoResult message="No Beneficiary found" />
+              )}
             </div>
           </ScrollArea>
         </div>

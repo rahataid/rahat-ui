@@ -14,7 +14,7 @@ import {
 import { UUID } from 'crypto';
 import { Users } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 const BeneficiaryGroups = () => {
   const { id } = useParams();
@@ -49,6 +49,11 @@ const BeneficiaryGroups = () => {
     },
     [filters],
   );
+  React.useEffect(() => {
+    if (searchParams.get('tab') === 'beneficiaryGroups') {
+      setFilters({});
+    }
+  }, [searchParams]);
   return (
     <>
       <div className="p-4 rounded-sm border">

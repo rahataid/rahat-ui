@@ -138,7 +138,7 @@ export default function ActivitiesList() {
         Title: item.title || 'N/A',
         'Early Action': item.category || 'N/A',
         Phase: item.phase || 'N/A',
-        Type: item.isAutomated ? 'Automated' : 'Manual' || 'N/A',
+        Type: item.isAutomated ? 'Automated' : 'Manual',
         Responsibility: item.responsibility,
         'Responsible Station': item.source || 'N/A',
         Status: item.status || 'N/A',

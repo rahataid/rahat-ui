@@ -1,13 +1,14 @@
 import React from 'react';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 export const useVendorsTransactionTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'topic',
       header: 'Topic',
-      cell: ({ row }) => <div>{row.getValue('topic')}</div>,
+      cell: ({ row }) => <div>{row.original?.transactionType}</div>,
     },
     {
       accessorKey: 'txHash',
@@ -19,15 +20,23 @@ export const useVendorsTransactionTableColumns = () => {
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <div>{row.getValue('status')}</div>,
+      cell: ({ row }) => (
+        <Badge
+          className={
+            row.original?.fspId === null ? 'bg-red-500 ' : 'bg-green-500'
+          }
+        >
+          {row.original?.fspId === null ? 'Offline' : 'Online'}
+        </Badge>
+      ),
     },
     {
       accessorKey: 'timeStamp',
       header: 'Timestamp',
       cell: ({ row }) => (
         <div>
-          {row?.original?.timeStamp
-            ? new Date(row?.original?.timeStamp).toLocaleString()
+          {row?.original?.createdAt
+            ? new Date(row?.original?.createdAt).toLocaleString()
             : ''}
         </div>
       ),

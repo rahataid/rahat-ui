@@ -28,12 +28,20 @@ const Transaction = ({ amount, date, hash }: Txn) => {
           <ArrowLeftRight size={16} />
         </div>
         <div>
-          <div
-            className="flex gap-1"
-            onClick={() => clickToCopy(hash || '', 1)}
-          >
-            <p className="text-sm font-medium truncate w-24">{hash}</p>
-            {copyAction === 1 ? <CopyCheck size={16} /> : <Copy size={16} />}
+          <div className="flex gap-1">
+            <a
+              target="_blank"
+              href={`https://stellar.expert/explorer/testnet/tx/${hash}`}
+              className="cursor-pointer"
+            >
+              <p className="text-sm font-medium truncate w-24">{hash}</p>
+            </a>
+            <span
+              onClick={() => clickToCopy(hash || '', 1)}
+              className="cursor-pointer"
+            >
+              {copyAction === 1 ? <CopyCheck size={16} /> : <Copy size={16} />}
+            </span>
           </div>
           <p className="text-sm text-muted-foreground">
             {date

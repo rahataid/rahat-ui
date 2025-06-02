@@ -7,25 +7,38 @@ import {
 import { useVendorsTransactionTableColumns } from '../columns/useTransactionColumns';
 import {
   ClientSidePagination,
+  CustomPagination,
   DemoTable,
   Heading,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
+import { useGetTxnRedemptionRequestList, usePagination } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
 
-export default function VendorsTransactionsHistory({
-  tableData,
-  loading,
-}: {
-  tableData: any;
-  loading?: boolean;
-}) {
+export default function VendorsTransactionsHistory() {
+  const { id, vendorId } = useParams();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  const {
+    filters,
+    setFilters,
+    pagination,
+    setPagination,
+    setNextPage,
+    setPerPage,
+    setPrevPage,
+  } = usePagination();
 
+  const { data: txnTable, isLoading } = useGetTxnRedemptionRequestList({
+    projectUUID: id,
+    uuid: vendorId,
+    ...pagination,
+    ...filters,
+  });
   const columns = useVendorsTransactionTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: tableData || [],
+    data: txnTable?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -33,27 +46,61 @@ export default function VendorsTransactionsHistory({
       columnVisibility,
     },
   });
+  const handleSearch = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
+      const value = event?.target?.value ?? '';
+      setFilters({ ...filters, [key]: value });
+    },
+    [filters],
+  );
+  console.log(txnTable?.response?.meta);
   return (
-    <div className="">
+    <div className=" space-y-1">
       <Heading
         title="Transaction History"
         titleStyle="text-lg"
         description="List of all the transactions made"
       />
+      {/* <SearchInput
+        name="txHash"
+        className="w-full"
+        value={
+          (table.getColumn('txHash')?.getFilterValue() as string) ??
+          filters?.txHash
+        }
+        onSearch={(event) => handleFilterChange(event)}
+      />
+       */}
       <SearchInput
         className="w-full"
-        name=""
-        value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-        onSearch={(event) =>
-          table.getColumn('name')?.setFilterValue(event.target.value)
-        }
+        name="transaction hash"
+        onSearch={(e) => handleSearch(e, 'txHash')}
+        value={filters?.txHash || ''}
       />
       <DemoTable
         table={table}
-        tableHeight={'h-[calc(100vh-380px)]'}
-        loading={loading}
+        tableHeight={'h-[calc(500px)]'}
+        loading={isLoading}
       />
-      <ClientSidePagination table={table} />
+      <CustomPagination
+        currentPage={pagination.page}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        setPagination={setPagination}
+        meta={
+          (txnTable?.response?.meta as any) || {
+            total: 0,
+            lastPage: 0,
+            currentPage: 0,
+            perPage: 0,
+            prev: null,
+            next: null,
+          }
+        }
+        perPage={pagination?.perPage}
+        total={txnTable?.response?.meta?.total || 0}
+      />
     </div>
   );
 }

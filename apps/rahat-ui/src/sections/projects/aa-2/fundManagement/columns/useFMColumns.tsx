@@ -70,32 +70,9 @@ export const useFundManagementTableColumns = () => {
       cell: ({ row }) => {
         const status = row.getValue('status') as FundStatus;
 
-        const badge = (
+        return (
           <Badge className={renderBadgeStyle(status)}>{status || 'N/A'}</Badge>
         );
-
-        if (status === FundStatus.FAILED || status === FundStatus.ERROR) {
-          return (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>{badge}</TooltipTrigger>
-                <TooltipContent className="rounded-sm w-64">
-                  <div className="flex space-x-2 items-center">
-                    <TriangleAlert size={16} strokeWidth={1.5} color="red" />
-                    <span className="font-semibold text-sm/6">
-                      Transaction Failed
-                    </span>
-                  </div>
-                  <p className="text-gray-500 text-sm mt-1">
-                    {row.original?.info?.error ?? 'Something went wrong!!'}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          );
-        }
-
-        return badge;
       },
     },
     {
@@ -113,7 +90,24 @@ export const useFundManagementTableColumns = () => {
               onClick={() => handleViewClick(row.original.uuid)}
             />
             {(status === FundStatus.FAILED || status === FundStatus.ERROR) && (
-              <TriangleAlert size={16} strokeWidth={1.5} color="red" />
+              <TooltipProvider delayDuration={200}>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <TriangleAlert size={16} strokeWidth={1.5} color="red" />
+                  </TooltipTrigger>
+                  <TooltipContent side="left" className="rounded-sm w-64">
+                    <div className="flex space-x-2 items-center">
+                      <TriangleAlert size={16} strokeWidth={1.5} color="red" />
+                      <span className="font-semibold text-sm/6">
+                        Transaction Failed
+                      </span>
+                    </div>
+                    <p className="text-gray-500 text-sm mt-1">
+                      {row.original?.info?.error ?? 'Something went wrong!!'}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
           </div>
         );

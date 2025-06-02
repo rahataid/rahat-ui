@@ -50,8 +50,8 @@ export default function TokensOverview() {
           chart={{
             colors: ['#F4A462', '#2A9D90'],
             series: [
-              { label: 'Redemeed', value: 5 },
-              { label: 'Not Redemeed', value: 4 },
+              { label: 'Redemeed', value: 0 },
+              { label: 'Not Redemeed', value: 0 },
             ],
           }}
           height={360}
@@ -59,7 +59,7 @@ export default function TokensOverview() {
         <BarChart
           custom
           title="Total tokens redeemed"
-          series={['10', '5', '30', '7']}
+          series={['0', '0', '0', '0']}
           categories={['Week 1', 'Week 2', 'Week 3', 'Week 4']}
           yaxisLabels={false}
           height={374}

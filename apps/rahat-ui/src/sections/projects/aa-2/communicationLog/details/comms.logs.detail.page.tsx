@@ -101,7 +101,7 @@ export default function CommsLogsDetailPage() {
   const failedCount = useMemo(() => {
     return (
       sessionLogs?.httpReponse?.data?.data?.filter(
-        (log: any) => log?.status === BroadcastStatus.SUCCESS,
+        (log: any) => log?.status === BroadcastStatus.FAIL,
       ) ?? []
     );
   }, [sessionLogs]);

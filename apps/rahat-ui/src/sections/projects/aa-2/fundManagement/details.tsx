@@ -31,11 +31,10 @@ export default function FundManagementDetail() {
     projectID as UUID,
     fundId,
   );
-  console.log('fund', data);
   const FMTokensData = [
     {
       name: 'Tokens',
-      amount: data?.numberOfTokens * data?.groupedBeneficiaries?.length || 0,
+      amount: data?.numberOfTokens || 'N/A',
     },
     {
       name: 'Total Beneficiaries',

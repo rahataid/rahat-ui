@@ -17,7 +17,9 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams, useSearchParams } from 'next/navigation';
-import { useFundManagementTableColumns } from '../columns/useFMColumns';
+import {
+  useFundManagementTableColumns,
+} from '../columns/useFMColumns';
 
 export default function FundManagementList() {
   const params = useParams();
@@ -47,6 +49,7 @@ export default function FundManagementList() {
     React.useState<VisibilityState>({});
 
   const columns = useFundManagementTableColumns();
+
   const table = useReactTable({
     data: groupsFundsData?.response?.data || [],
     columns,

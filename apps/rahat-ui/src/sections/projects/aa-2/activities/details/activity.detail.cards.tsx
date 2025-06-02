@@ -8,6 +8,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
+import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 type ActivityDetailCardsProps = {
   activityDetail?: any;
   loading?: boolean;
@@ -40,7 +41,7 @@ export default function ActivityDetailCards({
     </div>;
   }
   return (
-    <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 h-[calc(29vh)] w-full">
+    <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200  w-full">
       {loading ? (
         <SpinnerLoader />
       ) : (
@@ -55,15 +56,24 @@ export default function ActivityDetailCards({
             <span className="bg-gray-100 text-gray-700 text-xs font-normal px-2 py-1 rounded-sm">
               {activityDetail?.category?.name}
             </span>
-            <span className="ml-auto bg-gray-100 text-gray-700 text-xs font-normal px-2 py-1 rounded-sm">
-              {activityDetail?.status}
+            {/* getStatusBg(status) */}
+            <span
+              className={`ml-auto ${getStatusBg(
+                activityDetail?.status,
+              )} text-xs font-normal px-2 py-1 rounded-sm`}
+            >
+              {activityDetail?.status
+                .toLowerCase()
+                .split('_')
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ')}
             </span>
           </div>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild className="hover:cursor-pointer py-0">
-                <h3 className="text-lg font-semibold text-gray-900 leading-tight truncate ">
-                  {activityDetail?.title}...
+                <h3 className="text-lg font-semibold text-gray-900 leading-tight truncate w-[420px]">
+                  {activityDetail?.title}
                 </h3>
               </TooltipTrigger>
               <TooltipContent

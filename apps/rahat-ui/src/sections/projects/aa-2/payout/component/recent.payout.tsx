@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import RecentPaymentCard from './recent.payment.card';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
+import { NoResult } from 'apps/rahat-ui/src/common';
 
 const RecentPayout = () => {
   const { id } = useParams();
@@ -32,7 +33,7 @@ const RecentPayout = () => {
       </div>
 
       <div className="h-[calc(100vh-400px)] overflow-y-scroll overflow-x-hidden scrollbar-hidden">
-        {recentPayments.map((payment, index) => (
+        {/* {recentPayments.map((payment, index) => (
           <div key={payment.id}>
             <RecentPaymentCard
               beneficiaryGroupName={payment.beneficiaryGroupName}
@@ -48,7 +49,8 @@ const RecentPayout = () => {
               <Separator className="mt-2 mb-2" />
             )}
           </div>
-        ))}
+        ))} */}
+        <NoResult message="No Transaction made" />
       </div>
     </>
   );

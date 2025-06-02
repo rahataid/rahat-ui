@@ -20,7 +20,7 @@ export default function TokensOverview() {
         description="Overview of your tokens"
       />
       {!isLoading ? (
-        <div className="grid xl:grid-cols-4  md:grid-cols-2 grid-cols-1 gap-4 mb-4">
+        <div className="grid xl:grid-cols-5  lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
           {data?.data?.tokenStats.map((i: any) => (
             <DataCard
               key={i.name}
@@ -29,11 +29,15 @@ export default function TokensOverview() {
               number={i.amount}
             />
           ))}
-          <a target='_blank' href={`https://stellar.expert/explorer/testnet/asset/RAHAT-GCVLRQHGZYG32HZE3PKZ52NX5YFCNFDBUZDLUXQYMRS6WVBWSUOP5IYE-2`} className='cursor-pointer'>
+          <a
+            target="_blank"
+            href={`https://stellar.expert/explorer/testnet/asset/RAHAT-GCVLRQHGZYG32HZE3PKZ52NX5YFCNFDBUZDLUXQYMRS6WVBWSUOP5IYE-2`}
+            className="cursor-pointer"
+          >
             <DataCard
-                className="rounded-sm "
-                title={"Token"}
-                number={"Rahat"}
+              className="rounded-sm "
+              title={'Token'}
+              number={'Rahat'}
             />
           </a>
         </div>
@@ -46,8 +50,8 @@ export default function TokensOverview() {
           chart={{
             colors: ['#F4A462', '#2A9D90'],
             series: [
-              { label: 'Redemeed', value: 5 },
-              { label: 'Not Redemeed', value: 4 },
+              { label: 'Redemeed', value: 0 },
+              { label: 'Not Redemeed', value: 0 },
             ],
           }}
           height={360}
@@ -55,7 +59,7 @@ export default function TokensOverview() {
         <BarChart
           custom
           title="Total tokens redeemed"
-          series={['10', '5', '30', '7']}
+          series={['0', '0', '0', '0']}
           categories={['Week 1', 'Week 2', 'Week 3', 'Week 4']}
           yaxisLabels={false}
           height={374}

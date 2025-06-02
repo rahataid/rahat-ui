@@ -25,6 +25,7 @@ import { useActivitiesHavingComms, usePagination } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import useCommsActivitiesTableColumns from './useCommsActivitesTableColumns';
 import {
+  ClientSidePagination,
   CustomPagination,
   NoResult,
   SearchInput,
@@ -105,7 +106,7 @@ export default function CommsActivitiesTable() {
             }
             value={filters?.phase || ''}
           />
-          <SelectComponent
+          {/* <SelectComponent
             name="Status"
             options={[
               'ALL',
@@ -120,7 +121,7 @@ export default function CommsActivitiesTable() {
               })
             }
             value={filters?.status || ''}
-          />
+          /> */}
         </div>
         <div className="mt-1 bg-card border rounded">
           <ScrollArea className="h-[calc(100vh-430px)]">
@@ -174,6 +175,7 @@ export default function CommsActivitiesTable() {
             </Table>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
+
           <CustomPagination
             meta={
               activitiesMeta || {
@@ -187,11 +189,13 @@ export default function CommsActivitiesTable() {
             }
             handleNextPage={setNextPage}
             handlePrevPage={setPrevPage}
+            setPagination={setPagination}
             handlePageSizeChange={setPerPage}
             currentPage={pagination.page}
             perPage={pagination.perPage}
             total={activitiesMeta?.lastPage || 0}
           />
+          {/* <ClientSidePagination table={table} /> */}
         </div>
       </>
     </div>

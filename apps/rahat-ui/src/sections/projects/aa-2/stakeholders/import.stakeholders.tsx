@@ -50,10 +50,18 @@ export default function ImportStakeholder() {
   const hasEmptyRequiredFields = () => {
     if (data.length < 2) return true; // Only header, no data
 
+    // return data
+    //   .slice(1)
+    //   .some((row) =>
+    //     row.some((cell) => cell === '' || cell === null || cell === undefined),
+    //   );
     return data
       .slice(1)
       .some((row) =>
-        row.some((cell) => cell === '' || cell === null || cell === undefined),
+        row.some(
+          (cell, index) =>
+            index !== 6 && (!cell || cell.toString().trim() === ''),
+        ),
       );
   };
 
@@ -109,6 +117,12 @@ export default function ImportStakeholder() {
     },
   });
 
+  const allowedExtensions: { [key: string]: string } = {
+    xlsx: 'excel',
+    xls: 'excel',
+    json: 'json',
+    csv: 'csv',
+  };
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     setDuplicatePhonesFromServer(new Set());
@@ -117,6 +131,15 @@ export default function ImportStakeholder() {
     setSelectedFile(file || null);
 
     setFileName(file?.name as string);
+    const extension = file?.name.split('.').pop()?.toLowerCase();
+    if (
+      !extension ||
+      !Object.prototype.hasOwnProperty.call(allowedExtensions, extension)
+    ) {
+      return toast.error(
+        'Unsupported file format. Please upload an Excel, JSON, or CSV file.',
+      );
+    }
     if (file) {
       const reader = new FileReader();
       reader.onload = (evt) => {
@@ -146,6 +169,9 @@ export default function ImportStakeholder() {
           return newRow;
         });
 
+        if (normalizedData.length === 1) {
+          return toast.error('No Stakeholder found in excel file');
+        }
         if (normalizedData.length > 100)
           return toast.error(
             'Maximum 100 stakeholders can be uploaded at a time',
@@ -157,18 +183,8 @@ export default function ImportStakeholder() {
       setSelectedFile(file);
     }
   };
-  const allowedExtensions: { [key: string]: string } = {
-    xlsx: 'excel',
-    xls: 'excel',
-    json: 'json',
-    csv: 'csv',
-  };
 
   const handleUpload = async () => {
-    if (data?.length === 1) {
-      await Swal.fire('No Stakeholder found in excel file');
-      return;
-    }
     if (!selectedFile) return toast.error('Please select a file to upload');
 
     // Determine doctype based on file extension
@@ -230,7 +246,6 @@ export default function ImportStakeholder() {
       toast.error('Fill all required fields first');
     }
   }, [data]);
-  console.log(selectedFile);
 
   return (
     <>

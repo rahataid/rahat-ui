@@ -19,7 +19,7 @@ export default function TriggerStatementView() {
   usePhases(projectId);
   const phases = usePhasesStore((state) => state.phases);
 
-  useAATriggerStatements(projectId, {});
+  useAATriggerStatements(projectId, { perPage: 9999 });
   const triggers = useAAStationsStore((state) => state.triggers);
 
   const triggeredTriggers = React.useMemo(

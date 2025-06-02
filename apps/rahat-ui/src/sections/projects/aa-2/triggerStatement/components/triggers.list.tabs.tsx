@@ -19,31 +19,31 @@ type IProps = {
 };
 
 export default function TriggersListTabs({ projectId, phaseId }: IProps) {
-  useAATriggerStatements(projectId as UUID, {});
+  useAATriggerStatements(projectId as UUID, { perPage: 9999, phaseId: phaseId });
   const triggers = useAAStationsStore((state) => state.triggers);
 
   const { data: phaseHistory } = usePhaseHistory(projectId as UUID, {
     phaseUuid: phaseId as UUID,
   });
 
-  const all = React.useMemo(
-    () => triggers?.filter((t) => t?.phase?.uuid === phaseId),
-    [triggers, phaseId],
-  );
+  // const all = React.useMemo(
+  //   () => triggers?.filter((t) => t?.phase?.uuid === phaseId),
+  //   [triggers, phaseId],
+  // );
 
   const triggered = React.useMemo(
     () =>
       triggers?.filter(
-        (t) => t?.isTriggered === true && t?.phase?.uuid === phaseId,
+        (t) => t?.isTriggered === true,
       ),
-    [triggers, phaseId],
+    [triggers],
   );
   const notTriggered = React.useMemo(
     () =>
       triggers?.filter(
-        (t) => t?.isTriggered === false && t?.phase?.uuid === phaseId,
+        (t) => t?.isTriggered === false,
       ),
-    [triggers, phaseId],
+    [triggers],
   );
 
   return (
@@ -75,7 +75,7 @@ export default function TriggersListTabs({ projectId, phaseId }: IProps) {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="All">
-        <DynamicTriggersList projectId={projectId} triggers={all} />
+        <DynamicTriggersList projectId={projectId} triggers={triggers} />
       </TabsContent>
       <TabsContent value="Not Triggered">
         <DynamicTriggersList projectId={projectId} triggers={notTriggered} />

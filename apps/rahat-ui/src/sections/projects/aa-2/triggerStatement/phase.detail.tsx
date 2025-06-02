@@ -25,6 +25,8 @@ export default function PhaseDetail() {
     router.push(`/projects/aa/${projectId}/trigger-statements/add`);
   };
 
+  const isDisabled = !phase?.isActive || !phase?.canRevert || revertPhase.isPending;
+
   const handleRevertPhase = async () => {
     await revertPhase.mutateAsync({
       projectUUID: projectId,
@@ -49,20 +51,26 @@ export default function PhaseDetail() {
             name="Add Trigger"
             handleClick={handleAddTriggerClick}
           />
-          <CustomAlertDialog
-            dialogTrigger={
-              <IconLabelBtn
-                disabled={
-                  !phase?.isActive || !phase?.canRevert || revertPhase.isPending
-                }
-                Icon={Undo2}
-                name="Revert"
-              />
-            }
-            title="Revert Phase"
-            description="Are you sure you want to revert this phase?"
-            handleContinueClick={handleRevertPhase}
-          />
+
+          {isDisabled ? (
+            <IconLabelBtn
+              Icon={Undo2}
+              name="Revert"
+              disabled
+            />
+          ) : (
+            <CustomAlertDialog
+              dialogTrigger={
+                <IconLabelBtn
+                  Icon={Undo2}
+                  name="Revert"
+                />
+              }
+              title="Revert Phase"
+              description="Are you sure you want to revert this phase?"
+              handleContinueClick={handleRevertPhase}
+            />
+          )}
         </div>
       </div>
       <div className="grid grid-cols-3 gap-4">

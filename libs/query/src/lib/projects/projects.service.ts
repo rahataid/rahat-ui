@@ -1294,7 +1294,7 @@ export const useCambodiaLineChartsReports = (payload: any) => {
         uuid: projectUUID,
         data: {
           action: MS_CAM_ACTIONS.CAMBODIA.LINE_STATS,
-          payload: restPayload?.filters,
+          payload: { ...restPayload?.filters, vendorId: restPayload?.vendorId },
         },
       });
       return mutate;

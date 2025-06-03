@@ -73,23 +73,26 @@ export default function PhaseDetail() {
           )}
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-4">
-        <TriggersPhaseCard
-          title="Phase Overview"
-          subtitle={`Overview of ${phase?.name?.toLowerCase()} phase`}
-          chartLabels={['Mandatory', 'Optional']}
-          chartSeries={[
-            phase?.totalMandatoryTriggers,
-            phase?.totalOptionalTriggers,
-          ]}
-          mandatoryTriggers={phase?.totalMandatoryTriggers}
-          optionalTriggers={phase?.totalOptionalTriggers}
-          triggeredMandatoryTriggers={phase?.totalMandatoryTriggersTriggered}
-          triggeredOptionalTriggers={phase?.totalOptionalTriggersTriggered}
-          hideAddTrigger={true}
-          hideViewDetails={true}
-        />
-        <div className="p-4 border rounded-sm shadow col-span-2">
+      <div className="flex gap-4">
+        <div className="flex-shrink-0 w-1/3">
+          <TriggersPhaseCard
+            title="Phase Overview"
+            subtitle={`Overview of ${phase?.name?.toLowerCase()} phase`}
+            chartLabels={['Mandatory', 'Optional']}
+            chartSeries={[
+              phase?.totalMandatoryTriggers,
+              phase?.totalOptionalTriggers,
+            ]}
+            mandatoryTriggers={phase?.totalMandatoryTriggers}
+            optionalTriggers={phase?.totalOptionalTriggers}
+            triggeredMandatoryTriggers={phase?.totalMandatoryTriggersTriggered}
+            triggeredOptionalTriggers={phase?.totalOptionalTriggersTriggered}
+            hideAddTrigger={true}
+            hideViewDetails={true}
+          />
+        </div>
+
+        <div className="p-4 border rounded-sm shadow flex-grow">
           <Heading
             title="Triggers"
             titleStyle="text-xl/6"

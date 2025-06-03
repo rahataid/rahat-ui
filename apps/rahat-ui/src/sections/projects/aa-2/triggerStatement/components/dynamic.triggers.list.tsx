@@ -15,14 +15,14 @@ export default function DynamicTriggersList({
   const allTriggers = triggers?.length
     ? triggers
     : history?.flatMap((group) =>
-        group.triggers.map((trigger: any) => ({
-          ...trigger,
-          version: group.version,
-        })),
-      ) || [];
+      group.triggers.map((trigger: any) => ({
+        ...trigger,
+        version: group.version,
+      })),
+    ) || [];
 
   return (
-    <ScrollArea className="h-[calc(100vh-550px)] min-h-[300px]">
+    <ScrollArea className="h-[calc(100vh-360px)] min-h-[300px]">
       <div className="flex flex-col space-y-3 pr-2.5">
         {allTriggers?.length ? (
           allTriggers?.map((t: any) => (

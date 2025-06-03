@@ -32,6 +32,7 @@ import { Mail, MessageSquare, PencilIcon, Phone, Trash2 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { get } from 'react-hook-form';
+import { DialogComponent } from '../details/dialog.reuse';
 
 type IProps = {
   form: any;
@@ -538,14 +539,21 @@ export default function AddCommunicationForm({
                   )}
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 justify-center items-center">
                   <PencilIcon
-                    className="text-blue-500 hover:text-blue-600 transition-colors w-5 h-5"
+                    className=" text-blue-500 hover:text-blue-600 transition-colors hover:cursor-pointer hover:bg-slate-100 w-4 flex justify-center h-4  border-none p-0 hover:none "
                     onClick={() => editButtonClickHandler(i)}
                   />
-                  <Trash2
-                    className="text-red-500 hover:text-red-600 transition-colors w-5 h-5"
-                    onClick={() => handleRemoveclick(i)}
+                  <DialogComponent
+                    buttonIcon={Trash2}
+                    buttonText=""
+                    dialogTitle="Remove Communication"
+                    dialogDescription="Are you sure you want to remove this communication?"
+                    confirmButtonText="Remove"
+                    handleClick={() => handleRemoveclick(i)}
+                    buttonClassName=" text-red-500 hover:text-red-600 transition-colors w-6 flex justify-center h-6  border-none p-0 hover:none "
+                    confirmButtonClassName="rounded-sm w-full bg-red-500"
+                    variant="outline"
                   />
                 </div>
               </div>

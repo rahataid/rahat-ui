@@ -1,4 +1,4 @@
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye, RefreshCcw } from 'lucide-react';
@@ -30,6 +30,9 @@ export default function useActivitiesTableColumn() {
   const { id: projectID } = useParams();
   const router = useRouter();
 
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('from');
+
   const handleEyeClick = (activityId: any) => {
     setPaginationToLocalStorage();
     router.push(`/projects/aa/${projectID}/activities/${activityId}`);
@@ -37,7 +40,7 @@ export default function useActivitiesTableColumn() {
 
   const handleUpdateStatusIconClick = (activityId: any) => {
     router.push(
-      `/projects/aa/${projectID}/activities/${activityId}/update-status?from=detailPage`,
+      `/projects/aa/${projectID}/activities/${activityId}/update-status?from=${redirectTo}`,
     );
   };
 

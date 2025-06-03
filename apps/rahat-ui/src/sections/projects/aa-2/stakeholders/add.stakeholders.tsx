@@ -98,7 +98,7 @@ export default function AddStakeholders() {
     <div className="p-4">
       <div className="flex justify-between items-center">
         <HeaderWithBack
-          title={'Add Stakeholder'}
+          title={'Create Stakeholder'}
           subtitle="Fill the form below  to create a new stakeholder"
           path={`/projects/aa/${id}/stakeholders`}
         />
@@ -252,7 +252,7 @@ export default function AddStakeholders() {
                 Cancel
               </Button>
               <Button className="w-32" disabled={form.formState.isSubmitting}>
-                Add
+                Create
               </Button>
             </div>
           </div>

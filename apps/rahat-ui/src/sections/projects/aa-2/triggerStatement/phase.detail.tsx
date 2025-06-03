@@ -95,7 +95,7 @@ export default function PhaseDetail() {
             titleStyle="text-xl/6"
             description={`List of all triggers in the ${phase?.name?.toLowerCase()} phase`}
           />
-          <TriggersListTabs projectId={projectId} phaseId={phaseId} />
+          <TriggersListTabs projectId={projectId} phaseId={phaseId} triggers={phase?.triggers} />
         </div>
       </div>
     </div>

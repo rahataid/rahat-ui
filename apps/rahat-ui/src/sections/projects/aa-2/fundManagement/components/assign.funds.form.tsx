@@ -88,7 +88,7 @@ export default function AssignFundsForm() {
     perPage: 100,
     // sort: 'updatedAt',
     // order: 'desc',
-    tokenAssigned: true,
+    tokenAssigned: false,
   });
   // const { beneficiariesGroups } = useBeneficiariesGroupStore((state) => ({
   //   beneficiariesGroups: state.beneficiariesGroups,

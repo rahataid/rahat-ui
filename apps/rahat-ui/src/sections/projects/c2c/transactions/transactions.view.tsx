@@ -277,18 +277,22 @@ export default function TransactionView() {
                       className="border p-2"
                       title={tx?.extras?.senderAddress}
                     >
-                      {tx?.extras?.senderAddress}
+                      {tx?.extras?.senderAddress || 'N/A'}
                     </TableCell>
                     <TableCell className="border p-2">
-                      {tx.extras?.cryptoAmount} {tx?.token}
+                      {tx.extras?.cryptoAmount} {tx?.token || 'N/A'}
                     </TableCell>
                     <TableCell className="border p-2">
                       {tx.extras?.fiatTransactionAmount.toFixed(2)}{' '}
-                      {tx.extras?.fiatCurrency}
+                      {tx.extras?.fiatCurrency || 'N/A'}
                     </TableCell>
-                    <TableCell className="border p-2">{tx?.chain}</TableCell>
+                    <TableCell className="border p-2">
+                      {tx?.chain || 'N/A'}
+                    </TableCell>
 
-                    <TableCell className="border p-2">{tx?.status}</TableCell>
+                    <TableCell className="border p-2">
+                      {tx?.status || 'N/A'}
+                    </TableCell>
                     <TableCell className="border p-2">
                       {new Date(tx?.createdAt).toLocaleString()}
                     </TableCell>

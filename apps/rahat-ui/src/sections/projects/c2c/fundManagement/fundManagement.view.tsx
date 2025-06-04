@@ -129,7 +129,7 @@ const FundManagementView = () => {
             <div className="col-span-2 bg-card ml-2 rounded shadow mb-2">
               <ChartLine series={mySeries} categories={chartCategories} />
             </div>
-            <RecentTransaction transactions={transactionList} />
+            {/* <RecentTransaction transactions={transactionList} /> */}
           </div>
         )}
       </div>

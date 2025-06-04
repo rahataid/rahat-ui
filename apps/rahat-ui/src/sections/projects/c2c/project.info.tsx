@@ -1,6 +1,4 @@
 import { Project } from '@rahataid/sdk/project/project.types';
-import { formatdbDate } from 'apps/rahat-ui/src/utils';
-import { renderProjectDetailsExtras } from 'apps/rahat-ui/src/utils/render-extras';
 import { FC } from 'react';
 
 type ProjectInfoProps = {

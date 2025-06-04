@@ -65,9 +65,9 @@ const ProjectCharts = () => {
           series: ageSeries || [],
         }}
       />
-      <div className="row-span-2">
+      {/* <div className="row-span-2">
         <RecentTransaction transactions={transactionList} />
-      </div>
+      </div> */}
       <div className="col-span-2">
         <PieChart
           title="Disburse Methods"

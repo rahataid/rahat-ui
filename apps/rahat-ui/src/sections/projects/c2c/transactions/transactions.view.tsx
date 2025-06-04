@@ -147,13 +147,13 @@ export default function TransactionView() {
           >
             Chain Transactions
           </TabsTrigger>
-          <TabsTrigger
+          {/* <TabsTrigger
             id="offramp-transactions"
             className="w-full data-[state=active]:bg-white"
             value="offramp-transactions"
           >
             Offramp Transactions
-          </TabsTrigger>
+          </TabsTrigger> */}
         </TabsList>
       </div>
       <div className="p-2 bg-secondary">

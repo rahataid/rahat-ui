@@ -79,27 +79,41 @@ export default function AddTriggerView() {
       forecastStatus: z.string().optional(),
     })
     .superRefine((data, ctx) => {
-      if (
-        data.source === 'DHM' &&
-        selectedPhase?.name === 'ACTIVATION' &&
-        (!data.dangerLevel || data.dangerLevel.trim() === '')
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['dangerLevel'],
-          message: 'Danger Level is required',
-        });
+      if (data.source === 'DHM' && selectedPhase?.name === 'ACTIVATION') {
+        if (!data.dangerLevel || data.dangerLevel.toString().trim() === '') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['dangerLevel'],
+            message: 'Danger Level is required',
+          });
+        } else if (
+          isNaN(Number(data.dangerLevel)) ||
+          Number(data.dangerLevel) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['dangerLevel'],
+            message: 'Danger Level must be a positive number',
+          });
+        }
       }
-      if (
-        data.source === 'DHM' &&
-        selectedPhase?.name === 'READINESS' &&
-        (!data.warningLevel || data.warningLevel.trim() === '')
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['warningLevel'],
-          message: 'Warning Level is required',
-        });
+      if (data.source === 'DHM' && selectedPhase?.name === 'READINESS') {
+        if (!data.warningLevel || data.warningLevel.toString().trim() === '') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['warningLevel'],
+            message: 'Warning Level is required',
+          });
+        } else if (
+          isNaN(Number(data.warningLevel)) ||
+          Number(data.warningLevel) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['warningLevel'],
+            message: 'Warning Level must be a positive number',
+          });
+        }
       }
     });
 

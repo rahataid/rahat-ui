@@ -47,7 +47,7 @@ export default function AddStakeholders() {
       .string()
       .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
       .min(2, { message: 'Please enter name.' }),
-    phone: z.string().optional().refine(isValidPhoneNumberRefinement, {
+    phone: z.string().refine(isValidPhoneNumberRefinement, {
       message: 'Invalid phone number',
     }),
     email: z
@@ -72,7 +72,7 @@ export default function AddStakeholders() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
-      phone: '',
+      phone: '+977',
       email: '',
       designation: '',
       organization: '',
@@ -135,6 +135,7 @@ export default function AddStakeholders() {
                       <Label>Phone Number</Label>
                       <FormControl>
                         <PhoneInput
+                          defaultCountry="NP"
                           placeholder="Enter a Phone Number"
                           {...field}
                         />

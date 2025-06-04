@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
@@ -52,9 +52,16 @@ export default function UpdateStatus() {
   const redirectTo = searchParams.get('from');
   const router = useRouter();
 
-  const activitiesListPath = redirectTo
-    ? `/projects/aa/${projectId}/activities/${activityId}`
-    : `/projects/aa/${projectId}/activities`;
+  const activitiesListPath = useMemo(() => {
+    if (!redirectTo) {
+      return `/projects/aa/${projectId}/activities`;
+    }
+
+    return redirectTo === 'detailPage'
+      ? `/projects/aa/${projectId}/activities/${activityId}`
+      : `/projects/aa/${projectId}/activities/list/${redirectTo}`;
+  }, [redirectTo, projectId, activityId]);
+
   const uploadFile = useUploadFile();
 
   const updateStatus = useUpdateActivityStatus();
@@ -88,11 +95,21 @@ export default function UpdateStatus() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      status: activityDetail?.status || '',
-      notes: activityDetail?.notes || '',
-      activityDocuments: activityDetail?.activityDocuments || [],
+      status: '',
+      notes: '',
+      activityDocuments: [],
     },
   });
+
+  useEffect(() => {
+    if (activityDetail) {
+      form.reset({
+        status: activityDetail.status || '',
+        notes: activityDetail.notes || '',
+        activityDocuments: activityDetail.activityDocuments || [],
+      });
+    }
+  }, [activityDetail, form]);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,

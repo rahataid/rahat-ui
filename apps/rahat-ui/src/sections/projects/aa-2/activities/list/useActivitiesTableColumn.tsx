@@ -1,7 +1,7 @@
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Eye } from 'lucide-react';
+import { Eye, RefreshCcw } from 'lucide-react';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
@@ -30,9 +30,18 @@ export default function useActivitiesTableColumn() {
   const { id: projectID } = useParams();
   const router = useRouter();
 
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('from');
+
   const handleEyeClick = (activityId: any) => {
     setPaginationToLocalStorage();
     router.push(`/projects/aa/${projectID}/activities/${activityId}`);
+  };
+
+  const handleUpdateStatusIconClick = (activityId: any) => {
+    router.push(
+      `/projects/aa/${projectID}/activities/${activityId}/update-status?from=${redirectTo}`,
+    );
   };
 
   const columns: ColumnDef<IActivitiesItem>[] = [
@@ -128,6 +137,12 @@ export default function useActivitiesTableColumn() {
               size={20}
               strokeWidth={1.5}
               onClick={() => handleEyeClick(row.original.id)}
+            />
+            <RefreshCcw
+              className="hover:text-primary cursor-pointer"
+              size={20}
+              strokeWidth={1.5}
+              onClick={() => handleUpdateStatusIconClick(row.original.id)}
             />
           </div>
         );

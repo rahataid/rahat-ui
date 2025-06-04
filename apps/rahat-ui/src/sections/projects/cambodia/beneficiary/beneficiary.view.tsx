@@ -151,8 +151,9 @@ export default function BeneficiaryView() {
         <div className="rounded-lg border bg-card p-4 ">
           <div className="flex justify-between space-x-2 mb-2">
             <SearchInput
+              isDisabled={true}
               name="name"
-              className="w-[100%]"
+              className="w-[100%] cursor-not-allowed"
               value={
                 (table.getColumn('name')?.getFilterValue() as string) ??
                 filters?.name

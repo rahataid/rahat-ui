@@ -1,6 +1,7 @@
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -9,6 +10,7 @@ import { useParams } from 'next/navigation';
 import React, { useMemo } from 'react';
 import ElkenyaTable from '../table.component';
 import { useElkenyaVendorsBeneficiaryTableColumns } from './columns/use.vendors.beneficiary.table.columns';
+import ClientSidePagination from '../../components/client.side.pagination';
 
 interface VendorsBeneficiaryListProps {
   beneficiaryList: any;
@@ -49,6 +51,7 @@ export default function VendorsBeneficiaryList({
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    getPaginationRowModel: getPaginationRowModel(),
     state: {
       columnVisibility,
     },
@@ -60,6 +63,7 @@ export default function VendorsBeneficiaryList({
         tableHeight="h-[calc(100vh-380px)]"
         loading={loading}
       />
+      <ClientSidePagination table={table} />
     </div>
   );
 }

@@ -48,8 +48,6 @@ export default function UpdateStatus() {
     activityId,
   );
 
-  console.log(activityDetail);
-
   const searchParams = useSearchParams();
 
   const redirectTo = searchParams.get('from');

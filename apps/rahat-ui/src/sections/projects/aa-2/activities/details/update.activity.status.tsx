@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
@@ -47,6 +47,8 @@ export default function UpdateStatus() {
     projectId,
     activityId,
   );
+
+  console.log(activityDetail);
 
   const searchParams = useSearchParams();
 
@@ -96,11 +98,21 @@ export default function UpdateStatus() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      status: activityDetail?.status || '',
-      notes: activityDetail?.notes || '',
-      activityDocuments: activityDetail?.activityDocuments || [],
+      status: '',
+      notes: '',
+      activityDocuments: [],
     },
   });
+
+  useEffect(() => {
+    if (activityDetail) {
+      form.reset({
+        status: activityDetail.status || '',
+        notes: activityDetail.notes || '',
+        activityDocuments: activityDetail.activityDocuments || [],
+      });
+    }
+  }, [activityDetail, form]);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,

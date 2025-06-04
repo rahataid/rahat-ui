@@ -15,7 +15,6 @@ import { SearchInput } from 'apps/rahat-ui/src/common';
 
 const { NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED } = ACTIVITY_STATUS;
 const statusList = [NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED];
-
 type IProps = {
   handleFilter: (key: string, value: string) => void;
   projectID: UUID;
@@ -27,6 +26,7 @@ type IProps = {
   responsibility: string;
   category: string;
   status: string;
+  isAutomated: string;
 };
 
 export default function ActivitiesTableFilters({
@@ -37,6 +37,7 @@ export default function ActivitiesTableFilters({
   responsibility,
   category,
   status,
+  isAutomated,
 }: IProps) {
   const { categories } = useActivitiesStore((state) => ({
     categories: state.categories,
@@ -70,6 +71,24 @@ export default function ActivitiesTableFilters({
           </SelectGroup>
         </SelectContent>
       </Select>
+
+      {/* Filter Type */}
+      <Select
+        value={isAutomated}
+        onValueChange={(value) => handleFilter('isAutomated', value)}
+      >
+        <SelectTrigger className={isAutomated ? '' : 'text-muted-foreground'}>
+          <SelectValue placeholder="Select  Activity Type" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectItem value="all">All type</SelectItem>
+            <SelectItem value={'true'}>Automated</SelectItem>
+            <SelectItem value={'false'}>Manual</SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+
       {/* Filter Status  */}
       <Select
         value={status}

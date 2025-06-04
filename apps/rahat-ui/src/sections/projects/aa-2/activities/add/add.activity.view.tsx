@@ -517,7 +517,7 @@ export default function AddActivities() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Lead Time</FormLabel>
+                        <FormLabel>Lead Time (hours)</FormLabel>
                         <FormControl>
                           <Input
                             type="text"

@@ -1028,8 +1028,8 @@ export const useCambodiaCommisionCurrent = (payload: any) => {
       restPayloadString,
     ],
     placeholderData: keepPreviousData,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,

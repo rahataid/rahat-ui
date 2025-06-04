@@ -49,13 +49,15 @@ export default function FundManagementDetail() {
       amount: 'Rs. 10',
     },
   ];
+
+  console.log(data);
   return (
     <div className="p-4">
       <div className="flex justify-between items-center">
         <HeaderWithBack
           path={`/projects/aa/${projectID}/fund-management?tab=fundManagementList`}
-          title="Assign Funds"
-          subtitle="Fill the form below to assign funds to beneficiaries"
+          title={data?.title}
+          subtitle={`Detailed view of reserved fund`}
         />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
@@ -74,6 +76,7 @@ export default function FundManagementDetail() {
         title={data?.name}
         group={data?.groupedBeneficiaries}
         loading={isLoading}
+        status={data?.status}
       />
     </div>
   );

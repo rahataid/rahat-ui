@@ -1032,8 +1032,8 @@ export const useCambodiaCommisionCurrent = (payload: any) => {
       restPayloadString,
     ],
     placeholderData: keepPreviousData,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1298,7 +1298,7 @@ export const useCambodiaLineChartsReports = (payload: any) => {
         uuid: projectUUID,
         data: {
           action: MS_CAM_ACTIONS.CAMBODIA.LINE_STATS,
-          payload: restPayload?.filters,
+          payload: { ...restPayload?.filters, vendorId: restPayload?.vendorId },
         },
       });
       return mutate;

@@ -10,7 +10,6 @@ on:
 
 env:
   CI: false
-  env_dev: ${{ secrets.ENV_STAGE }}
   MANIFEST_FILE: 'K8s-Manifest/Rahat/Cambodia-Stage/Argo-Rollout/ui.yaml'
 
 jobs:

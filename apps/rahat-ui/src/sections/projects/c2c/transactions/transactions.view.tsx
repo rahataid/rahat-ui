@@ -49,7 +49,8 @@ export default function TransactionView() {
   const { id } = useParams();
   const tokenDetails = useTokenDetails();
 
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState([{ id: 'date', desc: true }]);
+
   const [transactionList, setTransactionList] = React.useState<Transaction[]>(
     [],
   );
@@ -59,7 +60,9 @@ export default function TransactionView() {
     [],
   );
   const [rowsPerPage, setRowsPerPage] = React.useState(10); // State for rows per page
-  const columns = useTransactionColumn();
+  const columns = useTransactionColumn({
+    setSorting,
+  });
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 

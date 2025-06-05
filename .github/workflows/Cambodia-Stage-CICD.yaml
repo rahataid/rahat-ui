@@ -2,16 +2,16 @@ name: Cambodia Stage CICD
 on:
   push:
     branches:
-      - 'dev'
+      - 'stage'
   pull_request:
     branches:
-      - 'dev'
+      - 'stage'
   workflow_dispatch:
 
 env:
   CI: false
   env_dev: ${{ secrets.ENV_STAGE }}
-  MANIFEST_FILE: 'K8s-Manifest/Rahat/Cambodia-Prod-Replicate/Argo-Rollout/ui.yaml'
+  MANIFEST_FILE: 'K8s-Manifest/Rahat/Cambodia-Stage/Argo-Rollout/ui.yaml'
 
 jobs:
   rahat-ui:

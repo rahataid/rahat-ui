@@ -1,6 +1,7 @@
 import { formatDate } from '../../../utils';
 import { useGraphService } from '../../../providers/subgraph-provider';
 import { useQuery } from '@tanstack/react-query';
+import { useRSQuery } from '@rumsan/react-query';
 
 const formatTransaction = (trans: any) => ({
   beneficiary: trans.beneficiary || trans.referrerBeneficiaries || '-',
@@ -80,6 +81,7 @@ export const useBeneficiaryTransaction = (address: string) => {
     queryKey: ['beneficiary-transaction', address],
     queryFn: async () => {
       const res = await queryService?.useBeneficiaryTransaction(address);
+
       const claimedAssigned = res?.claimAssigneds || [];
       const claimProcessed = res?.projectClaimProcesseds || [];
       const beneficiaryReferred = res?.beneficiaryReferreds || [];
@@ -167,17 +169,16 @@ export const useVendorVoucher = (address: string) => {
 };
 
 export const useAllVendorVoucher = () => {
-  const {queryService} = useGraphService();
+  const { queryService } = useGraphService();
 
   return useQuery({
     queryKey: ['vendors-voucher'],
     queryFn: async () => {
       const res = await queryService.useAllVendorVoucher();
       return res;
-    }
-  })
-}
-
+    },
+  });
+};
 
 export const useFreeVoucherHolder = () => {
   const { queryService } = useGraphService();

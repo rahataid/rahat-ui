@@ -36,7 +36,7 @@ export default function OfflineManagementView() {
   const {
     data: offlineVendors,
     isSuccess,
-    isLoading,
+    isFetching,
   } = useGetOfflineVendors(id as UUID);
   const columns = useTableColumn();
   const table = useReactTable({
@@ -94,7 +94,7 @@ export default function OfflineManagementView() {
           <ElkenyaTable
             table={table}
             tableHeight="h-[calc(100vh-293px)]"
-            loading={isLoading}
+            loading={isFetching}
           />
           {/* <Pagination
             pageIndex={table.getState().pagination.pageIndex}

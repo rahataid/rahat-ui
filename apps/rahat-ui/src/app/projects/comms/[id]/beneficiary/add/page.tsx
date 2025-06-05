@@ -1,9 +1,8 @@
-'use client';
+import React from 'react';
+import { AddRPBeneficiary } from 'apps/rahat-ui/src/sections/projects/comms/beneficiary/add';
 
-import { CommsBeneficiaryAddView } from 'apps/rahat-ui/src/sections/projects/comms/beneficiary';
-
-const Page = () => {
-  return <CommsBeneficiaryAddView />;
+const AddBeneficiary = () => {
+  return <AddRPBeneficiary />;
 };
 
-export default Page;
+export default AddBeneficiary;

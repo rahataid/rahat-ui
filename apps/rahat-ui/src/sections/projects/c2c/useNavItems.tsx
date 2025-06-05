@@ -5,6 +5,7 @@ import {
   Expand,
   FilePlus2,
   LayoutDashboard,
+  MessageSquareText,
   PencilRuler,
   PersonStanding,
   Plus,
@@ -52,8 +53,21 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
         },
         {
           title: 'Communications',
+          subtitle: 20,
           icon: <Speech size={18} strokeWidth={1.5} />,
-          path: `/projects/c2c/${id}/campaigns/text`,
+          path: `/projects/c2c/${id}/communication`,
+          children: [
+            {
+              title: 'Text',
+              path: `/projects/c2c/${id}/communication/text`,
+              icon: <MessageSquareText size={18} strokeWidth={1.5} />,
+            },
+            {
+              title: 'Email',
+              path: `/projects/c2c/${id}/communication/email`,
+              icon: <MessageSquareText size={18} strokeWidth={1.5} />,
+            },
+          ],
         },
         {
           title: 'Grievance',
@@ -65,11 +79,6 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
           icon: <Expand size={18} strokeWidth={1.5} />,
           path: `/projects/c2c/${id}/disbursement`,
         },
-      ],
-    },
-    {
-      title: 'Actions',
-      children: [
         {
           component: (
             <>

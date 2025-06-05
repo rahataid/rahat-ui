@@ -1,5 +1,6 @@
 import {
   useListRpCommunicationLogs,
+  usePagination,
   useProjectStore,
   useSettingsStore,
 } from '@rahat-ui/query';
@@ -24,6 +25,7 @@ import ViewColumns from '../../components/view.columns';
 import ElkenyaTable from '../table.component';
 import { useElkenyaSMSTableColumns } from './use.sms.table.columns';
 import ClientSidePagination from '../../components/client.side.pagination';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export default function CommunicationView() {
   const { id } = useParams() as { id: UUID };
@@ -34,60 +36,34 @@ export default function CommunicationView() {
     succed: 0,
     failed: 0,
   });
-  const { data, isLoading } = useListRpCommunicationLogs(id);
-  console.log({ data });
+  // const { data, isLoading } = useListRpCommunicationLogs(id);
+  // console.log({ data });
+  const {
+    pagination,
+    filters,
+    setFilters,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    selectedListItems,
+    setSelectedListItems,
+    resetSelectedListItems,
+  } = usePagination();
+  const { data, isFetching } = useListRpCommunicationLogs(id, {
+    page: pagination.page,
+    perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'createdAt',
+  });
+  const meta = data?.response.meta;
+  const logs = data?.response.data;
   const commsAppId = useSettingsStore((state) => state.commsSettings)?.APP_ID;
-  useEffect(() => {
-    setStats({
-      succed: 0,
-      failed: 0,
-    });
-    data
-      ?.filter((log) => log.app === commsAppId)
-      .map((logs: any) => {
-        setStats((prev) => {
-          return logs.status === 'SUCCESS'
-            ? { ...prev, succed: prev.succed + 1 }
-            : { ...prev, failed: prev.failed + 1 };
-        });
-      });
-  }, [data]);
-
   const projectClosed = useProjectStore(
     (state) => state.singleProject?.projectClosed,
   );
-
-  const cardData = [
-    {
-      title: 'Total Message Sent',
-      icon: 'MessageSquare',
-      total: stats.failed + stats.succed || 0,
-    },
-    {
-      title: 'Failed Message Delivery',
-      icon: 'MessageSquare',
-      total: stats.failed,
-    },
-    {
-      title: 'Successfull Messages Delivered',
-      icon: 'CircleCheck',
-      total: stats.succed,
-    },
-  ];
-
   const tableData = useMemo(() => {
     if (data) {
-      return data
-        .filter((log) => log.app === commsAppId)
-        .map((log) => ({
-          ...log,
-          to:
-            (Array.isArray(log?.details?.responses) &&
-              (log?.details?.responses[0]?.mobile?.mobile ||
-                log?.details?.responses[0]?.mobile)) ||
-            (Array.isArray(log?.details?.bulkResponse) &&
-              log?.details?.bulkResponse[0]?.mobileNumber),
-        }));
+      return logs.filter((log) => log.app === commsAppId);
     } else {
       return [];
     }
@@ -97,8 +73,8 @@ export default function CommunicationView() {
   const table = useReactTable({
     data: tableData,
     columns,
+    manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     // onRowSelectionChange: setSelectedListItems,
@@ -150,9 +126,11 @@ export default function CommunicationView() {
             <SearchInput
               className="w-full"
               name=""
-              value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
+              value={
+                (table.getColumn('address')?.getFilterValue() as string) ?? ''
+              }
               onSearch={(event) =>
-                table.getColumn('to')?.setFilterValue(event.target.value)
+                table.getColumn('address')?.setFilterValue(event.target.value)
               }
             />
             <ViewColumns table={table} />
@@ -167,21 +145,20 @@ export default function CommunicationView() {
           </div>
           <ElkenyaTable
             table={table}
-            tableHeight="h-[calc(100vh-421px)]"
-            loading={isLoading}
+            tableHeight="h-[calc(100vh-280px)]"
+            loading={isFetching}
           />
         </div>
       </div>
-      {/* <Pagination
-        pageIndex={table.getState().pagination.pageIndex}
-        pageCount={table.getPageCount()}
-        setPageSize={table.setPageSize}
-        canPreviousPage={table.getCanPreviousPage()}
-        previousPage={table.previousPage}
-        canNextPage={table.getCanNextPage()}
-        nextPage={table.nextPage}
-      /> */}
-      <ClientSidePagination table={table} />
+      <CustomPagination
+        meta={meta || { total: 0, currentPage: 0 }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={0}
+      />
     </>
   );
 }

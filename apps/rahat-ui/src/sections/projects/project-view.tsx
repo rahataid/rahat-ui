@@ -1,5 +1,5 @@
 'use client';
-import { useProjectList } from '@rahat-ui/query';
+import { useProjectList, useGetRahatSettingByName } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -7,14 +7,19 @@ import { CirclePlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useBoolean } from '../../hooks/use-boolean';
 import { ProjectCard } from '../../sections/projects';
+import { ExternalProjectCard } from '../../sections/projects/externalProjectCard';
 import AddProjectConfirmModal from './addProject.confirm';
-// import CustomPagination from '../../components/customPagination';
+
 
 export default function ProjectListView() {
   // const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const { data } = useProjectList();
   const AddProjectModal = useBoolean();
   const [filterValue, setFilterValue] = useState([]);
+
+  //TODO: remove once code merge
+  const { data: externalProjectsData } = useGetRahatSettingByName('EXTERNAL_PROJECTS');
+  const [externalProjects, setExternalProjects] = useState([]);
 
   const openAddProjectModal = () => {
     AddProjectModal.onTrue();
@@ -41,10 +46,18 @@ export default function ProjectListView() {
     setFilterValue(data?.data as any);
   }, [data?.data]);
 
+  //TODO: remove once code merge
+  useEffect(() => {
+    if (externalProjectsData?.data?.value) {
+      setExternalProjects(externalProjectsData?.data?.value);
+    }
+  }, [externalProjectsData]);
+
+
   return (
-    <div className=" p-4 bg-card mt-14">
+    <div className=" p-4 bg-card">
       <div className="mb-4">
-        <h1 className="font-semibold text-2xl mb-">Projects</h1>
+        <h1 className="font-semibold text-2xl">Projects</h1>
         <p className="text-muted-foreground">
           Here is a list of all the projects
         </p>
@@ -61,14 +74,14 @@ export default function ProjectListView() {
             // value={filterValue}
             onChange={handleFilterChange}
           />
-          <Button
+          {/* <Button
             onClick={() => openAddProjectModal()}
-            className="flex items-center justify-center gap-1"
+            className="flex items-center justify-center gap-1 text-white"
             disabled
           >
             <CirclePlus size={16} strokeWidth={1.5} />
             Add Project
-          </Button>
+          </Button> */}
         </div>
         <ScrollArea className="pb-2 h-[calc(100vh-253px)]">
           {filterValue && filterValue?.length > 0 ? (
@@ -84,6 +97,16 @@ export default function ProjectListView() {
                   status={project.status}
                 />
               ))}
+
+              {/* remove after code merge */}
+              {externalProjects?.map((project) => (
+                <ExternalProjectCard
+                  key={project?.redirectPath}
+                  project={project}
+                />
+              ))}
+
+
             </div>
           ) : (
             <div className="h-[calc(100vh-190px)] grid place-items-center">

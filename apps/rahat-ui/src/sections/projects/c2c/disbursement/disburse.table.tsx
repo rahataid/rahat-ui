@@ -1,5 +1,5 @@
 'use client';
-import { useGetDisbursements, usePagination } from '@rahat-ui/query';
+import { useGetDisbursements } from '@rahat-ui/query';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -21,12 +21,12 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { UUID } from 'crypto';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
+import { DataTablePagination } from '../transactions/dataTablePagination';
 import { useDisburseTableColumns } from './useDisburseTable';
 
 export function DisburseTable() {
@@ -36,7 +36,6 @@ export function DisburseTable() {
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const [rowSelection, setRowSelection] = React.useState({});
   const { id } = useParams() as { id: UUID };
   const { data, isLoading } = useGetDisbursements({
@@ -154,14 +153,7 @@ export function DisburseTable() {
           </ScrollArea>
         </Table>
       </div>
-      <CustomPagination
-        currentPage={pagination.page}
-        handleNextPage={setNextPage}
-        handlePageSizeChange={setPerPage}
-        handlePrevPage={setPrevPage}
-        meta={data || {}}
-        perPage={pagination.perPage}
-      />
+      <DataTablePagination table={table} />
     </div>
   );
 }

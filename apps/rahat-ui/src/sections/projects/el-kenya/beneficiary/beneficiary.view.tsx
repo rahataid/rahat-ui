@@ -65,7 +65,11 @@ export default function BeneficiaryView() {
     setFilters('');
   }, []);
 
-  const { data: beneficiaries, isLoading } = useProjectBeneficiaries({
+  const {
+    data: beneficiaries,
+    isLoading,
+    isFetching,
+  } = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
@@ -78,7 +82,19 @@ export default function BeneficiaryView() {
 
   const handleViewClick = (rowData: any) => {
     router.push(
-      `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${rowData.name}&&walletAddress=${rowData.walletAddress}&&gender=${rowData.gender}&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${rowData.eyeCheckupStatus}&&glassesStatus=${rowData.glassesStatus}&&voucherType=${rowData.voucherType}&&phone=${rowData.phone}&&type=${rowData.type}&&location=${rowData?.projectData?.location}&&serialNumber=${rowData?.extras?.serialNumber}`,
+      `/projects/el-kenya/${id}/beneficiary/${rowData.uuid}?name=${
+        rowData.name
+      }&&walletAddress=${rowData.walletAddress}&&gender=${
+        rowData.gender
+      }&&voucherStatus=${rowData.voucherStatus}&&eyeCheckupStatus=${
+        rowData.eyeCheckupStatus
+      }&&glassesStatus=${rowData.glassesStatus}&&voucherType=${
+        rowData.voucherType
+      }&&phone=${encodeURIComponent(rowData.phone)}&&type=${
+        rowData.type
+      }&&location=${rowData?.projectData?.location}&&serialNumber=${
+        rowData?.extras?.serialNumber
+      }`,
     );
   };
 
@@ -160,12 +176,14 @@ export default function BeneficiaryView() {
                 name="Voucher Type"
                 options={['SINGLE_VISION', 'READING_GLASSES']}
                 value={filters?.voucherType || ''}
+                showSelect={false}
               />
               <SelectComponent
                 onChange={(e) => setFilters({ ...filters, type: e })}
                 name="Beneficiary Type"
                 options={['PRE_DETERMINED', 'WALK_IN']}
                 value={filters?.type || ''}
+                showSelect={false}
               />
               <SelectComponent
                 onChange={(e) =>
@@ -174,26 +192,37 @@ export default function BeneficiaryView() {
                 name="Eye Checkup Status"
                 options={['CHECKED', 'NOT_CHECKED']}
                 value={filters?.eyeCheckupStatus || ''}
+                showSelect={false}
               />
               <SelectComponent
                 onChange={(e) => setFilters({ ...filters, glassesStatus: e })}
                 name="Glasses Status"
-                options={['REQUIRED', 'NOT_REQUIRED']}
+                options={['  REQUIRED', 'NOT_REQUIRED']}
                 value={filters?.glassesStatus || ''}
+                showSelect={false}
               />
               <SelectComponent
                 onChange={(e) => setFilters({ ...filters, voucherStatus: e })}
                 name="Voucher Status"
                 options={['REDEEMED', 'NOT_REDEEMED']}
                 value={filters?.voucherStatus || ''}
+                showSelect={false}
               />
-              <ViewColumns table={table} />
+              <SelectComponent
+                onChange={(e) =>
+                  setFilters({ ...filters, voucherAssignmentStatus: e })
+                }
+                name="Voucher Assignment Status"
+                options={['ASSIGNED', 'NOT_ASSIGNED']}
+                value={filters?.voucherAssignmentStatus || ''}
+                showSelect={false}
+              />
             </div>
             {Object.keys(filters).length != 0 && (
               <FiltersTags
                 filters={filters}
                 setFilters={setFilters}
-                total={meta?.total || 0}
+                total={beneficiaries?.data?.length}
               />
             )}
             <ElkenyaTable
@@ -203,7 +232,7 @@ export default function BeneficiaryView() {
                   ? 'h-[calc(100vh-389px)]'
                   : 'h-[calc(100vh-323px)]'
               }
-              loading={isLoading}
+              loading={isFetching}
             />
           </div>
         </div>

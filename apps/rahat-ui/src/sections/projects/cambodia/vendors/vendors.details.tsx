@@ -1,40 +1,94 @@
 import {
+  useCambodiaLineChartsReports,
+  useCambodiaVendorGet,
+  useCambodiaVendorsStats,
+} from '@rahat-ui/query';
+import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import { Coins, Copy, CopyCheck, Ticket, User } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import React, { use } from 'react';
 import HeaderWithBack from '../../components/header.with.back';
-import TransactionHistoryView from './transaction.history.view';
 import ConversionListView from './conversion.list.view';
 import HealthWorkersView from './health.workers.view';
-import { Check, Copy, CopyCheck, User } from 'lucide-react';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import React from 'react';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { DialogComponent } from '../../../../components/dialog';
-import { useCambodiaVendorGet, useCambodiaVendorsStats } from '@rahat-ui/query';
+import TransactionHistoryView from './transaction.history.view';
+import CambodiaLineCharts from '../../../chart-reports/cambodia-line-chart';
+import MONTHS from '../../../../utils/months.json';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import DropdownComponent from '../../components/dropdownComponent';
+import SpinnerLoader from '../../components/spinner.loader';
 
 export default function VendorsDetail() {
   const { id, vendorId } = useParams();
   const { data } = useCambodiaVendorGet({ projectUUID: id, vendorId }) as any;
   const [walletAddressCopied, setWalletAddressCopied] =
-    React.useState<number>();
+    React.useState<number>(0);
+  const currentYear = new Date().getFullYear();
+
+  const currentMonth = new Date().getMonth() + 1;
+  const currentMonthName = MONTHS.find(
+    (month) => month.value === currentMonth.toString(),
+  );
+  const [filters, setFilters] = React.useState({
+    month: currentMonth,
+    year: currentYear,
+  });
   const { data: vendorsStats } = useCambodiaVendorsStats({
     projectUUID: id,
     vendorId,
   }) as any;
 
+  const { data: lineChartReport, isLoading: lineChartLoading } =
+    useCambodiaLineChartsReports({
+      projectUUID: id,
+      filters,
+      vendorId: vendorId as string,
+    });
+  const transformedYearData = Array.from({ length: 5 }, (_, index) => {
+    const year = currentYear + index;
+    return {
+      label: year.toString(),
+      value: year.toString(),
+    };
+  });
+  const transformedMonthData =
+    MONTHS.map((item) => ({
+      label: item.label.toString(),
+      value: item.value.toString(),
+    })) || [];
+
+  if (lineChartLoading) {
+    return (
+      <div className="flex justify-center items-center">
+        <SpinnerLoader />
+      </div>
+    );
+  }
+  const handleSelect = (key: string, value: string) => {
+    if (key === 'Months') {
+      setFilters({ ...filters, month: parseInt(value) });
+    }
+    if (key === 'Years') {
+      setFilters({ ...filters, year: parseInt(value) });
+    }
+  };
+
   const clickToCopy = (walletAddress: string, id: number) => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(id);
+    setTimeout(() => {
+      setWalletAddressCopied(0);
+    }, 1000);
   };
 
   return (
-    <div className="h-[calc(100vh-95px)] m-4">
+    <div className="m-4 ">
       <div className="flex justify-between items-center">
         <HeaderWithBack
           title={data?.data?.User?.name}
@@ -57,46 +111,67 @@ export default function VendorsDetail() {
           onSubmit={() => console.log('submit')}
         /> */}
       </div>
-      <div className="flex space-x-4 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-2">
         <DataCard
-          className="w-full border-solid rounded-md"
+          className="border-solid rounded h-24 pt-2"
+          title="Wearers"
+          Icon={User}
+          number={vendorsStats?.data?.consumers || 0}
+        />
+
+        <DataCard
+          className="border-solid rounded h-24 pt-2"
+          title="Eye Checkup in VC"
+          Icon={Ticket}
+          number={vendorsStats?.data?.leadsConverted || 0}
+        />
+
+        <DataCard
+          className="border-solid rounded h-24 pt-2"
+          title="Sales"
+          Icon={Coins}
+          number={vendorsStats?.data?.sales || 0}
+        />
+
+        <DataCard
+          className="border-solid rounded h-24 pt-2"
+          title="Health Workers"
+          Icon={User}
+          number={vendorsStats?.data?.healthWorkers || 0}
+        />
+
+        <DataCard
+          className="border-solid rounded h-24 pt-2"
           title="Villagers Referred"
           Icon={User}
-          number={vendorsStats?.data?.leadsRecieved}
+          number={vendorsStats?.data?.leadsRecieved || 0}
         />
+
         <DataCard
-          className="w-full border-solid rounded-md"
-          title="Eye Checkup in VC"
-          Icon={User}
-          number={vendorsStats?.data?.leadsConverted}
-        />
-        <DataCard
-          className="w-full border-solid rounded-md"
+          className="border-solid rounded h-24 pt-2"
           title="Eyewear dispensed in VC"
-          Icon={User}
-          number={vendorsStats?.data?.footfalls}
+          Icon={Ticket}
+          number={vendorsStats?.data?.footfalls || 0}
         />
-        {/* <DataCard
-          className="w-full border-solid rounded-md"
-          title="Sales"
-          Icon={User}
-          number={vendorsStats?.data?.sales}
-        /> */}
       </div>
-      <div className="p-5 rounded border grid grid-cols-3 gap-5 mb-5">
+
+      <div className="p-5 rounded border shadow-sm grid grid-cols-3 gap-5 mb-2 h-20">
         <div>
           <h1 className="text-md text-muted-foreground">Wallet Address</h1>
           <div
             className="flex items-center space-x-2 cursor-pointer"
             onClick={() =>
-              clickToCopy(`${data?.data?.User?.wallet}`, data?.User?.wallet)
+              clickToCopy(
+                `${data?.data?.User?.wallet}`,
+                data?.data?.User?.wallet,
+              )
             }
           >
             <p>{truncateEthAddress(data?.data?.User?.wallet)}</p>
             {walletAddressCopied ? (
-              <CopyCheck size={15} strokeWidth={1.5} />
+              <CopyCheck size={20} strokeWidth={1.5} />
             ) : (
-              <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              <Copy className="text-slate-500" size={20} strokeWidth={1.5} />
             )}
           </div>
         </div>
@@ -109,8 +184,35 @@ export default function VendorsDetail() {
           <Badge>Not Approved</Badge>
         </div> */}
       </div>
+      {/* line graph  */}
+      <div className="mt-4 flex justify-end">
+        <DropdownComponent
+          transformedData={transformedMonthData}
+          title={'Months'}
+          handleSelect={handleSelect}
+          current={currentMonthName?.label}
+        />
+        <DropdownComponent
+          transformedData={transformedYearData}
+          title={'Years'}
+          handleSelect={handleSelect}
+          current={currentYear}
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {lineChartReport?.data?.map((item) => {
+          return (
+            <CambodiaLineCharts
+              series={item?.series}
+              categories={item?.categories}
+              name={item?.name}
+              key={item.name}
+            />
+          );
+        })}
+      </div>
       <Tabs defaultValue="transactionHistory">
-        <TabsList className="border bg-secondary rounded mb-4">
+        <TabsList className="border bg-secondary rounded mb-2">
           <TabsTrigger
             className="w-full data-[state=active]:bg-white"
             value="transactionHistory"

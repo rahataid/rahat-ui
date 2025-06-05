@@ -37,7 +37,6 @@ export default function HealthWorkersView() {
     ...pagination,
     ...filters,
   }) as any;
-  console.log(healthWorkers);
   const columns = useHealthWorkersTableColumns();
   const table = useReactTable({
     manualPagination: true,
@@ -62,7 +61,7 @@ export default function HealthWorkersView() {
       <div className="rounded border bg-card p-4">
         <CambodiaTable
           table={table}
-          tableHeight="h-[calc(100vh-570px)]"
+          tableHeight="h-[calc(300px)]"
           loading={isLoading}
         />
       </div>

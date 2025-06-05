@@ -5,9 +5,9 @@ import { formatDate } from 'date-fns';
 export const useElkenyaSMSTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'to',
+      accessorKey: 'address',
       header: 'Sent To',
-      cell: ({ row }) => <div>{row.getValue('to') || 'N/A'}</div>,
+      cell: ({ row }) => <div>{row.getValue('address') || 'N/A'}</div>,
     },
     {
       accessorKey: 'createdAt',

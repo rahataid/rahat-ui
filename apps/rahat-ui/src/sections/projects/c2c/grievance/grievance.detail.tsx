@@ -1,5 +1,5 @@
 'use client';
-
+import { useGrievanceChangeStatus } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
@@ -21,19 +21,35 @@ import { Minus, MoreVertical } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import EditGrievance from './grievance.edit';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import { UUID } from 'crypto';
+import { mapStatus } from '../const';
 
 type IProps = {
-  details: Grievance;
+  details: Grievance & { uuid: UUID };
   closeSecondPanel: VoidFunction;
 };
 
 export default function GrievanceDetail({ details, closeSecondPanel }: IProps) {
   const [activeTab, setActiveTab] = useState<'details' | 'edit'>('details');
-
+  const changeStatus = useGrievanceChangeStatus();
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
   };
 
+  const GrievanceStatus = [
+    { key: 'New', value: 'NEW' },
+    { key: 'Under Review', value: 'UNDER_REVIEW' },
+    { key: 'Resolved', value: 'RESOLVED' },
+    { key: 'Closed', value: 'CLOSED' },
+  ];
   return (
     <>
       <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
@@ -82,10 +98,34 @@ export default function GrievanceDetail({ details, closeSecondPanel }: IProps) {
           />
           <div>
             <div className="flex flex-col items-start justify-start gap-2 mb-1 w-full">
-              <Badge>{details?.status}</Badge>
+              <Badge>{mapStatus(details?.status)}</Badge>
               <h1 className="font-semibold text-xl">{details?.title}</h1>
             </div>
           </div>
+        </div>
+        <div>
+          <Select
+            onValueChange={(value) => {
+              changeStatus.mutateAsync({
+                uuid: details.uuid,
+                data: { status: value },
+              });
+            }}
+            defaultValue={''}
+          >
+            <SelectTrigger className="text-muted-foreground">
+              <SelectValue placeholder="Change status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {GrievanceStatus?.map((status) => {
+                  return (
+                    <SelectItem value={status.value}>{status.key}</SelectItem>
+                  );
+                })}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
       </div>
       <Separator className="my-2" />
@@ -115,12 +155,14 @@ export default function GrievanceDetail({ details, closeSecondPanel }: IProps) {
                     {details?.reportedBy || 'N/A'}
                   </p>
                   <p className="text-sm font-normal text-muted-foreground">
-                    Created By
+                    Reported By
                   </p>
                 </div>
                 <div className="text-left">
                   <p className="font-light text-base">
-                    {formatdbDate(details?.createdAt) || 'N/A'}
+                    {details?.createdAt
+                      ? formatdbDate(details?.createdAt)
+                      : 'N/A'}
                   </p>
                   <p className="text-sm font-normal text-muted-foreground">
                     Created On
@@ -141,7 +183,7 @@ export default function GrievanceDetail({ details, closeSecondPanel }: IProps) {
           </Card>
         </>
       )}
-      {activeTab === 'edit' && <EditGrievance />}
+      {activeTab === 'edit' && <EditGrievance details={details} />}
     </>
   );
 }

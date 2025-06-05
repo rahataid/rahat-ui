@@ -8,12 +8,14 @@ type IProps = {
 
 export default function HeaderWithBack({ title, path, subtitle }: IProps) {
   return (
-    <div className="mb-5">
+    <div>
       <div className="flex items-center space-x-2">
         <Back path={path} />
         <h1 className="font-semibold text-[28px]">{title}</h1>
       </div>
-      <p className="ml-9 text-muted-foreground text-base">{subtitle}</p>
+      <p className="ml-9 text-muted-foreground text-base hidden sm:block">
+        {subtitle}
+      </p>
     </div>
   );
 }

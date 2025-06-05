@@ -13,12 +13,14 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import React, { FC, useEffect, useState } from 'react';
-import { parseEther } from 'viem';
+import { parseEther, parseUnits } from 'viem';
 import Step1DisburseMethod from './1-disburse-method';
 import Step2DisburseAmount from './2-disburse-amount';
 import Step3DisburseSummary from './3-disburse-summary';
 import { WarningModal } from './warning';
 import { Step, Stepper } from 'react-form-stepper';
+import { useAccount } from 'wagmi';
+import { toast } from 'react-toastify';
 
 type DisburseFlowProps = {
   selectedBeneficiaries?: string[];
@@ -42,11 +44,14 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
+  const safeWallet = useProjectSettingsStore(
+    (state) => state?.settings?.[id]?.['SAFE_WALLET']?.address,
+  );
 
   const { data: safePendingTransactions, isLoading } =
     useGetSafePendingTransactions(id);
   const pendingTransactions = safePendingTransactions?.results || [];
-
+  const { isConnected } = useAccount();
   const disburseToken = useDisburseTokenToBeneficiaries();
   const disburseMultiSig = useDisburseTokenUsingMultisig();
   const { data: projectData } = useProject(id);
@@ -58,8 +63,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     setStepData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const pending =
+  const pendingMultiSignTransactions =
     stepData?.treasurySource === 'MULTISIG' && pendingTransactions?.length > 0;
+  console.log('pendingMultiSignTransactions', pendingMultiSignTransactions);
 
   const handleNext = () => {
     const currentStepValidations = steps[currentStep].validation;
@@ -83,33 +89,53 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const handleDisburseToken = async () => {
     setIsWarningModalOpen(false);
 
-    if (selectedBeneficiaries && selectedBeneficiaries?.length > 0) {
-      if (stepData.treasurySource === 'MULTISIG') {
-        await disburseMultiSig.mutateAsync({
-          amount: String(
-            +stepData.disburseAmount * selectedBeneficiaries?.length ?? 0,
-          ),
-          projectUUID: id,
-          beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
-          disburseMethod: stepData.treasurySource,
-          rahatTokenAddress: contractSettings?.rahattoken?.address,
-          c2cProjectAddress: contractSettings?.c2cproject?.address,
-        });
-        return;
-      }
+    if (!isConnected) {
+      toast.error('Please connect to wallet!');
+      return;
     }
 
-    await disburseToken.mutateAsync({
-      amount: parseEther(stepData.disburseAmount),
-      beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
-      rahatTokenAddress: contractSettings?.rahattoken?.address,
-      c2cProjectAddress: contractSettings?.c2cproject?.address,
+    if (!selectedBeneficiaries || selectedBeneficiaries.length === 0) {
+      toast.error('No beneficiaries selected!');
+      return;
+    }
+
+    const beneficiaryAddresses = selectedBeneficiaries as `0x${string}`[];
+    const { rahattoken, c2cproject } = contractSettings || {};
+
+    if (stepData.treasurySource === 'MULTISIG') {
+      const totalAmount = String(
+        +stepData.disburseAmount * selectedBeneficiaries.length,
+      );
+      const data = await disburseMultiSig.mutateAsync({
+        amount: totalAmount,
+        projectUUID: id,
+        beneficiaryAddresses,
+        disburseMethod: stepData.treasurySource,
+        rahatTokenAddress: rahattoken?.address,
+        c2cProjectAddress: c2cproject?.address,
+      });
+      const resData = Array.isArray(data) ? data?.[0] : data;
+      route.push(
+        `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&from=${safeWallet}&&disbursementUuid=${resData?.Disbursement?.uuid}&&safeTxHash=${resData?.safeTxHash}`,
+      );
+      return;
+    }
+
+    const disbursement = await disburseToken.mutateAsync({
+      amount: stepData.disburseAmount,
+      beneficiaryAddresses,
+      rahatTokenAddress: rahattoken?.address,
+      c2cProjectAddress: c2cproject?.address,
       disburseMethod: stepData.treasurySource,
       projectUUID: id,
     });
+    console.log('SUCCESS', disbursement);
+    const resData = Array.isArray(disbursement)
+      ? disbursement?.[0]
+      : disbursement;
 
     route.push(
-      `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm`,
+      `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&disbursementUuid=${resData?.Disbursement?.uuid}`,
     );
   };
 
@@ -117,13 +143,17 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     if (currentStep === 0) {
       route.push(`/projects/c2c/${id}/beneficiary`);
     } else if (currentStep > 0) {
+      if (currentStep === 1 || currentStep === 2) {
+        stepData.disburseAmount = '';
+      }
       setCurrentStep(currentStep - 1);
     }
   };
 
   const steps = [
     {
-      id: 'step1',
+      id: 'Step 1',
+      title: 'Disbursement Method',
       component: (
         <Step1DisburseMethod
           value={stepData.treasurySource}
@@ -140,7 +170,8 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       },
     },
     {
-      id: 'step2',
+      id: 'Step 2',
+      title: 'Disbursement Details',
       component: (
         <Step2DisburseAmount
           selectedBeneficiaries={
@@ -160,13 +191,14 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       },
     },
     {
-      id: 'confirm_send',
+      id: 'Step 3',
       title: 'Review & Confirm',
       component: (
         <Step3DisburseSummary
           selectedBeneficiaries={selectedBeneficiaries}
           token="USDC"
           value={stepData.disburseAmount}
+          treasurySource={stepData.treasurySource}
           projectSubgraphDetails={projectSubgraphDetails}
         />
       ),
@@ -214,6 +246,8 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     return steps[currentStep].component;
   };
 
+  console.log('pendingTransactions', pendingTransactions);
+
   return (
     <div className="p-2 mx-2 flex flex-col justify-evenly">
       <div className="bg-card rounded-lg">
@@ -233,12 +267,12 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
           }}
         >
           {steps.map((step, index) => (
-            <Step key={index} label={step.id} />
+            <Step key={index} label={step.title} />
           ))}
         </Stepper>
         <div>{renderComponent()}</div>
         <div className="flex items-center justify-end gap-4">
-          {pending && (
+          {pendingMultiSignTransactions && (
             <p className="text-red-500 text-sm">
               Pending transactions. Can't proceed right now.
             </p>
@@ -251,10 +285,13 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
               <Button
                 onClick={handleNext}
                 disabled={
-                  (stepData?.treasurySource === 'MULTISIG' && isLoading) ||
-                  pending ||
+                  pendingMultiSignTransactions ||
                   disburseMultiSig.isPending ||
-                  disburseToken.isPending
+                  disburseToken.isPending ||
+                  (currentStep === 0 && !stepData.treasurySource) ||
+                  (currentStep === 1 &&
+                    (!stepData.disburseAmount ||
+                      Number(stepData.disburseAmount) <= 0))
                 }
               >
                 {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}

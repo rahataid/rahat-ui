@@ -109,6 +109,29 @@ export default function ManageThreshold() {
                         <Input
                           type="number"
                           placeholder="Enter a Mandatory  Value"
+                          onKeyDown={(e) => {
+                            const invalidKeys = [
+                              'e',
+                              'E',
+                              '+',
+                              '-',
+                              '.',
+                              ',',
+                              '*',
+                              '/',
+                              '@',
+                              '#',
+                              '$',
+                              '%',
+                              '^',
+                              '&',
+                              '(',
+                              ')',
+                            ];
+                            if (invalidKeys.includes(e.key)) {
+                              e.preventDefault();
+                            }
+                          }}
                           {...field}
                         />
                       </FormControl>
@@ -129,6 +152,29 @@ export default function ManageThreshold() {
                         <Input
                           type="number"
                           placeholder="Enter a Optional Value"
+                          onKeyDown={(e) => {
+                            const invalidKeys = [
+                              'e',
+                              'E',
+                              '+',
+                              '-',
+                              '.',
+                              ',',
+                              '*',
+                              '/',
+                              '@',
+                              '#',
+                              '$',
+                              '%',
+                              '^',
+                              '&',
+                              '(',
+                              ')',
+                            ];
+                            if (invalidKeys.includes(e.key)) {
+                              e.preventDefault();
+                            }
+                          }}
                           {...field}
                         />
                       </FormControl>
@@ -143,7 +189,7 @@ export default function ManageThreshold() {
                 type="button"
                 variant="secondary"
                 className=" px-8 "
-                onClick={() => form.reset()}
+                onClick={() => router.back()}
               >
                 Cancel
               </Button>
@@ -154,6 +200,10 @@ export default function ManageThreshold() {
                     className="rounded-sm"
                     onClick={() => setOpen(true)}
                     type="button"
+                    disabled={
+                      !form.watch('requiredMandatoryTriggers') ||
+                      !form.watch('requiredOptionalTriggers')
+                    }
                   >
                     Configure
                   </Button>

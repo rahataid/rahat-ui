@@ -54,16 +54,6 @@ export default function AssignFundsForm() {
     beneficiaryName: z
       .string()
       .min(1, { message: 'Select a beneficiary group' }),
-    // tokenAmount: z
-    //   .string()
-    //   .min(1, { message: 'Enter valid amount' })
-    //   .refine(
-    //     (val) => {
-    //       const num = Number(val);
-    //       return !isNaN(num) && num >= 0;
-    //     },
-    //     { message: 'Amount must be a positive number' },
-    //   ),
     tokenAmount: z
       .string()
       .min(1, { message: 'Enter valid amount' })
@@ -243,6 +233,30 @@ export default function AssignFundsForm() {
                         type="text"
                         placeholder="Write token amount"
                         {...field}
+                        onKeyDown={(e) => {
+                          const blockedKeys = [
+                            ' ',
+                            'e',
+                            'E',
+                            '+',
+                            '-',
+                            '.',
+                            ',',
+                            '/',
+                            '*',
+                            '@',
+                            '#',
+                            ...Array.from({ length: 26 }, (_, i) =>
+                              String.fromCharCode(65 + i),
+                            ), // A–Z
+                            ...Array.from({ length: 26 }, (_, i) =>
+                              String.fromCharCode(97 + i),
+                            ), // a–z
+                          ];
+                          if (blockedKeys.includes(e.key)) {
+                            e.preventDefault();
+                          }
+                        }}
                         onChange={(e) => {
                           field.onChange(e);
                           form.trigger('tokenAmount');

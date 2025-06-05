@@ -165,21 +165,22 @@ export const useUpdatePayout = () => {
   });
 };
 
-export const usePaymentProviders = (projectUUID: UUID) => {
-  const { settings } = useProjectSettingsStore((state) => ({
-    settings: state.settings,
-  }));
-
-  const url = settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS?.OFFRAMP]?.url;
+export const usePaymentProviders = ({ projectUUID }: { projectUUID: UUID }) => {
+  const q = useProjectAction();
 
   return useQuery({
-    queryKey: ['paymentProviders', projectUUID],
+    queryKey: ['aa.payout.getPaymentProviders', projectUUID],
     queryFn: async () => {
-      if (!url) throw new Error('Missing OFFRAMP URL');
-      const response = await axios.get(url);
-      return response.data;
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.payout.getPaymentProviders',
+          payload: {},
+        },
+      });
+      return mutate.data;
     },
-    enabled: !!url,
+    enabled: !!projectUUID,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });

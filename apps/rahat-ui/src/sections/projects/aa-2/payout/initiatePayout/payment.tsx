@@ -68,7 +68,9 @@ export default function PaymentInitiation() {
   const router = useRouter();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  const { data: paymentProviders } = usePaymentProviders(projectID);
+  const { data: paymentProviders } = usePaymentProviders({
+    projectUUID: projectID,
+  });
 
   const { data: beneficiaryGroups } = useBeneficiariesGroups(projectID, {
     perPage: '100',
@@ -130,6 +132,7 @@ export default function PaymentInitiation() {
     },
   });
 
+  console.log(paymentProviders);
   const handleChange = <K extends keyof PaymentState>(
     key: K,
     value: PaymentState[K],
@@ -307,13 +310,12 @@ export default function PaymentInitiation() {
                 </Label>
                 <SelectComponent
                   name="payment provider"
-                  options={paymentProviders?.data?.map((p: any) => p?.name)}
+                  options={paymentProviders?.map((p: any) => p?.name)}
                   value={formState.paymentProvider?.name || ''}
                   onChange={(value) => {
-                    const selectedPaymentProvider =
-                      paymentProviders?.data?.find(
-                        (p: any) => p.name === value,
-                      );
+                    const selectedPaymentProvider = paymentProviders?.find(
+                      (p: any) => p.name === value,
+                    );
                     handleChange('paymentProvider', selectedPaymentProvider);
                   }}
                 />

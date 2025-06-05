@@ -25,19 +25,19 @@ import {
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { cn } from '@rahat-ui/shadcn/src';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useConfigureThreshold, usePhasesStore } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 
 export default function ManageThreshold() {
   const [open, setOpen] = useState(false);
-
+  const router = useRouter();
   const { id, phaseId } = useParams();
   const { threshold } = usePhasesStore((state) => ({
     threshold: state.threshold,
   }));
-  const { mutateAsync } = useConfigureThreshold();
+  const { mutateAsync, isSuccess } = useConfigureThreshold();
 
   const FormSchema = z.object({
     requiredMandatoryTriggers: z.preprocess(
@@ -77,6 +77,12 @@ export default function ManageThreshold() {
     await mutateAsync({ projectUUID: id as UUID, payload });
   };
 
+  useEffect(() => {
+    if (isSuccess) {
+      setOpen(false);
+      router.push(`/projects/aa/${id}/phase/${phaseId as string}`);
+    }
+  }, [isSuccess]);
   return (
     <div className="p-4">
       <HeaderWithBack

@@ -3,19 +3,33 @@ import TriggerCard from './trigger.card';
 
 type IProps = {
   projectId: string;
-  triggers: any;
+  triggers?: Array<any>;
+  history?: Array<any>;
 };
 
-export default function DynamicTriggersList({ projectId, triggers }: IProps) {
+export default function DynamicTriggersList({
+  projectId,
+  triggers,
+  history,
+}: IProps) {
+  const allTriggers = triggers?.length
+    ? triggers
+    : history?.flatMap((group) =>
+      group.triggers.map((trigger: any) => ({
+        ...trigger,
+        version: group.version,
+      })),
+    ) || [];
+
   return (
-    <ScrollArea className="h-[calc(100vh-550px)] min-h-[300px]">
+    <ScrollArea className="h-[calc(100vh-360px)] min-h-[300px]">
       <div className="flex flex-col space-y-3 pr-2.5">
-        {triggers?.length ? (
-          triggers?.map((t: any) => (
+        {allTriggers?.length ? (
+          allTriggers?.map((t: any) => (
             <TriggerCard
+              key={t?.uuid}
               projectId={projectId}
               triggerId={t?.repeatKey}
-              // phase={t?.phase?.name || 'N/A'}
               type={t?.source === 'MANUAL' ? 'Manual' : 'Automated'}
               isTriggered={t?.isTriggered}
               title={t?.title || 'N/A'}
@@ -23,6 +37,7 @@ export default function DynamicTriggersList({ projectId, triggers }: IProps) {
               riverBasin={t?.phase?.source?.riverBasin || 'N/A'}
               time={new Date(t?.createdAt)?.toLocaleString()}
               triggerType={t?.isMandatory ? 'Mandatory' : 'Optional'}
+              version={t?.version}
             />
           ))
         ) : (

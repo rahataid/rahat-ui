@@ -2,7 +2,7 @@ import React from 'react';
 import BeneficiaryInfo from './beneficiary.info';
 import TransactionLogs from './transaction.log';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useProjectBeneficiaryDetail } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 
@@ -10,11 +10,18 @@ const BeneficiaryDetail = () => {
   const params = useParams();
   const projectId = params.id as UUID;
   const beneficiaryId = params.uuid as UUID;
-
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('groupId');
+  const redirectToFund = searchParams.get('fundId');
   const details = useProjectBeneficiaryDetail({
     projectUUID: projectId,
     uuid: beneficiaryId,
   });
+  const navRoute = redirectTo
+    ? `/projects/aa/${projectId}/beneficiary/groupDetails/${redirectTo}`
+    : redirectToFund
+    ? `/projects/aa/${projectId}/fund-management/${redirectToFund}`
+    : `/projects/aa/${projectId}/beneficiary`;
 
   return (
     <div className="p-4 ">
@@ -22,7 +29,7 @@ const BeneficiaryDetail = () => {
         <HeaderWithBack
           title={'Beneficiary Details'}
           subtitle="Detailed view of the selected beneficiary"
-          path={`/projects/aa/${projectId}/beneficiary`}
+          path={navRoute}
         />
       </div>
 

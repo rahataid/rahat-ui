@@ -54,7 +54,22 @@ export default function AssignFundsForm() {
     beneficiaryName: z
       .string()
       .min(1, { message: 'Select a beneficiary group' }),
-    tokenAmount: z.string().min(1, { message: 'Enter valid amount' }),
+    // tokenAmount: z
+    //   .string()
+    //   .min(1, { message: 'Enter valid amount' })
+    //   .refine(
+    //     (val) => {
+    //       const num = Number(val);
+    //       return !isNaN(num) && num >= 0;
+    //     },
+    //     { message: 'Amount must be a positive number' },
+    //   ),
+    tokenAmount: z
+      .string()
+      .min(1, { message: 'Enter valid amount' })
+      .refine((val) => /^\d+$/.test(val), {
+        message: 'Amount must be a positive integer',
+      }),
     totalTokensReserved: z.number(),
   });
 
@@ -71,7 +86,7 @@ export default function AssignFundsForm() {
   const totalReservedTokens =
     reservationStats?.data?.totalReservedTokens?._sum?.benTokens || 0;
   const availableBudget = parsedProjectBudget - totalReservedTokens;
-
+  console.log(projectBudget);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -84,13 +99,12 @@ export default function AssignFundsForm() {
   });
 
   const benGroups = useBeneficiaryGroups(projectId, {
-    page: '1',
-    perPage: '100',
-    sort: 'updatedAt',
-    order: 'desc',
+    page: 1,
+    perPage: 100,
+    // sort: 'updatedAt',
+    // order: 'desc',
     tokenAssigned: false,
   });
-  console.log(benGroups);
   // const { beneficiariesGroups } = useBeneficiariesGroupStore((state) => ({
   //   beneficiariesGroups: state.beneficiariesGroups,
   //   beneficiariesGroupsMeta: state.beneficiariesGroupsMeta,
@@ -163,7 +177,7 @@ export default function AssignFundsForm() {
                             ? benGroups.data?.data.find(
                                 (group) => group.uuid === field.value,
                               )?.name
-                            : 'Select Ben Groups'}
+                            : 'Select Beneficiary Group'}
                           <ChevronDown className="opacity-50" />
                         </Button>
                       </FormControl>
@@ -185,8 +199,16 @@ export default function AssignFundsForm() {
                                   form.setValue(
                                     'beneficiaryGroup',
                                     group?.uuid,
+                                    { shouldValidate: true, shouldTouch: true },
                                   );
-                                  form.setValue('beneficiaryName', group?.name);
+                                  form.setValue(
+                                    'beneficiaryName',
+                                    group?.name,
+                                    {
+                                      shouldValidate: true,
+                                      shouldTouch: true,
+                                    },
+                                  );
                                 }}
                               >
                                 {group?.name}
@@ -221,6 +243,10 @@ export default function AssignFundsForm() {
                         type="text"
                         placeholder="Write token amount"
                         {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          form.trigger('tokenAmount');
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -239,7 +265,9 @@ export default function AssignFundsForm() {
                 Cancel
               </Button>
 
-              <Button className="px-10">Confirm</Button>
+              <Button className="px-10" disabled={!form.formState.isValid}>
+                Confirm
+              </Button>
             </div>
           </div>
         </div>

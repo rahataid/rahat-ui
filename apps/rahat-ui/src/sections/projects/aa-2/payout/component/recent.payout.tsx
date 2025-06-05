@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import RecentPaymentCard from './recent.payment.card';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
+import { NoResult } from 'apps/rahat-ui/src/common';
 
 interface RecentPayoutProps {
   payouts: Array<Record<string, any>>;

@@ -1,5 +1,7 @@
 import {
   useBeneficiariesGroupStore,
+  useSingleBeneficiaryGroup,
+  useSingleStakeholdersGroup,
   useStakeholdersGroupsStore,
   useUploadFile,
 } from '@rahat-ui/query';
@@ -24,8 +26,13 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { Transport, ValidationContent } from '@rumsan/connect/src/types';
+import { UUID } from 'crypto';
+import { isValid } from 'date-fns';
 import { Mail, MessageSquare, PencilIcon, Phone, Trash2 } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import * as React from 'react';
+import { get } from 'react-hook-form';
+import { DialogComponent } from '../details/dialog.reuse';
 
 type IProps = {
   form: any;
@@ -44,6 +51,7 @@ export default function AddCommunicationForm({
   communicationData,
   onRemove,
 }: IProps) {
+  const { id: projectId } = useParams();
   const [audioFile, setAudioFile] = React.useState({
     fileName: '',
     mediaURL: '',
@@ -51,6 +59,7 @@ export default function AddCommunicationForm({
   const [contentType, setContentType] = React.useState<ValidationContent | ''>(
     '',
   );
+  const [address, setAddress] = React.useState(false);
   const [isPlaying, setIsPlaying] = React.useState(false);
   const fileUpload = useUploadFile();
 
@@ -63,10 +72,30 @@ export default function AddCommunicationForm({
   );
 
   const activityCommunication = form.watch('activityCommunication') || {};
+
+  const fieldName = (name: string) => `activityCommunication.${name}`; // Dynamic field name generator
+  const selectedTransport = form.watch(fieldName('transportId'));
+  const groupType = form.watch(fieldName('groupType'));
+  const groupId = form.watch(fieldName('groupId'));
+
+  const transportData = appTransports?.find(
+    (t) => t.cuid === selectedTransport,
+  );
+  const isMessageRequired =
+    transportData?.name === 'EMAIL' || transportData?.name === 'SMS';
+
+  const isMessage =
+    isMessageRequired &&
+    (!activityCommunication.message ||
+      activityCommunication.message.trim() === '');
   const isSaveDisabled =
     !activityCommunication.groupType ||
     !activityCommunication.groupId ||
-    fileUpload.isPending;
+    fileUpload.isPending ||
+    !!get(form.formState.errors, fieldName('groupId')) ||
+    !activityCommunication.transportId ||
+    isMessage;
+
   // const stakeholdersGroups = [
   //   { id: '1', uuid: 'stkh-123', name: 'Health Workers' },
   //   { id: '2', uuid: 'stkh-456', name: 'NGO Representatives' },
@@ -79,19 +108,87 @@ export default function AddCommunicationForm({
   //   { id: '3', uuid: 'benf-303', name: 'Disabled Individuals' },
   // ];
 
-  const fieldName = (name: string) => `activityCommunication.${name}`; // Dynamic field name generator
+  const stakeholderId = groupType === 'STAKEHOLDERS' && groupId;
+  const beneficiaryId = groupType === 'BENEFICIARY' && groupId;
 
-  const selectedTransport = form.watch(fieldName('transportId'));
+  const { data: stakeholdersGroup, isLoading } = useSingleStakeholdersGroup(
+    projectId as UUID,
+    stakeholderId,
+  );
 
-  const groupId = form.watch(fieldName('groupId'));
+  const { data: beneficiaryGroup, isLoading: isLoadingss } =
+    useSingleBeneficiaryGroup(projectId as UUID, beneficiaryId);
+
+  /* validate group email is to check if there are any missing  emails in beneficiaries group and stakeholders group before adding any  data 
+   for the communication type email
+  */
+  const validateGroupEmails = ({
+    group,
+    type,
+    extractEmail,
+    form,
+    fieldName,
+  }: {
+    group: any;
+    type: 'stakeholders' | 'beneficiaries';
+    extractEmail: (item: any) => string | undefined;
+    form: any;
+    fieldName: (key: string) => string;
+  }) => {
+    if (group && Array.isArray(group)) {
+      const hasValidEmail = group.some((item) => {
+        const email = extractEmail(item);
+        return email?.trim() !== '';
+      });
+
+      if (!hasValidEmail) {
+        form.setError(fieldName('groupId'), {
+          type: 'manual',
+          message: `Email address is missing for some ${
+            type === 'stakeholders' ? 'stakeholders' : 'beneficiaries'
+          } in this group.`,
+        });
+      } else {
+        form.clearErrors(fieldName('groupId'));
+      }
+    }
+  };
 
   React.useEffect(() => {
-    const transportData = appTransports?.find(
-      (t) => t.cuid === selectedTransport,
-    );
-    setContentType(transportData?.validationContent as ValidationContent);
-  }, [selectedTransport]);
+    if (!address) {
+      // Clear any previous errors if transport doesn't require email
+      form.clearErrors(fieldName('groupId'));
+      return;
+    }
+    validateGroupEmails({
+      group: stakeholdersGroup?.stakeholders,
+      type: 'stakeholders',
+      extractEmail: (s) => s?.email,
+      form,
+      fieldName,
+    });
 
+    validateGroupEmails({
+      group: beneficiaryGroup?.groupedBeneficiaries,
+      type: 'beneficiaries',
+      extractEmail: (s) => s?.Beneficiary?.pii?.email,
+      form,
+      fieldName,
+    });
+  }, [address, stakeholdersGroup, beneficiaryGroup]);
+
+  React.useEffect(() => {
+    // const transportData = appTransports?.find(
+    //   (t) => t.cuid === selectedTransport,
+    // );
+    setContentType(transportData?.validationContent as ValidationContent);
+    if (transportData?.validationAddress === 'EMAIL') {
+      setAddress(true);
+      form.setValue(fieldName('audioURL'), '');
+    } else {
+      setAddress(false);
+    }
+  }, [selectedTransport]);
   const renderGroups = () => {
     const selectedGroupType = form.watch(fieldName('groupType'));
     let groups = <SelectLabel>Please select group type</SelectLabel>;
@@ -153,6 +250,8 @@ export default function AddCommunicationForm({
     form.setValue(fieldName('message'), '');
     form.setValue(fieldName('transportId'), '');
     form.setValue(fieldName('audioURL'), '');
+    form.clearErrors(fieldName('groupId'));
+
     setAudioFile({
       fileName: '',
       mediaURL: '',
@@ -181,6 +280,19 @@ export default function AddCommunicationForm({
     handleEditClick(itemData);
     onRemove(i);
   };
+
+  const clearCommunicationForm = () => {
+    form.setValue(fieldName('groupId'), '');
+    form.setValue(fieldName('groupType'), '');
+    form.setValue(fieldName('message'), '');
+    form.setValue(fieldName('transportId'), '');
+    form.setValue(fieldName('audioURL'), '');
+    setAudioFile({
+      fileName: '',
+      mediaURL: '',
+    });
+  };
+
   return (
     <div className="border border-dashed rounded p-4 my-8">
       <div className="flex justify-between items-center mb-6">
@@ -309,6 +421,23 @@ export default function AddCommunicationForm({
               />
             </div>
           )}
+
+        {address && (
+          <FormField
+            control={form.control}
+            name={fieldName('subject')}
+            render={({ field }) => (
+              <FormItem className="col-span-2">
+                <FormLabel>Subject</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter subject" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
         {contentType === ValidationContent.TEXT && (
           <FormField
             control={form.control}
@@ -329,7 +458,13 @@ export default function AddCommunicationForm({
       </div>
 
       <div className="flex justify-end mt-4 gap-4">
-        <Button variant="outline">Remove</Button>
+        <Button
+          variant="outline"
+          onClick={clearCommunicationForm}
+          type="button"
+        >
+          Remove
+        </Button>
         <Button
           variant="outline"
           onClick={handleSave}
@@ -384,7 +519,9 @@ export default function AddCommunicationForm({
                       <span>•</span>
                     </div>
                   </div>
-
+                  {t?.subject && (
+                    <p className="text-sm text-gray-700 mt-1">{t?.subject}</p>
+                  )}
                   <p className="text-sm text-gray-700 mt-1">{t?.message}</p>
                   {t?.audioURL?.mediaURL && (
                     <div className="pt-2">
@@ -402,14 +539,21 @@ export default function AddCommunicationForm({
                   )}
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 justify-center items-center">
                   <PencilIcon
-                    className="text-blue-500 hover:text-blue-600 transition-colors w-5 h-5"
+                    className=" text-blue-500 hover:text-blue-600 transition-colors hover:cursor-pointer hover:bg-slate-100 w-4 flex justify-center h-4  border-none p-0 hover:none "
                     onClick={() => editButtonClickHandler(i)}
                   />
-                  <Trash2
-                    className="text-red-500 hover:text-red-600 transition-colors w-5 h-5"
-                    onClick={() => handleRemoveclick(i)}
+                  <DialogComponent
+                    buttonIcon={Trash2}
+                    buttonText=""
+                    dialogTitle="Remove Communication"
+                    dialogDescription="Are you sure you want to remove this communication?"
+                    confirmButtonText="Remove"
+                    handleClick={() => handleRemoveclick(i)}
+                    buttonClassName=" text-red-500 hover:text-red-600 transition-colors w-6 flex justify-center h-6  border-none p-0 hover:none "
+                    confirmButtonClassName="rounded-sm w-full bg-red-500"
+                    variant="outline"
                   />
                 </div>
               </div>

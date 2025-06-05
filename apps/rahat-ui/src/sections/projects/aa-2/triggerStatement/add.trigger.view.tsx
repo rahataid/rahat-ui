@@ -63,20 +63,45 @@ export default function AddTriggerView() {
     },
   });
 
-  const AutomatedFormSchema = z.object({
-    title: z.string().min(2, { message: 'Please enter valid name' }),
-    source: z.string().min(1, { message: 'Please select data source' }),
-    isMandatory: z.boolean().optional(),
-    minLeadTimeDays: z.string().optional(),
-    maxLeadTimeDays: z.string().optional(),
-    probability: z.string().optional(),
-    notes: z.string().optional(),
-    warningLevel: z.string().optional(),
-    dangerLevel: z.string().optional(),
-    forecast: z.string().optional(),
-    daysToConsiderPrior: z.string().optional(),
-    forecastStatus: z.string().optional(),
-  });
+  const AutomatedFormSchema = z
+    .object({
+      title: z.string().min(2, { message: 'Please enter valid name' }),
+      source: z.string().min(1, { message: 'Please select data source' }),
+      isMandatory: z.boolean().optional(),
+      minLeadTimeDays: z.string().optional(),
+      maxLeadTimeDays: z.string().optional(),
+      probability: z.string().optional(),
+      notes: z.string().optional(),
+      warningLevel: z.string().optional(),
+      dangerLevel: z.string().optional(),
+      forecast: z.string().optional(),
+      daysToConsiderPrior: z.string().optional(),
+      forecastStatus: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+      if (
+        data.source === 'DHM' &&
+        selectedPhase?.name === 'ACTIVATION' &&
+        (!data.dangerLevel || data.dangerLevel.trim() === '')
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['dangerLevel'],
+          message: 'Danger Level is required',
+        });
+      }
+      if (
+        data.source === 'DHM' &&
+        selectedPhase?.name === 'READINESS' &&
+        (!data.warningLevel || data.warningLevel.trim() === '')
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['warningLevel'],
+          message: 'Warning Level is required',
+        });
+      }
+    });
 
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({
     resolver: zodResolver(AutomatedFormSchema),
@@ -171,37 +196,37 @@ export default function AddTriggerView() {
     const payload = allTriggers?.map(
       ({
         riverBasin,
-        maxLeadTimeDays,
-        minLeadTimeDays,
-        probability,
         type,
         time,
-        warningLevel,
-        dangerLevel,
-        forecast,
-        daysToConsiderPrior,
-        forecastStatus,
+        phaseId,
+        isMandatory,
+        title,
+        source,
+        notes,
         ...rest
-      }) => ({
-        ...rest,
-        triggerStatement: {
-          maxLeadTimeDays,
-          minLeadTimeDays,
-          probability,
-          warningLevel,
-          dangerLevel,
-          forecast,
-          daysToConsiderPrior,
-          forecastStatus,
-        },
-      }),
+      }) => {
+        // Only include non-empty fields in triggerStatement
+        const triggerStatement = Object.fromEntries(
+          Object.entries(rest).filter(
+            ([, value]) =>
+              value !== undefined && value !== null && value !== '',
+          ),
+        );
+        return {
+          phaseId,
+          isMandatory,
+          title,
+          source,
+          notes,
+          triggerStatement,
+        };
+      },
     );
     try {
       await addTriggers.mutateAsync({
         projectUUID: projectId,
         triggerStatementPayload: { triggers: payload },
       });
-      // router.push(triggerViewPath);
       router.back();
     } catch (e) {
       console.error(e);

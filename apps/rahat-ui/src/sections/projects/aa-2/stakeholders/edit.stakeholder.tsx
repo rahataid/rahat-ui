@@ -13,7 +13,7 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
-import { Heading } from 'apps/rahat-ui/src/common';
+import { HeaderWithBack, Heading } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
@@ -30,6 +30,7 @@ export default function EditStakeholders() {
   const stakeholder = useStakeholderDetails(projectId, {
     uuid: stakeholdersId,
   });
+  const redirectTo = searchParams?.get('from');
   console.log(' stakeholders', stakeholder);
   const updateStakeholder = useUpdateStakeholders();
 
@@ -46,7 +47,12 @@ export default function EditStakeholders() {
     phone: z.string().optional().refine(isValidPhoneNumberRefinement, {
       message: 'Invalid phone number',
     }),
-    email: z.string().optional(),
+    email: z
+      .string()
+      .optional()
+      .refine((email) => !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), {
+        message: 'Invalid email address',
+      }),
     designation: z
       .string()
       .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
@@ -85,13 +91,17 @@ export default function EditStakeholders() {
       });
     }
   }, [stakeholder, form]);
+
+  const routeNav = redirectTo
+    ? `/projects/aa/${projectId}/stakeholders?tab=stakeholders`
+    : `/projects/aa/${projectId}/stakeholders/${stakeholdersId}`;
   const handleEditStakeholders = async (data: z.infer<typeof FormSchema>) => {
     try {
       await updateStakeholder.mutateAsync({
         projectUUID: projectId,
         stakeholderPayload: { uuid: stakeholdersId, ...data },
       });
-      router.push(`/projects/aa/${projectId}/stakeholders/${stakeholdersId}`);
+      router.push(routeNav);
       form.reset();
     } catch (e) {
       console.error('Error updating stakeholder', e);
@@ -114,9 +124,10 @@ export default function EditStakeholders() {
   }
   return (
     <div className="p-4">
-      <Heading
-        title="Edit Stakeholder"
-        description="Edit the form below  to update a stakeholder"
+      <HeaderWithBack
+        title={'Edit Stakeholder'}
+        subtitle="Fill the form below  to create a new stakeholder"
+        path={routeNav}
       />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleEditStakeholders)}>

@@ -13,13 +13,22 @@ import {
 } from 'lucide-react';
 import CommsLogsTable from './comms.logs.table';
 import { useParams } from 'next/navigation';
-import { useGetCommunicationLogs, useListSessionLogs, usePagination, useRetryFailedBroadcast } from '@rahat-ui/query';
+import {
+  useGetCommunicationLogs,
+  useListSessionLogs,
+  usePagination,
+  useRetryFailedBroadcast,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
 import { Player } from 'react-simple-player';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import React, { useMemo } from 'react';
-import { getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
+import {
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import useCommsLogsTableColumns from './useCommsLogsTableColumns';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
@@ -31,50 +40,55 @@ type IHeadCardProps = {
 
 export default function CommsLogsDetailPage() {
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
-  const [communicationId, activityId, sessionId] = (commsIdXactivityIdXsessionId as string).split('%40');
+  const [communicationId, activityId, sessionId] = (
+    commsIdXactivityIdXsessionId as string
+  ).split('%40');
 
-  console.log("comms", communicationId)
-  console.log("act", activityId)
-  console.log("Session", sessionId)
+  console.log('comms', communicationId);
+  console.log('act', activityId);
+  console.log('Session', sessionId);
 
-  const {
-    pagination,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    setPagination,
-  } = usePagination();
+  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
+    usePagination();
 
   const columns = useCommsLogsTableColumns();
 
   // logs?.sessionLogs
 
- 
+  const { data: logs, isLoading } = useGetCommunicationLogs(
+    projectID as UUID,
+    communicationId,
+    activityId,
+  );
+  const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
+    useListSessionLogs(sessionId, { ...pagination });
 
-  const { data: logs, isLoading } = useGetCommunicationLogs(projectID as UUID, communicationId, activityId);
-  const {data: sessionLogs, isLoading: isLoadingSessionLogs} = useListSessionLogs(sessionId, { ...pagination })
+  const logsMeta = sessionLogs?.httpReponse?.data?.meta;
 
-  const logsMeta = sessionLogs?.httpReponse?.data?.meta
-
-  const mutateRetry = useRetryFailedBroadcast(projectID as UUID, communicationId, activityId);
+  console.log('logs', logs);
+  const mutateRetry = useRetryFailedBroadcast(
+    projectID as UUID,
+    communicationId,
+    activityId,
+  );
 
   const retryFailed = async () => {
-    mutateRetry.mutateAsync()
-  }
+    mutateRetry.mutateAsync();
+  };
 
   const failedCount = useMemo(() => {
-    return (logs?.sessionLogs?.filter((log: any) => log?.status === BroadcastStatus.FAIL))?.length
-  }, [logs])
-
+    return logs?.sessionLogs?.filter(
+      (log: any) => log?.status === BroadcastStatus.FAIL,
+    )?.length;
+  }, [logs]);
 
   const logsGroupName = useMemo(() => {
     if (logs?.groupName.length > 20) {
-      return `${logs?.groupName?.slice(0, 20)}...`
+      return `${logs?.groupName?.slice(0, 20)}...`;
     } else {
-      return logs?.groupName
+      return logs?.groupName;
     }
-  }, [logs])
-
+  }, [logs]);
 
   const table = useReactTable({
     manualPagination: true,
@@ -87,7 +101,6 @@ export default function CommsLogsDetailPage() {
     setPagination({ page: 1, perPage: 10 });
   }, []);
 
-
   const headCardFields = [
     {
       title: 'Total Audience',
@@ -97,7 +110,7 @@ export default function CommsLogsDetailPage() {
     {
       title: 'Triggered At',
       icon: Timer,
-      content: renderDateTime(logs?.sessionDetails?.createdAt)
+      content: renderDateTime(logs?.sessionDetails?.createdAt),
     },
     {
       title: 'Group Name',
@@ -112,31 +125,33 @@ export default function CommsLogsDetailPage() {
     {
       title: 'Status',
       icon: MessageSquareWarning,
-      content: <Badge className="bg-orange-100 text-orange-600">{logs?.sessionDetails?.status}</Badge>
-    }
+      content: (
+        <Badge className="bg-orange-100 text-orange-600">
+          {logs?.sessionDetails?.status}
+        </Badge>
+      ),
+    },
   ];
 
   if (isLoading || isLoadingSessionLogs) {
-    return (<Loader />)
+    return <Loader />;
   }
 
   return (
     <div className="p-4 h-[calc(100vh-65px)] bg-secondary">
       <div className="flex justify-between items-center mb-4">
         <h1 className="font-semibold text-xl">Communication Details</h1>
-        <div className='flex gap-2'>
+        <div className="flex gap-2">
           <Button type="button">
             <Download className="mr-2" size={16} strokeWidth={2} />
             <span className="font-normal">Failed Exports</span>
           </Button>
-          {
-            (failedCount > 0) && (
-              <Button type="button" onClick={retryFailed}>
-                <RefreshCcw className="mr-2" size={16} strokeWidth={2} />
-                <span className="font-normal">Retry Failed</span>
-              </Button>
-            )
-          }
+          {failedCount > 0 && (
+            <Button type="button" onClick={retryFailed}>
+              <RefreshCcw className="mr-2" size={16} strokeWidth={2} />
+              <span className="font-normal">Retry Failed</span>
+            </Button>
+          )}
         </div>
       </div>
 
@@ -167,7 +182,6 @@ export default function CommsLogsDetailPage() {
 
       <div className="mt-2 p-4 border border-primary rounded-sm bg-card">
         <div className="flex justify-start space-x-8 items-center">
-
           <div className="flex space-x-4">
             <div className="h-12 w-12 rounded-full border border-muted-foreground grid place-items-center">
               <MessageSquareMore
@@ -184,10 +198,9 @@ export default function CommsLogsDetailPage() {
             </div>
           </div>
 
-          <div className='w-full'>
+          <div className="w-full">
             {renderMessage(logs?.communicationDetail?.message)}
           </div>
-
         </div>
       </div>
 
@@ -214,7 +227,6 @@ export default function CommsLogsDetailPage() {
   );
 }
 
-
 function renderDateTime(dateTime: string) {
   if (dateTime) {
     const d = new Date(dateTime);
@@ -222,28 +234,32 @@ function renderDateTime(dateTime: string) {
     const localeTime = d.toLocaleTimeString();
     return `${localeDate} ${localeTime}`;
   }
-  return 'N/A'
+  return 'N/A';
 }
 
-
 function renderMessage(message: any) {
-  if (typeof (message) === "string") {
-    return message
+  if (typeof message === 'string') {
+    return message;
   }
   return (
-    <div className='bg-card space-x-8 flex items-center'>
-      <a className='cursor-pointer inline-flex' href={message?.mediaURL} target='_blank'>
-        <Download size={20} strokeWidth={1.5} className='mr-2' />
-        <span>
-          {`${message?.fileName?.substring(0, 20)}...`}
-        </span>
+    <div className="bg-card space-x-8 flex items-center">
+      <a
+        className="cursor-pointer inline-flex"
+        href={message?.mediaURL}
+        target="_blank"
+      >
+        <Download size={20} strokeWidth={1.5} className="mr-2" />
+        <span>{`${message?.fileName?.substring(0, 20)}...`}</span>
       </a>
-      <div className='p-2 w-1/2'>
-        <Player src={message?.mediaURL} accent={[41, 121, 214]} grey={[250, 250, 250]} />
+      <div className="p-2 w-1/2">
+        <Player
+          src={message?.mediaURL}
+          accent={[41, 121, 214]}
+          grey={[250, 250, 250]}
+        />
       </div>
     </div>
-
-  )
+  );
 }
 
 // function renderBadgeBg(status: string) {
@@ -254,7 +270,7 @@ function renderMessage(message: any) {
 //     return "bg-green-200"
 //   }
 //   if(status === SessionStatus.PENDING){
-//     return 
+//     return
 //   }
 //   return "bg-gray-200"
 // }

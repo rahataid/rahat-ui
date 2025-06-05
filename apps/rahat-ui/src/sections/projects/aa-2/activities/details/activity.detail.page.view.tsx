@@ -1,7 +1,7 @@
 import { Back, Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { Edit, Pencil, RefreshCcw, Trash } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { DocumentList } from '../components/documentCard';
 import CommunicationList from './activity.communication.list.card';
 import ActivityDetailCards from './activity.detail.cards';
@@ -14,13 +14,16 @@ export default function ActivitiesDetailView() {
   const params = useParams();
   const projectId = params.id as UUID;
   const activityId = params.activityID as UUID;
-
-  const activitiesListPath = `/projects/aa/${projectId}/activities`;
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('from');
 
   const { data: activityDetail, isLoading = false } = useSingleActivity(
     projectId,
     activityId,
   );
+  const activitiesListPath = redirectTo
+    ? `/projects/aa/${projectId}/activities`
+    : `/projects/aa/${projectId}/activities/list/${activityDetail?.phase?.name.toLowerCase()}`;
 
   const deleteActivity = useDeleteActivities();
 
@@ -41,9 +44,7 @@ export default function ActivitiesDetailView() {
     <div className="h-[calc(100vh-65px)] p-4">
       <div className="flex gap-2 justify-between">
         <div className="flex flex-col gap-2">
-          <Back
-            path={`/projects/aa/${projectId}/activities/list/${activityDetail?.phase?.name.toLowerCase()}`}
-          />
+          <Back path={activitiesListPath} />
           <Heading
             title={`Activity Details`}
             description="Detailed view of selected activity"
@@ -85,7 +86,7 @@ export default function ActivitiesDetailView() {
             Icon={RefreshCcw}
             handleClick={() =>
               router.push(
-                `/projects/aa/${projectId}/activities/${activityId}/update-status`,
+                `/projects/aa/${projectId}/activities/${activityId}/update-status?from=detailPage`,
               )
             }
             name="Update Status"

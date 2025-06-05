@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGroupsReservedFunds, usePagination } from '@rahat-ui/query';
 import {
+  ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -40,12 +41,15 @@ export default function FundManagementList() {
     {
       ...pagination,
       ...filters,
+      sort: 'createdAt',
+      order: 'desc',
     },
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
   const columns = useFundManagementTableColumns();
+
   const table = useReactTable({
     data: groupsFundsData?.response?.data || [],
     columns,

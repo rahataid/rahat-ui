@@ -1,37 +1,47 @@
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Eye } from 'lucide-react';
+import { Eye, RefreshCcw } from 'lucide-react';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
+import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 
-function getStatusBg(status: string) {
-  if (status === 'NOT_STARTED') {
-    return 'bg-gray-200';
-  }
+// function getStatusBg(status: string) {
+//   if (status === 'NOT_STARTED') {
+//     return 'bg-gray-200';
+//   }
 
-  if (status === 'WORK_IN_PROGRESS') {
-    return 'bg-orange-200';
-  }
+//   if (status === 'WORK_IN_PROGRESS') {
+//     return 'bg-orange-200';
+//   }
 
-  if (status === 'COMPLETED') {
-    return 'bg-green-200';
-  }
+//   if (status === 'COMPLETED') {
+//     return 'bg-green-200';
+//   }
 
-  if (status === 'DELAYED') {
-    return 'bg-red-200';
-  }
+//   if (status === 'DELAYED') {
+//     return 'bg-red-200';
+//   }
 
-  return '';
-}
+//   return '';
+// }
 
 export default function useActivitiesTableColumn() {
   const { id: projectID } = useParams();
   const router = useRouter();
 
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('from');
+
   const handleEyeClick = (activityId: any) => {
     setPaginationToLocalStorage();
     router.push(`/projects/aa/${projectID}/activities/${activityId}`);
+  };
+
+  const handleUpdateStatusIconClick = (activityId: any) => {
+    router.push(
+      `/projects/aa/${projectID}/activities/${activityId}/update-status?from=${redirectTo}`,
+    );
   };
 
   const columns: ColumnDef<IActivitiesItem>[] = [
@@ -79,7 +89,11 @@ export default function useActivitiesTableColumn() {
           <Badge
             className={`rounded-xl capitalize text-xs font-normal ${bgColor}`}
           >
-            {status}
+            {status
+              .toLowerCase()
+              .split('_')
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(' ')}
           </Badge>
         );
       },
@@ -109,6 +123,7 @@ export default function useActivitiesTableColumn() {
     {
       id: 'actions',
       enableHiding: false,
+      header: 'Action',
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">
@@ -122,6 +137,12 @@ export default function useActivitiesTableColumn() {
               size={20}
               strokeWidth={1.5}
               onClick={() => handleEyeClick(row.original.id)}
+            />
+            <RefreshCcw
+              className="hover:text-primary cursor-pointer"
+              size={20}
+              strokeWidth={1.5}
+              onClick={() => handleUpdateStatusIconClick(row.original.id)}
             />
           </div>
         );

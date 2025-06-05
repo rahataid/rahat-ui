@@ -30,7 +30,10 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { ValidationContent } from '@rumsan/connect/src/types';
+import {
+  ValidationAddress,
+  ValidationContent,
+} from '@rumsan/connect/src/types';
 import { useUserList } from '@rumsan/react-query';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
@@ -45,7 +48,7 @@ import {
 } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 import AddCommunicationForm from './add.communication.form';
@@ -56,7 +59,8 @@ export default function AddActivities() {
   const { id: projectID } = useParams();
   const searchParams = useSearchParams();
   const phaseId = searchParams.get('phaseId');
-
+  const navPae = searchParams.get('nav');
+  // console.log(navPae);
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const { data: users, isSuccess } = useUserList({
@@ -71,11 +75,10 @@ export default function AddActivities() {
       groupId: string;
       transportId: string;
       message?: string;
+      subject?: string;
       audioURL?: { mediaURL?: string; fileName?: string };
     }[]
   >([]);
-
-  const activitiesListPath = `/projects/aa/${projectID}/activities`;
 
   const { categories, hazardTypes } = useActivitiesStore((state) => ({
     categories: state.categories,
@@ -95,7 +98,12 @@ export default function AddActivities() {
   const nextId = React.useRef(0);
 
   const [audioUploading, setAudioUploading] = React.useState<boolean>(false);
-
+  const activitiesListPath =
+    navPae === 'mainPage'
+      ? `/projects/aa/${projectID}/activities`
+      : `/projects/aa/${projectID}/activities/list/${phases
+          .find((p) => p.uuid === phaseId)
+          ?.name.toLowerCase()}`;
   useStakeholdersGroups(projectID as UUID, {
     page: 1,
     perPage: 100,
@@ -136,6 +144,7 @@ export default function AddActivities() {
         groupId: z.string().optional(),
         transportId: z.string().optional(),
         message: z.string().optional(),
+        subject: z.string().optional(),
         audioURL: z
           .object({
             mediaURL: z.string().optional(),
@@ -212,6 +221,7 @@ export default function AddActivities() {
       groupId: activityCommunications?.groupId || '',
       transportId: activityCommunications?.transportId || '',
       message: activityCommunications?.message || '',
+      subject: activityCommunications?.subject || '',
       audioURL: {
         mediaURL: activityCommunications?.audioURL?.mediaURL || '',
         fileName: activityCommunications?.audioURL?.fileName || '',
@@ -223,7 +233,6 @@ export default function AddActivities() {
     // Update form state
     setCommunicationData(updatedCommunications);
   };
-
   // Handle to remove the communication data from the array stored in a local state
   const handleRemove = (index: number) => {
     const updatedCommunications = communicationData.filter(
@@ -262,6 +271,16 @@ export default function AddActivities() {
             transportId: comms.transportId,
             message: comms.audioURL,
           });
+        } else if (
+          selectedTransport?.validationAddress === ValidationAddress.EMAIL
+        ) {
+          activityCommunicationPayload.push({
+            groupType: comms.groupType,
+            groupId: comms.groupId,
+            transportId: comms.transportId,
+            subject: comms.subject,
+            message: comms.message,
+          });
         } else {
           activityCommunicationPayload.push({
             groupType: comms.groupType,
@@ -299,7 +318,7 @@ export default function AddActivities() {
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
         <div className="p-4">
           <div className=" mb-2 flex flex-col space-y-0">
-            <Back path={`/projects/aa/${projectID}/activities`} />
+            <Back path={activitiesListPath} />
 
             <div className="mt-4 flex justify-between items-center">
               <div>
@@ -316,7 +335,7 @@ export default function AddActivities() {
                     variant="outline"
                     className="w-36"
                     onClick={() => {
-                      router.push(activitiesListPath);
+                      form.reset();
                     }}
                   >
                     Cancel
@@ -498,7 +517,7 @@ export default function AddActivities() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Lead Time</FormLabel>
+                        <FormLabel>Lead Time (hours)</FormLabel>
                         <FormControl>
                           <Input
                             type="text"

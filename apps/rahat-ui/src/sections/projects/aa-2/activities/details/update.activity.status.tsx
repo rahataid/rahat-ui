@@ -1,11 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { CloudUpload, File, LoaderCircle, X } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -48,9 +48,20 @@ export default function UpdateStatus() {
     activityId,
   );
 
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('from');
   const router = useRouter();
 
-  const activitiesListPath = `/projects/aa/${projectId}/activities`;
+  const activitiesListPath = useMemo(() => {
+    if (!redirectTo) {
+      return `/projects/aa/${projectId}/activities`;
+    }
+
+    return redirectTo === 'detailPage'
+      ? `/projects/aa/${projectId}/activities/${activityId}`
+      : `/projects/aa/${projectId}/activities/list/${redirectTo}`;
+  }, [redirectTo, projectId, activityId]);
+
   const uploadFile = useUploadFile();
 
   const updateStatus = useUpdateActivityStatus();
@@ -84,11 +95,21 @@ export default function UpdateStatus() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      status: activityDetail?.status || '',
-      notes: activityDetail?.notes || '',
-      activityDocuments: activityDetail?.activityDocuments || [],
+      status: '',
+      notes: '',
+      activityDocuments: [],
     },
   });
+
+  useEffect(() => {
+    if (activityDetail) {
+      form.reset({
+        status: activityDetail.status || '',
+        notes: activityDetail.notes || '',
+        activityDocuments: activityDetail.activityDocuments || [],
+      });
+    }
+  }, [activityDetail, form]);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -154,10 +175,17 @@ export default function UpdateStatus() {
       .replace(/_/g, ' ')
       .replace(/\b\w/g, (char) => char.toUpperCase());
   };
+
+  React.useEffect(() => {
+    if (activityDetail) {
+      form.setValue('status', activityDetail?.status);
+      form.setValue('notes', activityDetail?.notes);
+    }
+  }, [activityDetail]);
   return (
     <div className=" mx-auto p-4 md:p-6">
       <div className="flex flex-col space-y-0">
-        <Back path={`/projects/aa/${projectId}/activities`} />
+        <Back path={activitiesListPath} />
 
         <div className="mt-4 flex justify-between items-center">
           <Heading

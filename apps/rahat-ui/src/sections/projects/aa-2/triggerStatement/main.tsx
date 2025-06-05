@@ -19,7 +19,7 @@ export default function TriggerStatementView() {
   usePhases(projectId);
   const phases = usePhasesStore((state) => state.phases);
 
-  useAATriggerStatements(projectId, {});
+  useAATriggerStatements(projectId, { perPage: 9999 });
   const triggers = useAAStationsStore((state) => state.triggers);
 
   const triggeredTriggers = React.useMemo(
@@ -54,33 +54,38 @@ export default function TriggerStatementView() {
         title="Trigger Statement"
         description="Track all the trigger reports here"
       />
-      <div className="grid grid-cols-3 gap-4">
+      <div className="flex flex-wrap gap-4">
         {phases
           .filter((p) => p.name !== 'PREPAREDNESS')
           .map((d) => (
-            <TriggersPhaseCard
-              key={d.id}
-              title={d.name}
-              subtitle={`Overview of ${d.name.toLowerCase()} phase`}
-              handleAddTrigger={() => handleAddTrigger(d)}
-              chartLabels={['Mandatory', 'Optional']}
-              chartSeries={[
-                d?.phaseStats?.totalMandatoryTriggers || 0,
-                d?.phaseStats?.totalOptionalTriggers || 0,
-              ]}
-              mandatoryTriggers={d?.phaseStats?.totalMandatoryTriggers || 0}
-              optionalTriggers={d?.phaseStats?.totalOptionalTriggers || 0}
-              triggeredMandatoryTriggers={
-                d?.phaseStats?.totalMandatoryTriggersTriggered || 0
-              }
-              triggeredOptionalTriggers={
-                d?.phaseStats?.totalOptionalTriggersTriggered || 0
-              }
-              handleViewDetails={() => handleViewDetails(d)}
-            />
+            <div key={d.id} className="w-full md:w-[32%] flex-grow flex-shrink-0">
+              <TriggersPhaseCard
+                title={d.name}
+                subtitle={`Overview of ${d.name.toLowerCase()} phase`}
+                handleAddTrigger={() => handleAddTrigger(d)}
+                chartLabels={['Mandatory', 'Optional']}
+                chartSeries={[
+                  d?.phaseStats?.totalMandatoryTriggers || 0,
+                  d?.phaseStats?.totalOptionalTriggers || 0,
+                ]}
+                mandatoryTriggers={d?.phaseStats?.totalMandatoryTriggers || 0}
+                optionalTriggers={d?.phaseStats?.totalOptionalTriggers || 0}
+                triggeredMandatoryTriggers={
+                  d?.phaseStats?.totalMandatoryTriggersTriggered || 0
+                }
+                triggeredOptionalTriggers={
+                  d?.phaseStats?.totalOptionalTriggersTriggered || 0
+                }
+                handleViewDetails={() => handleViewDetails(d)}
+              />
+            </div>
           ))}
-        <TriggersListCard projectId={projectId} triggers={triggeredTriggers} />
+
+        <div className="w-full md:w-[32%] flex-grow flex-shrink-0">
+          <TriggersListCard projectId={projectId} triggers={triggeredTriggers} />
+        </div>
       </div>
+
     </div>
   );
 }

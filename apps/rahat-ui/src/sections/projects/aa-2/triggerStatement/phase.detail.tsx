@@ -1,10 +1,11 @@
 import {
   Back,
+  CustomAlertDialog,
   Heading,
   IconLabelBtn,
   TableLoader,
 } from 'apps/rahat-ui/src/common';
-import { Plus, Undo2 } from 'lucide-react';
+import { Plus, Settings, Undo2 } from 'lucide-react';
 import { TriggersListTabs, TriggersPhaseCard } from './components';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -24,10 +25,13 @@ export default function PhaseDetail() {
     router.push(`/projects/aa/${projectId}/trigger-statements/add`);
   };
 
+  const isDisabled =
+    !phase?.isActive || !phase?.canRevert || revertPhase.isPending;
+
   const handleRevertPhase = async () => {
     await revertPhase.mutateAsync({
       projectUUID: projectId,
-      payload: { phaseId: phaseId },
+      payload: { phaseUuid: phaseId },
     });
   };
   return isLoading ? (
@@ -43,42 +47,65 @@ export default function PhaseDetail() {
         <div className="flex space-x-2">
           <IconLabelBtn
             variant="outline"
+            Icon={Settings}
+            name="Manage Threshold"
+            handleClick={() => {
+              router.push(
+                `/projects/aa/${projectId}/phase/${phaseId}/config-threshold`,
+              );
+            }}
+          />
+
+          <IconLabelBtn
+            variant="outline"
             className="text-primary border-primary"
             Icon={Plus}
             name="Add Trigger"
             handleClick={handleAddTriggerClick}
           />
-          <IconLabelBtn
-            disabled={true}
-            Icon={Undo2}
-            name="Revert"
-            handleClick={handleRevertPhase}
-          />
+
+          {isDisabled ? (
+            <IconLabelBtn Icon={Undo2} name="Revert" disabled />
+          ) : (
+            <CustomAlertDialog
+              dialogTrigger={<IconLabelBtn Icon={Undo2} name="Revert" />}
+              title="Revert Phase"
+              description="Are you sure you want to revert this phase?"
+              handleContinueClick={handleRevertPhase}
+            />
+          )}
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-4">
-        <TriggersPhaseCard
-          title="Phase Overview"
-          subtitle={`Overview of ${phase?.name?.toLowerCase()} phase`}
-          chartLabels={['Mandatory', 'Optional']}
-          chartSeries={[
-            phase?.totalMandatoryTriggers,
-            phase?.totalOptionalTriggers,
-          ]}
-          mandatoryTriggers={phase?.totalMandatoryTriggers}
-          optionalTriggers={phase?.totalOptionalTriggers}
-          triggeredMandatoryTriggers={phase?.totalMandatoryTriggersTriggered}
-          triggeredOptionalTriggers={phase?.totalOptionalTriggersTriggered}
-          hideAddTrigger={true}
-          hideViewDetails={true}
-        />
-        <div className="p-4 border rounded-sm shadow col-span-2">
+      <div className="flex gap-4">
+        <div className="flex-shrink-0 w-1/3">
+          <TriggersPhaseCard
+            title="Phase Overview"
+            subtitle={`Overview of ${phase?.name?.toLowerCase()} phase`}
+            chartLabels={['Mandatory', 'Optional']}
+            chartSeries={[
+              phase?.totalMandatoryTriggers,
+              phase?.totalOptionalTriggers,
+            ]}
+            mandatoryTriggers={phase?.totalMandatoryTriggers}
+            optionalTriggers={phase?.totalOptionalTriggers}
+            triggeredMandatoryTriggers={phase?.totalMandatoryTriggersTriggered}
+            triggeredOptionalTriggers={phase?.totalOptionalTriggersTriggered}
+            hideAddTrigger={true}
+            hideViewDetails={true}
+          />
+        </div>
+
+        <div className="p-4 border rounded-sm shadow flex-grow">
           <Heading
             title="Triggers"
             titleStyle="text-xl/6"
             description={`List of all triggers in the ${phase?.name?.toLowerCase()} phase`}
           />
-          <TriggersListTabs projectId={projectId} phaseId={phaseId} />
+          <TriggersListTabs
+            projectId={projectId}
+            phaseId={phaseId}
+            triggers={phase?.triggers}
+          />
         </div>
       </div>
     </div>

@@ -12,6 +12,8 @@ export default function TokensOverview() {
   const { data, isLoading } = useFetchTokenStatsStellar({
     projectUUID: uuid as '${string}-${string}-${string}-${string}-${string}',
   });
+
+  console.log(data?.data);
   return (
     <>
       <Heading

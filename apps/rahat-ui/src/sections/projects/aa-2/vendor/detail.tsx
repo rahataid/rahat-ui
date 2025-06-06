@@ -1,16 +1,22 @@
-import React from 'react';
-import { Back, Heading } from '../../../../common';
-import {
-  OverviewCard,
-  ProfileCard,
-  TransactionCard,
-  VendorDetailsTabs,
-} from './components';
 import { useGetVendorStellarStats } from '@rahat-ui/query/lib/aa';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { useParams } from 'next/navigation';
+import { Back, Heading } from '../../../../common';
+import { OverviewCard, ProfileCard, TransactionCard } from './components';
+import VendorsBeneficiaryList from './tables/beneficiary.table';
+import RedemptionRequestTable from './tables/redemption.request';
+import VendorsTransactionsHistory from './tables/transactions.history';
 
 export default function Detail() {
   const { id, vendorId } = useParams();
+  const { activeTab, setActiveTab } = useActiveTab('vendorOverview');
+
   const { data, isLoading } = useGetVendorStellarStats({
     projectUUID: id,
     uuid: vendorId,
@@ -24,15 +30,55 @@ export default function Detail() {
         title="Vendor Details"
         description="Detailed view of the selected vendor"
       />
-      <div className="grid grid-cols-1  lg:grid-cols-2 xl:grid-cols-3 gap-4 mb-4">
-        <ProfileCard />
-        <OverviewCard data={data && data?.data} loading={isLoading} />
-        <TransactionCard
-          transaction={data && data?.data?.transactions}
-          loading={isLoading}
-        />
-      </div>
-      <VendorDetailsTabs />
+      <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="border bg-secondary rounded">
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="vendorOverview"
+          >
+            Vendor Overview
+          </TabsTrigger>
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="transactionHistory"
+          >
+            Transaction History
+          </TabsTrigger>
+
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="beneficairyList"
+          >
+            Beneficiary List
+          </TabsTrigger>
+
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="redemptionRequest"
+          >
+            Redemption Request
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="vendorOverview">
+          <div className="grid grid-cols-1  lg:grid-cols-3  gap-4 mb-4">
+            <ProfileCard />
+            <OverviewCard data={data && data?.data} loading={isLoading} />
+            <TransactionCard
+              transaction={data && data?.data?.transactions}
+              loading={isLoading}
+            />
+          </div>
+        </TabsContent>
+        <TabsContent value="transactionHistory">
+          <VendorsTransactionsHistory />
+        </TabsContent>
+        <TabsContent value="beneficairyList">
+          <VendorsBeneficiaryList beneficiaryList={[]} loading={false} />
+        </TabsContent>
+        <TabsContent value="redemptionRequest">
+          <RedemptionRequestTable />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

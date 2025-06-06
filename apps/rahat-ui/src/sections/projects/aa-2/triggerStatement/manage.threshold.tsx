@@ -83,6 +83,8 @@ export default function ManageThreshold() {
       router.push(`/projects/aa/${id}/phase/${phaseId as string}`);
     }
   }, [isSuccess]);
+
+  console.log(form.formState.isValid);
   return (
     <div className="p-4">
       <HeaderWithBack
@@ -109,6 +111,7 @@ export default function ManageThreshold() {
                         <Input
                           type="number"
                           placeholder="Enter a Mandatory  Value"
+                          className="[&::-webkit-inner-spin-button]:opacity-100 [&::-webkit-outer-spin-button]:opacity-100"
                           onKeyDown={(e) => {
                             const invalidKeys = [
                               'e',
@@ -151,6 +154,7 @@ export default function ManageThreshold() {
                       <FormControl>
                         <Input
                           type="number"
+                          className="[&::-webkit-inner-spin-button]:opacity-100 [&::-webkit-outer-spin-button]:opacity-100 [&::-webkit-inner-spin-button]:bg-slate-400"
                           placeholder="Enter a Optional Value"
                           onKeyDown={(e) => {
                             const invalidKeys = [
@@ -195,19 +199,14 @@ export default function ManageThreshold() {
               </Button>
 
               <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
-                <DialogTrigger>
-                  <Button
-                    className="rounded-sm"
-                    onClick={() => setOpen(true)}
-                    type="button"
-                    disabled={
-                      !form.watch('requiredMandatoryTriggers') ||
-                      !form.watch('requiredOptionalTriggers')
-                    }
-                  >
-                    Configure
-                  </Button>
-                </DialogTrigger>
+                <Button
+                  className="rounded-sm"
+                  onClick={() => setOpen(true)}
+                  type="button"
+                  disabled={!form.formState.isValid}
+                >
+                  Configure
+                </Button>
                 <DialogContent
                   className="!rounded-sm"
                   onInteractOutside={(e) => {

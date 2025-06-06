@@ -8,10 +8,9 @@ export default function ProfileCard() {
   const { vendorDetails } = useAAVendorsStore((state) => ({
     vendorDetails: state.vendorDetails,
   }));
-  console.log(vendorDetails);
   const { clickToCopy, copyAction } = useCopy();
   return (
-    <div className="border rounded-md p-4">
+    <div className="border rounded-sm p-4">
       <div className="mb-4">
         <p className="text-lg font-semibold">Vendor Profile</p>
         <p className="text-sm text-muted-foreground">

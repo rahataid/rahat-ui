@@ -43,7 +43,7 @@ export function DocumentList({ documents, loading }: DocumentListProps) {
       <p className="text-gray-600 text-sm mb-4">
         List of all the uploaded documents
       </p>
-      <div className="overflow-y-auto  scrollbar-hidden xl:h-[calc(100vh-540px)]  h-[calc(100vh-340px)] ">
+      <div className="overflow-y-auto  scrollbar-hidden xl:h-[calc(100vh-540px)]  h-[calc(340px)] ">
         {loading && <SpinnerLoader />}
         <div className="grid  grid-cols-1 lg:grid-cols-2 gap-4 p-4">
           {documents?.map((doc, index) => (

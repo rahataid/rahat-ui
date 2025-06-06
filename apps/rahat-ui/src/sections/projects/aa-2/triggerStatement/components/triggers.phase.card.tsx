@@ -1,4 +1,5 @@
 import { ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { ArrowRight, Plus } from 'lucide-react';
@@ -16,6 +17,7 @@ type IProps = {
   triggeredOptionalTriggers: number;
   hideViewDetails?: boolean;
   handleViewDetails?: () => void;
+  isActive: boolean;
 };
 
 export default function TriggersPhaseCard({
@@ -30,6 +32,7 @@ export default function TriggersPhaseCard({
   triggeredMandatoryTriggers,
   triggeredOptionalTriggers,
   hideViewDetails = false,
+  isActive,
   handleViewDetails = () => {},
 }: IProps) {
   return (
@@ -37,6 +40,9 @@ export default function TriggersPhaseCard({
       <div>
         <div className="flex flex-wrap justify-between items-center space-x-4">
           <Heading title={title} titleStyle="text-xl" description={subtitle} />
+          <Badge className={`${isActive ? 'bg-green-300' : 'bg-red-300'}`}>
+            {isActive ? 'Triggerd' : 'Not Triggered'}
+          </Badge>
           <IconLabelBtn
             variant="outline"
             className={`border-primary text-primary ${

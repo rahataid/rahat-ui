@@ -66,7 +66,7 @@ const Transaction = ({ amount, date, hash }: Txn) => {
 
 export default function TransactionCard({ transaction, loading }: Props) {
   return (
-    <div className="border rounded-md p-4">
+    <div className="border rounded-sm p-4">
       <Heading
         title="Recent Transactions"
         titleStyle="text-lg"
@@ -94,7 +94,7 @@ export default function TransactionCard({ transaction, loading }: Props) {
           ))}
         </div>
       ) : (
-        <ScrollArea className=" h-[calc(200px)]">
+        <ScrollArea className=" h-[calc(350px)]">
           {transaction?.map((txn) => {
             return (
               <Transaction

@@ -60,14 +60,6 @@ export default function FundManagementDetailTable({
         title={title}
         titleStyle="text-lg"
         description="List of all the beneficiaries in the group"
-        status={status}
-        badgeClassName={
-          status === 'DISBURSED'
-            ? 'bg-green-200'
-            : status === 'NOT_DISBURSED'
-            ? 'bg-gray-100'
-            : 'bg-red-200'
-        }
       />
       <SearchInput
         className="w-full mb-2"

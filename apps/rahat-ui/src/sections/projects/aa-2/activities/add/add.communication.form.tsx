@@ -238,8 +238,8 @@ export default function AddCommunicationForm({
     form.setValue(fieldName('message'), '');
     form.setValue(fieldName('transportId'), '');
     form.setValue(fieldName('audioURL'), '');
+    form.setValue(fieldName('subject'), '');
     form.clearErrors(fieldName('groupId'));
-
     setAudioFile({
       fileName: '',
       mediaURL: '',

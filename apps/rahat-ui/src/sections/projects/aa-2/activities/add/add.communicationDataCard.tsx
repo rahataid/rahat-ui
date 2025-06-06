@@ -56,6 +56,7 @@ const CommunicationDataCard = ({
     }, 50);
     form.setValue(fieldName('groupType'), itemData?.groupType);
     form.setValue(fieldName('message'), itemData?.message);
+    form.setValue(fieldName('subject'), itemData?.subject);
     form.setValue(fieldName('transportId'), itemData?.transportId);
     form.setValue(fieldName('audioURL'), audioFile);
   };
@@ -64,6 +65,7 @@ const CommunicationDataCard = ({
     const scrollPosition = window.scrollY;
     onRemove(index);
     window.scrollTo(0, scrollPosition);
+    setOpen(false);
   };
 
   return (

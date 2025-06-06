@@ -18,7 +18,7 @@ type IProps = {
 export default function BeneficiariesGroupTable({ table, loading }: IProps) {
   return (
     <TableComponent>
-      <ScrollArea className="h-[calc(350px)]">
+      <ScrollArea className="h-[calc(400px)]">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>

@@ -50,6 +50,7 @@ export function DialogComponent({
           name={buttonText}
           variant={variant}
           className={buttonClassName}
+          type="button"
         />
       </DialogTrigger>
       <DialogContent

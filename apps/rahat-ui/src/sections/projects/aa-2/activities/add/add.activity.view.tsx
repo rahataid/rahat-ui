@@ -52,6 +52,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 import AddCommunicationForm from './add.communication.form';
+import CommunicationDataCard from './add.communicationDataCard';
 
 export default function AddActivities() {
   const createActivity = useCreateActivities();
@@ -346,7 +347,8 @@ export default function AddActivities() {
                     disabled={
                       createActivity?.isPending ||
                       uploadFile?.isPending ||
-                      audioUploading
+                      audioUploading ||
+                      open
                     }
                   >
                     Add
@@ -644,15 +646,22 @@ export default function AddActivities() {
             {open && (
               <AddCommunicationForm
                 form={form}
+                setOpen={setOpen}
                 onSave={() => {
                   handleSave();
                 }}
-                onRemove={handleRemove}
                 setLoading={setAudioUploading}
                 appTransports={appTransports}
-                communicationData={communicationData}
               />
             )}
+
+            <CommunicationDataCard
+              form={form}
+              communicationData={communicationData}
+              appTransports={appTransports}
+              onRemove={handleRemove}
+              setOpen={setOpen}
+            />
           </ScrollArea>
         </div>
       </form>

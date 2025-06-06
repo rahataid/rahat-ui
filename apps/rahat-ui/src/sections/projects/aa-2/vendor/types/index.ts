@@ -4,3 +4,10 @@ export interface IProjectVendor {
   phone: string;
   location: string;
 }
+
+export interface IProjectRedemption {
+  tokenAmount: string;
+  status: string;
+  approvedBy: string;
+  approvedDate: Date;
+}

@@ -5,6 +5,7 @@ import { Back, Heading, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { CommunicationDetailCard } from './communication.card';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 const activityDetail = {
   id: 4,
   uuid: '7b21ae50-41e2-4d68-8ba1-0b127f5d5af1',
@@ -129,6 +130,18 @@ const CommunicationDetailsView = () => {
     activityId,
   );
 
+  function getPhaseColor(phase: string) {
+    if (phase === 'PREPAREDNESS') {
+      return 'bg-green-100 text-green-500';
+    }
+    if (phase === 'ACTIVATION') {
+      return 'bg-red-100 text-red-500';
+    }
+    if (phase === 'READINESS') {
+      return 'bg-yellow-100 text-yellow-500';
+    }
+    return '';
+  }
   return (
     <div className="p-4">
       <div className="flex flex-col space-y-0">
@@ -143,10 +156,15 @@ const CommunicationDetailsView = () => {
           </div>
           <div className="flex flex-col">
             {/* <p className="text-sm text-muted-foreground">Activity title:</p> */}
+            <Label className="text-muted-foreground mb-2 text-xs">
+              Activity Title:
+            </Label>
             <p className="text-base">
               {activityDetail?.title}{' '}
               <span>
-                <Badge>{activityDetail?.phase?.name}</Badge>
+                <Badge className={getPhaseColor(activityDetail?.phase?.name)}>
+                  {activityDetail?.phase?.name}
+                </Badge>
               </span>
             </p>
           </div>

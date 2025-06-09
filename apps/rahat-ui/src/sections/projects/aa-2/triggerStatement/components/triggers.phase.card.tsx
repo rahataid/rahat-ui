@@ -17,7 +17,7 @@ type IProps = {
   triggeredOptionalTriggers: number;
   hideViewDetails?: boolean;
   handleViewDetails?: () => void;
-  isActive: boolean;
+  isActive?: boolean;
 };
 
 export default function TriggersPhaseCard({
@@ -39,10 +39,18 @@ export default function TriggersPhaseCard({
     <div className="p-4 rounded border shadow-md flex flex-col justify-between">
       <div>
         <div className="flex flex-wrap justify-between items-center space-x-4">
-          <Heading title={title} titleStyle="text-xl" description={subtitle} />
-          <Badge className={`${isActive ? 'bg-green-300' : 'bg-red-300'}`}>
-            {isActive ? 'Triggerd' : 'Not Triggered'}
-          </Badge>
+          <Heading
+            title={title}
+            titleStyle="text-xl"
+            description={subtitle}
+            status={isActive ? 'Triggerd' : 'Not Triggered'}
+            badgeClassName={`${
+              isActive
+                ? 'text-green-500 bg-green-100'
+                : 'text-red-500 bg-red-100'
+            } text-xs`}
+          />
+
           <IconLabelBtn
             variant="outline"
             className={`border-primary text-primary ${
@@ -53,7 +61,7 @@ export default function TriggersPhaseCard({
             handleClick={handleAddTrigger}
           />
         </div>
-        <div className="flex justify-center mb-2">
+        <div className="flex justify-center mb-2 ">
           <ChartDonut
             series={chartSeries}
             labels={chartLabels}

@@ -243,17 +243,18 @@ export default function PaymentInitiation() {
           {formState.method === PayoutType.VENDOR && (
             <div className="flex items-center space-x-3">
               <Switch
-                checked={formState.mode === PayoutMode.OFFLINE ? false : true}
+                checked={formState.mode === PayoutMode.OFFLINE ? true : false}
                 onCheckedChange={(checked) =>
                   handleChange(
                     'mode',
-                    checked ? PayoutMode.ONLINE : PayoutMode.OFFLINE,
+                    checked ? PayoutMode.OFFLINE : PayoutMode.ONLINE,
                   )
                 }
                 id="offline-switch"
               />
               <Label htmlFor="offline-switch">
-                {capitalizeFirstLetter(formState.mode)}
+                {/* {capitalizeFirstLetter(formState.mode)} */}
+                Offline
               </Label>
             </div>
           )}

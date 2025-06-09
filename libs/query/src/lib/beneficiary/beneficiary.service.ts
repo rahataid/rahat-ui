@@ -47,6 +47,9 @@ const getBeneficiaryGroup = async (uuid: UUID) => {
   return response?.data;
 };
 
+const validateBeneficiaryBankAccount = async (uuid: UUID) => {
+  const response = await api.get(`/beneficiaries/groups/${uuid}/account-check`);
+};
 export const useBeneficiaryGroupsList = (payload: any): any => {
   const { queryClient } = useRSQuery();
 
@@ -266,6 +269,35 @@ export const useRemoveBeneficiaryFromProject = () => {
       const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
         title: 'Error while removing beneficiary.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useValidateBeneficaryBankAccount = () => {
+  const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: (payload: any) => validateBeneficiaryBankAccount(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [TAGS.VALIDATE_BENEFICIARIES] });
+      toast.fire({
+        title: 'Accounts check in progress. Data will be listed soon',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      toast.fire({
+        title: 'Error while validating beneficiary.',
         icon: 'error',
         text: errorMessage,
       });

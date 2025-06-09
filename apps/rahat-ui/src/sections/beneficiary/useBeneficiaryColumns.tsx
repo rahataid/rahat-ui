@@ -5,7 +5,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { Eye, Copy, CopyCheck } from 'lucide-react';
+import { Eye, Copy, CopyCheck, TriangleAlertIcon } from 'lucide-react';
 import BeneficiaryDetail from './beneficiaryDetail';
 import {
   Tooltip,
@@ -135,13 +135,32 @@ export const useBeneficiaryTableColumns = () => {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
+        console.log(row.original);
         return (
-          <Eye
-            size={20}
-            strokeWidth={1.5}
-            className="cursor-pointer hover:text-primary"
-            onClick={() => openSplitDetailView(row.original)}
-          />
+          <div className="flex gap-2 items-center">
+            <Eye
+              size={20}
+              strokeWidth={1.5}
+              className="cursor-pointer hover:text-primary"
+              onClick={() => openSplitDetailView(row.original)}
+            />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <TriangleAlertIcon
+                    size={14}
+                    strokeWidth={1.5}
+                    className={`${
+                      !row.original.error && 'hidden'
+                    } text-red-500`}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Beneficiary does not have bank account</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         );
       },
     },

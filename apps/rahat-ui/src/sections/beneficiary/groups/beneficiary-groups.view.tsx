@@ -3,7 +3,7 @@ import React, { memo, useEffect } from 'react';
 
 import { useBeneficiaryGroupsList, usePagination } from '@rahat-ui/query';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import { Plus, Users } from 'lucide-react';
+import { LandmarkIcon, Plus, Users } from 'lucide-react';
 import SearchInput from '../../projects/components/search.input';
 import AddButton from '../../projects/components/add.btn';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -87,13 +87,21 @@ function BeneficiaryGroupsView() {
                   <div key={index} className="rounded-md border shadow p-4">
                     <div className="flex flex-col space-y-2">
                       <div
-                        className="cursor-pointer rounded-md bg-secondary grid place-items-center h-28"
+                        className="relative cursor-pointer rounded-md bg-secondary grid place-items-center h-28"
                         onClick={() => {
                           router.push(
                             `/beneficiary/groups/${i?.uuid}?isAssignedToProject=${isAssignedToProject}`,
                           );
                         }}
                       >
+                        {i?.isGroupValidForAA && (
+                          <div className="absolute top-2 right-2">
+                            <LandmarkIcon
+                              strokeWidth={2}
+                              className="w-4 h-4 text-green-700"
+                            />
+                          </div>
+                        )}
                         <div className="bg-[#667085] text-white p-2 rounded-full">
                           <Users size={20} strokeWidth={2.5} />
                         </div>

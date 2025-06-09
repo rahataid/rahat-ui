@@ -1,6 +1,10 @@
 'use client';
 
-import { useAssignBenGroupToProject, useProjectList, useRemoveBeneficiaryGroup } from '@rahat-ui/query';
+import {
+  useAssignBenGroupToProject,
+  useProjectList,
+  useRemoveBeneficiaryGroup,
+} from '@rahat-ui/query';
 import {
   Dialog,
   DialogClose,
@@ -32,29 +36,32 @@ type RemoveModalType = {
 type IProps = {
   beneficiaryGroupDetail: ListBeneficiaryGroup;
   removeModal: RemoveModalType;
-  closeSecondPanel: VoidFunction;
 };
 
 export default function RemoveBenfGroupModal({
   removeModal,
   beneficiaryGroupDetail,
-  closeSecondPanel
 }: IProps) {
-
-  const removeBenfGroup = useRemoveBeneficiaryGroup()
-
+  const removeBenfGroup = useRemoveBeneficiaryGroup();
+  const router = useRouter();
   const handleRemoveBenfGroup = async () => {
-    await removeBenfGroup.mutateAsync(beneficiaryGroupDetail.uuid as UUID)
-    closeSecondPanel();
+    await removeBenfGroup.mutateAsync(beneficiaryGroupDetail.uuid as UUID);
   };
 
   React.useEffect(() => {
-    removeBenfGroup.isSuccess && removeModal.onFalse()
+    if (removeBenfGroup.isSuccess) {
+      removeModal.onFalse();
+      router.back();
+    }
   }, [removeBenfGroup]);
 
   return (
     <Dialog open={removeModal.value} onOpenChange={removeModal.onToggle}>
-      <DialogContent>
+      <DialogContent
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>Archive Beneficiary Group</DialogTitle>
           <DialogDescription>
@@ -63,15 +70,14 @@ export default function RemoveBenfGroupModal({
         </DialogHeader>
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>
-            <Button type="button" variant="ghost">
+            <Button type="button" variant="outline">
               Cancel
             </Button>
           </DialogClose>
           <Button
             onClick={handleRemoveBenfGroup}
             type="button"
-            variant="ghost"
-            className="text-primary"
+            variant="default"
           >
             Confirm
           </Button>
@@ -80,5 +86,3 @@ export default function RemoveBenfGroupModal({
     </Dialog>
   );
 }
-
-

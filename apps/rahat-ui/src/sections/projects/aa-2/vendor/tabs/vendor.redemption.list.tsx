@@ -18,6 +18,7 @@ import {
   useProjectVendorTableColumns,
 } from '../table.columns';
 import { UUID } from 'crypto';
+import { useSearchParams } from 'next/navigation';
 
 export const VendorRedemptionList = ({ id }: { id: UUID }) => {
   const [columnVisibility, setColumnVisibility] =
@@ -32,6 +33,7 @@ export const VendorRedemptionList = ({ id }: { id: UUID }) => {
     setPagination,
   } = usePagination();
 
+  const searchParams = useSearchParams();
   const debouncedSearch = useDebounce(filters, 500);
   const columns = useProjectVendorRedemptionTableColumns();
   // const { data: vendors, isLoading } = useAAVendorsList({
@@ -62,6 +64,12 @@ export const VendorRedemptionList = ({ id }: { id: UUID }) => {
     },
     [filters],
   );
+
+  React.useEffect(() => {
+    if (searchParams.get('tab') === 'vendorRedemptionList') {
+      setFilters({});
+    }
+  }, [searchParams]);
   return (
     <div className="rounded border bg-card p-4">
       <div className="flex justify-between space-x-2 mb-2">

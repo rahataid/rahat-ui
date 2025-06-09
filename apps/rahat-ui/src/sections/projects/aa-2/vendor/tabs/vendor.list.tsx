@@ -15,10 +15,12 @@ import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import React from 'react';
 import { useProjectVendorTableColumns } from '../table.columns';
 import { UUID } from 'crypto';
+import { useSearchParams } from 'next/navigation';
 
 export const VendorList = ({ id }: { id: UUID }) => {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  const searchParams = useSearchParams();
   const {
     filters,
     setFilters,
@@ -59,6 +61,12 @@ export const VendorList = ({ id }: { id: UUID }) => {
     },
     [filters],
   );
+
+  React.useEffect(() => {
+    if (searchParams.get('tab') === 'vendorList') {
+      setFilters({});
+    }
+  }, [searchParams]);
   return (
     <div className="rounded border bg-card p-4">
       <div className="flex justify-between space-x-2 mb-2">

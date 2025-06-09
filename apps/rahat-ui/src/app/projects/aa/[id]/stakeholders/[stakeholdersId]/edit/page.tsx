@@ -1,5 +1,6 @@
 'use client';
 
+import { RoleAuth } from '@rahat-ui/auth';
 import dynamic from 'next/dynamic';
 
 const StakeholderEditPage = dynamic(
@@ -13,5 +14,9 @@ const StakeholderEditPage = dynamic(
 );
 
 export default function Page() {
-  return <StakeholderEditPage />;
+  return (
+    <RoleAuth roles={['Admin', 'Manager']}>
+      <StakeholderEditPage />;
+    </RoleAuth>
+  );
 }

@@ -14,7 +14,7 @@ export default function OverviewCard({ data, loading }: Props) {
     Number(data?.disbursedTokens || 0),
   ];
   return (
-    <div className="border rounded-md p-4">
+    <div className="border rounded-sm p-4">
       <div className="mb-4">
         <p className="text-lg font-semibold">Token Overview</p>
         <p className="text-sm text-muted-foreground">

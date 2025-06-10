@@ -1,7 +1,13 @@
 import * as React from 'react';
 import CoreBtnComponent from 'apps/rahat-ui/src/components/core.btn';
 import HeaderWithBack from '../../projects/components/header.with.back';
-import { FolderPlus, LandmarkIcon, Trash2Icon, UsersRound } from 'lucide-react';
+import {
+  CloudDownloadIcon,
+  FolderPlus,
+  LandmarkIcon,
+  Trash2Icon,
+  UsersRound,
+} from 'lucide-react';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import MembersTable from './members.table';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
@@ -12,6 +18,7 @@ import {
 } from '@tanstack/react-table';
 import {
   useBeneficiaryList,
+  useExportBeneficiariesFailedBankAccount,
   useGetBeneficiaryGroup,
   usePagination,
 } from '@rahat-ui/query';
@@ -22,7 +29,7 @@ import { UUID } from 'crypto';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import RemoveBenfGroupModal from './removeGroupModal';
 import ValidateBenefBankAccountByGroupUuid from './validateAccountModal';
-
+import * as XLSX from 'xlsx';
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
   const validateModal = useBoolean();
@@ -54,12 +61,14 @@ export default function GroupDetailView() {
   const searchParams = useSearchParams();
 
   const isAssignedToProject = searchParams.get('isAssignedToProject');
+  const isGroupValidForAA = searchParams.get('isGroupValidForAA');
+  console.log(isGroupValidForAA);
   const groupedBeneficiaries = [] as any;
   const { data: group } = useGetBeneficiaryGroup(Id);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const columns = useBeneficiaryTableColumns();
-
+  const { data } = useExportBeneficiariesFailedBankAccount(Id);
   const tableData = React.useMemo(() => {
     if (group) {
       return group?.data?.groupedBeneficiaries?.map((d: any) => ({
@@ -100,6 +109,25 @@ export default function GroupDetailView() {
   //     setTableData(Beneficiaries);
   //   }
   // }, []);
+
+  const onFailedExports = () => {
+    const rowsToDownload = data?.data || [];
+    const workbook = XLSX.utils.book_new();
+    const worksheetData = rowsToDownload?.map((benef: any) => ({
+      Name: benef?.Beneficiary?.pii.name,
+      Phone: benef?.Beneficiary?.pii.phone,
+      Wallet_Address: benef?.Beneficiary?.walletAddress,
+      Reason: benef?.Beneficiary?.extras?.error,
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');
+
+    XLSX.writeFile(
+      workbook,
+      `Failed ${group?.data?.name} Bank Validation.xlsx`,
+    );
+  };
+
   return (
     <>
       <RemoveBenfGroupModal
@@ -144,6 +172,14 @@ export default function GroupDetailView() {
             >
               <LandmarkIcon className="w-4 h-4" />
               Validate Bank Account
+            </Button>
+
+            <Button
+              variant={'outline'}
+              className={`${isGroupValidForAA === 'true' && 'hidden'} gap-2`}
+              onClick={onFailedExports}
+            >
+              <CloudDownloadIcon className="w-4 h-4" /> Export Failed
             </Button>
           </div>
         </div>

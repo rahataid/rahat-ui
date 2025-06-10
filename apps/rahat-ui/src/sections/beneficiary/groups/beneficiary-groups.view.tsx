@@ -90,7 +90,7 @@ function BeneficiaryGroupsView() {
                         className="relative cursor-pointer rounded-md bg-secondary grid place-items-center h-28"
                         onClick={() => {
                           router.push(
-                            `/beneficiary/groups/${i?.uuid}?isAssignedToProject=${isAssignedToProject}`,
+                            `/beneficiary/groups/${i?.uuid}?isAssignedToProject=${isAssignedToProject}&isGroupValidForAA=${i?.isGroupValidForAA}`,
                           );
                         }}
                       >

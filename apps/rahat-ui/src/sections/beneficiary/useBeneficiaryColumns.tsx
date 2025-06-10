@@ -135,7 +135,6 @@ export const useBeneficiaryTableColumns = () => {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        console.log(row.original);
         return (
           <div className="flex gap-2 items-center">
             <Eye
@@ -152,7 +151,7 @@ export const useBeneficiaryTableColumns = () => {
                     strokeWidth={1.5}
                     className={`${
                       !row.original.error && 'hidden'
-                    } text-red-500`}
+                    } text-red-500 hover:cursor-pointer`}
                   />
                 </TooltipTrigger>
                 <TooltipContent>

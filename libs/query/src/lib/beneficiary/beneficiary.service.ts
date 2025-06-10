@@ -19,7 +19,8 @@ import { useBeneficiaryGroupsStore } from './beneficiary-groups.store';
 import { useBeneficiaryStore } from './beneficiary.store';
 
 const GET_BENEFICIARY_GROUP = 'GET_BENEFICIARY_GROUP';
-
+const GET_FAILED_BANK_ACCOUNT_BENEFICIARY =
+  'GET_FAILED_BANK_ACCOUNT_BENEFICIARY';
 const createNewBeneficiary = async (payload: any) => {
   const response = await api.post('/beneficiaries', payload);
   return response?.data;
@@ -44,6 +45,13 @@ const removeBeneficiaryGroup = async (uuid: UUID) => {
 
 const getBeneficiaryGroup = async (uuid: UUID) => {
   const response = await api.get(`/beneficiaries/groups/${uuid}`);
+  return response?.data;
+};
+
+const getBeneficiaryFailedBankAccount = async (uuid: UUID) => {
+  const response = await api.get(
+    `/beneficiaries/groups/${uuid}/fail-account/export`,
+  );
   return response?.data;
 };
 
@@ -641,6 +649,20 @@ export const useGetBeneficiaryGroup = (
       queryKey: [GET_BENEFICIARY_GROUP, uuid],
       // @ts-ignore
       queryFn: () => getBeneficiaryGroup(uuid),
+    },
+    queryClient,
+  );
+};
+
+export const useExportBeneficiariesFailedBankAccount = (
+  uuid: UUID,
+): UseQueryResult<any, Error> => {
+  const { queryClient } = useRSQuery();
+  return useQuery(
+    {
+      queryKey: [GET_FAILED_BANK_ACCOUNT_BENEFICIARY, uuid],
+      queryFn: () => getBeneficiaryFailedBankAccount(uuid),
+      enabled: !!uuid,
     },
     queryClient,
   );

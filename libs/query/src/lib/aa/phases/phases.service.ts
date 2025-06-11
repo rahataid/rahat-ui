@@ -90,7 +90,10 @@ export const useRevertPhase = () => {
   });
 };
 
-export const usePhaseHistory = (uuid: UUID, payload: { phaseUuid: UUID }) => {
+export const usePhaseHistory = (
+  uuid: UUID,
+  payload: { phaseUuid: UUID; phase: boolean },
+) => {
   const q = useProjectAction();
 
   const query = useQuery({

@@ -4,11 +4,9 @@ import { useUserStore } from '@rumsan/react-query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ShieldX } from 'lucide-react';
 
-type Role = 'User' | 'Admin' | 'Manager' | 'Vendor';
-
 export interface AuthProps {
   hasContent?: boolean;
-  roles?: Role[];
+  roles?: string[];
   children: React.ReactNode;
 }
 

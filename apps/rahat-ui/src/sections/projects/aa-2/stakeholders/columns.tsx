@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { IconDialogComponent } from './component/iconDialog';
 import { useDeleteStakeholders } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { RoleAuth } from '@rahat-ui/auth';
+import { RoleAuth, AARoles } from '@rahat-ui/auth';
 
 export const useProjectStakeholdersTableColumns = () => {
   const router = useRouter();
@@ -67,7 +67,7 @@ export const useProjectStakeholdersTableColumns = () => {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <RoleAuth roles={['Admin', 'Manager']} hasContent={false}>
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
             <div className="flex items-center gap-2">
               <IconDialogComponent
                 Icon={Edit2}

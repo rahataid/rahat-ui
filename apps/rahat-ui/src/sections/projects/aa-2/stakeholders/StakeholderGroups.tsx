@@ -15,7 +15,7 @@ import {
   useStakeholdersGroupsStore,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { RoleAuth } from '@rahat-ui/auth';
+import { RoleAuth, AARoles } from '@rahat-ui/auth';
 
 const StakeGoldersGroups = () => {
   const { id } = useParams();
@@ -63,7 +63,7 @@ const StakeGoldersGroups = () => {
             value={filters?.search || ''}
           />
 
-          <RoleAuth roles={['Admin', 'Manager']} hasContent={false}>
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
             <AddButton
               path={`/projects/aa/${id}/stakeholders/groups/add`}
               name="Stakeholder Group"

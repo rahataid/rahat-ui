@@ -39,7 +39,7 @@ import { CloudDownload } from 'lucide-react';
 import StakeGoldersGroups from './StakeholderGroups';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { getPaginationFromLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
-import { RoleAuth } from '@rahat-ui/auth';
+import { RoleAuth, AARoles } from '@rahat-ui/auth';
 
 function StakeholdersView() {
   const router = useRouter();
@@ -132,7 +132,7 @@ function StakeholdersView() {
           </TabsTrigger>
         </TabsList>
 
-        <RoleAuth roles={['Admin', 'Manager']} hasContent={false}>
+        <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
           <IconLabelBtn
             name="Import Stakeholders"
             Icon={CloudDownload}
@@ -165,7 +165,10 @@ function StakeholdersView() {
                 onSearch={(e) => handleSearch(e, 'organization')}
                 value={filters?.organization || ''}
               />
-              <RoleAuth roles={['Admin', 'Manager']} hasContent={false}>
+              <RoleAuth
+                roles={[AARoles.ADMIN, AARoles.MANAGER]}
+                hasContent={false}
+              >
                 <AddButton
                   path={`/projects/aa/${projectId}/stakeholders/add`}
                   name="Stakeholder"

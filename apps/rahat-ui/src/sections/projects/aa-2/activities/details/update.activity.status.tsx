@@ -76,12 +76,7 @@ export default function UpdateStatus() {
 
   const FormSchema = z.object({
     status: z.string().min(1, { message: 'Please select status' }),
-    notes: z
-      .string()
-      .optional()
-      .refine((val) => !val || val?.length > 4, {
-        message: 'Must be at least 5 characters',
-      }),
+    notes: z.string().optional(),
     activityDocuments: z
       .array(
         z.object({
@@ -101,15 +96,15 @@ export default function UpdateStatus() {
     },
   });
 
-  useEffect(() => {
-    if (activityDetail) {
-      form.reset({
-        status: activityDetail.status || '',
-        notes: activityDetail.notes || '',
-        activityDocuments: activityDetail.activityDocuments || [],
-      });
-    }
-  }, [activityDetail, form]);
+  // useEffect(() => {
+  //   if (activityDetail) {
+  //     form.reset({
+  //       status: activityDetail.status || '',
+  //       notes: activityDetail.notes ?? '',
+  //       activityDocuments: activityDetail.activityDocuments || [],
+  //     });
+  //   }
+  // }, [activityDetail, form]);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -179,9 +174,16 @@ export default function UpdateStatus() {
   React.useEffect(() => {
     if (activityDetail) {
       form.setValue('status', activityDetail?.status);
-      form.setValue('notes', activityDetail?.notes);
+      form.setValue('notes', activityDetail?.notes ?? ' ');
+      form.setValue(
+        'activityDocuments',
+        activityDetail.activityDocuments ?? [],
+      );
+      // form.trigger('status');
     }
-  }, [activityDetail]);
+  }, [activityDetail, form]);
+
+  // console.log(activityDetail);
   return (
     <div className=" mx-auto p-4 md:p-6">
       <div className="flex flex-col space-y-0">
@@ -339,7 +341,11 @@ export default function UpdateStatus() {
                 <Button
                   type="submit"
                   className="w-48 rounded-sm"
-                  disabled={uploadFile?.isPending || updateStatus?.isPending}
+                  disabled={
+                    uploadFile?.isPending ||
+                    updateStatus?.isPending ||
+                    !activityDetail
+                  }
                 >
                   Update
                 </Button>

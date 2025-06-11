@@ -58,6 +58,14 @@ export default function FundManagementDetail() {
           path={`/projects/aa/${projectID}/fund-management?tab=fundManagementList`}
           title={data?.title}
           subtitle={`Detailed view of reserved fund`}
+          status={data?.status}
+          badgeClassName={
+            data?.status === 'DISBURSED'
+              ? 'bg-green-200'
+              : data?.status === 'NOT_DISBURSED'
+              ? 'bg-gray-100'
+              : 'bg-red-200'
+          }
         />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">

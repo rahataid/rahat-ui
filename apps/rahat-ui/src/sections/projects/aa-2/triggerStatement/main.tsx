@@ -58,7 +58,10 @@ export default function TriggerStatementView() {
         {phases
           .filter((p) => p.name !== 'PREPAREDNESS')
           .map((d) => (
-            <div key={d.id} className="w-full md:w-[32%] flex-grow flex-shrink-0">
+            <div
+              key={d.id}
+              className="w-full md:w-[32%] flex-grow flex-shrink-0"
+            >
               <TriggersPhaseCard
                 title={d.name}
                 subtitle={`Overview of ${d.name.toLowerCase()} phase`}
@@ -77,15 +80,18 @@ export default function TriggerStatementView() {
                   d?.phaseStats?.totalOptionalTriggersTriggered || 0
                 }
                 handleViewDetails={() => handleViewDetails(d)}
+                isActive={d?.isActive}
               />
             </div>
           ))}
 
         <div className="w-full md:w-[32%] flex-grow flex-shrink-0">
-          <TriggersListCard projectId={projectId} triggers={triggeredTriggers} />
+          <TriggersListCard
+            projectId={projectId}
+            triggers={triggeredTriggers}
+          />
         </div>
       </div>
-
     </div>
   );
 }

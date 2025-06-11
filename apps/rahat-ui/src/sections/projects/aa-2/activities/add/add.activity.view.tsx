@@ -48,10 +48,11 @@ import {
 } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
-import { useForm, useWatch } from 'react-hook-form';
+import { get, useForm, useWatch } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 import AddCommunicationForm from './add.communication.form';
+import CommunicationDataCard from './add.communicationDataCard';
 
 export default function AddActivities() {
   const createActivity = useCreateActivities();
@@ -313,6 +314,23 @@ export default function AddActivities() {
     }
   };
 
+  const responsibility = form.watch('responsibility');
+
+  React.useEffect(() => {
+    if (!responsibility) return;
+
+    const selectedUser = users?.data?.find((u) => u.uuid === responsibility);
+
+    if (selectedUser && !selectedUser.email) {
+      form.setError('responsibility', {
+        type: 'manual',
+        message: 'Selected user has no email',
+      });
+    } else {
+      form.clearErrors('responsibility');
+    }
+  }, [responsibility, users]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
@@ -346,7 +364,9 @@ export default function AddActivities() {
                     disabled={
                       createActivity?.isPending ||
                       uploadFile?.isPending ||
-                      audioUploading
+                      audioUploading ||
+                      open ||
+                      !!form.formState.errors.responsibility
                     }
                   >
                     Add
@@ -644,15 +664,22 @@ export default function AddActivities() {
             {open && (
               <AddCommunicationForm
                 form={form}
+                setOpen={setOpen}
                 onSave={() => {
                   handleSave();
                 }}
-                onRemove={handleRemove}
                 setLoading={setAudioUploading}
                 appTransports={appTransports}
-                communicationData={communicationData}
               />
             )}
+
+            <CommunicationDataCard
+              form={form}
+              communicationData={communicationData}
+              appTransports={appTransports}
+              onRemove={handleRemove}
+              setOpen={setOpen}
+            />
           </ScrollArea>
         </div>
       </form>

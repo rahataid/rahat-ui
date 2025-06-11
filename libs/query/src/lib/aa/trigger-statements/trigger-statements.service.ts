@@ -221,7 +221,7 @@ export const useDhmRainfallLevels = (uuid: UUID, payload: any) => {
   return query;
 };
 
-export const useGlofasWaterLevels = (uuid: UUID) => {
+export const useGlofasWaterLevels = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
 
   const query = useQuery({
@@ -230,8 +230,8 @@ export const useGlofasWaterLevels = (uuid: UUID) => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.waterLevels.getGlofas',
-          payload: {},
+          action: 'ms.waterLevels.getGlofas',
+          payload: payload,
         },
       });
       return mutate.data;

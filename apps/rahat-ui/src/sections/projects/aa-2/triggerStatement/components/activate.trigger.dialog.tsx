@@ -183,8 +183,8 @@ export default function ActivateTriggerDialog({
                       </FormControl>
                       <FormMessage />
                       <p className="text-xs text-muted-foreground font-medium">
-                        *Files must be JPEG, PNG, BMP, PDF, XLSX, or CSV under 5
-                        MB.
+                        *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
+                        CSV under 5 MB.
                       </p>
                       {documents?.map((file) => (
                         <div

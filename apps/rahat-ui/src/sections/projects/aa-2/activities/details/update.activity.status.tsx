@@ -277,8 +277,8 @@ export default function UpdateStatus() {
                       </FormControl>
                       <FormMessage />
                       <p className="text-xs text-orange-500 text-end">
-                        *Files must be under 5 MB and of type JPEG, PNG, BMP,
-                        PDF, XLSX, or CSV.
+                        *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
+                        CSV under 5 MB.
                       </p>
 
                       <div className="grid grid-cols-5 gap-4 p-2">

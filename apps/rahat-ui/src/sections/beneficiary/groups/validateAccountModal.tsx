@@ -4,6 +4,7 @@ import {
   useAssignBenGroupToProject,
   useProjectList,
   useRemoveBeneficiaryGroup,
+  useValidateBeneficaryBankAccount,
 } from '@rahat-ui/query';
 import {
   Dialog,
@@ -27,7 +28,7 @@ import { UUID } from 'crypto';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
-type RemoveModalType = {
+type ValidateModalType = {
   value: boolean;
   onToggle: () => void;
   onFalse: () => void;
@@ -35,37 +36,34 @@ type RemoveModalType = {
 
 type IProps = {
   beneficiaryGroupDetail: ListBeneficiaryGroup;
-  removeModal: RemoveModalType;
+  validateModal: ValidateModalType;
 };
 
-export default function RemoveBenfGroupModal({
-  removeModal,
+export default function ValidateBenefBankAccountByGroupUuid({
+  validateModal,
   beneficiaryGroupDetail,
 }: IProps) {
-  const removeBenfGroup = useRemoveBeneficiaryGroup();
+  const validateBenefGroup = useValidateBeneficaryBankAccount();
   const router = useRouter();
-  const handleRemoveBenfGroup = async () => {
-    await removeBenfGroup.mutateAsync(beneficiaryGroupDetail.uuid as UUID);
+  const handleValidateBankAccount = async () => {
+    await validateBenefGroup.mutateAsync(beneficiaryGroupDetail.uuid as UUID);
   };
 
   React.useEffect(() => {
-    if (removeBenfGroup.isSuccess) {
-      removeModal.onFalse();
-      router.back();
-    }
-  }, [removeBenfGroup]);
+    validateBenefGroup.isSuccess && validateModal.onFalse();
+  }, [validateBenefGroup]);
 
   return (
-    <Dialog open={removeModal.value} onOpenChange={removeModal.onToggle}>
+    <Dialog open={validateModal.value} onOpenChange={validateModal.onToggle}>
       <DialogContent
         onInteractOutside={(e) => {
           e.preventDefault();
         }}
       >
         <DialogHeader>
-          <DialogTitle>Archive Beneficiary Group</DialogTitle>
+          <DialogTitle>Validate Beneficiary Bank Account</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. Are you sure?
+            This will validate the beneficiary bank account.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="sm:justify-end">
@@ -75,7 +73,7 @@ export default function RemoveBenfGroupModal({
             </Button>
           </DialogClose>
           <Button
-            onClick={handleRemoveBenfGroup}
+            onClick={handleValidateBankAccount}
             type="button"
             variant="default"
           >

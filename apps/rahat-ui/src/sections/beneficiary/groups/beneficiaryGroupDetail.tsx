@@ -109,11 +109,11 @@ export default function BeneficiaryGroupDetail({
         assignedGroupId={assignedGroupId}
       />
 
-      <RemoveBenfGroupModal
+      {/* <RemoveBenfGroupModal
         beneficiaryGroupDetail={beneficiaryGroupDetail}
         removeModal={removeModal}
         closeSecondPanel={closeSecondPanel}
-      />
+      /> */}
 
       <div className="flex justify-between p-4 pt-5 bg-card border-b">
         <div className="flex gap-3">

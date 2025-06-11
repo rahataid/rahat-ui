@@ -204,8 +204,14 @@ export default function EditActivity() {
 
   const [audioUploading, setAudioUploading] = React.useState<boolean>(false);
 
-  useStakeholdersGroups(projectID as UUID, {});
-  useBeneficiariesGroups(projectID as UUID, {});
+  useStakeholdersGroups(projectID as UUID, {
+    page: 1,
+    perPage: 100,
+  });
+  useBeneficiariesGroups(projectID as UUID, {
+    page: 1,
+    perPage: 100,
+  });
   const appTransports = useListAllTransports();
 
   const activityDetailPath = `/projects/aa/${projectID}/activities/${activityID}`;
@@ -414,7 +420,6 @@ export default function EditActivity() {
   };
 
   React.useEffect(() => {
-
     form.reset({
       title: activityDetail?.title,
       responsibility: activityDetail?.managerId,
@@ -428,7 +433,6 @@ export default function EditActivity() {
       isAutomated: activityDetail?.isAutomated,
     });
   }, [activityDetail, form]);
-
 
   return (
     <Form {...form}>

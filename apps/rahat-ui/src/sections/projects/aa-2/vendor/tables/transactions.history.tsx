@@ -61,16 +61,7 @@ export default function VendorsTransactionsHistory() {
         titleStyle="text-lg"
         description="List of all the transactions made"
       />
-      {/* <SearchInput
-        name="txHash"
-        className="w-full"
-        value={
-          (table.getColumn('txHash')?.getFilterValue() as string) ??
-          filters?.txHash
-        }
-        onSearch={(event) => handleFilterChange(event)}
-      />
-       */}
+
       <SearchInput
         className="w-full"
         name="transaction hash"
@@ -79,7 +70,7 @@ export default function VendorsTransactionsHistory() {
       />
       <DemoTable
         table={table}
-        tableHeight={'h-[calc(500px)]'}
+        tableHeight={'h-[calc(400px)]'}
         loading={isLoading}
       />
       <CustomPagination

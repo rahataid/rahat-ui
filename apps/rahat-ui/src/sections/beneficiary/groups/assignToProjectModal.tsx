@@ -82,7 +82,10 @@ export default function AssignBeneficiaryToProjectModal({
                 projectsList.data?.data.map((project) => {
                   return (
                     <SelectItem
-                      disabled={assignedGroupId?.includes(project?.id)}
+                      disabled={
+                        assignedGroupId?.includes(project?.id) ||
+                        !beneficiaryGroupDetail?.isGroupValidForAA
+                      }
                       key={project.uuid}
                       value={project.uuid as UUID}
                     >

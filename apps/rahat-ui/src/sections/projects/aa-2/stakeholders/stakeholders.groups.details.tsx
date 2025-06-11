@@ -1,14 +1,7 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 
-import {
-  AddButton,
-  ClientSidePagination,
-  DemoTable,
-  SearchInput,
-  HeaderWithBack,
-  DataCard,
-} from 'apps/rahat-ui/src/common';
-import { User } from 'lucide-react';
+import { useSingleStakeholdersGroup } from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -17,10 +10,17 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { useProjectStakeholdersGroupTableColumns } from './columns';
-import { useParams, useRouter } from 'next/navigation';
+import {
+  ClientSidePagination,
+  DataCard,
+  DemoTable,
+  HeaderWithBack,
+  SearchInput,
+} from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
-import { useSingleStakeholdersGroup } from '@rahat-ui/query';
+import { Plus, User } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useProjectStakeholdersGroupTableColumns } from './columns';
 
 type Props = {};
 
@@ -106,10 +106,19 @@ const StakeholdersGroupsDetails = (props: Props) => {
                 ?.setFilterValue(event.target.value)
             }
           />
-          <AddButton
-            path={`/projects/aa/${projectId}/stakeholders/groups/edit/${groupId}`}
-            name="Stakeholder"
-          />
+
+          <Button
+            variant="default"
+            type="button"
+            onClick={() =>
+              router.push(
+                `/projects/aa/${projectId}/stakeholders/groups/edit/${groupId}`,
+              )
+            }
+            className=""
+          >
+            <Plus size={18} className="mr-1" /> Add StakeHolder
+          </Button>
         </div>
 
         <DemoTable

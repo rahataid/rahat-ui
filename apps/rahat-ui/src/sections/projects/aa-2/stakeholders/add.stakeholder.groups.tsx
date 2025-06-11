@@ -139,15 +139,17 @@ const UpdateOrAddStakeholdersGroup = () => {
       <div className="flex flex-col">
         <HeaderWithBack
           title={
-            isEditing ? 'Add Stakeholder Group' : 'Create Stakeholder Group'
+            isEditing ? 'Add Stakeholder to Group' : 'Create Stakeholder Group'
           }
-          subtitle={`Fill the form below to ${
-            isEditing ? 'update' : 'create a new'
+          subtitle={` ${
+            isEditing
+              ? 'Select stakeholders from the list below to add them to selected'
+              : 'Fill the form below to create a new'
           } stakeholder group`}
           path={`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`}
         />
         <div className="ml-1 mb-1">
-          <Label className="mb-2"> Stake Holder Group Name</Label>
+          <Label className="mb-2"> Stakeholder Group Name</Label>
           <Input
             placeholder="Write stakeholder group name"
             className="w-full rounded-md"

@@ -106,7 +106,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
         <div className="mt-4 flex justify-between items-center">
           <div>
             <Heading
-              title={`Group Name`}
+              title={`${payout?.beneficiaryGroupToken?.beneficiaryGroup?.name}`}
               description="List of all the payout transaction logs of selected group"
             />
           </div>

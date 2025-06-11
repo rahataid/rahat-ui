@@ -15,7 +15,10 @@ export default function WaterLevelTable({ tableData, columns }: IProps) {
   });
   return (
     <>
-      <DemoTable table={table} tableHeight="h-[calc(100vh-500px)]" />
+      <DemoTable
+        table={table}
+        tableHeight="h-[calc(100vh-500px)] min-h-[400px]"
+      />
     </>
   );
 }

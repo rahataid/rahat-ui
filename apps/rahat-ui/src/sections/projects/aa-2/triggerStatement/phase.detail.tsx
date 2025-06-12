@@ -86,7 +86,7 @@ export default function PhaseDetail() {
           )}
         </div>
       </div>
-      {true && (
+      {phase?.isActive && (
         <div className="mb-4">
           <Alert
             variant="destructive"

@@ -1,13 +1,18 @@
+'use client';
 import { UUID } from 'crypto';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSwal } from 'libs/query/src/swal';
 import { usePhasesStore } from './phases.store';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
 export const useSinglePhase = (uuid: UUID, phaseId: UUID) => {
   const q = useProjectAction();
+  const { setThreshhold } = usePhasesStore((state) => ({
+    setThreshhold: state.setThreshold,
+  }));
+
   const query = useQuery({
     queryKey: ['phase', uuid, phaseId],
     queryFn: async () => {
@@ -23,6 +28,14 @@ export const useSinglePhase = (uuid: UUID, phaseId: UUID) => {
       return mutate.data;
     },
   });
+  useEffect(() => {
+    setThreshhold({
+      name: query?.data?.name,
+      mandatory: query?.data?.requiredMandatoryTriggers,
+      optional: query?.data?.requiredOptionalTriggers,
+    });
+  }, [query?.data]);
+
   return query;
 };
 
@@ -77,7 +90,10 @@ export const useRevertPhase = () => {
   });
 };
 
-export const usePhaseHistory = (uuid: UUID, payload: { phaseUuid: UUID }) => {
+export const usePhaseHistory = (
+  uuid: UUID,
+  payload: { phaseUuid: UUID; phase: boolean },
+) => {
   const q = useProjectAction();
 
   const query = useQuery({
@@ -132,4 +148,53 @@ export const usePhases = (uuid: UUID) => {
     }
   }, [query.data]);
   return query;
+};
+
+export const useConfigureThreshold = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 2000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      payload,
+    }: {
+      projectUUID: UUID;
+      payload: {
+        uuid: string;
+        requiredMandatoryTriggers: number;
+        requiredOptionalTriggers: number;
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'ms.phase.configureThreshold',
+          payload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+
+      toast.fire({
+        title: 'Threshold configure successfully.',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while configuring  threshold.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
 };

@@ -11,6 +11,7 @@ export const TAGS = {
   GET_ALL_TRANSPORT: 'get_all_transport',
   GET_ALL_AUDIENCE: 'get_all_audience',
   GET_BENEFICIARIES: 'get_beneficiaries',
+  VALIDATE_BENEFICIARIES: 'validate_beneficiaries',
   GET_STAKEHOLDERS: 'get_stakeholders',
   GET_BENEFICIARIES_STATS: 'get_beneficiaries_stats',
   GET_VENDOr_STATS: 'get_vendor_stats',
@@ -48,6 +49,7 @@ export const PROJECT_SETTINGS_KEYS = {
   HAZARD_TYPE: 'HAZARD_TYPE',
   SAFE_WALLET: 'SAFE_WALLET',
   PROJECT_INFO: 'PROJECTINFO',
+  OFFRAMP: 'OFFRAMP',
 };
 
 export const TREASURY_SOURCES = [

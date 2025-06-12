@@ -204,8 +204,14 @@ export default function EditActivity() {
 
   const [audioUploading, setAudioUploading] = React.useState<boolean>(false);
 
-  useStakeholdersGroups(projectID as UUID, {});
-  useBeneficiariesGroups(projectID as UUID, {});
+  useStakeholdersGroups(projectID as UUID, {
+    page: 1,
+    perPage: 100,
+  });
+  useBeneficiariesGroups(projectID as UUID, {
+    page: 1,
+    perPage: 100,
+  });
   const appTransports = useListAllTransports();
 
   const activityDetailPath = `/projects/aa/${projectID}/activities/${activityID}`;
@@ -414,7 +420,6 @@ export default function EditActivity() {
   };
 
   React.useEffect(() => {
-
     form.reset({
       title: activityDetail?.title,
       responsibility: activityDetail?.managerId,
@@ -428,7 +433,6 @@ export default function EditActivity() {
       isAutomated: activityDetail?.isAutomated,
     });
   }, [activityDetail, form]);
-
 
   return (
     <Form {...form}>
@@ -694,8 +698,8 @@ export default function EditActivity() {
                       </FormControl>
                       <FormMessage />
                       <p className="text-xs text-end text-orange-500">
-                        *Files must be under 5 MB and of type JPEG, PNG, BMP,
-                        PDF, XLSX, or CSV.
+                        *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
+                        CSV under 5 MB.
                       </p>
                       <div className="grid lg:grid-cols-5 gap-3">
                         {documents?.map((file) => (

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
@@ -52,9 +52,16 @@ export default function UpdateStatus() {
   const redirectTo = searchParams.get('from');
   const router = useRouter();
 
-  const activitiesListPath = redirectTo
-    ? `/projects/aa/${projectId}/activities/${activityId}`
-    : `/projects/aa/${projectId}/activities`;
+  const activitiesListPath = useMemo(() => {
+    if (!redirectTo) {
+      return `/projects/aa/${projectId}/activities`;
+    }
+
+    return redirectTo === 'detailPage'
+      ? `/projects/aa/${projectId}/activities/${activityId}`
+      : `/projects/aa/${projectId}/activities/list/${redirectTo}`;
+  }, [redirectTo, projectId, activityId]);
+
   const uploadFile = useUploadFile();
 
   const updateStatus = useUpdateActivityStatus();
@@ -69,12 +76,7 @@ export default function UpdateStatus() {
 
   const FormSchema = z.object({
     status: z.string().min(1, { message: 'Please select status' }),
-    notes: z
-      .string()
-      .optional()
-      .refine((val) => !val || val?.length > 4, {
-        message: 'Must be at least 5 characters',
-      }),
+    notes: z.string().optional(),
     activityDocuments: z
       .array(
         z.object({
@@ -88,11 +90,21 @@ export default function UpdateStatus() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      status: activityDetail?.status || '',
-      notes: activityDetail?.notes || '',
-      activityDocuments: activityDetail?.activityDocuments || [],
+      status: '',
+      notes: '',
+      activityDocuments: [],
     },
   });
+
+  // useEffect(() => {
+  //   if (activityDetail) {
+  //     form.reset({
+  //       status: activityDetail.status || '',
+  //       notes: activityDetail.notes ?? '',
+  //       activityDocuments: activityDetail.activityDocuments || [],
+  //     });
+  //   }
+  // }, [activityDetail, form]);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -162,9 +174,16 @@ export default function UpdateStatus() {
   React.useEffect(() => {
     if (activityDetail) {
       form.setValue('status', activityDetail?.status);
-      form.setValue('notes', activityDetail?.notes);
+      form.setValue('notes', activityDetail?.notes ?? ' ');
+      form.setValue(
+        'activityDocuments',
+        activityDetail.activityDocuments ?? [],
+      );
+      // form.trigger('status');
     }
-  }, [activityDetail]);
+  }, [activityDetail, form]);
+
+  // console.log(activityDetail);
   return (
     <div className=" mx-auto p-4 md:p-6">
       <div className="flex flex-col space-y-0">
@@ -258,8 +277,8 @@ export default function UpdateStatus() {
                       </FormControl>
                       <FormMessage />
                       <p className="text-xs text-orange-500 text-end">
-                        *Files must be under 5 MB and of type JPEG, PNG, BMP,
-                        PDF, XLSX, or CSV.
+                        *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
+                        CSV under 5 MB.
                       </p>
 
                       <div className="grid grid-cols-5 gap-4 p-2">
@@ -322,7 +341,11 @@ export default function UpdateStatus() {
                 <Button
                   type="submit"
                   className="w-48 rounded-sm"
-                  disabled={uploadFile?.isPending || updateStatus?.isPending}
+                  disabled={
+                    uploadFile?.isPending ||
+                    updateStatus?.isPending ||
+                    !activityDetail
+                  }
                 >
                   Update
                 </Button>

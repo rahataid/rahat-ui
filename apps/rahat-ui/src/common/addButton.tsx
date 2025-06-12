@@ -30,7 +30,7 @@ export function AddButton({
       onClick={() => router.push(path)}
       className={className}
     >
-      <Plus size={18} className="mr-1" /> Add {name}
+      <Plus size={18} className="mr-1" /> Create {name}
     </Button>
   );
 }

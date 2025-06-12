@@ -64,7 +64,7 @@ const StakeGoldersGroups = () => {
 
           <AddButton
             path={`/projects/aa/${id}/stakeholders/groups/add`}
-            name="Stakeholder group"
+            name="Stakeholder Group"
           />
         </div>
         <ScrollArea className="h-[calc(100vh-360px)] mb-2">

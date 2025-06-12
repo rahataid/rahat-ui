@@ -38,7 +38,8 @@ type IProps = {
 };
 
 export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
-  const source = form.watch('source');
+  const source = form.watch('source') || ' ';
+  console.log(source);
   return (
     <>
       <Form {...form}>
@@ -279,10 +280,10 @@ export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
                           onValueChange={field.onChange}
                           value={field.value}
                         >
-                          <FormLabel>Forecast Status</FormLabel>
+                          <FormLabel> Select Forecast Status</FormLabel>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select status" />
+                              <SelectValue placeholder="Select forecast status" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>

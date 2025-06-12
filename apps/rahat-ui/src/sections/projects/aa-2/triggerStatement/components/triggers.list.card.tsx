@@ -15,11 +15,12 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
         titleStyle="text-xl/6"
         description="List of all recently activated triggers"
       />
-      <ScrollArea className="h-[calc(100vh-500px)] min-h-[440px]">
+      <ScrollArea className="h-[calc(100vh-260px)] min-h-[440px]">
         <div className="flex flex-col space-y-3 pr-2.5">
           {triggers?.length ? (
             triggers?.map((t: any) => (
               <TriggerCard
+                key={projectId}
                 projectId={projectId}
                 triggerId={t?.repeatKey}
                 phase={t?.phase?.name || 'N/A'}
@@ -27,7 +28,10 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
                 isTriggered={t?.isTriggered}
                 title={t?.title || 'N/A'}
                 dataSource={t?.source || 'N/A'}
-                riverBasin={t?.phase?.source?.riverBasin || 'N/A'}
+                riverBasin={
+                  (t?.source === 'MANUAL' && t?.phase?.source?.riverBasin) ||
+                  'N/A'
+                }
                 time={new Date(t?.createdAt)?.toLocaleString()}
               />
             ))

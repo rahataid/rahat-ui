@@ -42,6 +42,7 @@ export interface ListBeneficiaryGroup {
   updatedAt: Date;
   deletedAt: Date | null;
   beneficiaryGroupProject?: any;
+  isGroupValidForAA: boolean;
 }
 
 export interface UpdateBeneficiaryPayload {

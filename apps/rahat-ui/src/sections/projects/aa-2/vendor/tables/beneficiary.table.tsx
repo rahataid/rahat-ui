@@ -58,7 +58,7 @@ export default function VendorsBeneficiaryList({
     },
   });
   return (
-    <div className="">
+    <div className="space-y-2">
       <Heading
         title="Offline Beneficiaries"
         titleStyle="text-lg"
@@ -74,7 +74,7 @@ export default function VendorsBeneficiaryList({
       />
       <DemoTable
         table={table}
-        tableHeight={'h-[calc(100vh-380px)]'}
+        tableHeight={'h-[calc(400px)]'}
         loading={loading}
       />
       <ClientSidePagination table={table} />

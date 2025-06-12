@@ -19,7 +19,8 @@ import { useBeneficiaryGroupsStore } from './beneficiary-groups.store';
 import { useBeneficiaryStore } from './beneficiary.store';
 
 const GET_BENEFICIARY_GROUP = 'GET_BENEFICIARY_GROUP';
-
+const GET_FAILED_BANK_ACCOUNT_BENEFICIARY =
+  'GET_FAILED_BANK_ACCOUNT_BENEFICIARY';
 const createNewBeneficiary = async (payload: any) => {
   const response = await api.post('/beneficiaries', payload);
   return response?.data;
@@ -47,6 +48,16 @@ const getBeneficiaryGroup = async (uuid: UUID) => {
   return response?.data;
 };
 
+const getBeneficiaryFailedBankAccount = async (uuid: UUID) => {
+  const response = await api.get(
+    `/beneficiaries/groups/${uuid}/fail-account/export`,
+  );
+  return response?.data;
+};
+
+const validateBeneficiaryBankAccount = async (uuid: UUID) => {
+  const response = await api.get(`/beneficiaries/groups/${uuid}/account-check`);
+};
 export const useBeneficiaryGroupsList = (payload: any): any => {
   const { queryClient } = useRSQuery();
 
@@ -266,6 +277,35 @@ export const useRemoveBeneficiaryFromProject = () => {
       const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
         title: 'Error while removing beneficiary.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useValidateBeneficaryBankAccount = () => {
+  const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: (payload: any) => validateBeneficiaryBankAccount(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [TAGS.VALIDATE_BENEFICIARIES] });
+      toast.fire({
+        title: 'Accounts check in progress. Data will be listed soon',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      toast.fire({
+        title: 'Error while validating beneficiary.',
         icon: 'error',
         text: errorMessage,
       });
@@ -609,6 +649,20 @@ export const useGetBeneficiaryGroup = (
       queryKey: [GET_BENEFICIARY_GROUP, uuid],
       // @ts-ignore
       queryFn: () => getBeneficiaryGroup(uuid),
+    },
+    queryClient,
+  );
+};
+
+export const useExportBeneficiariesFailedBankAccount = (
+  uuid: UUID,
+): UseQueryResult<any, Error> => {
+  const { queryClient } = useRSQuery();
+  return useQuery(
+    {
+      queryKey: [GET_FAILED_BANK_ACCOUNT_BENEFICIARY, uuid],
+      queryFn: () => getBeneficiaryFailedBankAccount(uuid),
+      enabled: !!uuid,
     },
     queryClient,
   );

@@ -22,12 +22,14 @@ interface IProps {
   group: any[];
   loading?: boolean;
   title: string;
+  status?: string;
 }
 
 export default function FundManagementDetailTable({
   group,
   loading,
   title,
+  status,
 }: IProps) {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =

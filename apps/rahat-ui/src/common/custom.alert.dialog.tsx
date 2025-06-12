@@ -25,8 +25,8 @@ export function CustomAlertDialog({
 }: IProps) {
   return (
     <AlertDialog>
-      <AlertDialogTrigger className="flex items-center">
-        {dialogTrigger}
+      <AlertDialogTrigger asChild className="flex items-center">
+        <div>{dialogTrigger}</div>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader className="space-y-0">

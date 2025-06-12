@@ -76,7 +76,9 @@ export default function usePayoutTransactionLogTableColumn() {
       header: 'Timestamp',
       cell: ({ row }) => {
         const time = row.getValue('timeStamp') as string;
-        return <div className="flex gap-1">{time || 'N/A'}</div>;
+        return (
+          <div className="flex gap-1">{new Date(time).toLocaleString()}</div>
+        );
       },
     },
 
@@ -91,7 +93,7 @@ export default function usePayoutTransactionLogTableColumn() {
               className="hover:text-primary cursor-pointer"
               size={20}
               strokeWidth={1.5}
-              onClick={() => handleEyeClick(row.original.id)}
+              onClick={() => handleEyeClick(row?.original?.uuid)}
             />
           </div>
         );

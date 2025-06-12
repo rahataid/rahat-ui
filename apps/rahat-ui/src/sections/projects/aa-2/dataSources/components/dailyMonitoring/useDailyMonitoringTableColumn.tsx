@@ -16,6 +16,13 @@ export default function useDailyMonitoringTableColumn() {
 
   const columns: ColumnDef<any>[] = [
     {
+      accessorKey: 'dataEntryBy',
+      header: 'Created By',
+      cell: ({ row }) => {
+        return row.getValue('dataEntryBy');
+      },
+    },
+    {
       accessorKey: 'createdAt',
       header: 'Created At',
       filterFn: (row, columnId, filterValue) => {
@@ -34,13 +41,7 @@ export default function useDailyMonitoringTableColumn() {
         return 'N/A';
       },
     },
-    {
-      accessorKey: 'dataEntryBy',
-      header: 'Created By',
-      cell: ({ row }) => {
-        return row.getValue('dataEntryBy');
-      },
-    },
+
     {
       accessorKey: 'riverBasin',
       header: 'River Basin',

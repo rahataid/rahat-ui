@@ -282,20 +282,27 @@ export const useAATriggerStatements = (uuid: UUID, payload: any) => {
 
 export const useSingleTriggerStatement = (
   uuid: UUID,
-  repeatKey: string | string[],
+  repeatKey: string | string[] | number,
+  version: boolean,
 ) => {
   const q = useProjectAction();
 
+  const action = version ? 'ms.revertPhase.getOne' : 'ms.triggers.getOne';
+  const payload = version
+    ? {
+        id: repeatKey,
+      }
+    : {
+        repeatKey: repeatKey,
+      };
   const query = useQuery({
-    queryKey: ['triggerStatement', uuid, repeatKey],
+    queryKey: ['triggerStatement', uuid, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'ms.triggers.getOne',
-          payload: {
-            repeatKey: repeatKey,
-          },
+          action: action,
+          payload,
         },
       });
       return mutate.data;

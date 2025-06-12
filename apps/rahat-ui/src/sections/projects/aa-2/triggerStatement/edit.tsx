@@ -20,10 +20,11 @@ export default function EditTrigger() {
   const triggerRepeatKey = window.location.href.split('/').slice(-2, -1)[0];
 
   const triggerDetailPage = `/projects/aa/${projectId}/trigger-statements/${triggerRepeatKey}`;
-
+  const version = false;
   const { data: trigger, isLoading } = useSingleTriggerStatement(
     projectId,
     triggerRepeatKey,
+    version,
   );
 
   const triggerType = trigger?.source === 'MANUAL' ? 'manual' : 'automated';
@@ -276,6 +277,7 @@ export default function EditTrigger() {
     formHandlers[triggerType as 'manual' | 'automated']?.();
   };
 
+  console.log(trigger);
   React.useEffect(() => {
     if (triggerType === 'manual') {
       manualForm.reset({
@@ -301,9 +303,10 @@ export default function EditTrigger() {
     }
   }, [trigger]);
 
-  return isLoading ? (
-    <TableLoader />
-  ) : (
+  // return isLoading ? (
+  //   <TableLoader />
+  // ) :
+  return (
     <div className="p-4">
       <Back />
       <Heading

@@ -2,7 +2,12 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 function getStatusBg(status: string) {
   if (status === 'Not Started') {
     return 'bg-red-200 text-red-600';
@@ -40,7 +45,21 @@ export default function useCommsActivitiesTableColumns() {
       accessorKey: 'title',
       header: 'Title',
       cell: ({ row }) => (
-        <div className="capitalize min-w-72">{row.getValue('title')}</div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="truncate w-48 hover:cursor-pointer">
+                {row.getValue('title')}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              className="w-80 rounded-sm text-justify "
+            >
+              <p>{row.getValue('title')}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       ),
     },
     {

@@ -137,6 +137,7 @@ export default function PhaseDetail() {
             projectId={projectId}
             phaseId={phaseId}
             triggers={phase?.triggers}
+            riverBasin={phase?.source.riverBasin}
           />
         </div>
       </div>

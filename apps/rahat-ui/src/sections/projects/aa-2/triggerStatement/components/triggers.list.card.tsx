@@ -20,6 +20,7 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
           {triggers?.length ? (
             triggers?.map((t: any) => (
               <TriggerCard
+                key={projectId}
                 projectId={projectId}
                 triggerId={t?.repeatKey}
                 phase={t?.phase?.name || 'N/A'}
@@ -27,7 +28,10 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
                 isTriggered={t?.isTriggered}
                 title={t?.title || 'N/A'}
                 dataSource={t?.source || 'N/A'}
-                riverBasin={t?.phase?.source?.riverBasin || 'N/A'}
+                riverBasin={
+                  (t?.source === 'MANUAL' && t?.phase?.source?.riverBasin) ||
+                  'N/A'
+                }
                 time={new Date(t?.createdAt)?.toLocaleString()}
               />
             ))

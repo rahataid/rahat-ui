@@ -5,9 +5,7 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import DynamicTriggersList from './dynamic.triggers.list';
-import {
-  usePhaseHistory,
-} from '@rahat-ui/query';
+import { usePhaseHistory } from '@rahat-ui/query';
 import React from 'react';
 import { UUID } from 'crypto';
 
@@ -15,25 +13,26 @@ type IProps = {
   projectId: string;
   phaseId: string;
   triggers: Record<string, unknown>[];
+  riverBasin?: string;
 };
 
-export default function TriggersListTabs({ projectId, phaseId, triggers }: IProps) {
+export default function TriggersListTabs({
+  projectId,
+  phaseId,
+  triggers,
+  riverBasin,
+}: IProps) {
   const { data: phaseHistory } = usePhaseHistory(projectId as UUID, {
     phaseUuid: phaseId as UUID,
+    phase: true,
   });
 
   const triggered = React.useMemo(
-    () =>
-      triggers?.filter(
-        (t) => t?.isTriggered === true,
-      ),
+    () => triggers?.filter((t) => t?.isTriggered === true),
     [triggers],
   );
   const notTriggered = React.useMemo(
-    () =>
-      triggers?.filter(
-        (t) => t?.isTriggered === false,
-      ),
+    () => triggers?.filter((t) => t?.isTriggered === false),
     [triggers],
   );
 
@@ -66,13 +65,25 @@ export default function TriggersListTabs({ projectId, phaseId, triggers }: IProp
         </TabsTrigger>
       </TabsList>
       <TabsContent value="All">
-        <DynamicTriggersList projectId={projectId} triggers={triggers} />
+        <DynamicTriggersList
+          projectId={projectId}
+          triggers={triggers}
+          riverBasin={riverBasin}
+        />
       </TabsContent>
       <TabsContent value="Not Triggered">
-        <DynamicTriggersList projectId={projectId} triggers={notTriggered} />
+        <DynamicTriggersList
+          projectId={projectId}
+          triggers={notTriggered}
+          riverBasin={riverBasin}
+        />
       </TabsContent>
       <TabsContent value="Triggered">
-        <DynamicTriggersList projectId={projectId} triggers={triggered} />
+        <DynamicTriggersList
+          projectId={projectId}
+          triggers={triggered}
+          riverBasin={riverBasin}
+        />
       </TabsContent>
       <TabsContent value="History">
         <DynamicTriggersList projectId={projectId} history={phaseHistory} />

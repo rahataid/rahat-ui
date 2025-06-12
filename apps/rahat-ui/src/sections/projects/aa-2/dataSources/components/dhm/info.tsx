@@ -35,6 +35,16 @@ export function Info({ riverWatch }: any) {
     [riverWatch],
   );
 
+  const renderCardColor = (status: string) => {
+    const statusColorMap: Record<string, string> = {
+      'BELOW WARNING LEVEL': 'bg-green-100 border-green-500',
+      DANGER_LEVEL: 'bg-red-100 border-red-500',
+      WARNING_LEVEL: 'bg-yellow-100 border-yellow-500',
+    };
+
+    return statusColorMap[status] || '';
+  };
+
   return (
     <div className="flex justify-between space-x-4">
       <div className="p-4 rounded-sm border shadow w-full">
@@ -66,11 +76,9 @@ export function Info({ riverWatch }: any) {
         </div>
       </div>
       <div
-        className={`p-4 rounded-sm border shadow text-center w-64 ${
-          riverWatch?.info?.status === 'BELOW WARNING LEVEL'
-            ? 'bg-green-100 border-green-500'
-            : ''
-        }`}
+        className={`p-4 rounded-sm border shadow text-center w-64 ${renderCardColor(
+          riverWatch?.info?.status,
+        )}`}
       >
         <p className="text-primary font-semibold text-3xl/10">
           {riverWatch?.info?.waterLevel?.value}

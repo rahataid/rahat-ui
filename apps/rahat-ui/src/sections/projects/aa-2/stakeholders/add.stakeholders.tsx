@@ -47,7 +47,7 @@ export default function AddStakeholders() {
       .string()
       .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
       .min(2, { message: 'Please enter name.' }),
-    phone: z.string().optional().refine(isValidPhoneNumberRefinement, {
+    phone: z.string().refine(isValidPhoneNumberRefinement, {
       message: 'Invalid phone number',
     }),
     email: z
@@ -72,7 +72,7 @@ export default function AddStakeholders() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
-      phone: '',
+      phone: '+977',
       email: '',
       designation: '',
       organization: '',
@@ -98,7 +98,7 @@ export default function AddStakeholders() {
     <div className="p-4">
       <div className="flex justify-between items-center">
         <HeaderWithBack
-          title={'Add Stakeholder'}
+          title={'Create Stakeholder'}
           subtitle="Fill the form below  to create a new stakeholder"
           path={`/projects/aa/${id}/stakeholders`}
         />
@@ -135,6 +135,7 @@ export default function AddStakeholders() {
                       <Label>Phone Number</Label>
                       <FormControl>
                         <PhoneInput
+                          defaultCountry="NP"
                           placeholder="Enter a Phone Number"
                           {...field}
                         />
@@ -252,7 +253,7 @@ export default function AddStakeholders() {
                 Cancel
               </Button>
               <Button className="w-32" disabled={form.formState.isSubmitting}>
-                Add
+                Create
               </Button>
             </div>
           </div>

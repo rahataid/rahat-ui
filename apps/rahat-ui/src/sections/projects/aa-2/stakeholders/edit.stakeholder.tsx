@@ -47,7 +47,12 @@ export default function EditStakeholders() {
     phone: z.string().optional().refine(isValidPhoneNumberRefinement, {
       message: 'Invalid phone number',
     }),
-    email: z.string().optional(),
+    email: z
+      .string()
+      .optional()
+      .refine((email) => !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), {
+        message: 'Invalid email address',
+      }),
     designation: z
       .string()
       .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')

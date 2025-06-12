@@ -14,6 +14,7 @@ type IProps = {
   time: string;
   triggerType?: string;
   version?: number;
+  id?: number;
 };
 
 export default function TriggerCard({
@@ -28,6 +29,7 @@ export default function TriggerCard({
   time,
   triggerType,
   version,
+  id,
 }: IProps) {
   const router = useRouter();
   const renderPhaseBadgeColor = (phase: string) => {
@@ -40,14 +42,19 @@ export default function TriggerCard({
         return 'bg-green-50 text-green-500';
     }
   };
+  const handleRoute = () => {
+    if (version) {
+      router.push(
+        `/projects/aa/${projectId}/trigger-statements/${id}?version=true&type=${version}`,
+      );
+    } else {
+      router.push(`/projects/aa/${projectId}/trigger-statements/${triggerId}`);
+    }
+  };
   return (
     <div
       className="p-4 rounded border shadow cursor-pointer hover:shadow-md"
-      onClick={() => {
-        router.push(
-          `/projects/aa/${projectId}/trigger-statements/${triggerId}`,
-        );
-      }}
+      onClick={handleRoute}
     >
       <div className="flex justify-between items-center space-x-4 mb-2">
         <div className="flex items-center space-x-4">

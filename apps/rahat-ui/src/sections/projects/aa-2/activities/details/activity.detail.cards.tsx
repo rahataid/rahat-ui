@@ -1,6 +1,6 @@
 'use client';
 import { SpinnerLoader } from 'apps/rahat-ui/src/common';
-import { CheckCircle, Clock, UserCircle } from 'lucide-react';
+import { CheckCircle, Clock, NotepadText, UserCircle } from 'lucide-react';
 import * as React from 'react';
 import {
   TooltipProvider,
@@ -123,6 +123,13 @@ export default function ActivityDetailCards({
                   Completed at: {formatToNepalTime(activityDetail?.completedAt)}
                 </span>
               </>
+            </div>
+          )}
+
+          {activityDetail?.notes && (
+            <div className=" flex items-center text-xs mt-1">
+              <NotepadText className="w-4 h-3.5 mr-2 ml-1" />
+              <span>{activityDetail?.notes}</span>
             </div>
           )}
         </>

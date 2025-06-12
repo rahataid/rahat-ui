@@ -19,7 +19,7 @@ export default function DailyMonitoringTable({ table, loading }: IProps) {
   return (
     <TableComponent>
       <ScrollArea className="h-[calc(100vh-322px)]">
-        <TableHeader>
+        <TableHeader className="sticky top-0 bg-gray-100">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {

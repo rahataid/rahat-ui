@@ -79,27 +79,148 @@ export default function AddTriggerView() {
       forecastStatus: z.string().optional(),
     })
     .superRefine((data, ctx) => {
-      if (
-        data.source === 'DHM' &&
-        selectedPhase?.name === 'ACTIVATION' &&
-        (!data.dangerLevel || data.dangerLevel.trim() === '')
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['dangerLevel'],
-          message: 'Danger Level is required',
-        });
+      if (data.source === 'DHM' && selectedPhase?.name === 'ACTIVATION') {
+        if (!data.dangerLevel || data.dangerLevel.toString().trim() === '') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['dangerLevel'],
+            message: 'Danger Level is required',
+          });
+        } else if (
+          isNaN(Number(data.dangerLevel)) ||
+          Number(data.dangerLevel) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['dangerLevel'],
+            message: 'Danger Level must be a positive number',
+          });
+        }
+      }
+      if (data.source === 'DHM' && selectedPhase?.name === 'READINESS') {
+        if (!data.warningLevel || data.warningLevel.toString().trim() === '') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['warningLevel'],
+            message: 'Warning Level is required',
+          });
+        } else if (
+          isNaN(Number(data.warningLevel)) ||
+          Number(data.warningLevel) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['warningLevel'],
+            message: 'Warning Level must be a positive number',
+          });
+        }
       }
       if (
-        data.source === 'DHM' &&
-        selectedPhase?.name === 'READINESS' &&
-        (!data.warningLevel || data.warningLevel.trim() === '')
+        data.source === 'DAILY_MONITORING' &&
+        (selectedPhase?.name === 'ACTIVATION' ||
+          selectedPhase?.name === 'READINESS')
       ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['warningLevel'],
-          message: 'Warning Level is required',
-        });
+        if (!data.forecast || data.forecast.toString().trim() === '') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['forecast'],
+            message: 'Forecast is required',
+          });
+        }
+
+        if (
+          !data.daysToConsiderPrior ||
+          data.daysToConsiderPrior.toString().trim() === ''
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['daysToConsiderPrior'],
+            message: 'Days To Consider Prior is required',
+          });
+        } else if (
+          isNaN(Number(data.daysToConsiderPrior)) ||
+          Number(data.daysToConsiderPrior) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['daysToConsiderPrior'],
+            message: 'Days To Consider Prior must be a positive number',
+          });
+        }
+
+        if (
+          !data.forecastStatus ||
+          data.forecastStatus.toString().trim() === ''
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['forecastStatus'],
+            message: 'forecast Status is required',
+          });
+        }
+      }
+
+      if (
+        data.source === 'GLOFAS' &&
+        (selectedPhase?.name === 'ACTIVATION' ||
+          selectedPhase?.name === 'READINESS')
+      ) {
+        if (
+          !data.maxLeadTimeDays ||
+          data.maxLeadTimeDays.toString().trim() === ''
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['maxLeadTimeDays'],
+            message: 'Max Lead TimeDays is required',
+          });
+        } else if (
+          isNaN(Number(data.maxLeadTimeDays)) ||
+          Number(data.maxLeadTimeDays) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['maxLeadTimeDays'],
+            message: 'Max Lead Time Days must be a positive number',
+          });
+        }
+
+        if (
+          !data.minLeadTimeDays ||
+          data.minLeadTimeDays.toString().trim() === ''
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['minLeadTimeDays'],
+            message: 'Min Lead Time Days is required',
+          });
+        } else if (
+          isNaN(Number(data.minLeadTimeDays)) ||
+          Number(data.minLeadTimeDays) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['minLeadTimeDays'],
+            message: 'Min Lead Time Days must be a positive number',
+          });
+        }
+
+        if (!data.probability || data.probability.toString().trim() === '') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['probability'],
+            message: 'Forecast probability is required',
+          });
+        } else if (
+          isNaN(Number(data.probability)) ||
+          Number(data.probability) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['probability'],
+            message: 'Forecast probability must be a positive number',
+          });
+        }
       }
     });
 

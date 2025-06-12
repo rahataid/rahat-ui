@@ -4,6 +4,7 @@ import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { Heading } from './page.heading';
 import { ITransactions } from '../types/transactions';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import { format } from 'date-fns';
 
 interface IProps {
   cardTitle: string;
@@ -68,7 +69,7 @@ export function TransactionCard({
                       {i.subTitle}
                     </p>
                     <p className="text-sm/4 text-muted-foreground group-hover:underline group-hover:underline-offset-2">
-                      {i.date}
+                      {new Date(i.date)?.toLocaleString()}
                     </p>
                   </div>
                 </div>

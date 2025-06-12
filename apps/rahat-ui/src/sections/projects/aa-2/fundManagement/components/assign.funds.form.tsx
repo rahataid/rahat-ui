@@ -54,7 +54,12 @@ export default function AssignFundsForm() {
     beneficiaryName: z
       .string()
       .min(1, { message: 'Select a beneficiary group' }),
-    tokenAmount: z.string().min(1, { message: 'Enter valid amount' }),
+    tokenAmount: z
+      .string()
+      .min(1, { message: 'Enter valid amount' })
+      .refine((val) => /^\d+$/.test(val), {
+        message: 'Amount must be a positive integer',
+      }),
     totalTokensReserved: z.number(),
   });
 
@@ -88,7 +93,7 @@ export default function AssignFundsForm() {
     perPage: 100,
     // sort: 'updatedAt',
     // order: 'desc',
-    tokenAssigned: true,
+    tokenAssigned: false,
   });
   // const { beneficiariesGroups } = useBeneficiariesGroupStore((state) => ({
   //   beneficiariesGroups: state.beneficiariesGroups,
@@ -184,8 +189,16 @@ export default function AssignFundsForm() {
                                   form.setValue(
                                     'beneficiaryGroup',
                                     group?.uuid,
+                                    { shouldValidate: true, shouldTouch: true },
                                   );
-                                  form.setValue('beneficiaryName', group?.name);
+                                  form.setValue(
+                                    'beneficiaryName',
+                                    group?.name,
+                                    {
+                                      shouldValidate: true,
+                                      shouldTouch: true,
+                                    },
+                                  );
                                 }}
                               >
                                 {group?.name}
@@ -220,6 +233,34 @@ export default function AssignFundsForm() {
                         type="text"
                         placeholder="Write token amount"
                         {...field}
+                        onKeyDown={(e) => {
+                          const blockedKeys = [
+                            ' ',
+                            'e',
+                            'E',
+                            '+',
+                            '-',
+                            '.',
+                            ',',
+                            '/',
+                            '*',
+                            '@',
+                            '#',
+                            ...Array.from({ length: 26 }, (_, i) =>
+                              String.fromCharCode(65 + i),
+                            ), // A–Z
+                            ...Array.from({ length: 26 }, (_, i) =>
+                              String.fromCharCode(97 + i),
+                            ), // a–z
+                          ];
+                          if (blockedKeys.includes(e.key)) {
+                            e.preventDefault();
+                          }
+                        }}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          form.trigger('tokenAmount');
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -238,7 +279,9 @@ export default function AssignFundsForm() {
                 Cancel
               </Button>
 
-              <Button className="px-10">Confirm</Button>
+              <Button className="px-10" disabled={!form.formState.isValid}>
+                Confirm
+              </Button>
             </div>
           </div>
         </div>

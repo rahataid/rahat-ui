@@ -49,6 +49,7 @@ import CommsLogsTable from '../table/comms.logs.table';
 import CardSkeleton from 'apps/rahat-ui/src/common/cardSkeleton';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import * as XLSX from 'xlsx';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 type IHeadCardProps = {
   title: string;
   icon: LucideIcon;
@@ -206,8 +207,13 @@ export default function CommsLogsDetailPage() {
                     .join(' ')}
                 </Badge>
               </CardTitle>
-              <CardContent className="pl-1 pb-1 text-xl font-semibold ">
-                {activityDetail?.title}
+              <CardContent className="pl-1 pb-1  font-semibold flex flex-col gap-1">
+                <Label className="text-muted-foreground text-xs">
+                  Activity Title:
+                </Label>
+                <Label className="text-base space-y-1 font-semibold">
+                  {activityDetail?.title}
+                </Label>
               </CardContent>
               <CardFooter className="pl-1 pb-2 text-sm text-muted-foreground">
                 {activityDetail?.description}

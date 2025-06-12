@@ -4,28 +4,55 @@ import { DataCard, Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import RecentPayout from './component/recent.payout';
+import {
+  useFetchTokenStatsStellar,
+  useFundAssignmentStore,
+  usePayouts,
+} from '@rahat-ui/query';
+import { UUID } from 'crypto';
+import { useMemo } from 'react';
 
 export default function PayoutView() {
-  const { id: projectID } = useParams();
+  const params = useParams();
+  const projectID = params.id as UUID;
   const route = useRouter();
-  const payoutStats = [
-    {
-      label: 'Project Balance',
-      value: 23000,
-    },
-    {
-      label: 'Tokens Distributed',
-      value: 10000,
-    },
-    {
-      label: 'Tokens Disbursed',
-      value: 5000,
-    },
-    {
-      label: '1 Token Value',
-      value: 'Rs. 10',
-    },
-  ];
+  const { data: payouts } = usePayouts(projectID, {
+    page: 1,
+    perPage: 999,
+  });
+
+  useFetchTokenStatsStellar({
+    projectUUID: projectID,
+  });
+
+  const { stellarTokenStats } = useFundAssignmentStore((state) => ({
+    stellarTokenStats: state.stellarTokenStats,
+  }));
+
+  const payoutStats = useMemo(() => {
+    const getAmountByName = (name: string) =>
+      stellarTokenStats.find((item: any) => item.name === name)?.amount ??
+      'N/A';
+
+    return [
+      {
+        label: 'Project Balance',
+        value: getAmountByName('Disbursement Balance'),
+      },
+      {
+        label: 'Tokens Distributed',
+        value: getAmountByName('Disbursed Balance'),
+      },
+      {
+        label: 'Tokens Disbursed',
+        value: getAmountByName('Remaining Balance'),
+      },
+      {
+        label: '1 Token Value',
+        value: getAmountByName('Token Price'),
+      },
+    ];
+  }, [stellarTokenStats]);
 
   return (
     <div className="p-4 ">
@@ -52,7 +79,7 @@ export default function PayoutView() {
               key={stat.label}
               title={stat.label}
               number={stat.value as string}
-              className="rounded-sm h-24"
+              className="rounded-sm"
             />
           );
         })}
@@ -79,7 +106,7 @@ export default function PayoutView() {
           />
         </div>
         <div className="flex-[2] border rounded-sm p-4">
-          <RecentPayout />
+          <RecentPayout payouts={payouts} />
         </div>
       </div>
     </div>

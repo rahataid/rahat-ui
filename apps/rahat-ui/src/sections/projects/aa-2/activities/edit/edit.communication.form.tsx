@@ -86,7 +86,6 @@ export default function EditCommunicationForm({
       }
     }
 
-
     if (transportData?.validationAddress === 'EMAIL') {
       setAddress(true);
     } else {
@@ -112,6 +111,12 @@ export default function EditCommunicationForm({
     useSingleBeneficiaryGroup(projectId as UUID, beneficiaryId);
 
   React.useEffect(() => {
+    const transportData = appTransports?.find(
+      (t) => t.cuid === selectedTransport,
+    );
+
+    if (transportData?.validationAddress !== 'EMAIL') return;
+
     if (stakeholdersGroup && Array.isArray(stakeholdersGroup.stakeholders)) {
       const hasValidEmail = stakeholdersGroup.stakeholders.some(
         (s) => s?.email?.trim() !== '',
@@ -127,9 +132,15 @@ export default function EditCommunicationForm({
         form.clearErrors(fieldName('groupId'));
       }
     }
-  }, [stakeholdersGroup]);
+  }, [stakeholdersGroup, selectedTransport]);
 
   React.useEffect(() => {
+    const transportData = appTransports?.find(
+      (t) => t.cuid === selectedTransport,
+    );
+
+    if (transportData?.validationAddress !== 'EMAIL') return;
+
     if (
       beneficiaryGroup &&
       Array.isArray(beneficiaryGroup?.groupedBeneficiaries)
@@ -137,7 +148,7 @@ export default function EditCommunicationForm({
       const hasValidEmail = beneficiaryGroup?.groupedBeneficiaries?.some(
         (s) => s?.Beneficiary?.pii?.email.trim() !== '',
       );
-      console.log(hasValidEmail);
+
       if (!hasValidEmail) {
         form.setError(fieldName('groupId'), {
           type: 'manual',
@@ -148,7 +159,7 @@ export default function EditCommunicationForm({
         form.clearErrors(fieldName('groupId'));
       }
     }
-  }, [beneficiaryGroup]);
+  }, [beneficiaryGroup, selectedTransport]);
 
   const isSaveDisabled =
     !activityCommunication.groupType || !activityCommunication.groupId;

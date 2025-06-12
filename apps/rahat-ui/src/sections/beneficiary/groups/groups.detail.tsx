@@ -1,7 +1,13 @@
 import * as React from 'react';
 import CoreBtnComponent from 'apps/rahat-ui/src/components/core.btn';
 import HeaderWithBack from '../../projects/components/header.with.back';
-import { FolderPlus, UsersRound } from 'lucide-react';
+import {
+  CloudDownloadIcon,
+  FolderPlus,
+  LandmarkIcon,
+  Trash2Icon,
+  UsersRound,
+} from 'lucide-react';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import MembersTable from './members.table';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
@@ -12,6 +18,7 @@ import {
 } from '@tanstack/react-table';
 import {
   useBeneficiaryList,
+  useExportBeneficiariesFailedBankAccount,
   useGetBeneficiaryGroup,
   usePagination,
 } from '@rahat-ui/query';
@@ -19,14 +26,17 @@ import { useBeneficiaryTableColumns } from '../useBeneficiaryColumns';
 import ClientSidePagination from '../../projects/components/client.side.pagination';
 import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
-
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import RemoveBenfGroupModal from './removeGroupModal';
+import ValidateBenefBankAccountByGroupUuid from './validateAccountModal';
+import * as XLSX from 'xlsx';
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
-  const projectModal = useBoolean();
+  const validateModal = useBoolean();
   const removeModal = useBoolean();
 
   const handleAssignModalClick = () => {
-    projectModal.onTrue();
+    validateModal.onTrue();
   };
 
   const handleRemoveClick = () => {
@@ -51,12 +61,14 @@ export default function GroupDetailView() {
   const searchParams = useSearchParams();
 
   const isAssignedToProject = searchParams.get('isAssignedToProject');
+  const isGroupValidForAA = searchParams.get('isGroupValidForAA');
+  console.log(isGroupValidForAA);
   const groupedBeneficiaries = [] as any;
   const { data: group } = useGetBeneficiaryGroup(Id);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const columns = useBeneficiaryTableColumns();
-
+  const { data } = useExportBeneficiariesFailedBankAccount(Id);
   const tableData = React.useMemo(() => {
     if (group) {
       return group?.data?.groupedBeneficiaries?.map((d: any) => ({
@@ -70,6 +82,7 @@ export default function GroupDetailView() {
         phoneStatus: d?.Beneficiary?.phoneStatus,
         bankedStatus: d?.Beneficiary?.bankedStatus,
         uuid: d?.Beneficiary?.uuid,
+        error: d?.Beneficiary?.extras?.error,
       }));
     } else return [];
   }, [group]);
@@ -96,8 +109,37 @@ export default function GroupDetailView() {
   //     setTableData(Beneficiaries);
   //   }
   // }, []);
+
+  const onFailedExports = () => {
+    const rowsToDownload = data?.data || [];
+    const workbook = XLSX.utils.book_new();
+    const worksheetData = rowsToDownload?.map((benef: any) => ({
+      Name: benef?.Beneficiary?.pii.name,
+      Phone: benef?.Beneficiary?.pii.phone,
+      Wallet_Address: benef?.Beneficiary?.walletAddress,
+      Reason: benef?.Beneficiary?.extras?.error,
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');
+
+    XLSX.writeFile(
+      workbook,
+      `Failed ${group?.data?.name} Bank Validation.xlsx`,
+    );
+  };
+
   return (
     <>
+      <RemoveBenfGroupModal
+        beneficiaryGroupDetail={group?.data}
+        removeModal={removeModal}
+      />
+
+      <ValidateBenefBankAccountByGroupUuid
+        beneficiaryGroupDetail={group?.data}
+        validateModal={validateModal}
+      />
+
       <div className="p-4">
         <div className="flex justify-between items-center">
           <HeaderWithBack
@@ -113,6 +155,33 @@ export default function GroupDetailView() {
               handleClick={() => {}}
             />
           )}
+          <div className="flex gap-6">
+            <Button
+              variant={'outline'}
+              className="border-red-500 text-red-500 hover:text-red-500 gap-2"
+              onClick={handleRemoveClick}
+            >
+              <Trash2Icon className="w-4 h-4" />
+              Delete Group
+            </Button>
+
+            <Button
+              variant={'outline'}
+              className="gap-2"
+              onClick={handleAssignModalClick}
+            >
+              <LandmarkIcon className="w-4 h-4" />
+              Validate Bank Account
+            </Button>
+
+            <Button
+              variant={'outline'}
+              className={`${isGroupValidForAA === 'true' && 'hidden'} gap-2`}
+              onClick={onFailedExports}
+            >
+              <CloudDownloadIcon className="w-4 h-4" /> Export Failed
+            </Button>
+          </div>
         </div>
         <DataCard
           className="border-solid w-1/3 rounded-md"

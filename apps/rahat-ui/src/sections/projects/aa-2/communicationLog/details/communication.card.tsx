@@ -80,7 +80,7 @@ export function CommunicationDetailCard({
     );
   };
   return (
-    <Card className="rounded-sm pb-0">
+    <Card className="rounded-sm pb-0 flex flex-col justify-between">
       <CardHeader className="pb-2">
         <div className="flex items-start gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
@@ -114,7 +114,7 @@ export function CommunicationDetailCard({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pb-4">
+      <CardContent className="pb-4 min-h-[60px] flex-grow">
         {(activityCommunication?.transportName === 'EMAIL' ||
           activityCommunication?.transportName === 'SMS') && (
           <div className="mt-3">

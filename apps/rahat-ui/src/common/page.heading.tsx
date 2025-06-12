@@ -19,7 +19,13 @@ export function Heading({
 }: IProps) {
   return (
     <div className="mb-4">
-      <p className={cn('font-bold text-4xl mb-1', titleStyle)}>
+      <p
+        className={cn(
+          'font-bold mb-1',
+          !titleStyle && 'text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl',
+          titleStyle,
+        )}
+      >
         {title} {status && <Badge className={badgeClassName}>{status}</Badge>}
       </p>
       <p className="text-sm/4 text-muted-foreground">{description}</p>

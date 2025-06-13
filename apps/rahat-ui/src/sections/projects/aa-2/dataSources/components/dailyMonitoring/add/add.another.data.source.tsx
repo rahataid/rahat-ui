@@ -26,6 +26,7 @@ export default function AddAnotherDataSource({
     rainfallSelectItems,
     floodForecastSelectItems,
     gauageReadingStationSelectItems,
+    possibility,
   } = useSelectItems();
 
   const selectedDataSourceObjArray = form.watch('dataSource');
@@ -89,13 +90,14 @@ export default function AddAnotherDataSource({
               label="5 days"
               placeholder="Enter 5 day's status"
             />
-            <InputFormField
+            <SelectFormField
               form={form}
               name={fieldName(
                 'inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak',
               )}
               label="In between today until 7 Days is there any possibility of peak"
-              placeholder="Enter possibility"
+              placeholder="Select possibility"
+              selectItems={possibility}
             />
           </>
         );

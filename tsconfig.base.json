@@ -14,6 +14,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@rahat-ui/auth": ["libs/auth/src/index.ts"],
       "@rahat-ui/community": ["libs/community/src/index.ts"],
       "@rahat-ui/community-query": ["libs/community-query/src/index.ts"],
       "@rahat-ui/query": ["libs/query/src/index.ts"],

@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { IconDialogComponent } from './component/iconDialog';
 import { useDeleteStakeholders } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { RoleAuth, AARoles } from '@rahat-ui/auth';
 
 export const useProjectStakeholdersTableColumns = () => {
   const router = useRouter();
@@ -66,45 +67,47 @@ export const useProjectStakeholdersTableColumns = () => {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <div className="flex items-center gap-2">
-            <IconDialogComponent
-              Icon={Edit2}
-              buttonText=""
-              confirmButtonText="Edit"
-              dialogDescription="Are you sure you want to edit?"
-              dialogTitle="Edit"
-              handleClick={() =>
-                setTimeout(() => {
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+            <div className="flex items-center gap-2">
+              <IconDialogComponent
+                Icon={Edit2}
+                buttonText=""
+                confirmButtonText="Edit"
+                dialogDescription="Are you sure you want to edit?"
+                dialogTitle="Edit"
+                handleClick={() =>
+                  setTimeout(() => {
+                    router.push(
+                      `/projects/aa/${id}/stakeholders/${row.original.uuid}/edit?from="listPage"`,
+                    );
+                  }, 500)
+                }
+                variant="default"
+              />
+              <IconDialogComponent
+                Icon={Trash2}
+                buttonText=""
+                confirmButtonText="Delete"
+                dialogDescription="Are you sure you want to delete?"
+                dialogTitle="Delete"
+                handleClick={() => {
+                  handleDelete(row.original.uuid);
+                }}
+                variant="destructive"
+                color="red"
+              />
+              <Eye
+                className="hover:text-primary cursor-pointer"
+                size={16}
+                strokeWidth={1.5}
+                onClick={() =>
                   router.push(
-                    `/projects/aa/${id}/stakeholders/${row.original.uuid}/edit?from="listPage"`,
-                  );
-                }, 500)
-              }
-              variant="default"
-            />
-            <IconDialogComponent
-              Icon={Trash2}
-              buttonText=""
-              confirmButtonText="Delete"
-              dialogDescription="Are you sure you want to delete?"
-              dialogTitle="Delete"
-              handleClick={() => {
-                handleDelete(row.original.uuid);
-              }}
-              variant="destructive"
-              color="red"
-            />
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() =>
-                router.push(
-                  `/projects/aa/${id}/stakeholders/${row.original.uuid}`,
-                )
-              }
-            />
-          </div>
+                    `/projects/aa/${id}/stakeholders/${row.original.uuid}`,
+                  )
+                }
+              />
+            </div>
+          </RoleAuth>
         );
       },
     },

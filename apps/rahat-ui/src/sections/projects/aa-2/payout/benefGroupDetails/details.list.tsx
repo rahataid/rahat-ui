@@ -1,5 +1,9 @@
 'use client';
-import { usePagination, useSinglePayout } from '@rahat-ui/query';
+import {
+  useGetPayoutLogs,
+  usePagination,
+  useSinglePayout,
+} from '@rahat-ui/query';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
@@ -14,11 +18,11 @@ import {
 } from 'apps/rahat-ui/src/common';
 
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
-import BeneficiariesGroupTable from './beneficiariesGroupTable';
-import { Ticket, Users } from 'lucide-react';
-import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
+import { UUID } from 'crypto';
+import { Ticket, Users } from 'lucide-react';
+import BeneficiariesGroupTable from './beneficiariesGroupTable';
+import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const params = useParams();
@@ -42,6 +46,14 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     uuid: payoutId,
   });
 
+  const { data: payoutlogs, isLoading: payoutLogsLoading } = useGetPayoutLogs(
+    projectId,
+    {
+      payoutUUID: payoutId,
+      ...pagination,
+    },
+  );
+
   const columns = useBeneficiaryGroupDetailsLogColumns();
 
   const tableData = React.useMemo(() => {
@@ -62,7 +74,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
   const table = useReactTable({
     manualPagination: true,
-    data: tableData,
+    data: payoutlogs?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -86,13 +98,12 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const payoutStats = [
     {
       label: 'Total Beneficiaries',
-      value:
-        payout?.beneficiaryGroupToken?.beneficiaryGroup?._count?.beneficiaries,
+      value: payoutlogs?.response?.meta?.total,
       icon: Users,
     },
     {
       label: 'Total Tokens',
-      value: payout?.beneficiaryGroupToken?.numberOfTokens,
+      value: 0,
       icon: Ticket,
     },
   ];
@@ -156,20 +167,22 @@ export default function BeneficiaryGroupTransactionDetailsList() {
         </div>
         <BeneficiariesGroupTable table={table} loading={isLoading} />
         <CustomPagination
-          meta={{
-            total: 0,
-            currentPage: 0,
-            lastPage: 0,
-            perPage: 0,
-            next: null,
-            prev: null,
-          }}
+          meta={
+            payoutlogs?.response?.meta || {
+              total: 0,
+              currentPage: 0,
+              lastPage: 0,
+              perPage: 0,
+              next: null,
+              prev: null,
+            }
+          }
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}
           currentPage={pagination.page}
           perPage={pagination.perPage}
-          total={0}
+          total={payoutlogs?.response?.meta?.total}
         />
       </div>
     </div>

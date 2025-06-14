@@ -22,6 +22,7 @@ import InputFormField from '../input.form.field';
 import SelectFormField from '../select.form.field';
 import { useSelectItems } from '../useSelectItems';
 import { fieldLabels } from 'apps/rahat-ui/src/utils/fieldLabelValidation';
+const fields = ['todayGLOFAS', 'days3', 'days5'] as const;
 
 export default function EditDailyMonitoring() {
   const params = useParams();
@@ -239,6 +240,26 @@ export default function EditDailyMonitoring() {
                   break;
                 case 'Realtime Monitoring (River Watch)':
                   validateFields(['waterLevel']);
+
+                  if (
+                    data.waterLevel === undefined ||
+                    data.waterLevel === null ||
+                    data.waterLevel === '' ||
+                    isNaN(Number(data.waterLevel)) ||
+                    Number(data.waterLevel) <= 0
+                  ) {
+                    ctx.addIssue({
+                      code: z.ZodIssueCode.custom,
+                      path: ['waterLevel'],
+                      message: 'Water level must be a positive number .',
+                    });
+                  } else if (!/^\d+(\.\d+)?$/.test(String(data.waterLevel))) {
+                    ctx.addIssue({
+                      code: z.ZodIssueCode.custom,
+                      path: ['waterLevel'],
+                      message: 'Water level must be number.',
+                    });
+                  }
                   break;
                 case 'NWP':
                   validateFields(['hours24NWP', 'hours48', 'hours72NWP']);
@@ -272,6 +293,29 @@ export default function EditDailyMonitoring() {
                 'days5',
                 'inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak',
               ]);
+              fields.forEach((field) => {
+                const value = data[field];
+
+                if (
+                  value === undefined ||
+                  value === null ||
+                  value === '' ||
+                  isNaN(Number(value)) ||
+                  Number(value) <= 0
+                ) {
+                  ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    path: [field],
+                    message: `${field} must be a positive number.`,
+                  });
+                } else if (!/^\d+(\.\d+)?$/.test(String(value))) {
+                  ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    path: [field],
+                    message: `${field} must be a valid decimal number.`,
+                  });
+                }
+              });
               break;
 
             case 'Flash Flood Risk Monitoring':
@@ -291,6 +335,12 @@ export default function EditDailyMonitoring() {
                   code: z.ZodIssueCode.custom,
                   path: ['gaugeReading'],
                   message: 'Gauage Reading  must be a positive number.',
+                });
+              } else if (!/^\d+(\.\d+)?$/.test(String(data.gaugeReading))) {
+                ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  path: ['gaugeReading'],
+                  message: 'Gauge Reading level must be number.',
                 });
               }
               break;

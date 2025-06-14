@@ -27,11 +27,8 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
                 type={t?.source === 'MANUAL' ? 'Manual' : 'Automated'}
                 isTriggered={t?.isTriggered}
                 title={t?.title || 'N/A'}
-                dataSource={t?.source || 'N/A'}
-                riverBasin={
-                  (t?.source === 'MANUAL' && t?.phase?.source?.riverBasin) ||
-                  'N/A'
-                }
+                dataSource={t?.source === 'MANUAL' ? '' : t?.source}
+                riverBasin={t?.phase?.source?.riverBasin || 'N/A'}
                 time={new Date(t?.createdAt)?.toLocaleString()}
               />
             ))

@@ -1,6 +1,16 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { RotateCcwIcon, TriangleAlertIcon } from 'lucide-react';
+import { useTriggerForPayoutFailed } from '@rahat-ui/query';
+import { useCallback } from 'react';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 function getTransactionStatusColor(status: string) {
   switch (status.toLowerCase()) {
     case 'completed':
@@ -15,13 +25,28 @@ function getTransactionStatusColor(status: string) {
 }
 
 export default function useBeneficiaryGroupDetailsLogColumns() {
+  const { id } = useParams();
+  const triggerForPayoutFailed = useTriggerForPayoutFailed();
+
+  const handleTriggerPayoutFailed = useCallback(
+    async (uuid: string) => {
+      triggerForPayoutFailed.mutateAsync({
+        projectUUID: id as UUID,
+        payload: {
+          beneficiaryRedeemUuid: uuid,
+        },
+      });
+    },
+    [triggerForPayoutFailed],
+  );
+
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'walletAddress',
+      accessorKey: 'beneficiaryWalletAddress',
       header: 'Beneficiary Wallet Address',
       cell: ({ row }) => (
-        <div className="truncate max-w-[180px]">
-          {row.getValue('walletAddress')}
+        <div className="truncate w-48">
+          {row.getValue('beneficiaryWalletAddress')}
         </div>
       ),
     },
@@ -35,10 +60,36 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
       header: 'Bank Transaction ID',
       cell: ({ row }) => <div>{row.getValue('bankTransactionId')}</div>,
     },
+
+    {
+      accessorKey: 'transactionType',
+      header: 'Transaction Type',
+      cell: ({ row }) => {
+        const type = row?.original?.transactionType;
+        return (
+          <Badge
+            className={`rounded-xl capitalize ${getTransactionStatusColor(
+              type,
+            )}`}
+          >
+            {type
+              .toLowerCase()
+              .split('_')
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(' ')}
+          </Badge>
+        );
+      },
+    },
     {
       accessorKey: 'tokensAssigned',
       header: 'Tokens Assigned',
       cell: ({ row }) => <div>{row.getValue('tokensAssigned')}</div>,
+    },
+    {
+      accessorKey: 'fspId',
+      header: 'FSP',
+      cell: ({ row }) => <div>{row.getValue('fspId')}</div>,
     },
     {
       accessorKey: 'status',
@@ -51,16 +102,51 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
               status,
             )}`}
           >
-            {status}
+            {status
+              .toLowerCase()
+              .split('_')
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(' ')}
           </Badge>
         );
       },
     },
     {
-      accessorKey: 'timeStamp',
+      accessorKey: 'createdAt',
       header: 'Timestamp',
       cell: ({ row }) => (
-        <div>{new Date(row.getValue('timeStamp')).toLocaleString()}</div>
+        <div className="flex items-center gap-4">
+          {new Date(row.getValue('createdAt')).toLocaleString()}{' '}
+          {row.original?.isCompleted === false && (
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <RotateCcwIcon
+                    size={16}
+                    strokeWidth={1.5}
+                    color="red"
+                    onClick={() => handleTriggerPayoutFailed(row.original.uuid)}
+                  />
+                </TooltipTrigger>
+                <TooltipContent side="left" className="rounded-sm w-auto">
+                  <div className="flex space-x-2 items-center">
+                    <TriangleAlertIcon
+                      size={16}
+                      strokeWidth={1.5}
+                      color="red"
+                    />
+                    <span className="font-semibold text-sm/6">
+                      Transaction Failed
+                    </span>
+                  </div>
+                  <p className="text-gray-500 text-sm mt-1">
+                    {row.original?.info?.error ?? 'Something went wrong!!'}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
       ),
     },
   ];

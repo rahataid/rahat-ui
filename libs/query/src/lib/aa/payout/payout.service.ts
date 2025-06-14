@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSwal } from 'libs/query/src/swal';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
+import { Pagination } from '@rumsan/sdk/types';
 
 export enum PayoutType {
   FSP = 'FSP',
@@ -118,6 +119,25 @@ export const useSinglePayout = (projectUUID: UUID, payload: { uuid: UUID }) => {
   return query;
 };
 
+export const useGetPayoutLogs = (projectUUID: UUID, payload: any) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['payout', projectUUID, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.payout.getPayoutLogs',
+          payload: payload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
 export const useUpdatePayout = () => {
   const qc = useQueryClient();
   const q = useProjectAction();
@@ -140,6 +160,55 @@ export const useUpdatePayout = () => {
         uuid: projectUUID,
         data: {
           action: 'aa.payout.update',
+          payload: payload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['payouts'] });
+      qc.invalidateQueries({ queryKey: ['payout'] });
+      toast.fire({
+        title: 'Payout updated successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while updating payout.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useTriggerForPayoutFailed = () => {
+  const qc = useQueryClient();
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      payload,
+    }: {
+      projectUUID: UUID;
+      payload: {
+        beneficiaryRedeemUuid: string;
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.payout.triggerOneFailedPayoutRequest',
           payload: payload,
         },
       });

@@ -74,6 +74,11 @@ export const useSelectItems = () => {
     { value: 'Kolmoda Satyas ', label: 'Kolmoda Satyas ' },
   ];
 
+  const possibility = [
+    { value: 'Yes', label: 'Yes' },
+    { value: 'No', label: 'No' },
+  ];
+
   return {
     riverBasins,
     dataSourceSelectItems,
@@ -83,5 +88,6 @@ export const useSelectItems = () => {
     floodForecastSelectItems,
     rainfallForecastSelectItems,
     gauageReadingStationSelectItems,
+    possibility,
   };
 };

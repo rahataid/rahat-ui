@@ -6,13 +6,18 @@ import InputFormField from '../input.form.field';
 
 type IProps = {
   form: any;
-  onClose: VoidFunction;
+  onClose?: VoidFunction;
   index: number;
+  showRemoveButton?: boolean;
 };
 
-export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
+export default function AddAnotherDataSource({
+  form,
+  onClose,
+  index,
+  showRemoveButton,
+}: IProps) {
   const fieldName = (name: string) => `dataSource.${index}.${name}`; // Dynamic field name generator
-
   const {
     dataSourceSelectItems,
     dhmForecastSelectItems,
@@ -21,6 +26,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
     rainfallSelectItems,
     floodForecastSelectItems,
     gauageReadingStationSelectItems,
+    possibility,
   } = useSelectItems();
 
   const selectedDataSourceObjArray = form.watch('dataSource');
@@ -84,13 +90,14 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
               label="5 days"
               placeholder="Enter 5 day's status"
             />
-            <InputFormField
+            <SelectFormField
               form={form}
               name={fieldName(
                 'inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak',
               )}
               label="In between today until 7 Days is there any possibility of peak"
-              placeholder="Enter possibility"
+              placeholder="Select possibility"
+              selectItems={possibility}
             />
           </>
         );
@@ -323,15 +330,17 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
   return (
     <div className="border border-dashed rounded-sm p-4 my-8">
       <div className="flex justify-between items-center mb-4">
-        <div>
+        <div className="flex  flex-col">
           <h1 className="text-md font-semibold">Data Source Reporting</h1>
-          <p className="text-sm/4 text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground leading-normal">
             Select a data source below and add reports
           </p>
         </div>
-        <div className="p-0.5 rounded-full bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 cursor-pointer">
-          <X size={16} strokeWidth={2.5} onClick={onClose} />
-        </div>
+        {showRemoveButton && (
+          <div className="p-1 rounded-sm bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 cursor-pointer">
+            <X size={14} strokeWidth={2.5} onClick={onClose} />
+          </div>
+        )}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <SelectFormField

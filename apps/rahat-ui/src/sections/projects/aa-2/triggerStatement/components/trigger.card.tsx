@@ -1,7 +1,12 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { useRouter } from 'next/navigation';
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 type IProps = {
   projectId: string;
   triggerId: string;
@@ -74,9 +79,25 @@ export default function TriggerCard({
           {isTriggered ? 'Triggered' : 'Not Triggered'}
         </Badge>
       </div>
-      <p className="text-sm/6 font-medium mb-2">{title}</p>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className=" text-sm/6 font-medium mb-2 truncate w-52 hover:cursor-pointer">
+              {title}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent
+            side="bottom"
+            className="w-80 rounded-sm text-justify "
+          >
+            <p className="text-sm/6 font-medium mb-2">{title}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <p className="text-muted-foreground text-sm/4 mb-1">
-        {`${dataSource} . ${capitalizeFirstLetter(riverBasin)}`}
+        {`${dataSource} ${dataSource && '.'} ${capitalizeFirstLetter(
+          riverBasin,
+        )}`}
       </p>
       <p className="text-muted-foreground text-sm/4">{time}</p>
     </div>

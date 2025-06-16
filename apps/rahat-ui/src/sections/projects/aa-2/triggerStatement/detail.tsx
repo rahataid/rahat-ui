@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 
 import {
@@ -25,13 +25,21 @@ import {
 
 export default function TriggerStatementDetail() {
   const router = useRouter();
-  const { id } = useParams() as { id: UUID };
+  const params = useParams();
 
-  const triggerRepeatKey = window.location.href.split('/').slice(-1)[0];
+  const id = params?.id as UUID;
+  const triggerID = Number(params?.triggerID);
+  const searchparams = useSearchParams();
+  const type = searchparams?.get('type');
+  const version = searchparams.get('version') === 'true' ? true : false;
+  const triggerRepeatKey = version
+    ? triggerID
+    : window.location.href.split('/').slice(-1)[0];
 
   const { data: trigger, isLoading } = useSingleTriggerStatement(
     id,
     triggerRepeatKey,
+    version,
   );
 
   const phase = trigger?.phase?.name;
@@ -39,10 +47,12 @@ export default function TriggerStatementDetail() {
 
   const removeTrigger = useDeleteTriggerStatement();
 
+  const versionType = type as string | undefined;
+
   const handleDelete = async () => {
     await removeTrigger.mutateAsync({
       projectUUID: id,
-      triggerStatementPayload: { repeatKey: triggerRepeatKey },
+      triggerStatementPayload: { repeatKey: triggerRepeatKey as string },
     });
     router.push(`/projects/aa/${id}/trigger-statements`);
   };
@@ -55,17 +65,22 @@ export default function TriggerStatementDetail() {
         <Heading
           title="Trigger Details"
           description="Detailed view of the selected trigger"
+          status={versionType && `V${versionType}`}
         />
         <div className="flex space-x-2">
           <DeleteButton
-            className="rounded flex gap-1 items-center text-sm font-medium"
+            className={`rounded flex gap-1 items-center text-sm font-medium ${
+              version && 'hidden'
+            }`}
             name="trigger"
             label="Delete"
             handleContinueClick={handleDelete}
             disabled={trigger?.isTriggered}
           />
           <EditButton
-            className="rounded flex gap-1 items-center text-sm font-medium"
+            className={`rounded flex gap-1 items-center text-sm font-medium ${
+              version && 'hidden'
+            }`}
             label="Edit"
             onFallback={() =>
               router.push(
@@ -77,7 +92,7 @@ export default function TriggerStatementDetail() {
           {source === 'MANUAL' && !trigger?.isTriggered && (
             <ActivateTriggerDialog
               projectId={id}
-              repeatKey={triggerRepeatKey}
+              repeatKey={triggerRepeatKey as string}
             />
           )}
         </div>

@@ -37,15 +37,15 @@ export default function PayoutView() {
     return [
       {
         label: 'Project Balance',
-        value: Number(getAmountByName('Disbursement Balance')),
+        value: getAmountByName('Disbursement Balance'),
       },
       {
         label: 'Tokens Distributed',
-        value: Number(getAmountByName('Disbursed Balance')),
+        value: getAmountByName('Disbursed Balance'),
       },
       {
         label: 'Tokens Disbursed',
-        value: Number(getAmountByName('Remaining Balance')),
+        value: getAmountByName('Remaining Balance'),
       },
       {
         label: '1 Token Value',

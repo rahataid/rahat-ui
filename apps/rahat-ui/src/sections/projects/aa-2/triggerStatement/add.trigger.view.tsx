@@ -115,6 +115,113 @@ export default function AddTriggerView() {
           });
         }
       }
+      if (
+        data.source === 'DAILY_MONITORING' &&
+        (selectedPhase?.name === 'ACTIVATION' ||
+          selectedPhase?.name === 'READINESS')
+      ) {
+        if (!data.forecast || data.forecast.toString().trim() === '') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['forecast'],
+            message: 'Forecast is required',
+          });
+        }
+
+        if (
+          !data.daysToConsiderPrior ||
+          data.daysToConsiderPrior.toString().trim() === ''
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['daysToConsiderPrior'],
+            message: 'Days To Consider Prior is required',
+          });
+        } else if (
+          isNaN(Number(data.daysToConsiderPrior)) ||
+          Number(data.daysToConsiderPrior) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['daysToConsiderPrior'],
+            message: 'Days To Consider Prior must be a positive number',
+          });
+        }
+
+        if (
+          !data.forecastStatus ||
+          data.forecastStatus.toString().trim() === ''
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['forecastStatus'],
+            message: 'forecast Status is required',
+          });
+        }
+      }
+
+      if (
+        data.source === 'GLOFAS' &&
+        (selectedPhase?.name === 'ACTIVATION' ||
+          selectedPhase?.name === 'READINESS')
+      ) {
+        if (
+          !data.maxLeadTimeDays ||
+          data.maxLeadTimeDays.toString().trim() === ''
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['maxLeadTimeDays'],
+            message: 'Max Lead TimeDays is required',
+          });
+        } else if (
+          isNaN(Number(data.maxLeadTimeDays)) ||
+          Number(data.maxLeadTimeDays) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['maxLeadTimeDays'],
+            message: 'Max Lead Time Days must be a positive number',
+          });
+        }
+
+        if (
+          !data.minLeadTimeDays ||
+          data.minLeadTimeDays.toString().trim() === ''
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['minLeadTimeDays'],
+            message: 'Min Lead Time Days is required',
+          });
+        } else if (
+          isNaN(Number(data.minLeadTimeDays)) ||
+          Number(data.minLeadTimeDays) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['minLeadTimeDays'],
+            message: 'Min Lead Time Days must be a positive number',
+          });
+        }
+
+        if (!data.probability || data.probability.toString().trim() === '') {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['probability'],
+            message: 'Forecast probability is required',
+          });
+        } else if (
+          isNaN(Number(data.probability)) ||
+          Number(data.probability) <= 0
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['probability'],
+            message: 'Forecast probability must be a positive number',
+          });
+        }
+      }
     });
 
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({

@@ -45,7 +45,23 @@ export const useFundManagementTableColumns = () => {
       accessorKey: 'title',
       accessorFn: (row) => row?.title,
       header: 'Title',
-      cell: ({ row }) => <div>{row?.original?.title || 'N/A'}</div>,
+      cell: ({ row }) => (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="truncate w-48 hover:cursor-pointer">
+                {row?.original?.title || 'N/A'}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              className="w-80 rounded-sm text-justify "
+            >
+              <p>{row?.original?.title || 'N/A'}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ),
     },
     {
       accessorKey: 'beneficiaryGroup',

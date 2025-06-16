@@ -38,7 +38,8 @@ type IProps = {
 };
 
 export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
-  const source = form.watch('source');
+  const source = form.watch('source') || ' ';
+  console.log(source);
   return (
     <>
       <Form {...form}>

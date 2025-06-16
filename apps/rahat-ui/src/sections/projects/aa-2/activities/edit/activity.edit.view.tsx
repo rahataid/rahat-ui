@@ -698,8 +698,8 @@ export default function EditActivity() {
                       </FormControl>
                       <FormMessage />
                       <p className="text-xs text-end text-orange-500">
-                        *Files must be under 5 MB and of type JPEG, PNG, BMP,
-                        PDF, XLSX, or CSV.
+                        *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
+                        CSV under 5 MB.
                       </p>
                       <div className="grid lg:grid-cols-5 gap-3">
                         {documents?.map((file) => (

@@ -43,11 +43,11 @@ export default function TriggersPhaseCard({
             title={title}
             titleStyle="text-xl"
             description={subtitle}
-            status={isActive ? 'Triggerd' : 'Not Triggered'}
+            status={isActive ? 'Triggered' : 'Not Triggered'}
             badgeClassName={`${
               isActive
-                ? 'text-green-500 bg-green-100'
-                : 'text-red-500 bg-red-100'
+                ? 'text-red-500 bg-red-100'
+                : 'text-green-500 bg-green-100'
             } text-xs`}
           />
 

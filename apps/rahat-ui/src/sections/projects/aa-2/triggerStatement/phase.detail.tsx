@@ -5,11 +5,17 @@ import {
   IconLabelBtn,
   TableLoader,
 } from 'apps/rahat-ui/src/common';
-import { Plus, Settings, Undo2 } from 'lucide-react';
+import { AlertTriangle, Plus, Settings, Undo2 } from 'lucide-react';
 import { TriggersListTabs, TriggersPhaseCard } from './components';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useRevertPhase, useSinglePhase } from '@rahat-ui/query';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@rahat-ui/shadcn/src/components/ui/alert';
+import { format } from 'date-fns';
 
 export default function PhaseDetail() {
   const router = useRouter();
@@ -18,6 +24,10 @@ export default function PhaseDetail() {
   const phaseId = params.phaseId as UUID;
 
   const { data: phase, isLoading } = useSinglePhase(projectId, phaseId);
+
+  const date = phase?.activatedAt
+    ? format(new Date(phase?.activatedAt), 'MMMM d, yyyy')
+    : '';
 
   const revertPhase = useRevertPhase();
 
@@ -76,6 +86,27 @@ export default function PhaseDetail() {
           )}
         </div>
       </div>
+      {phase?.isActive && (
+        <div className="mb-4">
+          <Alert
+            variant="destructive"
+            className="border flex items-center gap-2 border-[#E7564B] rounded-sm bg-red-50 text-[#D92626] px-3 py-2"
+          >
+            <div className="bg-red-600 text-white p-2 rounded-full">
+              <AlertTriangle className="h-6 w-6" />
+            </div>
+            <div>
+              <AlertTitle className="text-sm mb-0">
+                This phase has been triggered
+              </AlertTitle>
+              <AlertDescription className="text-xs text-gray-700">
+                <p>{date}</p>
+              </AlertDescription>
+            </div>
+          </Alert>
+        </div>
+      )}
+
       <div className="flex gap-4">
         <div className="flex-shrink-0 w-1/3">
           <TriggersPhaseCard
@@ -92,6 +123,7 @@ export default function PhaseDetail() {
             triggeredOptionalTriggers={phase?.totalOptionalTriggersTriggered}
             hideAddTrigger={true}
             hideViewDetails={true}
+            isActive={phase?.isActive}
           />
         </div>
 
@@ -105,6 +137,7 @@ export default function PhaseDetail() {
             projectId={projectId}
             phaseId={phaseId}
             triggers={phase?.triggers}
+            riverBasin={phase?.source.riverBasin}
           />
         </div>
       </div>

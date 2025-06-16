@@ -65,6 +65,11 @@
         "style": "none",
         "linter": "eslint"
       }
+    },
+    "@nx/react": {
+      "library": {
+        "unitTestRunner": "jest"
+      }
     }
   }
 }

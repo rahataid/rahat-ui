@@ -1,10 +1,8 @@
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
-
 
 import {
   useRemoveMonitoringWhileUpdating,
@@ -23,13 +21,13 @@ import Loader from 'apps/rahat-ui/src/components/table.loader';
 import InputFormField from '../input.form.field';
 import SelectFormField from '../select.form.field';
 import { useSelectItems } from '../useSelectItems';
-
+import { fieldLabels } from 'apps/rahat-ui/src/utils/fieldLabelValidation';
+const fields = ['todayGLOFAS', 'days3', 'days5'] as const;
 
 export default function EditDailyMonitoring() {
   const params = useParams();
   const projectId = params.id as UUID;
   const monitoringId = params.monitoringId as UUID;
-
 
   const route = useRouter();
 
@@ -153,56 +151,201 @@ export default function EditDailyMonitoring() {
     dataEntryBy: z.string().min(2, { message: 'Please enter name.' }),
     riverBasin: z.string().min(1, { message: 'Please select a river basin.' }),
     dataSource: z.array(
-      z.object({
-        id: z.number().optional(),
-        source: z.string().min(1, { message: 'Please select a source.' }),
-        //DHM
-        forecast: z.string().optional(),
-        //DHM - 3 Days Flood Forecast Bulletin
-        today: z.string().optional(),
-        tomorrow: z.string().optional(),
-        dayAfterTomorrow: z.string().optional(),
-        //DHM - 3 Days Rainfall Forecast Bulletin
-        todayAfternoon: z.string().optional(),
-        todayNight: z.string().optional(),
-        tomorrowAfternoon: z.string().optional(),
-        tomorrowNight: z.string().optional(),
-        dayAfterTomorrowAfternoon: z.string().optional(),
-        dayAfterTomorrowNight: z.string().optional(),
-        //DHM - Realtime Monitoring (River Watch)
-        waterLevel: z.string().optional(),
+      z
+        .object({
+          id: z.number().optional(),
+          source: z.string().min(1, { message: 'Please select a source.' }),
+          //DHM
+          forecast: z.string().optional(),
+          //DHM - 3 Days Flood Forecast Bulletin
+          today: z.string().optional(),
+          tomorrow: z.string().optional(),
+          dayAfterTomorrow: z.string().optional(),
+          //DHM - 3 Days Rainfall Forecast Bulletin
+          todayAfternoon: z.string().optional(),
+          todayNight: z.string().optional(),
+          tomorrowAfternoon: z.string().optional(),
+          tomorrowNight: z.string().optional(),
+          dayAfterTomorrowAfternoon: z.string().optional(),
+          dayAfterTomorrowNight: z.string().optional(),
+          //DHM - Realtime Monitoring (River Watch)
+          waterLevel: z.string().optional(),
 
-        //DHM - NWP
-        hours24NWP: z.string().optional(),
-        hours48: z.string().optional(),
-        hours72NWP: z.string().optional(),
-        // NCMRWF Accumulated
-        heavyRainfallForecastInKarnaliBasin: z.string().optional(),
-        hours24: z.string().optional(),
-        hours72: z.string().optional(),
-        hours168: z.string().optional(),
-        // NCMRWF Deterministic & Probabilistic
-        extremeWeatherOutlook: z.string().optional(),
-        deterministicsPredictionSystem: z.string().optional(),
-        probabilisticPredictionSystem: z.string().optional(),
-        // GLOFAS
-        todayGLOFAS: z.string().optional(),
-        days3: z.string().optional(),
-        days5: z.string().optional(),
-        inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak: z
-          .string()
-          .optional(),
-        //Flash Flood Risk Monitoring
-        status: z.string().optional(),
+          //DHM - NWP
+          hours24NWP: z.string().optional(),
+          hours48: z.string().optional(),
+          hours72NWP: z.string().optional(),
+          // NCMRWF Accumulated
+          heavyRainfallForecastInKarnaliBasin: z.string().optional(),
+          hours24: z.string().optional(),
+          hours72: z.string().optional(),
+          hours168: z.string().optional(),
+          // NCMRWF Deterministic & Probabilistic
+          extremeWeatherOutlook: z.string().optional(),
+          deterministicsPredictionSystem: z.string().optional(),
+          probabilisticPredictionSystem: z.string().optional(),
+          // GLOFAS
+          todayGLOFAS: z.string().optional(),
+          days3: z.string().optional(),
+          days5: z.string().optional(),
+          inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak: z
+            .string()
+            .optional(),
+          //Flash Flood Risk Monitoring
+          status: z.string().optional(),
 
-        //gauge Reading
-        gaugeReading: z.string().optional(),
+          //gauge Reading
+          gaugeReading: z.string().optional(),
 
+          station: z.string().optional(),
+        })
+        .superRefine((data, ctx) => {
+          const validateFields = (fields: (keyof typeof data)[]) => {
+            for (const field of fields) {
+              const value = data[field];
+              if (typeof value !== 'string' || value.trim() === '') {
+                ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  path: [field],
+                  message: `${fieldLabels[field] ?? field} is required.`,
+                });
+              }
+            }
+          };
 
-        station: z.string().optional(),
+          switch (data.source) {
+            case 'DHM':
+              if (!data.forecast || data.forecast.trim() === '') {
+                ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  path: ['forecast'],
+                  message: 'Please select a forecast type.',
+                });
+                return;
+              }
 
+              switch (data.forecast) {
+                case '3 Days Flood Forecast Bulletin':
+                  validateFields(['today', 'tomorrow', 'dayAfterTomorrow']);
+                  break;
+                case '3 Days Rainfall Forecast Bulletin':
+                  validateFields([
+                    'todayAfternoon',
+                    'todayNight',
+                    'tomorrowAfternoon',
+                    'tomorrowNight',
+                    'dayAfterTomorrowAfternoon',
+                    'dayAfterTomorrowNight',
+                  ]);
+                  break;
+                case 'Realtime Monitoring (River Watch)':
+                  validateFields(['waterLevel']);
 
-      }),
+                  if (
+                    data.waterLevel === undefined ||
+                    data.waterLevel === null ||
+                    data.waterLevel === '' ||
+                    isNaN(Number(data.waterLevel)) ||
+                    Number(data.waterLevel) <= 0
+                  ) {
+                    ctx.addIssue({
+                      code: z.ZodIssueCode.custom,
+                      path: ['waterLevel'],
+                      message: 'Water level must be a positive number .',
+                    });
+                  } else if (!/^\d+(\.\d+)?$/.test(String(data.waterLevel))) {
+                    ctx.addIssue({
+                      code: z.ZodIssueCode.custom,
+                      path: ['waterLevel'],
+                      message: 'Water level must be number.',
+                    });
+                  }
+                  break;
+                case 'NWP':
+                  validateFields(['hours24NWP', 'hours48', 'hours72NWP']);
+                  break;
+                default:
+                  break;
+              }
+              break;
+
+            case 'NCMRWF Accumulated':
+              validateFields([
+                'heavyRainfallForecastInKarnaliBasin',
+                'hours24',
+                'hours72',
+                'hours168',
+              ]);
+              break;
+
+            case 'NCMRWF Deterministic & Probabilistic':
+              validateFields([
+                'extremeWeatherOutlook',
+                'deterministicsPredictionSystem',
+                'probabilisticPredictionSystem',
+              ]);
+              break;
+
+            case 'GLOFAS':
+              validateFields([
+                'todayGLOFAS',
+                'days3',
+                'days5',
+                'inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak',
+              ]);
+              fields.forEach((field) => {
+                const value = data[field];
+
+                if (
+                  value === undefined ||
+                  value === null ||
+                  value === '' ||
+                  isNaN(Number(value)) ||
+                  Number(value) <= 0
+                ) {
+                  ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    path: [field],
+                    message: `${field} must be a positive number.`,
+                  });
+                } else if (!/^\d+(\.\d+)?$/.test(String(value))) {
+                  ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    path: [field],
+                    message: `${field} must be a valid decimal number.`,
+                  });
+                }
+              });
+              break;
+
+            case 'Flash Flood Risk Monitoring':
+              validateFields(['status']);
+              break;
+
+            case 'Gauge Reading':
+              validateFields(['gaugeReading', 'station']);
+              if (
+                data.gaugeReading === undefined ||
+                data.gaugeReading === null ||
+                data.gaugeReading === '' ||
+                isNaN(Number(data.gaugeReading)) ||
+                Number(data.gaugeReading) <= 0
+              ) {
+                ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  path: ['gaugeReading'],
+                  message: 'Gauage Reading  must be a positive number.',
+                });
+              } else if (!/^\d+(\.\d+)?$/.test(String(data.gaugeReading))) {
+                ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  path: ['gaugeReading'],
+                  message: 'Gauge Reading level must be number.',
+                });
+              }
+              break;
+          }
+        }),
     ),
   });
 
@@ -337,17 +480,12 @@ export default function EditDailyMonitoring() {
       data: dataPayload,
     };
     try {
-
       await updateDailyMonitoring.mutateAsync({
         projectUUID: projectId,
         monitoringPayload: payload,
       });
 
-
-
-
       route.push(`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`);
-      
     } catch (e) {
       console.error('Edit Daily Monitoring Error::', e);
     }
@@ -380,10 +518,7 @@ export default function EditDailyMonitoring() {
       <HeaderWithBack
         title={'Edit Daily Monitoring'}
         subtitle="Edit the form below  to update daily monitoring"
-
-
         path={`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`}
-
       />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleEditDailyMonitoring)}>
@@ -404,7 +539,7 @@ export default function EditDailyMonitoring() {
                 selectItems={riverBasins}
               />
             </div>
-            {anotherDataSourceFields.map((k, index) => (
+            {/* {anotherDataSourceFields.map((k, index) => (
               <AddAnotherDataSource
                 key={index}
                 form={form}
@@ -414,7 +549,28 @@ export default function EditDailyMonitoring() {
                   anotherDataSourceRemove(index);
                 }}
               />
-            ))}
+            ))} */}
+            {anotherDataSourceFields.length === 0 ? (
+              <AddAnotherDataSource
+                key={0}
+                form={form}
+                index={0}
+                showRemoveButton={false}
+              />
+            ) : (
+              anotherDataSourceFields.map((_, index) => (
+                <AddAnotherDataSource
+                  key={index}
+                  form={form}
+                  index={index}
+                  onClose={() => {
+                    handleRemove(form.getValues(`dataSource.${index}`));
+                    anotherDataSourceRemove(index);
+                  }}
+                  showRemoveButton={anotherDataSourceFields.length > 1}
+                />
+              ))
+            )}
 
             <Button
               type="button"

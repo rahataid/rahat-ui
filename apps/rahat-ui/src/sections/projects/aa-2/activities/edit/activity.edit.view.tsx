@@ -233,7 +233,7 @@ export default function EditActivity() {
     source: z.string().min(2, { message: 'Please enter source' }),
     phaseId: z.string().min(1, { message: 'Please select phase' }),
     categoryId: z.string().min(1, { message: 'Please select category' }),
-    leadTime: z.string().min(2, { message: 'Please enter lead time' }),
+    leadTime: z.string().min(1, { message: 'Please enter lead time' }),
     description: z
       .string()
       .optional()
@@ -311,13 +311,10 @@ export default function EditActivity() {
         return;
       }
 
-      const newFileName = `${Date.now()}-${file.name}`;
-      const modifiedFile = new File([file], newFileName, { type: file.type });
-
       const newId = nextId.current++;
-      setDocuments((prev) => [...prev, { id: newId, name: modifiedFile.name }]);
+      setDocuments((prev) => [...prev, { id: newId, name: file.name }]);
       const formData = new FormData();
-      formData.append('file', modifiedFile);
+      formData.append('file', file);
       const { data: afterUpload } = await uploadFile.mutateAsync(formData);
       setAllFiles((prev) => [...prev, afterUpload]);
     }
@@ -637,12 +634,19 @@ export default function EditActivity() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Lead Time</FormLabel>
+                        <FormLabel>Lead Time (hours)</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
                             placeholder="Enter lead time"
                             {...field}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              // Allow only digits (0-9)
+                              if (/^\d*$/.test(value)) {
+                                field.onChange(e); // Only update if valid
+                              }
+                            }}
                           />
                         </FormControl>
                         <FormMessage />
@@ -701,11 +705,11 @@ export default function EditActivity() {
                         *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
                         CSV under 5 MB.
                       </p>
-                      <div className="grid lg:grid-cols-5 gap-3">
+                      <div className="grid sm:grid-cols-2  lg:grid-cols-3 xl:grid-cols-5 gap-4 p-2">
                         {documents?.map((file) => (
                           <div
                             key={file.name}
-                            className="flex justify-between border p-4 rounded-xl items-center space-x-2"
+                            className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 flex items-center gap-3 hover:cursor-pointer hover:bg-gray-100"
                           >
                             {uploadFile.isPending &&
                             documents?.[documents?.length - 1].name ===
@@ -714,7 +718,7 @@ export default function EditActivity() {
                             ) : (
                               <FileCheck className="w-9 h-9 text-green-600" />
                             )}
-                            <p className="text-sm  flex  items-center truncate w-28">
+                            <p className="text-xs  flex  items-center gap-2">
                               {file.name}
                             </p>
                             <X

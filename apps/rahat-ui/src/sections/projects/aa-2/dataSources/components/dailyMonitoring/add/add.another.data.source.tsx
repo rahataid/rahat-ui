@@ -330,17 +330,17 @@ export default function AddAnotherDataSource({
   return (
     <div className="border border-dashed rounded-sm p-4 my-8">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-md font-semibold">Data Source Reporting</h1>
-        <div className="flex gap-2 items-center justify-center">
+        <div className="flex  flex-col">
+          <h1 className="text-md font-semibold">Data Source Reporting</h1>
           <p className="text-sm text-muted-foreground leading-normal">
             Select a data source below and add reports
           </p>
-          {showRemoveButton && (
-            <div className="p-1 rounded-sm bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 cursor-pointer">
-              <X size={14} strokeWidth={2.5} onClick={onClose} />
-            </div>
-          )}
         </div>
+        {showRemoveButton && (
+          <div className="p-1 rounded-sm bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 cursor-pointer">
+            <X size={14} strokeWidth={2.5} onClick={onClose} />
+          </div>
+        )}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <SelectFormField

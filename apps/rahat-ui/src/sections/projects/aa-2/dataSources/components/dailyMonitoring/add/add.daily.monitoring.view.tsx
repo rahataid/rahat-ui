@@ -139,7 +139,7 @@ export default function AddDailyMonitoring() {
                     ctx.addIssue({
                       code: z.ZodIssueCode.custom,
                       path: ['waterLevel'],
-                      message: 'Water level must be number.',
+                      message: 'Water level must be a valid decimal number.',
                     });
                   }
 
@@ -190,13 +190,13 @@ export default function AddDailyMonitoring() {
                   ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     path: [field],
-                    message: `${field} must be a positive number.`,
+                    message: `${fieldLabels[field]} must be a positive number.`,
                   });
                 } else if (!/^\d+(\.\d+)?$/.test(String(value))) {
                   ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     path: [field],
-                    message: `${field} must be a valid decimal number.`,
+                    message: `${fieldLabels[field]} must be a valid decimal number.`,
                   });
                 }
               });

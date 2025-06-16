@@ -69,7 +69,7 @@ export function NavMain(items: IProps) {
               <Link href={item.path as string}>
                 <SidebarMenuButton
                   tooltip={item.title}
-                  className={`font-medium ${
+                  className={`font-medium rounded-sm ${
                     isActive
                       ? 'bg-primary text-white'
                       : 'text-muted-foreground hover:text-foreground'

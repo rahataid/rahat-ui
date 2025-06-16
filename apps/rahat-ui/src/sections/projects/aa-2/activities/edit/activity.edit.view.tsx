@@ -233,7 +233,7 @@ export default function EditActivity() {
     source: z.string().min(2, { message: 'Please enter source' }),
     phaseId: z.string().min(1, { message: 'Please select phase' }),
     categoryId: z.string().min(1, { message: 'Please select category' }),
-    leadTime: z.string().min(2, { message: 'Please enter lead time' }),
+    leadTime: z.string().min(1, { message: 'Please enter lead time' }),
     description: z
       .string()
       .optional()
@@ -634,12 +634,19 @@ export default function EditActivity() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Lead Time</FormLabel>
+                        <FormLabel>Lead Time (hours)</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
                             placeholder="Enter lead time"
                             {...field}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              // Allow only digits (0-9)
+                              if (/^\d*$/.test(value)) {
+                                field.onChange(e); // Only update if valid
+                              }
+                            }}
                           />
                         </FormControl>
                         <FormMessage />

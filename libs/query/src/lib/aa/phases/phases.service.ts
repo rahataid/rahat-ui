@@ -120,6 +120,13 @@ export const usePhases = (uuid: UUID) => {
   const { settings } = useProjectSettingsStore((state) => ({
     settings: state.settings,
   }));
+
+  const activeYear =
+    settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.['active_year'];
+
+  const riverBasin =
+    settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.['river_basin'];
+
   const query = useQuery({
     queryKey: ['phases', uuid],
     queryFn: async () => {
@@ -128,19 +135,14 @@ export const usePhases = (uuid: UUID) => {
         data: {
           action: 'ms.phases.getAll',
           payload: {
-            activeYear:
-              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-                'active_year'
-              ],
-            riverBasin:
-              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-                'river_basin'
-              ],
+            activeYear,
+            riverBasin,
           },
         },
       });
       return mutate.data;
     },
+    enabled: !!(uuid && activeYear && riverBasin),
   });
   React.useEffect(() => {
     if (query.data) {

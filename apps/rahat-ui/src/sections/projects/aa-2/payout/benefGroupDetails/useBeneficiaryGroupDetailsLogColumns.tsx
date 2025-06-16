@@ -118,17 +118,19 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
         <div className="flex items-center gap-4">
           {new Date(row.getValue('createdAt')).toLocaleString()}{' '}
           {row.original?.isCompleted === false && (
-            <TooltipProvider delayDuration={200}>
+            <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild className="hover:cursor-pointer py-0">
                   <RotateCcwIcon
-                    size={16}
-                    strokeWidth={1.5}
-                    color="red"
+                    className="w-6 h-6 xl:w-4 xl:h-4  text-red-500"
+                    strokeWidth={2.5}
                     onClick={() => handleTriggerPayoutFailed(row.original.uuid)}
                   />
                 </TooltipTrigger>
-                <TooltipContent side="left" className="rounded-sm w-auto">
+                <TooltipContent
+                  side="left"
+                  className="w-96 rounded-sm p-4 max-h-60 overflow-auto"
+                >
                   <div className="flex space-x-2 items-center">
                     <TriangleAlertIcon
                       size={16}
@@ -139,7 +141,7 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
                       Transaction Failed
                     </span>
                   </div>
-                  <p className="text-gray-500 text-sm mt-1">
+                  <p className="text-gray-500 text-sm mt-1 break-words">
                     {row.original?.info?.error ?? 'Something went wrong!!'}
                   </p>
                 </TooltipContent>

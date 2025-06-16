@@ -1,8 +1,9 @@
 import { X } from 'lucide-react';
 import { useSelectItems } from '../useSelectItems';
-import React from 'react';
+import React, { Fragment, useCallback, useEffect } from 'react';
 import SelectFormField from '../select.form.field';
 import InputFormField from '../input.form.field';
+import { useWatch } from 'react-hook-form';
 
 type IProps = {
   form: any;
@@ -17,7 +18,15 @@ export default function AddAnotherDataSource({
   index,
   showRemoveButton,
 }: IProps) {
-  const fieldName = (name: string) => `dataSource.${index}.${name}`; // Dynamic field name generator
+  const fieldName = useCallback(
+    (name: string) => `dataSource.${index}.${name}`,
+    [index],
+  ); // Dynamic field name generator
+
+  const selectedSource = useWatch({
+    control: form.control,
+    name: fieldName('source'),
+  });
   const {
     dataSourceSelectItems,
     dhmForecastSelectItems,
@@ -350,7 +359,9 @@ export default function AddAnotherDataSource({
           placeholder="Select Data Source"
           selectItems={newSourceSelectItemsArray}
         />
-        {renderFieldsBasedOnSource()}
+        <Fragment key={form.watch(fieldName('source'))}>
+          {renderFieldsBasedOnSource()}
+        </Fragment>
       </div>
     </div>
   );

@@ -123,7 +123,7 @@ export default function AddActivities() {
     source: z.string().min(2, { message: 'Please enter responsible station' }),
     phaseId: z.string().min(1, { message: 'Please select phase' }),
     categoryId: z.string().min(1, { message: 'Please select category' }),
-    leadTime: z.string().min(2, { message: 'Please enter lead time' }),
+    leadTime: z.string().min(1, { message: 'Please enter lead time' }),
     description: z
       .string()
       .optional()
@@ -540,6 +540,36 @@ export default function AddActivities() {
                             type="text"
                             placeholder="Enter lead time"
                             {...field}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              // Allow only digits (0-9)
+                              if (/^\d*$/.test(value)) {
+                                field.onChange(e); // Only update if valid
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              const invalidKeys = [
+                                'e',
+                                'E',
+                                '+',
+                                '-',
+                                '.',
+                                ',',
+                                '*',
+                                '/',
+                                '@',
+                                '#',
+                                '$',
+                                '%',
+                                '^',
+                                '&',
+                                '(',
+                                ')',
+                              ];
+                              if (invalidKeys.includes(e.key)) {
+                                e.preventDefault();
+                              }
+                            }}
                           />
                         </FormControl>
                         <FormMessage />

@@ -82,6 +82,7 @@ export default function GroupDetailView() {
         bankedStatus: d?.Beneficiary?.bankedStatus,
         uuid: d?.Beneficiary?.uuid,
         error: d?.Beneficiary?.extras?.error,
+        extras: d?.Beneficiary?.extras,
       }));
     } else return [];
   }, [group]);

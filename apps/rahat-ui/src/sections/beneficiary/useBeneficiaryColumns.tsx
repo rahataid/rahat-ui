@@ -91,7 +91,9 @@ export const useBeneficiaryTableColumns = () => {
                 clickToCopy(row.getValue('walletAddress'), row?.original?.uuid)
               }
             >
-              <p>{truncateEthAddress(row.getValue('walletAddress'))}</p>
+              <p className="truncate w-28">
+                {truncateEthAddress(row.getValue('walletAddress'))}
+              </p>
               {walletAddressCopied &&
               walletAddressCopied === row?.original?.uuid ? (
                 <CopyCheck size={15} strokeWidth={1.5} />

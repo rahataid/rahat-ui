@@ -145,7 +145,7 @@ export default function GroupDetailView() {
           <HeaderWithBack
             title={group?.data?.name}
             subtitle="Here is a detailed view of the selected beneficiary group"
-            path="/beneficiary"
+            path="/beneficiary?tab=beneficiaryGroups"
           />
           {/* {Number(isAssignedToProject) === 0 && (
             <CoreBtnComponent

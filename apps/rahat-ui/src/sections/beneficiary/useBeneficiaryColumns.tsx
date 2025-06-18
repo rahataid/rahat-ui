@@ -135,6 +135,7 @@ export const useBeneficiaryTableColumns = () => {
     },
     {
       id: 'actions',
+      header: 'Actions',
       enableHiding: false,
       cell: ({ row }) => {
         return (

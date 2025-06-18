@@ -93,6 +93,7 @@ export default function TriggerStatementDetail() {
             <ActivateTriggerDialog
               projectId={id}
               repeatKey={triggerRepeatKey as string}
+              version={version}
             />
           )}
         </div>

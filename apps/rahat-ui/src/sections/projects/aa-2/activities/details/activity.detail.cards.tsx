@@ -125,12 +125,25 @@ export default function ActivityDetailCards({
               </>
             </div>
           )}
-
-          {activityDetail?.notes && (
-            <div className=" flex items-center text-xs mt-1">
-              <NotepadText className="w-4 h-3.5 mr-2 ml-1" />
-              <span>{activityDetail?.notes}</span>
-            </div>
+          {activityDetail?.notes !== null && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild className="hover:cursor-pointer py-0">
+                  <div className="flex items-start text-xs mt-1 space-x-2">
+                    <NotepadText className="w-4 h-3.5 flex-shrink-0 mt-0.5" />
+                    <span className="break-words text-justify truncate w-[620px]">
+                      {activityDetail.notes}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="right"
+                  className="w-80 rounded-sm text-justify "
+                >
+                  <p> {activityDetail.notes}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
         </>
       )}

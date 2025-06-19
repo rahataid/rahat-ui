@@ -48,7 +48,7 @@ export default function EditTrigger() {
 
   const AutomatedFormSchema = z
     .object({
-      title: z.string().min(2, { message: 'Please enter valid name' }),
+      title: z.string().min(2, { message: 'Please enter trigger title' }),
       source: z.string().min(1, { message: 'Please select data source' }),
       isMandatory: z.boolean().optional(),
       minLeadTimeDays: z.string().optional(),

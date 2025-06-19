@@ -125,7 +125,7 @@ export default function ActivityDetailCards({
               </>
             </div>
           )}
-          {activityDetail?.notes !== null && (
+          {activityDetail?.notes ? (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild className="hover:cursor-pointer py-0">
@@ -140,11 +140,11 @@ export default function ActivityDetailCards({
                   side="right"
                   className="w-80 rounded-sm text-justify "
                 >
-                  <p> {activityDetail.notes}</p>
+                  <p>{activityDetail.notes}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          )}
+          ) : null}
         </>
       )}
     </div>

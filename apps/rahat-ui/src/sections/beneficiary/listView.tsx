@@ -113,7 +113,7 @@ export default function ListView({
       <div className="border rounded shadow p-3">
         <div className="flex space-x-2 items-center mb-2">
           <Input
-            placeholder="Filter beneficiary by walletAddress..."
+            placeholder="Search name..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)

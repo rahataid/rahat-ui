@@ -276,7 +276,7 @@ export default function AddBeneficiaryForm() {
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter beneficiaryddress"
+                            placeholder="Enter beneficiary address"
                             {...field}
                           />
                         </FormControl>

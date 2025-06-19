@@ -48,12 +48,12 @@ export default function BeneficiaryDetail() {
           path="/beneficiary"
         />
         <div className="flex space-x-2">
-          <CoreBtnComponent
+          {/* <CoreBtnComponent
             className="text-primary bg-sky-50"
             name="Assign to Project"
             Icon={FolderPlus}
             handleClick={() => {}}
-          />
+          /> */}
           <CoreBtnComponent
             name="Edit"
             Icon={Pencil}
@@ -120,6 +120,11 @@ export default function BeneficiaryDetail() {
         <div>
           <h1 className="text-md text-muted-foreground">Internet Status</h1>
           <Badge>{beneficiary?.internetStatus ?? 'N/A'}</Badge>
+        </div>
+
+        <div>
+          <h1 className="text-md text-muted-foreground">Wallet</h1>
+          <Badge>{beneficiary?.walletAddress ?? 'N/A'}</Badge>
         </div>
       </div>
 

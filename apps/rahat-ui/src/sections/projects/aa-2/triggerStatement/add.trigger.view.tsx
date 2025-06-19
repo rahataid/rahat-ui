@@ -49,7 +49,7 @@ export default function AddTriggerView() {
   const addTriggers = useCreateTriggerStatement();
 
   const ManualFormSchema = z.object({
-    title: z.string().min(2, { message: 'Please enter valid title' }),
+    title: z.string().min(2, { message: 'Please enter trigger title' }),
     isMandatory: z.boolean().optional(),
     notes: z.string().optional(),
   });

@@ -53,7 +53,7 @@ export const useUserTableColumns = () => {
     },
     {
       accessorKey: 'wallet',
-      header: 'Wallet',
+      header: 'Wallet Address',
       cell: ({ row }) => {
         const walletAddress = row.getValue('wallet') as string;
         return (
@@ -92,6 +92,7 @@ export const useUserTableColumns = () => {
     },
     {
       id: 'actions',
+      header: 'Actions',
       enableHiding: false,
       cell: ({ row }) => {
         return (

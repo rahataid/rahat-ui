@@ -129,7 +129,7 @@ export default function AddUser() {
       <form onSubmit={form.handleSubmit(handleAddUser)}>
         <div className="p-4 h-[calc(100vh-130px)]">
           <HeaderWithBack
-            title="Add User"
+            title="Create User"
             subtitle="Create a new user detail"
             path="/users"
           />
@@ -222,34 +222,6 @@ export default function AddUser() {
                   );
                 }}
               />
-              <div className="col-span-2">
-                <FormField
-                  control={form.control}
-                  name="wallet"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Wallet Address</FormLabel>
-                        <FormControl>
-                          <div className="relative w-full">
-                            <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              type="text"
-                              placeholder="Enter wallet address"
-                              {...field}
-                            />
-                            <p className="text-xs text-amber-500 mt-2">
-                              * Wallet address is required. If not entered, it
-                              will be automatically filled.
-                            </p>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-              </div>
               <FormField
                 control={form.control}
                 name="roles"
@@ -284,6 +256,32 @@ export default function AddUser() {
                   );
                 }}
               />
+              <FormField
+                control={form.control}
+                name="wallet"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Wallet Address</FormLabel>
+                      <FormControl>
+                        <div className="relative w-full">
+                          <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="text"
+                            placeholder="Enter wallet address"
+                            {...field}
+                          />
+                          <p className="text-xs text-amber-500 mt-2">
+                            * Wallet address is required. If not entered, it
+                            will be automatically filled.
+                          </p>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
             </>
           </div>
         </div>
@@ -300,7 +298,7 @@ export default function AddUser() {
             Clear
           </Button>
           <Button type="submit" className="px-10">
-            Add
+            Create
           </Button>
         </div>
       </form>

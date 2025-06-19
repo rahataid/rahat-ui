@@ -23,6 +23,7 @@ import {
   Wallet,
   Phone,
   Mail,
+  Calendar,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useBoolean } from '../../hooks/use-boolean';
@@ -98,6 +99,20 @@ export default function VendorsDetailSplitView({
     await removeVendor.mutateAsync({ vendorId: vendorsDetail.id });
     closeSecondPanel();
   };
+  const formattedDate =
+    vendorsDetail?.createdAt &&
+    !isNaN(new Date(vendorsDetail.createdAt).getTime())
+      ? new Intl.DateTimeFormat('en-NP', {
+          timeZone: 'Asia/Kathmandu',
+          weekday: 'short',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true,
+        }).format(new Date(vendorsDetail.createdAt))
+      : 'N/A';
 
   return (
     <div className="h-full border-l">
@@ -214,6 +229,16 @@ export default function VendorsDetailSplitView({
           </div>
           <p className="text-muted-foreground text-base">
             {vendorsDetail?.email || '-'}
+          </p>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <Calendar size={20} strokeWidth={1.5} />
+            <p>Registered Date</p>
+          </div>
+          <p className="text-muted-foreground text-base">
+            {formattedDate || '-'}
           </p>
         </div>
       </div>

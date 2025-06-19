@@ -123,7 +123,7 @@ export default function UsersDetailSplitView({
                 className="flex space-x-3 items-center"
                 onClick={() => clickToCopy(userDetail?.wallet as string)}
               >
-                <p className="text-muted-foreground text-base truncate w-48">
+                <p className="text-muted-foreground text-base truncate w-28">
                   {(userDetail?.wallet as string) ?? '-'}
                 </p>
                 {userDetail?.wallet &&

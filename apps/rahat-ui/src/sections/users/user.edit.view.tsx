@@ -201,30 +201,7 @@ export default function EditUser() {
                   );
                 }}
               />
-              <div className="col-span-2">
-                <FormField
-                  control={form.control}
-                  name="wallet"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Wallet Address</FormLabel>
-                        <FormControl>
-                          <div className="relative w-full">
-                            <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              type="text"
-                              placeholder="Enter wallet address"
-                              {...field}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-              </div>
+
               <FormField
                 control={form.control}
                 name="roles"
@@ -255,6 +232,29 @@ export default function EditUser() {
                           </SelectGroup>
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <FormField
+                control={form.control}
+                name="wallet"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Wallet Address</FormLabel>
+                      <FormControl>
+                        <div className="relative w-full">
+                          <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="text"
+                            placeholder="Enter wallet address"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   );

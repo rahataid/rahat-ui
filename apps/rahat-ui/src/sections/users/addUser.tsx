@@ -162,7 +162,7 @@ export default function AddUser() {
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                         className="flex space-x-1"
                       >
                         {Object.values(Gender).map((gender) => (
@@ -260,7 +260,7 @@ export default function AddUser() {
                         onValueChange={(value) => {
                           field.onChange([value]);
                         }}
-                        defaultValue={field.value[0]}
+                        value={field.value[0] ?? ''}
                       >
                         <FormLabel>User Role</FormLabel>
                         <FormControl>
@@ -292,9 +292,12 @@ export default function AddUser() {
             className="px-14"
             type="button"
             variant="secondary"
-            onClick={() => router.push('/users')}
+            onClick={() => {
+              form.reset();
+              // router.push('/users')
+            }}
           >
-            Cancel
+            Clear
           </Button>
           <Button type="submit" className="px-10">
             Add

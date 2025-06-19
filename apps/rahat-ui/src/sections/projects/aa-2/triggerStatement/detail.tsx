@@ -94,6 +94,7 @@ export default function TriggerStatementDetail() {
               projectId={id}
               repeatKey={triggerRepeatKey as string}
               version={version}
+              notes={trigger?.notes}
             />
           )}
         </div>

@@ -149,11 +149,10 @@ export default function BeneficiaryDetail() {
         </div>
       </div>
 
-      <div className="mt-3 space-y-3">
-        <h1 className="font-medium">Extra Details</h1>
-
-        {Object.keys(beneficiary?.extras || {}).length > 0 &&
-          beneficiary?.extras && (
+      {Object.keys(beneficiary?.extras || {}).length > 0 &&
+        beneficiary?.extras && (
+          <div className="mt-3 space-y-3">
+            <h1 className="font-medium">Extra Details</h1>
             <div className="p-5 rounded-sm shadow border grid grid-cols-4 gap-5">
               {Object.entries(beneficiary.extras)
                 .filter(([key]) => {
@@ -174,8 +173,8 @@ export default function BeneficiaryDetail() {
                   </div>
                 ))}
             </div>
-          )}
-      </div>
+          </div>
+        )}
     </div>
   );
 }

@@ -180,9 +180,10 @@ export default function VendorsDetailSplitView({
             className="flex space-x-3 items-center"
             onClick={() => clickToCopy(vendorsDetail?.walletAddress)}
           >
-            <p className="text-muted-foreground text-base">
-              {truncateEthAddress(vendorsDetail?.walletAddress) ?? '-'}
+            <p className="text-muted-foreground text-base truncate w-48">
+              {vendorsDetail?.walletAddress ?? '-'}
             </p>
+
             {vendorsDetail?.walletAddress &&
               (walletAddressCopied ? (
                 <CopyCheck size={15} strokeWidth={1.5} />

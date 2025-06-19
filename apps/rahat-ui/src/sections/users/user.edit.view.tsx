@@ -268,9 +268,12 @@ export default function EditUser() {
             className="px-14"
             type="button"
             variant="secondary"
-            onClick={() => router.push('/users')}
+            onClick={() => {
+              form.reset();
+              // router.push('/users')
+            }}
           >
-            Cancel
+            Reset
           </Button>
           {updateUser.isPending ? (
             <Button disabled>

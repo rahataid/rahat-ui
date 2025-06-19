@@ -348,7 +348,7 @@ export default function EditStakeholders() {
                   )
                 }
               >
-                Cancel
+                Reset
               </Button>
               <Button className="w-32" disabled={form.formState.isSubmitting}>
                 Update

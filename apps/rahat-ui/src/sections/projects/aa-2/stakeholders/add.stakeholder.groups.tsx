@@ -205,7 +205,7 @@ const UpdateOrAddStakeholdersGroup = () => {
             onClick={resetSelectedListItems}
             variant="outline"
           >
-            Cancel{' '}
+            Clear
           </Button>
           <Button
             className="w-48 rounded-md"

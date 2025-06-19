@@ -173,9 +173,16 @@ export default function UserAddRoleView() {
               className="px-14"
               type="button"
               variant="secondary"
-              onClick={() => router.push('/users/roles')}
+              // onClick={() => router.push('/users/roles')}
+              onClick={() => {
+                form.reset({
+                  name: '',
+                  isSystem: false,
+                });
+                setSeletedSubjectActions(null);
+              }}
             >
-              Cancel
+              Clear
             </Button>
             <Button type="submit" className="px-10">
               Add

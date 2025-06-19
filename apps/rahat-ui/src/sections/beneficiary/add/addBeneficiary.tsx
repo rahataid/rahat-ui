@@ -123,7 +123,7 @@ export default function AddBeneficiaryForm() {
         <form onSubmit={form.handleSubmit(handleCreateBeneficiary)}>
           <div className="p-4 h-[calc(100vh-115px)]">
             <HeaderWithBack
-              title="Add Beneficiary"
+              title="Create Beneficiary"
               subtitle="Create a new beneficiary"
               path="/beneficiary"
             />
@@ -394,9 +394,9 @@ export default function AddBeneficiaryForm() {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => router.push('/beneficiary')}
+              onClick={() => form.reset()}
             >
-              Cancel
+              Clear
             </Button>
             {addBeneficiary.isPending ? (
               <Button disabled>
@@ -404,7 +404,7 @@ export default function AddBeneficiaryForm() {
                 Please wait
               </Button>
             ) : (
-              <Button className="px-10">Add</Button>
+              <Button className="px-10">Create</Button>
             )}
           </div>
         </form>

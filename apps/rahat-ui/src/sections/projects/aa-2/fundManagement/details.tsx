@@ -50,7 +50,6 @@ export default function FundManagementDetail() {
     },
   ];
 
-  console.log(data);
   return (
     <div className="p-4">
       <div className="flex justify-between items-center">
@@ -61,9 +60,11 @@ export default function FundManagementDetail() {
           status={data?.status}
           badgeClassName={
             data?.status === 'DISBURSED'
-              ? 'bg-green-200'
-              : data?.status === 'NOT_DISBURSED'
-              ? 'bg-gray-100'
+              ? 'bg-green-100 text-green-500'
+              : data?.status === 'STARTED'
+              ? 'bg-blue-100 text-blue-500'
+              : ['FAILED', 'ERROR'].includes(data?.status)
+              ? 'bg-red-100 text-red-500'
               : 'bg-red-200'
           }
         />

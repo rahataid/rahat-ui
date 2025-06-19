@@ -31,11 +31,13 @@ import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 type IProps = {
   projectId: UUID;
   repeatKey: string;
+  version?: boolean;
 };
 
 export default function ActivateTriggerDialog({
   projectId,
   repeatKey,
+  version,
 }: IProps) {
   const router = useRouter();
   const uploadFile = useUploadFile();
@@ -122,7 +124,7 @@ export default function ActivateTriggerDialog({
       <DialogTrigger asChild>
         <Button
           type="button"
-          className="px-8"
+          className={`px-8 ${version && 'hidden'}`}
           onClick={() => setShowModal(true)}
         >
           Trigger

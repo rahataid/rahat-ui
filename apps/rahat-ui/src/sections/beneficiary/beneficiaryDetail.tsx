@@ -24,6 +24,7 @@ import {
   FolderDot,
   FolderPlus,
   Landmark,
+  LandmarkIcon,
   Mail,
   MapPin,
   Minus,
@@ -31,11 +32,13 @@ import {
   Pencil,
   Phone,
   Trash2,
+  User,
+  WalletIcon,
   Wifi,
   X,
 } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useBoolean } from '../../hooks/use-boolean';
 import AssignToProjectModal from './components/assignToProjectModal';
@@ -43,6 +46,8 @@ import DeleteBeneficiaryModal from './components/deleteBenfModal';
 import SplitViewDetailCards from './components/split.view.detail.cards';
 import EditBeneficiary from './editBeneficiary';
 import TooltipComponent from '../../components/tooltip';
+import { humanizeString } from '../../utils';
+import useCopy from '../../hooks/useCopy';
 
 type IProps = {
   beneficiaryDetail: any;
@@ -58,6 +63,9 @@ export default function BeneficiaryDetail({
   const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
   const projectModal = useBoolean();
   const deleteModal = useBoolean();
+  const searchParams = useSearchParams();
+  const { clickToCopy, copyAction } = useCopy();
+  const { Id } = useParams();
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
@@ -69,12 +77,12 @@ export default function BeneficiaryDetail({
     setActiveTab(tab);
   };
 
-  const clickToCopy = () => {
-    if (walletAddress) {
-      navigator.clipboard.writeText(walletAddress);
-      setWalletAddressCopied(true);
-    }
-  };
+  // const clickToCopy = () => {
+  //   if (walletAddress) {
+  //     navigator.clipboard.writeText(walletAddress);
+  //     setWalletAddressCopied(true);
+  //   }
+  // };
 
   const handleAssignModalClick = () => {
     projectModal.onTrue();
@@ -86,6 +94,11 @@ export default function BeneficiaryDetail({
 
   const benfAssignedToProject = beneficiaryDetail?.BeneficiaryProject?.length;
 
+  const fromTab = searchParams.get('fromTab');
+  const isAssignedToProject = searchParams.get('isAssignedToProject');
+  const isGroupValidForAA = searchParams.get('isGroupValidForAA');
+
+  console.log(beneficiaryDetail);
   return (
     <>
       <AssignToProjectModal
@@ -221,23 +234,32 @@ export default function BeneficiaryDetail({
           />
           <TooltipComponent
             handleOnClick={() =>
-              router.push(`/beneficiary/${beneficiaryDetail.uuid}/edit`)
+              router.push(
+                fromTab
+                  ? `/beneficiary/${beneficiaryDetail.uuid}/edit?isAssignedToProject=${isAssignedToProject}&isGroupValidForAA=${isGroupValidForAA}&fromTab=${fromTab}&groupId=${Id}`
+                  : `/beneficiary/${beneficiaryDetail.uuid}/edit`,
+              )
             }
             Icon={Pencil}
             tip="Edit"
           />
-          <TooltipComponent
-            handleOnClick={handleAssignModalClick}
-            Icon={FolderPlus}
-            tip="Assign Project"
-          />
-          <TooltipComponent
-            handleOnClick={() =>
-              router.push(`/beneficiary/${beneficiaryDetail.uuid}`)
-            }
-            Icon={Expand}
-            tip="Expand"
-          />
+
+          {!fromTab && (
+            <>
+              <TooltipComponent
+                handleOnClick={handleAssignModalClick}
+                Icon={FolderPlus}
+                tip="Assign Project"
+              />
+              <TooltipComponent
+                handleOnClick={() =>
+                  router.push(`/beneficiary/${beneficiaryDetail.uuid}`)
+                }
+                Icon={Expand}
+                tip="Expand"
+              />
+            </>
+          )}
         </div>
         <TooltipComponent
           handleOnClick={closeSecondPanel}
@@ -340,7 +362,86 @@ export default function BeneficiaryDetail({
             {beneficiaryDetail?.internetStatus || '-'}
           </p>
         </div>
+
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <WalletIcon size={20} strokeWidth={1.5} />
+            <p>Wallet Address</p>
+          </div>
+          <div className="flex items-center">
+            <div className="text-base text-muted-foreground truncate w-32  mr-2">
+              {beneficiaryDetail?.walletAddress || 'N/A'}
+            </div>
+            <button
+              onClick={() =>
+                clickToCopy(beneficiaryDetail?.walletAddress || '', 1)
+              }
+              className="ml-2 text-sm text-gray-500"
+            >
+              {copyAction === 1 ? (
+                <CopyCheck className="w-4 h-4" />
+              ) : (
+                <Copy className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+        </div>
       </div>
+      {beneficiaryDetail?.BeneficiaryProject && (
+        <div
+          className={`p-4 flex flex-col space-y-4 ml-2 ${
+            beneficiaryDetail?.BeneficiaryProject?.length < 1 && 'hidden'
+          }`}
+        >
+          <div className="flex justify-between items-start">
+            <p className="text-base font-medium">Project Involved</p>
+
+            <div className="flex flex-col items-end space-y-2">
+              {beneficiaryDetail?.BeneficiaryProject?.map((item, index) => (
+                <p
+                  key={item.id || index}
+                  className="text-muted-foreground text-base"
+                >
+                  {item.Project?.name || '-'}
+                </p>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {beneficiaryDetail?.extras && (
+        <div className="p-4 flex flex-col space-y-4 ml-2">
+          <h1 className="font-medium">Extra Details</h1>
+
+          {Object.keys(beneficiaryDetail?.extras || {}).length > 0 &&
+            beneficiaryDetail?.extras && (
+              <div className="flex flex-col space-y-4">
+                {Object.entries(beneficiaryDetail.extras)
+                  .filter(([key]) => {
+                    const cleanKey = key.trim().toLowerCase();
+                    return ![
+                      'error',
+                      'bankedstatus',
+                      'validbankaccount',
+                      'token',
+                    ].includes(cleanKey);
+                  })
+                  .map(([key, value]) => (
+                    <div
+                      key={key}
+                      className="flex justify-between items-center"
+                    >
+                      <p>{humanizeString(key)}</p>
+                      <p className="text-muted-foreground text-base">
+                        {String(value) || '-'}
+                      </p>
+                    </div>
+                  ))}
+              </div>
+            )}
+        </div>
+      )}
     </>
   );
 }

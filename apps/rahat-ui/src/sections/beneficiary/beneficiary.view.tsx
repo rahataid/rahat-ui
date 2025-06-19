@@ -42,6 +42,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { useActiveTab } from '../../utils/useActivetab';
 
 function BeneficiaryView() {
   const router = useRouter();
@@ -167,9 +168,17 @@ function BeneficiaryView() {
       );
     }
   };
+  const { activeTab, setActiveTab } = useActiveTab('beneficiary');
+  const { closeSecondPanel } = useSecondPanel();
+
+  useEffect(() => {
+    if (activeTab === 'beneficiaryGroups') {
+      closeSecondPanel();
+    }
+  }, [activeTab]);
 
   return (
-    <Tabs defaultValue="beneficiary">
+    <Tabs value={activeTab} onValueChange={setActiveTab}>
       <TabsContent value="beneficiary">
         <div>
           <h1 className="font-semibold text-2xl text-label pl-4">
@@ -250,7 +259,7 @@ function BeneficiaryView() {
           handlePageSizeChange={setPerPage}
           currentPage={pagination.page}
           perPage={pagination.perPage}
-          total={data?.response?.meta.lastPage || 0}
+          total={data?.response?.meta.total || 0}
         />
       </TabsContent>
       <TabsContent value="beneficiaryGroups">

@@ -222,7 +222,7 @@ export default function EditBeneficiary({ beneficiary }: any) {
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder="Enter beneficiaryddress"
+                          placeholder="Enter beneficiary address"
                           {...field}
                         />
                       </FormControl>

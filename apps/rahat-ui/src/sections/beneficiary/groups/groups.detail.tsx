@@ -82,6 +82,7 @@ export default function GroupDetailView() {
         bankedStatus: d?.Beneficiary?.bankedStatus,
         uuid: d?.Beneficiary?.uuid,
         error: d?.Beneficiary?.extras?.error,
+        extras: d?.Beneficiary?.extras,
       }));
     } else return [];
   }, [group]);
@@ -144,7 +145,7 @@ export default function GroupDetailView() {
           <HeaderWithBack
             title={group?.data?.name}
             subtitle="Here is a detailed view of the selected beneficiary group"
-            path="/beneficiary"
+            path="/beneficiary?tab=beneficiaryGroups"
           />
           {/* {Number(isAssignedToProject) === 0 && (
             <CoreBtnComponent

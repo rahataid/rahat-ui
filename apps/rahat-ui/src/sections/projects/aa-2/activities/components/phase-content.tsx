@@ -98,7 +98,7 @@ export default function PhaseContent({
             ))}
           </div>
         ) : (
-          <NoResult />
+          <NoResult message="No Activities Available)" />
         )}
       </CardContent>
     </Card>

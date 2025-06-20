@@ -1,9 +1,14 @@
 'use client';
 
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { AAUpdateOrAddStakeholdersGroup } from 'apps/rahat-ui/src/sections/projects/aa-2';
 
 const Page = () => {
-  return <AAUpdateOrAddStakeholdersGroup />;
+  return (
+    <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]}>
+      <AAUpdateOrAddStakeholdersGroup />;
+    </RoleAuth>
+  );
 };
 
 export default Page;

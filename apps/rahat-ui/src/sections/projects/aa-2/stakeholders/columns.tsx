@@ -165,18 +165,20 @@ export const useProjectStakeholdersGroupTableColumns = () => {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() =>
-                router.push(
-                  `/projects/aa/${id}/stakeholders/${row.original.uuid}?groupId=${groupId}`,
-                )
-              }
-            />
-          </div>
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+            <div className="flex items-center gap-2">
+              <Eye
+                className="hover:text-primary cursor-pointer"
+                size={16}
+                strokeWidth={1.5}
+                onClick={() =>
+                  router.push(
+                    `/projects/aa/${id}/stakeholders/${row.original.uuid}?groupId=${groupId}`,
+                  )
+                }
+              />
+            </div>
+          </RoleAuth>
         );
       },
     },

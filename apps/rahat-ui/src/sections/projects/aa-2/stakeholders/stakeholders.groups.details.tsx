@@ -21,6 +21,7 @@ import { UUID } from 'crypto';
 import { Plus, User } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useProjectStakeholdersGroupTableColumns } from './columns';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 type Props = {};
 
@@ -107,18 +108,20 @@ const StakeholdersGroupsDetails = (props: Props) => {
             }
           />
 
-          <Button
-            variant="default"
-            type="button"
-            onClick={() =>
-              router.push(
-                `/projects/aa/${projectId}/stakeholders/groups/edit/${groupId}`,
-              )
-            }
-            className=""
-          >
-            <Plus size={18} className="mr-1" /> Add StakeHolder
-          </Button>
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+            <Button
+              variant="default"
+              type="button"
+              onClick={() =>
+                router.push(
+                  `/projects/aa/${projectId}/stakeholders/groups/edit/${groupId}`,
+                )
+              }
+              className=""
+            >
+              <Plus size={18} className="mr-1" /> Add StakeHolder
+            </Button>
+          </RoleAuth>
         </div>
 
         <DemoTable

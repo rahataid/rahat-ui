@@ -54,7 +54,9 @@ export default function TriggerStatementDetail() {
       projectUUID: id,
       triggerStatementPayload: { repeatKey: triggerRepeatKey as string },
     });
-    router.push(`/projects/aa/${id}/trigger-statements`);
+    router.push(
+      `/projects/aa/${id}/trigger-statements/phase/${trigger?.phaseId}`,
+    );
   };
   return isLoading ? (
     <TableLoader />

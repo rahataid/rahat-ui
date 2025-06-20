@@ -80,7 +80,11 @@ export const VendorRedemptionList = ({ id }: { id: UUID }) => {
           value={filters?.search || ''}
         />
       </div>
-      <DemoTable table={table} tableHeight="h-[500px]" />
+      <DemoTable
+        table={table}
+        tableHeight="h-[500px]"
+        message="No Vendor Redemption Requests"
+      />
       <CustomPagination
         currentPage={pagination.page}
         handleNextPage={setNextPage}

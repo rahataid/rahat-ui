@@ -52,9 +52,7 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
             </div>
           ))
         ) : (
-          <p className="text-sm font-medium text-muted-foreground">
-            No payouts found
-          </p>
+          <NoResult message="No Payout Available" />
         )}
       </div>
     </>

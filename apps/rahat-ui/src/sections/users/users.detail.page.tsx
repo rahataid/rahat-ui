@@ -158,7 +158,9 @@ export default function UsersDetailPage() {
               className="flex items-center space-x-2 cursor-pointer"
               onClick={() => clickToCopy(User?.wallet as string)}
             >
-              <p>{truncateEthAddress(User?.wallet as string)}</p>
+              <p className="text-muted-foreground text-base truncate w-48">
+                {User?.wallet as string}
+              </p>
               {walletAddressCopied === User?.wallet ? (
                 <CopyCheck size={15} strokeWidth={1.5} />
               ) : (

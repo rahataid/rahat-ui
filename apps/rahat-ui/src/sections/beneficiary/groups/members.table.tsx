@@ -53,7 +53,7 @@ export default function MembersTable({
         <div className="bg-card border rounded">
           <TableComponent>
             <ScrollArea className="h-[calc(100vh-465px)]">
-              <TableHeader>
+              <TableHeader className="sticky top-0 bg-card">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {

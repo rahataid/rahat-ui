@@ -592,7 +592,7 @@ export default function EditDailyMonitoring() {
                 form.reset();
               }}
             >
-              Cancel
+              Reset
             </Button>
             <Button type="submit" className="w-32">
               Update

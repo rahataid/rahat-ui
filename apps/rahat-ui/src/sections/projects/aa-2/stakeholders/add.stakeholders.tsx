@@ -250,7 +250,7 @@ export default function AddStakeholders() {
                 className=" px-8 "
                 onClick={() => form.reset()}
               >
-                Cancel
+                Clear
               </Button>
               <Button className="w-32" disabled={form.formState.isSubmitting}>
                 Create

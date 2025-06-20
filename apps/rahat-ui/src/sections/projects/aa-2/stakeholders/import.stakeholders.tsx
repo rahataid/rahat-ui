@@ -366,7 +366,7 @@ export default function ImportStakeholder() {
               setSelectedFile(null);
             }}
           >
-            Cancel
+            Clear
           </Button>
 
           <Button

@@ -74,6 +74,7 @@ export default function FundManagementDetailTable({
         table={table}
         tableHeight="h-[calc(100vh-550px)]"
         loading={loading}
+        message="No Detail Available"
       />
       <ClientSidePagination table={table} />
     </div>

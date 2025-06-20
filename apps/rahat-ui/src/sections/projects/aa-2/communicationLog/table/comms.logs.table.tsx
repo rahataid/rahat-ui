@@ -65,7 +65,11 @@ export default function CommsLogsTable({
                     colSpan={table.getAllColumns().length}
                     className="h-24 text-center"
                   >
-                    {isLoading ? <SpinnerLoader /> : <NoResult />}
+                    {isLoading ? (
+                      <SpinnerLoader />
+                    ) : (
+                      <NoResult message="No Communications Logs Available" />
+                    )}
                   </TableCell>
                 </TableRow>
               )}

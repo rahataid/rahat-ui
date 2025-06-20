@@ -98,7 +98,7 @@ const BeneficiaryGroups = () => {
               })}
             </div>
           ) : (
-            <NoResult />
+            <NoResult message="No Beneficiary Group Available" />
           )}
         </ScrollArea>
 

@@ -1,15 +1,9 @@
-import Link from 'next/link';
-import DataCard from '../../components/dataCard';
-import { getValueFromPath } from '../../utils/extractObjetInfo';
-import getIcon from '../../utils/getIcon';
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from 'next/navigation';
-import { UUID } from 'crypto';
+'use client';
 import { usePagination } from '@rahat-ui/query';
+import { UUID } from 'crypto';
+import { useParams, useRouter } from 'next/navigation';
+import DataCard from '../../components/dataCard';
+import getIcon from '../../utils/getIcon';
 type DataCardData = {
   component: any;
   source: any;
@@ -39,7 +33,6 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
   //     ? getValueFromPath(relevantData.data, path)
   //     : null;
 
-  console.log(component);
   const cardDataValue =
     component.type === 'dataCard' && relevantData ? relevantData.data : '-';
 

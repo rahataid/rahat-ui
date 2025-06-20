@@ -46,6 +46,7 @@ export const PROJECT_SETTINGS_KEYS = {
   DATASOURCE: 'DATASOURCE',
   HAZARD_TYPE: 'HAZARD_TYPE',
   SAFE_WALLET: 'SAFE_WALLET',
+  SCB: 'SCB',
 };
 
 export const TREASURY_SOURCES = [
@@ -122,7 +123,6 @@ export const MS_CAM_ACTIONS = {
       DELETE: 'cambodia.chw.delete',
       STATS: 'cambodia.chw.stats',
       BENEFICIARIES_STATS: 'cambodia.beneficiary.stats',
-      VALIDATE_HEALTH_WORKER: 'cambodia.chw.validate_health_worker',
     },
     VENDOR: {
       LIST: 'cambodia.vendor.list',
@@ -144,9 +144,7 @@ export const MS_CAM_ACTIONS = {
     COMMUNICATION: {
       LIST: 'cambodia.communication.list',
       BROAD_CAST_STATUS_COUNT: 'cambodia.app.broadcast_status_count',
-      TRIGGER_COMMUNICATION: 'cambodia.app.trigger_communication',
     },
     LINE_STATS: 'cambodia.app.line_stats',
-    PROJECT_SETTINGS: 'cambodia.app.project_settings',
   },
 };

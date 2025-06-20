@@ -21,6 +21,11 @@ import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
 import Swal from 'sweetalert2';
+import { mapStatus } from '../el-kenya';
+
+interface ExtendedProject extends Project {
+  projectClosed: boolean;
+}
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
@@ -497,6 +502,47 @@ export const useAAProjectSettingsHazardType = (uuid: UUID) => {
   return query;
 };
 
+export const useAAProjectSettingsSCB = (uuid: UUID) => {
+  const q = useProjectAction([PROJECT_SETTINGS_KEYS.SCB]);
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+
+  const query = useQuery({
+    queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid, PROJECT_SETTINGS_KEYS.SCB],
+    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SCB]),
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: PROJECT_SETTINGS_KEYS.SCB,
+          },
+        },
+      });
+      return mutate.data.value;
+    },
+  });
+
+  useEffect(() => {
+    if (!isEmpty(query.data)) {
+      const settingsToUpdate = {
+        ...settings,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.SCB]: query?.data,
+        },
+      };
+      setSettings(settingsToUpdate);
+      window.location.reload();
+    }
+  }, [query.data]);
+
+  return query;
+};
+
 export const useProjectList = (
   payload?: Pagination,
 ): UseQueryResult<FormattedResponse<Project[]>, Error> => {
@@ -530,7 +576,12 @@ export const useProject = (
 
   useEffect(() => {
     if (query.data) {
-      setSingleProject(query.data.data); // Access the 'data' property of the 'FormattedResponse' object
+      const projectClosed = query.data.data?.status === 'CLOSED';
+      const updatedProject: ExtendedProject = {
+        ...query.data.data,
+        projectClosed,
+      };
+      setSingleProject(updatedProject); // Access the 'data' property of the 'FormattedResponse' object
     }
   }, [query.data]);
   return query;
@@ -543,6 +594,14 @@ type GetProjectBeneficiaries = Pagination & {
   projectUUID: UUID;
   type?: string;
   vouchers?: any;
+};
+
+type GetConsumerData = {
+  projectUUID: UUID;
+  voucherStatus?: string;
+  eyeCheckupStatus?: string;
+  voucherType?: string;
+  consentStatus?: string;
 };
 
 export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
@@ -585,13 +644,69 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
               voucherClaimStatus: row?.claimStatus,
               name: row?.piiData?.name || '',
               email: row?.piiData?.email || '',
-              gender: row?.projectData?.gender?.toString() || '',
-              phone: row?.piiData?.phone || 'N/A',
+              gender:
+                row?.projectData?.gender?.toString() ||
+                row?.extras?.gender ||
+                '',
+              phone: row?.piiData?.phone || row?.extras?.phone || 'N/A',
               type: row?.type?.toString() || 'N/A',
               phoneStatus: row?.projectData?.phoneStatus || '',
               bankedStatus: row?.projectData?.bankedStatus || '',
               internetStatus: row?.projectData?.internetStatus || '',
               benTokens: row?.benTokens || 'N/A',
+              createdAt: new Date(row?.createdAt).toLocaleString() || '',
+            }))
+          : [],
+      };
+    }, [query.data]),
+  };
+};
+
+export const useListConsentConsumer = (payload: GetConsumerData) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const LIST_CONSENT = 'beneficiary.list_full_data_by_project';
+  const { projectUUID, ...restPayload } = payload;
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const queryKey = useMemo(
+    () => [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, restPayloadString],
+    [restPayloadString],
+  );
+  //todo use mutation
+  const query = useQuery({
+    queryKey: [LIST_CONSENT, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: LIST_CONSENT,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return {
+    ...query,
+    data: useMemo(() => {
+      return {
+        ...query.data,
+        data: query.data?.data?.length
+          ? query.data.data.map((row: any) => ({
+              createdAt: new Date(row?.createdAt).toLocaleString() || '',
+              walletAddress: row?.walletAddress?.toString(),
+              vendorName: row?.extras?.vendorName || '',
+              gender:
+                row?.projectData?.gender?.toString() || row?.extras?.gender,
+              phone: row?.piiData?.phone || row?.extras?.phone,
+              glassPurchaseType: mapStatus(row?.voucherType),
+              voucherUsage: mapStatus(row?.eyeCheckupStatus),
+              voucherStatus: mapStatus(row?.voucherStatus),
+              consent: row?.extras?.consent,
             }))
           : [],
       };
@@ -951,6 +1066,8 @@ export const useCambodiaCommisionCreate = () => {
       return mutate;
     },
     onSuccess: () => {
+      Swal.fire('Commission Scheme Saved Successfully', '', 'success');
+
       qc.invalidateQueries({
         queryKey: [MS_CAM_ACTIONS.CAMBODIA.COMMISION_SCHEME.GET_CURRENT],
       });
@@ -1177,7 +1294,7 @@ export const useCambodiaLineChartsReports = (payload: any) => {
         uuid: projectUUID,
         data: {
           action: MS_CAM_ACTIONS.CAMBODIA.LINE_STATS,
-          payload: restPayload?.filters,
+          payload: { ...restPayload?.filters, vendorId: restPayload?.vendorId },
         },
       });
       return mutate;
@@ -1222,85 +1339,4 @@ export const useCambodiaCommisionStats = (payload: any) => {
     },
   });
   return query;
-};
-
-export const useCambodiaProjectSettings = (payload: any) => {
-  const q = useProjectAction<any[]>();
-  const { projectUUID, ...restPayload } = payload;
-  const restPayloadString = JSON.stringify(restPayload);
-  const query = useQuery({
-    queryKey: [MS_CAM_ACTIONS.CAMBODIA.PROJECT_SETTINGS, restPayloadString],
-    placeholderData: keepPreviousData,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: MS_CAM_ACTIONS.CAMBODIA.PROJECT_SETTINGS,
-          payload: restPayload,
-        },
-      });
-      return mutate;
-    },
-  });
-  return query;
-};
-
-export const useCambodiaTriggerComms = () => {
-  const q = useProjectAction<any[]>();
-  const qc = useQueryClient();
-
-  return useMutation({
-    mutationKey: [MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.TRIGGER_COMMUNICATION],
-
-    mutationFn: async (payload: any) => {
-      const { projectUUID, ...restPayload } = payload;
-
-      const mutate = await q.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.TRIGGER_COMMUNICATION,
-          payload: restPayload,
-        },
-      });
-      return mutate;
-    },
-    onSuccess: () => {
-      Swal.fire(
-        'Your message is scheduled and will be delivered shortly',
-        '',
-        'success',
-      );
-      qc.invalidateQueries({
-        queryKey: [MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.LIST],
-      });
-    },
-  });
-};
-export const useValidateHealthWorker = () => {
-  const q = useProjectAction<any[]>();
-  const qc = useQueryClient();
-
-  return useMutation({
-    mutationKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.VALIDATE_HEALTH_WORKER],
-
-    mutationFn: async (payload: any) => {
-      const { projectUUID, ...restPayload } = payload;
-
-      const mutate = await q.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: MS_CAM_ACTIONS.CAMBODIA.CHW.VALIDATE_HEALTH_WORKER,
-          payload: restPayload,
-        },
-      });
-      return mutate;
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({
-        queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.VALIDATE_HEALTH_WORKER],
-      });
-    },
-  });
 };

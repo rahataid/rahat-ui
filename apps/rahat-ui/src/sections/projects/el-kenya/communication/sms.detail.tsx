@@ -51,7 +51,7 @@ export default function CommunicationView() {
   } = usePagination();
 
   const { data: campginData } = useGetRpCampaign(id as UUID, cid);
-  const { data, isSuccess, isLoading } = useListRpCampaignLog(id as UUID, {
+  const { data, isSuccess, isFetching } = useListRpCampaignLog(id as UUID, {
     uuid: cid as string,
     query: {
       page: 1,
@@ -88,9 +88,9 @@ export default function CommunicationView() {
       let failed = 0;
 
       return data?.data?.map((item: any) => {
-        if (item.isComplete) {
+        if (item.status === 'SUCCESS') {
           succed += 1;
-        } else {
+        } else if (item.status === 'FAIL') {
           failed += 1;
         }
         setStats({
@@ -100,7 +100,7 @@ export default function CommunicationView() {
         return {
           createdAt: new Date(item.createdAt).toLocaleString(),
           status: item?.status,
-          to: item?.address,
+          address: item?.address,
         };
       });
     } else {
@@ -173,9 +173,11 @@ export default function CommunicationView() {
             <SearchInput
               className="w-full"
               name=""
-              value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
+              value={
+                (table.getColumn('address')?.getFilterValue() as string) ?? ''
+              }
               onSearch={(event) =>
-                table.getColumn('to')?.setFilterValue(event.target.value)
+                table.getColumn('address')?.setFilterValue(event.target.value)
               }
             />
             <ViewColumns table={table} />
@@ -183,7 +185,7 @@ export default function CommunicationView() {
           <ElkenyaTable
             table={table}
             tableHeight="h-[calc(100vh-573px)]"
-            loading={isLoading}
+            loading={isFetching}
           />
         </div>
       </div>

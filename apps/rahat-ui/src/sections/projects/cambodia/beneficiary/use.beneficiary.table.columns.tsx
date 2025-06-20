@@ -1,4 +1,3 @@
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';

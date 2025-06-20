@@ -1,5 +1,3 @@
-// This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
-// If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 export function truncateEthereumAddress(address: string) {
@@ -24,14 +22,19 @@ export function formatDate(date: number) {
   return formattedDate;
 }
 
-export function formatdbDate(date: string) {
-  const updated = new Date(date);
-
-  const datePart = updated.toISOString().split('T')[0];
-
-  const timePart = updated.toTimeString().split(' ')[0].slice(0, 5);
-
-  return `${datePart} - ${timePart}`;
+export function formatdbDate(date: string | Date) {
+  return date
+    ? new Date(
+        typeof date === 'string' ? date : date?.toISOString(),
+      ).toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      })
+    : '';
 }
 
 export function getDayOfWeek(dbDate: string) {
@@ -111,3 +114,22 @@ export function formatDT(date: Date) {
 
   return formattedDate;
 }
+
+export const formatDateFromBloackChain = (dateString: string) => {
+  let date = new Date(dateString);
+
+  // Get the components of the date
+  const day = date.getDate();
+  const month = date.toLocaleString('default', { month: 'short' });
+  const year = date.getFullYear();
+  const hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const period = hours >= 12 ? 'PM' : 'AM';
+
+  // Convert hours to 12-hour format
+  const hours12 = hours % 12 || 12;
+
+  // Form the date string
+  const formattedDate = `${month} ${day}, ${year} ${hours12}:${minutes} ${period}`;
+  return formattedDate;
+};

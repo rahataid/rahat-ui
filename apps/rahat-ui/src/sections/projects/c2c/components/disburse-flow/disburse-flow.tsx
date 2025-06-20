@@ -99,7 +99,6 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       return;
     }
 
-    const disburseAmount = parseUnits(stepData.disburseAmount, 6);
     const beneficiaryAddresses = selectedBeneficiaries as `0x${string}`[];
     const { rahattoken, c2cproject } = contractSettings || {};
 
@@ -115,14 +114,15 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
         rahatTokenAddress: rahattoken?.address,
         c2cProjectAddress: c2cproject?.address,
       });
+      const resData = Array.isArray(data) ? data?.[0] : data;
       route.push(
-        `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&from=${safeWallet}&&disbursementUuid=${data?.uuid}`,
+        `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&from=${safeWallet}&&disbursementUuid=${resData?.Disbursement?.uuid}&&safeTxHash=${resData?.safeTxHash}`,
       );
       return;
     }
 
     const disbursement = await disburseToken.mutateAsync({
-      amount: disburseAmount,
+      amount: stepData.disburseAmount,
       beneficiaryAddresses,
       rahatTokenAddress: rahattoken?.address,
       c2cProjectAddress: c2cproject?.address,
@@ -130,9 +130,12 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       projectUUID: id,
     });
     console.log('SUCCESS', disbursement);
+    const resData = Array.isArray(disbursement)
+      ? disbursement?.[0]
+      : disbursement;
 
     route.push(
-      `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&disbursementUuid=${disbursement?.uuid}`,
+      `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&disbursementUuid=${resData?.Disbursement?.uuid}`,
     );
   };
 
@@ -140,7 +143,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     if (currentStep === 0) {
       route.push(`/projects/c2c/${id}/beneficiary`);
     } else if (currentStep > 0) {
-      if (currentStep === 2) {
+      if (currentStep === 1 || currentStep === 2) {
         stepData.disburseAmount = '';
       }
       setCurrentStep(currentStep - 1);

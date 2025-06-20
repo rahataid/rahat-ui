@@ -59,7 +59,7 @@ function BeneficiaryView() {
 
   useBeneficiaryGroupsList({ ...pagination });
 
-  const { data } = useBeneficiaryList({
+  const { data, isLoading } = useBeneficiaryList({
     ...pagination,
     ...filters,
   });
@@ -73,7 +73,6 @@ function BeneficiaryView() {
     page: 1,
     perPage: 10,
   });
-
   const table = useReactTable({
     manualPagination: true,
     data: data?.data || [],
@@ -164,44 +163,34 @@ function BeneficiaryView() {
 
   return (
     <Tabs defaultValue="beneficiary">
-      <TabsContent value="beneficiary">
-        <div>
-          <h1 className="font-semibold text-2xl text-label pl-4">
-            Beneficiary
-          </h1>
-        </div>
-      </TabsContent>
-      <TabsContent value="beneficiaryGroups">
-        <div>
-          <h1 className="font-semibold text-2xl text-label pl-4">
-            Beneficiary Groups
-          </h1>
-        </div>
-      </TabsContent>
-      <div className="flex justify-between items-center p-4">
-        <TabsList className="border bg-secondary rounded">
-          <TabsTrigger
-            id="beneficiary"
-            className="w-full data-[state=active]:bg-white"
-            value="beneficiary"
+      <div className="p-4">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
+          <TabsList className="border w-full sm:w-auto bg-secondary rounded flex">
+            <TabsTrigger
+              id="beneficiary"
+              className="w-full min-w-[140px] text-center data-[state=active]:bg-white"
+              value="beneficiary"
+            >
+              Beneficiary
+            </TabsTrigger>
+            <TabsTrigger
+              id="beneficiaryGroups"
+              className="w-full min-w-[140px] text-center data-[state=active]:bg-white"
+              value="beneficiaryGroups"
+            >
+              Beneficiary Groups
+            </TabsTrigger>
+          </TabsList>
+          <Button
+            variant="outline"
+            className="w-full sm:w-auto"
+            onClick={() => router.push('/beneficiary/import')}
           >
-            Beneficiary
-          </TabsTrigger>
-          <TabsTrigger
-            id="beneficiaryGroups"
-            className="w-full data-[state=active]:bg-white"
-            value="beneficiaryGroups"
-          >
-            Beneficiary Groups
-          </TabsTrigger>
-        </TabsList>
-        <Button
-          variant="outline"
-          onClick={() => router.push('/beneficiary/import')}
-        >
-          <CloudDownload className="mr-1" /> Import beneficiaries
-        </Button>
+            <CloudDownload className="mr-1" /> Import Beneficiaries
+          </Button>
+        </div>
       </div>
+
       <TabsContent value="beneficiary">
         <div className="p-4">
           <BeneficiaryListView
@@ -216,6 +205,7 @@ function BeneficiaryView() {
             filters={filters}
             setFilters={setFilters}
             handleDateChange={handleDateChange}
+            loading={isLoading}
           />
         </div>
         <CustomPagination
@@ -225,9 +215,10 @@ function BeneficiaryView() {
           handlePageSizeChange={setPerPage}
           currentPage={pagination.page}
           perPage={pagination.perPage}
-          total={data?.response?.meta.lastPage || 0}
+          total={data?.response?.meta?.lastPage || 0}
         />
       </TabsContent>
+
       <TabsContent value="beneficiaryGroups">
         <div className="p-4">
           <BeneficiaryGroupsView />
@@ -236,5 +227,4 @@ function BeneficiaryView() {
     </Tabs>
   );
 }
-
 export default memo(BeneficiaryView);

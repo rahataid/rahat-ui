@@ -14,8 +14,11 @@ import {
   TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import UsersDetailSplitView from './users.detail.split.view';
+import { useParams, useRouter } from 'next/navigation';
 
 export const useUserTableColumns = () => {
+  const router = useRouter();
+
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
 
@@ -25,12 +28,16 @@ export const useUserTableColumns = () => {
   };
 
   const openSplitDetailView = (rowDetail: User) => {
-    setSecondPanelComponent(
-      <UsersDetailSplitView
-        userDetail={rowDetail}
-        closeSecondPanel={closeSecondPanel}
-      />,
-    );
+    if (window.innerWidth <= 768) {
+      router.push(`/users/${rowDetail.uuid}`);
+    } else {
+      setSecondPanelComponent(
+        <UsersDetailSplitView
+          userDetail={rowDetail}
+          closeSecondPanel={closeSecondPanel}
+        />,
+      );
+    }
   };
 
   const columns: ColumnDef<User>[] = [

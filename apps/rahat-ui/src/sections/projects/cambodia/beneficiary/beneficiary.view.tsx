@@ -13,7 +13,7 @@ import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
 import { CloudUpload, Download, UserRoundX } from 'lucide-react';
 import Link from 'next/link';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import SearchInput from '../../components/search.input';
@@ -36,8 +36,8 @@ export default function BeneficiaryView() {
     selectedListItems,
     setSelectedListItems,
     resetSelectedListItems,
-    resetFilters,
   } = usePagination();
+  // const { name, type, ...otherFilters } = filters;
   const debouncedSearch = useDebounce(filters, 500);
 
   const { data, isLoading } = useCambodiaBeneficiaries({
@@ -48,15 +48,6 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...(debouncedSearch as any),
   });
-
-  const processedData = {
-    ...data,
-    data: data?.data.map((benef) => ({
-      ...benef,
-      name: benef?.piiData?.name,
-    })),
-  };
-
   const { data: allData } = useCambodiaBeneficiaries({
     page: pagination.page,
     perPage: data?.response?.meta?.total,
@@ -72,6 +63,13 @@ export default function BeneficiaryView() {
     };
   }, [router]);
 
+  const processedData = {
+    ...data,
+    data: data?.data.map((benef) => ({
+      ...benef,
+      name: benef?.piiData?.name,
+    })),
+  };
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
@@ -83,9 +81,11 @@ export default function BeneficiaryView() {
       });
     }
   };
+
   const columns = useCambodiaBeneficiaryTableColumns();
   const table = useReactTable({
     manualPagination: true,
+    manualFiltering: true,
     data: processedData?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -118,7 +118,6 @@ export default function BeneficiaryView() {
 
     XLSX.writeFile(workbook, 'Beneficiaries.xlsx');
   };
-
   return (
     <>
       <div className="p-4 bg-white ">
@@ -171,9 +170,6 @@ export default function BeneficiaryView() {
                 }
                 value={filters?.type || ''}
               />
-
-              {/*
-              <ViewColumns table={table} /> */}
             </div>
           </div>
           <CambodiaTable table={table} loading={isLoading} />

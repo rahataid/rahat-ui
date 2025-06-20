@@ -21,9 +21,9 @@ import SelectComponent from '../select.component';
 import CambodiaTable from '../table.component';
 import { useTableColumns } from './use.table.columns';
 
-import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
 import { DateRange } from 'react-day-picker';
 import * as XLSX from 'xlsx';
+import { DateRangePicker } from 'apps/rahat-ui/src/components/datePickerRange';
 
 export default function CommunicationView() {
   const { id } = useParams() as { id: UUID };
@@ -43,7 +43,8 @@ export default function CommunicationView() {
   const { data: broadStatusCount } = useCambodiaBroadCastCounts({
     projectUUID: id,
   }) as any;
-  const { data, isLoading } = useCambodiaCommsList({
+
+  const { data, isLoading, isFetching } = useCambodiaCommsList({
     projectUUID: id,
     page: pagination.page,
     perPage: pagination.perPage,
@@ -106,7 +107,6 @@ export default function CommunicationView() {
         value === 'ALL'
           ? setFilters({
               ...filters,
-              status: {},
             })
           : value;
       table.getColumn(name)?.setFilterValue(filterValue);
@@ -118,27 +118,37 @@ export default function CommunicationView() {
   };
 
   const handleDateChange = (date: DateRange | undefined) => {
-    if (date?.from && date?.to) {
-      if (date.from.getTime() === date.to.getTime()) {
-        // If the dates are the same, adjust the end date to cover the full day
-        const startOfDay = new Date(date.from.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(date.to.setHours(23, 59, 59, 999));
+    if (date?.from) {
+      const from = new Date(date.from);
+      const to = new Date(date.to ?? date.from);
 
-        setFilters({
-          ...filters,
-          startDate: startOfDay.toISOString(),
-          endDate: endOfDay.toISOString(),
-        });
-      } else {
-        setFilters({
-          ...filters,
-          startDate: date.from,
-          endDate: date.to,
-        });
-      }
-    } else {
+      const startOfDay = new Date(
+        from.getFullYear(),
+        from.getMonth(),
+        from.getDate(),
+        0,
+        0,
+        0,
+        0,
+      );
+
+      const endOfDay = new Date(
+        to.getFullYear(),
+        to.getMonth(),
+        to.getDate(),
+        23,
+        59,
+        59,
+        999,
+      );
+
       setFilters({
         ...filters,
+        startDate: startOfDay.toISOString(), // this will represent 00:00 local time in UTC
+        endDate: endOfDay.toISOString(), // this will represent 23:59 local time in UTC
+      });
+    } else {
+      setFilters({
         startDate: undefined,
         endDate: undefined,
       });
@@ -163,18 +173,14 @@ export default function CommunicationView() {
     XLSX.writeFile(workbook, 'Communication Report.xlsx');
   };
 
-  // useEffect(() => {
-  //   setFilters({});
-  // }, []);
-
   const handleClearDate = () => {
-    console.log(filters.status);
     setFilters({
       ...filters,
       startDate: undefined,
       endDate: undefined,
     });
   };
+
   return (
     <>
       <div className="p-4">
@@ -235,7 +241,7 @@ export default function CommunicationView() {
           <CambodiaTable
             table={table}
             tableHeight="h-[calc(100vh-376px)]"
-            loading={isLoading}
+            loading={isFetching}
           />
         </div>
       </div>

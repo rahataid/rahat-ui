@@ -36,12 +36,14 @@ type IProps = {
   projectId: UUID;
   repeatKey: string;
   version?: boolean;
+  notes: string;
 };
 
 export default function ActivateTriggerDialog({
   projectId,
   repeatKey,
   version,
+  notes,
 }: IProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -76,7 +78,7 @@ export default function ActivateTriggerDialog({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      notes: '',
+      notes: notes || '',
       triggerDocuments: [],
     },
   });

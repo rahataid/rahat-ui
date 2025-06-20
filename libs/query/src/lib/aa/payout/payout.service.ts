@@ -138,6 +138,24 @@ export const useGetPayoutLogs = (projectUUID: UUID, payload: any) => {
   return query;
 };
 
+export const useGetPayoutLog = (projectUUID: UUID, payload: any) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['payout', projectUUID, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.payout.getPayoutLog',
+          payload: payload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
 export const useUpdatePayout = () => {
   const qc = useQueryClient();
   const q = useProjectAction();
@@ -202,6 +220,55 @@ export const useTriggerForPayoutFailed = () => {
     }: {
       projectUUID: UUID;
       payload: {
+        payoutUUID: string;
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.payout.triggerFailedPayoutRequest',
+          payload: payload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['payouts'] });
+      qc.invalidateQueries({ queryKey: ['payout'] });
+      toast.fire({
+        title: 'Payout Triggerd successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while triggering payout.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useTriggerForOnePayoutFailed = () => {
+  const qc = useQueryClient();
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      payload,
+    }: {
+      projectUUID: UUID;
+      payload: {
         beneficiaryRedeemUuid: string;
       };
     }) => {
@@ -209,6 +276,55 @@ export const useTriggerForPayoutFailed = () => {
         uuid: projectUUID,
         data: {
           action: 'aa.payout.triggerOneFailedPayoutRequest',
+          payload: payload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['payouts'] });
+      qc.invalidateQueries({ queryKey: ['payout'] });
+      toast.fire({
+        title: 'Payout updated successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while updating payout.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useTriggerPayout = () => {
+  const qc = useQueryClient();
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      payload,
+    }: {
+      projectUUID: UUID;
+      payload: {
+        uuid: string;
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.payout.triggerPayout',
           payload: payload,
         },
       });

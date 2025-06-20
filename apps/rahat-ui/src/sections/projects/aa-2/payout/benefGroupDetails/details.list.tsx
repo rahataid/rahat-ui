@@ -3,6 +3,8 @@ import {
   useGetPayoutLogs,
   usePagination,
   useSinglePayout,
+  useTriggerForPayoutFailed,
+  useTriggerPayout,
 } from '@rahat-ui/query';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -20,9 +22,23 @@ import {
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { UUID } from 'crypto';
-import { Ticket, Users } from 'lucide-react';
+import { RotateCcw, Ticket, Users } from 'lucide-react';
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
+import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const params = useParams();
@@ -53,7 +69,8 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       ...pagination,
     },
   );
-
+  const triggerForPayoutFailed = useTriggerForPayoutFailed();
+  const triggerPayout = useTriggerPayout();
   const columns = useBeneficiaryGroupDetailsLogColumns();
 
   const tableData = React.useMemo(() => {
@@ -95,18 +112,39 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     });
   };
 
+  const handleTriggerPayoutFailed = React.useCallback(async () => {
+    triggerForPayoutFailed.mutateAsync({
+      projectUUID: projectId,
+      payload: {
+        payoutUUID: payoutId,
+      },
+    });
+  }, [triggerForPayoutFailed]);
+
+  const handleTriggerPayout = React.useCallback(async () => {
+    triggerPayout.mutateAsync({
+      projectUUID: projectId,
+      payload: {
+        uuid: payoutId,
+      },
+    });
+  }, [triggerPayout]);
+
   const payoutStats = [
     {
       label: 'Total Beneficiaries',
-      value: payoutlogs?.response?.meta?.total,
+      value:
+        payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
+          ?.beneficiaries ?? 0,
       icon: Users,
     },
     {
       label: 'Total Tokens',
-      value: 0,
+      value: payout?.beneficiaryGroupToken?.numberOfTokens,
       icon: Ticket,
     },
   ];
+
   return isLoading ? (
     <TableLoader />
   ) : (
@@ -119,11 +157,29 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <Heading
               title={`${payout?.beneficiaryGroupToken?.beneficiaryGroup?.name}`}
               description="List of all the payout transaction logs of selected group"
+              status={payout?.isCompleted ? 'Completed' : 'Not Completed'}
+              badgeClassName={isCompleteBgStatus(payout?.isCompleted)}
             />
+          </div>
+          <div className="flex gap-2">
+            <PayoutConfirmationDialog
+              onConfirm={() => handleTriggerPayout()}
+              payoutData={payout}
+            />
+
+            <Button
+              className={`gap-2 text-sm ${
+                payout?.hasFailedPayoutRequests === false && 'hidden'
+              }`}
+              onClick={handleTriggerPayoutFailed}
+            >
+              <RotateCcw className="w-4 h-4" />
+              Retry Failed Requests
+            </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {payoutStats?.map((item) => (
             <DataCard
               key={item.label}
@@ -136,8 +192,16 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           <DataCard
             title="Payout Mode"
             Icon={Ticket}
-            smallNumber={capitalizeFirstLetter(payout?.mode)}
+            smallNumber={payout?.type}
             className="rounded-sm"
+            badge
+          />
+          <DataCard
+            title="Payout Mode"
+            Icon={Ticket}
+            smallNumber={payout?.extras?.paymentProviderName}
+            className="rounded-sm"
+            badge
           />
         </div>
       </div>

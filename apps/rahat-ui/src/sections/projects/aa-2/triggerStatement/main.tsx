@@ -46,7 +46,9 @@ export default function TriggerStatementView() {
 
   const handleViewDetails = (phase: any) => {
     setPhase(phase);
-    router.push(`/projects/aa/${projectId}/phase/${phase?.uuid}`);
+    router.push(
+      `/projects/aa/${projectId}/trigger-statements/phase/${phase?.uuid}`,
+    );
   };
   return (
     <div className="p-4">

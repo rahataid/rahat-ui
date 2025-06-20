@@ -202,7 +202,10 @@ const UpdateOrAddStakeholdersGroup = () => {
         <div className="flex justify-end gap-4">
           <Button
             className="w-48 rounded-md"
-            onClick={resetSelectedListItems}
+            onClick={() => {
+              setStakeholdersGroupName('');
+              resetSelectedListItems();
+            }}
             variant="outline"
           >
             Clear

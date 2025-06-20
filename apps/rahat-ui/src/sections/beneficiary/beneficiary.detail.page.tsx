@@ -1,44 +1,26 @@
-// import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
-// // import BeneficiaryDetailTableView from './beneficiaryDetailTable';
-// import InfoCards from './infoCards';
-
-// export default function BeneficiaryDetailPageView() {
-//   const { data: voucherData, error: voucherError } = useBeneficaryVoucher(
-//     '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7',
-//   );
-
-//   return (
-//     <>
-//       <InfoCards voucherData={voucherData} voucherError={voucherError} />
-//       {/* <BeneficiaryDetailTableView
-//         tableSpacing="p-2"
-//         tableScrollAreaHeight="h-[calc(100vh-303px)]"
-//       /> */}
-//     </>
-//   );
-// }
-
+'use client';
 import { useBeneficiaryStore } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { UUID } from 'crypto';
-import { FolderPlus, Pencil, Trash2 } from 'lucide-react';
+import { Copy, CopyCheck, FolderPlus, Pencil, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import CoreBtnComponent from '../../components/core.btn';
 import HeaderWithBack from '../projects/components/header.with.back';
 import { humanizeString } from '../../utils';
+import React from 'react';
 
 export default function BeneficiaryDetail() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
-  // const [walletAddressCopied, setWalletAddressCopied] =
-  //   React.useState<string>();
+  const [walletAddressCopied, setWalletAddressCopied] =
+    React.useState<string>();
 
   const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
 
-  // const clickToCopy = (walletAddress: string) => {
-  //   navigator.clipboard.writeText(walletAddress);
-  //   setWalletAddressCopied(walletAddress);
-  // };
+  const clickToCopy = (walletAddress: string) => {
+    navigator.clipboard.writeText(walletAddress);
+    setWalletAddressCopied(walletAddress);
+  };
   return (
     <div className="p-4">
       <div className="flex justify-between items-center">
@@ -83,20 +65,7 @@ export default function BeneficiaryDetail() {
           <h1 className="text-md text-muted-foreground">Estimated Age</h1>
           <p className="font-medium">{beneficiary?.age ?? 'N/A'}</p>
         </div>
-        {/* <div>
-          <h1 className="text-md text-muted-foreground">Wallet Address</h1>
-          <div
-            className="flex items-center space-x-2 cursor-pointer"
-            onClick={() => clickToCopy(beneficiary?.walletAddress as string)}
-          >
-            <p>{truncateEthAddress(beneficiary?.walletAddress as string)}</p>
-            {walletAddressCopied === beneficiary?.walletAddress ? (
-              <CopyCheck size={15} strokeWidth={1.5} />
-            ) : (
-              <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
-            )}
-          </div>
-        </div> */}
+
         <div>
           <h1 className="text-md text-muted-foreground">Address</h1>
           <p className="font-medium">{beneficiary?.location ?? 'N/A'}</p>
@@ -122,9 +91,27 @@ export default function BeneficiaryDetail() {
           <Badge>{beneficiary?.internetStatus ?? 'N/A'}</Badge>
         </div>
 
-        <div>
+        {/* <div>
           <h1 className="text-md text-muted-foreground">Wallet</h1>
           <Badge>{beneficiary?.walletAddress ?? 'N/A'}</Badge>
+        </div> */}
+
+        <div>
+          <h1 className="text-md text-muted-foreground">Wallet Address</h1>
+          <div
+            className="flex items-center space-x-2 cursor-pointer"
+            onClick={() => clickToCopy(beneficiary?.walletAddress as string)}
+          >
+            <Badge className="truncate w-32">
+              {beneficiary?.walletAddress ?? 'N/A'}
+            </Badge>
+
+            {walletAddressCopied === beneficiary?.walletAddress ? (
+              <CopyCheck size={15} strokeWidth={1.5} />
+            ) : (
+              <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+            )}
+          </div>
         </div>
       </div>
 

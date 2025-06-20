@@ -170,7 +170,7 @@ export default function TriggerStatementDetail() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 mt-4">
-        {source === 'MANUAL' && trigger?.triggerDocuments && (
+        {source === 'MANUAL' && trigger?.triggerDocuments?.length > 0 && (
           <DocumentsSection
             triggerDocuments={trigger?.triggerDocuments}
             date={trigger?.updatedAt}

@@ -111,7 +111,7 @@ export default function TriggerStatementDetail() {
           />
           <div
             className={`grid ${
-              trigger?.isTriggered ? 'grid-cols-6' : 'grid-cols-5'
+              trigger?.isTriggered ? 'grid-cols-7' : 'grid-cols-5'
             } text-sm/4 text-muted-foreground mt-6`}
           >
             <div>
@@ -149,6 +149,12 @@ export default function TriggerStatementDetail() {
               <div>
                 <p className="mb-1">Triggered At</p>
                 <p>{new Date(trigger?.triggeredAt).toLocaleString()}</p>
+              </div>
+            )}
+            {trigger?.triggeredBy && (
+              <div>
+                <p className="mb-1">Triggered By</p>
+                <p>{trigger?.triggeredBy}</p>
               </div>
             )}
           </div>

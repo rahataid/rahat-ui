@@ -23,7 +23,11 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { X, CloudUpload, LoaderCircle, FileCheck } from 'lucide-react';
-import { useUploadFile, useActivateTrigger } from '@rahat-ui/query';
+import {
+  useUploadFile,
+  useActivateTrigger,
+  useQueryClient,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { toast } from 'react-toastify';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
@@ -40,6 +44,7 @@ export default function ActivateTriggerDialog({
   version,
 }: IProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const uploadFile = useUploadFile();
   const activateTrigger = useActivateTrigger();
   const [showModal, setShowModal] = React.useState<boolean>(false);
@@ -107,6 +112,19 @@ export default function ActivateTriggerDialog({
       await activateTrigger.mutateAsync({
         projectUUID: projectId,
         activatePayload: { repeatKey: repeatKey, ...data },
+      });
+
+      // Build payload exactly as used in useSingleTriggerStatement hook
+      const payload = version
+        ? {
+            id: repeatKey,
+          }
+        : {
+            repeatKey: repeatKey,
+          };
+
+      queryClient.invalidateQueries({
+        queryKey: ['triggerStatement', projectId, payload],
       });
       // router.push(`/projects/aa/${projectID}/trigger-statements`);
     } catch (e) {

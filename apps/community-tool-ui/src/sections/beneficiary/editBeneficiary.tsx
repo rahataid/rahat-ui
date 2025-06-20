@@ -96,8 +96,8 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       .refine((value) => !/\s/.test(value), {
         message: 'Phone must not contain whitespace',
       })
-      .refine((value) => /^[0-9]*$/.test(value), {
-        message: 'Phone must only numbers',
+      .refine((value) => /^[0-9+\-()]*$/.test(value), {
+        message: 'Phone number can  include digits and special characters',
       }),
     location: z.string().optional(),
     latitude: z

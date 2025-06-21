@@ -14,6 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from 'libs/shadcn/src/components/ui/tooltip';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 type CardProps = {
   title: string;
@@ -25,6 +26,7 @@ type CardProps = {
   loading?: boolean;
   refresh?: VoidFunction;
   iconStyle?: string;
+  badge?: boolean;
 };
 
 export function DataCard({
@@ -37,6 +39,7 @@ export function DataCard({
   subtitle,
   refresh,
   iconStyle,
+  badge,
 }: CardProps) {
   return (
     <Card className={cn('flex flex-col rounded justify-center', className)}>
@@ -103,9 +106,13 @@ export function DataCard({
                 </div>
               )}
 
-              <div className="text-xl font-normal text-primary">
-                {smallNumber}
-              </div>
+              {badge ? (
+                <Badge>{smallNumber}</Badge>
+              ) : (
+                <div className="text-xl font-normal text-primary">
+                  {smallNumber}
+                </div>
+              )}
             </>
           )}
         </div>

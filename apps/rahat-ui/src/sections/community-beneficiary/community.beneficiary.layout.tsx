@@ -53,7 +53,7 @@ const CommunityBeneficiaryLayout: FC<CommunityBeneficiaryLayoutProps> = ({
     <>
       <Tabs defaultValue="list">
         <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel defaultSize={18} minSize={18} maxSize={18}>
+          {/* <ResizablePanel defaultSize={18} minSize={18} maxSize={18}>
             {menuItems.map((item) => (
               <CommunityBeneficiaryNavView
                 key={item.title}
@@ -63,7 +63,7 @@ const CommunityBeneficiaryLayout: FC<CommunityBeneficiaryLayoutProps> = ({
               />
             ))}
             <Separator />
-          </ResizablePanel>
+          </ResizablePanel> */}
           {renderChildren()}
         </ResizablePanelGroup>
       </Tabs>

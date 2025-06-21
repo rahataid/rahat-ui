@@ -27,13 +27,12 @@ export default function PayoutTransactionList() {
     filters,
   } = usePagination();
 
-  const { data: payouts } = usePayouts(projectID as UUID, {
+  const { data: payouts, isLoading } = usePayouts(projectID as UUID, {
     page: 1,
     perPage: 999,
   });
 
   const columns = usePayoutTransactionLogTableColumn();
-  const isLoading = false;
 
   const tableData = React.useMemo(
     () =>

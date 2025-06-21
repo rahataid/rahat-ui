@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 
@@ -15,8 +15,13 @@ import { useListTempGroups, usePagination } from '@rahat-ui/query';
 import CustomPagination from '../../components/customPagination';
 import GroupListView from './communitBeneficiaryGroupList';
 import { useCommunityBeneficiaryGroupTableColumns } from './useCommunityBeneficiaryColumn';
+import { ChevronLeftIcon } from 'lucide-react';
+import HeaderWithBack from '../projects/components/header.with.back';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 function ViewCommunityGroup() {
+  const router = useRouter();
+
   const {
     pagination,
     selectedListItems,
@@ -29,7 +34,7 @@ function ViewCommunityGroup() {
     setPagination,
   } = usePagination();
 
-  const { data: tempGroups } = useListTempGroups({
+  const { data: tempGroups, isLoading } = useListTempGroups({
     ...pagination,
     ...(filters as any),
   });
@@ -51,31 +56,34 @@ function ViewCommunityGroup() {
       rowSelection: selectedListItems,
     },
   });
-
   return (
-    <Tabs defaultValue="list" className="h-full">
-      <>
-        <TabsContent value="list">
-          <GroupListView
-            table={table}
-            setFilters={setFilters}
-            filters={filters}
-            pagination={pagination}
-            setPagination={setPagination}
-          />
-        </TabsContent>
-
-        <CustomPagination
-          currentPage={pagination.page}
-          handleNextPage={setNextPage}
-          handlePrevPage={setPrevPage}
-          handlePageSizeChange={setPerPage}
-          meta={tempGroups?.response?.meta || { total: 0, currentPage: 0 }}
-          perPage={pagination?.perPage}
-          total={tempGroups?.response?.meta?.total || 0}
+    <div className="p-4">
+      <HeaderWithBack
+        title="Import Group from Community Tool"
+        subtitle=" Here beneficiary groups from the Community Tool are listed and
+          available for import"
+        path="/beneficiary"
+      />
+      <div className="p-4  border rounded-sm ">
+        <GroupListView
+          table={table}
+          setFilters={setFilters}
+          filters={filters}
+          pagination={pagination}
+          setPagination={setPagination}
+          loading={isLoading}
         />
-      </>
-    </Tabs>
+      </div>
+      <CustomPagination
+        currentPage={pagination.page}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        meta={tempGroups?.response?.meta || { total: 0, currentPage: 0 }}
+        perPage={pagination?.perPage}
+        total={tempGroups?.response?.meta?.total || 0}
+      />
+    </div>
   );
 }
 

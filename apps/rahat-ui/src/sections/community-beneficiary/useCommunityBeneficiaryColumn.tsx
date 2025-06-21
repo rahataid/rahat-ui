@@ -1,7 +1,14 @@
 import { useTempBeneficiaryImport } from '@rahat-ui/query';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk';
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye, Import } from 'lucide-react';
+import {
+  CloudDownload,
+  CloudDownloadIcon,
+  Copy,
+  CopyCheck,
+  Eye,
+  Import,
+} from 'lucide-react';
 import Link from 'next/link';
 import { humanReadableDate, humanizeString } from '../../utils';
 import { TempBeneficiary } from '@rahataid/sdk';
@@ -12,6 +19,20 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import useCopy from '../../hooks/useCopy';
+import { UUID } from 'crypto';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 
 export const useCommunityBeneficiaryGroupTableColumns = () => {
   const importTempBeneficiaries = useTempBeneficiaryImport();
@@ -32,11 +53,23 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
       accessorKey: 'name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
+
     {
       header: 'Created At',
       accessorKey: 'createdAt',
       cell: ({ row }) => {
-        return <div>{humanReadableDate(row.getValue('createdAt'))}</div>;
+        const createAt = row.getValue('createdAt');
+        const formatDate = new Intl.DateTimeFormat('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+          timeZone: 'Asia/Kathmandu',
+        }).format(new Date(createAt as Date));
+
+        return <div>{formatDate}</div>;
       },
     },
     {
@@ -50,12 +83,14 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger>
-                  <Link href={`/community-beneficiary/${row.original.uuid}`}>
-                    <Eye
-                      size={20}
-                      strokeWidth={1.5}
-                      className="bg-transparent hover:bg-blue-500 text-blue-700  hover:text-white p-1  border border-blue-500 hover:border-transparent rounded w-6 h-6"
-                    />
+                  <Link
+                    href={`/community-beneficiary/${
+                      row.original.uuid
+                    }?name=${row.getValue('name')}&date=${row.getValue(
+                      'createdAt',
+                    )}`}
+                  >
+                    <Eye size={18} strokeWidth={2} />
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary">
@@ -63,24 +98,38 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger
-                  onClick={() =>
-                    handleImportBeneficiaries(row.original.uuid as string)
-                  }
-                >
-                  <Import
-                    className="bg-transparent hover:bg-blue-500 text-blue-700  hover:text-white p-1  border border-blue-500 hover:border-transparent rounded w-6 h-6"
-                    size={40}
-                  />
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary">
-                  <p className="text-xs font-medium">Import</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <CloudDownload
+                  size={18}
+                  strokeWidth={2}
+                  className="hover:cursor-pointer"
+                />
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader className="mx-auto">
+                  <AlertDialogTitle className="flex flex-col  items-center justify-center">
+                    <CloudDownloadIcon className="w-6 h-6" />
+                    <div>Import Beneficiary Group</div>
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to import this beneficiary group to
+                    Rahat
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    type="button"
+                    onClick={() =>
+                      handleImportBeneficiaries(row.original.uuid as string)
+                    }
+                  >
+                    Import
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         );
       },
@@ -90,6 +139,7 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
 };
 
 export const useCommunityBeneficiaryTableColumns = () => {
+  const { clickToCopy, copyAction } = useCopy();
   const columns: ColumnDef<ListBeneficiary>[] = [
     {
       header: 'Beneficiary Name',
@@ -101,7 +151,39 @@ export const useCommunityBeneficiaryTableColumns = () => {
         );
       },
     },
-
+    {
+      accessorKey: 'walletAddress',
+      header: 'Wallet Address',
+      cell: ({ row }) => (
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() =>
+                clickToCopy(
+                  row?.original?.walletAddress as string,
+                  row?.original?.id as number,
+                )
+              }
+            >
+              <p className=" truncate w-48">
+                {row?.original?.walletAddress as string}
+              </p>
+              {copyAction === row?.original?.id ? (
+                <CopyCheck size={15} strokeWidth={1.5} />
+              ) : (
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              )}
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary" side="bottom">
+              <p className="text-xs font-medium">
+                {copyAction === row?.original?.id ? 'copied' : 'click to copy'}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ),
+    },
     {
       accessorKey: 'phone',
       header: 'Phone',

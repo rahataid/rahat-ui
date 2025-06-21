@@ -58,7 +58,7 @@ export default function ListView({
 
   return (
     <>
-      <div className="-mt-2 p-2 bg-secondary">
+      <div className="-mt-2 p-2">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Filters by first name..."
@@ -68,101 +68,71 @@ export default function ListView({
               filters?.firstName
             }
             onChange={(event) => handleFilterChange(event)}
-            className="rounded mr-2"
+            className="rounded"
           />
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                <Settings2 className="mr-2 h-4 w-5" />
-                View
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
-        <div className="rounded border bg-card h-[calc(100vh-180px)]">
-          <TableComponent>
-            <ScrollArea className="h-table1">
-              <TableHeader className="sticky top-0 bg-card">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
-                        </TableHead>
-                      );
-                    })}
+        {/* <div className="rounded border bg-card h-[calc(100vh-180px)]"> */}
+        <TableComponent>
+          <ScrollArea className="h-[calc(100vh-500px)] bg-card ">
+            <TableHeader className="sticky top-0 bg-card">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
                   </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={table.getAllColumns().length}
-                      className="h-24 text-center"
-                    >
-                      {loading ? (
-                        <div className="flex items-center justify-center mt-4">
-                          <div className="text-center">
-                            <CircleEllipsisIcon className="animate-spin h-8 w-8 ml-4" />
-                            <Label className="text-base">Loading ...</Label>
-                          </div>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={table.getAllColumns().length}
+                    className="h-24 text-center"
+                  >
+                    {loading ? (
+                      <div className="flex items-center justify-center mt-4">
+                        <div className="text-center">
+                          <CircleEllipsisIcon className="animate-spin h-8 w-8 ml-4" />
+                          <Label className="text-base">Loading ...</Label>
                         </div>
-                      ) : (
-                        'No result found'
-                      )}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </ScrollArea>
-          </TableComponent>
-        </div>
+                      </div>
+                    ) : (
+                      'No result found'
+                    )}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </ScrollArea>
+        </TableComponent>
       </div>
+      {/* </div> */}
     </>
   );
 }

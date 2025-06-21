@@ -3,7 +3,11 @@
 import { useGetPayoutLog, useTriggerForOnePayoutFailed } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import { DataCard, HeaderWithBack } from 'apps/rahat-ui/src/common';
+import {
+  DataCard,
+  HeaderWithBack,
+  TableLoader,
+} from 'apps/rahat-ui/src/common';
 import { intlFormatDate } from 'apps/rahat-ui/src/utils';
 import {
   isPayoutTransactionFailed,
@@ -11,13 +15,15 @@ import {
 } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { UUID } from 'crypto';
 import { Coins, RotateCcw } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import InfoItem from './infoItem';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useCallback } from 'react';
 
 export default function BeneficiaryTransactionLogDetails() {
   const { id, uuid } = useParams();
+  const groupId = useSearchParams().get('groupId');
+
   const triggerForPayoutFailed = useTriggerForOnePayoutFailed();
 
   const { data, isLoading: payoutLogsLoading } = useGetPayoutLog(id as UUID, {
@@ -31,18 +37,23 @@ export default function BeneficiaryTransactionLogDetails() {
       },
     });
   }, [triggerForPayoutFailed]);
+  if (payoutLogsLoading) {
+    return <TableLoader />;
+  }
   return (
     <div className="p-4 md:p-6  space-y-6">
       <div className=" flex justify-between items-center">
         <HeaderWithBack
-          path=""
+          path={`/projects/aa/${id as string}/payout/details/${
+            groupId as string
+          }`}
           subtitle="Detaild view of the selected payout transaction log"
           title="Transaction Log Details"
         />
 
         <Button
           className={`gap-2 text-sm ${
-            isPayoutTransactionFailed(data?.data?.status) && 'hidden'
+            !isPayoutTransactionFailed(data?.data?.status) && 'hidden'
           }`}
           onClick={handleTriggerSinglePayoutFailed}
         >

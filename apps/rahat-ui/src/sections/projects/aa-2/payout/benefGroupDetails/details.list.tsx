@@ -66,7 +66,11 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     projectId,
     {
       payoutUUID: payoutId,
-      ...pagination,
+      ...filters,
+      page: pagination.page,
+      perPage: pagination.perPage,
+      sort: 'updatedAt',
+      order: 'desc',
     },
   );
   const triggerForPayoutFailed = useTriggerForPayoutFailed();
@@ -145,6 +149,13 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
   ];
 
+  const handleSearch = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
+      const value = event?.target?.value ?? '';
+      setFilters({ ...filters, [key]: value });
+    },
+    [filters],
+  );
   return isLoading ? (
     <TableLoader />
   ) : (
@@ -209,17 +220,43 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       <div className="rounded-sm border border-gray-100 space-y-2 p-4 mt-2">
         <div className="flex gap-2">
           <SearchInput
-            name="walletAddress"
             className="w-full flex-[4]"
-            value={
-              (table.getColumn('walletAddress')?.getFilterValue() as string) ??
-              filters?.walletAddress
-            }
-            onSearch={(event) => handleFilterChange(event)}
+            name="beneficiary wallet address"
+            onSearch={(e) => handleSearch(e, 'search')}
+            value={filters?.search || ''}
           />
+
+          <SelectComponent
+            name="Transaction Type"
+            options={[
+              'ALL',
+              'TOKEN_TRANSFER',
+              'FIAT_TRANSFER',
+              'VENDOR_REIMBURSEMENT',
+            ]}
+            onChange={(value) =>
+              handleFilterChange({
+                target: { name: 'transactionType', value },
+              })
+            }
+            value={filters?.transactionType || ''}
+            className="flex-[1]"
+          />
+
           <SelectComponent
             name="Status"
-            options={['ALL', 'COMPLETED', 'PENDING', 'REJECTED']}
+            options={[
+              'ALL',
+              'PENDING',
+              'TOKEN_TRANSACTION_INITIATED',
+              'TOKEN_TRANSACTION_COMPLETED',
+              'TOKEN_TRANSACTION_FAILED',
+              'FIAT_TRANSACTION_INITIATED',
+              'FIAT_TRANSACTION_COMPLETED',
+              'FIAT_TRANSACTION_FAILED',
+              'COMPLETED',
+              'FAILED',
+            ]}
             onChange={(value) =>
               handleFilterChange({
                 target: { name: 'status', value },
@@ -229,7 +266,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             className="flex-[1]"
           />
         </div>
-        <BeneficiariesGroupTable table={table} loading={isLoading} />
+        <BeneficiariesGroupTable table={table} loading={payoutLogsLoading} />
         <CustomPagination
           meta={
             payoutlogs?.response?.meta || {

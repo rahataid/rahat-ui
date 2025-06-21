@@ -22,6 +22,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { transactionBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
+import { intlFormatDate } from 'apps/rahat-ui/src/utils';
 function getTransactionStatusColor(status: string) {
   switch (status.toLowerCase()) {
     case 'completed':
@@ -36,7 +37,7 @@ function getTransactionStatusColor(status: string) {
 }
 
 export default function useBeneficiaryGroupDetailsLogColumns() {
-  const { id } = useParams();
+  const { id, detailID } = useParams();
   const router = useRouter();
   const triggerForPayoutFailed = useTriggerForOnePayoutFailed();
   const fspName = usePaymentProviders({ projectUUID: id as UUID });
@@ -53,15 +54,36 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
     [triggerForPayoutFailed],
   );
   const handleEyeClick = (uuid: any) => {
-    router.push(`/projects/aa/${id}/payout/transaction-details/${uuid}`);
+    router.push(
+      `/projects/aa/${id}/payout/transaction-details/${uuid}?groupId=${detailID}`,
+    );
   };
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'beneficiaryWalletAddress',
       header: 'Beneficiary Wallet Address',
       cell: ({ row }) => (
-        <div className="truncate w-24">
-          {row.getValue('beneficiaryWalletAddress')}
+        <div
+          onClick={() =>
+            clickToCopy(
+              row?.original?.beneficiaryWalletAddress,
+              row?.original?.id,
+            )
+          }
+          className="flex items-center gap-2"
+        >
+          <p className="truncate w-20 ">
+            {row?.original?.beneficiaryWalletAddress || 'N/A'}
+          </p>
+          {copyAction === row?.original?.id ? (
+            <CopyCheck size={15} strokeWidth={1.5} />
+          ) : (
+            <Copy
+              className="text-slate-500 cursor-pointer"
+              size={15}
+              strokeWidth={1.5}
+            />
+          )}
         </div>
       ),
     },
@@ -100,21 +122,18 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
       header: 'Transaction Hash',
       cell: ({ row }) => {
         return (
-          <div
-            onClick={() =>
-              clickToCopy(row?.original?.txHash, row?.original?.id)
-            }
-            className="flex items-center gap-2"
-          >
-            <p className="truncate w-20 ">{row?.original?.txHash || 'N/A'}</p>
-            {copyAction === row?.original?.id ? (
-              <CopyCheck size={15} strokeWidth={1.5} />
+          <div>
+            {row?.original?.txHash ? (
+              <a
+                href={`https://stellar.expert/explorer/testnet/tx/${row?.original?.txHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-base text-blue-500 hover:underline cursor-pointer"
+              >
+                <p className="truncate w-20">{row?.original?.txHash}</p>
+              </a>
             ) : (
-              <Copy
-                className="text-slate-500 cursor-pointer"
-                size={15}
-                strokeWidth={1.5}
-              />
+              'N/A'
             )}
           </div>
         );
@@ -176,40 +195,8 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
       header: 'Timestamp',
       cell: ({ row }) => (
         <div className="flex items-center gap-4">
-          {new Date(row.getValue('createdAt')).toLocaleString()}{' '}
-          {row.original?.isCompleted === false && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild className="hover:cursor-pointer py-0">
-                  <RotateCcwIcon
-                    className="w-6 h-6 xl:w-4 xl:h-4  text-red-500"
-                    strokeWidth={2.5}
-                    onClick={() =>
-                      handleTriggerSinglePayoutFailed(row.original.uuid)
-                    }
-                  />
-                </TooltipTrigger>
-                <TooltipContent
-                  side="left"
-                  className="w-96 rounded-sm p-4 max-h-60 overflow-auto"
-                >
-                  <div className="flex space-x-2 items-center">
-                    <TriangleAlertIcon
-                      size={16}
-                      strokeWidth={1.5}
-                      color="red"
-                    />
-                    <span className="font-semibold text-sm/6">
-                      Transaction Failed
-                    </span>
-                  </div>
-                  <p className="text-gray-500 text-sm mt-1 break-words">
-                    {row.original?.info?.error ?? 'Something went wrong!!'}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+          {/* {new Date(row.getValue('createdAt')).toLocaleString()}{' '} */}
+          {intlFormatDate(row?.original?.createdAt)}
         </div>
       ),
     },
@@ -221,6 +208,45 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">
+            {row.original?.isCompleted === false && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild className="hover:cursor-pointer py-0">
+                    <TriangleAlertIcon
+                      className="w-6 h-6 xl:w-4 xl:h-4  text-red-500"
+                      strokeWidth={2.5}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="left"
+                    className="w-96 rounded-sm p-4 max-h-60 overflow-auto"
+                  >
+                    <div className="flex space-x-2 items-center">
+                      <TriangleAlertIcon
+                        size={16}
+                        strokeWidth={1.5}
+                        color="red"
+                      />
+                      <span className="font-semibold text-sm/6">
+                        Transaction Failed
+                      </span>
+                    </div>
+                    <p className="text-gray-500 text-sm mt-1 break-words">
+                      {row.original?.info?.error ?? 'Something went wrong!!'}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+            {row.original?.isCompleted === false && (
+              <RotateCcwIcon
+                className="w-6 h-6 xl:w-4 xl:h-4  text-blue-400 cursor-pointer"
+                strokeWidth={2.5}
+                onClick={() =>
+                  handleTriggerSinglePayoutFailed(row.original.uuid)
+                }
+              />
+            )}
             <Eye
               className="hover:text-primary cursor-pointer"
               size={20}

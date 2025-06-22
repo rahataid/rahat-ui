@@ -39,6 +39,7 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const params = useParams();
@@ -56,17 +57,15 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     filters,
   } = usePagination();
 
-  const router = useRouter();
-
   const { data: payout, isLoading } = useSinglePayout(projectId, {
     uuid: payoutId,
   });
-
+  const debounsSearch = useDebounce(filters, 500);
   const { data: payoutlogs, isLoading: payoutLogsLoading } = useGetPayoutLogs(
     projectId,
     {
       payoutUUID: payoutId,
-      ...filters,
+      ...debounsSearch,
       page: pagination.page,
       perPage: pagination.perPage,
       sort: 'updatedAt',
@@ -156,6 +155,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
     [filters],
   );
+
   return isLoading ? (
     <TableLoader />
   ) : (
@@ -183,8 +183,13 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                 payout?.hasFailedPayoutRequests === false && 'hidden'
               }`}
               onClick={handleTriggerPayoutFailed}
+              disabled={triggerForPayoutFailed.isPending}
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw
+                className={`${
+                  triggerForPayoutFailed.isPending ? 'animate-spin' : ''
+                } w-4 h-4`}
+              />
               Retry Failed Requests
             </Button>
           </div>
@@ -259,10 +264,10 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             ]}
             onChange={(value) =>
               handleFilterChange({
-                target: { name: 'status', value },
+                target: { name: 'transactionStatus', value },
               })
             }
-            value={filters?.status || ''}
+            value={filters?.transactionStatus || ''}
             className="flex-[1]"
           />
         </div>

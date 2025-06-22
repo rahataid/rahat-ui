@@ -24,7 +24,7 @@ interface Payout {
   type?: PayoutType;
   mode?: PayoutMode;
   status?: string;
-  groupId?: string;
+  groupName?: string;
   payoutProcessorId?: string;
 }
 

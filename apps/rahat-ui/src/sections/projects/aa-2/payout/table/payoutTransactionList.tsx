@@ -14,6 +14,7 @@ import {
 import PayoutTable from './payoutTable';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { UUID } from 'crypto';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 export default function PayoutTransactionList() {
   const { id: projectID } = useParams();
 
@@ -27,9 +28,12 @@ export default function PayoutTransactionList() {
     filters,
   } = usePagination();
 
+  const debounceSearch = useDebounce(filters, 500);
   const { data: payouts, isLoading } = usePayouts(projectID as UUID, {
-    page: 1,
-    perPage: 999,
+    page: pagination.page,
+    perPage: pagination.perPage,
+    status: debounceSearch.status,
+    groupName: debounceSearch.groupName,
   });
 
   const columns = usePayoutTransactionLogTableColumn();
@@ -73,7 +77,13 @@ export default function PayoutTransactionList() {
       page: 1,
     });
   };
-
+  const handleSearch = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
+      const value = event?.target?.value ?? '';
+      setFilters({ ...filters, [key]: value });
+    },
+    [filters],
+  );
   return (
     <div className="p-4">
       <div className="flex flex-col space-y-0">
@@ -92,13 +102,10 @@ export default function PayoutTransactionList() {
       <div className="rounded-sm border border-gray-100 space-y-2 p-4">
         <div className="flex gap-2">
           <SearchInput
-            name="groupName"
             className="w-full flex-[4]"
-            value={
-              (table.getColumn('groupName')?.getFilterValue() as string) ??
-              filters?.groupName
-            }
-            onSearch={(event) => handleFilterChange(event)}
+            name="group name"
+            onSearch={(e) => handleSearch(e, 'groupName')}
+            value={filters?.groupName || ''}
           />
           <SelectComponent
             name="Status"

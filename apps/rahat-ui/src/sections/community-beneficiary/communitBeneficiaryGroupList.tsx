@@ -63,7 +63,7 @@ export default function GroupListView({
       <div className="p-2">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Filters by group Name..."
+            placeholder="Search Group Name..."
             name="groupName"
             value={
               (table.getColumn('groupName')?.getFilterValue() as string) ??
@@ -77,7 +77,7 @@ export default function GroupListView({
 
         <>
           <TableComponent>
-            <ScrollArea className="h-[calc(100vh-350px)] bg-card ">
+            <ScrollArea className="h-[570px] bg-card ">
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

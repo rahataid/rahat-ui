@@ -109,21 +109,26 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
               <AlertDialogContent>
                 <AlertDialogHeader className="mx-auto">
                   <AlertDialogTitle className="flex flex-col  items-center justify-center">
-                    <CloudDownloadIcon className="w-6 h-6" />
+                    <div className="rounded-full p-2 bg-blue-100">
+                      <CloudDownloadIcon className="w-6 h-6" color="blue" />
+                    </div>
                     <div>Import Beneficiary Group</div>
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     Are you sure you want to import this beneficiary group to
-                    Rahat
+                    Rahat?
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel className="w-full">
+                    Cancel
+                  </AlertDialogCancel>
                   <AlertDialogAction
                     type="button"
                     onClick={() =>
                       handleImportBeneficiaries(row.original.uuid as string)
                     }
+                    className="w-full"
                   >
                     Import
                   </AlertDialogAction>

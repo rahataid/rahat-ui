@@ -20,6 +20,7 @@ import UsersRolesTabSplitView from './users.roles.tab.split.view';
 import Swal from 'sweetalert2';
 import DeleteButton from '../../components/delete.btn';
 import EditButton from '../../components/edit.btn';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 type IProps = {
   userDetail: User;
@@ -112,53 +113,55 @@ export default function UsersDetailSplitView({
           </TabsList>
         </div>
         <TabsContent value="general">
-          <div className="p-4 flex flex-col space-y-4">
-            <h1 className="font-medium">General Details</h1>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-4">
-                <Wallet size={20} strokeWidth={1.5} />
-                <p>Wallet Address</p>
+          <ScrollArea className="h-[calc(100vh-340px)]">
+            <div className="p-4 flex flex-col space-y-4">
+              <h1 className="font-medium">General Details</h1>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-4">
+                  <Wallet size={20} strokeWidth={1.5} />
+                  <p>Wallet Address</p>
+                </div>
+                <div
+                  className="flex space-x-3 items-center"
+                  onClick={() => clickToCopy(userDetail?.wallet as string)}
+                >
+                  <p className="text-muted-foreground text-base truncate w-28">
+                    {(userDetail?.wallet as string) ?? '-'}
+                  </p>
+                  {userDetail?.wallet &&
+                    (walletAddressCopied ? (
+                      <CopyCheck size={15} strokeWidth={1.5} />
+                    ) : (
+                      <Copy
+                        className="text-muted-foreground"
+                        size={15}
+                        strokeWidth={1.5}
+                      />
+                    ))}
+                </div>
               </div>
-              <div
-                className="flex space-x-3 items-center"
-                onClick={() => clickToCopy(userDetail?.wallet as string)}
-              >
-                <p className="text-muted-foreground text-base truncate w-28">
-                  {(userDetail?.wallet as string) ?? '-'}
+
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-4">
+                  <Phone size={20} strokeWidth={1.5} />
+                  <p>Phone Number</p>
+                </div>
+                <p className="text-muted-foreground text-base">
+                  {userDetail?.phone || '-'}
                 </p>
-                {userDetail?.wallet &&
-                  (walletAddressCopied ? (
-                    <CopyCheck size={15} strokeWidth={1.5} />
-                  ) : (
-                    <Copy
-                      className="text-muted-foreground"
-                      size={15}
-                      strokeWidth={1.5}
-                    />
-                  ))}
               </div>
-            </div>
 
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-4">
-                <Phone size={20} strokeWidth={1.5} />
-                <p>Phone Number</p>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-4">
+                  <Mail size={20} strokeWidth={1.5} />
+                  <p>Email Address</p>
+                </div>
+                <p className="text-muted-foreground text-base">
+                  {userDetail?.email || '-'}
+                </p>
               </div>
-              <p className="text-muted-foreground text-base">
-                {userDetail?.phone || '-'}
-              </p>
             </div>
-
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-4">
-                <Mail size={20} strokeWidth={1.5} />
-                <p>Email Address</p>
-              </div>
-              <p className="text-muted-foreground text-base">
-                {userDetail?.email || '-'}
-              </p>
-            </div>
-          </div>
+          </ScrollArea>
         </TabsContent>
         <TabsContent value="usersRoles">
           <UsersRolesTabSplitView userDetail={userDetail} />

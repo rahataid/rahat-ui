@@ -47,6 +47,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useRouter } from 'next/navigation';
 import DeleteButton from '../../components/delete.btn';
 import { toast } from 'react-toastify';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 type IProps = {
   vendorsDetail: any;
@@ -174,74 +175,76 @@ export default function VendorsDetailSplitView({
           </div>
         </div>
       </div>
-      <div className="p-4 flex flex-col space-y-4">
-        <h1 className="font-medium">General</h1>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <FolderDot size={20} strokeWidth={1.5} />
-            <p>Project Name</p>
-          </div>
-          <p className="text-muted-foreground text-base">
-            {vendorsDetail?.projectName || '-'}
-          </p>
-        </div>
-
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Wallet size={20} strokeWidth={1.5} />
-            <p>Wallet Address</p>
-          </div>
-          <div
-            className="flex space-x-3 items-center"
-            onClick={() => clickToCopy(vendorsDetail?.walletAddress)}
-          >
-            <p className="text-muted-foreground text-base truncate w-48">
-              {vendorsDetail?.walletAddress ?? '-'}
+      <ScrollArea className="h-[calc(100vh-240px)]">
+        <div className="p-4 flex flex-col space-y-4">
+          <h1 className="font-medium">General</h1>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <FolderDot size={20} strokeWidth={1.5} />
+              <p>Project Name</p>
+            </div>
+            <p className="text-muted-foreground text-base">
+              {vendorsDetail?.projectName || '-'}
             </p>
+          </div>
 
-            {vendorsDetail?.walletAddress &&
-              (walletAddressCopied ? (
-                <CopyCheck size={15} strokeWidth={1.5} />
-              ) : (
-                <Copy
-                  className="text-muted-foreground"
-                  size={15}
-                  strokeWidth={1.5}
-                />
-              ))}
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <Wallet size={20} strokeWidth={1.5} />
+              <p>Wallet Address</p>
+            </div>
+            <div
+              className="flex space-x-3 items-center"
+              onClick={() => clickToCopy(vendorsDetail?.walletAddress)}
+            >
+              <p className="text-muted-foreground text-base truncate w-48">
+                {vendorsDetail?.walletAddress ?? '-'}
+              </p>
+
+              {vendorsDetail?.walletAddress &&
+                (walletAddressCopied ? (
+                  <CopyCheck size={15} strokeWidth={1.5} />
+                ) : (
+                  <Copy
+                    className="text-muted-foreground"
+                    size={15}
+                    strokeWidth={1.5}
+                  />
+                ))}
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <Phone size={20} strokeWidth={1.5} />
+              <p>Phone Number</p>
+            </div>
+            <p className="text-muted-foreground text-base">
+              {vendorsDetail?.phone || '-'}
+            </p>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <Mail size={20} strokeWidth={1.5} />
+              <p>Email Address</p>
+            </div>
+            <p className="text-muted-foreground text-base">
+              {vendorsDetail?.email || '-'}
+            </p>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <Calendar size={20} strokeWidth={1.5} />
+              <p>Registered Date</p>
+            </div>
+            <p className="text-muted-foreground text-base">
+              {formattedDate || '-'}
+            </p>
           </div>
         </div>
-
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Phone size={20} strokeWidth={1.5} />
-            <p>Phone Number</p>
-          </div>
-          <p className="text-muted-foreground text-base">
-            {vendorsDetail?.phone || '-'}
-          </p>
-        </div>
-
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Mail size={20} strokeWidth={1.5} />
-            <p>Email Address</p>
-          </div>
-          <p className="text-muted-foreground text-base">
-            {vendorsDetail?.email || '-'}
-          </p>
-        </div>
-
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Calendar size={20} strokeWidth={1.5} />
-            <p>Registered Date</p>
-          </div>
-          <p className="text-muted-foreground text-base">
-            {formattedDate || '-'}
-          </p>
-        </div>
-      </div>
+      </ScrollArea>
 
       <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
         <DialogContent>

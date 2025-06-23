@@ -51,7 +51,7 @@ import {
 } from '../../../utils';
 
 export default function AddBeneficiary() {
-  const { extras }: any = useFormStore();
+  const { extras, resetExtras }: any = useFormStore();
 
   const { pagination } = usePagination();
   const { data: definitions } = useActiveFieldDefList({
@@ -141,6 +141,8 @@ export default function AddBeneficiary() {
     };
 
     const nonEmptyFields = selectNonEmptyFields(formData);
+
+    console.log(extras);
     await addCommunityBeneficiary.mutateAsync({
       ...nonEmptyFields,
       extras,
@@ -150,10 +152,36 @@ export default function AddBeneficiary() {
   useEffect(() => {
     if (addCommunityBeneficiary.isSuccess) {
       form.reset();
+      resetExtras();
     }
   }, [addCommunityBeneficiary.isSuccess, form]);
 
   const filteredDefinitions = filterFieldDefs(definitions);
+
+  const phoneValue = form.watch('phone');
+
+  useEffect(() => {
+    // Only set phoneStatus if phone passes validation
+    const isValidPhone =
+      phoneValue &&
+      phoneValue.length >= 10 &&
+      /^[0-9+\-()]*$/.test(phoneValue) &&
+      !/\s/.test(phoneValue);
+
+    if (isValidPhone) {
+      form.setValue('phoneStatus', PhoneStatus.SMART_PHONE, {
+        shouldValidate: true,
+      });
+    } else {
+      form.setValue('phoneStatus', '');
+    }
+  }, [phoneValue, form]);
+
+  useEffect(() => {
+    if (extras.bank_ac_name && extras.bank_ac_number && extras.bank_name) {
+      form.setValue('bankedStatus', BankedStatus.BANKED);
+    }
+  }, [extras.bank_ac_name, extras.bank_ac_number, extras.bank_name, form]);
 
   return (
     <Form {...form}>
@@ -244,7 +272,7 @@ export default function AddBeneficiary() {
                     <FormItem>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -279,7 +307,7 @@ export default function AddBeneficiary() {
                     <FormItem>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -341,7 +369,7 @@ export default function AddBeneficiary() {
                     <FormItem>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -528,7 +556,6 @@ export default function AddBeneficiary() {
               <br />
               {filteredDefinitions && filteredDefinitions.length > 0
                 ? filteredDefinitions.map((definition: any) => {
-                    console.log(definition);
                     return (
                       <>
                         <FormBuilder

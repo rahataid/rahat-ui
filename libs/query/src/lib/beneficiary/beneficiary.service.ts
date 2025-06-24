@@ -58,6 +58,15 @@ const getBeneficiaryFailedBankAccount = async (uuid: UUID) => {
 const validateBeneficiaryBankAccount = async (uuid: UUID) => {
   const response = await api.get(`/beneficiaries/groups/${uuid}/account-check`);
 };
+
+const updateGroupPropose = async (uuid: UUID, groupPurpose: string) => {
+  const response = await api.patch(
+    `/beneficiaries/groups/${uuid}/addGroupPurpose`,
+    {
+      groupPurpose,
+    },
+  );
+};
 export const useBeneficiaryGroupsList = (payload: any): any => {
   const { queryClient } = useRSQuery();
 
@@ -306,6 +315,36 @@ export const useValidateBeneficaryBankAccount = () => {
       const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
         title: 'Error while validating beneficiary.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useUpdateGroupPropose = () => {
+  const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: (payload: any) =>
+      updateGroupPropose(payload.uuid, payload.selectedPurpose),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [GET_BENEFICIARY_GROUP] });
+      toast.fire({
+        title: 'Group propose updated successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      toast.fire({
+        title: 'Error while updating group propose',
         icon: 'error',
         text: errorMessage,
       });

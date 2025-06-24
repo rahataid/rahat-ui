@@ -7,6 +7,7 @@ import {
   LandmarkIcon,
   Trash2Icon,
   UsersRound,
+  Wallet,
 } from 'lucide-react';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import MembersTable from './members.table';
@@ -30,18 +31,29 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import RemoveBenfGroupModal from './removeGroupModal';
 import ValidateBenefBankAccountByGroupUuid from './validateAccountModal';
 import * as XLSX from 'xlsx';
+import UpdateGroupProposeModal from './groupProposeModal';
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
   const validateModal = useBoolean();
   const removeModal = useBoolean();
+  const groupProposeModal = useBoolean();
 
   const handleAssignModalClick = () => {
     validateModal.onTrue();
   };
 
+  const handleValidateWalletClick = () => {
+    window.alert('Need to update when backend api is ready');
+  };
+
   const handleRemoveClick = () => {
     removeModal.onTrue();
   };
+
+  const handleGroupPurposeClick = () => {
+    groupProposeModal.onTrue();
+  };
+
   const {
     pagination,
     selectedListItems,
@@ -140,6 +152,11 @@ export default function GroupDetailView() {
         validateModal={validateModal}
       />
 
+      <UpdateGroupProposeModal
+        beneficiaryGroupDetail={group?.data}
+        validateModal={groupProposeModal}
+      />
+
       <div className="p-4">
         <div className="flex justify-between items-center">
           <HeaderWithBack
@@ -158,6 +175,13 @@ export default function GroupDetailView() {
           <div className="flex gap-6">
             <Button
               variant={'outline'}
+              className=" gap-2"
+              onClick={handleGroupPurposeClick}
+            >
+              Choose Group Purpose
+            </Button>
+            <Button
+              variant={'outline'}
               className="border-red-500 text-red-500 hover:text-red-500 gap-2"
               onClick={handleRemoveClick}
             >
@@ -165,14 +189,27 @@ export default function GroupDetailView() {
               Delete Group
             </Button>
 
-            <Button
-              variant={'outline'}
-              className="gap-2"
-              onClick={handleAssignModalClick}
-            >
-              <LandmarkIcon className="w-4 h-4" />
-              Validate Bank Account
-            </Button>
+            {group?.data?.groupPurpose === 'MOBILE_MONEY' && (
+              <Button
+                variant={'outline'}
+                className="gap-2"
+                onClick={handleValidateWalletClick}
+              >
+                <Wallet className="w-4 h-4" />
+                Validate Wallet
+              </Button>
+            )}
+
+            {group?.data?.groupPurpose === 'BANK_TRANSFER' && (
+              <Button
+                variant={'outline'}
+                className="gap-2"
+                onClick={handleAssignModalClick}
+              >
+                <LandmarkIcon className="w-4 h-4" />
+                Validate Bank Account
+              </Button>
+            )}
 
             <Button
               variant={'outline'}

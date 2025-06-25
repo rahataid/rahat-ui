@@ -45,7 +45,12 @@ export default function RemoveBenfGroupModal({
   const removeBenfGroup = useRemoveBeneficiaryGroup();
   const router = useRouter();
   const handleRemoveBenfGroup = async () => {
-    await removeBenfGroup.mutateAsync(beneficiaryGroupDetail.uuid as UUID);
+    try {
+      await removeBenfGroup.mutateAsync(beneficiaryGroupDetail.uuid as UUID);
+      router.push('/beneficiary?tab=beneficiaryGroups');
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   React.useEffect(() => {

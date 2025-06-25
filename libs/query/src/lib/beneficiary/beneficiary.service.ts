@@ -39,7 +39,9 @@ const listBeneficiaryGroups = async (payload: Pagination) => {
 };
 
 const removeBeneficiaryGroup = async (uuid: UUID) => {
-  const response = await api.delete(`/beneficiaries/groups/${uuid}`);
+  const response = await api.delete(
+    `/beneficiaries/groups/${uuid}?hardDelete=true`,
+  );
   return response?.data;
 };
 

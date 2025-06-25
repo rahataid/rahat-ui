@@ -42,10 +42,6 @@ export default function GroupDetailView() {
     validateModal.onTrue();
   };
 
-  const handleValidateWalletClick = () => {
-    window.alert('Need to update when backend api is ready');
-  };
-
   const handleRemoveClick = () => {
     removeModal.onTrue();
   };
@@ -189,25 +185,21 @@ export default function GroupDetailView() {
               Delete Group
             </Button>
 
-            {group?.data?.groupPurpose === 'MOBILE_MONEY' && (
+            {(group?.data?.groupPurpose === 'MOBILE_MONEY' ||
+              group?.data?.groupPurpose === 'BANK_TRANSFER') && (
               <Button
-                variant={'outline'}
-                className="gap-2"
-                onClick={handleValidateWalletClick}
-              >
-                <Wallet className="w-4 h-4" />
-                Validate Wallet
-              </Button>
-            )}
-
-            {group?.data?.groupPurpose === 'BANK_TRANSFER' && (
-              <Button
-                variant={'outline'}
+                variant="outline"
                 className="gap-2"
                 onClick={handleAssignModalClick}
               >
-                <LandmarkIcon className="w-4 h-4" />
-                Validate Bank Account
+                {group.data.groupPurpose === 'MOBILE_MONEY' ? (
+                  <Wallet className="w-4 h-4" />
+                ) : (
+                  <LandmarkIcon className="w-4 h-4" />
+                )}
+                {group.data.groupPurpose === 'MOBILE_MONEY'
+                  ? 'Validate Wallet'
+                  : 'Validate Bank Account'}
               </Button>
             )}
 

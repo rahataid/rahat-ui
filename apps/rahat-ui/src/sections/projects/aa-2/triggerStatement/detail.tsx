@@ -54,7 +54,9 @@ export default function TriggerStatementDetail() {
       projectUUID: id,
       triggerStatementPayload: { repeatKey: triggerRepeatKey as string },
     });
-    router.push(`/projects/aa/${id}/trigger-statements`);
+    router.push(
+      `/projects/aa/${id}/trigger-statements/phase/${trigger?.phaseId}`,
+    );
   };
   return isLoading ? (
     <TableLoader />
@@ -94,6 +96,7 @@ export default function TriggerStatementDetail() {
               projectId={id}
               repeatKey={triggerRepeatKey as string}
               version={version}
+              notes={trigger?.notes}
             />
           )}
         </div>
@@ -111,7 +114,7 @@ export default function TriggerStatementDetail() {
           />
           <div
             className={`grid ${
-              trigger?.isTriggered ? 'grid-cols-6' : 'grid-cols-5'
+              trigger?.isTriggered ? 'grid-cols-7' : 'grid-cols-5'
             } text-sm/4 text-muted-foreground mt-6`}
           >
             <div>
@@ -151,6 +154,12 @@ export default function TriggerStatementDetail() {
                 <p>{new Date(trigger?.triggeredAt).toLocaleString()}</p>
               </div>
             )}
+            {trigger?.triggeredBy && (
+              <div>
+                <p className="mb-1">Triggered By</p>
+                <p>{trigger?.triggeredBy}</p>
+              </div>
+            )}
           </div>
         </div>
         {source !== 'MANUAL' && (
@@ -163,7 +172,7 @@ export default function TriggerStatementDetail() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 mt-4">
-        {source === 'MANUAL' && trigger?.triggerDocuments && (
+        {source === 'MANUAL' && trigger?.triggerDocuments?.length > 0 && (
           <DocumentsSection
             triggerDocuments={trigger?.triggerDocuments}
             date={trigger?.updatedAt}

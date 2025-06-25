@@ -1,5 +1,11 @@
 'use client';
-import { usePagination, useSinglePayout } from '@rahat-ui/query';
+import {
+  useGetPayoutLogs,
+  usePagination,
+  useSinglePayout,
+  useTriggerForPayoutFailed,
+  useTriggerPayout,
+} from '@rahat-ui/query';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
@@ -14,11 +20,26 @@ import {
 } from 'apps/rahat-ui/src/common';
 
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
-import BeneficiariesGroupTable from './beneficiariesGroupTable';
-import { Ticket, Users } from 'lucide-react';
-import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
+import { UUID } from 'crypto';
+import { RotateCcw, Ticket, Users } from 'lucide-react';
+import BeneficiariesGroupTable from './beneficiariesGroupTable';
+import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
+import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const params = useParams();
@@ -36,12 +57,23 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     filters,
   } = usePagination();
 
-  const router = useRouter();
-
   const { data: payout, isLoading } = useSinglePayout(projectId, {
     uuid: payoutId,
   });
-
+  const debounsSearch = useDebounce(filters, 500);
+  const { data: payoutlogs, isLoading: payoutLogsLoading } = useGetPayoutLogs(
+    projectId,
+    {
+      payoutUUID: payoutId,
+      ...debounsSearch,
+      page: pagination.page,
+      perPage: pagination.perPage,
+      sort: 'updatedAt',
+      order: 'desc',
+    },
+  );
+  const triggerForPayoutFailed = useTriggerForPayoutFailed();
+  const triggerPayout = useTriggerPayout();
   const columns = useBeneficiaryGroupDetailsLogColumns();
 
   const tableData = React.useMemo(() => {
@@ -62,7 +94,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
   const table = useReactTable({
     manualPagination: true,
-    data: tableData,
+    data: payoutlogs?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -83,11 +115,30 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     });
   };
 
+  const handleTriggerPayoutFailed = React.useCallback(async () => {
+    triggerForPayoutFailed.mutateAsync({
+      projectUUID: projectId,
+      payload: {
+        payoutUUID: payoutId,
+      },
+    });
+  }, [triggerForPayoutFailed]);
+
+  const handleTriggerPayout = React.useCallback(async () => {
+    triggerPayout.mutateAsync({
+      projectUUID: projectId,
+      payload: {
+        uuid: payoutId,
+      },
+    });
+  }, [triggerPayout]);
+
   const payoutStats = [
     {
       label: 'Total Beneficiaries',
       value:
-        payout?.beneficiaryGroupToken?.beneficiaryGroup?._count?.beneficiaries,
+        payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
+          ?.beneficiaries ?? 0,
       icon: Users,
     },
     {
@@ -96,6 +147,15 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       icon: Ticket,
     },
   ];
+
+  const handleSearch = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
+      const value = event?.target?.value ?? '';
+      setFilters({ ...filters, [key]: value });
+    },
+    [filters],
+  );
+
   return isLoading ? (
     <TableLoader />
   ) : (
@@ -108,11 +168,34 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <Heading
               title={`${payout?.beneficiaryGroupToken?.beneficiaryGroup?.name}`}
               description="List of all the payout transaction logs of selected group"
+              status={payout?.isCompleted ? 'Completed' : 'Not Completed'}
+              badgeClassName={isCompleteBgStatus(payout?.isCompleted)}
             />
+          </div>
+          <div className="flex gap-2">
+            <PayoutConfirmationDialog
+              onConfirm={() => handleTriggerPayout()}
+              payoutData={payout}
+            />
+
+            <Button
+              className={`gap-2 text-sm ${
+                payout?.hasFailedPayoutRequests === false && 'hidden'
+              }`}
+              onClick={handleTriggerPayoutFailed}
+              disabled={triggerForPayoutFailed.isPending}
+            >
+              <RotateCcw
+                className={`${
+                  triggerForPayoutFailed.isPending ? 'animate-spin' : ''
+                } w-4 h-4`}
+              />
+              Retry Failed Requests
+            </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {payoutStats?.map((item) => (
             <DataCard
               key={item.label}
@@ -125,8 +208,16 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           <DataCard
             title="Payout Mode"
             Icon={Ticket}
-            smallNumber={capitalizeFirstLetter(payout?.mode)}
+            smallNumber={payout?.type}
             className="rounded-sm"
+            badge
+          />
+          <DataCard
+            title="Payout Mode"
+            Icon={Ticket}
+            smallNumber={payout?.extras?.paymentProviderName}
+            className="rounded-sm"
+            badge
           />
         </div>
       </div>
@@ -134,42 +225,70 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       <div className="rounded-sm border border-gray-100 space-y-2 p-4 mt-2">
         <div className="flex gap-2">
           <SearchInput
-            name="walletAddress"
             className="w-full flex-[4]"
-            value={
-              (table.getColumn('walletAddress')?.getFilterValue() as string) ??
-              filters?.walletAddress
-            }
-            onSearch={(event) => handleFilterChange(event)}
+            name="beneficiary wallet address"
+            onSearch={(e) => handleSearch(e, 'search')}
+            value={filters?.search || ''}
           />
+
           <SelectComponent
-            name="Status"
-            options={['ALL', 'COMPLETED', 'PENDING', 'REJECTED']}
+            name="Transaction Type"
+            options={[
+              'ALL',
+              'TOKEN_TRANSFER',
+              'FIAT_TRANSFER',
+              'VENDOR_REIMBURSEMENT',
+            ]}
             onChange={(value) =>
               handleFilterChange({
-                target: { name: 'status', value },
+                target: { name: 'transactionType', value },
               })
             }
-            value={filters?.status || ''}
+            value={filters?.transactionType || ''}
+            className="flex-[1]"
+          />
+
+          <SelectComponent
+            name="Status"
+            options={[
+              'ALL',
+              'PENDING',
+              'TOKEN_TRANSACTION_INITIATED',
+              'TOKEN_TRANSACTION_COMPLETED',
+              'TOKEN_TRANSACTION_FAILED',
+              'FIAT_TRANSACTION_INITIATED',
+              'FIAT_TRANSACTION_COMPLETED',
+              'FIAT_TRANSACTION_FAILED',
+              'COMPLETED',
+              'FAILED',
+            ]}
+            onChange={(value) =>
+              handleFilterChange({
+                target: { name: 'transactionStatus', value },
+              })
+            }
+            value={filters?.transactionStatus || ''}
             className="flex-[1]"
           />
         </div>
-        <BeneficiariesGroupTable table={table} loading={isLoading} />
+        <BeneficiariesGroupTable table={table} loading={payoutLogsLoading} />
         <CustomPagination
-          meta={{
-            total: 0,
-            currentPage: 0,
-            lastPage: 0,
-            perPage: 0,
-            next: null,
-            prev: null,
-          }}
+          meta={
+            payoutlogs?.response?.meta || {
+              total: 0,
+              currentPage: 0,
+              lastPage: 0,
+              perPage: 0,
+              next: null,
+              prev: null,
+            }
+          }
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}
           currentPage={pagination.page}
           perPage={pagination.perPage}
-          total={0}
+          total={payoutlogs?.response?.meta?.total}
         />
       </div>
     </div>

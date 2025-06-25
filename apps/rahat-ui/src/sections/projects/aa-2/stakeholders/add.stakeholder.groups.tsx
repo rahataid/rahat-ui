@@ -32,6 +32,7 @@ import {
   useUpdateStakeholdersGroups,
 } from '@rahat-ui/query';
 import StakeholdersTableFilters from './component/stakeholders.table.filters';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 const UpdateOrAddStakeholdersGroup = () => {
   const params = useParams();
@@ -52,8 +53,8 @@ const UpdateOrAddStakeholdersGroup = () => {
     resetSelectedListItems,
     setPagination,
   } = usePagination();
-
-  useStakeholders(projectId, { ...pagination, ...filters });
+  const debounceSearch = useDebounce(filters, 500);
+  useStakeholders(projectId, { ...pagination, ...debounceSearch });
 
   const { data: stakeholdersGroupDetail } = useSingleStakeholdersGroup(
     projectId,

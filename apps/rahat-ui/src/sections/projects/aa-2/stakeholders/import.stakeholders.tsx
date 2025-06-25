@@ -60,7 +60,7 @@ export default function ImportStakeholder() {
       .some((row) =>
         row.some(
           (cell, index) =>
-            index !== 6 && (!cell || cell.toString().trim() === ''),
+            index !== 7 && (!cell || cell.toString().trim() === ''),
         ),
       );
   };
@@ -86,7 +86,7 @@ export default function ImportStakeholder() {
                 truncate max-w-[150px]
                 ${
                   isMissing
-                    ? 'bg-red-500 text-yellow-800'
+                    ? 'bg-red-100 text-yellow-800'
                     : headerText === 'phone number' &&
                       duplicatePhonesFromServer.has(value?.toString().trim())
                     ? 'bg-yellow-500 text-red-800'
@@ -209,6 +209,7 @@ export default function ImportStakeholder() {
 
       // Clear duplicates if successful
       setDuplicatePhonesFromServer(new Set());
+
       toast.success('Stakeholders imported successfully!');
       router.push(`/projects/aa/${id}/stakeholders?tab=stakeholders`);
     } catch (error: any) {
@@ -364,6 +365,9 @@ export default function ImportStakeholder() {
               setData([]);
               setFileName('No File Choosen');
               setSelectedFile(null);
+              if (inputRef.current) {
+                inputRef.current.value = '';
+              }
             }}
           >
             Cancel

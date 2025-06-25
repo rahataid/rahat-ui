@@ -62,7 +62,6 @@ export default function GroupDetailView() {
 
   const isAssignedToProject = searchParams.get('isAssignedToProject');
   const isGroupValidForAA = searchParams.get('isGroupValidForAA');
-  console.log(isGroupValidForAA);
   const groupedBeneficiaries = [] as any;
   const { data: group } = useGetBeneficiaryGroup(Id);
   const [columnVisibility, setColumnVisibility] =
@@ -83,6 +82,7 @@ export default function GroupDetailView() {
         bankedStatus: d?.Beneficiary?.bankedStatus,
         uuid: d?.Beneficiary?.uuid,
         error: d?.Beneficiary?.extras?.error,
+        extras: d?.Beneficiary?.extras,
       }));
     } else return [];
   }, [group]);
@@ -145,16 +145,16 @@ export default function GroupDetailView() {
           <HeaderWithBack
             title={group?.data?.name}
             subtitle="Here is a detailed view of the selected beneficiary group"
-            path="/beneficiary"
+            path="/beneficiary?tab=beneficiaryGroups"
           />
-          {Number(isAssignedToProject) === 0 && (
+          {/* {Number(isAssignedToProject) === 0 && (
             <CoreBtnComponent
               className="text-primary bg-sky-50"
               name="Assign to Project"
               Icon={FolderPlus}
               handleClick={() => {}}
             />
-          )}
+          )} */}
           <div className="flex gap-6">
             <Button
               variant={'outline'}

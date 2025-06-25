@@ -1,5 +1,5 @@
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { SpinnerLoader } from 'apps/rahat-ui/src/common';
+import { NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { File } from 'lucide-react';
 
 interface DocumentCardProps {
@@ -45,11 +45,15 @@ export function DocumentList({ documents, loading }: DocumentListProps) {
       </p>
       <div className="overflow-y-auto  scrollbar-hidden xl:h-[calc(100vh-540px)]  h-[calc(340px)] ">
         {loading && <SpinnerLoader />}
-        <div className="grid  grid-cols-1 lg:grid-cols-2 gap-4 p-4">
-          {documents?.map((doc, index) => (
-            <DocumentCard key={index} {...doc} />
-          ))}
-        </div>
+        {documents?.length ? (
+          <div className="grid  grid-cols-1 lg:grid-cols-2 gap-4 p-4">
+            {documents?.map((doc, index) => (
+              <DocumentCard key={index} {...doc} />
+            ))}
+          </div>
+        ) : (
+          <NoResult message="No document available" />
+        )}
       </div>
     </div>
   );

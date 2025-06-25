@@ -132,3 +132,17 @@ export const generateExcel = (
 export function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
+
+export const intlFormatDate = (dateStr?: string) => {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return '-';
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour12: true,
+    hour: 'numeric',
+    minute: 'numeric',
+  }).format(date);
+};

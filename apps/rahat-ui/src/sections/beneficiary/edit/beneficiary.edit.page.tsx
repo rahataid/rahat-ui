@@ -30,7 +30,7 @@ import { toast } from 'react-toastify';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
 import { Loader2, Wallet } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import {
   RadioGroup,
@@ -50,6 +50,11 @@ export default function AddBeneficiaryForm() {
   const updateBeneficiary = useUpdateBeneficiary();
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
+  const searchParams = useSearchParams();
+  const groupId = searchParams.get('groupId');
+  const isGroupValidForAA = searchParams.get('isGroupValidForAA');
+  const isAssignedToProject = searchParams.get('isAssignedToProject');
+  const fromTab = searchParams.get('fromTab') as string;
   const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
 
   const FormSchema = z.object({
@@ -116,7 +121,11 @@ export default function AddBeneficiaryForm() {
         },
         walletAddress: data.walletAddress,
       });
-      router.push('/beneficiary');
+      router.push(
+        fromTab === 'beneficiaryGroups'
+          ? `/beneficiary/groups/${groupId}?isAssignedToProject=${isAssignedToProject}&isGroupValidForAA=${isGroupValidForAA}&fromTab=${fromTab}`
+          : '/beneficiary',
+      );
     } catch (e) {
       console.error('Error::', e);
     }
@@ -130,8 +139,13 @@ export default function AddBeneficiaryForm() {
             <HeaderWithBack
               title="Edit Beneficiary"
               subtitle="Edit Beneficiary Detail"
-              path="/beneficiary"
+              path={
+                fromTab === 'beneficiaryGroups'
+                  ? `/beneficiary/groups/${groupId}?isAssignedToProject=${isAssignedToProject}&isGroupValidForAA=${isGroupValidForAA}&fromTab=${fromTab}`
+                  : '/beneficiary'
+              }
             />
+
             <div className="shadow-md p-4 rounded-sm bg-card">
               <div className="grid grid-cols-2 gap-4">
                 <FormField
@@ -262,7 +276,7 @@ export default function AddBeneficiaryForm() {
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter beneficiaryddress"
+                            placeholder="Enter beneficiary address"
                             {...field}
                           />
                         </FormControl>
@@ -419,9 +433,12 @@ export default function AddBeneficiaryForm() {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => router.push('/beneficiary')}
+              // onClick={() => router.push('/beneficiary')}
+              onClick={() => {
+                form.reset();
+              }}
             >
-              Cancel
+              Clear
             </Button>
             {updateBeneficiary.isPending ? (
               <Button disabled>

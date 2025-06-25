@@ -52,7 +52,6 @@ export default function FundManagementDetailTable({
       columnFilters,
     },
   });
-  console.log('single', group);
 
   return (
     <div className="border rounded-sm p-4">

@@ -61,7 +61,7 @@ export default function PhaseDetail() {
             name="Manage Threshold"
             handleClick={() => {
               router.push(
-                `/projects/aa/${projectId}/phase/${phaseId}/config-threshold`,
+                `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}/config-threshold`,
               );
             }}
           />

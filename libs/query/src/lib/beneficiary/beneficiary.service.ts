@@ -39,7 +39,9 @@ const listBeneficiaryGroups = async (payload: Pagination) => {
 };
 
 const removeBeneficiaryGroup = async (uuid: UUID) => {
-  const response = await api.delete(`/beneficiaries/groups/${uuid}`);
+  const response = await api.delete(
+    `/beneficiaries/groups/${uuid}?hardDelete=true`,
+  );
   return response?.data;
 };
 
@@ -607,15 +609,15 @@ export const useTempBeneficiaryImport = () => {
   return useMutation({
     mutationKey: [TAGS.IMPORT_TEMP_BENEFICIARIES],
     mutationFn: async (payload: any) => {
-      const { isConfirmed } = await Swal.fire({
-        title: 'CAUTION!',
-        text: ' Are you sure , you want to import beneficiary?',
-        icon: 'warning',
-        confirmButtonText: 'Yes, I am sure!',
-        showCancelButton: true,
-      });
+      // const { isConfirmed } = await Swal.fire({
+      //   title: 'CAUTION!',
+      //   text: ' Are you sure , you want to import beneficiary?',
+      //   icon: 'warning',
+      //   confirmButtonText: 'Yes, I am sure!',
+      //   showCancelButton: true,
+      // });
 
-      if (!isConfirmed) return;
+      // if (!isConfirmed) return;
 
       return await benClient.importTempBeneficiaries(payload);
     },

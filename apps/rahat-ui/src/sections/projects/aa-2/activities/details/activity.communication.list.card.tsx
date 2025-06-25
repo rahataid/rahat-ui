@@ -13,8 +13,10 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { SpinnerLoader } from 'apps/rahat-ui/src/common';
+import { NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { CommunicationCard } from '../components/communicationCard';
+import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
+import { useMemo } from 'react';
 
 type CommunicationData = {
   groupId: string;
@@ -35,6 +37,14 @@ export default function CommunicationList({
   activityCommunication,
   loading,
 }: CommunicationList) {
+  const defaultTab = useMemo(() => {
+    const active = activityCommunication?.some(
+      (d) => d.sessionStatus === 'NEW' || d.sessionStatus === 'PENDING',
+    );
+    return active ? 'communications' : 'history';
+  }, [activityCommunication]);
+
+  const { activeTab, setActiveTab } = useActiveTab(defaultTab);
   return (
     <div className="border px-4 pt-2 rounded-xl ">
       <div className="mb-4 flex items-center justify-between ">
@@ -56,7 +66,7 @@ export default function CommunicationList({
         </div> */}
       </div>
 
-      <Tabs defaultValue={'communications'}>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="communications">Communications</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
@@ -65,25 +75,37 @@ export default function CommunicationList({
         <TabsContent value="communications">
           {loading && <SpinnerLoader />}
           <div className="overflow-y-auto  scrollbar-hidden xl:h-[calc(100vh-320px)] h-[calc(100vh-200px)]   ">
-            {activityCommunication
-              ?.filter(
-                (d) =>
-                  d.sessionStatus === 'NEW' || d.sessionStatus === 'PENDING',
-              )
-              .map((comm, index) => (
-                <CommunicationCard key={index} activityCommunication={comm} />
-              ))}
+            {activityCommunication?.filter(
+              (d) => d.sessionStatus === 'NEW' || d.sessionStatus === 'PENDING',
+            ).length === 0 && !loading ? (
+              <NoResult message="No Communication Available" />
+            ) : (
+              activityCommunication
+                ?.filter(
+                  (d) =>
+                    d.sessionStatus === 'NEW' || d.sessionStatus === 'PENDING',
+                )
+                .map((comm, index) => (
+                  <CommunicationCard key={index} activityCommunication={comm} />
+                ))
+            )}
           </div>
         </TabsContent>
 
         <TabsContent value="history">
           {loading && <SpinnerLoader />}
           <div className="overflow-y-auto  scrollbar-hidden xl:h-[calc(100vh-320px)]  h-[calc(100vh-200px)]  ">
-            {activityCommunication
-              ?.filter((d) => d.sessionStatus === 'COMPLETED')
-              .map((comm, index) => (
-                <CommunicationCard key={index} activityCommunication={comm} />
-              ))}
+            {activityCommunication?.filter(
+              (d) => d.sessionStatus === 'COMPLETED',
+            ).length === 0 && !loading ? (
+              <NoResult message="No History Available" />
+            ) : (
+              activityCommunication
+                ?.filter((d) => d.sessionStatus === 'COMPLETED')
+                .map((comm, index) => (
+                  <CommunicationCard key={index} activityCommunication={comm} />
+                ))
+            )}
           </div>
         </TabsContent>
       </Tabs>

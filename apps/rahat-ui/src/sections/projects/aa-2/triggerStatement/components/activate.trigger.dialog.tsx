@@ -23,7 +23,11 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { X, CloudUpload, LoaderCircle, FileCheck } from 'lucide-react';
-import { useUploadFile, useActivateTrigger } from '@rahat-ui/query';
+import {
+  useUploadFile,
+  useActivateTrigger,
+  useQueryClient,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { toast } from 'react-toastify';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
@@ -31,13 +35,18 @@ import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 type IProps = {
   projectId: UUID;
   repeatKey: string;
+  version?: boolean;
+  notes: string;
 };
 
 export default function ActivateTriggerDialog({
   projectId,
   repeatKey,
+  version,
+  notes,
 }: IProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const uploadFile = useUploadFile();
   const activateTrigger = useActivateTrigger();
   const [showModal, setShowModal] = React.useState<boolean>(false);
@@ -69,7 +78,7 @@ export default function ActivateTriggerDialog({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      notes: '',
+      notes: notes || '',
       triggerDocuments: [],
     },
   });
@@ -106,6 +115,19 @@ export default function ActivateTriggerDialog({
         projectUUID: projectId,
         activatePayload: { repeatKey: repeatKey, ...data },
       });
+
+      // Build payload exactly as used in useSingleTriggerStatement hook
+      const payload = version
+        ? {
+            id: repeatKey,
+          }
+        : {
+            repeatKey: repeatKey,
+          };
+
+      queryClient.invalidateQueries({
+        queryKey: ['triggerStatement', projectId, payload],
+      });
       // router.push(`/projects/aa/${projectID}/trigger-statements`);
     } catch (e) {
       console.error('Activate Trigger Error::', e);
@@ -122,7 +144,7 @@ export default function ActivateTriggerDialog({
       <DialogTrigger asChild>
         <Button
           type="button"
-          className="px-8"
+          className={`px-8 ${version && 'hidden'}`}
           onClick={() => setShowModal(true)}
         >
           Trigger

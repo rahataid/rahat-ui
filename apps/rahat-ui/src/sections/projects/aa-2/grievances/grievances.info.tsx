@@ -9,7 +9,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
   console.log('grievance details', grievance);
   return (
     <>
-      <div className="grid grid-cols-3 gap-6 px-6 py-4">
+      <div className="grid grid-cols-3 gap-6">
         <DataItem label="Title" value={grievance?.title || 'N/A'} />
         <DataItem label="Reported By" value={grievance?.reportedBy || 'N/A'} />
         <DataItem label="Type" value={grievance?.type || 'N/A'} />

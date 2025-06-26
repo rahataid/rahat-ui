@@ -1,7 +1,7 @@
 'use client';
 import { useQuery, useRSQuery } from '@rumsan/react-query';
 import { useMutation } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useProjectAction } from '../projects';
 import { GetGrievanceList, GrievanceFormData } from './types/grievance';
 import { UUID } from 'crypto';
@@ -21,11 +21,39 @@ export const useGrievanceList = (payload: GetGrievanceList) => {
   const { projectUUID, ...restPayload } = payload;
   const { queryClient } = useRSQuery();
 
-  const restPayloadString = JSON.stringify(restPayload);
+  // Debounce function with proper TypeScript types
+  const debounce = useCallback(<F extends (...args: unknown[]) => unknown>(
+    func: F,
+    wait: number
+  ) => {
+    let timeout: NodeJS.Timeout;
+    return (...args: Parameters<F>): Promise<ReturnType<F>> => {
+      clearTimeout(timeout);
+      return new Promise<ReturnType<F>>((resolve) => {
+        timeout = setTimeout(() => resolve(func(...args) as ReturnType<F>), wait);
+      });
+    };
+  }, []);
+
+  // Debounced payload string to prevent rapid updates
+  const [debouncedPayload, setDebouncedPayload] = useState<string>('');
+  
+  const updateDebouncedPayload = useCallback(
+    debounce((payload: Record<string, unknown>) => {
+      setDebouncedPayload(JSON.stringify(payload));
+    }, 300),
+    [debounce]
+  );
+
+  // Update debounced payload when restPayload changes
+  useEffect(() => {
+    updateDebouncedPayload(restPayload);
+  }, [restPayload, updateDebouncedPayload]);
 
   const query = useQuery(
     {
-      queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT, restPayloadString],
+      queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT, debouncedPayload],
+      enabled: !!debouncedPayload, // Only run query when we have a debounced payload
       refetchOnMount: true,
       refetchOnWindowFocus: true,
       queryFn: async () => {

@@ -23,7 +23,7 @@ const GrievancesDetail = () => {
     : `/projects/aa/${projectId}/grievances`;
 
   return (
-    <div className="p-4 ">
+    <div className="p-4 mb-2">
       <div className="flex justify-between items-center">
         <HeaderWithBack
           title={'Grievance Details'}
@@ -38,7 +38,7 @@ const GrievancesDetail = () => {
       </div>
 
       <div className="flex">
-        <div className="flex border rounded-lg flex-col gap-4 p-4 mx-4  w-full">
+        <div className="flex border rounded-xl flex-col gap-4 p-4 w-full">
           <GrievanceInfo grievance={details?.data?.data} />
         </div>
       </div>

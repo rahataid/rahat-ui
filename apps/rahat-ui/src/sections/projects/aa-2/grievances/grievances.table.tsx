@@ -92,14 +92,19 @@ function GrievancesTable() {
     [filters],
   );
 
+  // Reset pagination to first page when filters change
+  React.useEffect(() => {
+    setPagination({ ...pagination, page: 1 });
+  }, [filters]);
+
   return (
     <div className="p-4 rounded-sm border">
       <div className="flex mb-2 gap-2">
         <SearchInput
           className="w-full"
           name="Title"
-          onSearch={(e) => handleSearch(e, 'search')}
-          value={filters?.search || ''}
+          onSearch={(e) => handleSearch(e, 'title')}
+          value={filters?.title || ''}
         />
         <AddButton
           path={`/projects/aa/${id}/grievances/add`}

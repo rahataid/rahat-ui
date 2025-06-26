@@ -1,41 +1,13 @@
 'use client';
 
-import * as React from 'react';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 
-import {
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+import { useParams } from 'next/navigation';
 
-import { useParams, useSearchParams } from 'next/navigation';
-
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tabs';
-import {
-  CustomPagination,
-  DemoTable,
-  SearchInput,
-} from 'apps/rahat-ui/src/common';
-import { UUID } from 'crypto';
-import BeneficiaryGroups from './BeneficiaryGroups';
-import { useProjectBeneficiaryTableColumns } from './columns';
+import { Tabs, TabsContent } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import GrievancesTable from './grievances.table';
 function GrievancesView() {
-  const { id } = useParams();
-  const uuid = id as UUID;
   const { activeTab, setActiveTab } = useActiveTab('beneficiary');
 
   return (
@@ -50,56 +22,9 @@ function GrievancesView() {
         Track all the grievances in the project
       </p>
 
-      <div className="flex justify-between items-center p-4">
-        <TabsList className="border bg-secondary rounded">
-          <TabsTrigger
-            id="beneficiary"
-            className="w-full data-[state=active]:bg-white"
-            value="beneficiary"
-          >
-            Grievances
-          </TabsTrigger>
-        </TabsList>
-
-        {/* <Button
-          variant="outline"
-          onClick={() => router.push('/beneficiary/import')}
-        >
-          <CloudDownload className="mr-1" /> Import beneficiaries
-        </Button> */}
+      <div className="px-4">
+        <GrievancesTable />
       </div>
-      <TabsContent value="beneficiary">
-        <div className="px-4">
-          {/* <div className="p-4 rounded-sm border">
-            <div className="flex mb-2 gap-2">
-              <SearchInput
-                className="w-full"
-                name="walletAddress"
-                onSearch={(e) => handleSearch(e, 'search')}
-                value={filters?.search || ''}
-              />
-            </div>
-            <DemoTable table={table} loading={projectBeneficiaries.isLoading} />
-
-            <CustomPagination
-              currentPage={pagination.page}
-              handleNextPage={setNextPage}
-              handlePrevPage={setPrevPage}
-              handlePageSizeChange={setPerPage}
-              setPagination={setPagination}
-              meta={
-                (projectBeneficiaries?.data?.response?.meta as any) || {
-                  total: 0,
-                  currentPage: 0,
-                }
-              }
-              perPage={pagination?.perPage}
-              total={projectBeneficiaries?.data?.response?.meta?.total || 0}
-            />
-          </div> */}
-          <GrievancesTable />
-        </div>
-      </TabsContent>
     </Tabs>
   );
 }

@@ -16,22 +16,20 @@ import {
 
 import { useParams, useSearchParams } from 'next/navigation';
 
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tabs';
+  useGrievanceList,
+  usePagination,
+  useProjectBeneficiaries,
+} from '@rahat-ui/query';
 import {
+  AddButton,
   CustomPagination,
   DemoTable,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
-import { UUID } from 'crypto';
-import BeneficiaryGroups from './BeneficiaryGroups';
-import { useProjectBeneficiaryTableColumns } from './columns';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
+import { UUID } from 'crypto';
+import { useGrievancesTableColumns } from './columns';
 function GrievancesTable() {
   const { id } = useParams();
   const uuid = id as UUID;
@@ -55,8 +53,9 @@ function GrievancesTable() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const columns = useProjectBeneficiaryTableColumns();
-  const projectBeneficiaries = useProjectBeneficiaries({
+  const columns = useGrievancesTableColumns();
+
+  const projectGrievances = useGrievanceList({
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
@@ -67,7 +66,7 @@ function GrievancesTable() {
 
   const table = useReactTable({
     manualPagination: true,
-    data: projectBeneficiaries?.data?.data || [],
+    data: projectGrievances?.data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -92,22 +91,23 @@ function GrievancesTable() {
     },
     [filters],
   );
-  React.useEffect(() => {
-    if (searchParams.get('tab') === 'beneficiary') {
-      setFilters({});
-    }
-  }, [searchParams]);
+
   return (
     <div className="p-4 rounded-sm border">
       <div className="flex mb-2 gap-2">
         <SearchInput
           className="w-full"
-          name="walletAddress"
+          name="Title"
           onSearch={(e) => handleSearch(e, 'search')}
           value={filters?.search || ''}
         />
+        <AddButton
+          path={`/projects/aa/${id}/grievances/add`}
+          name="Grievance"
+          variant="default"
+        />
       </div>
-      <DemoTable table={table} loading={projectBeneficiaries.isLoading} />
+      <DemoTable table={table} loading={projectGrievances.isLoading} />
 
       <CustomPagination
         currentPage={pagination.page}
@@ -116,13 +116,13 @@ function GrievancesTable() {
         handlePageSizeChange={setPerPage}
         setPagination={setPagination}
         meta={
-          (projectBeneficiaries?.data?.response?.meta as any) || {
+          (projectGrievances?.data?.response?.meta as any) || {
             total: 0,
             currentPage: 0,
           }
         }
         perPage={pagination?.perPage}
-        total={projectBeneficiaries?.data?.response?.meta?.total || 0}
+        total={projectGrievances?.data?.response?.meta?.total || 0}
       />
     </div>
   );

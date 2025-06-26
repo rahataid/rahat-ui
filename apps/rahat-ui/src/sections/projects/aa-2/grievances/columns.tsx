@@ -1,63 +1,55 @@
 'use client';
-import * as React from 'react';
-import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
 
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import {
   Tooltip,
+  TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-  TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { useParams, useRouter } from 'next/navigation';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { formatDate } from 'apps/community-tool-ui/src/utils';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { useParams, useRouter } from 'next/navigation';
 
-export const useProjectBeneficiaryTableColumns = () => {
+export const useGrievancesTableColumns = () => {
   const router = useRouter();
   const { id } = useParams();
 
-  const { clickToCopy, copyAction } = useCopy();
-
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'wallet',
-      header: 'Wallet',
-      cell: ({ row }) => (
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger
-              className="flex items-center gap-3 cursor-pointer"
-              onClick={() =>
-                clickToCopy(row?.original?.walletAddress, row?.original?.uuid)
-              }
-            >
-              <p>{truncateEthAddress(row?.original?.walletAddress)}</p>
-              {copyAction === row?.original?.uuid ? (
-                <CopyCheck size={15} strokeWidth={1.5} />
-              ) : (
-                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
-              )}
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary" side="bottom">
-              <p className="text-xs font-medium">
-                {copyAction === row?.original?.uuid
-                  ? 'copied'
-                  : 'click to copy'}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ),
+      accessorKey: 'title',
+      header: 'Title',
+      cell: ({ row }) => <div> {row.getValue('title')}</div>,
     },
     {
-      accessorKey: 'gender',
-      header: 'Gender',
-      cell: ({ row }) => <div> {row.getValue('gender')}</div>,
+      accessorKey: 'reportedBy',
+      header: 'Reporter',
+      cell: ({ row }) => <div> {row.getValue('reportedBy')}</div>,
     },
     {
-      id: 'actions',
+      accessorKey: 'type',
+      header: 'Type',
+      cell: ({ row }) => <div> {row.getValue('type')}</div>,
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => <div> {row.getValue('status')}</div>,
+    },
+    {
+      accessorKey: 'priority',
+      header: 'Priority',
+      cell: ({ row }) => <div> {row.getValue('priority')}</div>,
+    },
+    {
+      accessorKey: 'createdAt',
+      header: 'Created At',
+      cell: ({ row }) => <div> {formatDate(row.getValue('createdAt'))}</div>,
+    },
+    {
+      id: 'action',
       header: 'Action',
       enableHiding: false,
       cell: ({ row }) => {
@@ -69,7 +61,7 @@ export const useProjectBeneficiaryTableColumns = () => {
               strokeWidth={1.5}
               onClick={() =>
                 router.push(
-                  `/projects/aa/${id}/beneficiary/${row.original.uuid}`,
+                  `/projects/aa/${id}/grievances/${row.original.uuid}`,
                 )
               }
             />

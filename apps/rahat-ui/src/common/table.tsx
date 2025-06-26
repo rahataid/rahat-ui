@@ -20,13 +20,15 @@ type IProps = {
 };
 
 export function DemoTable({ table, tableHeight, loading }: IProps) {
+  console.log(table.getHeaderGroups(), 'xxx');
   return (
     <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
       <TableComponent>
         <TableHeader className="sticky top-0 bg-gray-100">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
+              {headerGroup.headers.map((header, i) => {
+                console.log('header.id', i, header.id);
                 return (
                   <TableHead key={header.id}>
                     {header.isPlaceholder

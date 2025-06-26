@@ -138,9 +138,9 @@ export default function TriggerStatementDetail() {
               <p className="mb-1">Phase</p>
               <Badge
                 className={`${
-                  trigger?.phase?.isActive
-                    ? 'text-red-500 bg-red-100'
-                    : 'text-green-500 bg-green-100'
+                  trigger?.phase?.name === 'READINESS'
+                    ? 'text-yellow-500 bg-yellow-100'
+                    : 'text-red-500 bg-red-100'
                 } text-xs`}
               >
                 {trigger?.phase?.name || 'N/A'}

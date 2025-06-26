@@ -17,7 +17,6 @@ import React, { useEffect } from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import AddButton from '../../components/add.btn';
-import SelectComponent from '../select.component';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { CloudDownload } from 'lucide-react';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
@@ -30,6 +29,8 @@ import {
 } from '@rahat-ui/shadcn/components/tabs';
 import BeneficiaryGroupView from './beneficiary.group.view';
 import FiltersTags from '../../components/filtersTags';
+import DynamicSelectComponent from '../../sms-voucher/select.component';
+import SelectComponent from '../select.component';
 
 export default function BeneficiaryView() {
   const { id } = useParams() as { id: UUID };
@@ -171,10 +172,13 @@ export default function BeneficiaryView() {
               />
             </div>
             <div className="flex justify-between gap-2 mb-2">
-              <SelectComponent
+              <DynamicSelectComponent
                 onChange={(e) => setFilters({ ...filters, voucherType: e })}
                 name="Voucher Type"
-                options={['SINGLE_VISION', 'READING_GLASSES']}
+                options={[
+                  { value: 'SINGLE_VISION', label: 'Ready to Clip (R2C)' },
+                  { value: 'READING_GLASSES', label: 'READING_GLASSES' },
+                ]}
                 value={filters?.voucherType || ''}
                 showSelect={false}
               />

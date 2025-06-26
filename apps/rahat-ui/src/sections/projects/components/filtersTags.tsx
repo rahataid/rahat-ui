@@ -7,6 +7,12 @@ import {
   ScrollBar,
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
+const DISPLAY_MAP: Record<string, Record<string, string>> = {
+  voucherType: {
+    SINGLE_VISION: 'Ready to Clip (R2C)',
+  },
+};
+
 const FiltersTags = ({ filters, setFilters, total }: any) => {
   const filterArray = Object.entries(filters).map(([key, value]) => {
     return { key, value };
@@ -23,22 +29,25 @@ const FiltersTags = ({ filters, setFilters, total }: any) => {
         <p className="text-primary min-w-max">{total} results found</p>
         <ScrollArea className="w-full py-2">
           <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-4 items-center">
-            {filterArray.map((filter) => (
-              <div key={filter.key} className="flex items-center gap-2">
-                {filter?.key.charAt(0).toUpperCase() + filter?.key.slice(1)}:{' '}
-                <span
-                  onClick={() => handleFilterArrayChange(filter.key)}
-                  className="cursor-pointer bg-primary py-1 px-2 text-white rounded text-xs flex items-center gap-2"
-                >
-                  {typeof filter.value === 'object' ? (
-                    <>{format(filter.value, 'MMM dd yyyy')}</>
-                  ) : (
-                    <>{filter.value}</>
-                  )}
-                  <RxCrossCircled />
-                </span>
-              </div>
-            ))}
+            {filterArray.map(({ key, value }) => {
+              const prettyValue =
+                typeof value === 'object'
+                  ? format(value, 'MMM dd yyyy')
+                  : DISPLAY_MAP[key]?.[value as string] ?? value;
+
+              return (
+                <div key={key} className="flex items-center gap-2">
+                  {key.charAt(0).toUpperCase() + key.slice(1)}:{' '}
+                  <span
+                    onClick={() => handleFilterArrayChange(key)}
+                    className="cursor-pointer bg-primary py-1 px-2 text-white rounded text-xs flex items-center gap-2"
+                  >
+                    {prettyValue}
+                    <RxCrossCircled />
+                  </span>
+                </div>
+              );
+            })}
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>

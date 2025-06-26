@@ -76,9 +76,7 @@ export default function PieChart({
       // },
     },
     colors,
-    labels: series.map((i) =>
-      i.label === 'Single Vision' ? 'Ready to Clip (R2C)' : i.label,
-    ),
+    labels: series.map((i) => i.label),
     stroke: { colors: communityTool ? ['none'] : [colors[5]], show: false },
     legend: {
       offsetY: 0,

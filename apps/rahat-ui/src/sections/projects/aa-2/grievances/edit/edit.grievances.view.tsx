@@ -21,6 +21,7 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -214,195 +215,209 @@ export default function EditGrievance() {
   }
 
   return (
-    <div className="space-y-6 p-6">
-      <div className=" mb-2 flex flex-col space-y-0">
-        <Back path={grievanceListPath} />
-
-        <div className="mt-4 flex justify-between items-center">
-          <div>
-            <Heading
-              title={`Edit Grievance`}
-              description="Fill the form below to update grievance"
-            />
-          </div>
-        </div>
-      </div>
-
+    <div className="">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="rounded-xl border p-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Reported By */}
-              <FormField
-                control={form.control}
-                name="reportedBy"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Reporter Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter reporter's name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="p-4">
+            <div className=" mb-2 flex flex-col space-y-0">
+              <Back path={grievanceListPath} />
 
-              {/* Reporter Contact */}
-              <FormField
-                control={form.control}
-                name="reporterContact"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contact Information</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter reporter's contact information"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Title */}
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter grievance title" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Description */}
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Enter detailed description of the grievance"
-                        className="min-h-[120px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Type */}
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Type</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {grievanceTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Status */}
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {grievanceStatuses.map((status) => (
-                          <SelectItem key={status.value} value={status.value}>
-                            {status.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Priority */}
-              <FormField
-                control={form.control}
-                name="priority"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Priority *</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={(value: string) =>
-                          field.onChange(value as GrievancePriority)
-                        }
-                        value={field.value ?? ''}
-                        className="flex space-x-1"
-                      >
-                        {grievancePriorities.map((item) => (
-                          <FormItem
-                            key={item.value}
-                            className="flex items-center space-x-3 space-y-0"
-                          >
-                            <FormControl>
-                              <RadioGroupItem
-                                value={item.value as GrievancePriority}
-                              />
-                            </FormControl>
-                            <FormLabel className="font-normal">
-                              {item.label}
-                            </FormLabel>
-                          </FormItem>
-                        ))}
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="mt-4 flex justify-between items-center">
+                <div>
+                  <Heading
+                    title={`Edit Grievance`}
+                    description="Fill the form below to update grievance"
+                  />
+                </div>
+              </div>
             </div>
-          </div>
+            <ScrollArea className=" h-[calc(100vh-230px)]">
+              <div className="rounded-xl border p-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="reportedBy"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Reporter Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter reporter's name"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-          <div className="flex justify-end space-x-4">
-            <Button type="button" variant="outline" onClick={handleResetForm}>
-              Reset
-            </Button>
-            <Button type="submit" disabled={updateGrievance.isPending}>
-              {updateGrievance.isPending ? 'Saving...' : 'Save Changes'}
-            </Button>
+                  <FormField
+                    control={form.control}
+                    name="reporterContact"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Contact Information</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter reporter's contact information"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Title */}
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormLabel>Title</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter grievance title"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Provide the detailed information about the grievance"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Type</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {grievanceTypes.map((type) => (
+                              <SelectItem key={type.value} value={type.value}>
+                                {type.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Status</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {grievanceStatuses.map((status) => (
+                              <SelectItem
+                                key={status.value}
+                                value={status.value}
+                              >
+                                {status.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Priority */}
+                  <FormField
+                    control={form.control}
+                    name="priority"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <FormLabel>Priority *</FormLabel>
+                        <FormControl>
+                          <RadioGroup
+                            onValueChange={(value: string) =>
+                              field.onChange(value as GrievancePriority)
+                            }
+                            value={field.value ?? ''}
+                            className="flex space-x-1"
+                          >
+                            {grievancePriorities.map((item) => (
+                              <FormItem
+                                key={item.value}
+                                className="flex items-center space-x-3 space-y-0"
+                              >
+                                <FormControl>
+                                  <RadioGroupItem
+                                    value={item.value as GrievancePriority}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal">
+                                  {item.label}
+                                </FormLabel>
+                              </FormItem>
+                            ))}
+                          </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end space-x-4 mt-10">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-36"
+                  onClick={handleResetForm}
+                >
+                  Reset
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={updateGrievance.isPending}
+                  className="w-36"
+                >
+                  {updateGrievance.isPending ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </div>
+            </ScrollArea>
           </div>
         </form>
       </Form>

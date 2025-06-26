@@ -8,6 +8,7 @@ import { useProjectAction } from '../../projects';
 import { useEffect } from 'react';
 import { useAAGrievancesStore } from './store';
 import { toast } from 'sonner';
+import { UUID } from 'crypto';
 
 export const useGrievancesList = (payload: any) => {
   const { setGrievances } = useAAGrievancesStore((state) => ({
@@ -48,8 +49,8 @@ export const useChangeGrievanceStatus = () => {
 
   return useMutation({
     mutationFn: async (payload: {
-      projectUUID: string;
-      grievanceId: string;
+      projectUUID: UUID;
+      grievanceId: UUID;
       status: string;
     }) => {
       const { projectUUID, ...rest } = payload;
@@ -78,8 +79,8 @@ export const useUpdateGrievance = () => {
 
   return useMutation({
     mutationFn: async (payload: {
-      projectUUID: string;
-      grievanceId: string;
+      projectUUID: UUID;
+      grievanceId: UUID;
       data: any;
     }) => {
       const { projectUUID, ...rest } = payload;
@@ -102,10 +103,7 @@ export const useUpdateGrievance = () => {
   });
 };
 
-export const useGrievanceDetails = (
-  projectUUID: string,
-  grievanceUUID: string,
-) => {
+export const useGrievanceDetails = (projectUUID: UUID, grievanceUUID: UUID) => {
   const q = useProjectAction<any>();
 
   return useQuery({
@@ -129,10 +127,7 @@ export const useRemoveGrievance = () => {
   const q = useProjectAction<any>();
 
   return useMutation({
-    mutationFn: async (payload: {
-      projectUUID: string;
-      grievanceUUID: string;
-    }) => {
+    mutationFn: async (payload: { projectUUID: UUID; grievanceUUID: UUID }) => {
       const response = await q.mutateAsync({
         uuid: payload.projectUUID,
         data: {

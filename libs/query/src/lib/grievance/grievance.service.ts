@@ -22,33 +22,33 @@ export const useGrievanceList = (payload: GetGrievanceList) => {
   const { queryClient } = useRSQuery();
 
   // Debounce function with proper TypeScript types
-  const debounce = useCallback(<F extends (...args: unknown[]) => unknown>(
-    func: F,
-    wait: number
-  ) => {
-    let timeout: NodeJS.Timeout;
-    return (...args: Parameters<F>): Promise<ReturnType<F>> => {
-      clearTimeout(timeout);
-      return new Promise<ReturnType<F>>((resolve) => {
-        timeout = setTimeout(() => resolve(func(...args) as ReturnType<F>), wait);
-      });
-    };
-  }, []);
+  const debounce = useCallback(
+    <T>(fn: (args: T) => void, delay: number) => {
+      let timeout: NodeJS.Timeout;
+      return (args: T) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn(args), delay);
+      };
+    },
+    []
+  );
 
   // Debounced payload string to prevent rapid updates
   const [debouncedPayload, setDebouncedPayload] = useState<string>('');
   
-  const updateDebouncedPayload = useCallback(
-    debounce((payload: Record<string, unknown>) => {
-      setDebouncedPayload(JSON.stringify(payload));
-    }, 300),
+  // Memoize the debounced function to prevent recreation on every render
+  const debouncedSetPayload = useMemo(
+    () =>
+      debounce<Record<string, unknown>>((payload) => {
+        setDebouncedPayload(JSON.stringify(payload));
+      }, 300),
     [debounce]
   );
 
   // Update debounced payload when restPayload changes
   useEffect(() => {
-    updateDebouncedPayload(restPayload);
-  }, [restPayload, updateDebouncedPayload]);
+    debouncedSetPayload(restPayload);
+  }, [restPayload, debouncedSetPayload]);
 
   const query = useQuery(
     {

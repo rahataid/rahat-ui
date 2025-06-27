@@ -16,14 +16,15 @@ export const useFetchTokenStatsStellar = (payload: any) => {
 
   const query = useQuery({
     // queryKey: ['aa.stellar.getStellarStats', restPayloadString],
-    queryKey: ['aa.chain.getStellarStats', restPayloadString],
+    queryKey: ['aa.chain.getDisbursementStats', restPayloadString],
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await projectBalance.mutateAsync({
         uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
         data: {
-          action: 'aa.chain.getStellarStats',
+          // TODO:naming
+          action: 'aa.chain.getDisbursementStats',
           // action: 'aa.stellar.getStellarStats',
           payload: {},
         },

@@ -102,7 +102,7 @@ export default function UpdateGroupProposeModal({
         <DialogHeader>
           <DialogTitle>Update Group Purpose</DialogTitle>
           <DialogDescription>
-            This will update the group purpose.
+            Select the group purpose below and click update to save.
           </DialogDescription>
         </DialogHeader>
 
@@ -137,7 +137,7 @@ export default function UpdateGroupProposeModal({
             type="button"
             variant="default"
           >
-            Confirm
+            Update
           </Button>
         </DialogFooter>
       </DialogContent>

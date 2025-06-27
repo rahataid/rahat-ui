@@ -7,7 +7,7 @@ import {
   LandmarkIcon,
   Trash2Icon,
   UsersRound,
-  Wallet,
+  Phone,
 } from 'lucide-react';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import MembersTable from './members.table';
@@ -32,6 +32,7 @@ import RemoveBenfGroupModal from './removeGroupModal';
 import ValidateBenefBankAccountByGroupUuid from './validateAccountModal';
 import * as XLSX from 'xlsx';
 import UpdateGroupProposeModal from './groupProposeModal';
+import { Back, Heading } from 'apps/rahat-ui/src/common';
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
   const validateModal = useBoolean();
@@ -109,6 +110,8 @@ export default function GroupDetailView() {
     },
   });
 
+  const groupProposeName = group?.data?.groupPurpose?.split('_')[0];
+
   // React.useEffect(() => {
   //   if (groupedBeneficiaries) {
   //     setTableData(groupedBeneficiaries)
@@ -155,11 +158,21 @@ export default function GroupDetailView() {
 
       <div className="p-4">
         <div className="flex justify-between items-center">
-          <HeaderWithBack
+          {/* <HeaderWithBack
             title={group?.data?.name}
             subtitle="Here is a detailed view of the selected beneficiary group"
             path="/beneficiary?tab=beneficiaryGroups"
-          />
+          /> */}
+          <div>
+            <Back path="/beneficiary?tab=beneficiaryGroups" />
+            <Heading
+              title={group?.data?.name}
+              description={
+                'Here is a detailed view of the selected beneficiary group'
+              }
+              status={groupProposeName}
+            />
+          </div>
           {/* {Number(isAssignedToProject) === 0 && (
             <CoreBtnComponent
               className="text-primary bg-sky-50"
@@ -171,18 +184,19 @@ export default function GroupDetailView() {
           <div className="flex gap-6">
             <Button
               variant={'outline'}
-              className=" gap-2"
-              onClick={handleGroupPurposeClick}
-            >
-              Choose Group Purpose
-            </Button>
-            <Button
-              variant={'outline'}
               className="border-red-500 text-red-500 hover:text-red-500 gap-2"
               onClick={handleRemoveClick}
             >
               <Trash2Icon className="w-4 h-4" />
               Delete Group
+            </Button>
+            <Button
+              variant={'outline'}
+              className=" gap-2"
+              onClick={handleGroupPurposeClick}
+            >
+              {groupProposeName ? 'Change ' : 'Assign '}
+              Group Purpose
             </Button>
 
             {(group?.data?.groupPurpose === 'MOBILE_MONEY' ||
@@ -193,12 +207,12 @@ export default function GroupDetailView() {
                 onClick={handleAssignModalClick}
               >
                 {group.data.groupPurpose === 'MOBILE_MONEY' ? (
-                  <Wallet className="w-4 h-4" />
+                  <Phone className="w-4 h-4" />
                 ) : (
                   <LandmarkIcon className="w-4 h-4" />
                 )}
                 {group.data.groupPurpose === 'MOBILE_MONEY'
-                  ? 'Validate Wallet'
+                  ? 'Validate Phone Number'
                   : 'Validate Bank Account'}
               </Button>
             )}

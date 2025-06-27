@@ -15,8 +15,10 @@ import {
 } from '@tanstack/react-table';
 
 import { useParams, useSearchParams } from 'next/navigation';
+import { X } from 'lucide-react';
 
 import { useGrievanceList, usePagination } from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   AddButton,
   CustomPagination,
@@ -111,6 +113,41 @@ function GrievancesTable() {
     [filters, setFilters],
   );
 
+  const clearFilters = () => {
+    setFilters({});
+  };
+
+  const clearFilter = (key: string) => {
+    const newFilters = { ...filters };
+    delete newFilters[key];
+    setFilters(newFilters);
+  };
+
+  const hasActiveFilters = Object.keys(filters).length > 0;
+
+  // Get display name for filter values
+  const getFilterDisplayName = (key: string, value: string) => {
+    if (key === 'status') {
+      return grievanceStatus.find((s) => s.value === value)?.label || value;
+    }
+    if (key === 'priority') {
+      return grievancePriority.find((p) => p.value === value)?.label || value;
+    }
+    return value;
+  };
+
+  // Define filter display order
+  const filterOrder = ['title', 'status', 'priority'];
+
+  // Sort filters according to the defined order
+  const getOrderedFilters = () => {
+    return Object.entries(filters).sort(([a], [b]) => {
+      const indexA = filterOrder.indexOf(a);
+      const indexB = filterOrder.indexOf(b);
+      return indexA - indexB;
+    });
+  };
+
   console.log('filters', filters);
 
   React.useEffect(() => {
@@ -120,9 +157,35 @@ function GrievancesTable() {
   return (
     <div className="p-4 rounded-sm border">
       <div className="flex flex-col space-y-2 mb-4">
-        <div className="flex gap-2">
+        {/* Active filters */}
+        {hasActiveFilters && (
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            {getOrderedFilters().map(([key, value]) => (
+              <div
+                key={key}
+                className="inline-flex items-center px-3 py-1 text-sm rounded-full bg-accent/80 hover:bg-accent text-accent-foreground transition-colors"
+              >
+                <span className="font-medium capitalize">{key}:</span>
+                <span className="ml-1">{getFilterDisplayName(key, value)}</span>
+                <button
+                  onClick={() => clearFilter(key)}
+                  className="ml-2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            ))}
+            <button
+              onClick={clearFilters}
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Clear all
+            </button>
+          </div>
+        )}
+        <div className="flex items-center gap-2">
           <SearchInput
-            className="w-full"
+            className="flex-1"
             name="Title"
             onSearch={(e) => handleSearch(e, 'title')}
             value={filters?.title || ''}
@@ -159,11 +222,13 @@ function GrievancesTable() {
               ))}
             </SelectContent>
           </Select>
-          <AddButton
-            path={`/projects/aa/${id}/grievances/add`}
-            name="Grievance"
-            variant="default"
-          />
+          <div className="flex items-center gap-2">
+            <AddButton
+              path={`/projects/aa/${id}/grievances/add`}
+              name="Grievance"
+              variant="default"
+            />
+          </div>
         </div>
       </div>
       <DemoTable table={table} loading={projectGrievances.isLoading} />

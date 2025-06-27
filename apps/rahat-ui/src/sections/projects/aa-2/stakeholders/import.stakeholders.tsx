@@ -49,18 +49,14 @@ export default function ImportStakeholder() {
   >(new Set());
   const hasEmptyRequiredFields = () => {
     if (data.length < 2) return true; // Only header, no data
-
-    // return data
-    //   .slice(1)
-    //   .some((row) =>
-    //     row.some((cell) => cell === '' || cell === null || cell === undefined),
-    //   );
     return data
       .slice(1)
       .some((row) =>
         row.some(
           (cell, index) =>
-            index !== 6 && (!cell || cell.toString().trim() === ''),
+            index !== 6 &&
+            index !== 7 &&
+            (!cell || cell.toString().trim() === ''),
         ),
       );
   };
@@ -76,9 +72,11 @@ export default function ImportStakeholder() {
           const colIndex = parseInt(column.id.replace('col-', ''), 10);
           const headerText =
             data[0]?.[colIndex]?.toString().toLowerCase() ?? '';
-
+          const isOptional = colIndex === 6 || colIndex === 7;
           const isMissing =
-            value === '' || value === null || value === undefined;
+            (!isOptional && value === '') ||
+            value === null ||
+            value === undefined;
 
           return (
             <TableCell
@@ -86,7 +84,7 @@ export default function ImportStakeholder() {
                 truncate max-w-[150px]
                 ${
                   isMissing
-                    ? 'bg-red-500 text-yellow-800'
+                    ? 'bg-red-100 text-yellow-800'
                     : headerText === 'phone number' &&
                       duplicatePhonesFromServer.has(value?.toString().trim())
                     ? 'bg-yellow-500 text-red-800'
@@ -209,6 +207,7 @@ export default function ImportStakeholder() {
 
       // Clear duplicates if successful
       setDuplicatePhonesFromServer(new Set());
+
       toast.success('Stakeholders imported successfully!');
       router.push(`/projects/aa/${id}/stakeholders?tab=stakeholders`);
     } catch (error: any) {
@@ -364,6 +363,9 @@ export default function ImportStakeholder() {
               setData([]);
               setFileName('No File Choosen');
               setSelectedFile(null);
+              if (inputRef.current) {
+                inputRef.current.value = '';
+              }
             }}
           >
             Clear

@@ -16,7 +16,7 @@ const StakeholderEditPage = dynamic(
 export default function Page() {
   return (
     <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]}>
-      <StakeholderEditPage />;
+      <StakeholderEditPage />
     </RoleAuth>
   );
 }

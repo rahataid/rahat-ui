@@ -16,11 +16,7 @@ import {
 
 import { useParams, useSearchParams } from 'next/navigation';
 
-import {
-  useGrievanceList,
-  usePagination,
-  useProjectBeneficiaries,
-} from '@rahat-ui/query';
+import { useGrievanceList, usePagination } from '@rahat-ui/query';
 import {
   AddButton,
   CustomPagination,
@@ -30,6 +26,17 @@ import {
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { UUID } from 'crypto';
 import { useGrievancesTableColumns } from './columns';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import {
+  grievancePriority,
+  grievanceStatus,
+} from 'apps/rahat-ui/src/constants/aa.grievances.constants';
 function GrievancesTable() {
   const { id } = useParams();
   const uuid = id as UUID;
@@ -45,14 +52,14 @@ function GrievancesTable() {
     setFilters,
     setPagination,
   } = usePagination();
-  const { activeTab, setActiveTab } = useActiveTab('beneficiary');
+  // Remove unused variables
+  useActiveTab('beneficiary');
   const searchParams = useSearchParams();
-  const refreshSearch = searchParams.get('tab');
+  searchParams.get('tab'); // Keep for potential side effects
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
+  // We're not using columnFilters directly since we're handling filters manually
+  const [, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const columns = useGrievancesTableColumns();
 
   const projectGrievances = useGrievanceList({
@@ -78,7 +85,7 @@ function GrievancesTable() {
     getRowId: (row) => row.uuid,
     state: {
       sorting,
-      columnFilters,
+      columnFilters: [], // Using empty array since we're handling filters manually
       columnVisibility,
       rowSelection: selectedListItems,
     },
@@ -89,28 +96,75 @@ function GrievancesTable() {
       const value = event?.target?.value ?? '';
       setFilters({ ...filters, [key]: value });
     },
-    [filters],
+    [filters, setFilters],
   );
 
-  // Reset pagination to first page when filters change
+  const handleFilterChange = React.useCallback(
+    (key: string, value: string) => {
+      if (value === 'all') {
+        const { [key]: _, ...rest } = filters;
+        setFilters(rest);
+      } else {
+        setFilters({ ...filters, [key]: value });
+      }
+    },
+    [filters, setFilters],
+  );
+
+  console.log('filters', filters);
+
   React.useEffect(() => {
-    setPagination({ ...pagination, page: 1 });
-  }, [filters]);
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  }, [filters, setPagination]);
 
   return (
     <div className="p-4 rounded-sm border">
-      <div className="flex mb-2 gap-2">
-        <SearchInput
-          className="w-full"
-          name="Title"
-          onSearch={(e) => handleSearch(e, 'title')}
-          value={filters?.title || ''}
-        />
-        <AddButton
-          path={`/projects/aa/${id}/grievances/add`}
-          name="Grievance"
-          variant="default"
-        />
+      <div className="flex flex-col space-y-2 mb-4">
+        <div className="flex gap-2">
+          <SearchInput
+            className="w-full"
+            name="Title"
+            onSearch={(e) => handleSearch(e, 'title')}
+            value={filters?.title || ''}
+          />
+          <Select
+            value={filters?.status || 'all'}
+            onValueChange={(value) => handleFilterChange('status', value)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              {grievanceStatus.map((status) => (
+                <SelectItem key={status.value} value={status.value}>
+                  {status.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={filters?.priority || 'all'}
+            onValueChange={(value) => handleFilterChange('priority', value)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Priority" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Priorities</SelectItem>
+              {grievancePriority.map((priority) => (
+                <SelectItem key={priority.value} value={priority.value}>
+                  {priority.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <AddButton
+            path={`/projects/aa/${id}/grievances/add`}
+            name="Grievance"
+            variant="default"
+          />
+        </div>
       </div>
       <DemoTable table={table} loading={projectGrievances.isLoading} />
 

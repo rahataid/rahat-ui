@@ -26,8 +26,7 @@ export function DemoTable({ table, tableHeight, loading }: IProps) {
         <TableHeader className="sticky top-0 bg-gray-100">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header, i) => {
-                console.log('header.id', i, header.id);
+              {headerGroup.headers.map((header) => {
                 return (
                   <TableHead key={header.id}>
                     {header.isPlaceholder

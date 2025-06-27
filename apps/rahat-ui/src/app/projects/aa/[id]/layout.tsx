@@ -40,10 +40,10 @@ export default function ProjectLayoutRoot({
     return children;
   };
   return (
-    <GarphQlProvider>
-      <ProjectLayout projectType={ProjectTypes.ANTICIPATORY_ACTION}>
-        {renderChildren()}
-      </ProjectLayout>
-    </GarphQlProvider>
+    // <GarphQlProvider>
+    <ProjectLayout projectType={ProjectTypes.ANTICIPATORY_ACTION}>
+      {renderChildren()}
+    </ProjectLayout>
+    // </GarphQlProvider>
   );
 }

@@ -15,14 +15,16 @@ export const useFetchTokenStatsStellar = (payload: any) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: ['aa.stellar.getStellarStats', restPayloadString],
+    // queryKey: ['aa.stellar.getStellarStats', restPayloadString],
+    queryKey: ['aa.chain.getStellarStats', restPayloadString],
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await projectBalance.mutateAsync({
         uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
         data: {
-          action: 'aa.stellar.getStellarStats',
+          action: 'aa.chain.getStellarStats',
+          // action: 'aa.stellar.getStellarStats',
           payload: {},
         },
       });

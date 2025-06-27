@@ -33,6 +33,7 @@ import ValidateBenefBankAccountByGroupUuid from './validateAccountModal';
 import * as XLSX from 'xlsx';
 import UpdateGroupProposeModal from './groupProposeModal';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
   const validateModal = useBoolean();
@@ -182,6 +183,14 @@ export default function GroupDetailView() {
             />
           )} */}
           <div className="flex gap-6">
+            {group?.data?.isGroupValidForAA && (
+              <Badge className="bg-green-50 text-green-600">
+                {group?.data?.groupPurpose === 'BANK_TRANSFER' &&
+                  'Bank Account Verified'}
+                {group?.data?.groupPurpose === 'MOBILE_MONEY' &&
+                  'Mobile Verified'}
+              </Badge>
+            )}
             <Button
               variant={'outline'}
               className="border-red-500 text-red-500 hover:text-red-500 gap-2"
@@ -199,23 +208,24 @@ export default function GroupDetailView() {
               Group Purpose
             </Button>
 
-            {(group?.data?.groupPurpose === 'MOBILE_MONEY' ||
-              group?.data?.groupPurpose === 'BANK_TRANSFER') && (
-              <Button
-                variant="outline"
-                className="gap-2"
-                onClick={handleAssignModalClick}
-              >
-                {group.data.groupPurpose === 'MOBILE_MONEY' ? (
-                  <Phone className="w-4 h-4" />
-                ) : (
-                  <LandmarkIcon className="w-4 h-4" />
-                )}
-                {group.data.groupPurpose === 'MOBILE_MONEY'
-                  ? 'Validate Phone Number'
-                  : 'Validate Bank Account'}
-              </Button>
-            )}
+            {!group?.data?.isGroupValidForAA &&
+              (group?.data?.groupPurpose === 'MOBILE_MONEY' ||
+                group?.data?.groupPurpose === 'BANK_TRANSFER') && (
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  onClick={handleAssignModalClick}
+                >
+                  {group.data.groupPurpose === 'MOBILE_MONEY' ? (
+                    <Phone className="w-4 h-4" />
+                  ) : (
+                    <LandmarkIcon className="w-4 h-4" />
+                  )}
+                  {group.data.groupPurpose === 'MOBILE_MONEY'
+                    ? 'Validate Phone Number'
+                    : 'Validate Bank Account'}
+                </Button>
+              )}
 
             <Button
               variant={'outline'}

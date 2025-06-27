@@ -26,7 +26,7 @@ import {
 import { useGetFreeVoucherTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Tooltip,
@@ -209,8 +209,8 @@ export function FreeTransactionTable() {
         <h1 className="text-primary">Transactions</h1>
       </div>
       <div className="rounded border">
-      <ScrollArea className="h-[50vh]">
-        <Table>
+        <ScrollArea className="h-[50vh]">
+          <Table>
             <TableHeader className="top-0 sticky bg-card">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -257,8 +257,7 @@ export function FreeTransactionTable() {
                 </TableRow>
               )}
             </TableBody>
-          
-        </Table>
+          </Table>
         </ScrollArea>
       </div>
     </div>

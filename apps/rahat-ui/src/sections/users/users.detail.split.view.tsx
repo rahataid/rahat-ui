@@ -1,7 +1,7 @@
 'use client';
 
 import { UUID } from 'crypto';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { Copy, CopyCheck, X, Expand, Wallet, Phone, Mail } from 'lucide-react';
 import Image from 'next/image';
 import TooltipComponent from '../../components/tooltip';

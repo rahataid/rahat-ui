@@ -1,4 +1,4 @@
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import React from 'react';
 import { Copy, CopyCheck, FolderPlus, Pencil, Trash2 } from 'lucide-react';
 import HeaderWithBack from '../projects/components/header.with.back';

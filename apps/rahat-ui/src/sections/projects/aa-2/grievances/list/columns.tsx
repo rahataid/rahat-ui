@@ -12,7 +12,7 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { formatDate } from 'apps/community-tool-ui/src/utils';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { useParams, useRouter } from 'next/navigation';
-import { StatusChip, PriorityChip, TypeChip } from './components';
+import { StatusChip, PriorityChip, TypeChip } from '../components';
 
 export const useGrievancesTableColumns = () => {
   const router = useRouter();
@@ -130,8 +130,6 @@ export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
       header: 'Action',
       enableHiding: false,
       cell: ({ row }) => {
-        console.log(row);
-
         return (
           <div className="flex items-center gap-2">
             <Eye

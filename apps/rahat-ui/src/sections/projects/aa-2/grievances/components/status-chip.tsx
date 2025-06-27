@@ -9,14 +9,20 @@ type StatusChipProps = {
   showIcon?: boolean;
 };
 
-// Using neutral styling for all statuses
+// GitHub-inspired color scheme for status chips with better contrast
 const statusColors = {
-  [GrievanceStatus.NEW]: 'bg-gray-50 text-gray-800 border-gray-200',
-  [GrievanceStatus.IN_PROGRESS]: 'bg-gray-50 text-gray-800 border-gray-200',
-  [GrievanceStatus.RESOLVED]: 'bg-gray-50 text-gray-800 border-gray-200',
-  [GrievanceStatus.CLOSED]: 'bg-gray-50 text-gray-800 border-gray-200',
-  [GrievanceStatus.REJECTED]: 'bg-gray-50 text-gray-800 border-gray-200',
-  default: 'bg-gray-50 text-gray-800 border-gray-200',
+  // New/Open - Light blue (GitHub's default for new/opened issues)
+  [GrievanceStatus.NEW]: 'bg-blue-50 text-blue-800 border-blue-200',
+  // In Progress - Dark blue (GitHub's in-progress color)
+  [GrievanceStatus.IN_PROGRESS]: 'bg-blue-100 text-blue-800 border-blue-300',
+  // Resolved - Purple (GitHub's merged/closed PR color)
+  [GrievanceStatus.RESOLVED]: 'bg-purple-50 text-purple-800 border-purple-200',
+  // Closed - Green (GitHub's closed/merged color)
+  [GrievanceStatus.CLOSED]: 'bg-green-50 text-green-800 border-green-200',
+  // Rejected - Red (GitHub's closed/not-planned color)
+  [GrievanceStatus.REJECTED]: 'bg-red-50 text-red-800 border-red-200',
+  // Default - Gray for unknown states
+  default: 'bg-gray-100 text-gray-800 border-gray-300',
 } as const;
 
 const statusIcons = {
@@ -37,31 +43,30 @@ const statusLabels = {
   default: 'N/A',
 } as const;
 
-export function StatusChip({ 
-  status, 
+export function StatusChip({
+  status,
   className,
-  showIcon = true 
+  showIcon = true,
 }: StatusChipProps) {
-  const colorClass = status && status in statusColors 
-    ? statusColors[status as keyof typeof statusColors] 
-    : statusColors.default;
-  
-  const displayText = status && status in statusLabels 
-    ? statusLabels[status as keyof typeof statusLabels] 
-    : statusLabels.default;
-    
-  const IconComponent = status && status in statusIcons 
-    ? statusIcons[status as keyof typeof statusIcons] 
-    : statusIcons.default;
-  
+  const colorClass =
+    status && status in statusColors
+      ? statusColors[status as keyof typeof statusColors]
+      : statusColors.default;
+
+  const displayText =
+    status && status in statusLabels
+      ? statusLabels[status as keyof typeof statusLabels]
+      : statusLabels.default;
+
+  const IconComponent =
+    status && status in statusIcons
+      ? statusIcons[status as keyof typeof statusIcons]
+      : statusIcons.default;
+
   return (
-    <Badge 
-      variant="outline" 
-      className={cn(
-        'inline-flex items-center gap-1',
-        colorClass,
-        className
-      )}
+    <Badge
+      variant="outline"
+      className={cn('inline-flex items-center gap-1', colorClass, className)}
     >
       {showIcon && <IconComponent className="w-3 h-3" />}
       {displayText}

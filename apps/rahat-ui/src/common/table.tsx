@@ -20,7 +20,6 @@ type IProps = {
 };
 
 export function DemoTable({ table, tableHeight, loading }: IProps) {
-  console.log(table.getHeaderGroups(), 'xxx');
   return (
     <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
       <TableComponent>

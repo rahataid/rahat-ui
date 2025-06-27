@@ -22,27 +22,24 @@ export const useGrievanceList = (payload: GetGrievanceList) => {
   const { queryClient } = useRSQuery();
 
   // Debounce function with proper TypeScript types
-  const debounce = useCallback(
-    <T>(fn: (args: T) => void, delay: number) => {
-      let timeout: NodeJS.Timeout;
-      return (args: T) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => fn(args), delay);
-      };
-    },
-    []
-  );
+  const debounce = useCallback(<T>(fn: (args: T) => void, delay: number) => {
+    let timeout: NodeJS.Timeout;
+    return (args: T) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => fn(args), delay);
+    };
+  }, []);
 
   // Debounced payload string to prevent rapid updates
   const [debouncedPayload, setDebouncedPayload] = useState<string>('');
-  
+
   // Memoize the debounced function to prevent recreation on every render
   const debouncedSetPayload = useMemo(
     () =>
       debounce<Record<string, unknown>>((payload) => {
         setDebouncedPayload(JSON.stringify(payload));
       }, 300),
-    [debounce]
+    [debounce],
   );
 
   // Update debounced payload when restPayload changes
@@ -57,15 +54,13 @@ export const useGrievanceList = (payload: GetGrievanceList) => {
       refetchOnMount: true,
       refetchOnWindowFocus: true,
       queryFn: async () => {
-        const mutate = await q.mutateAsync({
+        return q.mutateAsync({
           uuid: projectUUID,
           data: {
             action: MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT,
             payload: restPayload,
           },
         });
-        console.log('list grievances data', mutate);
-        return mutate;
       },
     },
     queryClient,
@@ -118,15 +113,13 @@ export const useGrievanceAdd = () => {
         projectUUID: UUID;
         grievancePayload: GrievanceFormData;
       }) => {
-        const mutate = await q.mutateAsync({
+        return q.mutateAsync({
           uuid: projectUUID,
           data: {
             action: MS_ACTIONS.GRIEVANCES.ADD,
             payload: grievancePayload,
           },
         });
-        console.log('add grievance data', mutate);
-        return mutate;
       },
       onSuccess: () => {
         queryClient.invalidateQueries({
@@ -138,6 +131,7 @@ export const useGrievanceAdd = () => {
         });
       },
       onError: (error: any) => {
+        console.log('error', error);
         const errorMessage = error?.response?.data?.message || 'Error';
         toast.fire({
           title: 'Error while adding grievance.',
@@ -166,16 +160,13 @@ export const useGrievanceDetails = ({
     {
       queryKey: [MS_ACTIONS.GRIEVANCES.GET, grievanceUUID],
       queryFn: async () => {
-        console.log('get by UUID grievance dataxxx', grievanceUUID);
-        const mutate = await q.mutateAsync({
+        return q.mutateAsync({
           uuid: projectUUID,
           data: {
             action: MS_ACTIONS.GRIEVANCES.GET,
             payload: { uuid: grievanceUUID },
           },
         });
-        console.log('get by UUID grievance data', mutate);
-        return mutate;
       },
     },
     queryClient,
@@ -204,15 +195,13 @@ export const useGrievanceEdit = () => {
         projectUUID: UUID;
         grievancePayload: GrievanceFormData & { uuid: string };
       }) => {
-        const mutate = await q.mutateAsync({
+        return q.mutateAsync({
           uuid: projectUUID,
           data: {
             action: MS_ACTIONS.GRIEVANCES.UPDATE,
             payload: grievancePayload,
           },
         });
-        console.log('update grievance data', mutate);
-        return mutate;
       },
       onSuccess: () => {
         queryClient.invalidateQueries({

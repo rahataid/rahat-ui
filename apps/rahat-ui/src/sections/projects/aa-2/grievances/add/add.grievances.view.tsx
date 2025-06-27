@@ -39,12 +39,12 @@ import { z } from 'zod';
 export default function AddGrievances() {
   const { id: projectID } = useParams();
   const router = useRouter();
-
   const { user } = useUserStore((state) => ({
     user: state.user,
   }));
+  const [formKey, setFormKey] = React.useState(0);
+  const forceRerender = () => setFormKey((prev) => prev + 1);
   const grievancesListPath = `/projects/aa/${projectID}/grievances`;
-
   const addGrievance = useGrievanceAdd();
 
   const grievanceType = [
@@ -121,11 +121,6 @@ export default function AddGrievances() {
     },
   );
 
-  // Add this near the top of your component with other state declarations
-  const [formKey, setFormKey] = React.useState(0);
-  const forceRerender = () => setFormKey((prev) => prev + 1);
-
-  // Define form schema with proper types
   const FormSchema = z.object({
     reportedBy: z
       .string()
@@ -179,16 +174,12 @@ export default function AddGrievances() {
     FormValues
   > = async (data) => {
     try {
-      console.log('Form submitted:', data, user);
-
       // Ensure all required fields are present with proper types
       const payload = {
         ...data,
         reporterUserId: user?.data?.id,
         status: data.status || GrievanceStatus.NEW,
       };
-
-      console.log('final payload', payload);
 
       await addGrievance.mutateAsync({
         projectUUID: projectID as UUID,
@@ -206,7 +197,6 @@ export default function AddGrievances() {
         priority: undefined,
       });
 
-      // Show success message or redirect
       router.push(grievancesListPath);
     } catch (error) {
       console.error('Error submitting form:', error);

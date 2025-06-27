@@ -32,6 +32,11 @@ import {
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useUserStore } from '@rumsan/react-query';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
+import {
+  grievancePriority,
+  grievanceStatus,
+  grievanceType,
+} from 'apps/rahat-ui/src/constants/aa.grievances.constants';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -85,39 +90,14 @@ const grievanceFormSchema = z.object({
 
 type GrievanceFormValues = z.infer<typeof grievanceFormSchema>;
 
-const grievanceTypes = [
-  { value: GrievanceType.TECHNICAL, label: 'Technical' },
-  { value: GrievanceType.OPERATIONAL, label: 'Operational' },
-  { value: GrievanceType.FINANCIAL, label: 'Financial' },
-  { value: GrievanceType.OTHER, label: 'Other' },
-];
-
-const grievanceStatuses = [
-  { value: GrievanceStatus.NEW, label: 'New' },
-  { value: GrievanceStatus.IN_PROGRESS, label: 'In Progress' },
-  { value: GrievanceStatus.RESOLVED, label: 'Resolved' },
-  { value: GrievanceStatus.CLOSED, label: 'Closed' },
-  { value: GrievanceStatus.REJECTED, label: 'Rejected' },
-];
-
-const grievancePriorities = [
-  { value: GrievancePriority.LOW, label: 'Low' },
-  { value: GrievancePriority.MEDIUM, label: 'Medium' },
-  { value: GrievancePriority.HIGH, label: 'High' },
-  { value: GrievancePriority.CRITICAL, label: 'Critical' },
-];
-
 export default function EditGrievance() {
   const router = useRouter();
   const params = useParams();
   const user = useUserStore();
-
   const projectID = params?.id as UUID;
   const grievanceID = params?.uuid as UUID;
-  console.log('pramsxxx', params);
-  console.log('projectIDxxx', projectID);
-  console.log('grievanceIDxxx', grievanceID);
   const grievanceListPath = `/projects/aa/${projectID}/grievances`;
+  const [formKey, setFormKey] = React.useState(0);
 
   // Fetch grievance details
   const { data: grievanceData, isLoading } = useGrievanceDetails({
@@ -162,9 +142,6 @@ export default function EditGrievance() {
       });
     }
   }, [grievanceData, form]);
-
-  // Form key to force re-render when needed
-  const [formKey, setFormKey] = React.useState(0);
 
   // Handle form reset
   const handleResetForm = React.useCallback(() => {
@@ -334,7 +311,7 @@ export default function EditGrievance() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {grievanceTypes.map((type) => (
+                            {grievanceType.map((type) => (
                               <SelectItem key={type.value} value={type.value}>
                                 {type.label}
                               </SelectItem>
@@ -362,7 +339,7 @@ export default function EditGrievance() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {grievanceStatuses.map((status) => (
+                            {grievanceStatus.map((status) => (
                               <SelectItem
                                 key={status.value}
                                 value={status.value}
@@ -392,7 +369,7 @@ export default function EditGrievance() {
                             value={field.value ?? ''}
                             className="flex space-x-1"
                           >
-                            {grievancePriorities.map((item) => (
+                            {grievancePriority.map((item) => (
                               <FormItem
                                 key={item.value}
                                 className="flex items-center space-x-3 space-y-0"

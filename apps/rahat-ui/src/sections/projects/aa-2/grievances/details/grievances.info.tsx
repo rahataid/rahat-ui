@@ -1,4 +1,4 @@
-import { StatusChip, PriorityChip, TypeChip } from './components';
+import { StatusChip, PriorityChip, TypeChip } from '../components';
 import {
   Card,
   CardContent,
@@ -33,10 +33,6 @@ type IProps = {
 };
 
 const GrievanceInfo = ({ grievance }: IProps) => {
-  console.log('grievance details', grievance);
-
-
-
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
@@ -69,7 +65,10 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                   Priority
                 </p>
                 <div className="mt-1">
-                  <PriorityChip priority={grievance?.priority} showIcon={false} />
+                  <PriorityChip
+                    priority={grievance?.priority}
+                    showIcon={false}
+                  />
                 </div>
               </div>
             </div>
@@ -100,9 +99,20 @@ const GrievanceInfo = ({ grievance }: IProps) => {
 
             <div>
               <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">
+                Reporter Contact
+              </label>
+              <p className="mt-1 text-sm font-medium text-gray-900">
+                {grievance?.reporterContact || 'N/A'}
+              </p>
+            </div>
+
+            <Separator />
+
+            <div>
+              <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">
                 Reported By
               </label>
-              <p className="mt-1 text-sm text-gray-900">
+              <p className="mt-1 text-sm font-medium text-gray-900">
                 {grievance?.reportedBy || grievance?.reporter || 'N/A'}
               </p>
             </div>

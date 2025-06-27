@@ -9,13 +9,18 @@ type PriorityChipProps = {
   showIcon?: boolean;
 };
 
-// Priority levels maintain their colors for visual hierarchy
+// Priority levels with GitHub-inspired color scheme
 const priorityColors = {
-  [GrievancePriority.LOW]: 'bg-green-50 text-green-800 border-green-100',
-  [GrievancePriority.MEDIUM]: 'bg-yellow-50 text-yellow-800 border-yellow-100',
-  [GrievancePriority.HIGH]: 'bg-orange-50 text-orange-800 border-orange-100',
-  [GrievancePriority.CRITICAL]: 'bg-red-50 text-red-800 border-red-100',
-  default: 'bg-gray-50 text-gray-800 border-gray-200',
+  // Low priority - Muted blue (less urgent)
+  [GrievancePriority.LOW]: 'bg-blue-50 text-blue-800 border-blue-200',
+  // Medium priority - Yellow (needs attention)
+  [GrievancePriority.MEDIUM]: 'bg-yellow-50 text-yellow-800 border-yellow-200',
+  // High priority - Orange (needs immediate attention)
+  [GrievancePriority.HIGH]: 'bg-orange-50 text-orange-800 border-orange-200',
+  // Critical priority - Red (urgent action required)
+  [GrievancePriority.CRITICAL]: 'bg-red-50 text-red-800 border-red-200',
+  // Default - Gray for unknown states
+  default: 'bg-gray-100 text-gray-800 border-gray-300',
 } as const;
 
 const priorityIcons = {

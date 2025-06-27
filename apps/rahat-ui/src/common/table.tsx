@@ -17,9 +17,10 @@ type IProps = {
   table: Table<any>;
   tableHeight?: string;
   loading?: boolean;
+  message?: string;
 };
 
-export function DemoTable({ table, tableHeight, loading }: IProps) {
+export function DemoTable({ table, tableHeight, loading, message }: IProps) {
   return (
     <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
       <TableComponent>
@@ -61,7 +62,7 @@ export function DemoTable({ table, tableHeight, loading }: IProps) {
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                {loading ? <SpinnerLoader /> : <NoResult />}
+                {loading ? <SpinnerLoader /> : <NoResult message={message} />}
               </TableCell>
             </TableRow>
           )}

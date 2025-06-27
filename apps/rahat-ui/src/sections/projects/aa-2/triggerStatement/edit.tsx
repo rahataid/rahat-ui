@@ -336,9 +336,17 @@ export default function EditTrigger() {
             type="button"
             variant="outline"
             className="w-40 mr-2"
-            onClick={() => router.push(triggerDetailPage)}
+            onClick={() => {
+              if (triggerType === 'automated') {
+                automatedForm.reset();
+              } else {
+                manualForm.reset();
+              }
+
+              // router.push(triggerDetailPage);
+            }}
           >
-            Cancel
+            Reset
           </Button>
           <Button
             type="submit"

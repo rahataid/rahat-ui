@@ -48,6 +48,7 @@ export const useVendorList = (
             name: d.User?.name,
             phone: d.User?.phone,
             gender: d.User?.gender,
+            createdAt: d.User?.createdAt,
           })),
         };
       },

@@ -56,7 +56,7 @@ export default function ProjectListView() {
       <div className="p-4 border rounded shadow">
         <div className="flex items-center space-x-2 mb-4">
           <Input
-            placeholder="Filter projects..."
+            placeholder="Search Project by Name..."
             className="rounded"
             // value={filterValue}
             onChange={handleFilterChange}

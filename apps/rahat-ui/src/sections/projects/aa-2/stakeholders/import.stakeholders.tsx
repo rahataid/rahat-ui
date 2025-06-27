@@ -49,18 +49,14 @@ export default function ImportStakeholder() {
   >(new Set());
   const hasEmptyRequiredFields = () => {
     if (data.length < 2) return true; // Only header, no data
-
-    // return data
-    //   .slice(1)
-    //   .some((row) =>
-    //     row.some((cell) => cell === '' || cell === null || cell === undefined),
-    //   );
     return data
       .slice(1)
       .some((row) =>
         row.some(
           (cell, index) =>
-            index !== 7 && (!cell || cell.toString().trim() === ''),
+            index !== 6 &&
+            index !== 7 &&
+            (!cell || cell.toString().trim() === ''),
         ),
       );
   };
@@ -76,9 +72,11 @@ export default function ImportStakeholder() {
           const colIndex = parseInt(column.id.replace('col-', ''), 10);
           const headerText =
             data[0]?.[colIndex]?.toString().toLowerCase() ?? '';
-
+          const isOptional = colIndex === 6 || colIndex === 7;
           const isMissing =
-            value === '' || value === null || value === undefined;
+            (!isOptional && value === '') ||
+            value === null ||
+            value === undefined;
 
           return (
             <TableCell

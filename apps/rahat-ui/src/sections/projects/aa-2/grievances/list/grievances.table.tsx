@@ -96,7 +96,12 @@ function GrievancesTable() {
   const handleSearch = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
       const value = event?.target?.value ?? '';
-      setFilters({ ...filters, [key]: value });
+      if (value === '') {
+        const { [key]: _, ...rest } = filters;
+        setFilters(rest);
+      } else {
+        setFilters({ ...filters, [key]: value });
+      }
     },
     [filters, setFilters],
   );
@@ -148,8 +153,6 @@ function GrievancesTable() {
     });
   };
 
-  console.log('filters', filters);
-
   React.useEffect(() => {
     setPagination((prev) => ({ ...prev, page: 1 }));
   }, [filters, setPagination]);
@@ -198,7 +201,7 @@ function GrievancesTable() {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="all">All Status</SelectItem>
               {grievanceStatus.map((status) => (
                 <SelectItem key={status.value} value={status.value}>
                   {status.label}
@@ -214,7 +217,7 @@ function GrievancesTable() {
               <SelectValue placeholder="Priority" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Priorities</SelectItem>
+              <SelectItem value="all">All Priority</SelectItem>
               {grievancePriority.map((priority) => (
                 <SelectItem key={priority.value} value={priority.value}>
                   {priority.label}

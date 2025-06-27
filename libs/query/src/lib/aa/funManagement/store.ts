@@ -1,4 +1,5 @@
 import { localStore, zustandStore } from '@rumsan/react-query';
+import { StoreApi, UseBoundStore } from 'zustand';
 
 const initialStore = {
   stellarTokenStats: [],
@@ -20,7 +21,9 @@ type FundAssignmentStateAction = {
 
 type FundAssignmentStore = FundAssignmentState & FundAssignmentStateAction;
 
-export const useFundAssignmentStore = zustandStore<FundAssignmentStore>(
+export const useFundAssignmentStore: UseBoundStore<
+  StoreApi<FundAssignmentStore>
+> = zustandStore<FundAssignmentStore>(
   (set) => ({
     ...initialStore,
     setAssignedFundData: (assignedFundData) => set({ assignedFundData }),

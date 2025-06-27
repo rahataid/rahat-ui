@@ -40,7 +40,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { Copy, CopyCheck, Minus, MoreVertical, Trash2 } from 'lucide-react';
 import AssignToken from './assign-token.modal';
 import { UUID } from 'crypto';

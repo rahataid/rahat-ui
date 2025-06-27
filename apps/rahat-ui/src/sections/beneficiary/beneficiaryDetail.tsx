@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { ListBeneficiary } from '@rahat-ui/types';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { UUID } from 'crypto';
 import {
   Copy,

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Eye, Copy, CopyCheck, TriangleAlertIcon } from 'lucide-react';
@@ -15,6 +14,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ListBeneficiary } from '@rahat-ui/types';
 import { useSearchParams } from 'next/navigation';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
 export const useBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();

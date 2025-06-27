@@ -1,4 +1,5 @@
 import { localStore, zustandStore } from '@rumsan/react-query';
+import { StoreApi, UseBoundStore } from 'zustand';
 
 interface I {
   id: number;
@@ -9,7 +10,7 @@ interface I {
 }
 
 const initialStore = {
-  phasesStats: {}
+  phasesStats: {},
 };
 
 type StatsState = {
@@ -17,21 +18,22 @@ type StatsState = {
 };
 
 type StatsStateAction = {
-   setPhasesStats: (stats: any) => void;
+  setPhasesStats: (stats: any) => void;
 };
 
 type StatsStore = StatsState & StatsStateAction;
 
-export const useStatsStore = zustandStore<StatsStore>(
-  (set) => ({
-    ...initialStore,
-    setPhasesStats: (stats) => set({ phasesStats: stats }),
-  }),
-  {
-    devtoolsEnabled: true,
-    persistOptions: {
-      name: 'aaStatsStore',
-      storage: localStore,
+export const useStatsStore: UseBoundStore<StoreApi<StatsStore>> =
+  zustandStore<StatsStore>(
+    (set) => ({
+      ...initialStore,
+      setPhasesStats: (stats) => set({ phasesStats: stats }),
+    }),
+    {
+      devtoolsEnabled: true,
+      persistOptions: {
+        name: 'aaStatsStore',
+        storage: localStore,
+      },
     },
-  },
-);
+  );

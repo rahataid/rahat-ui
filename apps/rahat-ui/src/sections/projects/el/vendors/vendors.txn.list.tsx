@@ -24,9 +24,8 @@ import {
 import * as React from 'react';
 
 import { useVendorTransaction } from '../../../../hooks/el/subgraph/querycall';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import TableLoader from '../../../../components/table.loader';
-
 
 const columns: ColumnDef<any>[] = [
   {
@@ -40,7 +39,11 @@ const columns: ColumnDef<any>[] = [
     accessorKey: 'transactionHash',
     header: 'Txn Hash',
     cell: ({ row }) => (
-      <a href={`https://sepolia.arbiscan.io/tx/${row.getValue('transactionHash')}`}>
+      <a
+        href={`https://sepolia.arbiscan.io/tx/${row.getValue(
+          'transactionHash',
+        )}`}
+      >
         {' '}
         {truncateEthAddress(row.getValue('transactionHash'))}
       </a>
@@ -64,9 +67,7 @@ interface VendorTxnListProps {
 }
 
 export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
-  const { data: txns, isFetching } = useVendorTransaction(
-    walletAddress,
-  );
+  const { data: txns, isFetching } = useVendorTransaction(walletAddress);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

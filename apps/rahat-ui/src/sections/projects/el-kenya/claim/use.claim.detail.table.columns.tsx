@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
 export default function useClaimDetailTableColumn() {
   const columns: ColumnDef<any>[] = [

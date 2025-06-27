@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { ArrowUp } from 'lucide-react';
 import { formatEther } from 'viem';

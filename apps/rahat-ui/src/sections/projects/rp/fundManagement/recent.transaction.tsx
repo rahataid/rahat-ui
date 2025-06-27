@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { ArrowUp } from 'lucide-react';
 import { formatEther } from 'viem';

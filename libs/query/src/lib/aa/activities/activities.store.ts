@@ -1,4 +1,5 @@
 import { localStore, zustandStore } from '@rumsan/react-query';
+import { StoreApi, UseBoundStore } from 'zustand';
 
 interface I {
   id: number;
@@ -13,7 +14,7 @@ const initialStore = {
   phases: [],
   hazardTypes: [],
   activities: [],
-  activitiesMeta: {}
+  activitiesMeta: {},
 };
 
 type ActivitiesState = {
@@ -34,20 +35,21 @@ type ActivitiesStateAction = {
 
 type ActivitiesStore = ActivitiesState & ActivitiesStateAction;
 
-export const useActivitiesStore = zustandStore<ActivitiesStore>(
-  (set) => ({
-    ...initialStore,
-    setCategories: (categories) => set({ categories }),
-    setPhases: (phases) => set({ phases }),
-    setHazardTypes: (hazardTypes) => set({ hazardTypes }),
-    setActivities: (activities) => set({ activities }),
-    setActivitiesMeta: (meta) => set({ activitiesMeta: meta })
-  }),
-  {
-    devtoolsEnabled: true,
-    persistOptions: {
-      name: 'aaActivitiesStore',
-      storage: localStore,
+export const useActivitiesStore: UseBoundStore<StoreApi<ActivitiesStore>> =
+  zustandStore<ActivitiesStore>(
+    (set) => ({
+      ...initialStore,
+      setCategories: (categories) => set({ categories }),
+      setPhases: (phases) => set({ phases }),
+      setHazardTypes: (hazardTypes) => set({ hazardTypes }),
+      setActivities: (activities) => set({ activities }),
+      setActivitiesMeta: (meta) => set({ activitiesMeta: meta }),
+    }),
+    {
+      devtoolsEnabled: true,
+      persistOptions: {
+        name: 'aaActivitiesStore',
+        storage: localStore,
+      },
     },
-  },
-);
+  );

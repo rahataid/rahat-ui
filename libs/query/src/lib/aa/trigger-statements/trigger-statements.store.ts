@@ -1,4 +1,5 @@
 import { localStore, zustandStore } from '@rumsan/react-query';
+import { StoreApi, UseBoundStore } from 'zustand';
 
 const initialStore = {
   dhmStations: null,
@@ -18,18 +19,19 @@ type AAStationsStateAction = {
 
 type AAStationsStore = AAStationsState & AAStationsStateAction;
 
-export const useAAStationsStore = zustandStore<AAStationsStore>(
-  (set) => ({
-    ...initialStore,
-    setDhmStations: (dhmStations) => set({ dhmStations }),
-    resetDhmStations: () => set({ ...initialStore }),
-    setTriggers: (triggers) => set({ triggers }),
-  }),
-  {
-    devtoolsEnabled: true,
-    persistOptions: {
-      name: 'aaProjectStore',
-      storage: localStore,
+export const useAAStationsStore: UseBoundStore<StoreApi<AAStationsStore>> =
+  zustandStore<AAStationsStore>(
+    (set) => ({
+      ...initialStore,
+      setDhmStations: (dhmStations) => set({ dhmStations }),
+      resetDhmStations: () => set({ ...initialStore }),
+      setTriggers: (triggers) => set({ triggers }),
+    }),
+    {
+      devtoolsEnabled: true,
+      persistOptions: {
+        name: 'aaProjectStore',
+        storage: localStore,
+      },
     },
-  },
-);
+  );

@@ -21,18 +21,29 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
 import { Redemption } from './redemption.table';
 import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
-export const useTableColumns = (handleAssignClick: any,getRedemptions:any) => {
+export const useTableColumns = (
+  handleAssignClick: any,
+  getRedemptions: any,
+) => {
   const { id } = useParams();
-  const [selectedRow, setSelectedRow] = useState(null)
+  const [selectedRow, setSelectedRow] = useState(null);
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -43,11 +54,10 @@ export const useTableColumns = (handleAssignClick: any,getRedemptions:any) => {
     contractSettings?.eyevoucher?.address || '',
   );
 
-
   const projectModal = useBoolean();
 
-  const handleConfirmationModal = (row:any) => {
-   setSelectedRow(row)
+  const handleConfirmationModal = (row: any) => {
+    setSelectedRow(row);
     projectModal.onTrue();
   };
 
@@ -64,19 +74,16 @@ export const useTableColumns = (handleAssignClick: any,getRedemptions:any) => {
   const updateRedemption = useUpdateElRedemption();
 
   const handleApprove = async () => {
-    await updateRedemption.mutateAsync({
-      projectUUID: uuid,
-      redemptionUUID: [selectedRow?.uuid],
-    })
-    .finally(()=>
-      {
-      setSelectedRow(null);
-      projectModal.onFalse();
-      getRedemptions();
-    
-    }
-    );
-
+    await updateRedemption
+      .mutateAsync({
+        projectUUID: uuid,
+        redemptionUUID: [selectedRow?.uuid],
+      })
+      .finally(() => {
+        setSelectedRow(null);
+        projectModal.onFalse();
+        getRedemptions();
+      });
   };
 
   const columns: ColumnDef<Redemption>[] = [
@@ -212,52 +219,54 @@ export const useTableColumns = (handleAssignClick: any,getRedemptions:any) => {
         if (rowData.status === 'APPROVED') return null;
         return (
           <>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => handleConfirmationModal(rowData)}>
-                Approve Redemption
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => handleConfirmationModal(rowData)}
+                >
+                  Approve Redemption
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Approve Redemption</DialogTitle>
-            <DialogDescription>
-              <p className="text-orange-500">
-                Are you sure you want to approve the redemption?
-              </p>
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="ghost">
-                Close
-              </Button>
-            </DialogClose>
-            <Button
-              onClick={handleApprove}
-              type="button"
-              variant="ghost"
-              className="text-primary"
+            <Dialog
+              open={projectModal.value}
+              onOpenChange={projectModal.onToggle}
             >
-              Approve
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Approve Redemption</DialogTitle>
+                  <DialogDescription>
+                    <p className="text-orange-500">
+                      Are you sure you want to approve the redemption?
+                    </p>
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button type="button" variant="ghost">
+                      Close
+                    </Button>
+                  </DialogClose>
+                  <Button
+                    onClick={handleApprove}
+                    type="button"
+                    variant="ghost"
+                    className="text-primary"
+                  >
+                    Approve
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </>
-
-
-
         );
       },
     },

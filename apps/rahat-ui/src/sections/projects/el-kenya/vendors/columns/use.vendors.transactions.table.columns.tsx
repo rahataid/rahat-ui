@@ -1,4 +1,4 @@
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { ColumnDef } from '@tanstack/react-table';
 
 export const useElkenyaVendorsTransactionsTableColumns = () => {

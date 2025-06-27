@@ -70,6 +70,7 @@ export default function PhaseDetail() {
             variant="outline"
             className="text-primary border-primary"
             Icon={Plus}
+            disabled={phase?.isActive}
             name="Add Trigger"
             handleClick={handleAddTriggerClick}
           />

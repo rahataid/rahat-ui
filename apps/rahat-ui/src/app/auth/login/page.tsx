@@ -86,7 +86,7 @@ export default function AuthPage() {
           <div className="rounded-sm border shadow-sm p-4 space-y-4">
             <div className="flex flex-col space-y-2 text-center">
               <h1 className="text-2xl  tracking-tight">
-                {!optSent ? 'Sign in' : 'OTP has been sent'}
+                {!optSent ? 'Sign in' : 'Verify with OTP'}
               </h1>
               <p className="text-sm text-muted-foreground">
                 {!optSent
@@ -170,7 +170,7 @@ export default function AuthPage() {
                         onRequestOtp(e, true);
                       }}
                     >
-                      Resend
+                      Resend OTP
                     </span>
                   </p>
 

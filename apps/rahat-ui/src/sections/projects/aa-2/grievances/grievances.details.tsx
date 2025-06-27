@@ -1,14 +1,16 @@
-import React from 'react';
-import GrievanceInfo from './grievances.info';
-import { EditButton, HeaderWithBack } from 'apps/rahat-ui/src/common';
-import { useParams, useSearchParams } from 'next/navigation';
-import { UUID } from 'crypto';
 import { useGrievanceDetails } from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Back, Heading } from 'apps/rahat-ui/src/common';
+import { UUID } from 'crypto';
+import { PencilIcon } from 'lucide-react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import GrievanceInfo from './grievances.info';
 
 const GrievancesDetail = () => {
   const params = useParams();
   const projectId = params.id as UUID;
   const grievanceId = params.uuid as UUID;
+  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('groupId');
   const redirectToFund = searchParams.get('fundId');
@@ -24,17 +26,28 @@ const GrievancesDetail = () => {
 
   return (
     <div className="p-4 mb-2">
-      <div className="flex justify-between items-center">
-        <HeaderWithBack
-          title={'Grievance Details'}
-          subtitle="Detailed view of the selected grievance"
-          path={navRoute}
-        />
-        <EditButton
-          className="rounded flex gap-1 items-center text-sm font-medium"
-          label="Edit"
-          path={`/projects/aa/${projectId}/grievances/${grievanceId}/edit`}
-        />
+      <div className="mb-2 flex flex-col space-y-0">
+        <Back path={navRoute} />
+
+        <div className="mt-4 flex justify-between items-center">
+          <div>
+            <Heading
+              title={`Grievance Details`}
+              description="Detailed view of the selected grievance"
+            />
+          </div>
+          <Button
+            className="rounded flex gap-1 items-center text-sm font-medium w-auto"
+            onClick={() =>
+              router.push(
+                `/projects/aa/${projectId}/grievances/${grievanceId}/edit`,
+              )
+            }
+          >
+            <PencilIcon className="h-4 w-4" />
+            Edit
+          </Button>
+        </div>
       </div>
 
       <div className="flex">

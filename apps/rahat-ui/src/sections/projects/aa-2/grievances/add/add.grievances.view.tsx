@@ -31,25 +31,19 @@ import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useUserStore } from '@rumsan/react-query';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 export default function AddGrievances() {
   const { id: projectID } = useParams();
-  const searchParams = useSearchParams();
-  const phaseId = searchParams.get('phaseId');
   const router = useRouter();
 
   const { user } = useUserStore((state) => ({
     user: state.user,
   }));
-  const grievancesListPath = undefined;
-  // ||
-  // `/projects/aa/${projectID}/grievances/list/${phases
-  //   .find((p) => p.uuid === phaseId)
-  //   ?.name.toLowerCase()}`;
+  const grievancesListPath = `/projects/aa/${projectID}/grievances`;
 
   const addGrievance = useGrievanceAdd();
 
@@ -116,20 +110,20 @@ export default function AddGrievances() {
 
   // Custom validation for email or phone number
   const emailOrPhone = z.string().refine(
-    (val) => {
-      // Check if it's an email
+    (value) => {
+      // Check if it's a valid email or a valid phone number (minimum 10 digits)
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (emailRegex.test(val)) return true;
-
-      // Check if it's a phone number (supports international format with optional +)
-      const phoneRegex =
-        /^[+]?[\s.-]?(?:\(?\d{1,3}\)?[\s.-]?)?\d{3,}[\s.-]?\d{4,}$/;
-      return phoneRegex.test(val);
+      const phoneRegex = /^[0-9]{10,15}$/; // Assuming phone numbers are 10-15 digits
+      return emailRegex.test(value) || phoneRegex.test(value);
     },
     {
-      message: 'Must be a valid email or phone number',
+      message: 'Please enter a valid email or phone number',
     },
   );
+
+  // Add this near the top of your component with other state declarations
+  const [formKey, setFormKey] = React.useState(0);
+  const forceRerender = () => setFormKey((prev) => prev + 1);
 
   // Define form schema with proper types
   const FormSchema = z.object({
@@ -213,7 +207,7 @@ export default function AddGrievances() {
       });
 
       // Show success message or redirect
-      // router.push(grievancesListPath);
+      router.push(grievancesListPath);
     } catch (error) {
       console.error('Error submitting form:', error);
     }
@@ -320,6 +314,7 @@ export default function AddGrievances() {
                 />
 
                 <FormField
+                  key={`type-${formKey}`}
                   control={form.control}
                   name="type"
                   render={({ field }) => (
@@ -329,7 +324,7 @@ export default function AddGrievances() {
                         onValueChange={(value: string) =>
                           field.onChange(value as GrievanceType)
                         }
-                        value={field.value}
+                        value={field.value || ''}
                         defaultValue={field.value}
                       >
                         <FormControl>
@@ -387,6 +382,7 @@ export default function AddGrievances() {
                 />
 
                 <FormField
+                  key={`priority-${formKey}`}
                   control={form.control}
                   name="priority"
                   render={({ field }) => (
@@ -438,6 +434,7 @@ export default function AddGrievances() {
                     type: undefined,
                     priority: undefined,
                   });
+                  forceRerender();
                 }}
               >
                 Clear

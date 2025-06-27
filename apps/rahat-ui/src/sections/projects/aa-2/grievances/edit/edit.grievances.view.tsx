@@ -163,8 +163,11 @@ export default function EditGrievance() {
     }
   }, [grievanceData, form]);
 
+  // Form key to force re-render when needed
+  const [formKey, setFormKey] = React.useState(0);
+
   // Handle form reset
-  const handleResetForm = () => {
+  const handleResetForm = React.useCallback(() => {
     if (grievanceData?.data) {
       const {
         reportedBy,
@@ -175,6 +178,8 @@ export default function EditGrievance() {
         status,
         priority,
       } = grievanceData.data;
+
+      // First, reset the form with the original values
       form.reset({
         reportedBy: reportedBy || '',
         reporterContact: reporterContact || '',
@@ -184,8 +189,18 @@ export default function EditGrievance() {
         status: status || GrievanceStatus.NEW,
         priority: priority || GrievancePriority.MEDIUM,
       });
+
+      // Then force a re-render to ensure UI updates
+      setFormKey((prev) => prev + 1);
     }
-  };
+  }, [form, grievanceData?.data]);
+
+  // Initial form setup when data loads
+  React.useEffect(() => {
+    if (grievanceData?.data) {
+      handleResetForm();
+    }
+  }, [grievanceData, handleResetForm]);
 
   // Update grievance mutation
   const updateGrievance = useGrievanceEdit();
@@ -216,7 +231,7 @@ export default function EditGrievance() {
 
   return (
     <div className="">
-      <Form {...form}>
+      <Form {...form} key={formKey}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="p-4">
             <div className=" mb-2 flex flex-col space-y-0">

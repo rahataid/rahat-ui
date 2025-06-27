@@ -12,6 +12,7 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { formatDate } from 'apps/community-tool-ui/src/utils';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { useParams, useRouter } from 'next/navigation';
+import { StatusChip, PriorityChip, TypeChip } from './components';
 
 export const useGrievancesTableColumns = () => {
   const router = useRouter();
@@ -31,17 +32,29 @@ export const useGrievancesTableColumns = () => {
     {
       accessorKey: 'type',
       header: 'Type',
-      cell: ({ row }) => <div> {row.getValue('type')}</div>,
+      cell: ({ row }) => (
+        <div>
+          <TypeChip type={row.getValue('type')} showIcon={false} />
+        </div>
+      ),
     },
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <div> {row.getValue('status')}</div>,
+      cell: ({ row }) => (
+        <div>
+          <StatusChip status={row.getValue('status')} showIcon={false} />
+        </div>
+      ),
     },
     {
       accessorKey: 'priority',
       header: 'Priority',
-      cell: ({ row }) => <div> {row.getValue('priority')}</div>,
+      cell: ({ row }) => (
+        <div>
+          <PriorityChip priority={row.getValue('priority')} showIcon={false} />
+        </div>
+      ),
     },
     {
       accessorKey: 'createdAt',

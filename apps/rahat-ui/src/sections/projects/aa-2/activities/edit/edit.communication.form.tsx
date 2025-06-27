@@ -62,6 +62,10 @@ export default function EditCommunicationForm({
   );
 
   const fieldName = (name: string) => `activityCommunication.${index}.${name}`; // Dynamic field name generator
+  const initialMessageRef = React.useRef(form.getValues(fieldName('message')));
+  const initialAudioURLRef = React.useRef(
+    form.getValues(fieldName('audioURL')),
+  );
 
   const selectedTransport = form.watch(fieldName('transportId'));
   const sessionId = form.watch(fieldName('sessionId'));
@@ -194,11 +198,7 @@ export default function EditCommunicationForm({
     if (file) {
       const formData = new FormData();
       formData.append('file', file);
-      // form.setValue(fieldName('audioURL'), {
-      //   fileName: 'file_example_MP3_700KB1.mp3',
-      //   mediaURL:
-      //     'https://rahat-rumsan.s3.us-east-1.amazonaws.com/aa/dev/QmeJHC7HHv7aLYwyD7h2Ax36NGVn7dLHm7iwV5w2WR72XR',
-      // });
+
       const { data: afterUpload } = await fileUpload.mutateAsync(formData);
 
       setAudioFile(afterUpload);
@@ -212,7 +212,40 @@ export default function EditCommunicationForm({
   React.useEffect(() => {
     setLoading(fileUpload.isPending);
   }, [fileUpload.isPending, !fileUpload.isPending]);
-  const disabled = Boolean(sessionId);
+  const isSessionComplete = Boolean(sessionId);
+
+  const isMediaFromBackend =
+    (typeof initialMessageRef.current === 'object' &&
+      initialMessageRef.current?.mediaURL) ||
+    (typeof initialAudioURLRef.current === 'object' &&
+      initialAudioURLRef.current?.mediaURL);
+
+  React.useEffect(() => {
+    if (!selectedTransport || !appTransports?.length) return;
+
+    const transportData = appTransports.find(
+      (t) => t.cuid === selectedTransport,
+    );
+
+    const newContentType =
+      transportData?.validationContent as ValidationContent;
+
+    if (newContentType) {
+      setContentType(newContentType);
+
+      // 🧼 Reset fields if type changes
+      if (newContentType === ValidationContent.TEXT) {
+        form.setValue(fieldName('message'), '');
+        form.setValue(fieldName('audioURL'), {});
+      } else if (newContentType === ValidationContent.URL) {
+        form.setValue(fieldName('message'), {}); // assuming audio goes in message sometimes
+        form.setValue(fieldName('audioURL'), {});
+      }
+    }
+
+    setAddress(transportData?.validationAddress === 'EMAIL');
+  }, [selectedTransport]);
+
   return (
     <div className="border border-dashed rounded p-4 my-8">
       <div className="flex justify-between items-center mb-6">
@@ -237,7 +270,7 @@ export default function EditCommunicationForm({
               <Select
                 onValueChange={field.onChange}
                 value={field.value || ''}
-                disabled={disabled}
+                disabled={isSessionComplete}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -263,7 +296,7 @@ export default function EditCommunicationForm({
               <Select
                 value={field.value}
                 onValueChange={field.onChange}
-                disabled={disabled}
+                disabled={isSessionComplete}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -279,7 +312,7 @@ export default function EditCommunicationForm({
           )}
         />
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name={fieldName('transportId')}
           render={({ field }) => (
@@ -310,14 +343,48 @@ export default function EditCommunicationForm({
               <FormMessage />
             </FormItem>
           )}
+        /> */}
+        <FormField
+          control={form.control}
+          name={fieldName('transportId')}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Communication Type</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value}
+                disabled={isSessionComplete || isMediaFromBackend} // <- already handled here!
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select communication type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {appTransports?.map((transport) => {
+                    return (
+                      <SelectItem
+                        value={transport?.cuid as string}
+                        key={transport?.cuid}
+                      >
+                        {transport?.name}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
         />
+
         {contentType === ValidationContent.URL && (
           <FormField
             control={form.control}
             name={fieldName('audioURL')}
             render={() => {
               return (
-                <FormItem className={`${disabled && 'hidden'}`}>
+                <FormItem className={`${isSessionComplete && 'hidden'}`}>
                   <FormLabel>Upload audio</FormLabel>
                   <FormControl>
                     <Input
@@ -372,7 +439,7 @@ export default function EditCommunicationForm({
                       <Textarea
                         placeholder="Write message"
                         {...field}
-                        disabled={disabled}
+                        disabled={isSessionComplete}
                       />
                     ) : (
                       <div className="flex flex-col gap-2">

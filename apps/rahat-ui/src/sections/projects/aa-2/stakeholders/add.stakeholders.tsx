@@ -348,7 +348,7 @@ export default function AddStakeholders() {
                   setUnsavedSupportAreaInput('');
                 }}
               >
-                Cancel
+                Clear
               </Button>
               <Button
                 className="w-32"

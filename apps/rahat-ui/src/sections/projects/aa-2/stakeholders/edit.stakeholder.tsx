@@ -377,6 +377,7 @@ export default function EditStakeholders() {
                 className=" px-8"
                 onClick={() => {
                   form.reset();
+
                   setUnsavedSupportAreaInput('');
                 }}
               >

@@ -15,6 +15,8 @@ import { Table, flexRender } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
 import AddButton from '../projects/components/add.btn';
 import ViewColumns from '../projects/components/view.columns';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Plus } from 'lucide-react';
 
 type IProps = {
   table: Table<User>;
@@ -36,7 +38,13 @@ export default function UsersTable({ table }: IProps) {
             className="rounded"
           />
           <ViewColumns table={table} />
-          <AddButton name="User" path="/users/add" />
+          <Button
+            variant={'default'}
+            type="button"
+            onClick={() => router.push('/users/add')}
+          >
+            <Plus size={18} className="mr-1" /> Create User
+          </Button>
         </div>
         <div>
           <ScrollArea className="h-[calc(100vh-303px)]">

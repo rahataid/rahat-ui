@@ -193,9 +193,12 @@ export default function ManageThreshold() {
                 type="button"
                 variant="secondary"
                 className=" px-8 "
-                onClick={() => router.back()}
+                onClick={() => {
+                  form.reset();
+                  // router.back()
+                }}
               >
-                Cancel
+                Reset
               </Button>
 
               <Dialog open={open} onOpenChange={(open) => setOpen(open)}>

@@ -103,7 +103,7 @@ const StakeGoldersGroups = () => {
               })}
             </div>
           ) : (
-            <NoResult />
+            <NoResult message="No Stakeholder Groups Available" />
           )}
         </ScrollArea>
 

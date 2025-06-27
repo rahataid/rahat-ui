@@ -453,10 +453,11 @@ export default function EditActivity() {
                     variant="outline"
                     className="  w-36"
                     onClick={() => {
-                      router.push(activitiesListPath);
+                      // router.push(activitiesListPath);
+                      form.reset();
                     }}
                   >
-                    Cancel
+                    Reset
                   </Button>
                   <Button
                     className="  w-36"

@@ -368,7 +368,7 @@ export default function ImportStakeholder() {
               }
             }}
           >
-            Cancel
+            Clear
           </Button>
 
           <Button

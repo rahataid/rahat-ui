@@ -38,8 +38,6 @@ function VendorsView() {
     projectModal.onTrue();
   };
 
-  console.log(refetch);
-
   const handleAssignProject = async () => {
     if (!selectedProject) return alert('Please select a project');
     const res = await addVendor.mutateAsync({

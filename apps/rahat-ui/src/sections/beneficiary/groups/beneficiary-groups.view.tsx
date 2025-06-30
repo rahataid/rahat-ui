@@ -75,7 +75,13 @@ function BeneficiaryGroupsView() {
             name="group"
             onSearch={(e) => handleSearch(e.target.value)}
           />
-          <AddButton name="Group" path="/beneficiary/groups/add" />
+          <Button
+            variant={'default'}
+            type="button"
+            onClick={() => router.push(`/beneficiary/groups/add`)}
+          >
+            <Plus size={18} className="mr-1" /> Create Group
+          </Button>
         </div>
         <ScrollArea className="h-[calc(100vh-300px)]">
           {filteredGroups.length > 0 ? (
@@ -90,7 +96,7 @@ function BeneficiaryGroupsView() {
                         className="relative cursor-pointer rounded-md bg-secondary grid place-items-center h-28"
                         onClick={() => {
                           router.push(
-                            `/beneficiary/groups/${i?.uuid}?isAssignedToProject=${isAssignedToProject}&isGroupValidForAA=${i?.isGroupValidForAA}`,
+                            `/beneficiary/groups/${i?.uuid}?isAssignedToProject=${isAssignedToProject}&isGroupValidForAA=${i?.isGroupValidForAA}&fromTab=beneficiaryGroups`,
                           );
                         }}
                       >

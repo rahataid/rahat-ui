@@ -58,15 +58,21 @@ export default function SelectFormField({
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {selectItems?.map((item, index) => (
-                  <SelectItem
-                    key={index}
-                    value={item.value}
-                    disabled={item.isDisabled || false}
-                  >
-                    {item.label}
-                  </SelectItem>
-                ))}
+                {selectItems && selectItems.length > 0 ? (
+                  selectItems.map((item, index) => (
+                    <SelectItem
+                      key={index}
+                      value={item.value}
+                      disabled={item.isDisabled || false}
+                    >
+                      {item.label}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <div className="px-4 py-2 text-muted-foreground text-sm">
+                    No options available
+                  </div>
+                )}
               </SelectContent>
             </Select>
             <FormMessage />

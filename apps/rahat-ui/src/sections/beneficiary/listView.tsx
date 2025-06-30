@@ -1,7 +1,7 @@
 'use client';
 
 import { Table, flexRender } from '@tanstack/react-table';
-import { ChevronDown, Settings2 } from 'lucide-react';
+import { ChevronDown, Plus, Settings2 } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
@@ -31,6 +31,7 @@ import { DatePicker } from '../../components/datePicker';
 import FiltersTags from '../projects/components/filtersTags';
 import Image from 'next/image';
 import AddButton from '../projects/components/add.btn';
+import { useRouter } from 'next/navigation';
 
 type IProps = {
   table: Table<ListBeneficiary>;
@@ -68,7 +69,7 @@ export default function ListView({
     setSelectedProject(project);
     handleFilterProjectSelect(project.value);
   };
-
+  const router = useRouter();
   const selectFilterProjectItems = [
     {
       name: 'All',
@@ -112,7 +113,7 @@ export default function ListView({
       <div className="border rounded shadow p-3">
         <div className="flex space-x-2 items-center mb-2">
           <Input
-            placeholder="Filter beneficiary..."
+            placeholder="Search name..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
@@ -151,7 +152,7 @@ export default function ListView({
             </DropdownMenuContent>
           </DropdownMenu> */}
 
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
                 <Settings2 className="mr-2 h-4 w-5" />
@@ -179,8 +180,14 @@ export default function ListView({
                   );
                 })}
             </DropdownMenuContent>
-          </DropdownMenu>
-          <AddButton name="Beneficiary" path={`/beneficiary/add`} />
+          </DropdownMenu> */}
+          <Button
+            variant={'default'}
+            type="button"
+            onClick={() => router.push(`/beneficiary/add`)}
+          >
+            <Plus size={18} className="mr-1" /> Create Beneficiary
+          </Button>
           {table.getSelectedRowModel().rows.length ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

@@ -200,3 +200,22 @@ export const useConfigureThreshold = () => {
     },
   });
 };
+
+export const useSources = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+  const query = useQuery({
+    queryKey: ['sources', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.sources.getAll',
+          payload,
+        },
+      });
+      return mutate.data;
+    },
+    enabled: !!uuid,
+  });
+  return query;
+};

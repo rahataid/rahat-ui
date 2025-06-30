@@ -8,6 +8,7 @@ export default function BeneficiaryDetailPageView() {
     '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7',
   );
 
+  console.log('sad');
   return (
     <>
       <InfoCards voucherData={voucherData} voucherError={voucherError} />

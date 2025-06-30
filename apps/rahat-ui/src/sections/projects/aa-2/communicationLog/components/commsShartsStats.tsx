@@ -67,7 +67,7 @@ export default function CommunicationsChartsStats({
                         (statsBenefStakeholders?.stakeholder?.SMS?.FAIL || 0),
                     },
                   ],
-                  colors: ['#F4A462', '#2A9D90'],
+                  colors: ['#43A047', '#E53935'],
                 }}
                 custom={true}
                 projectAA={true}
@@ -109,7 +109,7 @@ export default function CommunicationsChartsStats({
           </CardContent>
         </Card>
 
-        {/* the comment part is for the email which may be useed in feature  */}
+        {/* the comment part is for the email which may be used in future  */}
         {/* Email Card */}
         {/* <Card className="shadow-sm rounded-sm flex-1 w-full">
           <CardHeader className="pb-0 pt-1">
@@ -226,7 +226,7 @@ export default function CommunicationsChartsStats({
                             0) || 0,
                     },
                   ],
-                  colors: ['#F4A462', '#2A9D90'],
+                  colors: ['#43A047', '#E53935'],
                 }}
                 custom={true}
                 projectAA={true}

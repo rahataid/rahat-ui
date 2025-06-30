@@ -40,7 +40,7 @@ export default function GroupCreateView() {
       const result = await createBeneficiaryGroup.mutateAsync(payload);
       if (result) {
         toast.success('Beneficiary group added successfully!');
-        router.push('/beneficiary');
+        router.push('/beneficiary?tab=beneficiaryGroups');
       }
     } catch (e: any) {
       toast.error(
@@ -54,9 +54,9 @@ export default function GroupCreateView() {
       <form onSubmit={form.handleSubmit(handleCreateGroup)}>
         <div className="p-4 h-[calc(100vh-115px)]">
           <HeaderWithBack
-            title="Create Beneficiary Group"
+            title="Create Group"
             subtitle="Create a new beneficiary group"
-            path="/beneficiary/groups"
+            path="/beneficiary?tab=beneficiaryGroups"
           />
           <div className="shadow-md p-4 rounded-sm bg-card">
             <div className="grid grid-cols-2 gap-4">
@@ -86,9 +86,9 @@ export default function GroupCreateView() {
           <Button
             type="button"
             variant="secondary"
-            onClick={() => router.push('/beneficiary')}
+            onClick={() => form.reset()}
           >
-            Cancel
+            Clear
           </Button>
           {/* {addGroup.isPending ? (
             <Button disabled>
@@ -97,7 +97,7 @@ export default function GroupCreateView() {
             </Button>
           ) : 
           ( */}
-          <Button className="px-10">Add</Button>
+          <Button className="px-10">Create</Button>
           {/* )} */}
         </div>
       </form>

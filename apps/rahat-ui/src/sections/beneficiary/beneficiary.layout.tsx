@@ -18,8 +18,9 @@ const BeneficiaryLayout: FC<BeneficiaryLayoutProps> = ({
   menuItems,
 }) => {
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
+    const defaultSize = index === 1 ? 20 : 70;
     return (
-      <ResizablePanel minSize={50} key={index}>
+      <ResizablePanel minSize={20} defaultSize={defaultSize} key={index}>
         {children}
       </ResizablePanel>
     );

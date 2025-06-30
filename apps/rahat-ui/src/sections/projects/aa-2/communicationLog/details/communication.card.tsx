@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Mail,
   MessageSquare,
@@ -24,6 +24,9 @@ import {
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { useListSessionLogs, usePagination } from '@rahat-ui/query';
+import { BroadcastStatus } from '@rumsan/connect/src/types';
+import * as XLSX from 'xlsx';
 
 interface BaseCommunication {
   groupId: string;
@@ -57,6 +60,20 @@ export function CommunicationDetailCard({
   activityId,
   projectId,
 }: CommunicationCardProps) {
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+    filters,
+    setFilters,
+  } = usePagination();
+  const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
+    useListSessionLogs(activityCommunication?.sessionId, {
+      ...pagination,
+      ...filters,
+    });
   const router = useRouter();
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -78,6 +95,32 @@ export function CommunicationDetailCard({
     router.push(
       `/projects/aa/${projectId}/communication-logs/commsdetails/${activityCommunication?.communicationId}@${activityId}@${activityCommunication?.sessionId}`,
     );
+  };
+
+  const failedCount = useMemo(() => {
+    return (
+      sessionLogs?.httpReponse?.data?.data?.filter(
+        (log: any) => log?.status === BroadcastStatus.FAIL,
+      ) ?? []
+    );
+  }, [sessionLogs]);
+  const onFailedExports = () => {
+    const logs = sessionLogs?.httpReponse?.data?.data?.filter(
+      (log: any) => log?.status === BroadcastStatus.FAIL,
+    );
+
+    if (!logs?.length) return;
+
+    const rowsToDownload = logs || [];
+    const workbook = XLSX.utils.book_new();
+    const worksheetData = rowsToDownload?.map((log: any) => ({
+      Address: log.address,
+      Status: log.status,
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');
+
+    XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
   };
   return (
     <Card className="rounded-sm pb-0 flex flex-col justify-between">
@@ -139,7 +182,12 @@ export function CommunicationDetailCard({
       </CardContent>
       <CardFooter className="pt-0 pb-4 flex justify-end">
         <div className="flex gap-3">
-          <Button variant="outline" className="flex-1 gap-2" disabled={true}>
+          <Button
+            variant="outline"
+            className=" gap-2"
+            onClick={onFailedExports}
+            disabled={failedCount.length === 0}
+          >
             Failed Exports
             <CloudDownload className="h-4 w-4" />
           </Button>

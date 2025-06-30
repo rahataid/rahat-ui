@@ -72,14 +72,15 @@ export default function CommsLogsDetailPage() {
     setFilters,
   } = usePagination();
 
-  const columns = useCommsLogsTableColumns();
-
   // logs?.sessionLogs
 
   const { data: logs, isLoading } = useGetCommunicationLogs(
     projectID as UUID,
     communicationId,
     activityId,
+  );
+  const columns = useCommsLogsTableColumns(
+    logs?.sessionDetails?.Transport?.name,
   );
 
   const { data: activityDetail, isLoading: isLoadingActivity } =

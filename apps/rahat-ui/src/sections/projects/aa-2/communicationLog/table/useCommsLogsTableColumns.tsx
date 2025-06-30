@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { TriangleAlertIcon } from 'lucide-react';
-export default function useCommsLogsTableColumns() {
+export default function useCommsLogsTableColumns(transportName: string) {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'audience',
@@ -47,7 +47,7 @@ export default function useCommsLogsTableColumns() {
         return (
           <div className="flex items-center space-x-2 gap-2">
             {renderDateTime(row?.original?.createdAt)}
-            {row?.original?.status === 'FAIL' && (
+            {transportName === 'IVR' && row?.original?.status === 'FAIL' && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild className="hover:cursor-pointer py-0">

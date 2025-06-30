@@ -183,22 +183,16 @@ export default function GroupDetailView() {
             />
           )} */}
           <div className="flex gap-6">
-            {group?.data?.isGroupValidForAA && (
-              <Badge className="bg-green-50 text-green-600">
-                {group?.data?.groupPurpose === 'BANK_TRANSFER' &&
-                  'Bank Account Verified'}
-                {group?.data?.groupPurpose === 'MOBILE_MONEY' &&
-                  'Mobile Verified'}
-              </Badge>
-            )}
-            <Button
-              variant={'outline'}
-              className="border-red-500 text-red-500 hover:text-red-500 gap-2"
-              onClick={handleRemoveClick}
-            >
-              <Trash2Icon className="w-4 h-4" />
-              Delete Group
-            </Button>
+            {group?.data?.isGroupValidForAA &&
+              (group?.data?.groupPurpose === 'BANK_TRANSFER' ||
+                group?.data?.groupPurpose === 'MOBILE_MONEY') && (
+                <Badge className="bg-green-50 text-green-600">
+                  {group?.data?.groupPurpose === 'BANK_TRANSFER' &&
+                    'Bank Account Verified'}
+                  {group?.data?.groupPurpose === 'MOBILE_MONEY' &&
+                    'Phone Number Verified'}
+                </Badge>
+              )}
             <Button
               variant={'outline'}
               className=" gap-2"
@@ -233,6 +227,14 @@ export default function GroupDetailView() {
               onClick={onFailedExports}
             >
               <CloudDownloadIcon className="w-4 h-4" /> Export Failed
+            </Button>
+            <Button
+              variant={'outline'}
+              className="border-red-500 text-red-500 hover:text-red-500 gap-2"
+              onClick={handleRemoveClick}
+            >
+              <Trash2Icon className="w-4 h-4" />
+              Delete Group
             </Button>
           </div>
         </div>

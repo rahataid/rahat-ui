@@ -34,6 +34,8 @@ import * as XLSX from 'xlsx';
 import UpdateGroupProposeModal from './groupProposeModal';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
+import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
   const validateModal = useBoolean();
@@ -80,6 +82,7 @@ export default function GroupDetailView() {
   const { data } = useExportBeneficiariesFailedBankAccount(Id);
   const tableData = React.useMemo(() => {
     if (group) {
+      const groupPurpose = group?.data?.groupPurpose;
       return group?.data?.groupedBeneficiaries?.map((d: any) => ({
         name: d?.Beneficiary?.pii?.name,
         phone: d?.Beneficiary?.pii?.phone,
@@ -93,6 +96,8 @@ export default function GroupDetailView() {
         uuid: d?.Beneficiary?.uuid,
         error: d?.Beneficiary?.extras?.error,
         extras: d?.Beneficiary?.extras,
+        groupPurpose: groupPurpose,
+        isGroupValidForAA: group?.data?.isGroupValidForAA,
       }));
     } else return [];
   }, [group]);
@@ -111,7 +116,7 @@ export default function GroupDetailView() {
     },
   });
 
-  const groupProposeName = group?.data?.groupPurpose?.split('_')[0];
+  const groupPurposeName = group?.data?.groupPurpose?.split('_')[0];
 
   // React.useEffect(() => {
   //   if (groupedBeneficiaries) {
@@ -171,7 +176,7 @@ export default function GroupDetailView() {
               description={
                 'Here is a detailed view of the selected beneficiary group'
               }
-              status={groupProposeName}
+              status={capitalizeFirstLetter(groupPurposeName || '')}
             />
           </div>
           {/* {Number(isAssignedToProject) === 0 && (
@@ -182,55 +187,67 @@ export default function GroupDetailView() {
               handleClick={() => {}}
             />
           )} */}
-          <div className="flex gap-6">
+          <div className="flex gap-2">
             {group?.data?.isGroupValidForAA &&
-              (group?.data?.groupPurpose === 'BANK_TRANSFER' ||
-                group?.data?.groupPurpose === 'MOBILE_MONEY') && (
-                <Badge className="bg-green-50 text-green-600">
-                  {group?.data?.groupPurpose === 'BANK_TRANSFER' &&
-                    'Bank Account Verified'}
-                  {group?.data?.groupPurpose === 'MOBILE_MONEY' &&
-                    'Phone Number Verified'}
+              (group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER ||
+                group?.data?.groupPurpose === GroupPurpose.MOBILE_MONEY) && (
+                <Badge className="bg-green-50 text-green-600 flex items-center gap-1">
+                  {group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER && (
+                    <>
+                      <LandmarkIcon className="h-4 w-4 text-green-600" />
+                      Bank Account Verified
+                    </>
+                  )}
+                  {group?.data?.groupPurpose === GroupPurpose.MOBILE_MONEY && (
+                    <>
+                      <Phone className="h-4 w-4 text-green-600" />
+                      Phone Number Verified
+                    </>
+                  )}
                 </Badge>
               )}
             <Button
               variant={'outline'}
-              className=" gap-2"
+              className="gap-2 text-gray-700 rounded-sm"
               onClick={handleGroupPurposeClick}
             >
-              {groupProposeName ? 'Change ' : 'Assign '}
+              {groupPurposeName ? 'Change ' : 'Assign '}
               Group Purpose
             </Button>
 
             {!group?.data?.isGroupValidForAA &&
-              (group?.data?.groupPurpose === 'MOBILE_MONEY' ||
-                group?.data?.groupPurpose === 'BANK_TRANSFER') && (
+              (group?.data?.groupPurpose === GroupPurpose.MOBILE_MONEY ||
+                group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER) && (
                 <Button
                   variant="outline"
-                  className="gap-2"
+                  className="gap-2 text-gray-700 rounded-sm"
                   onClick={handleAssignModalClick}
                 >
-                  {group.data.groupPurpose === 'MOBILE_MONEY' ? (
-                    <Phone className="w-4 h-4" />
+                  {group.data.groupPurpose === GroupPurpose.MOBILE_MONEY ? (
+                    <>
+                      <Phone className="w-4 h-4" />
+                      Validate Phone Number
+                    </>
                   ) : (
-                    <LandmarkIcon className="w-4 h-4" />
+                    <>
+                      <LandmarkIcon className="w-4 h-4" />
+                      Validate Bank Account
+                    </>
                   )}
-                  {group.data.groupPurpose === 'MOBILE_MONEY'
-                    ? 'Validate Phone Number'
-                    : 'Validate Bank Account'}
                 </Button>
               )}
-
             <Button
               variant={'outline'}
-              className={`${isGroupValidForAA === 'true' && 'hidden'} gap-2`}
+              className={`${
+                group?.data?.isGroupValidForAA && 'hidden'
+              } gap-2 text-gray-700 rounded-sm`}
               onClick={onFailedExports}
             >
               <CloudDownloadIcon className="w-4 h-4" /> Export Failed
             </Button>
             <Button
               variant={'outline'}
-              className="border-red-500 text-red-500 hover:text-red-500 gap-2"
+              className="border-red-500 text-red-500 gap-2 rounded-sm"
               onClick={handleRemoveClick}
             >
               <Trash2Icon className="w-4 h-4" />

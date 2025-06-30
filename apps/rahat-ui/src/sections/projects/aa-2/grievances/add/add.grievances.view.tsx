@@ -30,6 +30,11 @@ import {
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useUserStore } from '@rumsan/react-query';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
+import {
+  grievancePriority,
+  grievanceStatus,
+  grievanceType,
+} from 'apps/rahat-ui/src/constants/aa.grievances.constants';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -46,67 +51,6 @@ export default function AddGrievances() {
   const forceRerender = () => setFormKey((prev) => prev + 1);
   const grievancesListPath = `/projects/aa/${projectID}/grievances`;
   const addGrievance = useGrievanceAdd();
-
-  const grievanceType = [
-    {
-      label: 'Technical',
-      value: GrievanceType.TECHNICAL,
-    },
-    {
-      label: 'Operational',
-      value: GrievanceType.OPERATIONAL,
-    },
-    {
-      label: 'Financial',
-      value: GrievanceType.FINANCIAL,
-    },
-    {
-      label: 'Other',
-      value: GrievanceType.OTHER,
-    },
-  ];
-
-  const grievanceStatus = [
-    {
-      label: 'New',
-      value: GrievanceStatus.NEW,
-    },
-    {
-      label: 'In Progress',
-      value: GrievanceStatus.IN_PROGRESS,
-    },
-    {
-      label: 'Resolved',
-      value: GrievanceStatus.RESOLVED,
-    },
-    {
-      label: 'Closed',
-      value: GrievanceStatus.CLOSED,
-    },
-    {
-      label: 'Rejected',
-      value: GrievanceStatus.REJECTED,
-    },
-  ];
-
-  const grievancePriority = [
-    {
-      label: 'Low',
-      value: GrievancePriority.LOW,
-    },
-    {
-      label: 'Medium',
-      value: GrievancePriority.MEDIUM,
-    },
-    {
-      label: 'High',
-      value: GrievancePriority.HIGH,
-    },
-    {
-      label: 'Critical',
-      value: GrievancePriority.CRITICAL,
-    },
-  ];
 
   // Custom validation for email or phone number
   const emailOrPhone = z.string().refine(

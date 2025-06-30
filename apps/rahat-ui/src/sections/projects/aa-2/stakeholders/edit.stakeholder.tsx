@@ -31,7 +31,6 @@ export default function EditStakeholders() {
     uuid: stakeholdersId,
   });
   const redirectTo = searchParams?.get('from');
-  console.log(' stakeholders', stakeholder);
   const updateStakeholder = useUpdateStakeholders();
 
   const isValidPhoneNumberRefinement = (value: string | undefined) => {
@@ -228,41 +227,6 @@ export default function EditStakeholders() {
                 }}
               />
 
-              {/* <FormField
-                control={form.control}
-                name="district"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <Select
-                        value={field.value || ''}
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                        }}
-                      >
-                        <Label>District</Label>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select District" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectGroup>
-                            {Object.values(DISTRICTS_OF_NEPAL).map(
-                              (district) => (
-                                <SelectItem value={district} key={district}>
-                                  {district}
-                                </SelectItem>
-                              ),
-                            )}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              /> */}
               <FormField
                 control={form.control}
                 name="district"
@@ -282,41 +246,7 @@ export default function EditStakeholders() {
                   );
                 }}
               />
-              {/* <FormField
-                control={form.control}
-                name="municipality"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <Select
-                        value={field.value || ''}
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                        }}
-                      >
-                        <Label>Municipality</Label>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a municipality" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectGroup>
-                            {MUNICIPALITIES_OF_NEPAL.map(
-                              (municipality, index) => (
-                                <SelectItem value={municipality} key={index}>
-                                  {municipality}
-                                </SelectItem>
-                              ),
-                            )}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              /> */}
+
               <FormField
                 control={form.control}
                 name="municipality"
@@ -342,13 +272,11 @@ export default function EditStakeholders() {
                 type="button"
                 variant="secondary"
                 className=" px-8"
-                onClick={() =>
-                  router.push(
-                    `/projects/aa/${projectId}/stakeholders/${stakeholdersId}`,
-                  )
-                }
+                onClick={() => {
+                  form.reset();
+                }}
               >
-                Cancel
+                Reset
               </Button>
               <Button className="w-32" disabled={form.formState.isSubmitting}>
                 Update

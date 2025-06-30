@@ -4,7 +4,7 @@ import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
-import { useCreateDailyMonitoring } from '@rahat-ui/query';
+import { useCreateDailyMonitoring, useSources } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
@@ -12,7 +12,6 @@ import { Plus } from 'lucide-react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import SelectFormField from '../select.form.field';
-import { useSelectItems } from '../useSelectItems';
 import AddAnotherDataSource from './add.another.data.source';
 import { fieldLabels } from 'apps/rahat-ui/src/utils/fieldLabelValidation';
 const fields = ['todayGLOFAS', 'days3', 'days5'] as const;
@@ -22,9 +21,18 @@ export default function AddDailyMonitoring() {
   const projectId = params.id as UUID;
   const router = useRouter();
 
-  const dailyMonitoringListPath = `/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`;
+  const { data: sources } = useSources(projectId, {});
 
-  const { riverBasins } = useSelectItems();
+  const riverBasins = React.useMemo(
+    () =>
+      sources?.map((source: any) => ({
+        label: source.riverBasin,
+        value: source.riverBasin,
+      })),
+    [sources],
+  );
+
+  const dailyMonitoringListPath = `/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`;
 
   const createDailyMonitoring = useCreateDailyMonitoring();
 
@@ -423,10 +431,10 @@ export default function AddDailyMonitoring() {
               className="bg-red-100 text-red-600 w-36"
               onClick={() => {
                 form.reset();
-                router.push(dailyMonitoringListPath);
+                // router.push(dailyMonitoringListPath);
               }}
             >
-              Cancel
+              Clear
             </Button>
             <Button type="submit" className="w-32">
               Add

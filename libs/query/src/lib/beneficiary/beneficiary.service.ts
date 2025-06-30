@@ -690,6 +690,7 @@ export const useGetBeneficiaryGroup = (
       queryKey: [GET_BENEFICIARY_GROUP, uuid],
       // @ts-ignore
       queryFn: () => getBeneficiaryGroup(uuid),
+      refetchOnWindowFocus: true,
     },
     queryClient,
   );

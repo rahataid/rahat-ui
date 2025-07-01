@@ -11,6 +11,7 @@ import {
   CloudAlert,
   Coins,
   Store,
+  NotebookPenIcon,
 } from 'lucide-react';
 
 export type NavItem = {
@@ -84,6 +85,11 @@ export const useNavItems = () => {
           title: 'Communication Logs',
           path: `/projects/aa/${params.id}/communication-logs`,
           icon: <SmartphoneNfc size={18} strokeWidth={2} />,
+        },
+        {
+          title: 'Grievances',
+          path: `/projects/aa/${params.id}/grievances`,
+          icon: <NotebookPenIcon size={18} strokeWidth={2} />,
         },
       ],
     },

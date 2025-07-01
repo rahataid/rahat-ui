@@ -53,7 +53,7 @@ export const useUserTableColumns = () => {
     },
     {
       accessorKey: 'wallet',
-      header: 'Wallet',
+      header: 'Wallet Address',
       cell: ({ row }) => {
         const walletAddress = row.getValue('wallet') as string;
         return (
@@ -63,7 +63,7 @@ export const useUserTableColumns = () => {
                 className="flex items-center gap-3 cursor-pointer"
                 onClick={() => clickToCopy(walletAddress, row.index)}
               >
-                <p>{truncateEthAddress(walletAddress)}</p>
+                <p className="truncate w-48">{walletAddress}</p>
                 {walletAddress ? (
                   walletAddressCopied === row.index ? (
                     <CopyCheck size={15} strokeWidth={1.5} />
@@ -92,6 +92,7 @@ export const useUserTableColumns = () => {
     },
     {
       id: 'actions',
+      header: 'Actions',
       enableHiding: false,
       cell: ({ row }) => {
         return (

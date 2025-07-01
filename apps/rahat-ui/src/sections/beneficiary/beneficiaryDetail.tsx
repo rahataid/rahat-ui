@@ -48,6 +48,7 @@ import EditBeneficiary from './editBeneficiary';
 import TooltipComponent from '../../components/tooltip';
 import { humanizeString } from '../../utils';
 import useCopy from '../../hooks/useCopy';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 type IProps = {
   beneficiaryDetail: any;
@@ -294,154 +295,157 @@ export default function BeneficiaryDetail({
           </div>
         </div>
       </div>
-      <div className="p-4 flex flex-col space-y-4">
-        <h1 className="font-medium">General</h1>
 
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <MapPin size={20} strokeWidth={1.5} />
-            <p>Address</p>
-          </div>
-          <p className="text-muted-foreground text-base">
-            {beneficiaryDetail?.piiData?.extras?.address ||
-              beneficiaryDetail?.location ||
-              '-'}
-          </p>
-        </div>
+      <ScrollArea className="h-[calc(100vh-240px)]">
+        <div className="p-4 flex flex-col space-y-4">
+          <h1 className="font-medium">General</h1>
 
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Phone size={20} strokeWidth={1.5} />
-            <p>Phone Number</p>
-          </div>
-          <p className="text-muted-foreground text-base">
-            {beneficiaryDetail?.piiData?.phone ||
-              beneficiaryDetail?.phone ||
-              '-'}
-          </p>
-        </div>
-
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Mail size={20} strokeWidth={1.5} />
-            <p>Email Address</p>
-          </div>
-          <p className="text-muted-foreground text-base">
-            {beneficiaryDetail?.piiData?.email ||
-              beneficiaryDetail?.email ||
-              '-'}
-          </p>
-        </div>
-
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Phone size={20} strokeWidth={1.5} />
-            <p>Phone Status</p>
-          </div>
-          <p className="text-muted-foreground text-base">
-            {beneficiaryDetail?.phoneStatus || '-'}
-          </p>
-        </div>
-
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Landmark size={20} strokeWidth={1.5} />
-            <p>Bank Status</p>
-          </div>
-          <p className="text-muted-foreground text-base">
-            {beneficiaryDetail?.bankedStatus || '-'}
-          </p>
-        </div>
-
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Wifi size={20} strokeWidth={1.5} />
-            <p>Internet Status</p>
-          </div>
-          <p className="text-muted-foreground text-base">
-            {beneficiaryDetail?.internetStatus || '-'}
-          </p>
-        </div>
-
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <WalletIcon size={20} strokeWidth={1.5} />
-            <p>Wallet Address</p>
-          </div>
-          <div className="flex items-center">
-            <div className="text-base text-muted-foreground truncate w-32  mr-2">
-              {beneficiaryDetail?.walletAddress || 'N/A'}
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <MapPin size={20} strokeWidth={1.5} />
+              <p>Address</p>
             </div>
-            <button
-              onClick={() =>
-                clickToCopy(beneficiaryDetail?.walletAddress || '', 1)
-              }
-              className="ml-2 text-sm text-gray-500"
-            >
-              {copyAction === 1 ? (
-                <CopyCheck className="w-4 h-4" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )}
-            </button>
+            <p className="text-muted-foreground text-base">
+              {beneficiaryDetail?.piiData?.extras?.address ||
+                beneficiaryDetail?.location ||
+                '-'}
+            </p>
           </div>
-        </div>
-      </div>
-      {beneficiaryDetail?.BeneficiaryProject && (
-        <div
-          className={`p-4 flex flex-col space-y-4 ml-2 ${
-            beneficiaryDetail?.BeneficiaryProject?.length < 1 && 'hidden'
-          }`}
-        >
-          <div className="flex justify-between items-start">
-            <p className="text-base font-medium">Project Involved</p>
 
-            <div className="flex flex-col items-end space-y-2">
-              {beneficiaryDetail?.BeneficiaryProject?.map((item, index) => (
-                <p
-                  key={item.id || index}
-                  className="text-muted-foreground text-base"
-                >
-                  {item.Project?.name || '-'}
-                </p>
-              ))}
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <Phone size={20} strokeWidth={1.5} />
+              <p>Phone Number</p>
             </div>
+            <p className="text-muted-foreground text-base">
+              {beneficiaryDetail?.piiData?.phone ||
+                beneficiaryDetail?.phone ||
+                '-'}
+            </p>
           </div>
-        </div>
-      )}
 
-      {beneficiaryDetail?.extras && (
-        <div className="p-4 flex flex-col space-y-4 ml-2">
-          <h1 className="font-medium">Extra Details</h1>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <Mail size={20} strokeWidth={1.5} />
+              <p>Email Address</p>
+            </div>
+            <p className="text-muted-foreground text-base">
+              {beneficiaryDetail?.piiData?.email ||
+                beneficiaryDetail?.email ||
+                '-'}
+            </p>
+          </div>
 
-          {Object.keys(beneficiaryDetail?.extras || {}).length > 0 &&
-            beneficiaryDetail?.extras && (
-              <div className="flex flex-col space-y-4">
-                {Object.entries(beneficiaryDetail.extras)
-                  .filter(([key]) => {
-                    const cleanKey = key.trim().toLowerCase();
-                    return ![
-                      'error',
-                      'bankedstatus',
-                      'validbankaccount',
-                      'token',
-                    ].includes(cleanKey);
-                  })
-                  .map(([key, value]) => (
-                    <div
-                      key={key}
-                      className="flex justify-between items-center"
-                    >
-                      <p>{humanizeString(key)}</p>
-                      <p className="text-muted-foreground text-base">
-                        {String(value) || '-'}
-                      </p>
-                    </div>
-                  ))}
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <Phone size={20} strokeWidth={1.5} />
+              <p>Phone Status</p>
+            </div>
+            <p className="text-muted-foreground text-base">
+              {beneficiaryDetail?.phoneStatus || '-'}
+            </p>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <Landmark size={20} strokeWidth={1.5} />
+              <p>Bank Status</p>
+            </div>
+            <p className="text-muted-foreground text-base">
+              {beneficiaryDetail?.bankedStatus || '-'}
+            </p>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <Wifi size={20} strokeWidth={1.5} />
+              <p>Internet Status</p>
+            </div>
+            <p className="text-muted-foreground text-base">
+              {beneficiaryDetail?.internetStatus || '-'}
+            </p>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <WalletIcon size={20} strokeWidth={1.5} />
+              <p>Wallet Address</p>
+            </div>
+            <div className="flex items-center">
+              <div className="text-base text-muted-foreground truncate w-32  mr-2">
+                {beneficiaryDetail?.walletAddress || 'N/A'}
               </div>
-            )}
+              <button
+                onClick={() =>
+                  clickToCopy(beneficiaryDetail?.walletAddress || '', 1)
+                }
+                className="ml-2 text-sm text-gray-500"
+              >
+                {copyAction === 1 ? (
+                  <CopyCheck className="w-4 h-4" />
+                ) : (
+                  <Copy className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+          </div>
         </div>
-      )}
+        {beneficiaryDetail?.BeneficiaryProject && (
+          <div
+            className={`p-4 flex flex-col space-y-4 ml-2 ${
+              beneficiaryDetail?.BeneficiaryProject?.length < 1 && 'hidden'
+            }`}
+          >
+            <div className="flex justify-between items-start">
+              <p className="text-base font-medium">Project Involved</p>
+
+              <div className="flex flex-col items-end space-y-2">
+                {beneficiaryDetail?.BeneficiaryProject?.map((item, index) => (
+                  <p
+                    key={item.id || index}
+                    className="text-muted-foreground text-base"
+                  >
+                    {item.Project?.name || '-'}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {beneficiaryDetail?.extras && (
+          <div className="p-4 flex flex-col space-y-4 ml-2">
+            <h1 className="font-medium">Extra Details</h1>
+
+            {Object.keys(beneficiaryDetail?.extras || {}).length > 0 &&
+              beneficiaryDetail?.extras && (
+                <div className="flex flex-col space-y-4">
+                  {Object.entries(beneficiaryDetail.extras)
+                    .filter(([key]) => {
+                      const cleanKey = key.trim().toLowerCase();
+                      return ![
+                        'error',
+                        'bankedstatus',
+                        'validbankaccount',
+                        'token',
+                      ].includes(cleanKey);
+                    })
+                    .map(([key, value]) => (
+                      <div
+                        key={key}
+                        className="flex justify-between items-center"
+                      >
+                        <p>{humanizeString(key)}</p>
+                        <p className="text-muted-foreground text-base">
+                          {String(value) || '-'}
+                        </p>
+                      </div>
+                    ))}
+                </div>
+              )}
+          </div>
+        )}
+      </ScrollArea>
     </>
   );
 }

@@ -175,7 +175,7 @@ function StakeholdersView() {
                 />
               </RoleAuth>
             </div>
-            <DemoTable table={table} />
+            <DemoTable table={table} message="No Stakeholders Available" />
 
             <CustomPagination
               meta={

@@ -355,7 +355,7 @@ export default function AddActivities() {
                       form.reset();
                     }}
                   >
-                    Cancel
+                    Clear
                   </Button>
                   <Button
                     className="w-36"

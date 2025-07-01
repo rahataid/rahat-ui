@@ -352,7 +352,6 @@ export default function ImportStakeholder() {
       // Clear duplicates if successful
       setDuplicatePhonesFromServer(new Set());
 
-      toast.success('Stakeholders imported successfully!');
       router.push(`/projects/aa/${id}/stakeholders?tab=stakeholders`);
     } catch (error: any) {
       const message: string =

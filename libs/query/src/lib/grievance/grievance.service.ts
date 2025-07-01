@@ -13,6 +13,7 @@ const MS_ACTIONS = {
     ADD: 'aa.grievances.create',
     GET: 'aa.grievances.get',
     UPDATE: 'aa.grievances.update',
+    UPDATE_STATUS: 'aa.grievances.updateStatus',
   },
 };
 
@@ -217,6 +218,59 @@ export const useGrievanceEdit = () => {
         const errorMessage = error?.response?.data?.message || 'Error';
         toast.fire({
           title: 'Error while updating grievance.',
+          icon: 'error',
+          text: errorMessage,
+        });
+      },
+    },
+    queryClient,
+  );
+
+  return query;
+};
+
+export const useGrievanceEditStatus = () => {
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  const q = useProjectAction<{ uuid: string; status: string }>();
+  const { queryClient } = useRSQuery();
+
+  const query = useMutation(
+    {
+      mutationFn: async ({
+        projectUUID,
+        grievancePayload,
+      }: {
+        projectUUID: UUID;
+        grievancePayload: { uuid: string; status: string };
+      }) => {
+        return q.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: MS_ACTIONS.GRIEVANCES.UPDATE_STATUS,
+            payload: grievancePayload,
+          },
+        });
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT],
+        });
+        toast.fire({
+          title: 'Grievance status updated successfully.',
+          icon: 'success',
+        });
+      },
+      onError: (error: any) => {
+        console.log('error', error);
+        const errorMessage = error?.response?.data?.message || 'Error';
+        toast.fire({
+          title: 'Error while updating grievance status.',
           icon: 'error',
           text: errorMessage,
         });

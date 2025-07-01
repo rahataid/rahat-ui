@@ -358,13 +358,11 @@ export default function ImportStakeholder() {
       const message: string =
         error?.response?.data?.message || error?.message || '';
 
-      const phoneMatch =
-        message.match(/Phone\(s\):\s*([^|]+)/i) ||
-        message.match(/Phone number must be unique,?\s*(.+)/i);
+      const phoneMatch = message.match(/Phone\(s\):\s*([^|]+)/i);
       if (phoneMatch) {
         const phoneList = phoneMatch[1]
           .split(',')
-          .map((p) => p.trim())
+          .map((p) => p.trim().replace(/^\+977/, ''))
           .filter(Boolean);
         setDuplicatePhonesFromServer(new Set(phoneList));
       }

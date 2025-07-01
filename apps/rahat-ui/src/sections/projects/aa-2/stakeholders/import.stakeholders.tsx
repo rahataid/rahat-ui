@@ -80,12 +80,14 @@ export default function ImportStakeholder() {
     console.log(headers);
 
     return data.slice(1).some((row) =>
-      requiredHeaders.some((header) => {
-        const index = headers.indexOf(header);
-        if (index === -1) return true; // required column missing
-        const cell = row[index];
-        return !cell || cell.toString().trim() === '';
-      }),
+      requiredHeaders
+        .filter((h) => h !== 'email')
+        .some((header) => {
+          const index = headers.indexOf(header);
+          if (index === -1) return true; // required column missing
+          const cell = row[index];
+          return !cell || cell.toString().trim() === '';
+        }),
     );
   };
 
@@ -402,7 +404,7 @@ export default function ImportStakeholder() {
 
   // Duplicate phone numbers in uploaded file
   React.useEffect(() => {
-    if (duplicatePhonesOnUpload.size > 0) {
+    if (duplicatePhonesOnUpload.size > 1) {
       toast.warn(
         `⚠️ ${duplicatePhonesOnUpload.size} duplicate phone number(s) found in uploaded file. They have been highlighted in red.`,
         { autoClose: 5000 },
@@ -412,7 +414,7 @@ export default function ImportStakeholder() {
 
   // Duplicate emails in uploaded file
   React.useEffect(() => {
-    if (duplicateEmails.size > 0) {
+    if (duplicateEmails.size > 1) {
       toast.warn(
         `⚠️ ${duplicateEmails.size} duplicate email address(es) found in uploaded file. They have been highlighted in yellow.`,
         { autoClose: 5000 },
@@ -420,6 +422,7 @@ export default function ImportStakeholder() {
     }
   }, [duplicateEmails]);
 
+  console.log('emails', duplicateEmails);
   return (
     <>
       <div className="p-4  h-[calc(100vh-120px)]">
@@ -556,8 +559,8 @@ export default function ImportStakeholder() {
             disabled={
               data?.length === 0 ||
               hasEmptyRequiredFields() ||
-              duplicatePhonesOnUpload.size > 0 ||
-              duplicateEmails.size > 0
+              duplicatePhonesOnUpload.size > 1 ||
+              duplicateEmails.size > 1
             }
           >
             Import

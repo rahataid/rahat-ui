@@ -21,7 +21,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import useCopy from '../../hooks/useCopy';
 import { UUID } from 'crypto';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import {
   AlertDialog,
   AlertDialogAction,

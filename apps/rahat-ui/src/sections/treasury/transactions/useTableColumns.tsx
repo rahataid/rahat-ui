@@ -1,6 +1,6 @@
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
 export type Transaction = {
   topic: string;

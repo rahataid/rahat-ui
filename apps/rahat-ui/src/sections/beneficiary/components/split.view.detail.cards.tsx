@@ -7,7 +7,7 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
 export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
   const router = useRouter();

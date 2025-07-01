@@ -1,7 +1,7 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Eye } from 'lucide-react';
 import { ListBeneficiary } from '@rahat-ui/types';

@@ -1,4 +1,5 @@
 import { localStore, zustandStore } from '@rumsan/react-query';
+import { StoreApi, UseBoundStore } from 'zustand';
 
 const initialStore = {
   stakeholders: [],
@@ -17,17 +18,18 @@ type StakeholdersStateAction = {
 
 type StakeholdersStore = StakeholdersState & StakeholdersStateAction;
 
-export const useStakeholdersStore = zustandStore<StakeholdersStore>(
-  (set) => ({
-    ...initialStore,
-    setStakeholders: (stakeholders) => set({ stakeholders }),
-    setStakeholdersMeta: (meta) => set({ stakeholdersMeta: meta }),
-  }),
-  {
-    devtoolsEnabled: true,
-    persistOptions: {
-      name: 'aaStakeholdersStore',
-      storage: localStore,
+export const useStakeholdersStore: UseBoundStore<StoreApi<StakeholdersStore>> =
+  zustandStore<StakeholdersStore>(
+    (set) => ({
+      ...initialStore,
+      setStakeholders: (stakeholders) => set({ stakeholders }),
+      setStakeholdersMeta: (meta) => set({ stakeholdersMeta: meta }),
+    }),
+    {
+      devtoolsEnabled: true,
+      persistOptions: {
+        name: 'aaStakeholdersStore',
+        storage: localStore,
+      },
     },
-  },
-);
+  );

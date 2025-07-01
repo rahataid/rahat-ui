@@ -1,4 +1,4 @@
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { formatdbDate } from 'apps/rahat-ui/src/utils';
 import { Copy, CopyCheck } from 'lucide-react';

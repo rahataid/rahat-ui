@@ -32,7 +32,7 @@ import RemoveBenfGroupModal from './removeGroupModal';
 import ValidateBenefBankAccountByGroupUuid from './validateAccountModal';
 import * as XLSX from 'xlsx';
 import UpdateGroupProposeModal from './groupProposeModal';
-import { Back, Heading } from 'apps/rahat-ui/src/common';
+import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
@@ -75,7 +75,7 @@ export default function GroupDetailView() {
   const isAssignedToProject = searchParams.get('isAssignedToProject');
   const isGroupValidForAA = searchParams.get('isGroupValidForAA');
   const groupedBeneficiaries = [] as any;
-  const { data: group } = useGetBeneficiaryGroup(Id);
+  const { data: group, isLoading } = useGetBeneficiaryGroup(Id);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const columns = useBeneficiaryTableColumns();
@@ -145,7 +145,9 @@ export default function GroupDetailView() {
     );
   };
 
-  return (
+  return isLoading ? (
+    <TableLoader />
+  ) : (
     <>
       <RemoveBenfGroupModal
         beneficiaryGroupDetail={group?.data}
@@ -208,7 +210,9 @@ export default function GroupDetailView() {
               )}
             <Button
               variant={'outline'}
-              className="gap-2 text-gray-700 rounded-sm"
+              className={`gap-2 text-gray-700 rounded-sm ${
+                group?.data?.groupedBeneficiaries?.length === 0 && 'hidden'
+              }`}
               onClick={handleGroupPurposeClick}
             >
               {groupPurposeName ? 'Change ' : 'Assign '}
@@ -239,7 +243,9 @@ export default function GroupDetailView() {
             <Button
               variant={'outline'}
               className={`${
-                group?.data?.isGroupValidForAA && 'hidden'
+                (group?.data?.isGroupValidForAA ||
+                  group?.data?.groupedBeneficiaries?.length === 0) &&
+                'hidden'
               } gap-2 text-gray-700 rounded-sm`}
               onClick={onFailedExports}
             >

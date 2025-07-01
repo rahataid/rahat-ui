@@ -1,3 +1,4 @@
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { DataItem } from 'apps/rahat-ui/src/common';
 import { User } from 'lucide-react';
 // import DataCard from '../../common/dataCard';
@@ -26,6 +27,20 @@ const StakeHolderInfo = ({ stakeholder }: IProps) => {
         <DataItem label="Organization" value={stakeholder?.organization} />
         <DataItem label="District " value={stakeholder?.district} />
         <DataItem label="Municipality" value={stakeholder?.municipality} />
+
+        <div>
+          <h1 className="text-lg text-black">Support Area</h1>
+          {stakeholder?.supportArea?.map((a) => {
+            return (
+              <Badge
+                className="text-sm text-muted-foreground font-medium w-auto mr-2"
+                key={a}
+              >
+                {a}
+              </Badge>
+            );
+          })}
+        </div>
       </div>
     </>
   );

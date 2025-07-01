@@ -2,7 +2,7 @@ import React from 'react';
 import { Copy, CopyCheck } from 'lucide-react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useSearchParams } from 'next/navigation';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 
 import {

@@ -201,30 +201,7 @@ export default function EditUser() {
                   );
                 }}
               />
-              <div className="col-span-2">
-                <FormField
-                  control={form.control}
-                  name="wallet"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Wallet Address</FormLabel>
-                        <FormControl>
-                          <div className="relative w-full">
-                            <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              type="text"
-                              placeholder="Enter wallet address"
-                              {...field}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-              </div>
+
               <FormField
                 control={form.control}
                 name="roles"
@@ -260,6 +237,29 @@ export default function EditUser() {
                   );
                 }}
               />
+
+              <FormField
+                control={form.control}
+                name="wallet"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Wallet Address</FormLabel>
+                      <FormControl>
+                        <div className="relative w-full">
+                          <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="text"
+                            placeholder="Enter wallet address"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
             </>
           </div>
         </div>
@@ -268,9 +268,12 @@ export default function EditUser() {
             className="px-14"
             type="button"
             variant="secondary"
-            onClick={() => router.push('/users')}
+            onClick={() => {
+              form.reset();
+              // router.push('/users')
+            }}
           >
-            Cancel
+            Reset
           </Button>
           {updateUser.isPending ? (
             <Button disabled>

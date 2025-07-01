@@ -438,7 +438,7 @@ export default function AddBeneficiaryForm() {
                 form.reset();
               }}
             >
-              Clear
+              Reset
             </Button>
             {updateBeneficiary.isPending ? (
               <Button disabled>

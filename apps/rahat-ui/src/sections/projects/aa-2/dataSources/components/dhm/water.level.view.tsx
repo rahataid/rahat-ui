@@ -62,13 +62,25 @@ export function WaterLevelView({
           </div>
         </div>
         <TabsContent value="Point">
-          <PointWaterLevel waterLevels={data?.info?.history} />
+          <PointWaterLevel
+            waterLevels={data?.info?.history}
+            dangerLevel={data?.info?.danger_level}
+            warningLevel={data?.info?.warning_level}
+          />
         </TabsContent>
         <TabsContent value="Hourly">
-          <HourlyAndDailyWaterLevel waterLevels={data?.info?.history} />
+          <HourlyAndDailyWaterLevel
+            waterLevels={data?.info?.history}
+            dangerLevel={data?.info?.danger_level}
+            warningLevel={data?.info?.warning_level}
+          />
         </TabsContent>
         <TabsContent value="Daily">
-          <HourlyAndDailyWaterLevel waterLevels={data?.info?.history} />
+          <HourlyAndDailyWaterLevel
+            waterLevels={data?.info?.history}
+            dangerLevel={data?.info?.danger_level}
+            warningLevel={data?.info?.warning_level}
+          />
         </TabsContent>
       </Tabs>
     </div>

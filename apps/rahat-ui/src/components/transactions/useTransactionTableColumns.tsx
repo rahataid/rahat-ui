@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import {
   Tooltip,
   TooltipContent,

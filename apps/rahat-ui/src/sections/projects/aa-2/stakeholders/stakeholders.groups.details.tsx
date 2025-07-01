@@ -108,6 +108,17 @@ const StakeholdersGroupsDetails = (props: Props) => {
             }
           />
 
+          <SearchInput
+            className="w-full"
+            name="supportArea"
+            value={
+              (table.getColumn('supportArea')?.getFilterValue() as string) ?? ''
+            }
+            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+              table.getColumn('supportArea')?.setFilterValue(event.target.value)
+            }
+          />
+
           <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
             <Button
               variant="default"

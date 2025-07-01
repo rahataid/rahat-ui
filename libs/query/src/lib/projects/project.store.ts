@@ -1,6 +1,7 @@
 import { Project } from '@rahataid/sdk/project/project.types';
 import { localStore, zustandStore } from '@rumsan/react-query';
 import { FormattedResponse } from '@rumsan/sdk/utils';
+import { StoreApi, UseBoundStore } from 'zustand';
 
 type ProjectState = {
   singleProject: FormattedResponse<Project>['data'] | null;
@@ -22,20 +23,21 @@ const initialStore = {
   projects: [],
 };
 
-export const useProjectStore = zustandStore<ProjectStore>(
-  (set) => ({
-    ...initialStore,
-    meta: {},
-    setSingleProject: (project) => set({ singleProject: project }),
-    setProjects: (projects) => set({ projects }),
-    resetProject: () => set({ ...initialStore }),
-    setMeta: (meta: FormattedResponse<Project>['response']['meta']) =>
-      set({ meta }),
-  }),
-  {
-    devtoolsEnabled: true,
-  },
-);
+export const useProjectStore: UseBoundStore<StoreApi<ProjectStore>> =
+  zustandStore<ProjectStore>(
+    (set) => ({
+      ...initialStore,
+      meta: {},
+      setSingleProject: (project) => set({ singleProject: project }),
+      setProjects: (projects) => set({ projects }),
+      resetProject: () => set({ ...initialStore }),
+      setMeta: (meta: FormattedResponse<Project>['response']['meta']) =>
+        set({ meta }),
+    }),
+    {
+      devtoolsEnabled: true,
+    },
+  );
 
 const initialSettingsStore = {
   settings: null,
@@ -53,7 +55,9 @@ type ProjectSettingsStateAction = {
 
 type ProjectSettingsStore = ProjectSettingsState & ProjectSettingsStateAction;
 
-export const useProjectSettingsStore = zustandStore<ProjectSettingsStore>(
+export const useProjectSettingsStore: UseBoundStore<
+  StoreApi<ProjectSettingsStore>
+> = zustandStore<ProjectSettingsStore>(
   (set) => ({
     ...initialSettingsStore,
     setSettings: (settings) =>

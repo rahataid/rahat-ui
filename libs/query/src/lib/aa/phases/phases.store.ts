@@ -1,4 +1,5 @@
 import { localStore, zustandStore } from '@rumsan/react-query';
+import { StoreApi, UseBoundStore } from 'zustand';
 
 type Threshold = {
   name: string;
@@ -27,17 +28,18 @@ type PhasesStateAction = {
 
 type PhasesStore = PhasesState & PhasesStateAction;
 
-export const usePhasesStore = zustandStore<PhasesStore>(
-  (set) => ({
-    ...initialStore,
-    setPhases: (phases) => set({ phases }),
-    setThreshold: (threshold: Threshold) => set({ threshold }),
-  }),
-  {
-    devtoolsEnabled: true,
-    persistOptions: {
-      name: 'aaPhasesStore',
-      storage: localStore,
+export const usePhasesStore: UseBoundStore<StoreApi<PhasesStore>> =
+  zustandStore<PhasesStore>(
+    (set) => ({
+      ...initialStore,
+      setPhases: (phases) => set({ phases }),
+      setThreshold: (threshold: Threshold) => set({ threshold }),
+    }),
+    {
+      devtoolsEnabled: true,
+      persistOptions: {
+        name: 'aaPhasesStore',
+        storage: localStore,
+      },
     },
-  },
-);
+  );

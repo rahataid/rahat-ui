@@ -3,6 +3,7 @@ export const useSelectItems = () => {
     { value: 'Karnali', label: 'Karnali' },
     { value: 'Mahakali', label: 'Mahakali' },
     { value: 'Bheri', label: 'Bheri' },
+    { value: 'Doda river at East-West Highway', label: 'Dodha' },
   ];
 
   const dataSourceSelectItems = [

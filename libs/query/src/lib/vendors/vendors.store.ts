@@ -1,6 +1,7 @@
 import { Vendor } from '@rahataid/sdk/vendor/vendors.types';
 import { zustandStore } from '@rumsan/react-query';
 import { FormattedResponse } from '@rumsan/sdk/utils';
+import { StoreApi, UseBoundStore } from 'zustand';
 
 type VendorState = {
   singleVendor: FormattedResponse<Vendor>['data'] | null;
@@ -22,17 +23,18 @@ const initialStore = {
   vendors: [],
 };
 
-export const useVendorStore = zustandStore<VendorStore>(
-  (set) => ({
-    ...initialStore,
-    meta: {},
-    setSingleVendor: (vendor) => set({ singleVendor: vendor }),
-    setVendors: (vendors) => set({ vendors }),
-    resetVendor: () => set({ ...initialStore }),
-    setMeta: (meta: FormattedResponse<Vendor>['response']['meta']) =>
-      set({ meta }),
-  }),
-  {
-    devtoolsEnabled: true,
-  },
-);
+export const useVendorStore: UseBoundStore<StoreApi<VendorStore>> =
+  zustandStore<VendorStore>(
+    (set) => ({
+      ...initialStore,
+      meta: {},
+      setSingleVendor: (vendor) => set({ singleVendor: vendor }),
+      setVendors: (vendors) => set({ vendors }),
+      resetVendor: () => set({ ...initialStore }),
+      setMeta: (meta: FormattedResponse<Vendor>['response']['meta']) =>
+        set({ meta }),
+    }),
+    {
+      devtoolsEnabled: true,
+    },
+  );

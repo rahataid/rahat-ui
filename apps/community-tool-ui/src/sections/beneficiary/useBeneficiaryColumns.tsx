@@ -8,7 +8,7 @@ import { Eye } from 'lucide-react';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 import { humanizeString } from '../../utils';
 import BeneficiaryDetail from './beneficiaryDetail';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import {
   Tooltip,
   TooltipContent,

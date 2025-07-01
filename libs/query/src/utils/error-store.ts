@@ -1,3 +1,4 @@
+import { StoreApi, UseBoundStore } from 'zustand';
 import { createStore } from './zustand-store';
 
 export interface ErrorRes extends Error {
@@ -15,17 +16,18 @@ type ErrorActions = {
 
 export type ErrorStore = ErrorState & ErrorActions;
 
-const useErrorStore = createStore<ErrorStore>(
-  (set) => ({
-    error: null,
-    setError(error) {
-      console.log('error', error);
-      set({ error });
+const useErrorStore: UseBoundStore<StoreApi<ErrorStore>> =
+  createStore<ErrorStore>(
+    (set) => ({
+      error: null,
+      setError(error) {
+        console.log('error', error);
+        set({ error });
+      },
+    }),
+    {
+      devtoolsEnabled: true,
     },
-  }),
-  {
-    devtoolsEnabled: true,
-  },
-);
+  );
 
 export default useErrorStore;

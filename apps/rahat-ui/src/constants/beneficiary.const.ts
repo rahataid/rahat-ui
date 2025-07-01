@@ -5,3 +5,9 @@ export const BENEFICIARY_NAV_ROUTE = {
   ADD_BENEFICIARY: 'add_beneficiary',
   IMPORT_BENEFICIARY: 'import_beneficiary',
 };
+
+export enum GroupPurpose {
+  BANK_TRANSFER = 'BANK_TRANSFER',
+  MOBILE_MONEY = 'MOBILE_MONEY',
+  COMMUNICATION = 'COMMUNICATION',
+}

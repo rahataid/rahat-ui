@@ -1,6 +1,6 @@
 'use client';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, Copy, CopyCheck } from 'lucide-react';
 import { useMemo, useState } from 'react';

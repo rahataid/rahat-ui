@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/src/components/ui/table';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Tooltip,

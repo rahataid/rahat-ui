@@ -7,6 +7,7 @@ import {
   LandmarkIcon,
   Trash2Icon,
   UsersRound,
+  Phone,
 } from 'lucide-react';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import MembersTable from './members.table';
@@ -30,10 +31,16 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import RemoveBenfGroupModal from './removeGroupModal';
 import ValidateBenefBankAccountByGroupUuid from './validateAccountModal';
 import * as XLSX from 'xlsx';
+import UpdateGroupProposeModal from './groupProposeModal';
+import { Back, Heading } from 'apps/rahat-ui/src/common';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
+import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
   const validateModal = useBoolean();
   const removeModal = useBoolean();
+  const groupProposeModal = useBoolean();
 
   const handleAssignModalClick = () => {
     validateModal.onTrue();
@@ -42,6 +49,11 @@ export default function GroupDetailView() {
   const handleRemoveClick = () => {
     removeModal.onTrue();
   };
+
+  const handleGroupPurposeClick = () => {
+    groupProposeModal.onTrue();
+  };
+
   const {
     pagination,
     selectedListItems,
@@ -70,6 +82,7 @@ export default function GroupDetailView() {
   const { data } = useExportBeneficiariesFailedBankAccount(Id);
   const tableData = React.useMemo(() => {
     if (group) {
+      const groupPurpose = group?.data?.groupPurpose;
       return group?.data?.groupedBeneficiaries?.map((d: any) => ({
         name: d?.Beneficiary?.pii?.name,
         phone: d?.Beneficiary?.pii?.phone,
@@ -83,6 +96,8 @@ export default function GroupDetailView() {
         uuid: d?.Beneficiary?.uuid,
         error: d?.Beneficiary?.extras?.error,
         extras: d?.Beneficiary?.extras,
+        groupPurpose: groupPurpose,
+        isGroupValidForAA: group?.data?.isGroupValidForAA,
       }));
     } else return [];
   }, [group]);
@@ -100,6 +115,8 @@ export default function GroupDetailView() {
       rowSelection: selectedListItems,
     },
   });
+
+  const groupPurposeName = group?.data?.groupPurpose?.split('_')[0];
 
   // React.useEffect(() => {
   //   if (groupedBeneficiaries) {
@@ -140,13 +157,28 @@ export default function GroupDetailView() {
         validateModal={validateModal}
       />
 
+      <UpdateGroupProposeModal
+        beneficiaryGroupDetail={group?.data}
+        validateModal={groupProposeModal}
+      />
+
       <div className="p-4">
         <div className="flex justify-between items-center">
-          <HeaderWithBack
+          {/* <HeaderWithBack
             title={group?.data?.name}
             subtitle="Here is a detailed view of the selected beneficiary group"
             path="/beneficiary?tab=beneficiaryGroups"
-          />
+          /> */}
+          <div>
+            <Back path="/beneficiary?tab=beneficiaryGroups" />
+            <Heading
+              title={group?.data?.name}
+              description={
+                'Here is a detailed view of the selected beneficiary group'
+              }
+              status={capitalizeFirstLetter(groupPurposeName || '')}
+            />
+          </div>
           {/* {Number(isAssignedToProject) === 0 && (
             <CoreBtnComponent
               className="text-primary bg-sky-50"
@@ -155,31 +187,71 @@ export default function GroupDetailView() {
               handleClick={() => {}}
             />
           )} */}
-          <div className="flex gap-6">
+          <div className="flex gap-2">
+            {group?.data?.isGroupValidForAA &&
+              (group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER ||
+                group?.data?.groupPurpose === GroupPurpose.MOBILE_MONEY) && (
+                <Badge className="bg-green-50 text-green-600 flex items-center gap-1">
+                  {group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER && (
+                    <>
+                      <LandmarkIcon className="h-4 w-4 text-green-600" />
+                      Bank Account Verified
+                    </>
+                  )}
+                  {group?.data?.groupPurpose === GroupPurpose.MOBILE_MONEY && (
+                    <>
+                      <Phone className="h-4 w-4 text-green-600" />
+                      Phone Number Verified
+                    </>
+                  )}
+                </Badge>
+              )}
             <Button
               variant={'outline'}
-              className="border-red-500 text-red-500 hover:text-red-500 gap-2"
+              className="gap-2 text-gray-700 rounded-sm"
+              onClick={handleGroupPurposeClick}
+            >
+              {groupPurposeName ? 'Change ' : 'Assign '}
+              Group Purpose
+            </Button>
+
+            {!group?.data?.isGroupValidForAA &&
+              (group?.data?.groupPurpose === GroupPurpose.MOBILE_MONEY ||
+                group?.data?.groupPurpose === GroupPurpose.BANK_TRANSFER) && (
+                <Button
+                  variant="outline"
+                  className="gap-2 text-gray-700 rounded-sm"
+                  onClick={handleAssignModalClick}
+                >
+                  {group.data.groupPurpose === GroupPurpose.MOBILE_MONEY ? (
+                    <>
+                      <Phone className="w-4 h-4" />
+                      Validate Phone Number
+                    </>
+                  ) : (
+                    <>
+                      <LandmarkIcon className="w-4 h-4" />
+                      Validate Bank Account
+                    </>
+                  )}
+                </Button>
+              )}
+            <Button
+              variant={'outline'}
+              className={`${
+                group?.data?.isGroupValidForAA && 'hidden'
+              } gap-2 text-gray-700 rounded-sm`}
+              onClick={onFailedExports}
+            >
+              <CloudDownloadIcon className="w-4 h-4" /> Export Failed
+            </Button>
+            <Button
+              variant={'outline'}
+              className="border-red-500 text-red-500 gap-2 rounded-sm"
               onClick={handleRemoveClick}
             >
               <Trash2Icon className="w-4 h-4" />
               Delete Group
-            </Button>
-
-            <Button
-              variant={'outline'}
-              className="gap-2"
-              onClick={handleAssignModalClick}
-            >
-              <LandmarkIcon className="w-4 h-4" />
-              Validate Bank Account
-            </Button>
-
-            <Button
-              variant={'outline'}
-              className={`${isGroupValidForAA === 'true' && 'hidden'} gap-2`}
-              onClick={onFailedExports}
-            >
-              <CloudDownloadIcon className="w-4 h-4" /> Export Failed
             </Button>
           </div>
         </div>

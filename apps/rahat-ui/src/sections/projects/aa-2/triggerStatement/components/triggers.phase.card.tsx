@@ -59,6 +59,7 @@ export default function TriggersPhaseCard({
             Icon={Plus}
             name="Add Trigger"
             handleClick={handleAddTrigger}
+            disabled={isActive}
           />
         </div>
         <div className="flex justify-center mb-2 ">

@@ -25,7 +25,7 @@ export default function StakeholdersTableFilters({
     React.useState('');
   const [municipalitySearchText, setMunicipalitySearchText] =
     React.useState('');
-
+  const [supportAreaText, setSupportAreaText] = React.useState('');
   const handleSearch: IHandleSearch = React.useCallback(
     (event, key) => {
       setFilters({ ...filters, [key]: event.target.value });
@@ -37,6 +37,7 @@ export default function StakeholdersTableFilters({
     setStakeholderSearchText(filters?.name ?? '');
     setOrganizationSearchText(filters?.organization ?? '');
     setMunicipalitySearchText(filters?.municipality ?? '');
+    setSupportAreaText(filters?.supportArea ?? '');
   }, [filters]);
   return (
     <div className="flex justify-between space-x-2 items-center mb-2">
@@ -62,6 +63,14 @@ export default function StakeholdersTableFilters({
         name="municipality"
         value={municipalitySearchText}
         onSearch={(e) => handleSearch(e, 'municipality')}
+      />
+
+      {/* Search support area */}
+      <SearchInput
+        className="w-full"
+        name="support area"
+        value={supportAreaText}
+        onSearch={(e) => handleSearch(e, 'supportArea')}
       />
     </div>
   );

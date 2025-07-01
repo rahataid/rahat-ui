@@ -40,6 +40,7 @@ import StakeGoldersGroups from './StakeholderGroups';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { getPaginationFromLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
 import { RoleAuth, AARoles } from '@rahat-ui/auth';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 function StakeholdersView() {
   const router = useRouter();
@@ -57,13 +58,14 @@ function StakeholdersView() {
     setFilters,
     filters,
   } = usePagination();
+  const debounceSearch = useDebounce(filters, 500);
   const showStoredPagination = searchParams.get('storePagination') === 'true';
   useEffect(() => {
     const prevPagination = getPaginationFromLocalStorage(showStoredPagination);
     setPagination(prevPagination);
   }, [showStoredPagination]);
 
-  useStakeholders(projectId, { ...pagination, ...filters });
+  useStakeholders(projectId, { ...pagination, ...debounceSearch });
 
   const { stakeholders, stakeholdersMeta } = useStakeholdersStore((state) => ({
     stakeholders: state.stakeholders,
@@ -164,6 +166,12 @@ function StakeholdersView() {
                 name="organization"
                 onSearch={(e) => handleSearch(e, 'organization')}
                 value={filters?.organization || ''}
+              />
+              <SearchInput
+                className="w-full"
+                name="support area"
+                onSearch={(e) => handleSearch(e, 'supportArea')}
+                value={filters?.supportArea || ''}
               />
               <RoleAuth
                 roles={[AARoles.ADMIN, AARoles.MANAGER]}

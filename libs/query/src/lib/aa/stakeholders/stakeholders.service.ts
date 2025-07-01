@@ -262,12 +262,27 @@ export const useUploadStakeholders = () => {
       console.error('Upload error', error);
       const message: string =
         error?.response?.data?.message || error?.message || '';
-      const match = message.match(/Phone number must be unique,?\s*(.+)/i);
-      if (match) {
+
+      const phoneMatch =
+        message.match(/Phone\(s\):\s*([^|]+)/i) ||
+        message.match(/Phone number must be unique,?\s*(.+)/i);
+      const emailMatch = message.match(/Email\(s\):\s*(.+)/i);
+      // Build error message conditionally
+      const errorLines: string[] = [];
+
+      if (phoneMatch) {
+        errorLines.push('• Duplicate phone numbers found.');
+      }
+
+      if (emailMatch) {
+        errorLines.push('• Duplicate emails found.');
+      }
+
+      if (errorLines.length > 0) {
         toast.fire({
           icon: 'error',
-          title: ' Unique contraints',
-          text: 'Duplicate phone numbers found in the file!',
+          title: 'Unique constraint violation',
+          text: errorLines.join('\n'),
         });
       } else {
         toast.fire({

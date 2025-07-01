@@ -33,9 +33,22 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 const DOWNLOAD_FILE_URL = '/files/stakeholder-sample.xlsx';
-
+const requiredHeaders = [
+  'stakeholders name',
+  'phone number',
+  'designation',
+  'organization',
+  'district',
+  'municipality',
+];
 export default function ImportStakeholder() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
@@ -47,22 +60,35 @@ export default function ImportStakeholder() {
   const [duplicatePhonesFromServer, setDuplicatePhonesFromServer] = useState<
     Set<string>
   >(new Set());
-  const hasEmptyRequiredFields = () => {
-    if (data.length < 2) return true; // Only header, no data
+  const [duplicateEmailFromServer, setDuplicateEmailFromServer] = useState<
+    Set<string>
+  >(new Set());
+  const [duplicatePhonesOnUpload, setDuplicatePhonesOnUpload] = useState<
+    Set<string>
+  >(new Set());
+  const [duplicateEmails, setDuplicateEmails] = useState<Set<string>>(
+    new Set(),
+  );
+  const [invalidPhoneStrings, setInvalidPhoneStrings] = useState<Set<string>>(
+    new Set(),
+  );
 
-    // return data
-    //   .slice(1)
-    //   .some((row) =>
-    //     row.some((cell) => cell === '' || cell === null || cell === undefined),
-    //   );
-    return data
-      .slice(1)
-      .some((row) =>
-        row.some(
-          (cell, index) =>
-            index !== 6 && (!cell || cell.toString().trim() === ''),
-        ),
-      );
+  const hasEmptyRequiredFields = () => {
+    if (data.length < 2) return true;
+
+    const headers = data[0].map((h: any) => h?.toString().toLowerCase().trim());
+    console.log(headers);
+
+    return data.slice(1).some((row) =>
+      requiredHeaders
+        .filter((h) => h !== 'email')
+        .some((header) => {
+          const index = headers.indexOf(header);
+          if (index === -1) return true; // required column missing
+          const cell = row[index];
+          return !cell || cell.toString().trim() === '';
+        }),
+    );
   };
 
   const columns = React.useMemo<ColumnDef<any>[]>(
@@ -77,29 +103,88 @@ export default function ImportStakeholder() {
           const headerText =
             data[0]?.[colIndex]?.toString().toLowerCase() ?? '';
 
-          const isMissing =
-            value === '' || value === null || value === undefined;
+          const valueStr = value?.toString().trim();
+          const isPhone = /phone/.test(headerText);
+          const isEmail = /email/.test(headerText);
 
+          const isMissing =
+            (requiredHeaders.includes(headerText) && valueStr === '') ||
+            valueStr === null ||
+            valueStr === undefined;
+
+          const isInvalidPhone =
+            isPhone && valueStr && invalidPhoneStrings.has(valueStr);
+
+          const isDuplicatePhone =
+            isPhone && valueStr && duplicatePhonesOnUpload.has(valueStr);
+
+          const isDuplicatePhoneFromServer =
+            duplicatePhonesFromServer &&
+            valueStr &&
+            duplicatePhonesFromServer.has(valueStr);
+          const isDuplicateEmailsFromServer =
+            duplicateEmailFromServer &&
+            valueStr &&
+            duplicateEmailFromServer.has(valueStr);
+          const isDuplicateEmail =
+            isEmail && valueStr && duplicateEmails.has(valueStr);
           return (
             <TableCell
               className={`
-                truncate max-w-[150px]
-                ${
-                  isMissing
-                    ? 'bg-red-500 text-yellow-800'
-                    : headerText === 'phone number' &&
-                      duplicatePhonesFromServer.has(value?.toString().trim())
-                    ? 'bg-yellow-500 text-red-800'
-                    : ''
-                }
-              `}
+    truncate max-w-[150px] cursor-pointer
+    ${
+      isMissing
+        ? 'bg-blue-100 text-white'
+        : isInvalidPhone
+        ? 'bg-blue-100 text-white'
+        : isDuplicatePhone
+        ? 'bg-red-100 text-red-500'
+        : isDuplicatePhoneFromServer
+        ? 'bg-red-100 text-red-500'
+        : isDuplicateEmail
+        ? 'bg-yellow-100 text-yellow-600'
+        : isDuplicateEmailsFromServer
+        ? 'bg-yellow-100 text-yellow-600'
+        : ''
+    }
+  `}
             >
-              {value as React.ReactNode}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className=" inline-block w-full min-h-[1.5rem]">
+                      {value?.toString()?.trim() || '--'}
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    {isMissing
+                      ? 'Required field is missing'
+                      : isInvalidPhone
+                      ? 'Invalid phone format as consist of a string'
+                      : isDuplicatePhone
+                      ? 'Phone is duplicated within the file'
+                      : isDuplicatePhoneFromServer
+                      ? 'Phone already exists in the database'
+                      : isDuplicateEmail
+                      ? 'Email is duplicated within the file'
+                      : isDuplicateEmailsFromServer
+                      ? 'Email already exists in the database'
+                      : ''}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </TableCell>
           );
         },
       })) ?? [],
-    [data, duplicatePhonesFromServer],
+    [
+      data,
+      duplicateEmailFromServer,
+      duplicateEmails,
+      duplicatePhonesFromServer,
+      duplicatePhonesOnUpload,
+      invalidPhoneStrings,
+    ],
   );
 
   const tableData = React.useMemo(() => data.slice(1), [data]);
@@ -142,6 +227,7 @@ export default function ImportStakeholder() {
     }
     if (file) {
       const reader = new FileReader();
+
       reader.onload = (evt) => {
         const bstr = evt.target?.result;
         const wb = XLSX.read(bstr, { type: 'binary' });
@@ -157,17 +243,70 @@ export default function ImportStakeholder() {
           ),
         );
 
-        // Get header count to pad shorter rows
         const columnCount = filteredData[0]?.length || 0;
 
-        // Ensure each row has the same number of columns
-        const normalizedData = filteredData.map((row) => {
+        const header = filteredData[0];
+
+        // Normalize header names
+        const normalizedHeaders = header.map((h) =>
+          h?.toString().toLowerCase().trim(),
+        );
+
+        const phoneIndex = header.findIndex((h) =>
+          h?.toString().toLowerCase().includes('phone'),
+        );
+        const emailIndex = header.findIndex((h) =>
+          h?.toString().toLowerCase().includes('email'),
+        );
+
+        const seenPhones = new Set<string>();
+        const duplicatePhones = new Set<string>();
+        const invalidPhoneStrings = new Set<string>();
+        const seenEmails = new Set<string>();
+        const duplicateEmails = new Set<string>();
+
+        const normalizedData = filteredData.map((row, idx) => {
           const newRow = [...row];
-          while (newRow.length < columnCount) {
-            newRow.push('');
+          while (newRow.length < columnCount) newRow.push('');
+
+          if (idx === 0) return newRow;
+
+          // Phone validation
+          if (phoneIndex !== -1) {
+            const phone = newRow[phoneIndex]?.toString().trim() ?? '';
+
+            if (/[A-Za-z]/.test(phone) || phone.length !== 10) {
+              invalidPhoneStrings.add(phone);
+            }
+
+            if (seenPhones.has(phone)) duplicatePhones.add(phone);
+            seenPhones.add(phone);
+
+            newRow[phoneIndex] = phone;
           }
+
+          // Email validation
+          if (emailIndex !== -1) {
+            const email = newRow[emailIndex]?.toString().trim() ?? '';
+            if (seenEmails.has(email)) duplicateEmails.add(email);
+            seenEmails.add(email);
+          }
+
           return newRow;
         });
+
+        // Check for missing required fields
+        for (const required of requiredHeaders) {
+          if (!normalizedHeaders.includes(required)) {
+            toast.error(
+              `File is missing the required field: "${required}". Download the sample file for reference.`,
+              {
+                autoClose: 5000,
+              },
+            );
+            return;
+          }
+        }
 
         if (normalizedData.length === 1) {
           return toast.error('No Stakeholder found in excel file');
@@ -177,8 +316,13 @@ export default function ImportStakeholder() {
             'Maximum 100 stakeholders can be uploaded at a time',
           );
 
+        setDuplicatePhonesOnUpload(duplicatePhones);
+        setDuplicateEmails(duplicateEmails);
+        setInvalidPhoneStrings(invalidPhoneStrings);
+
         setData(normalizedData);
       };
+
       reader.readAsBinaryString(file);
       setSelectedFile(file);
     }
@@ -209,18 +353,28 @@ export default function ImportStakeholder() {
 
       // Clear duplicates if successful
       setDuplicatePhonesFromServer(new Set());
-      toast.success('Stakeholders imported successfully!');
+
       router.push(`/projects/aa/${id}/stakeholders?tab=stakeholders`);
     } catch (error: any) {
       const message: string =
         error?.response?.data?.message || error?.message || '';
-      const match = message.match(/Phone number must be unique,?\s*(.+)/i);
-      if (match) {
-        const phoneList = match[1]
+
+      const phoneMatch = message.match(/Phone\(s\):\s*([^|]+)/i);
+      if (phoneMatch) {
+        const phoneList = phoneMatch[1]
           .split(',')
-          .map((p) => p.trim())
-          .filter((p) => p);
+          .map((p) => p.trim().replace(/^\+977/, ''))
+          .filter(Boolean);
         setDuplicatePhonesFromServer(new Set(phoneList));
+      }
+
+      const emailMatch = message.match(/Email\(s\):\s*(.+)/i);
+      if (emailMatch) {
+        const emailList = emailMatch[1]
+          .split(',')
+          .map((e) => e.trim())
+          .filter(Boolean);
+        setDuplicateEmailFromServer(new Set(emailList));
       }
     }
   };
@@ -241,12 +395,34 @@ export default function ImportStakeholder() {
       });
   };
 
+  // Empty required fields warning
   React.useEffect(() => {
     if (data.length > 1 && hasEmptyRequiredFields()) {
       toast.error('Fill all required fields first');
     }
   }, [data]);
 
+  // Duplicate phone numbers in uploaded file
+  React.useEffect(() => {
+    if (duplicatePhonesOnUpload.size > 1) {
+      toast.warn(
+        `⚠️ ${duplicatePhonesOnUpload.size} duplicate phone number(s) found in uploaded file. They have been highlighted in red.`,
+        { autoClose: 5000 },
+      );
+    }
+  }, [duplicatePhonesOnUpload]);
+
+  // Duplicate emails in uploaded file
+  React.useEffect(() => {
+    if (duplicateEmails.size > 1) {
+      toast.warn(
+        `⚠️ ${duplicateEmails.size} duplicate email address(es) found in uploaded file. They have been highlighted in yellow.`,
+        { autoClose: 5000 },
+      );
+    }
+  }, [duplicateEmails]);
+
+  console.log('emails', duplicateEmails);
   return (
     <>
       <div className="p-4  h-[calc(100vh-120px)]">
@@ -364,6 +540,14 @@ export default function ImportStakeholder() {
               setData([]);
               setFileName('No File Choosen');
               setSelectedFile(null);
+              setDuplicatePhonesOnUpload(new Set());
+              setDuplicateEmails(new Set());
+              setDuplicatePhonesFromServer(new Set());
+              setInvalidPhoneStrings(new Set());
+
+              if (inputRef.current) {
+                inputRef.current.value = '';
+              }
             }}
           >
             Clear
@@ -372,7 +556,12 @@ export default function ImportStakeholder() {
           <Button
             className="w-48 bg-primary hover:ring-2 ring-primary"
             onClick={handleUpload}
-            disabled={data?.length === 0 || hasEmptyRequiredFields()}
+            disabled={
+              data?.length === 0 ||
+              hasEmptyRequiredFields() ||
+              duplicatePhonesOnUpload.size > 1 ||
+              duplicateEmails.size > 1
+            }
           >
             Import
           </Button>

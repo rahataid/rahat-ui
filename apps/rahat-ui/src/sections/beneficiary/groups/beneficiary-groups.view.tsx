@@ -93,7 +93,7 @@ function BeneficiaryGroupsView() {
                 return (
                   <div
                     key={index}
-                    className="rounded-sm border shadow p-4 flex flex-col"
+                    className="rounded-sm border shadow p-4 flex flex-col cursor-pointer"
                     onClick={() => {
                       router.push(
                         `/beneficiary/groups/${i?.uuid}?isAssignedToProject=${isAssignedToProject}&isGroupValidForAA=${i?.isGroupValidForAA}&fromTab=beneficiaryGroups`,

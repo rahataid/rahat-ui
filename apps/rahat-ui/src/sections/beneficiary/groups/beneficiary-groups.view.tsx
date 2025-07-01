@@ -163,6 +163,7 @@ function BeneficiaryGroupsView() {
                         e.stopPropagation();
                         handleAssignModalClick(i);
                       }}
+                      disabled={!i?._count?.groupedBeneficiaries}
                     >
                       <Plus className="mr-1" size={18} strokeWidth={1.5} />
                       Assign Project

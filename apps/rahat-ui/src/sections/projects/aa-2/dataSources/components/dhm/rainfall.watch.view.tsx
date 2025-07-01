@@ -4,7 +4,7 @@ import {
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Heading, TableLoader } from 'apps/rahat-ui/src/common';
+import { Heading, NoResult, TableLoader } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { MapPin, RadioTower, Skull, TriangleAlert, Waves } from 'lucide-react';
 import { useParams } from 'next/navigation';
@@ -72,9 +72,19 @@ export default function RainfallWatchView() {
     [rainfallWatch],
   );
 
-  return isLoading ? (
-    <TableLoader />
-  ) : (
+  if (isLoading) {
+    return <TableLoader />;
+  }
+
+  if (!rainfallWatch || !rainfallWatch.info) {
+    return (
+      <div className="p-4">
+        <NoResult message="No Rainfall Watch Data" />
+      </div>
+    );
+  }
+
+  return (
     <div className="flex flex-col space-y-4">
       {/* <div className="p-4 rounded-sm border shadow flex justify-between space-x-4">
         <div className="w-full">

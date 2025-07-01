@@ -22,7 +22,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { Minus, Copy, CopyCheck } from 'lucide-react';
 import Image from 'next/image';
 import TransactionTable from './beneficiary.transaction.table';

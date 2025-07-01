@@ -1,7 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useProjectAction } from '../../projects';
+import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { useSwal } from 'libs/query/src/swal';
 import { UUID } from 'crypto';
+import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
 export const useCreateDailyMonitoring = () => {
   const q = useProjectAction();
@@ -49,6 +50,9 @@ export const useCreateDailyMonitoring = () => {
 
 export const useDailyMonitoring = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
 
   const query = useQuery({
     queryKey: ['dailyMonitorings', uuid, payload],
@@ -57,7 +61,17 @@ export const useDailyMonitoring = (uuid: UUID, payload: any) => {
         uuid,
         data: {
           action: 'ms.dailyMonitoring.getAll',
-          payload: payload,
+          payload: {
+            ...payload,
+            activeYear:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'active_year'
+              ],
+            riverBasin:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'river_basin'
+              ],
+          },
         },
       });
       return mutate.response;

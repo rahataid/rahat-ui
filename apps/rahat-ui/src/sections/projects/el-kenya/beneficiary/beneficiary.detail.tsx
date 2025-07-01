@@ -1,5 +1,5 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import React from 'react';
 import { Copy, CopyCheck } from 'lucide-react';
 import HeaderWithBack from '../../components/header.with.back';

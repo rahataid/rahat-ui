@@ -11,7 +11,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
 export type VendorType = {
   name: string;
@@ -23,7 +23,10 @@ interface VendorTableProps {
   voucherPrice: number;
 }
 
-export const useVendorTable = ({ handleViewClick, voucherPrice }: VendorTableProps) => {
+export const useVendorTable = ({
+  handleViewClick,
+  voucherPrice,
+}: VendorTableProps) => {
   const columns: ColumnDef<VendorType>[] = [
     {
       accessorKey: 'name',
@@ -35,23 +38,19 @@ export const useVendorTable = ({ handleViewClick, voucherPrice }: VendorTablePro
     {
       accessorKey: 'phone',
       header: 'Phone',
-      cell: ({ row }) => (
-        <div>{row.getValue('phone')}</div>
-      ),
+      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
     },
     {
       accessorKey: 'totalVoucherRedemmed',
       header: 'Total Vouchers Redeemed',
-      cell: ({ row }) => (
-        <div>{row.getValue('totalVoucherRedemmed')}</div>
-      ),
+      cell: ({ row }) => <div>{row.getValue('totalVoucherRedemmed')}</div>,
     },
-    
+
     {
       accessorKey: 'redemmedValue',
       header: 'Redeemed Value',
       cell: ({ row }) => (
-        <div>{Number(row.getValue('totalVoucherRedemmed'))*voucherPrice}</div>
+        <div>{Number(row.getValue('totalVoucherRedemmed')) * voucherPrice}</div>
       ),
     },
 
@@ -59,7 +58,7 @@ export const useVendorTable = ({ handleViewClick, voucherPrice }: VendorTablePro
       accessorKey: 'redemptionNumber',
       header: 'Claims Value',
       cell: ({ row }) => (
-        <div>{Number(row.getValue('redemptionNumber'))*voucherPrice}</div>
+        <div>{Number(row.getValue('redemptionNumber')) * voucherPrice}</div>
       ),
     },
     {

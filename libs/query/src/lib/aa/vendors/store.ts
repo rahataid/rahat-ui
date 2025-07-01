@@ -1,4 +1,5 @@
 import { localStore, zustandStore } from '@rumsan/react-query';
+import { StoreApi, UseBoundStore } from 'zustand';
 
 const initialStore = {
   vendors: [],
@@ -17,17 +18,18 @@ type AAVendorsStateAction = {
 
 type AAVendorsStore = AAVendorsState & AAVendorsStateAction;
 
-export const useAAVendorsStore = zustandStore<AAVendorsStore>(
-  (set) => ({
-    ...initialStore,
-    setVendors: (vendors: any) => set({ vendors }),
-    setVendorDetails: (vendorDetails: any) => set({ vendorDetails }),
-  }),
-  {
-    devtoolsEnabled: true,
-    persistOptions: {
-      name: 'aaVendorsStore',
-      storage: localStore,
+export const useAAVendorsStore: UseBoundStore<StoreApi<AAVendorsStore>> =
+  zustandStore<AAVendorsStore>(
+    (set) => ({
+      ...initialStore,
+      setVendors: (vendors: any) => set({ vendors }),
+      setVendorDetails: (vendorDetails: any) => set({ vendorDetails }),
+    }),
+    {
+      devtoolsEnabled: true,
+      persistOptions: {
+        name: 'aaVendorsStore',
+        storage: localStore,
+      },
     },
-  },
-);
+  );

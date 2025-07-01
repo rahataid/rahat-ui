@@ -333,9 +333,9 @@ export default function UpdateStatus() {
                   type="button"
                   variant="secondary"
                   className="bg-red-100 text-red-600  w-48 rounded-sm"
-                  onClick={() => router.back()}
+                  onClick={() => form.reset()}
                 >
-                  Cancel
+                  Reset
                 </Button>
 
                 <Button

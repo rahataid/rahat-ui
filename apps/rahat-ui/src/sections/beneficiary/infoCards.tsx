@@ -14,7 +14,7 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { UUID } from 'crypto';
 import { useRouter } from 'next/navigation';
 import { useBoolean } from '../../hooks/use-boolean';

@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 
-type ChannelType = 'EMAIL' | 'SMS' | 'IVR';
+type ChannelType = 'EMAIL' | 'SMS' | 'VOICE';
 
 type CommunicationStats = {
   SUCCESS?: number;
@@ -201,8 +201,8 @@ export default function CommunicationsChartsStats({
               Total AVC Sent
             </CardTitle>
             <CardDescription className="text-lg text-sky-500 font-bold">
-              {(statsBenefStakeholders?.beneficiary?.IVR?.TOTAL || 0) +
-                (statsBenefStakeholders?.stakeholder?.IVR?.TOTAL || 0)}
+              {(statsBenefStakeholders?.beneficiary?.VOICE?.TOTAL || 0) +
+                (statsBenefStakeholders?.stakeholder?.VOICE?.TOTAL || 0)}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex justify-between flex-col xl:flex-row  ">
@@ -213,16 +213,17 @@ export default function CommunicationsChartsStats({
                     {
                       label: 'Successfully Delivered AVC',
                       value:
-                        (statsBenefStakeholders?.beneficiary?.IVR?.SUCCESS ||
+                        (statsBenefStakeholders?.beneficiary?.VOICE?.SUCCESS ||
                           0) +
-                          (statsBenefStakeholders?.stakeholder?.IVR?.SUCCESS ||
-                            0) || 0,
+                          (statsBenefStakeholders?.stakeholder?.VOICE
+                            ?.SUCCESS || 0) || 0,
                     },
                     {
                       label: 'AVC Delivery Failures',
                       value:
-                        (statsBenefStakeholders?.beneficiary?.IVR?.FAIL || 0) +
-                          (statsBenefStakeholders?.stakeholder?.IVR?.FAIL ||
+                        (statsBenefStakeholders?.beneficiary?.VOICE?.FAIL ||
+                          0) +
+                          (statsBenefStakeholders?.stakeholder?.VOICE?.FAIL ||
                             0) || 0,
                     },
                   ],
@@ -240,31 +241,32 @@ export default function CommunicationsChartsStats({
                   label: 'Unique AVC Recipients',
                   value:
                     commsStatsData?.stats?.transportStats.find(
-                      (r) => r.name === 'IVR',
+                      (r) => r.name === 'VOICE',
                     )?.totalRecipients || 0,
                 },
                 {
                   label: 'Successfully Delivered',
                   value:
-                    (statsBenefStakeholders?.beneficiary?.IVR?.SUCCESS || 0) +
-                      (statsBenefStakeholders?.stakeholder?.IVR?.SUCCESS ||
+                    (statsBenefStakeholders?.beneficiary?.VOICE?.SUCCESS || 0) +
+                      (statsBenefStakeholders?.stakeholder?.VOICE?.SUCCESS ||
                         0) || 0,
                 },
 
                 {
                   label: 'AVC Delivery Failures',
                   value:
-                    (statsBenefStakeholders?.beneficiary?.IVR?.FAIL || 0) +
-                      (statsBenefStakeholders?.stakeholder?.IVR?.FAIL || 0) ||
+                    (statsBenefStakeholders?.beneficiary?.VOICE?.FAIL || 0) +
+                      (statsBenefStakeholders?.stakeholder?.VOICE?.FAIL || 0) ||
                     0,
                 },
                 {
                   label: 'AVC Successfully sent to Beneficiaries',
-                  value: statsBenefStakeholders?.beneficiary?.IVR?.SUCCESS || 0,
+                  value:
+                    statsBenefStakeholders?.beneficiary?.VOICE?.SUCCESS || 0,
                 },
                 {
                   label: 'AVC Successfully sent to Stakeholders',
-                  value: statsBenefStakeholders?.stakeholder?.IVR?.SUCCESS,
+                  value: statsBenefStakeholders?.stakeholder?.VOICE?.SUCCESS,
                 },
               ].map(({ label, value }) => (
                 <div key={label} className="flex flex-col flex-wrap bg-white">

@@ -1,7 +1,7 @@
 import React from 'react';
 import { UUID } from 'crypto';
 import { Copy, CopyCheck } from 'lucide-react';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import EditButton from '../../../../components/edit.btn';
 import DeleteButton from '../../../../components/delete.btn';
 import { useParams, useSearchParams } from 'next/navigation';

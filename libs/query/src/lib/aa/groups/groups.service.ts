@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 import {
   keepPreviousData,
   useMutation,
+  UseMutationOptions,
+  UseMutationResult,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
@@ -15,55 +17,81 @@ import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { useBeneficiaryGroupsStore } from '../../beneficiary/beneficiary-groups.store';
 
-export const useCreateStakeholdersGroups = () => {
+type StakeholderGroupArgs = {
+  projectUUID: UUID;
+  stakeholdersGroupPayload: {
+    name: string;
+    stakeholders: Array<{
+      uuid: string;
+    }>;
+  };
+};
+
+export const useCreateStakeholdersGroups = <
+  TData = unknown,
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: Omit<
+    UseMutationOptions<TData, TError, StakeholderGroupArgs, TContext>,
+    'mutationFn'
+  >,
+): UseMutationResult<TData, TError, StakeholderGroupArgs, TContext> => {
   const q = useProjectAction();
   const alert = useSwal();
+
   const toast = alert.mixin({
     toast: true,
     position: 'top-end',
     showConfirmButton: false,
     timer: 3000,
   });
-  return useMutation({
-    mutationFn: async ({
-      projectUUID,
-      stakeholdersGroupPayload,
-    }: {
-      projectUUID: UUID;
-      stakeholdersGroupPayload: {
-        name: string;
-        stakeholders: Array<{
-          uuid: string;
-        }>;
-      };
-    }) => {
+
+  const mutationResults = useMutation<
+    TData,
+    TError,
+    StakeholderGroupArgs,
+    TContext
+  >({
+    mutationFn: async ({ projectUUID, stakeholdersGroupPayload }) => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'aaProject.stakeholders.addGroup',
           payload: stakeholdersGroupPayload,
         },
-      });
+      }) as TData;
     },
-    onSuccess: () => {
+    onSuccess: (data, variables, ctx) => {
       q.reset();
+      options?.onSuccess?.(data, variables, ctx);
       toast.fire({
         title: 'Stakeholders Group added successfully',
         icon: 'success',
       });
     },
-    onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+    onError: (error, variables, ctx) => {
       q.reset();
+      options?.onError?.(error, variables, ctx);
+      const errorMessage = (error as any)?.response?.data?.message || 'Error';
       toast.fire({
         title: 'Error while adding stakeholders group.',
         icon: 'error',
         text: errorMessage,
       });
     },
+    ...options,
   });
-};
 
+  return {
+    ...mutationResults,
+    mutate: (variables: StakeholderGroupArgs) => {
+      if (!mutationResults.isPending) {
+        mutationResults.mutate(variables);
+      }
+    },
+  };
+};
 export const useCreateBenficiariesGroups = () => {
   const q = useProjectAction();
   const alert = useSwal();

@@ -71,7 +71,6 @@ export default function DailyMonitoringListView() {
     },
   });
 
-  console.log(date);
   return (
     <div className="p-1 pt-0 ">
       <div className="flex gap-2 items-center mb-2">

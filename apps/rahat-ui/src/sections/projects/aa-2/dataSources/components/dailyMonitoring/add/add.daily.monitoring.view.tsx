@@ -431,10 +431,10 @@ export default function AddDailyMonitoring() {
               className="bg-red-100 text-red-600 w-36"
               onClick={() => {
                 form.reset();
-                router.push(dailyMonitoringListPath);
+                // router.push(dailyMonitoringListPath);
               }}
             >
-              Cancel
+              Clear
             </Button>
             <Button type="submit" className="w-32">
               Add

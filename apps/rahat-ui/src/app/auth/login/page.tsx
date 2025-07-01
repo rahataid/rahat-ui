@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { paths } from '../../../routes/paths';
 import { toast } from 'react-toastify';
+import Image from 'next/image';
 
 export default function AuthPage() {
   const router = useRouter();
@@ -75,132 +76,152 @@ export default function AuthPage() {
         Get Started
       </Link> */}
       <div className="w-full flex justify-center">
-        <div className="flex flex-col gap-4 w-96">
-          <div className="flex flex-col space-y-2 text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {!optSent ? 'Sign in' : 'OTP has been sent'}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {!optSent
-                ? 'Enter your email address.'
-                : `OTP has been sent to ${address}`}
-            </p>
+        <div className="flex flex-col gap-4 w-[450px]">
+          <div className="flex flex-col space-y-2 items-center">
+            <Image src={'/rahat-logo.png'} width={40} height={40} alt="" />
+            <div className="text-2xl font-bold tracking-tight">
+              Welcome to Rahat
+            </div>
           </div>
+          <div className="rounded-sm border shadow-sm p-4 space-y-4">
+            <div className="flex flex-col space-y-2 text-center">
+              <h1 className="text-2xl  tracking-tight">
+                {!optSent ? 'Sign in' : 'Verify with OTP'}
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                {!optSent
+                  ? 'Enter your email address to receive unique OTP code .'
+                  : `To ensure you security please enter your One-Time-Password . \n OTP has been sent to ${address}`}
+              </p>
+            </div>
 
-          {!optSent ? (
-            <form onSubmit={onRequestOtp}>
-              <div className="grid gap-2">
-                <div className="grid gap-1">
-                  <Label className="sr-only" htmlFor="email">
-                    Email
-                  </Label>
-                  <Input
-                    id="email"
-                    placeholder="Email"
-                    type="email"
-                    autoCapitalize="none"
-                    autoComplete="email"
-                    autoCorrect="off"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                  />
-                </div>
-                {error && (
-                  <p className="text-red-500 text-center">
-                    {error?.response?.data?.message}
-                  </p>
-                )}
-                <Button
-                  type="submit"
-                  disabled={isPending || !isEmailValid || !address}
-                >
-                  Send OTP
-                </Button>
-              </div>
-            </form>
-          ) : (
-            <form onSubmit={onVerifyOtp}>
-              <div className="grid gap-2">
-                <div className="grid gap-1">
-                  <Label className="sr-only" htmlFor="otp">
-                    OTP
-                  </Label>
-                  <Input
-                    id="otp"
-                    placeholder="Enter OTP"
-                    type="text"
-                    autoCapitalize="none"
-                    autoComplete="otp"
-                    autoCorrect="off"
-                    value={otp}
-                    onChange={(e) => {
-                      const integerRegex = /^\d*$/;
-
-                      const value = e.target.value;
-
-                      if (integerRegex.test(value)) {
-                        otpinputError && setOtpinputError(false);
-                        setOtp(e.target.value);
-                      } else {
-                        setOtpinputError(true);
-                      }
-                    }}
-                  />
-                  {otpinputError && (
-                    <div className="text-red-700 text-sm">
-                      Please enter valid OTP
-                    </div>
+            {!optSent ? (
+              <form onSubmit={onRequestOtp}>
+                <div className="grid gap-2">
+                  <div className="grid gap-1">
+                    <Label className="sr-only" htmlFor="email">
+                      Email
+                    </Label>
+                    <Input
+                      id="email"
+                      placeholder="Email"
+                      type="email"
+                      autoCapitalize="none"
+                      autoComplete="email"
+                      autoCorrect="off"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                    />
+                  </div>
+                  {error && (
+                    <p className="text-red-500 text-center">
+                      {error?.response?.data?.message}
+                    </p>
                   )}
+                  <Button
+                    type="submit"
+                    disabled={isPending || !isEmailValid || !address}
+                  >
+                    Send OTP
+                  </Button>
                 </div>
-                <Button type="submit" disabled={otp?.length !== 6}>
-                  Verify
-                </Button>
-              </div>
-            </form>
-          )}
+              </form>
+            ) : (
+              <form onSubmit={onVerifyOtp}>
+                <div className="grid gap-2">
+                  <div className="grid gap-1">
+                    <Label className="sr-only" htmlFor="otp">
+                      OTP
+                    </Label>
+                    <Input
+                      id="otp"
+                      placeholder="Enter OTP"
+                      type="text"
+                      autoCapitalize="none"
+                      autoComplete="otp"
+                      autoCorrect="off"
+                      value={otp}
+                      onChange={(e) => {
+                        const integerRegex = /^\d*$/;
 
-          {optSent && (
-            <p className="px-8 text-center text-sm text-muted-foreground">
-              Didn't get one?
-              <span
-                className="underline font-medium ml-2 cursor-pointer"
-                onClick={(e) => {
-                  setOtp('');
-                  onRequestOtp(e, true);
-                }}
-              >
-                Resend
-              </span>
-            </p>
-          )}
+                        const value = e.target.value;
 
-          {!optSent && (
-            <p className="text-muted-foreground text-sm">
-              By clicking continue, you agree to our
-              <span className="font-medium">
+                        if (integerRegex.test(value)) {
+                          otpinputError && setOtpinputError(false);
+                          setOtp(e.target.value);
+                        } else {
+                          setOtpinputError(true);
+                        }
+                      }}
+                    />
+                    {otpinputError && (
+                      <div className="text-red-700 text-sm">
+                        Please enter valid OTP
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="px-8 text-center text-sm text-muted-foreground">
+                    Didn't get one?
+                    <span
+                      className="underline font-medium ml-2 cursor-pointer"
+                      onClick={(e) => {
+                        setOtp('');
+                        onRequestOtp(e, true);
+                      }}
+                    >
+                      Resend OTP
+                    </span>
+                  </p>
+
+                  <Button type="submit" disabled={otp?.length !== 6}>
+                    Verify
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={'outline'}
+                    onClick={(e) => {
+                      setOtpSent(false);
+                      setOtp('');
+                      setChallenge('');
+                      setAddress('');
+                      // optionally reset address if needed: setAddress('');
+                    }}
+                  >
+                    Back
+                  </Button>
+                </div>
+              </form>
+            )}
+
+            {!optSent && (
+              <p className="text-muted-foreground text-sm">
+                By clicking continue, you agree to our
+                <span className="font-medium">
+                  <Link
+                    target="_blank"
+                    href={
+                      'https://docs.google.com/document/d/15eSgn1OPwsvWRU0inMOHYFgV5kvdOVA7L5LPoo6jJO0/edit'
+                    }
+                    className="underline font-medium"
+                  >
+                    Terms of Service
+                  </Link>
+                </span>
+                {''} and {''}
                 <Link
                   target="_blank"
                   href={
-                    'https://docs.google.com/document/d/15eSgn1OPwsvWRU0inMOHYFgV5kvdOVA7L5LPoo6jJO0/edit'
+                    'https://docs.google.com/document/d/1pWc5apsDdVDQvQXIaIMckGXfQo4YHs5ZoXMrKxIvdNQ/edit'
                   }
                   className="underline font-medium"
                 >
-                  Terms of Service
+                  Privacy Policy
                 </Link>
-              </span>
-              {''} and {''}
-              <Link
-                target="_blank"
-                href={
-                  'https://docs.google.com/document/d/1pWc5apsDdVDQvQXIaIMckGXfQo4YHs5ZoXMrKxIvdNQ/edit'
-                }
-                className="underline font-medium"
-              >
-                Privacy Policy
-              </Link>
-              .
-            </p>
-          )}
+                .
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>

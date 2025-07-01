@@ -1,4 +1,4 @@
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import React from 'react';
 import { Copy, CopyCheck, FolderPlus, Pencil, Trash2 } from 'lucide-react';
 import HeaderWithBack from '../projects/components/header.with.back';
@@ -158,7 +158,9 @@ export default function UsersDetailPage() {
               className="flex items-center space-x-2 cursor-pointer"
               onClick={() => clickToCopy(User?.wallet as string)}
             >
-              <p>{truncateEthAddress(User?.wallet as string)}</p>
+              <p className="text-muted-foreground text-base truncate w-48">
+                {User?.wallet as string}
+              </p>
               {walletAddressCopied === User?.wallet ? (
                 <CopyCheck size={15} strokeWidth={1.5} />
               ) : (

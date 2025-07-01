@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { CoinsIcon, Copy, CopyCheck, Ticket, Users2Icon } from 'lucide-react';
 import { useParams } from 'next/navigation';

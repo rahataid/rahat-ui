@@ -32,7 +32,7 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { useProjectTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import {
@@ -70,8 +70,7 @@ export default function TransactionTable({}) {
     setWalletAddressCopied(index);
   };
 
-  const [tranactionCopied, setTransactionCopied] =
-    React.useState<number>();
+  const [tranactionCopied, setTransactionCopied] = React.useState<number>();
 
   const clickToCopyTxn = (transactions: string, index: number) => {
     navigator.clipboard.writeText(transactions);
@@ -196,7 +195,7 @@ export default function TransactionTable({}) {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-      )
+      ),
     },
   ];
 

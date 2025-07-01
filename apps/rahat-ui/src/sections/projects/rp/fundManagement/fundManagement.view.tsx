@@ -31,7 +31,7 @@ import {
 import { useParams, useRouter } from 'next/navigation';
 import { DisbursementConditionType } from '../disbursement-management/2-disbursement-condition';
 import { useEffect, useState } from 'react';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { formatEther } from 'viem';
 import { useReadRahatTokenBalanceOf } from 'libs/query/src/lib/rp/contracts/generated-hooks';
 import {

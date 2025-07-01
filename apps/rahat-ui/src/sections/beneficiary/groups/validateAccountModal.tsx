@@ -61,9 +61,16 @@ export default function ValidateBenefBankAccountByGroupUuid({
         }}
       >
         <DialogHeader>
-          <DialogTitle>Validate Beneficiary Bank Account</DialogTitle>
+          <DialogTitle>
+            {beneficiaryGroupDetail?.groupPurpose === 'MOBILE_MONEY'
+              ? 'Validate Beneficiary Phone Number'
+              : 'Validate Beneficiary Bank Account'}
+          </DialogTitle>
           <DialogDescription>
-            This will validate the beneficiary bank account.
+            This will validate the beneficiary{' '}
+            {beneficiaryGroupDetail?.groupPurpose === 'MOBILE_MONEY'
+              ? 'phone number'
+              : 'bank account'}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="sm:justify-end">

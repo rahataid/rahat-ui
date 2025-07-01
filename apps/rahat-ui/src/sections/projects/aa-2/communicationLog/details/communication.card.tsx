@@ -44,7 +44,7 @@ interface EmailCommunication extends BaseCommunication {
 }
 
 interface IVRCommunication extends BaseCommunication {
-  transportName: 'IVR';
+  transportName: 'VOICE';
   message: Record<string, never>;
 }
 
@@ -84,7 +84,7 @@ export function CommunicationDetailCard({
         return <MessageSquare className="h-5 w-5 text-gray-500" />;
       case 'EMAIL':
         return <Mail className="h-5 w-5 text-gray-500" />;
-      case 'IVR':
+      case 'VOICE':
         return <Mic className="h-5 w-5 text-gray-500" />;
       default:
         return <MessageSquare className="h-5 w-5 text-gray-500" />;
@@ -167,7 +167,7 @@ export function CommunicationDetailCard({
           </div>
         )}
 
-        {activityCommunication?.transportName === 'IVR' &&
+        {activityCommunication?.transportName === 'VOICE' &&
           Object.keys(activityCommunication?.message).length !== 0 && (
             <div className="mt-3">
               <audio

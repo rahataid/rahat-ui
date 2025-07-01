@@ -47,7 +47,7 @@ export default function useCommsLogsTableColumns(transportName: string) {
         return (
           <div className="flex items-center space-x-2 gap-2">
             {renderDateTime(row?.original?.createdAt)}
-            {transportName === 'IVR' && row?.original?.status === 'FAIL' && (
+            {transportName === 'VOICE' && row?.original?.status === 'FAIL' && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild className="hover:cursor-pointer py-0">

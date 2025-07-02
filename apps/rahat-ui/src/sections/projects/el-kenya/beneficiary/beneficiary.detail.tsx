@@ -110,7 +110,7 @@ export default function BeneficiaryDetail() {
         </div>
         {type === 'WALK_IN' && (
           <div>
-            <h1 className="text-md text-muted-foreground">Serial Number</h1>
+            <h1 className="text-md text-muted-foreground">Transaction ID</h1>
             <p className="font-medium">{serialNumber}</p>
           </div>
         )}

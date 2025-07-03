@@ -158,9 +158,7 @@ export default function PaymentInitiation() {
       }`}
     >
       <RadioGroupItem value={value} id={`method-${value.toLowerCase()}`} />
-      <span>
-        {value === PayoutType.VENDOR ? capitalizeFirstLetter(value) : value}
-      </span>
+      <span>{value}</span>
     </Label>
   );
 
@@ -180,18 +178,18 @@ export default function PaymentInitiation() {
           },
         };
         break;
-      case PayoutType.VENDOR:
+      case PayoutType.CVA:
         switch (formState.mode) {
           case PayoutMode.ONLINE:
             payload = {
-              type: PayoutType.VENDOR,
+              type: PayoutType.CVA,
               mode: PayoutMode.ONLINE,
               groupId: formState?.group?.tokensReserved?.uuid,
             };
             break;
           case PayoutMode.OFFLINE:
             payload = {
-              type: PayoutType.VENDOR,
+              type: PayoutType.CVA,
               mode: PayoutMode.OFFLINE,
               groupId: formState?.group?.tokensReserved?.uuid,
               payoutProcessorId: formState?.vendor?.uuid,
@@ -228,61 +226,45 @@ export default function PaymentInitiation() {
 
         <div className="border rounded-sm p-4 space-y-4 bg-white w-full">
           {/* Payment Method */}
-          <RadioGroup
-            defaultValue={formState.method}
-            onValueChange={(value) =>
-              handleChange('method', value as PayoutType)
-            }
-            className="flex items-center space-x-6 mb-2"
-          >
-            {renderMethodOption(PayoutType.FSP)}
-            {renderMethodOption(PayoutType.VENDOR)}
-          </RadioGroup>
+          <div className="flex justify-between">
+            <RadioGroup
+              defaultValue={formState.method}
+              onValueChange={(value) =>
+                handleChange('method', value as PayoutType)
+              }
+              className="flex items-center space-x-6 mb-2"
+            >
+              {renderMethodOption(PayoutType.FSP)}
+              {renderMethodOption(PayoutType.CVA)}
+            </RadioGroup>
 
-          {/* Online/Offline Toggle */}
-          {formState.method === PayoutType.VENDOR && (
-            <div className="flex items-center space-x-3">
-              <Switch
-                checked={formState.mode === PayoutMode.OFFLINE ? true : false}
-                onCheckedChange={(checked) =>
-                  handleChange(
-                    'mode',
-                    checked ? PayoutMode.OFFLINE : PayoutMode.ONLINE,
-                  )
-                }
-                id="offline-switch"
-              />
-              <Label htmlFor="offline-switch">
-                {/* {capitalizeFirstLetter(formState.mode)} */}
-                Offline
-              </Label>
-            </div>
-          )}
-
-          {/* Vendor Select - only if online */}
-          {formState.mode === PayoutMode.OFFLINE &&
-            formState.method === PayoutType.VENDOR && (
-              <div className="flex flex-col space-y-1">
-                <Label className="font-medium text-sm/6">Vendor</Label>
-                <SelectComponent
-                  name="Vendor"
-                  options={vendors?.data?.map((vendor: any) => vendor?.name)}
-                  value={formState.vendor?.name || ''}
-                  onChange={(value) => {
-                    const selectedVendor = vendors?.data?.find(
-                      (vendor: any) => vendor.name === value,
-                    );
-                    handleChange('vendor', selectedVendor);
-                  }}
+            {/* Online/Offline Toggle */}
+            {formState.method === PayoutType.CVA && (
+              <div className="flex items-center space-x-3">
+                <Switch
+                  checked={formState.mode === PayoutMode.ONLINE ? true : false}
+                  onCheckedChange={(checked) =>
+                    handleChange(
+                      'mode',
+                      checked ? PayoutMode.ONLINE : PayoutMode.OFFLINE,
+                    )
+                  }
+                  id="offline-switch"
                 />
+                <Label htmlFor="offline-switch">
+                  {formState.mode === PayoutMode.ONLINE ? 'Online' : 'Offline'}
+                </Label>
               </div>
             )}
+          </div>
+
+          {/* Vendor Select - only if online */}
 
           <div
             className={`grid ${
               formState.method === PayoutType.FSP
                 ? 'grid-cols-2'
-                : 'grid-cols-1'
+                : 'grid-cols-2'
             } gap-4`}
           >
             {/* Beneficiary Group Select */}
@@ -302,7 +284,23 @@ export default function PaymentInitiation() {
                 }}
               />
             </div>
-
+            {formState.mode === PayoutMode.OFFLINE &&
+              formState.method === PayoutType.CVA && (
+                <div className="flex flex-col space-y-1">
+                  <Label className="font-medium text-sm/6">Vendor</Label>
+                  <SelectComponent
+                    name="Vendor"
+                    options={vendors?.data?.map((vendor: any) => vendor?.name)}
+                    value={formState.vendor?.name || ''}
+                    onChange={(value) => {
+                      const selectedVendor = vendors?.data?.find(
+                        (vendor: any) => vendor.name === value,
+                      );
+                      handleChange('vendor', selectedVendor);
+                    }}
+                  />
+                </div>
+              )}
             {/* Select Payment Provider */}
             {formState.method === PayoutType.FSP && (
               <div className="flex flex-col space-y-1">

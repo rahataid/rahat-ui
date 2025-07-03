@@ -7,7 +7,7 @@ import {
   useTriggerPayout,
 } from '@rahat-ui/query';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import * as React from 'react';
 
 import {
@@ -19,27 +19,15 @@ import {
   TableLoader,
 } from 'apps/rahat-ui/src/common';
 
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
+import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
 import { RotateCcw, Ticket, Users } from 'lucide-react';
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
-import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
-import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
-import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const params = useParams();
@@ -168,7 +156,13 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <Heading
               title={`${payout?.beneficiaryGroupToken?.beneficiaryGroup?.name}`}
               description="List of all the payout transaction logs of selected group"
-              status={payout?.isCompleted ? 'Completed' : 'Not Completed'}
+              status={
+                payoutlogs?.data.length === 0
+                  ? ''
+                  : payout?.isCompleted
+                  ? 'Completed'
+                  : 'Not Completed'
+              }
               badgeClassName={isCompleteBgStatus(payout?.isCompleted)}
             />
           </div>

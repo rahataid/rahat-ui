@@ -27,15 +27,33 @@ export function GlofasSection() {
     perPage: 9999,
   });
 
-  console.log({ glofasData });
-
-  const returnPeriodHeaders = React.useMemo(
-    () => glofasData?.info?.returnPeriodTable?.returnPeriodHeaders,
+  const returnPeriodHeaders2yr = React.useMemo(
+    () => glofasData?.info?.returnPeriodTable2yr?.returnPeriodHeaders,
     [glofasData],
   );
 
-  const returnPeriodData = React.useMemo(
-    () => glofasData?.info?.returnPeriodTable?.returnPeriodData,
+  const returnPeriodData2yr = React.useMemo(
+    () => glofasData?.info?.returnPeriodTable2yr?.returnPeriodData,
+    [glofasData],
+  );
+
+  const returnPeriodHeaders5yr = React.useMemo(
+    () => glofasData?.info?.returnPeriodTable5yr?.returnPeriodHeaders,
+    [glofasData],
+  );
+
+  const returnPeriodData5yr = React.useMemo(
+    () => glofasData?.info?.returnPeriodTable5yr?.returnPeriodData,
+    [glofasData],
+  );
+
+  const returnPeriodHeaders20yr = React.useMemo(
+    () => glofasData?.info?.returnPeriodTable20yr?.returnPeriodHeaders,
+    [glofasData],
+  );
+
+  const returnPeriodData20yr = React.useMemo(
+    () => glofasData?.info?.returnPeriodTable20yr?.returnPeriodData,
     [glofasData],
   );
 
@@ -81,7 +99,7 @@ export function GlofasSection() {
           <table className="min-w-full bg-white border border-gray-200">
             <thead>
               <tr>
-                {returnPeriodHeaders?.map((header: string, index: number) => (
+                {returnPeriodHeaders2yr?.map((header: string, index: number) => (
                   <th
                     className="p-2 border border-gray-300 bg-gray-100 text-center text-xs font-semibold text-gray-600"
                     key={index}
@@ -92,7 +110,7 @@ export function GlofasSection() {
               </tr>
             </thead>
             <tbody>
-              {returnPeriodData?.map((row: string[], rowIndex: number) => (
+              {returnPeriodData2yr?.map((row: string[], rowIndex: number) => (
                 <tr key={rowIndex}>
                   {row.map((cell: string, cellIndex: number) => {
                     let bgColor;
@@ -115,6 +133,96 @@ export function GlofasSection() {
           </table>
         </div>
       </div>
+
+      {returnPeriodHeaders5yr && returnPeriodData5yr && (
+        <div className="bg-card p-4 rounded-sm border shadow mt-4">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="font-semibold text-lg">{'ECMWF-ENS > 5 yr RP'}</h1>
+          </div>
+          <div className="overflow-auto">
+            <table className="min-w-full bg-white border border-gray-200">
+              <thead>
+                <tr>
+                  {returnPeriodHeaders5yr?.map((header: string, index: number) => (
+                    <th
+                      className="p-2 border border-gray-300 bg-gray-100 text-center text-xs font-semibold text-gray-600"
+                      key={index}
+                    >
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {returnPeriodData5yr?.map((row: string[], rowIndex: number) => (
+                  <tr key={rowIndex}>
+                    {row.map((cell: string, cellIndex: number) => {
+                      let bgColor;
+                      if (cellIndex > 0) {
+                        bgColor = getCellColor(cell);
+                      }
+
+                      return (
+                        <td
+                          className={`p-2 border border-gray-200 text-center text-sm text-gray-700 ${bgColor}`}
+                          key={cellIndex}
+                        >
+                          {cell}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {returnPeriodHeaders20yr && returnPeriodData20yr && (
+        <div className="bg-card p-4 rounded-sm border shadow mt-4">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="font-semibold text-lg">{'ECMWF-ENS > 20 yr RP'}</h1>
+          </div>
+          <div className="overflow-auto">
+            <table className="min-w-full bg-white border border-gray-200">
+              <thead>
+                <tr>
+                  {returnPeriodHeaders20yr?.map((header: string, index: number) => (
+                    <th
+                      className="p-2 border border-gray-300 bg-gray-100 text-center text-xs font-semibold text-gray-600"
+                      key={index}
+                    >
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {returnPeriodData20yr?.map((row: string[], rowIndex: number) => (
+                  <tr key={rowIndex}>
+                    {row.map((cell: string, cellIndex: number) => {
+                      let bgColor;
+                      if (cellIndex > 0) {
+                        bgColor = getCellColor(cell);
+                      }
+
+                      return (
+                        <td
+                          className={`p-2 border border-gray-200 text-center text-sm text-gray-700 ${bgColor}`}
+                          key={cellIndex}
+                        >
+                          {cell}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </ScrollArea>
   );
 }

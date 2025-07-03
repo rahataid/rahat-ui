@@ -715,7 +715,11 @@ export default function AddCommunicationForm({
       </div>
 
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent>
+        <DialogContent
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}
+        >
           <DialogHeader>
             <DialogTitle>Enter a file name</DialogTitle>
             <DialogDescription>

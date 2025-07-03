@@ -516,7 +516,7 @@ export default function EditCommunicationForm({
         {contentType === ValidationContent.URL &&
           !fileUpload.isSuccess &&
           !isSessionComplete &&
-          !isMediaFromBackend && (
+          !form.watch(fieldName('audioURL'))?.mediaURL && (
             <div className="col-span-2">
               <Tabs defaultValue="upload" className="items-center">
                 <TabsList className="">
@@ -652,7 +652,7 @@ export default function EditCommunicationForm({
               <Trash2
                 onClick={() => removeFile()}
                 className={`h-5 w-5s hover:cursor-pointer ${
-                  (isSessionComplete || isMediaFromBackend) && 'hidden'
+                  isSessionComplete && 'hidden'
                 }`}
                 color="red"
               />
@@ -730,7 +730,11 @@ export default function EditCommunicationForm({
       </div>
 
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent>
+        <DialogContent
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}
+        >
           <DialogHeader>
             <DialogTitle>Enter a file name</DialogTitle>
             <DialogDescription>
@@ -764,6 +768,7 @@ export default function EditCommunicationForm({
                 setShowConfirmDialog(false);
               }}
               type="button"
+              disabled={!customFileName}
             >
               Confirm Upload
             </Button>

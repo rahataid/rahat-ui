@@ -75,6 +75,17 @@ jobs:
           tags: |
             esatya/rahat-ui:aa-mcn-main
             esatya/rahat-ui:aa-mcn-main-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
+      
+      - name: build && push community-tool-ui
+        id: build-push-community-tool-ui
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.community-tool-ui
+          push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+          tags: |
+            esatya/community-tool-ui:aa-mcn-main
+            esatya/community-tool-ui:aa-mcn-main-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
 
     outputs:
       sha_short: ${{ steps.vars.outputs.sha_short }}

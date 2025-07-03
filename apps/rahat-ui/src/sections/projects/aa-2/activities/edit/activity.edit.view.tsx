@@ -173,6 +173,11 @@ export default function EditActivity() {
   const uploadFile = useUploadFile();
   const updateActivity = useUpdateActivities();
   const { id: projectID, activityID } = useParams();
+  const [isRecording, setIsRecording] = React.useState(false);
+  const [isFinished, setIsFinished] = React.useState(false);
+  const [recordedFile, setRecordedFile] = React.useState<string | null>(null);
+  const [isAudioUploaded, setIsAudioUploaded] = React.useState(false);
+
   const { data: users, isSuccess } = useUserList({
     page: 1,
     perPage: 9999,
@@ -431,6 +436,8 @@ export default function EditActivity() {
     });
   }, [activityDetail, form]);
 
+  const [btndisabled, setBtnDisabled] = React.useState(false);
+  console.log(btndisabled);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleUpdateActivity)}>
@@ -465,7 +472,8 @@ export default function EditActivity() {
                     disabled={
                       updateActivity?.isPending ||
                       uploadFile?.isPending ||
-                      audioUploading
+                      audioUploading ||
+                      (isFinished && !!recordedFile && !isAudioUploaded)
                     }
                   >
                     Update
@@ -755,6 +763,13 @@ export default function EditActivity() {
                 onClose={() => {
                   activityCommunicationRemove(index);
                 }}
+                isFinished={isFinished}
+                isRecording={isRecording}
+                recordedFile={recordedFile}
+                setIsFinished={setIsFinished}
+                setIsRecording={setIsRecording}
+                setRecordedFile={setRecordedFile}
+                setAudioIsUploaded={setIsAudioUploaded}
               />
             ))}
             <Button

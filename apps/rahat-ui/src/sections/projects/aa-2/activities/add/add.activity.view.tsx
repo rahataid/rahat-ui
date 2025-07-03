@@ -241,7 +241,6 @@ export default function AddActivities() {
     setCommunicationData(updatedCommunications);
   };
   const handleCreateActivities = async (data: z.infer<typeof FormSchema>) => {
-    console.log('objectadd');
     const manager =
       users?.data?.find((u) => u?.uuid === data.responsibility) || null;
     const { responsibility, activityCommunication, ...rest } = data;

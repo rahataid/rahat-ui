@@ -1,11 +1,6 @@
-import React, { useState } from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { isValidPhoneNumber } from 'react-phone-number-input';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { UUID } from 'crypto';
-import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import { useCreateStakeholders } from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
   FormControl,
@@ -13,22 +8,17 @@ import {
   FormItem,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
-import { DISTRICTS_OF_NEPAL } from 'apps/rahat-ui/src/common/data/district';
-import { MUNICIPALITIES_OF_NEPAL } from 'apps/rahat-ui/src/common/data/municipality';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useCreateStakeholders } from '@rahat-ui/query';
+import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import { UUID } from 'crypto';
 import { Tag, TagInput } from 'emblor';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { isValidPhoneNumber } from 'react-phone-number-input';
+import { z } from 'zod';
 
 export default function AddStakeholders() {
   const { id } = useParams();
@@ -127,7 +117,6 @@ export default function AddStakeholders() {
       console.error('Create Stakeholder Error::', e);
     }
   };
-  const l = form.watch('supportArea');
 
   return (
     <div className="p-4">
@@ -168,14 +157,7 @@ export default function AddStakeholders() {
                 render={({ field }) => {
                   return (
                     <FormItem>
-                      <Label>
-                        Support Area{' '}
-                        {unsavedSupportAreaInput && (
-                          <span className="text-sm text-red-400 ml-1">
-                            Press Enter to add.
-                          </span>
-                        )}
-                      </Label>
+                      <Label>Support Area</Label>
                       <FormControl>
                         <>
                           <TagInput
@@ -212,8 +194,14 @@ export default function AddStakeholders() {
                               onKeyDown: handleSupportAreaKeyDown,
                             }}
                           />
+                          {unsavedSupportAreaInput && (
+                            <span className="text-sm text-red-400 ml-1">
+                              Press Enter to add.
+                            </span>
+                          )}
                         </>
                       </FormControl>
+
                       <FormMessage />
                     </FormItem>
                   );
@@ -345,6 +333,7 @@ export default function AddStakeholders() {
                 className=" px-8 "
                 onClick={() => {
                   form.reset();
+                  setVariationTags([]);
                   setUnsavedSupportAreaInput('');
                 }}
               >

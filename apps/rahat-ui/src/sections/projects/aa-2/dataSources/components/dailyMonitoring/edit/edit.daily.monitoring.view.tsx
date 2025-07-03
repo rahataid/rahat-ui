@@ -136,6 +136,7 @@ export default function EditDailyMonitoring() {
               gaugeReading: item.gaugeReading || '',
               station: item.station,
               id: item.id,
+              gaugeForecast: item?.gaugeForecast,
             };
           default:
             return {
@@ -193,7 +194,7 @@ export default function EditDailyMonitoring() {
             .optional(),
           //Flash Flood Risk Monitoring
           status: z.string().optional(),
-
+          gaugeForecast: z.string().optional(),
           //gauge Reading
           gaugeReading: z.string().optional(),
 
@@ -323,7 +324,7 @@ export default function EditDailyMonitoring() {
               break;
 
             case 'Gauge Reading':
-              validateFields(['gaugeReading', 'station']);
+              validateFields(['gaugeReading', 'station', 'gaugeForecast']);
               if (
                 data.gaugeReading === undefined ||
                 data.gaugeReading === null ||
@@ -334,7 +335,7 @@ export default function EditDailyMonitoring() {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   path: ['gaugeReading'],
-                  message: 'Gauage Reading  must be a positive number.',
+                  message: 'Gauge Reading  must be a positive number.',
                 });
               } else if (!/^\d+(\.\d+)?$/.test(String(data.gaugeReading))) {
                 ctx.addIssue({
@@ -467,6 +468,7 @@ export default function EditDailyMonitoring() {
             gaugeReading: item?.gaugeReading,
             station: item?.station,
             id: item?.id,
+            gaugeForecast: item?.gaugeForecast,
           });
           break;
         default:

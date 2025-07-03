@@ -34,11 +34,13 @@ export default function AddAnotherDataSource({
     rainfallForecastSelectItems,
     rainfallSelectItems,
     floodForecastSelectItems,
-    gauageReadingStationSelectItems,
+    gaugeReadingStationSelectItems,
     possibility,
+    gaugeForecastDataSourceSelectItems,
   } = useSelectItems();
 
   const selectedDataSourceObjArray = form.watch('dataSource');
+  const selectedGaugeForecast = form.watch(fieldName('gaugeForecast'));
 
   const selectedSourceStringArray = selectedDataSourceObjArray?.map(
     (obj: any) => obj.source,
@@ -192,16 +194,25 @@ export default function AddAnotherDataSource({
           <>
             <SelectFormField
               form={form}
-              name={fieldName('station')}
-              label="Station"
-              placeholder="Select station"
-              selectItems={gauageReadingStationSelectItems}
+              name={fieldName('gaugeForecast')}
+              label="Forecast"
+              placeholder="Select forecast"
+              selectItems={gaugeForecastDataSourceSelectItems}
             />
             <InputFormField
               form={form}
               name={fieldName('gaugeReading')}
-              label="Gauge Reading (mm)"
+              label={`Gauge Reading ${
+                selectedGaugeForecast === 'riverWatch' ? '(m)' : '(mm)'
+              }`}
               placeholder="Enter gauge reading"
+            />
+            <SelectFormField
+              form={form}
+              name={fieldName('station')}
+              label="Station"
+              placeholder="Select station"
+              selectItems={gaugeReadingStationSelectItems}
             />
           </>
         );

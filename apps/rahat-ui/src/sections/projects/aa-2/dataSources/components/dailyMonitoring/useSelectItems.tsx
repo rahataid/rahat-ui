@@ -70,7 +70,7 @@ export const useSelectItems = () => {
     { value: 'Extremely Heavy Rain', label: 'Extremely Heavy Rain' },
   ];
 
-  const gauageReadingStationSelectItems = [
+  const gaugeReadingStationSelectItems = [
     { value: 'Rangoon Ridge', label: 'Rangoon Ridge' },
     { value: 'Kolmoda Satyas ', label: 'Kolmoda Satyas ' },
   ];
@@ -78,6 +78,11 @@ export const useSelectItems = () => {
   const possibility = [
     { value: 'Yes', label: 'Yes' },
     { value: 'No', label: 'No' },
+  ];
+
+  const gaugeForecastDataSourceSelectItems = [
+    { value: 'rainfallWatch', label: 'Rainfall Watch' },
+    { value: 'riverWatch', label: 'River Watch' },
   ];
 
   return {
@@ -88,7 +93,8 @@ export const useSelectItems = () => {
     rainfallSelectItems,
     floodForecastSelectItems,
     rainfallForecastSelectItems,
-    gauageReadingStationSelectItems,
+    gaugeReadingStationSelectItems,
     possibility,
+    gaugeForecastDataSourceSelectItems,
   };
 };

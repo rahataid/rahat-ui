@@ -88,6 +88,7 @@ export default function AddDailyMonitoring() {
           //gauge Reading
           gaugeReading: z.string().optional(),
           station: z.string().optional(),
+          gaugeForecast: z.string().optional(),
         })
         .superRefine((data, ctx) => {
           const validateFields = (fields: (keyof typeof data)[]) => {
@@ -216,7 +217,7 @@ export default function AddDailyMonitoring() {
               break;
 
             case 'Gauge Reading':
-              validateFields(['gaugeReading', 'station']);
+              validateFields(['gaugeReading', 'station', 'gaugeForecast']);
               if (
                 data.gaugeReading === undefined ||
                 data.gaugeReading === null ||
@@ -227,7 +228,7 @@ export default function AddDailyMonitoring() {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   path: ['gaugeReading'],
-                  message: 'Gauage Reading  must be a positive number.',
+                  message: 'Gauge Reading  must be a positive number.',
                 });
               } else if (!/^\d+(\.\d+)?$/.test(String(data.gaugeReading))) {
                 ctx.addIssue({
@@ -346,6 +347,7 @@ export default function AddDailyMonitoring() {
             source: item.source,
             gaugeReading: item?.gaugeReading,
             station: item?.station,
+            gaugeForecast: item?.gaugeForecast,
           });
           break;
         default:

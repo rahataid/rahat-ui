@@ -22,7 +22,7 @@ const nextConfig = {
       /@walletconnect[\\/]web3-provider/,
       /@web3auth[\\/]web3auth/,
       /@walletconnect[\\/]universal-provider/,
-      /@metamask\/sdk|@wagmi\/connectors|connectkit|encoding/,
+      new RegExp('@metamask/sdk|@wagmi/connectors|connectkit|encoding'),
     ];
 
     // Exclude 'react-native' from resolving for @walletconnect/universal-provider
@@ -37,6 +37,24 @@ const nextConfig = {
     });
     return config;
   },
+  async rewrites() {
+    return [
+      {
+        source: '/ingest/static/:path*',
+        destination: 'https://us-assets.i.posthog.com/static/:path*',
+      },
+      {
+        source: '/ingest/:path*',
+        destination: 'https://us.i.posthog.com/:path*',
+      },
+      {
+        source: '/ingest/decide',
+        destination: 'https://us.i.posthog.com/decide',
+      },
+    ];
+  },
+  // This is required to support PostHog trailing slash API requests
+  skipTrailingSlashRedirect: true,
 };
 
 const plugins = [

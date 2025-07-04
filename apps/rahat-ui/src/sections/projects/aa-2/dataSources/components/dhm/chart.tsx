@@ -6,11 +6,17 @@ const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 type ChartProps = {
   data: Record<string, any>[]; // accepts any shape with datetime
-  dangerLevel: string;
-  warningLevel: string;
+  dangerLevel?: string;
+  warningLevel?: string;
+  yaxisTitle?: string;
 };
 
-const TimeSeriesChart = ({ data, dangerLevel, warningLevel }: ChartProps) => {
+const TimeSeriesChart = ({
+  data,
+  dangerLevel,
+  warningLevel,
+  yaxisTitle = 'Water Level (m)',
+}: ChartProps) => {
   if (!data || data.length === 0) return null;
 
   const keys = Object.keys(data[0]).filter((key) => key !== 'datetime');
@@ -33,10 +39,24 @@ const TimeSeriesChart = ({ data, dangerLevel, warningLevel }: ChartProps) => {
     },
     yaxis: {
       title: {
-        text: 'Water Level (m)',
+        text: yaxisTitle,
       },
-      min: Math.min(...data.map((d) => d[1]), Number(warningLevel)) - 0.5,
-      max: Number(dangerLevel) + 0.5,
+      ...(warningLevel && {
+        min:
+          Math.min(
+            ...data.flatMap((d) => keys.map((key) => d[key])),
+            Number(warningLevel),
+            Number(dangerLevel),
+          ) - 0.5,
+      }),
+      ...(dangerLevel && {
+        max:
+          Math.max(
+            ...data.flatMap((d) => keys.map((key) => d[key])),
+            Number(warningLevel),
+            Number(dangerLevel),
+          ) + 0.5,
+      }),
     },
     tooltip: {
       x: { format: 'dd MMM HH:mm' },
@@ -57,30 +77,38 @@ const TimeSeriesChart = ({ data, dangerLevel, warningLevel }: ChartProps) => {
     },
     annotations: {
       yaxis: [
-        {
-          y: warningLevel,
-          borderColor: '#FFA500', // orange
-          label: {
-            borderColor: '#FFA500',
-            style: {
-              color: '#fff',
-              background: '#FFA500',
-            },
-            text: 'Warning Level',
-          },
-        },
-        {
-          y: dangerLevel,
-          borderColor: '#FF0000', // red
-          label: {
-            borderColor: '#FF0000',
-            style: {
-              color: '#fff',
-              background: '#FF0000',
-            },
-            text: 'Danger Level',
-          },
-        },
+        ...(warningLevel
+          ? [
+              {
+                y: warningLevel,
+                borderColor: '#FFA500', // orange
+                label: {
+                  borderColor: '#FFA500',
+                  style: {
+                    color: '#fff',
+                    background: '#FFA500',
+                  },
+                  text: 'Warning Level',
+                },
+              },
+            ]
+          : []),
+        ...(dangerLevel
+          ? [
+              {
+                y: dangerLevel,
+                borderColor: '#FF0000', // red
+                label: {
+                  borderColor: '#FF0000',
+                  style: {
+                    color: '#fff',
+                    background: '#FF0000',
+                  },
+                  text: 'Danger Level',
+                },
+              },
+            ]
+          : []),
       ],
     },
   };

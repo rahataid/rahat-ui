@@ -1,4 +1,4 @@
-// 'use client';
+'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -151,7 +151,13 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       const formattedDate = formatDate(formData.birthDate as Date);
       formData.birthDate = formattedDate;
     }
+    if (formData.phone) {
+      formData.phoneStatus = PhoneStatus.SMART_PHONE;
+    }
 
+    if (extras.bank_ac_name && extras.bank_ac_number && extras.bank_name) {
+      formData.bankedStatus = BankedStatus.BANKED;
+    }
     const nonEmptyFields = selectNonEmptyFields(formData);
     if (extras.hasOwnProperty('isDuplicate')) {
       delete extras.isDuplicate;

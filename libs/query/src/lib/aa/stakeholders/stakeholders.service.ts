@@ -2,7 +2,10 @@
 import { useEffect } from 'react';
 import {
   keepPreviousData,
+  MutationFunction,
   useMutation,
+  UseMutationOptions,
+  UseMutationResult,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
@@ -24,6 +27,10 @@ interface IStakeholdersUpdatePayload {
   municipality?: string;
 }
 
+type StakeholderArgs = {
+  projectUUID: UUID;
+  stakeholderPayload: any;
+};
 export const useStakeholders = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
   const { setStakeholders, setStakeholdersMeta } = useStakeholdersStore(
@@ -57,48 +64,67 @@ export const useStakeholders = (uuid: UUID, payload: any) => {
   return { ...query, stakeholdersMeta: query?.data?.meta };
 };
 
-export const useCreateStakeholders = () => {
+export const useCreateStakeholders = <
+  TData = unknown,
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: Omit<
+    UseMutationOptions<TData, TError, StakeholderArgs, TContext>,
+    'mutationFn'
+  >,
+): UseMutationResult<TData, TError, StakeholderArgs, TContext> => {
   const q = useProjectAction();
   const alert = useSwal();
+
   const toast = alert.mixin({
     toast: true,
     position: 'top-end',
     showConfirmButton: false,
     timer: 3000,
   });
-  return useMutation({
-    mutationFn: async ({
-      projectUUID,
-      stakeholderPayload,
-    }: {
-      projectUUID: UUID;
-      stakeholderPayload: any;
-    }) => {
-      return q.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: 'aaProject.stakeholders.add',
-          payload: stakeholderPayload,
-        },
-      });
+
+  const mutationResults = useMutation<TData, TError, StakeholderArgs, TContext>(
+    {
+      mutationFn: async ({ projectUUID, stakeholderPayload }) => {
+        return q.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: 'aaProject.stakeholders.add',
+            payload: stakeholderPayload,
+          },
+        }) as TData;
+      },
+      onSuccess: (data, variables, ctx) => {
+        q.reset();
+        options?.onSuccess?.(data, variables, ctx);
+        toast.fire({
+          title: 'Stakeholder added successfully',
+          icon: 'success',
+        });
+      },
+      onError: (error, variables, ctx) => {
+        q.reset();
+        options?.onError?.(error, variables, ctx);
+        const errorMessage = (error as any)?.response?.data?.message || 'Error';
+        toast.fire({
+          title: 'Error while adding stakeholder.',
+          icon: 'error',
+          text: errorMessage,
+        });
+      },
+      ...options,
     },
-    onSuccess: () => {
-      q.reset();
-      toast.fire({
-        title: 'Stakeholder added successfully',
-        icon: 'success',
-      });
+  );
+
+  return {
+    ...mutationResults,
+    mutate: (variables: StakeholderArgs) => {
+      if (!mutationResults.isPending) {
+        mutationResults.mutate(variables);
+      }
     },
-    onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
-      q.reset();
-      toast.fire({
-        title: 'Error while adding stakeholder.',
-        icon: 'error',
-        text: errorMessage,
-      });
-    },
-  });
+  };
 };
 
 export const useUpdateStakeholders = () => {
@@ -262,12 +288,27 @@ export const useUploadStakeholders = () => {
       console.error('Upload error', error);
       const message: string =
         error?.response?.data?.message || error?.message || '';
-      const match = message.match(/Phone number must be unique,?\s*(.+)/i);
-      if (match) {
+
+      const phoneMatch =
+        message.match(/Phone\(s\):\s*([^|]+)/i) ||
+        message.match(/Phone number must be unique,?\s*(.+)/i);
+      const emailMatch = message.match(/Email\(s\):\s*(.+)/i);
+      // Build error message conditionally
+      const errorLines: string[] = [];
+
+      if (phoneMatch) {
+        errorLines.push('• Duplicate phone numbers found.');
+      }
+
+      if (emailMatch) {
+        errorLines.push('• Duplicate emails found.');
+      }
+
+      if (errorLines.length > 0) {
         toast.fire({
           icon: 'error',
-          title: ' Unique contraints',
-          text: 'Duplicate phone numbers found in the file!',
+          title: 'Unique constraint violation',
+          text: errorLines.join('\n'),
         });
       } else {
         toast.fire({

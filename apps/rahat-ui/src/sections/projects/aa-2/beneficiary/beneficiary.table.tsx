@@ -107,7 +107,11 @@ function BeneficiaryTable() {
           value={filters?.search || ''}
         />
       </div>
-      <DemoTable table={table} loading={projectBeneficiaries.isLoading} />
+      <DemoTable
+        table={table}
+        loading={projectBeneficiaries.isLoading}
+        message="No Beneficiaries Available"
+      />
 
       <CustomPagination
         currentPage={pagination.page}

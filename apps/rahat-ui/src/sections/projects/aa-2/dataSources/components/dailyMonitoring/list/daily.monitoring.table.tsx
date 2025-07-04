@@ -57,7 +57,11 @@ export default function DailyMonitoringTable({ table, loading }: IProps) {
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                {loading ? <SpinnerLoader /> : <NoResult />}
+                {loading ? (
+                  <SpinnerLoader />
+                ) : (
+                  <NoResult message="No Daily Monitoring Available" />
+                )}
               </TableCell>
             </TableRow>
           )}

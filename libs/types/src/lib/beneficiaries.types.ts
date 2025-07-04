@@ -43,6 +43,7 @@ export interface ListBeneficiaryGroup {
   deletedAt: Date | null;
   beneficiaryGroupProject?: any;
   isGroupValidForAA: boolean;
+  groupPurpose?: string;
 }
 
 export interface UpdateBeneficiaryPayload {

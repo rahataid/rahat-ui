@@ -9,6 +9,7 @@ import { IconDialogComponent } from './component/iconDialog';
 import { useDeleteStakeholders } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { RoleAuth, AARoles } from '@rahat-ui/auth';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 export const useProjectStakeholdersTableColumns = () => {
   const router = useRouter();
@@ -50,9 +51,14 @@ export const useProjectStakeholdersTableColumns = () => {
       cell: ({ row }) => <div> {row.getValue('organization')}</div>,
     },
     {
-      accessorKey: 'district',
-      header: 'District',
-      cell: ({ row }) => <div> {row.getValue('district')}</div>,
+      accessorKey: 'supportArea',
+      header: 'Support Area',
+      cell: ({ row }) =>
+        row?.original?.supportArea.length > 0 ? (
+          <Badge className="w-auto">{row.original.supportArea[0]}</Badge>
+        ) : (
+          []
+        ),
     },
 
     {
@@ -148,11 +154,15 @@ export const useProjectStakeholdersGroupTableColumns = () => {
       cell: ({ row }) => <div> {row.getValue('organization')}</div>,
     },
     {
-      accessorKey: 'district',
-      header: 'District',
-      cell: ({ row }) => <div> {row.getValue('district')}</div>,
+      accessorKey: 'supportArea',
+      header: 'Support Area',
+      cell: ({ row }) =>
+        row?.original?.supportArea.length > 0 ? (
+          <Badge className="w-auto">{row.original.supportArea[0]}</Badge>
+        ) : (
+          []
+        ),
     },
-
     {
       accessorKey: 'municipality',
       header: 'Municipality',
@@ -242,9 +252,14 @@ export const useProjectSelectStakeholdersTableColumns = () => {
       cell: ({ row }) => <div> {row.getValue('organization')}</div>,
     },
     {
-      accessorKey: 'district',
-      header: 'District',
-      cell: ({ row }) => <div> {row.getValue('district')}</div>,
+      accessorKey: 'supportArea',
+      header: 'Support Area',
+      cell: ({ row }) =>
+        row?.original?.supportArea.length > 0 ? (
+          <Badge className="w-auto">{row.original.supportArea[0]}</Badge>
+        ) : (
+          []
+        ),
     },
 
     {

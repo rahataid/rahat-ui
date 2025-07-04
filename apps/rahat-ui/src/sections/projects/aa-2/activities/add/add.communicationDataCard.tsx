@@ -83,7 +83,7 @@ const CommunicationDataCard = ({
                       ?.name === 'SMS' ? (
                     <MessageSquare className="h-5 w-5 text-gray-500" />
                   ) : appTransports?.find((g) => g.cuid === t.transportId)
-                      ?.name === 'IVR' ? (
+                      ?.name === 'VOICE' ? (
                     <Phone className="h-5 w-5 text-gray-500" />
                   ) : (
                     <MessageSquare className="h-5 w-5 text-gray-500" />

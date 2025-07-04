@@ -19,8 +19,10 @@ type UserLayoutProps = {
 
 const UserLayout: FC<UserLayoutProps> = ({ children, menuItems }) => {
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
+    const defaultSize = index === 1 ? 30 : 70;
+
     return (
-      <ResizablePanel minSize={30} key={index}>
+      <ResizablePanel minSize={30} defaultSize={defaultSize} key={index}>
         {children}
         {/* <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea> */}
       </ResizablePanel>

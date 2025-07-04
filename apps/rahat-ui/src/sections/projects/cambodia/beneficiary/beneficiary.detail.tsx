@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { formatDT } from 'apps/rahat-ui/src/utils';
 import { Copy, CopyCheck } from 'lucide-react';
 import { useParams } from 'next/navigation';

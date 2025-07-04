@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { isValidPhoneNumber } from 'react-phone-number-input';
@@ -28,6 +28,7 @@ import { DISTRICTS_OF_NEPAL } from 'apps/rahat-ui/src/common/data/district';
 import { MUNICIPALITIES_OF_NEPAL } from 'apps/rahat-ui/src/common/data/municipality';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useCreateStakeholders } from '@rahat-ui/query';
+import { Tag, TagInput } from 'emblor';
 
 export default function AddStakeholders() {
   const { id } = useParams();
@@ -36,7 +37,10 @@ export default function AddStakeholders() {
 
   const addedFromGroup = searchParams.get('fromGroup');
   const createStakeholder = useCreateStakeholders();
-
+  const [variationTags, setVariationTags] = useState<Tag[]>([]);
+  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
+  const [unsavedSupportAreaInput, setUnsavedSupportAreaInput] =
+    useState<string>('');
   const isValidPhoneNumberRefinement = (value: string | undefined) => {
     if (value === undefined || value === '') return true; // If phone number is empty or undefined, it's considered valid
     return isValidPhoneNumber(value);
@@ -66,6 +70,14 @@ export default function AddStakeholders() {
       .min(2, { message: 'Please enter organization.' }),
     district: z.string().min(2, { message: 'Please enter district.' }),
     municipality: z.string().min(2, { message: 'Please enter municipality' }),
+    supportArea: z
+      .array(
+        z.object({
+          id: z.string(),
+          text: z.string(),
+        }),
+      )
+      .optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -80,12 +92,34 @@ export default function AddStakeholders() {
       municipality: '',
     },
   });
-
+  // Handle Enter key in the support area TagInput
+  const handleSupportAreaKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (e.key === 'Enter') {
+      // Prevent form submission on Enter
+      e.preventDefault();
+      if (unsavedSupportAreaInput.trim() !== '') {
+        const newTag: Tag = {
+          id: new Date().getTime().toString(),
+          text: unsavedSupportAreaInput.trim(),
+        };
+        const updatedTags = [...variationTags, newTag];
+        setVariationTags(updatedTags);
+        form.setValue('supportArea', updatedTags);
+        setUnsavedSupportAreaInput('');
+      }
+    }
+  };
   const handleCreateStakeholders = async (data: z.infer<typeof FormSchema>) => {
     try {
+      const payload = {
+        ...data,
+        supportArea: data?.supportArea?.map((t) => t.text),
+      };
       await createStakeholder.mutateAsync({
         projectUUID: id as UUID,
-        stakeholderPayload: data,
+        stakeholderPayload: payload,
       });
       router.push(`/projects/aa/${id}/stakeholders`);
       form.reset();
@@ -93,6 +127,7 @@ export default function AddStakeholders() {
       console.error('Create Stakeholder Error::', e);
     }
   };
+  const l = form.watch('supportArea');
 
   return (
     <div className="p-4">
@@ -106,25 +141,85 @@ export default function AddStakeholders() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleCreateStakeholders)}>
           <div className=" p-4 rounded-lg border bg-card gap-3">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <Label>Stakeholders Name</Label>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="Enter a Stakeholder Name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
+            <div className="grid grid-cols-2 gap-4 mb-4 mt-5">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Label>Stakeholders Name</Label>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Enter a Stakeholder Name"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <FormField
+                control={form.control}
+                name="supportArea"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Label>
+                        Support Area{' '}
+                        {unsavedSupportAreaInput && (
+                          <span className="text-sm text-red-400 ml-1">
+                            Press Enter to add.
+                          </span>
+                        )}
+                      </Label>
+                      <FormControl>
+                        <>
+                          <TagInput
+                            {...field}
+                            tags={variationTags}
+                            setTags={(newTags) => {
+                              setVariationTags(newTags);
+                              form.setValue(
+                                'supportArea',
+                                newTags as [Tag, ...Tag[]],
+                              );
+                            }}
+                            placeholder={'Enter a Support Area'}
+                            className="min-h-[23px]"
+                            styleClasses={{
+                              inlineTagsContainer:
+                                'border-input rounded shadow-xs p-1 gap-1 ' +
+                                'focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500',
+                              input:
+                                'w-full rounded-sm min-w-[80px] shadow-none px-2 h-7',
+                              tag: {
+                                body: 'h-7 relative rounded-sm border border-input font-medium text-xs ps-2 pe-7',
+                                closeButton:
+                                  'absolute -inset-y-px -end-px p-0 rounded-e-md flex size-7 transition-[color,box-shadow] outline-none focus-visible:ring-2 focus-visible:ring-blue-500 text-muted-foreground/80 hover:text-foreground',
+                              },
+                            }}
+                            activeTagIndex={activeTagIndex}
+                            setActiveTagIndex={setActiveTagIndex}
+                            inputProps={{
+                              value: unsavedSupportAreaInput,
+                              onChange: (
+                                e: React.ChangeEvent<HTMLInputElement>,
+                              ) => setUnsavedSupportAreaInput(e.target.value),
+                              onKeyDown: handleSupportAreaKeyDown,
+                            }}
+                          />
+                        </>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            </div>
             <div className="grid grid-cols-2 gap-4 mb-4 mt-5">
               <FormField
                 control={form.control}
@@ -248,11 +343,20 @@ export default function AddStakeholders() {
                 type="button"
                 variant="secondary"
                 className=" px-8 "
-                onClick={() => form.reset()}
+                onClick={() => {
+                  form.reset();
+                  setUnsavedSupportAreaInput('');
+                }}
               >
-                Cancel
+                Clear
               </Button>
-              <Button className="w-32" disabled={form.formState.isSubmitting}>
+              <Button
+                className="w-32"
+                disabled={
+                  form.formState.isSubmitting ||
+                  unsavedSupportAreaInput.trim() !== ''
+                }
+              >
                 Create
               </Button>
             </div>

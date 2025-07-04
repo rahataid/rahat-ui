@@ -9,7 +9,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { UUID } from 'crypto';
 import { Copy, CopyCheck } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';

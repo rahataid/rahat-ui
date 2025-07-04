@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import {
   Trash2,
   Copy,
@@ -23,6 +23,7 @@ import {
   Wallet,
   Phone,
   Mail,
+  Calendar,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useBoolean } from '../../hooks/use-boolean';
@@ -46,6 +47,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useRouter } from 'next/navigation';
 import DeleteButton from '../../components/delete.btn';
 import { toast } from 'react-toastify';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 type IProps = {
   vendorsDetail: any;
@@ -98,6 +100,20 @@ export default function VendorsDetailSplitView({
     await removeVendor.mutateAsync({ vendorId: vendorsDetail.id });
     closeSecondPanel();
   };
+  const formattedDate =
+    vendorsDetail?.createdAt &&
+    !isNaN(new Date(vendorsDetail.createdAt).getTime())
+      ? new Intl.DateTimeFormat('en-NP', {
+          timeZone: 'Asia/Kathmandu',
+          weekday: 'short',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true,
+        }).format(new Date(vendorsDetail.createdAt))
+      : 'N/A';
 
   return (
     <div className="h-full border-l">
@@ -159,63 +175,76 @@ export default function VendorsDetailSplitView({
           </div>
         </div>
       </div>
-      <div className="p-4 flex flex-col space-y-4">
-        <h1 className="font-medium">General</h1>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <FolderDot size={20} strokeWidth={1.5} />
-            <p>Project Name</p>
-          </div>
-          <p className="text-muted-foreground text-base">
-            {vendorsDetail?.projectName || '-'}
-          </p>
-        </div>
-
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Wallet size={20} strokeWidth={1.5} />
-            <p>Wallet Address</p>
-          </div>
-          <div
-            className="flex space-x-3 items-center"
-            onClick={() => clickToCopy(vendorsDetail?.walletAddress)}
-          >
+      <ScrollArea className="h-[calc(100vh-240px)]">
+        <div className="p-4 flex flex-col space-y-4">
+          <h1 className="font-medium">General</h1>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <FolderDot size={20} strokeWidth={1.5} />
+              <p>Project Name</p>
+            </div>
             <p className="text-muted-foreground text-base">
-              {truncateEthAddress(vendorsDetail?.walletAddress) ?? '-'}
+              {vendorsDetail?.projectName || '-'}
             </p>
-            {vendorsDetail?.walletAddress &&
-              (walletAddressCopied ? (
-                <CopyCheck size={15} strokeWidth={1.5} />
-              ) : (
-                <Copy
-                  className="text-muted-foreground"
-                  size={15}
-                  strokeWidth={1.5}
-                />
-              ))}
           </div>
-        </div>
 
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Phone size={20} strokeWidth={1.5} />
-            <p>Phone Number</p>
-          </div>
-          <p className="text-muted-foreground text-base">
-            {vendorsDetail?.phone || '-'}
-          </p>
-        </div>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <Wallet size={20} strokeWidth={1.5} />
+              <p>Wallet Address</p>
+            </div>
+            <div
+              className="flex space-x-3 items-center"
+              onClick={() => clickToCopy(vendorsDetail?.walletAddress)}
+            >
+              <p className="text-muted-foreground text-base truncate w-48">
+                {vendorsDetail?.walletAddress ?? '-'}
+              </p>
 
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Mail size={20} strokeWidth={1.5} />
-            <p>Email Address</p>
+              {vendorsDetail?.walletAddress &&
+                (walletAddressCopied ? (
+                  <CopyCheck size={15} strokeWidth={1.5} />
+                ) : (
+                  <Copy
+                    className="text-muted-foreground"
+                    size={15}
+                    strokeWidth={1.5}
+                  />
+                ))}
+            </div>
           </div>
-          <p className="text-muted-foreground text-base">
-            {vendorsDetail?.email || '-'}
-          </p>
+
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <Phone size={20} strokeWidth={1.5} />
+              <p>Phone Number</p>
+            </div>
+            <p className="text-muted-foreground text-base">
+              {vendorsDetail?.phone || '-'}
+            </p>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <Mail size={20} strokeWidth={1.5} />
+              <p>Email Address</p>
+            </div>
+            <p className="text-muted-foreground text-base">
+              {vendorsDetail?.email || '-'}
+            </p>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <Calendar size={20} strokeWidth={1.5} />
+              <p>Registered Date</p>
+            </div>
+            <p className="text-muted-foreground text-base">
+              {formattedDate || '-'}
+            </p>
+          </div>
         </div>
-      </div>
+      </ScrollArea>
 
       <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
         <DialogContent>

@@ -15,7 +15,7 @@ import {
   AvatarImage,
 } from '@rahat-ui/shadcn/src/components/ui/avatar';
 import { Copy, CopyCheck, Mail, Phone, Wallet } from 'lucide-react';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
 export default function ProfileView() {
   const user = useUserStore((state) => state.user);

@@ -6,9 +6,11 @@ const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 type ChartProps = {
   data: Record<string, any>[]; // accepts any shape with datetime
+  dangerLevel: string;
+  warningLevel: string;
 };
 
-const TimeSeriesChart = ({ data }: ChartProps) => {
+const TimeSeriesChart = ({ data, dangerLevel, warningLevel }: ChartProps) => {
   if (!data || data.length === 0) return null;
 
   const keys = Object.keys(data[0]).filter((key) => key !== 'datetime');
@@ -33,6 +35,8 @@ const TimeSeriesChart = ({ data }: ChartProps) => {
       title: {
         text: 'Water Level (m)',
       },
+      min: Math.min(...data.map((d) => d[1]), Number(warningLevel)) - 0.5,
+      max: Number(dangerLevel) + 0.5,
     },
     tooltip: {
       x: { format: 'dd MMM HH:mm' },
@@ -50,6 +54,34 @@ const TimeSeriesChart = ({ data }: ChartProps) => {
         opacityTo: 0,
         stops: [0, 90, 100],
       },
+    },
+    annotations: {
+      yaxis: [
+        {
+          y: warningLevel,
+          borderColor: '#FFA500', // orange
+          label: {
+            borderColor: '#FFA500',
+            style: {
+              color: '#fff',
+              background: '#FFA500',
+            },
+            text: 'Warning Level',
+          },
+        },
+        {
+          y: dangerLevel,
+          borderColor: '#FF0000', // red
+          label: {
+            borderColor: '#FF0000',
+            style: {
+              color: '#fff',
+              background: '#FF0000',
+            },
+            text: 'Danger Level',
+          },
+        },
+      ],
     },
   };
 

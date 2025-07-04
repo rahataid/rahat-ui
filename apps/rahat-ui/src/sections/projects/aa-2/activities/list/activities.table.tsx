@@ -11,6 +11,7 @@ import {
   ScrollArea,
   ScrollBar,
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { NoResult } from 'apps/rahat-ui/src/common';
 
 type IProps = {
   table: Table<any>;
@@ -59,7 +60,7 @@ export default function ActivitiesTable({ table, tableheight }: IProps) {
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                No results.
+                <NoResult message="No Activities Available" />
               </TableCell>
             </TableRow>
           )}

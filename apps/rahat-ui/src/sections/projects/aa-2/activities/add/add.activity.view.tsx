@@ -67,6 +67,8 @@ export default function AddActivities() {
   const { data: users, isSuccess } = useUserList({
     page: 1,
     perPage: 9999,
+    sort: 'createdAt',
+    roles: 'admin , manager',
   });
   useActivitiesCategories(projectID as UUID);
   usePhases(projectID as UUID);
@@ -353,7 +355,7 @@ export default function AddActivities() {
                       form.reset();
                     }}
                   >
-                    Cancel
+                    Clear
                   </Button>
                   <Button
                     className="w-36"

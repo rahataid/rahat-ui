@@ -8,6 +8,7 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import React from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { NoResult, TableLoader } from 'apps/rahat-ui/src/common';
 
 export function GlofasSection() {
   const params = useParams();
@@ -17,7 +18,7 @@ export function GlofasSection() {
     settings: state.settings,
   }));
 
-  const { data: glofasData } = useGlofasWaterLevels(projectId, {
+  const { data: glofasData, isLoading } = useGlofasWaterLevels(projectId, {
     riverBasin:
       settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
         'river_basin'
@@ -51,10 +52,18 @@ export function GlofasSection() {
     }
     return 'bg-green-50';
   };
+  if (isLoading) {
+    return <TableLoader />;
+  }
 
-  return !glofasData ? (
-    <p>Data not available for GLOFAS.</p>
-  ) : (
+  if (!glofasData) {
+    return (
+      <div className="p-4">
+        <NoResult message="No GLOFAS Data" />
+      </div>
+    );
+  }
+  return (
     <ScrollArea className="h-[calc(100vh-220px)]">
       <GlofasInfoCard glofas={glofasData} />
       <div className="bg-card overflow-hidden p-4 border shadow rounded-sm mt-4">

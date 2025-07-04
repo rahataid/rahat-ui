@@ -47,7 +47,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { UUID } from 'crypto';
 import { format } from 'date-fns';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { FIELD_DEF_FETCH_LIMIT } from '../../constants/app.const';
 import useFormStore from '../../formBuilder/form.store';
 import { filterFieldDefs, formatDate, selectNonEmptyFields } from '../../utils';
@@ -58,7 +58,9 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const { closeSecondPanel } = useSecondPanel();
 
   const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
-
+  // const { data } = useCommunityBeneficiaryListByID({
+  //   uuid,
+  // });
   const { pagination } = usePagination();
   const { data: definitions } = useActiveFieldDefList({
     ...pagination,
@@ -94,8 +96,8 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       .refine((value) => !/\s/.test(value), {
         message: 'Phone must not contain whitespace',
       })
-      .refine((value) => /^[0-9]*$/.test(value), {
-        message: 'Phone must only numbers',
+      .refine((value) => /^[0-9+\-()]*$/.test(value), {
+        message: 'Phone number can  include digits and special characters',
       }),
     location: z.string().optional(),
     latitude: z
@@ -122,27 +124,24 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: useMemo(
-      () => ({
-        walletAddress: data?.walletAddress || '',
-        firstName: data?.firstName,
-        lastName: data?.lastName,
-        gender: data?.gender,
-        email: data?.email || '',
-        phone: data?.phone || '',
-        bankedStatus: data?.bankedStatus || '',
-        internetStatus: data?.internetStatus || '',
-        phoneStatus: data?.phoneStatus || '',
-        location: data?.location || '',
-        latitude: data?.latitude || 0,
-        longitude: data?.longitude || 0,
-        notes: data?.notes || '',
-        govtIDNumber: data?.govtIDNumber || '',
-        birthDate:
-          data && data?.birthDate ? new Date(data?.birthDate) : undefined,
-      }),
-      [data],
-    ),
+    defaultValues: {
+      walletAddress: data?.walletAddress || '',
+      firstName: data?.firstName,
+      lastName: data?.lastName,
+      gender: data?.gender,
+      email: data?.email || '',
+      phone: data?.phone || '',
+      bankedStatus: data?.bankedStatus || '',
+      internetStatus: data?.internetStatus || '',
+      phoneStatus: data?.phoneStatus || '',
+      location: data?.location || '',
+      latitude: data?.latitude || 0,
+      longitude: data?.longitude || 0,
+      notes: data?.notes || '',
+      govtIDNumber: data?.govtIDNumber || '',
+      birthDate:
+        data && data?.birthDate ? new Date(data?.birthDate) : undefined,
+    },
   });
 
   const handleEditBeneficiary = async (
@@ -167,10 +166,27 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     closeSecondPanel();
   };
 
-  const filteredDefinitions = useMemo(
-    () => filterFieldDefs(definitions),
-    [definitions],
-  );
+  useEffect(() => {
+    form.reset({
+      walletAddress: data?.walletAddress || '',
+      firstName: data?.firstName || '',
+      lastName: data?.lastName || '',
+      gender: data?.gender || '',
+      email: data?.email || '',
+      phone: data?.phone || '',
+      bankedStatus: data?.bankedStatus || '',
+      internetStatus: data?.internetStatus || '',
+      phoneStatus: data?.phoneStatus || '',
+      location: data?.location || '',
+      latitude: data?.latitude || 0,
+      longitude: data?.longitude || 0,
+      notes: data?.notes || '',
+      govtIDNumber: data?.govtIDNumber || '',
+      birthDate: data?.birthDate ? new Date(data?.birthDate) : undefined,
+    });
+  }, [data, form]);
+
+  const filteredDefinitions = filterFieldDefs(definitions);
 
   return (
     <Form {...form}>

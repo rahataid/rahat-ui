@@ -360,8 +360,19 @@ export default function PaymentInitiation() {
           )}
 
           <div className="flex justify-end space-x-2">
-            <Button variant="outline" className="rounded-sm w-48">
-              Cancel
+            <Button
+              variant="outline"
+              className="rounded-sm w-48"
+              onClick={() => {
+                setFormState((prev) => ({
+                  ...prev,
+                  group: {},
+                  vendor: {},
+                  paymentProvider: {},
+                }));
+              }}
+            >
+              Clear
             </Button>
             <PaymentDialog formState={formState} handleSubmit={handleSubmit} />
           </div>

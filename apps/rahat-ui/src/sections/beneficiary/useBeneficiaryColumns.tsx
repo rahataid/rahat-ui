@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Eye, Copy, CopyCheck, TriangleAlertIcon } from 'lucide-react';
@@ -15,6 +14,8 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ListBeneficiary } from '@rahat-ui/types';
 import { useSearchParams } from 'next/navigation';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
+import { GroupPurpose } from '../../constants/beneficiary.const';
 
 export const useBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
@@ -147,38 +148,45 @@ export const useBeneficiaryTableColumns = () => {
               onClick={() => openSplitDetailView(row.original)}
             />
 
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild className="hover:cursor-pointer py-0">
-                  <TriangleAlertIcon
-                    size={16}
-                    strokeWidth={1.5}
-                    color="red"
-                    className={`${
-                      !row.original.error && 'hidden'
-                    } text-red-500 hover:cursor-pointer`}
-                  />
-                </TooltipTrigger>
-                <TooltipContent
-                  side="left"
-                  className="w-96 rounded-sm p-4 max-h-60 overflow-auto"
-                >
-                  <div className="flex space-x-2 items-center">
+            {!row?.original?.isGroupValidForAA && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild className="hover:cursor-pointer py-0">
                     <TriangleAlertIcon
                       size={16}
                       strokeWidth={1.5}
                       color="red"
+                      className={`${
+                        !row.original.error && 'hidden'
+                      } text-red-500 hover:cursor-pointer`}
                     />
-                    <span className="font-semibold text-sm/6">
-                      Bank Account Validation Failed
-                    </span>
-                  </div>
-                  <p className="text-gray-500 text-sm mt-1 break-words">
-                    {row.original.error ?? 'Something went wrong!!'}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="left"
+                    className="w-96 rounded-sm p-4 max-h-60 overflow-auto"
+                  >
+                    <div className="flex space-x-2 items-center">
+                      <TriangleAlertIcon
+                        size={16}
+                        strokeWidth={1.5}
+                        color="red"
+                      />
+                      <span className="font-semibold text-sm/6">
+                        {row?.original?.groupPurpose ===
+                          GroupPurpose.BANK_TRANSFER &&
+                          'Bank Account Validation Failed'}
+                        {row?.original?.groupPurpose ===
+                          GroupPurpose.MOBILE_MONEY &&
+                          'Phone Number Validation Failed'}
+                      </span>
+                    </div>
+                    <p className="text-gray-500 text-sm mt-1 break-words">
+                      {row.original.error ?? 'Something went wrong!!'}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
         );
       },

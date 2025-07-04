@@ -6,7 +6,7 @@ import { AAUpdateOrAddStakeholdersGroup } from 'apps/rahat-ui/src/sections/proje
 const Page = () => {
   return (
     <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]}>
-      <AAUpdateOrAddStakeholdersGroup />;
+      <AAUpdateOrAddStakeholdersGroup />
     </RoleAuth>
   );
 };

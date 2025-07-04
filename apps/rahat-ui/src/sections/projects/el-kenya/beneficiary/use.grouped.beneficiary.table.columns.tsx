@@ -8,7 +8,7 @@ import {
   TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import React from 'react';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { Copy, CopyCheck } from 'lucide-react';
 
 export const useKenyaGroupedBeneficiaryTableColumns = () => {

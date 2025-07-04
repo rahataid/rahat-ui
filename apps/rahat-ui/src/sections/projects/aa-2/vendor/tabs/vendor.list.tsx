@@ -77,7 +77,12 @@ export const VendorList = ({ id }: { id: UUID }) => {
           value={filters?.search || ''}
         />
       </div>
-      <DemoTable table={table} tableHeight="h-[500px]" loading={isLoading} />
+      <DemoTable
+        table={table}
+        tableHeight="h-[500px]"
+        loading={isLoading}
+        message="No Vendors Available"
+      />
       <CustomPagination
         currentPage={pagination.page}
         handleNextPage={setNextPage}

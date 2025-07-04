@@ -24,7 +24,7 @@ import {
 import * as React from 'react';
 
 import { useVendorTransaction } from '../../hooks/el/subgraph/querycall';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import TableLoader from '../../components/table.loader';
 import { useRPVendorTransactions } from '@rahat-ui/query';
 import {

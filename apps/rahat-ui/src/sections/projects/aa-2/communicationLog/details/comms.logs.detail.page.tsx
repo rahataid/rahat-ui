@@ -50,6 +50,7 @@ import CardSkeleton from 'apps/rahat-ui/src/common/cardSkeleton';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import * as XLSX from 'xlsx';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 type IHeadCardProps = {
   title: string;
   icon: LucideIcon;
@@ -72,20 +73,25 @@ export default function CommsLogsDetailPage() {
     setFilters,
   } = usePagination();
 
-  const columns = useCommsLogsTableColumns();
-
   // logs?.sessionLogs
-
+  const debounceSearch = useDebounce(filters, 500);
   const { data: logs, isLoading } = useGetCommunicationLogs(
     projectID as UUID,
     communicationId,
     activityId,
   );
-
+  const columns = useCommsLogsTableColumns(
+    logs?.sessionDetails?.Transport?.name,
+  );
+  const cleanFilters = Object.fromEntries(
+    Object.entries(debounceSearch).filter(
+      ([_, v]) => v !== '' && v !== null && v !== undefined,
+    ),
+  );
   const { data: activityDetail, isLoading: isLoadingActivity } =
     useSingleActivity(projectID as UUID, activityId);
   const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
-    useListSessionLogs(sessionId, { ...pagination, ...filters });
+    useListSessionLogs(sessionId, { ...pagination, ...cleanFilters });
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
 
@@ -161,10 +167,13 @@ export default function CommsLogsDetailPage() {
     XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
   };
 
-  // if (isLoading || isLoadingSessionLogs) {
-  //   return <Loader />;
-  // }
-
+  const handleSearch = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
+      const value = event?.target?.value ?? '';
+      setFilters({ ...filters, [key]: value });
+    },
+    [filters],
+  );
   return (
     <div className="p-4">
       <div className="flex flex-col space-y-0">
@@ -248,11 +257,11 @@ export default function CommsLogsDetailPage() {
                   <p className="font-medium">{logsMeta?.total}</p>
                 </div>
 
-                {/* IVR Status */}
+                {/* VOICE Status */}
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 flex items-center justify-center">
-                      {logs?.sessionDetails?.Transport?.name === 'IVR' ? (
+                      {logs?.sessionDetails?.Transport?.name === 'VOICE' ? (
                         <AudioLines />
                       ) : logs?.sessionDetails?.Transport?.name === 'EMAIL' ? (
                         <Mail />
@@ -288,17 +297,14 @@ export default function CommsLogsDetailPage() {
             <Card className="col-span-1 md:col-span-2 w-full rounded-sm">
               <CardHeader className="flex flex-row items-center justify-center gap-2 pb-0 pt-0.5 space-y-0 px-2">
                 <SearchInput
-                  name="audience"
                   className="w-full"
-                  value={
-                    (table.getColumn('audience')?.getFilterValue() as string) ??
-                    filters?.audience
-                  }
-                  onSearch={(event) => handleFilterChange(event)}
+                  value={filters.address}
+                  name="Audience"
+                  onSearch={(e) => handleSearch(e, 'address')}
                 />
                 <SelectComponent
                   name="Status"
-                  options={['ALL', 'SUCCESS', 'PENDING', 'FAILED']}
+                  options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
                   onChange={(value) =>
                     handleFilterChange({
                       target: { name: 'status', value },

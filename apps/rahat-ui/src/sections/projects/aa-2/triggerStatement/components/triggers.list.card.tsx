@@ -1,5 +1,5 @@
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { Heading } from 'apps/rahat-ui/src/common';
+import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import TriggerCard from './trigger.card';
 
 type IProps = {
@@ -33,9 +33,7 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
               />
             ))
           ) : (
-            <p className="text-sm font-medium text-muted-foreground">
-              No triggers found
-            </p>
+            <NoResult message="No Recent Triggers" />
           )}
         </div>
       </ScrollArea>

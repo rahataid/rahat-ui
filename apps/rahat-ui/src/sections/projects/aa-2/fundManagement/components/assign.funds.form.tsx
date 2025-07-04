@@ -276,7 +276,7 @@ export default function AssignFundsForm() {
                 variant="secondary"
                 onClick={() => form.reset()}
               >
-                Cancel
+                Clear
               </Button>
 
               <Button className="px-10" disabled={!form.formState.isValid}>

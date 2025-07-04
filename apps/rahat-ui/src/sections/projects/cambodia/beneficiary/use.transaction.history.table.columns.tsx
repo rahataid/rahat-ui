@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { ArrowUpDown, Copy, CopyCheck } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 export type Transaction = {

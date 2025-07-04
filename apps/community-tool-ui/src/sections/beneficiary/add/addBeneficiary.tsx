@@ -85,8 +85,8 @@ export default function AddBeneficiary() {
       .refine((value) => !/\s/.test(value), {
         message: 'Phone must not contain whitespace',
       })
-      .refine((value) => /^[0-9]*$/.test(value), {
-        message: 'Phone must only numbers',
+      .refine((value) => /^[0-9+\-()]*$/.test(value), {
+        message: 'Phone number can  include digits and special characters',
       }),
     email: z.string().optional(),
     birthDate: z.date().optional(),

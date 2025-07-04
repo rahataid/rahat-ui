@@ -4,7 +4,7 @@ import {
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Heading, TableLoader } from 'apps/rahat-ui/src/common';
+import { Heading, NoResult, TableLoader } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { format } from 'date-fns';
 import { MapPin, RadioTower, Skull, TriangleAlert } from 'lucide-react';
@@ -66,9 +66,18 @@ export default function RiverWatchView() {
     return statusColorMap[status] || '';
   };
 
-  return isLoading ? (
-    <TableLoader />
-  ) : (
+  if (isLoading) {
+    return <TableLoader />;
+  }
+
+  if (!riverWatch || !riverWatch.info) {
+    return (
+      <div className="p-4">
+        <NoResult message="No River Watch Data" />
+      </div>
+    );
+  }
+  return (
     <div className="flex flex-col space-y-4">
       <div
         className="p-4 rounded-sm border shadow flex justify-between space-x-4 cursor-pointer hover:shadow-md"

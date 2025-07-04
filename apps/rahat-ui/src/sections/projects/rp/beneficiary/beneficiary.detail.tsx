@@ -38,7 +38,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { UUID } from 'crypto';
 import {
@@ -77,8 +77,11 @@ export default function BeneficiaryDetail({
   });
 
   const assignedTokens = useReadRahatPayrollProjectTokenAllocations({
-    args: [contractSettings?.rahattoken?.address,beneficiaryDetails?.walletAddress],
-    address: contractSettings?.rahatpayrollproject?.address
+    args: [
+      contractSettings?.rahattoken?.address,
+      beneficiaryDetails?.walletAddress,
+    ],
+    address: contractSettings?.rahatpayrollproject?.address,
   });
 
   const [activeTab, setActiveTab] = useState<'details' | 'transaction'>(

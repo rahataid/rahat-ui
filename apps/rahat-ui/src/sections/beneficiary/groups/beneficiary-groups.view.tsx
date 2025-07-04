@@ -12,6 +12,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useRouter } from 'next/navigation';
 import AssignBeneficiaryToProjectModal from './assignToProjectModal';
 import { ListBeneficiaryGroup } from '@rahat-ui/types';
+import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 
 function BeneficiaryGroupsView() {
   const router = useRouter();
@@ -90,53 +91,83 @@ function BeneficiaryGroupsView() {
                 const isAssignedToProject = i?.beneficiaryGroupProject?.length;
 
                 return (
-                  <div key={index} className="rounded-md border shadow p-4">
-                    <div className="flex flex-col space-y-2">
-                      <div
-                        className="relative cursor-pointer rounded-md bg-secondary grid place-items-center h-28"
-                        onClick={() => {
-                          router.push(
-                            `/beneficiary/groups/${i?.uuid}?isAssignedToProject=${isAssignedToProject}&isGroupValidForAA=${i?.isGroupValidForAA}&fromTab=beneficiaryGroups`,
-                          );
-                        }}
-                      >
-                        {i?.isGroupValidForAA && (
-                          <div className="absolute top-2 right-2">
-                            <LandmarkIcon
-                              strokeWidth={2}
-                              className="w-4 h-4 text-green-700"
-                            />
-                          </div>
-                        )}
-                        <div className="bg-[#667085] text-white p-2 rounded-full">
-                          <Users size={20} strokeWidth={2.5} />
+                  <div
+                    key={index}
+                    className="rounded-sm border shadow p-4 flex flex-col cursor-pointer"
+                    onClick={() => {
+                      router.push(
+                        `/beneficiary/groups/${i?.uuid}?isAssignedToProject=${isAssignedToProject}&isGroupValidForAA=${i?.isGroupValidForAA}&fromTab=beneficiaryGroups`,
+                      );
+                    }}
+                  >
+                    <div className="flex-grow">
+                      <div className="mb-4">
+                        <div className="flex justify-between items-center">
+                          <p className="text-lg font-semibold mb-1 text-[#3D3D51]">
+                            {i?.name ?? 'N/A'}
+                          </p>
+                          {i?.isGroupValidForAA && (
+                            <div>
+                              <LandmarkIcon
+                                strokeWidth={2}
+                                className="w-4 h-4 text-green-600"
+                              />
+                            </div>
+                          )}
                         </div>
-                      </div>
-                      <div className="flex">
-                        {i?.beneficiaryGroupProject?.map((project) => {
-                          return (
-                            <Badge key={project?.Project?.id}>
-                              {project?.Project?.name ?? 'N/A'}
-                            </Badge>
-                          );
-                        })}
+
+                        <div className="flex gap-2 items-center text-[#667085]">
+                          <Users size={18} strokeWidth={2} />
+                          {i?._count?.groupedBeneficiaries || 0} beneficiaries
+                        </div>
+
+                        {i?.groupPurpose && (
+                          <Badge className="text-gray-700 font-normal text-[15px]/5">
+                            {capitalizeFirstLetter(
+                              i?.groupPurpose?.split('_')[0] || '',
+                            )}
+                          </Badge>
+                        )}
                       </div>
 
-                      <p className="text-base mb-1">{i?.name ?? 'N/A'}</p>
-                      <div className="flex gap-2 items-center">
-                        <Users size={18} strokeWidth={2} />
-                        {i?._count?.groupedBeneficiaries || 0}
+                      <div className="mb-3">
+                        <p className="text-sm/6 text-[#505868] mb-2">
+                          Projects Involved
+                        </p>
+                        <div className="flex gap-1 flex-wrap">
+                          {i?.beneficiaryGroupProject?.length > 0 ? (
+                            i?.beneficiaryGroupProject?.map((project) => {
+                              return (
+                                <Badge
+                                  key={project?.Project?.id}
+                                  className="text-[#3D3D51] text-sm/6 font-normal"
+                                >
+                                  {project?.Project?.name ?? 'N/A'}
+                                </Badge>
+                              );
+                            })
+                          ) : (
+                            <p className="text-sm/6 italic text-[#505868]">
+                              No Projects Assigned
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        onClick={() => handleAssignModalClick(i)}
-                        // disabled={isAssignedToProject}
-                      >
-                        <Plus className="mr-1" size={18} strokeWidth={1.5} />
-                        Assign Project
-                      </Button>
                     </div>
+
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      className="w-full mx-auto"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAssignModalClick(i);
+                      }}
+                      disabled={!i?._count?.groupedBeneficiaries}
+                    >
+                      <Plus className="mr-1" size={18} strokeWidth={1.5} />
+                      Assign Project
+                    </Button>
                   </div>
                 );
               })}

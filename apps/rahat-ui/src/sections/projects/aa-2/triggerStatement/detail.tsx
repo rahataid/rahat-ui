@@ -67,7 +67,18 @@ export default function TriggerStatementDetail() {
         <Heading
           title="Trigger Details"
           description="Detailed view of the selected trigger"
-          status={versionType && `V${versionType}`}
+          status={
+            versionType
+              ? `V${versionType}`
+              : trigger?.isTriggered && 'Triggered'
+          }
+          badgeClassName={`${
+            versionType
+              ? ''
+              : trigger?.isTriggered
+              ? 'text-red-500 bg-red-100'
+              : 'text-green-500 bg-green-100'
+          } text-xs`}
         />
         <div className="flex space-x-2">
           <DeleteButton
@@ -77,7 +88,7 @@ export default function TriggerStatementDetail() {
             name="trigger"
             label="Delete"
             handleContinueClick={handleDelete}
-            disabled={trigger?.isTriggered}
+            disabled={trigger?.isTriggered || trigger?.phase?.isActive}
           />
           <EditButton
             className={`rounded flex gap-1 items-center text-sm font-medium ${
@@ -91,14 +102,16 @@ export default function TriggerStatementDetail() {
             }
             disabled={trigger?.phase?.isActive || trigger?.isTriggered}
           />
-          {source === 'MANUAL' && !trigger?.isTriggered && (
-            <ActivateTriggerDialog
-              projectId={id}
-              repeatKey={triggerRepeatKey as string}
-              version={version}
-              notes={trigger?.notes}
-            />
-          )}
+          {source === 'MANUAL' &&
+            !trigger?.phase?.isActive &&
+            !trigger?.isTriggered && (
+              <ActivateTriggerDialog
+                projectId={id}
+                repeatKey={triggerRepeatKey as string}
+                version={version}
+                notes={trigger?.notes}
+              />
+            )}
         </div>
       </div>
       <div
@@ -114,7 +127,7 @@ export default function TriggerStatementDetail() {
           />
           <div
             className={`grid ${
-              trigger?.isTriggered ? 'grid-cols-7' : 'grid-cols-5'
+              trigger?.isTriggered ? 'grid-cols-8' : 'grid-cols-6'
             } text-sm/4 text-muted-foreground mt-6`}
           >
             <div>
@@ -123,7 +136,15 @@ export default function TriggerStatementDetail() {
             </div>
             <div>
               <p className="mb-1">Phase</p>
-              <Badge>{trigger?.phase?.name || 'N/A'}</Badge>
+              <Badge
+                className={`${
+                  trigger?.phase?.name === 'READINESS'
+                    ? 'text-yellow-500 bg-yellow-100'
+                    : 'text-red-500 bg-red-100'
+                } text-xs`}
+              >
+                {trigger?.phase?.name || 'N/A'}
+              </Badge>
             </div>
             <div>
               <p className="mb-1">Trigger Type</p>
@@ -148,6 +169,12 @@ export default function TriggerStatementDetail() {
                 <p className="text-red-500">N/A</p>
               )}
             </div>
+            {trigger?.createdBy && (
+              <div>
+                <p className="mb-1">Created By</p>
+                <p>{trigger?.createdBy}</p>
+              </div>
+            )}
             {trigger?.isTriggered && (
               <div>
                 <p className="mb-1">Triggered At</p>

@@ -418,9 +418,16 @@ export default function AddTriggerView() {
               type="button"
               variant="outline"
               className="w-40 mr-2"
-              onClick={() => router.push(triggerViewPath)}
+              onClick={() => {
+                if (activeTab === 'automated') {
+                  automatedForm.reset();
+                } else {
+                  manualForm.reset();
+                }
+                // router.push(triggerViewPath)
+              }}
             >
-              Cancel
+              Clear
             </Button>
             <ConfirmAddTrigger
               open={open}

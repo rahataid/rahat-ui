@@ -8,6 +8,7 @@ import { Heading } from 'apps/rahat-ui/src/common';
 import { DHMSection, GlofasSection } from './components';
 import { DailyMonitoringListView } from './components/dailyMonitoring';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
+import ExternalLinks from './components/externalLink/linkContent';
 
 export default function DataSources() {
   const { activeTab, setActiveTab } = useActiveTab('dhm');
@@ -38,6 +39,12 @@ export default function DataSources() {
           >
             Daily Monitoring
           </TabsTrigger>
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
+            value="externalLinks"
+          >
+            External Links
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="dhm">
           <DHMSection />
@@ -47,6 +54,9 @@ export default function DataSources() {
         </TabsContent>
         <TabsContent value="dailyMonitoring">
           <DailyMonitoringListView />
+        </TabsContent>
+        <TabsContent value="externalLinks">
+          <ExternalLinks />
         </TabsContent>
       </Tabs>
     </div>

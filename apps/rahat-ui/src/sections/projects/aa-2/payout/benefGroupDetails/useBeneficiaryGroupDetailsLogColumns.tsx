@@ -117,28 +117,28 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
         );
       },
     },
-    {
-      accessorKey: 'txHash',
-      header: 'Transaction Hash',
-      cell: ({ row }) => {
-        return (
-          <div>
-            {row?.original?.txHash ? (
-              <a
-                href={`https://stellar.expert/explorer/testnet/tx/${row?.original?.txHash}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-base text-blue-500 hover:underline cursor-pointer"
-              >
-                <p className="truncate w-20">{row?.original?.txHash}</p>
-              </a>
-            ) : (
-              'N/A'
-            )}
-          </div>
-        );
-      },
-    },
+    // {
+    //   accessorKey: 'txHash',
+    //   header: 'Transaction Hash',
+    //   cell: ({ row }) => {
+    //     return (
+    //       <div>
+    //         {row?.original?.txHash ? (
+    //           <a
+    //             href={`https://stellar.expert/explorer/testnet/tx/${row?.original?.txHash}`}
+    //             target="_blank"
+    //             rel="noopener noreferrer"
+    //             className="text-base text-blue-500 hover:underline cursor-pointer"
+    //           >
+    //             <p className="truncate w-20">{row?.original?.txHash}</p>
+    //           </a>
+    //         ) : (
+    //           'N/A'
+    //         )}
+    //       </div>
+    //     );
+    //   },
+    // },
 
     {
       accessorKey: 'transactionType',
@@ -165,18 +165,18 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
       header: 'Tokens Assigned',
       cell: ({ row }) => <div>{row.original?.amount}</div>,
     },
-    {
-      accessorKey: 'fspId',
-      header: 'FSP',
-      cell: ({ row }) => (
-        <div>
-          {fspName.data?.find((a) => a.id === row.original.fspId)?.name}
-        </div>
-      ),
-    },
+    // {
+    //   accessorKey: 'fspId',
+    //   header: 'FSP',
+    //   cell: ({ row }) => (
+    //     <div>
+    //       {fspName.data?.find((a) => a.id === row.original.fspId)?.name}
+    //     </div>
+    //   ),
+    // },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: 'Payout Status',
       cell: ({ row }) => {
         const status = row?.original?.status;
         return (

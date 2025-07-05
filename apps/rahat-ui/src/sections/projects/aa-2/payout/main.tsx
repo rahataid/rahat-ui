@@ -8,6 +8,7 @@ import {
   useFetchTokenStatsStellar,
   useFundAssignmentStore,
   usePayouts,
+  usePayoutStats,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useMemo } from 'react';
@@ -20,7 +21,7 @@ export default function PayoutView() {
     page: 1,
     perPage: 999,
   });
-
+  const { data: statsPayout, isLoading } = usePayoutStats(projectID);
   useFetchTokenStatsStellar({
     projectUUID: projectID,
   });
@@ -59,7 +60,7 @@ export default function PayoutView() {
       <div className="flex justify-between items-center space-x-4">
         <Heading
           title="Payout"
-          description="Worem ipsum dolor sit amet, consectetur adipiscing elit"
+          description="Track all the payout reports here"
         />
         <div className="flex flex-end gap-2">
           <IconLabelBtn
@@ -84,27 +85,58 @@ export default function PayoutView() {
           );
         })}
       </div>
-      <div className="flex mt-4 gap-4">
-        <div className=" border rounded-sm p-4 h-[calc(50vh)]">
-          <h1 className="text-lg font-medium">Token Status</h1>
-          <PieChart
-            chart={{
-              series: [
-                {
-                  label: 'Project Balance',
-                  value: 23000,
-                },
-                {
-                  label: 'Tokens Distributed',
-                  value: 10000,
-                },
-              ],
-              colors: ['#F4A462', '#2A9D90'],
-            }}
-            custom={true}
-            projectAA={true}
-          />
+      <div className="flex flex-wrap mt-4 gap-4">
+        <div className="flex-1 border rounded-sm p-4">
+          <h1 className="text-lg font-medium mb-4">Payout Type</h1>
+          <div className="w-full aspect-square">
+            <PieChart
+              chart={{
+                series: [
+                  { label: 'FSP', value: statsPayout?.payoutTypes?.FSP || 0 },
+                  {
+                    label: 'CVA',
+                    value: statsPayout?.payoutTypes?.VENDOR || 0,
+                  },
+                ],
+                colors: ['#F4A462', '#2A9D90'],
+              }}
+              custom={true}
+              projectAA={true}
+              donutSize="70%"
+              width="100%"
+              height="100%"
+              type="donut"
+            />
+          </div>
         </div>
+
+        <div className="flex-1 border rounded-sm p-4">
+          <h1 className="text-lg font-medium mb-4">Total Payout</h1>
+          <div className="w-full aspect-square">
+            <PieChart
+              chart={{
+                series: [
+                  {
+                    label: 'Completed',
+                    value: statsPayout?.completionStatus?.COMPLETED || 0,
+                  },
+                  {
+                    label: 'Not Completed',
+                    value: statsPayout?.completionStatus?.NOT_COMPLETED || 0,
+                  },
+                ],
+                colors: ['#F4A462', '#2A9D90'],
+              }}
+              custom={true}
+              projectAA={true}
+              donutSize="70%"
+              width="100%"
+              height="100%"
+              type="donut"
+            />
+          </div>
+        </div>
+
         <div className="flex-[2] border rounded-sm p-4">
           <RecentPayout payouts={payouts} />
         </div>

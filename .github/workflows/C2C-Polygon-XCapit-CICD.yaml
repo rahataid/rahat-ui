@@ -67,6 +67,6 @@ jobs:
           file: Dockerfile.rahat-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           tags: |
-            esatya/rahat-ui:c2c-xcapita-demo
-            esatya/rahat-ui:c2c-xcapita-demo-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
+            esatya/rahat-ui:c2c-xcapit-demo
+            esatya/rahat-ui:c2c-xcapit-demo-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
 

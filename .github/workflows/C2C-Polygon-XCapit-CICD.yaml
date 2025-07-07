@@ -1,11 +1,5 @@
 name: X-Capita Demo CI/CD
 on:
-  push:
-    branches:
-      - 'stage'
-  pull_request:
-    branches:
-      - 'stage'
   workflow_dispatch:
 
 env:
@@ -15,7 +9,7 @@ jobs:
   rahat-ui:
     name: rahat-ui
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.message, 'action') || contains(github.event.pull_request.title, 'action') || github.event_name == 'workflow_dispatch'
+    if: startsWith(github.ref_name, 'release/') && github.event_name == 'workflow_dispatch'
 
     steps:
       - uses: actions/checkout@v4
@@ -73,6 +67,6 @@ jobs:
           file: Dockerfile.rahat-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           tags: |
-            esatya/rahat-ui:x-capita-demo
-            esatya/rahat-ui:x-capita-demo-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
+            esatya/rahat-ui:c2c-xcapita-demo
+            esatya/rahat-ui:c2c-xcapita-demo-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
 

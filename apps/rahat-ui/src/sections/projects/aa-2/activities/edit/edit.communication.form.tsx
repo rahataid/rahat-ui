@@ -45,6 +45,7 @@ import {
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useWatch } from 'react-hook-form';
 type IProps = {
   form: any;
   appTransports: Transport[] | undefined;
@@ -115,7 +116,15 @@ export default function EditCommunicationForm({
   const initialAudioURLRef = React.useRef(
     form.getValues(fieldName('audioURL')),
   );
+  const audioURL = useWatch({
+    control: form.control,
+    name: fieldName('audioURL'),
+  });
 
+  const transportId = useWatch({
+    control: form.control,
+    name: fieldName('transportId'),
+  });
   const selectedTransport = form.watch(fieldName('transportId'));
   const sessionId = form.watch(fieldName('sessionId'));
   const message = form.watch(fieldName('message'));
@@ -287,6 +296,7 @@ export default function EditCommunicationForm({
 
   const startRecording = async () => {
     try {
+      setAudioIsUploaded(true);
       isResettingRef.current = false;
       setRecordedFile(null);
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -338,6 +348,8 @@ export default function EditCommunicationForm({
       animationRef.current = null;
     }
     stopAll();
+    setAudioIsUploaded(false);
+
     setIsPaused(false);
   };
 
@@ -358,6 +370,7 @@ export default function EditCommunicationForm({
       mediaRef.current.pause();
       setIsPaused(true);
       clearTimeout(timerRef.current);
+      setAudioIsUploaded(true);
     }
   };
 
@@ -366,6 +379,7 @@ export default function EditCommunicationForm({
       mediaRef.current.resume();
       setIsPaused(false);
       updateTimer(); // resume timer
+      setAudioIsUploaded(true);
     }
   };
   const stopAll = () => {
@@ -419,7 +433,7 @@ export default function EditCommunicationForm({
         <h1 className="text-lg font-semibold">Communication</h1>
         {sessionId ? (
           <span>
-            <Badge className="bg-yellow-100">communication completed</Badge>
+            <Badge className="bg-green-200">communication completed</Badge>
           </span>
         ) : (
           <div className="p-1 rounded-full bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 cursor-pointer">
@@ -488,7 +502,7 @@ export default function EditCommunicationForm({
               <Select
                 onValueChange={field.onChange}
                 value={field.value}
-                disabled={isSessionComplete || isMediaFromBackend} // <- already handled here!
+                disabled={isSessionComplete || isMediaFromBackend}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -601,6 +615,7 @@ export default function EditCommunicationForm({
                                 setAudioIsUploaded(true);
                               }}
                               canvasRef={canvasRef}
+                              fileUploadPending={fileUpload.isPending}
                             />
                           </FormControl>
                           <div className="flex justify-end">
@@ -751,7 +766,10 @@ export default function EditCommunicationForm({
           <div className="flex justify-end gap-2">
             <Button
               variant="ghost"
-              onClick={() => setShowConfirmDialog(false)}
+              onClick={() => {
+                setShowConfirmDialog(false);
+                setAudioIsUploaded(true);
+              }}
               type="button"
             >
               Cancel

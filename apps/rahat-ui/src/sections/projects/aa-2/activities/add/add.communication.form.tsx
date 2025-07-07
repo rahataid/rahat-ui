@@ -431,6 +431,18 @@ export default function AddCommunicationForm({
     setRecordedFile(null);
     fileUpload.reset();
   };
+  const isVoiceTransport =
+    transportData?.name?.toLowerCase().includes('voice') ||
+    transportData?.name?.toLowerCase().includes('ivr');
+
+  const isVoiceAudioMissing =
+    isVoiceTransport &&
+    (!activityCommunication.audioURL ||
+      (typeof activityCommunication.audioURL === 'string' &&
+        activityCommunication.audioURL.trim() === '') ||
+      (typeof activityCommunication.audioURL === 'object' &&
+        !activityCommunication.audioURL.mediaURL));
+
   return (
     <div className="border border-dashed rounded p-4 my-8">
       <div className="flex justify-between items-center mb-6">
@@ -581,6 +593,7 @@ export default function AddCommunicationForm({
                               setShowConfirmDialog(true);
                             }}
                             canvasRef={canvasRef}
+                            fileUploadPending={fileUpload.isPending}
                           />
                         </FormControl>
                         <div className="flex justify-end">
@@ -708,7 +721,7 @@ export default function AddCommunicationForm({
           variant="outline"
           onClick={handleSave}
           type="button"
-          disabled={isSaveDisabled}
+          disabled={isSaveDisabled || isVoiceAudioMissing}
         >
           Save
         </Button>

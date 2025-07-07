@@ -40,6 +40,7 @@ type Props = {
   timerClassName?: string;
   animationRef: React.MutableRefObject<number | null>;
   analyserRef: React.MutableRefObject<AnalyserNode | null>;
+  fileUploadPending: any;
 };
 
 export const AudioRecorder = ({
@@ -61,6 +62,7 @@ export const AudioRecorder = ({
   isPaused,
   pauseRecording,
   resumeRecording,
+  fileUploadPending,
 }: Props) => {
   useEffect(() => {
     if (!isRecording || !canvasRef.current || !analyserRef.current) return;
@@ -223,7 +225,12 @@ export const AudioRecorder = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button onClick={startRecording} size="icon" type="button">
+                  <Button
+                    onClick={startRecording}
+                    size="icon"
+                    type="button"
+                    disabled={fileUploadPending}
+                  >
                     <Mic size={16} />
                   </Button>
                 </TooltipTrigger>
@@ -245,6 +252,7 @@ export const AudioRecorder = ({
                     type="button"
                     variant={'outline'}
                     className="rounded-sm gap-2"
+                    disabled={fileUploadPending}
                   >
                     <UploadIcon size={16} /> Upload
                   </Button>
@@ -252,8 +260,36 @@ export const AudioRecorder = ({
                 <TooltipContent>Upload</TooltipContent>
               </Tooltip>
             </TooltipProvider>
-
             <TooltipProvider>
+              <Tooltip>
+                {fileUploadPending ? (
+                  <div>
+                    <Button
+                      variant="destructive"
+                      type="button"
+                      className="rounded-sm gap-2 opacity-50 cursor-not-allowed"
+                      disabled
+                    >
+                      <Trash size={16} /> Delete
+                    </Button>
+                  </div>
+                ) : (
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={resetRecording}
+                      variant="destructive"
+                      type="button"
+                      className="rounded-sm gap-2"
+                    >
+                      <Trash size={16} /> Delete
+                    </Button>
+                  </TooltipTrigger>
+                )}
+                <TooltipContent>Reset</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            {/* <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -261,13 +297,14 @@ export const AudioRecorder = ({
                     variant="destructive"
                     type="button"
                     className="rounded-sm gap-2"
+                    disabled={fileUploadPending}
                   >
                     <Trash size={16} /> Delete
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Reset</TooltipContent>
               </Tooltip>
-            </TooltipProvider>
+            </TooltipProvider> */}
           </>
         )}
       </div>

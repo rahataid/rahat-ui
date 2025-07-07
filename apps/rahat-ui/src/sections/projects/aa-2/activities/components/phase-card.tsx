@@ -1,5 +1,6 @@
 'use client';
 
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { cn } from '@rahat-ui/shadcn/src';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -73,15 +74,17 @@ export default function PhaseCard({
               .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
               .join(' ')}
           </Badge>
-          <div
-            className="flex items-center gap-2 text-blue-500 text-xs hover:cursor-pointer hover:rounded-sm hover:bg-gray-50 hover:p-1 hover:text-sm "
-            onClick={(e) => {
-              e.stopPropagation();
-              onUpdateStatus();
-            }}
-          >
-            Update Status <RefreshCw className="w-4 h-4" />
-          </div>
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+            <div
+              className="flex items-center gap-2 text-blue-500 text-xs hover:cursor-pointer hover:rounded-sm hover:bg-gray-50 hover:p-1 hover:text-sm "
+              onClick={(e) => {
+                e.stopPropagation();
+                onUpdateStatus();
+              }}
+            >
+              Update Status <RefreshCw className="w-4 h-4" />
+            </div>
+          </RoleAuth>
         </div>
         <p className="text-sm font-medium text-gray-900 truncate  w-52  xxl:w-96">
           {title}

@@ -52,7 +52,7 @@ export default function usePayoutTransactionLogTableColumn() {
     },
     {
       accessorKey: 'payoutMode',
-      header: 'Payout Mode',
+      header: 'Payout Method',
       cell: ({ row }) => <div>{row.getValue('payoutMode')}</div>,
     },
     {

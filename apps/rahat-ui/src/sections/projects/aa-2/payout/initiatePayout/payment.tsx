@@ -304,11 +304,9 @@ export default function PaymentInitiation() {
             {/* Select Payment Provider */}
             {formState.method === PayoutType.FSP && (
               <div className="flex flex-col space-y-1">
-                <Label className="font-medium text-sm/6">
-                  Payment Provider
-                </Label>
+                <Label className="font-medium text-sm/6">Payout Method</Label>
                 <SelectComponent
-                  name="payment provider"
+                  name="payout method"
                   options={paymentProviders?.map((p: any) => p?.name)}
                   value={formState.paymentProvider?.name || ''}
                   onChange={(value) => {

@@ -131,7 +131,9 @@ export default function BeneficiaryTransactionLogDetails() {
               label="No. of Attempts"
               value={data?.data?.info?.numberOfAttempts}
             />
-            <InfoItem label="Message" value={data?.data?.info?.message} />
+            {data?.data?.info?.error && (
+              <InfoItem label="Message" value={data?.data?.info?.error} />
+            )}
           </div>
         </CardContent>
       </Card>

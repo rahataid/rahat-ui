@@ -32,7 +32,7 @@ export default function PayoutTransactionList() {
   const { data: payouts, isLoading } = usePayouts(projectID as UUID, {
     page: pagination.page,
     perPage: pagination.perPage,
-    status: debounceSearch.status,
+    payoutType: debounceSearch.payoutType,
     groupName: debounceSearch.groupName,
   });
 
@@ -48,7 +48,10 @@ export default function PayoutTransactionList() {
               d?.beneficiaryGroupToken?.beneficiaryGroup?._count?.beneficiaries,
             totalTokenAssigned: d?.beneficiaryGroupToken?.numberOfTokens,
             payoutType: d?.type,
-            payoutMode: d?.mode,
+            payoutMode:
+              d?.type === 'FSP'
+                ? d?.extras?.paymentProviderName || '-'
+                : d?.mode,
             status: d?.status ?? 'N/A',
             timeStamp: d?.updatedAt,
           }))
@@ -62,6 +65,7 @@ export default function PayoutTransactionList() {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  console.log(payouts);
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
@@ -92,8 +96,8 @@ export default function PayoutTransactionList() {
         <div className="mt-4 flex justify-between items-center">
           <div>
             <Heading
-              title={`Transaction Logs`}
-              description="List of all the payout transaction logs"
+              title={`Payout List`}
+              description="List of all the payouts available"
             />
           </div>
         </div>
@@ -108,14 +112,14 @@ export default function PayoutTransactionList() {
             value={filters?.groupName || ''}
           />
           <SelectComponent
-            name="Status"
-            options={['ALL', 'COMPLETED', 'PENDING', 'REJECTED']}
+            name="Payout Type"
+            options={['ALL', 'FSP', 'CVA']}
             onChange={(value) =>
               handleFilterChange({
-                target: { name: 'status', value },
+                target: { name: 'payoutType', value },
               })
             }
-            value={filters?.status || ''}
+            value={filters?.payoutType || ''}
             className="flex-[1]"
           />
         </div>

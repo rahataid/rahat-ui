@@ -53,10 +53,10 @@ export function PaymentDialog({ formState, handleSubmit }: PaymentDialogProps) {
           <div className="grid grid-cols-2 gap-2">
             <div className="text-gray-600 font-medium">Payout Method</div>
             <div className="font-medium text-muted-foreground">
-              {formState?.mode
-                ? formState.mode.charAt(0).toUpperCase() +
-                  formState.mode.slice(1).toLowerCase()
-                : ''}
+              {formState?.method === 'FSP'
+                ? formState?.paymentProvider?.name
+                : formState.mode.charAt(0).toUpperCase() +
+                  formState.mode.slice(1).toLowerCase()}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-2">

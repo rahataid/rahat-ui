@@ -2,6 +2,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 export default function useDailyMonitoringTableColumn() {
   const { id: projectId } = useParams();
@@ -33,10 +34,7 @@ export default function useDailyMonitoringTableColumn() {
       cell: ({ row }) => {
         const createdAt = row.getValue('createdAt') as string;
         if (createdAt) {
-          const d = new Date(createdAt);
-          const localeDate = d.toLocaleDateString();
-          const localeTime = d.toLocaleTimeString();
-          return `${localeDate} ${localeTime}`;
+          return dateFormat(createdAt);
         }
         return 'N/A';
       },

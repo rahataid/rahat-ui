@@ -22,6 +22,7 @@ import {
   DocumentsSection,
   ForecastDataSection,
 } from './components';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 export default function TriggerStatementDetail() {
   const router = useRouter();
@@ -178,7 +179,7 @@ export default function TriggerStatementDetail() {
             {trigger?.isTriggered && (
               <div>
                 <p className="mb-1">Triggered At</p>
-                <p>{new Date(trigger?.triggeredAt).toLocaleString()}</p>
+                <p>{dateFormat(trigger?.triggeredAt)}</p>
               </div>
             )}
             {trigger?.triggeredBy && (
@@ -216,7 +217,7 @@ export default function TriggerStatementDetail() {
             <div className="bg-gray-100 rounded-sm p-4">
               <p className="text-sm/4 mb-1">{trigger?.notes}</p>
               <p className="text-gray-500 text-sm/4">
-                {new Date(trigger?.updatedAt).toLocaleString()}
+                {dateFormat(trigger?.updatedAt)}
               </p>
             </div>
           </div>

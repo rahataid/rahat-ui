@@ -64,6 +64,14 @@ export const useNavItems = () => {
           title: 'Fund Management',
           path: `/projects/aa/${params.id}/fund-management`,
           icon: <Coins size={18} strokeWidth={2} />,
+          wrapper: (children: React.ReactNode) => (
+            <RoleAuth
+              roles={[AARoles.ADMIN, AARoles.MANAGER]}
+              hasContent={false}
+            >
+              {children}
+            </RoleAuth>
+          ),
         },
         {
           title: 'Payout',

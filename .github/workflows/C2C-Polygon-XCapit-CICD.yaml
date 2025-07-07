@@ -1,4 +1,4 @@
-name: X-Capita Demo CI/CD
+name: C2C Polygon XCapit CI/CD
 on:
   workflow_dispatch:
 

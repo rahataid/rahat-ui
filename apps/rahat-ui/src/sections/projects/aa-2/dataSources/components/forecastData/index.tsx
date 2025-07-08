@@ -23,6 +23,7 @@ interface SearchParams {
   riverBasin: string | null;
   latestGaugeReading: string | null;
   dataEntryBy: string | null;
+  filterDate: string | null;
 }
 
 const ForeCastData = () => {
@@ -40,6 +41,7 @@ const ForeCastData = () => {
       riverBasin: searchParams.get('riverBasin'),
       latestGaugeReading: searchParams.get('latestGaugeReading'),
       dataEntryBy: searchParams.get('dataEntryBy'),
+      filterDate: searchParams.get('filterDate'),
     }),
     [searchParams],
   );
@@ -47,7 +49,7 @@ const ForeCastData = () => {
   const { data, isLoading } = useGaugeForecast(projectId, {
     sourceId: extractedParams.sourceId,
     station: extractedParams.station,
-    date: extractedParams.date,
+    date: extractedParams.filterDate,
     gaugeForecast: extractedParams.gaugeForecast,
   });
 

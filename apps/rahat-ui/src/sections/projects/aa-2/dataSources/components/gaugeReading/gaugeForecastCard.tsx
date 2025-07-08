@@ -7,6 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@radix-ui/react-tooltip';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 interface IGaugeForecastCardProps {
   date?: string | null;
@@ -80,7 +81,9 @@ const GaugeForecastCard = ({
             <Calendar className="w-4 h-4 text-gray-500" />
             <div>
               <p className="text-sm font-medium text-gray-700">Created Date</p>
-              <p className="text-sm text-gray-600">{date || 'N/A'}</p>
+              <p className="text-sm text-gray-600">
+                {dateFormat(date) || 'N/A'}
+              </p>
             </div>
           </div>
         </div>

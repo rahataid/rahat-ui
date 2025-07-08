@@ -68,7 +68,7 @@ const GaugeReading = ({ date }: IGaugeReadingProps) => {
         const unit = getGaugeUnit(item?.gaugeForecast);
         return (
           <Link
-            href={`/projects/aa/${projectId}/data-sources/forecast-data?sourceId=${item?.sourceId}&station=${item?.station}&date=${item?.date}&gaugeForecast=${item?.gaugeForecast}&riverBasin=${item?.riverBasin}&latestGaugeReading=${item?.latestGaugeReading}&dataEntryBy=${item?.dataEntryBy}`}
+            href={`/projects/aa/${projectId}/data-sources/forecast-data?sourceId=${item?.sourceId}&station=${item?.station}&date=${item?.createdAt}&gaugeForecast=${item?.gaugeForecast}&riverBasin=${item?.riverBasin}&latestGaugeReading=${item?.latestGaugeReading}&dataEntryBy=${item?.dataEntryBy}filterDate=${item?.date}`}
             key={`${item?.riverBasin}_${item?.date}_${item?.station}_${item?.gaugeForecast}`}
           >
             <GaugeForecastCard
@@ -77,7 +77,7 @@ const GaugeReading = ({ date }: IGaugeReadingProps) => {
               station={item?.station}
               latestGaugeReading={item?.latestGaugeReading}
               dataEntryBy={item?.dataEntryBy}
-              date={item?.date}
+              date={item?.createdAt}
               unit={unit}
             />
           </Link>

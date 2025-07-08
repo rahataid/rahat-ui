@@ -9,11 +9,11 @@ import {
 } from '@radix-ui/react-tooltip';
 
 interface IGaugeForecastCardProps {
-  date?: string;
-  station?: string;
+  date?: string | null;
+  station?: string | null;
   riverBasin?: string;
-  gaugeForecast?: string;
-  averageGaugeReading?: number;
+  gaugeForecast?: string | null;
+  latestGaugeReading?: number;
   dataEntryBy?: string | null;
   unit?: string;
 }
@@ -24,7 +24,7 @@ const GaugeForecastCard = ({
   station,
   dataEntryBy,
   date,
-  averageGaugeReading,
+  latestGaugeReading,
   unit,
 }: IGaugeForecastCardProps) => {
   return (
@@ -52,13 +52,13 @@ const GaugeForecastCard = ({
                   : 'Rainfall Watch'}
               </Badge>
             )) ||
-              'N/N'}
+              'N/A'}
           </div>
           <div className="flex items-center gap-2">
             <RadioTower className="w-4 h-4 text-gray-500" />
             <div>
               <p className="text-sm font-medium text-gray-700">Station</p>
-              <p className="text-sm text-gray-600">{station || 'N/N'}</p>
+              <p className="text-sm text-gray-600">{station || 'N/A'}</p>
             </div>
           </div>
         </div>
@@ -69,7 +69,7 @@ const GaugeForecastCard = ({
             <User className="w-4 h-4 text-gray-500" />
             <div>
               <p className="text-sm font-medium text-gray-700">Created By</p>
-              <p className="text-sm text-gray-600">{dataEntryBy || 'N/N'}</p>
+              <p className="text-sm text-gray-600">{dataEntryBy || 'N/A'}</p>
             </div>
           </div>
         </div>
@@ -80,7 +80,7 @@ const GaugeForecastCard = ({
             <Calendar className="w-4 h-4 text-gray-500" />
             <div>
               <p className="text-sm font-medium text-gray-700">Created Date</p>
-              <p className="text-sm text-gray-600">{date || 'N/N'}</p>
+              <p className="text-sm text-gray-600">{date || 'N/A'}</p>
             </div>
           </div>
         </div>
@@ -92,7 +92,7 @@ const GaugeForecastCard = ({
             <div>
               <p className="text-sm font-medium text-gray-700">Gauge Reading</p>
               <p className="text-sm text-gray-600">
-                {averageGaugeReading || 0} {unit}
+                {latestGaugeReading ? `${latestGaugeReading} ${unit}` : 'N/A'}
               </p>
             </div>
           </div>

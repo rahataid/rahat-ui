@@ -25,7 +25,7 @@ import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { UUID } from 'crypto';
 
 import { format } from 'date-fns';
-import { CalendarIcon, Plus } from 'lucide-react';
+import { CalendarIcon, Plus, Trash2 } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 import useDailyMonitoringTableColumn from '../useDailyMonitoringTableColumn';
@@ -126,13 +126,15 @@ export default function DailyMonitoringListView() {
 
         {date && (
           <Button
-            variant="secondary"
+            variant="outline"
+            className="text-red-500 border-red-300 hover:bg-red-50 hover:border-red-400"
             onClick={() => {
               setDate(null);
               table.getColumn('createdAt')?.setFilterValue(undefined);
             }}
           >
-            Clear date
+            <Trash2 className="w-4 h-4 mr-2" />
+            Clear Date
           </Button>
         )}
 

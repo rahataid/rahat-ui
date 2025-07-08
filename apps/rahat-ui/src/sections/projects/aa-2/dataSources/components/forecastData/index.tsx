@@ -21,7 +21,7 @@ interface SearchParams {
   date: string | null;
   gaugeForecast: string | null;
   riverBasin: string | null;
-  averageGauge: string | null;
+  latestGaugeReading: string | null;
   dataEntryBy: string | null;
 }
 
@@ -38,7 +38,7 @@ const ForeCastData = () => {
       date: searchParams.get('date'),
       gaugeForecast: searchParams.get('gaugeForecast'),
       riverBasin: searchParams.get('riverBasin'),
-      averageGauge: searchParams.get('averageGauge'),
+      latestGaugeReading: searchParams.get('latestGaugeReading'),
       dataEntryBy: searchParams.get('dataEntryBy'),
     }),
     [searchParams],
@@ -82,11 +82,11 @@ const ForeCastData = () => {
       />
       <GaugeForecastCard
         riverBasin={extractedParams.riverBasin || ''}
-        gaugeForecast={extractedParams.gaugeForecast || 'N/N'}
-        station={extractedParams.station || 'N/N'}
-        averageGaugeReading={Number(extractedParams.averageGauge)}
+        gaugeForecast={extractedParams.gaugeForecast}
+        station={extractedParams.station}
+        latestGaugeReading={Number(extractedParams.latestGaugeReading)}
         dataEntryBy={extractedParams.dataEntryBy}
-        date={extractedParams.date || ''}
+        date={extractedParams.date}
         unit={unit}
       />
       <div className="p-4 rounded-sm border shadow">

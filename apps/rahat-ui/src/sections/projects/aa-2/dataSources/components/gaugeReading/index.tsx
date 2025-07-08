@@ -21,7 +21,7 @@ interface GaugeData {
   riverBasin: string;
   gaugeForecast: string;
   totalGaugeReading: number;
-  averageGaugeReading: number;
+  latestGaugeReading: number;
   count: number;
   createdBy: string | null;
   isDeleted: boolean;
@@ -68,14 +68,14 @@ const GaugeReading = ({ date }: IGaugeReadingProps) => {
         const unit = getGaugeUnit(item?.gaugeForecast);
         return (
           <Link
-            href={`/projects/aa/${projectId}/data-sources/forecast-data?sourceId=${item?.sourceId}&station=${item?.station}&date=${item?.date}&gaugeForecast=${item?.gaugeForecast}&riverBasin=${item?.riverBasin}&averageGauge=${item?.averageGaugeReading}&dataEntryBy=${item?.dataEntryBy}`}
+            href={`/projects/aa/${projectId}/data-sources/forecast-data?sourceId=${item?.sourceId}&station=${item?.station}&date=${item?.date}&gaugeForecast=${item?.gaugeForecast}&riverBasin=${item?.riverBasin}&latestGaugeReading=${item?.latestGaugeReading}&dataEntryBy=${item?.dataEntryBy}`}
             key={`${item?.riverBasin}_${item?.date}_${item?.station}_${item?.gaugeForecast}`}
           >
             <GaugeForecastCard
               riverBasin={item?.riverBasin}
               gaugeForecast={item?.gaugeForecast}
               station={item?.station}
-              averageGaugeReading={item?.averageGaugeReading}
+              latestGaugeReading={item?.latestGaugeReading}
               dataEntryBy={item?.dataEntryBy}
               date={item?.date}
               unit={unit}

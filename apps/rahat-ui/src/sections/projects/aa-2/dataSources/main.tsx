@@ -18,14 +18,20 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { cn } from '@rahat-ui/shadcn/src';
-import { CalendarIcon } from 'lucide-react';
-import { useState } from 'react';
+import { CalendarIcon, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import { format } from 'date-fns';
 
 export default function DataSources() {
   const { activeTab, setActiveTab } = useActiveTab('dhm');
   const [date, setDate] = useState<Date | null>(null);
+
+  useEffect(() => {
+    if (activeTab !== 'gaugeReading') {
+      setDate(null);
+    }
+  }, [activeTab]);
 
   return (
     <div className="p-4">
@@ -62,7 +68,7 @@ export default function DataSources() {
             </TabsTrigger>
           </TabsList>
           {activeTab === 'gaugeReading' && (
-            <div>
+            <div className="flex items-center">
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -90,12 +96,14 @@ export default function DataSources() {
               </Popover>
               {date && (
                 <Button
-                  variant="secondary"
+                  variant="outline"
+                  className="text-red-500 border-red-300 hover:bg-red-50 hover:border-red-400"
                   onClick={() => {
                     setDate(null);
                   }}
                 >
-                  Clear date
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Clear Date
                 </Button>
               )}
             </div>

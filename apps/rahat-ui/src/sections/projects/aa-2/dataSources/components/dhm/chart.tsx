@@ -2,6 +2,7 @@
 
 import React from 'react';
 import dynamic from 'next/dynamic';
+import { format } from 'date-fns';
 const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 type ChartProps = {
@@ -36,6 +37,11 @@ const TimeSeriesChart = ({
       title: {
         text: 'Time Stamp',
       },
+      labels: {
+        formatter: function (value) {
+          return format(new Date(value), 'h:mm a');
+        },
+      },
     },
     yaxis: {
       title: {
@@ -59,7 +65,11 @@ const TimeSeriesChart = ({
       }),
     },
     tooltip: {
-      x: { format: 'dd MMM HH:mm' },
+      x: {
+        formatter: function (value) {
+          return format(new Date(value), 'PPp');
+        },
+      },
     },
     dataLabels: { enabled: false },
     stroke: {

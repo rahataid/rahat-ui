@@ -7,6 +7,7 @@ import { CloudDownloadIcon, Plus } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import PhaseContent from './components/phase-content';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function ActivitiesView() {
   const { id: projectID } = useParams();
@@ -61,23 +62,26 @@ export default function ActivitiesView() {
           description="Track all the activities reports here"
         />
         <div className="flex flex-end gap-2">
-          <IconLabelBtn
-            Icon={CloudDownloadIcon}
-            handleClick={handleDownloadReport}
-            name="Download Report"
-            variant="outline"
-          />
-
-          <IconLabelBtn
-            Icon={Plus}
-            handleClick={() =>
-              router.push(
-                `/projects/aa/${projectID}/activities/add?nav=mainPage`,
-              )
-            }
-            name="Add Activity"
-            variant="default"
-          />
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+            <IconLabelBtn
+              Icon={CloudDownloadIcon}
+              handleClick={handleDownloadReport}
+              name="Download Report"
+              variant="outline"
+            />
+          </RoleAuth>
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+            <IconLabelBtn
+              Icon={Plus}
+              handleClick={() =>
+                router.push(
+                  `/projects/aa/${projectID}/activities/add?nav=mainPage`,
+                )
+              }
+              name="Add Activity"
+              variant="default"
+            />
+          </RoleAuth>
         </div>
       </div>
       <div className="grid  lg:grid-cols-1 xl:grid-cols-3  gap-4">

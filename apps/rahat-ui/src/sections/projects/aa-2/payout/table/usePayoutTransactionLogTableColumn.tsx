@@ -2,6 +2,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
+import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 
 function getTransactionStatusColor(status: string) {
   switch (status.toLowerCase()) {
@@ -62,11 +63,12 @@ export default function usePayoutTransactionLogTableColumn() {
         const status = row?.original?.status;
         return (
           <Badge
-            className={`rounded-xl capitalize ${getTransactionStatusColor(
-              status,
-            )}`}
+            className={`rounded-xl capitalize ${isCompleteBgStatus(status)}`}
           >
-            {status}
+            {status
+              .toLowerCase()
+              .replace(/_/g, ' ')
+              .replace(/^./, (char) => char.toUpperCase())}
           </Badge>
         );
       },

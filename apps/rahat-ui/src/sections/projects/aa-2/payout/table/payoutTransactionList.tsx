@@ -69,7 +69,9 @@ export default function PayoutTransactionList() {
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
-      const filterValue = value === 'ALL' ? '' : value;
+      const filterValue =
+        value === 'ALL' ? '' : value === 'CVA' ? 'VENDOR' : value;
+
       table.getColumn(name)?.setFilterValue(filterValue);
       setFilters({
         ...filters,
@@ -119,7 +121,11 @@ export default function PayoutTransactionList() {
                 target: { name: 'payoutType', value },
               })
             }
-            value={filters?.payoutType || ''}
+            value={
+              filters?.payoutType === 'VENDOR'
+                ? 'CVA'
+                : filters?.payoutType || ''
+            }
             className="flex-[1]"
           />
         </div>

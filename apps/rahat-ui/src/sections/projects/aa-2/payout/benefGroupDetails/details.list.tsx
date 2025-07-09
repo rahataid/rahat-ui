@@ -143,7 +143,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
     [filters],
   );
-
+  console.log(payout);
   return isLoading ? (
     <TableLoader />
   ) : (
@@ -156,14 +156,11 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <Heading
               title={`${payout?.beneficiaryGroupToken?.beneficiaryGroup?.name}`}
               description="List of all the payout transaction logs of selected group"
-              status={
-                payoutlogs?.data.length === 0
-                  ? ''
-                  : payout?.isCompleted
-                  ? 'Completed'
-                  : 'Not Completed'
-              }
-              badgeClassName={isCompleteBgStatus(payout?.isCompleted)}
+              status={payout?.status
+                .toLowerCase()
+                .replace(/_/g, ' ')
+                .replace(/^./, (char) => char.toUpperCase())}
+              badgeClassName={isCompleteBgStatus(payout?.status)}
             />
           </div>
           <div className="flex gap-2">

@@ -10,6 +10,7 @@ type ChartProps = {
   dangerLevel?: string;
   warningLevel?: string;
   yaxisTitle?: string;
+  unit?: string;
 };
 
 const TimeSeriesChart = ({
@@ -17,6 +18,7 @@ const TimeSeriesChart = ({
   dangerLevel,
   warningLevel,
   yaxisTitle = 'Water Level (m)',
+  unit = '',
 }: ChartProps) => {
   if (!data || data.length === 0) return null;
 
@@ -42,6 +44,7 @@ const TimeSeriesChart = ({
           return format(new Date(value), 'h:mm a');
         },
       },
+      tooltip: { enabled: false },
     },
     yaxis: {
       title: {
@@ -65,9 +68,15 @@ const TimeSeriesChart = ({
       }),
     },
     tooltip: {
+      shared: false,
       x: {
         formatter: function (value) {
           return format(new Date(value), 'PPp');
+        },
+      },
+      y: {
+        formatter: function (value) {
+          return `${value} ${unit}`;
         },
       },
     },

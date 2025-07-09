@@ -82,7 +82,7 @@ const GaugeForecastCard = ({
             <div>
               <p className="text-sm font-medium text-gray-700">Created Date</p>
               <p className="text-sm text-gray-600">
-                {dateFormat(date, 'MMMM d, yyyy') || 'N/A'}
+                {dateFormat(date, 'eee, MMMM d, yyyy') || 'N/A'}
               </p>
             </div>
           </div>

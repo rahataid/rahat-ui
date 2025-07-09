@@ -109,6 +109,7 @@ const ForeCastData = () => {
                   ? 'Water Level'
                   : 'Rainfall'
               } (${unit})`}
+              unit={unit}
             />
           </div>
           <WaterLevelTable tableData={data?.data} columns={columns} />

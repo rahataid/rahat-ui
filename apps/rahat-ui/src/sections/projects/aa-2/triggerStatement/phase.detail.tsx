@@ -15,8 +15,8 @@ import {
   AlertDescription,
   AlertTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert';
-import { format } from 'date-fns';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 export default function PhaseDetail() {
   const router = useRouter();
@@ -25,10 +25,6 @@ export default function PhaseDetail() {
   const phaseId = params.phaseId as UUID;
 
   const { data: phase, isLoading } = useSinglePhase(projectId, phaseId);
-
-  const date = phase?.activatedAt
-    ? format(new Date(phase?.activatedAt), 'MMMM d, yyyy')
-    : '';
 
   const revertPhase = useRevertPhase();
 
@@ -109,7 +105,7 @@ export default function PhaseDetail() {
                 This phase has been triggered
               </AlertTitle>
               <AlertDescription className="text-xs text-gray-700">
-                <p>{date}</p>
+                <p>{dateFormat(phase?.activatedAt)}</p>
               </AlertDescription>
             </div>
           </Alert>

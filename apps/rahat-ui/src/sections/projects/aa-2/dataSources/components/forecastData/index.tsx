@@ -55,6 +55,9 @@ const ForeCastData = () => {
 
   const unit = getGaugeUnit(extractedParams.gaugeForecast || '');
   const columns = usePointTableColumns({ unit });
+  const forecastTitle = `${
+    extractedParams.gaugeForecast === 'riverWatch' ? 'water' : 'rain'
+  } level`;
 
   if (isLoading) {
     return (
@@ -95,13 +98,17 @@ const ForeCastData = () => {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Heading
-              title="Water Level"
-              titleStyle="text-xl"
-              description="Chart and showing water level"
+              title={forecastTitle}
+              titleStyle="text-xl capitalize"
+              description={`Chart and table showing ${forecastTitle}`}
             />
             <TimeSeriesChart
               data={data?.data}
-              yaxisTitle={`Water Level (${unit})`}
+              yaxisTitle={`${
+                extractedParams.gaugeForecast === 'riverWatch'
+                  ? 'Water Level'
+                  : 'Rainfall'
+              } (${unit})`}
             />
           </div>
           <WaterLevelTable tableData={data?.data} columns={columns} />

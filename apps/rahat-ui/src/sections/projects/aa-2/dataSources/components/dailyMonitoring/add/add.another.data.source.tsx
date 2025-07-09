@@ -34,13 +34,18 @@ export default function AddAnotherDataSource({
     rainfallForecastSelectItems,
     rainfallSelectItems,
     floodForecastSelectItems,
-    gaugeReadingStationSelectItems,
+    gaugeReadingRainfallStationItems,
+    gaugeReadingRiverStationItems,
     possibility,
     gaugeForecastDataSourceSelectItems,
   } = useSelectItems();
 
   const selectedDataSourceObjArray = form.watch('dataSource');
   const selectedGaugeForecast = form.watch(fieldName('gaugeForecast'));
+  const gaugeReadingOptions =
+    selectedGaugeForecast === 'rainfallWatch'
+      ? gaugeReadingRainfallStationItems
+      : gaugeReadingRiverStationItems;
 
   const selectedSourceStringArray = selectedDataSourceObjArray?.map(
     (obj: any) => obj.source,
@@ -199,21 +204,25 @@ export default function AddAnotherDataSource({
               placeholder="Select forecast"
               selectItems={gaugeForecastDataSourceSelectItems}
             />
-            <InputFormField
-              form={form}
-              name={fieldName('gaugeReading')}
-              label={`Gauge Reading ${
-                selectedGaugeForecast === 'riverWatch' ? '(m)' : '(mm)'
-              }`}
-              placeholder="Enter gauge reading"
-            />
-            <SelectFormField
-              form={form}
-              name={fieldName('station')}
-              label="Station"
-              placeholder="Select station"
-              selectItems={gaugeReadingStationSelectItems}
-            />
+            {selectedGaugeForecast && (
+              <>
+                <SelectFormField
+                  form={form}
+                  name={fieldName('station')}
+                  label="Station"
+                  placeholder="Select station"
+                  selectItems={gaugeReadingOptions}
+                />
+                <InputFormField
+                  form={form}
+                  name={fieldName('gaugeReading')}
+                  label={`Gauge Reading ${
+                    selectedGaugeForecast === 'riverWatch' ? '(m)' : '(mm)'
+                  }`}
+                  placeholder="Enter gauge reading"
+                />
+              </>
+            )}
           </>
         );
         break;

@@ -47,7 +47,7 @@ const GaugeForecastCard = ({
               </Tooltip>
             </TooltipProvider>
             {(gaugeForecast && (
-              <Badge className="h-fit text-sm text-center font-normal">
+              <Badge className="h-fit text-[11px] text-center font-normal">
                 {gaugeForecast === 'riverWatch'
                   ? 'River Watch'
                   : 'Rainfall Watch'}
@@ -82,7 +82,7 @@ const GaugeForecastCard = ({
             <div>
               <p className="text-sm font-medium text-gray-700">Created Date</p>
               <p className="text-sm text-gray-600">
-                {dateFormat(date) || 'N/A'}
+                {dateFormat(date, 'MMMM d, yyyy') || 'N/A'}
               </p>
             </div>
           </div>

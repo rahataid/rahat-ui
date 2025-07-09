@@ -70,9 +70,14 @@ export const useSelectItems = () => {
     { value: 'Extremely Heavy Rain', label: 'Extremely Heavy Rain' },
   ];
 
-  const gaugeReadingStationSelectItems = [
+  const gaugeReadingRainfallStationItems = [
     { value: 'Rangoon Ridge', label: 'Rangoon Ridge' },
     { value: 'Kolmoda Satyas ', label: 'Kolmoda Satyas ' },
+  ];
+
+  const gaugeReadingRiverStationItems = [
+    { value: 'Macheli Mahendra Highway', label: 'Macheli Mahendra Highway' },
+    { value: 'Kolmoda', label: 'Kolmoda' },
   ];
 
   const possibility = [
@@ -93,7 +98,8 @@ export const useSelectItems = () => {
     rainfallSelectItems,
     floodForecastSelectItems,
     rainfallForecastSelectItems,
-    gaugeReadingStationSelectItems,
+    gaugeReadingRainfallStationItems,
+    gaugeReadingRiverStationItems,
     possibility,
     gaugeForecastDataSourceSelectItems,
   };

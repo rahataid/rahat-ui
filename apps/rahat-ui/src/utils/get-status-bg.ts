@@ -36,11 +36,17 @@ export const getStatusBg = (status: string) => {
   return '';
 };
 
-export const isCompleteBgStatus = (isComplete: boolean) => {
-  if (isComplete) {
+export const isCompleteBgStatus = (status: string) => {
+  if (status === 'COMPLETED') {
     return 'text-green-500 bg-green-100';
   }
-  return 'text-red-500 bg-red-100';
+  if (status === 'FAILED') {
+    return 'text-red-500 bg-red-100';
+  }
+  if (status === 'PENDING') {
+    return 'text-yellow-500 bg-yellow-100';
+  }
+  return 'text-blue-500 bg-gray-100';
 };
 
 export const transactionBgStatus = (

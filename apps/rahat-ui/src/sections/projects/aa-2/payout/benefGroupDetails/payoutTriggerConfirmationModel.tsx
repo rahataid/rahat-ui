@@ -20,6 +20,7 @@ export default function PayoutConfirmationDialog({
   payoutData,
   onConfirm,
 }: IProps) {
+  console.log(payoutData);
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -48,7 +49,11 @@ export default function PayoutConfirmationDialog({
           </div>
           <div className="flex justify-between">
             <span className="font-medium">Payout Method</span>
-            <span>{payoutData?.mode}</span>
+            <span>
+              {payoutData?.type === 'FSP'
+                ? payoutData?.extras?.paymentProviderName
+                : payoutData?.mode}
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="font-medium">Beneficiary Group Name</span>

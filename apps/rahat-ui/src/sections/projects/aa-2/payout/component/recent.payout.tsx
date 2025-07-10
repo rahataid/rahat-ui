@@ -22,7 +22,7 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
           onClick={() => route.push(`/projects/aa/${id}/payout/list`)}
           disabled={!payouts?.length}
         >
-          View all Transactions
+          View all Payout List
           <ArrowRight className="ml-1" size={14} strokeWidth={1.5} />
         </Button>
       </div>

@@ -58,7 +58,7 @@ export default function UsersDetailSplitView({
             handleContinueClick={handleDeleteUser}
           />
           <EditButton
-            path={`/users/${userDetail?.uuid}/edit`}
+            path={`/users/${userDetail?.uuid}/edit?split=true`}
             className="border-none p-0 shadow-none"
           />
           <TooltipComponent

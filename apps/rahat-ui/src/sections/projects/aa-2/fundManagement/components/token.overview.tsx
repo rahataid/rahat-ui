@@ -24,7 +24,7 @@ export default function TokensOverview() {
   const { pagination } = usePagination();
   const { data: groupsFundsData } = useGroupsReservedFunds(projectId, {
     page: pagination.page,
-    perPage: '99999',
+    perPage: 99999,
     sort: 'updatedAt',
     order: 'desc',
   });
@@ -95,7 +95,6 @@ export default function TokensOverview() {
             <PieChart
               title="Token Status"
               chart={{
-                // colors: ['#F4A462', '#2A9D90'],
                 colors: ['#2A9D90', '#E53935', '#BDBDBD'],
                 series: tokenStatus(),
               }}

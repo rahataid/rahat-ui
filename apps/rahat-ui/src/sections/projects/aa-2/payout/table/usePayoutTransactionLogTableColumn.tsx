@@ -4,9 +4,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
 
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
-
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-
 
 function getTransactionStatusColor(status: string) {
   switch (status.toLowerCase()) {

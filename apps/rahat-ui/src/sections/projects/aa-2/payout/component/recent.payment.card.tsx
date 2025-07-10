@@ -1,3 +1,4 @@
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { Eye, ArrowLeftRight, Dot } from 'lucide-react';
 
 interface GroupCardProps {
@@ -40,7 +41,7 @@ export default function RecentPaymentCard({
       </div>
       {/* Date and Time */}
       <div className="text-sm text-muted-foreground whitespace-nowrap">
-        {dateTime}
+        {dateFormat(dateTime)}
       </div>
       {/* View Icon */}
       <button onClick={onView}>

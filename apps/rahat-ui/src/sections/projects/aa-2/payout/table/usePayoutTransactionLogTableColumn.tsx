@@ -2,7 +2,11 @@ import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
+
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
+
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+
 
 function getTransactionStatusColor(status: string) {
   switch (status.toLowerCase()) {
@@ -78,9 +82,7 @@ export default function usePayoutTransactionLogTableColumn() {
       header: 'Timestamp',
       cell: ({ row }) => {
         const time = row.getValue('timeStamp') as string;
-        return (
-          <div className="flex gap-1">{new Date(time).toLocaleString()}</div>
-        );
+        return <div className="flex gap-1">{dateFormat(time)}</div>;
       },
     },
 

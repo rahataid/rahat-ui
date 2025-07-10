@@ -41,7 +41,7 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
                   item?.beneficiaryGroupToken?.beneficiaryGroup?._count
                     ?.beneficiaries
                 }
-                dateTime={new Date(item?.updatedAt)?.toLocaleString()}
+                dateTime={item?.updatedAt}
                 onView={() =>
                   route.push(`/projects/aa/${id}/payout/details/${item?.uuid}`)
                 }

@@ -29,6 +29,7 @@ import {
 import { CloudDownloadIcon, Plus } from 'lucide-react';
 
 import FiltersTags from 'apps/rahat-ui/src/common/filtersTags';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function ActivitiesList() {
   const { id: projectID, title } = useParams();
@@ -190,19 +191,22 @@ export default function ActivitiesList() {
             variant="outline"
             className="rounded w-full"
           />
-          <IconLabelBtn
-            Icon={Plus}
-            handleClick={() =>
-              router.push(
-                `/projects/aa/${projectID}/activities/add?phaseId=${
-                  phases.find((p) => p.name === (title as string).toUpperCase())
-                    ?.uuid
-                }`,
-              )
-            }
-            name="Add Activity"
-            className="rounded w-full"
-          />
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+            <IconLabelBtn
+              Icon={Plus}
+              handleClick={() =>
+                router.push(
+                  `/projects/aa/${projectID}/activities/add?phaseId=${
+                    phases.find(
+                      (p) => p.name === (title as string).toUpperCase(),
+                    )?.uuid
+                  }`,
+                )
+              }
+              name="Add Activity"
+              className="rounded w-full"
+            />
+          </RoleAuth>
         </div>
       </div>
       <ActivitiesTableFilters

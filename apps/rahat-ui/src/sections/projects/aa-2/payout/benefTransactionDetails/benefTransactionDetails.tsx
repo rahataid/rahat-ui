@@ -19,6 +19,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import InfoItem from './infoItem';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useCallback } from 'react';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function BeneficiaryTransactionLogDetails() {
   const { id, uuid } = useParams();
@@ -50,16 +51,17 @@ export default function BeneficiaryTransactionLogDetails() {
           subtitle="Detaild view of the selected payout transaction log"
           title="Transaction Log Details"
         />
-
-        <Button
-          className={`gap-2 text-sm ${
-            !isPayoutTransactionFailed(data?.data?.status) && 'hidden'
-          }`}
-          onClick={handleTriggerSinglePayoutFailed}
-        >
-          <RotateCcw className="w-4 h-4" />
-          Retry
-        </Button>
+        <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+          <Button
+            className={`gap-2 text-sm ${
+              !isPayoutTransactionFailed(data?.data?.status) && 'hidden'
+            }`}
+            onClick={handleTriggerSinglePayoutFailed}
+          >
+            <RotateCcw className="w-4 h-4" />
+            Retry
+          </Button>
+        </RoleAuth>
       </div>
       <DataCard
         title="Token Assigned"

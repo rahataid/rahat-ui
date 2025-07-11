@@ -23,7 +23,7 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import HeaderWithBack from '../projects/components/header.with.back';
 import { Loader2, Wallet } from 'lucide-react';
@@ -52,6 +52,7 @@ const FormSchema = z.object({
 export default function EditUser() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
+  const searchParams = useSearchParams()?.get('split');
 
   const { data } = useUserGet(id);
   const user = data?.data;
@@ -101,7 +102,7 @@ export default function EditUser() {
           <HeaderWithBack
             title="Edit User"
             subtitle="Edit user detail"
-            path="/users"
+            path={searchParams ? '/users' : `/users/${id}`}
           />
           <div className="grid grid-cols-2 gap-4 border p-4 rounded-md">
             <>

@@ -49,9 +49,27 @@ interface Props {
   };
   communityTool?: boolean;
   donutSize?: string;
-  width?: number;
-  height?: number;
+  width?: number | string;
+  height?: number | string;
   projectAA?: boolean;
+  type?:
+    | 'line'
+    | 'area'
+    | 'bar'
+    | 'pie'
+    | 'donut'
+    | 'radialBar'
+    | 'scatter'
+    | 'bubble'
+    | 'heatmap'
+    | 'candlestick'
+    | 'boxPlot'
+    | 'radar'
+    | 'polarArea'
+    | 'rangeBar'
+    | 'rangeArea'
+    | 'treemap'
+    | undefined;
 }
 
 export default function PieChart({
@@ -64,6 +82,7 @@ export default function PieChart({
   width = 400,
   height = 320,
   projectAA = false,
+  type = 'pie',
 }: Props) {
   const {
     colors = ['#00b67a', '#8BC34A', '#FFA726', '#007bb6', '#7a00b6'],
@@ -125,7 +144,7 @@ export default function PieChart({
   return custom ? (
     <Chart
       dir="ltr"
-      type="pie"
+      type={type}
       series={chartSeries}
       options={chartOptions}
       height={height}

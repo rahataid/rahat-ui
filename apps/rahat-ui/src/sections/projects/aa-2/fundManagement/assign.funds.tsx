@@ -18,7 +18,7 @@ export default function AssignFundsView() {
         title="Assign Funds"
         subtitle="Fill the form below to assign funds to beneficiaries"
       />
-      <div className="grid grid-cols-4 gap-4 mb-4">
+      {/* <div className="grid grid-cols-4 gap-4 mb-4">
         {stellarTokenStats?.map((i) => (
           <DataCard
             key={i.name}
@@ -27,7 +27,7 @@ export default function AssignFundsView() {
             number={i.amount}
           />
         ))}
-      </div>
+      </div> */}
       <AssignFundsForm />
     </div>
   );

@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { useParams } from 'next/navigation';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { NavItem as BaseNavItem } from '../components/nav-items.types';
 import {
   UsersRound,
   HardDrive,
@@ -13,14 +15,7 @@ import {
   Store,
 } from 'lucide-react';
 
-export type NavItem = {
-  title: string;
-  path?: string;
-  icon?: React.ReactNode;
-  subtitle?: string | number;
-  onClick?: () => void;
-  children?: NavItem[];
-};
+type NavItem = BaseNavItem;
 
 export const useNavItems = () => {
   const params = useParams();
@@ -69,21 +64,53 @@ export const useNavItems = () => {
           title: 'Fund Management',
           path: `/projects/aa/${params.id}/fund-management`,
           icon: <Coins size={18} strokeWidth={2} />,
+          wrapper: (children: React.ReactNode) => (
+            <RoleAuth
+              roles={[AARoles.ADMIN, AARoles.MANAGER]}
+              hasContent={false}
+            >
+              {children}
+            </RoleAuth>
+          ),
         },
         {
           title: 'Payout',
           path: `/projects/aa/${params.id}/payout`,
           icon: <HandCoinsIcon size={18} strokeWidth={2} />,
+          wrapper: (children: React.ReactNode) => (
+            <RoleAuth
+              roles={[AARoles.ADMIN, AARoles.MANAGER]}
+              hasContent={false}
+            >
+              {children}
+            </RoleAuth>
+          ),
         },
         {
           title: 'Vendors',
           path: `/projects/aa/${params.id}/vendors`,
           icon: <Store size={18} strokeWidth={2} />,
+          wrapper: (children: React.ReactNode) => (
+            <RoleAuth
+              roles={[AARoles.ADMIN, AARoles.MANAGER]}
+              hasContent={false}
+            >
+              {children}
+            </RoleAuth>
+          ),
         },
         {
           title: 'Communication Logs',
           path: `/projects/aa/${params.id}/communication-logs`,
           icon: <SmartphoneNfc size={18} strokeWidth={2} />,
+          wrapper: (children: React.ReactNode) => (
+            <RoleAuth
+              roles={[AARoles.ADMIN, AARoles.MANAGER]}
+              hasContent={false}
+            >
+              {children}
+            </RoleAuth>
+          ),
         },
       ],
     },

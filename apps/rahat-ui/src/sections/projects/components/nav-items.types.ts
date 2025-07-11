@@ -13,11 +13,12 @@ export type NavItem = {
   className?: string;
   component?: React.ReactNode;
   disabled?: boolean;
+  wrapper?: (children: React.ReactNode) => React.ReactNode;
 };
 
 export type ProjectNavItemsReturnType = {
   navItems: NavItem[];
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export type ProjectType =

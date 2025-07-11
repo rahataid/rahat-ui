@@ -1,3 +1,4 @@
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -22,15 +23,17 @@ export default function PayoutConfirmationDialog({
 }: IProps) {
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button
-          className={`bg-blue-600 hover:bg-blue-700 text-white ${
-            payoutData?.isPayoutTriggered && 'hidden'
-          }`}
-        >
-          Trigger Payout
-        </Button>
-      </AlertDialogTrigger>
+      <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+        <AlertDialogTrigger asChild>
+          <Button
+            className={`bg-blue-600 hover:bg-blue-700 text-white ${
+              payoutData?.isPayoutTriggered && 'hidden'
+            }`}
+          >
+            Trigger Payout
+          </Button>
+        </AlertDialogTrigger>
+      </RoleAuth>
       <AlertDialogContent className="max-w-lg">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-center text-lg font-semibold">

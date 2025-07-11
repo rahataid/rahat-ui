@@ -14,6 +14,7 @@ import MembersTable from './members.table';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import {
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -103,10 +104,11 @@ export default function GroupDetailView() {
   }, [group]);
 
   const table = useReactTable({
-    manualPagination: true,
+    // manualPagination: true,
     data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => row.uuid,

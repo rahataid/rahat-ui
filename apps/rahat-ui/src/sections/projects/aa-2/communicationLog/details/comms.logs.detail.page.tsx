@@ -10,33 +10,6 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 // import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import Loader from 'apps/rahat-ui/src/components/table.loader';
-import { UUID } from 'crypto';
-import {
-  AudioLines,
-  CloudDownload,
-  Component,
-  Download,
-  Hash,
-  LucideIcon,
-  Mail,
-  MessageSquareMore,
-  MessageSquareWarning,
-  RefreshCcw,
-  Text,
-  Timer,
-  UsersRound,
-} from 'lucide-react';
-import { useParams } from 'next/navigation';
-import React, { useMemo } from 'react';
-import { Player } from 'react-simple-player';
-import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
-import {
-  Back,
-  CustomPagination,
-  Heading,
-  SearchInput,
-} from 'apps/rahat-ui/src/common';
 import {
   Card,
   CardContent,
@@ -44,14 +17,32 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import CommsLogsTable from '../table/comms.logs.table';
-import CardSkeleton from 'apps/rahat-ui/src/common/cardSkeleton';
-import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
-import * as XLSX from 'xlsx';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import {
+  Back,
+  CustomPagination,
+  Heading,
+  SearchInput,
+} from 'apps/rahat-ui/src/common';
+import CardSkeleton from 'apps/rahat-ui/src/common/cardSkeleton';
+import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import { UUID } from 'crypto';
+import {
+  AudioLines,
+  CloudDownload,
+  LucideIcon,
+  Mail,
+  Text,
+} from 'lucide-react';
+import { useParams } from 'next/navigation';
+import React, { useMemo } from 'react';
+import * as XLSX from 'xlsx';
+import CommsLogsTable from '../table/comms.logs.table';
+import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
+import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 type IHeadCardProps = {
   title: string;
   icon: LucideIcon;
@@ -204,7 +195,11 @@ export default function CommsLogsDetailPage() {
           ) : (
             <Card className="p-4 rounded-sm bg-white">
               <CardTitle className="flex gap-2 pb-2">
-                <Badge>{activityDetail?.phase?.name}</Badge>
+                <Badge
+                  className={`${getPhaseColor(activityDetail?.phase?.name)}`}
+                >
+                  {activityDetail?.phase?.name}
+                </Badge>
                 <Badge
                   className={`rounded-xl capitalize text-xs font-normal ${getStatusBg(
                     activityDetail?.status,
@@ -349,6 +344,7 @@ export default function CommsLogsDetailPage() {
 }
 
 function renderMessage(message: any) {
+  console.log(message);
   if (typeof message === 'string') {
     return message;
   }
@@ -356,7 +352,7 @@ function renderMessage(message: any) {
     <div className="bg-gray-50 p-3 rounded-sm">
       <p className="text-center mb-2">{message?.fileName} </p>
 
-      <audio src={message?.audioURL} controls className="w-full h-10 " />
+      <audio src={message?.mediaURL} controls className="w-full h-10 " />
     </div>
   );
 }

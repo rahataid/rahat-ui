@@ -24,10 +24,19 @@ const TimeSeriesChart = ({
 
   const keys = Object.keys(data[0]).filter((key) => key !== 'datetime');
 
+  const sortedData = [...data].sort(
+    (a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime(),
+  );
+
   const series = keys.map((key) => ({
     name: key === 'value' ? 'average' : key,
-    data: data.map((d) => [new Date(d.datetime).getTime(), d[key]]),
+    data: sortedData.map((d) => [new Date(d.datetime).getTime(), d[key]]),
   }));
+
+  const minTime = new Date(sortedData[0].datetime).getTime();
+  const maxTime = new Date(
+    sortedData[sortedData.length - 1].datetime,
+  ).getTime();
 
   const options: ApexCharts.ApexOptions = {
     chart: {
@@ -36,6 +45,8 @@ const TimeSeriesChart = ({
     },
     xaxis: {
       type: 'datetime',
+      min: minTime,
+      max: maxTime,
       title: {
         text: 'Time Stamp',
       },
@@ -43,6 +54,7 @@ const TimeSeriesChart = ({
         formatter: function (value) {
           return format(new Date(value), 'h:mm a');
         },
+        rotate: 0,
       },
       tooltip: { enabled: false },
     },

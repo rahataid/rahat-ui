@@ -107,6 +107,7 @@ export default function AddActivities() {
       : `/projects/aa/${projectID}/activities/list/${phases
           .find((p) => p.uuid === phaseId)
           ?.name.toLowerCase()}`;
+
   useStakeholdersGroups(projectID as UUID, {
     page: 1,
     perPage: 100,
@@ -198,7 +199,7 @@ export default function AddActivities() {
 
   const selectedPhaseId = form.watch('phaseId');
   const selectedPhase = phases.find((d) => d.uuid === selectedPhaseId);
-
+  console.log(phases);
   React.useEffect(() => {
     form.setValue('activityDocuments', allFiles);
   }, [allFiles, setAllFiles]);

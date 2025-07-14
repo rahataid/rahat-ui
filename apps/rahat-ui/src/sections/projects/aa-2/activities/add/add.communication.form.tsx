@@ -104,6 +104,7 @@ export default function AddCommunicationForm({
   const beneficiaryGroups = useBeneficiariesGroupStore(
     (state) => state.beneficiariesGroups,
   );
+  console.log(beneficiaryGroups);
 
   const activityCommunication = form.watch('activityCommunication') || {};
 
@@ -216,18 +217,22 @@ export default function AddCommunicationForm({
     let groups = <SelectLabel>Please select group type</SelectLabel>;
     switch (selectedGroupType) {
       case 'STAKEHOLDERS':
-        groups = stakeholdersGroups.map((group: any) => (
-          <SelectItem key={group.id} value={group.uuid}>
-            {group.name}
-          </SelectItem>
-        ));
+        groups = stakeholdersGroups
+          .filter((a) => a?._count?.stakeholders > 0)
+          .map((group: any) => (
+            <SelectItem key={group.id} value={group.uuid}>
+              {group?.name}
+            </SelectItem>
+          ));
         break;
       case 'BENEFICIARY':
-        groups = beneficiaryGroups.map((group: any) => (
-          <SelectItem key={group.id} value={group.uuid}>
-            {group.name}
-          </SelectItem>
-        ));
+        groups = beneficiaryGroups
+          .filter((group: any) => group._count.groupedBeneficiaries > 0)
+          .map((group: any) => (
+            <SelectItem key={group.id} value={group.uuid}>
+              {group.name}
+            </SelectItem>
+          ));
         break;
       default:
         break;
@@ -424,6 +429,48 @@ export default function AddCommunicationForm({
 
     setAddress(transportData?.validationAddress === 'EMAIL');
   }, [selectedTransport]);
+
+  // React.useEffect(() => {
+  //   const selectedGroupType = form.watch(fieldName('groupType'));
+  //   const selectedGroupId = form.watch(fieldName('groupId'));
+
+  //   if (!selectedGroupId || !selectedGroupType) return;
+
+  //   if (selectedGroupType === 'STAKEHOLDERS') {
+  //     const selectedGroup = stakeholdersGroups.find(
+  //       (g) => g.uuid === selectedGroupId,
+  //     );
+
+  //     if (selectedGroup?.stakeholders?.length === 0) {
+  //       form.setError(fieldName('groupId'), {
+  //         type: 'manual',
+  //         message: 'Selected stakeholder group is empty.',
+  //       });
+  //     } else {
+  //       form.clearErrors(fieldName('groupId'));
+  //     }
+  //   }
+
+  //   if (selectedGroupType === 'BENEFICIARY') {
+  //     const selectedGroup = beneficiaryGroups.find(
+  //       (g) => g.uuid === selectedGroupId,
+  //     );
+
+  //     if (selectedGroup?.groupedBeneficiaries?.length === 2) {
+  //       form.setError(fieldName('groupId'), {
+  //         type: 'manual',
+  //         message: 'Selected beneficiary group is empty.',
+  //       });
+  //     } else {
+  //       form.clearErrors(fieldName('groupId'));
+  //     }
+  //   }
+  // }, [
+  //   form.watch(fieldName('groupType')),
+  //   form.watch(fieldName('groupId')),
+  //   stakeholdersGroups,
+  //   beneficiaryGroups,
+  // ]);
 
   const removeFile = () => {
     form.setValue(fieldName('audioURL'), {});

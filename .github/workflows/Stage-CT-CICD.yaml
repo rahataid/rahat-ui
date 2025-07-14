@@ -33,13 +33,15 @@ jobs:
           url: ${{ secrets.VAULT_URL }}
           token: ${{ secrets.VAULT_TOKEN }}
           secrets: |
-            github/data/general/docker/estya username | DOCKERHUB_USERNAME ;
-            github/data/general/docker/estya password | DOCKERHUB_TOKEN ;
+            github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
+            github/data/general/docker/esatya password | DOCKERHUB_TOKEN ;
+            github/data/general/npmrc env | NPMRC ;
+            github/data/rahat/rahat-ui/stage/ct ct-ui | ENV ;
 
-      # - name: create environment file
-      #   run: |
-      #     tee ./.env <<<"$ENV"
-      #     tee ./.npmrc <<<"$NPMRC"
+      - name: create environment file
+        run: |
+          tee ./.env <<<"$ENV"
+          tee ./.npmrc <<<"$NPMRC"
       - uses: actions/setup-node@v3
         with:
           node-version: 20.10.0

@@ -24,7 +24,7 @@ import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
-import { RotateCcw, Ticket, Users } from 'lucide-react';
+import { House, RotateCcw, Ticket, Users } from 'lucide-react';
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
 import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
@@ -212,6 +212,16 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             className="rounded-sm"
             badge
           />
+
+          {payout?.type === 'CVA' && payout?.mode === 'OFFLINE' && (
+            <DataCard
+              title="Vendor"
+              Icon={House}
+              smallNumber={payout?.vendor?.name}
+              className="rounded-sm"
+              badge
+            />
+          )}
         </div>
       </div>
 

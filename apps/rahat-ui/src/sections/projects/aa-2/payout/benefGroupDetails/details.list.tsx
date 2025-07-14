@@ -40,6 +40,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const params = useParams();
@@ -177,21 +178,22 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               onConfirm={() => handleTriggerPayout()}
               payoutData={payout}
             />
-
-            <Button
-              className={`gap-2 text-sm ${
-                payout?.hasFailedPayoutRequests === false && 'hidden'
-              }`}
-              onClick={handleTriggerPayoutFailed}
-              disabled={triggerForPayoutFailed.isPending}
-            >
-              <RotateCcw
-                className={`${
-                  triggerForPayoutFailed.isPending ? 'animate-spin' : ''
-                } w-4 h-4`}
-              />
-              Retry Failed Requests
-            </Button>
+            <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+              <Button
+                className={`gap-2 text-sm ${
+                  payout?.hasFailedPayoutRequests === false && 'hidden'
+                }`}
+                onClick={handleTriggerPayoutFailed}
+                disabled={triggerForPayoutFailed.isPending}
+              >
+                <RotateCcw
+                  className={`${
+                    triggerForPayoutFailed.isPending ? 'animate-spin' : ''
+                  } w-4 h-4`}
+                />
+                Retry Failed Requests
+              </Button>
+            </RoleAuth>
           </div>
         </div>
 

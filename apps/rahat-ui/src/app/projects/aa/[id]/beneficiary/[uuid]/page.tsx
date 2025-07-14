@@ -1,5 +1,6 @@
 'use client';
 
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import dynamic from 'next/dynamic';
 
 const BeneficaryDetailPage = dynamic(
@@ -13,5 +14,9 @@ const BeneficaryDetailPage = dynamic(
 );
 
 export default function Page() {
-  return <BeneficaryDetailPage />;
+  return (
+    <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]}>
+      <BeneficaryDetailPage />
+    </RoleAuth>
+  );
 }

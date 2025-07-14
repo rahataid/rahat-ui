@@ -116,9 +116,6 @@ jobs:
         run: |
           git config user.name "sandab-rumsan"
           git config user.email "sandab@rumsan.net"
-          git add ${{ env.ADMIN_MANIFEST_FILE }}
-          git add ${{ env.API_MANIFEST_FILE }}
-          git add ${{ env.WEB_MANIFEST_FILE }}
-          git add ${{ env.WEBHOOK_MANIFEST_FILE }}
+          git add ${{ env.MANIFEST_FILE }}
           git commit -m "runner: Update CT Stage Image tag to stage-${{ needs.community-tool-ui.outputs.sha_short }}-${{ needs.community-tool-ui.outputs.run_id_short }}"
           git push origin main

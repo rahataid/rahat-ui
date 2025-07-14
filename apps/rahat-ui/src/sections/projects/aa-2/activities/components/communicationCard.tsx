@@ -23,6 +23,7 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { SessionStatus } from '@rumsan/connect/src/types';
 import MessageWithToggle from './messageWithToggle';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 interface BaseCommunication {
   groupId: string;
@@ -103,25 +104,30 @@ export function CommunicationCard({
               </h3>
               <div className="flex gap-2">
                 {activityCommunication?.sessionStatus === SessionStatus.NEW && (
-                  <Button
-                    className="items-center justify-center"
-                    variant="ghost"
-                    onClick={() =>
-                      triggerCommunication(
-                        activityId,
-                        activityCommunication?.communicationId,
-                      )
-                    }
-                    type="button"
+                  <RoleAuth
+                    roles={[AARoles.ADMIN, AARoles.MANAGER]}
+                    hasContent={false}
                   >
-                    {loadingButtons.includes(
-                      activityCommunication?.communicationId,
-                    ) ? (
-                      <LoaderCircle size={20} className={`animate-spin `} />
-                    ) : (
-                      <SendHorizonal size={18} strokeWidth={1.5} />
-                    )}
-                  </Button>
+                    <Button
+                      className="items-center justify-center"
+                      variant="ghost"
+                      onClick={() =>
+                        triggerCommunication(
+                          activityId,
+                          activityCommunication?.communicationId,
+                        )
+                      }
+                      type="button"
+                    >
+                      {loadingButtons.includes(
+                        activityCommunication?.communicationId,
+                      ) ? (
+                        <LoaderCircle size={20} className={`animate-spin `} />
+                      ) : (
+                        <SendHorizonal size={18} strokeWidth={1.5} />
+                      )}
+                    </Button>
+                  </RoleAuth>
                 )}
               </div>
             </div>

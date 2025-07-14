@@ -9,7 +9,6 @@ import {
 } from 'libs/shadcn/src/components/ui/collapsible';
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -34,7 +33,7 @@ export function NavMain(items: IProps) {
       <SidebarMenu>
         {items?.items?.map((item) => {
           const isActive = (item.path as string)?.split('/')[4] === activePath;
-          return item?.children?.length ? (
+          const menuItem = item?.children?.length ? (
             <Collapsible
               key={item.title}
               asChild
@@ -67,22 +66,42 @@ export function NavMain(items: IProps) {
           ) : (
             <SidebarMenuItem>
               <Link href={item.path as string}>
-                <SidebarMenuButton
-                  tooltip={item.title}
-                  className={`font-medium rounded-sm ${
-                    isActive
-                      ? 'bg-primary text-white'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <span className="h-6 w-6 flex items-center justify-center">
-                    {item.icon}
-                  </span>
-                  <span>{item.title}</span>
-                </SidebarMenuButton>
+                {item.wrapper ? (
+                  item.wrapper(
+                    <SidebarMenuButton
+                      tooltip={item.title}
+                      className={`font-medium rounded-sm ${
+                        isActive
+                          ? 'bg-primary text-white'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <span className="h-6 w-6 flex items-center justify-center">
+                        {item.icon}
+                      </span>
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                  )
+                ) : (
+                  <SidebarMenuButton
+                    tooltip={item.title}
+                    className={`font-medium rounded-sm ${
+                      isActive
+                        ? 'bg-primary text-white'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <span className="h-6 w-6 flex items-center justify-center">
+                      {item.icon}
+                    </span>
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                )}
               </Link>
             </SidebarMenuItem>
           );
+          
+          return menuItem;
         })}
       </SidebarMenu>
     </SidebarGroup>

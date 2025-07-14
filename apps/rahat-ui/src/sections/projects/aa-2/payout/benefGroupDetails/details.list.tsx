@@ -168,21 +168,22 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               onConfirm={() => handleTriggerPayout()}
               payoutData={payout}
             />
-
-            <Button
-              className={`gap-2 text-sm ${
-                payout?.hasFailedPayoutRequests === false && 'hidden'
-              }`}
-              onClick={handleTriggerPayoutFailed}
-              disabled={triggerForPayoutFailed.isPending}
-            >
-              <RotateCcw
-                className={`${
-                  triggerForPayoutFailed.isPending ? 'animate-spin' : ''
-                } w-4 h-4`}
-              />
-              Retry Failed Requests
-            </Button>
+            <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+              <Button
+                className={`gap-2 text-sm ${
+                  payout?.hasFailedPayoutRequests === false && 'hidden'
+                }`}
+                onClick={handleTriggerPayoutFailed}
+                disabled={triggerForPayoutFailed.isPending}
+              >
+                <RotateCcw
+                  className={`${
+                    triggerForPayoutFailed.isPending ? 'animate-spin' : ''
+                  } w-4 h-4`}
+                />
+                Retry Failed Requests
+              </Button>
+            </RoleAuth>
           </div>
         </div>
 

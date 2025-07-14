@@ -28,6 +28,7 @@ import {
   transactionBgStatus,
 } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { intlFormatDate } from 'apps/rahat-ui/src/utils';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 function getTransactionStatusColor(status: string) {
   switch (status.toLowerCase()) {
     case 'completed':
@@ -273,13 +274,15 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
                   strokeWidth={2.5}
                 />
               ) : (
-                <RotateCcwIcon
-                  className="w-6 h-6 xl:w-4 xl:h-4 text-blue-400 cursor-pointer"
-                  strokeWidth={2.5}
-                  onClick={() =>
-                    handleTriggerSinglePayoutFailed(row.original.uuid)
-                  }
-                />
+                <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+                  <RotateCcwIcon
+                    className="w-6 h-6 xl:w-4 xl:h-4 text-blue-400 cursor-pointer"
+                    strokeWidth={2.5}
+                    onClick={() =>
+                      handleTriggerSinglePayoutFailed(row.original.uuid)
+                    }
+                  />
+                </RoleAuth>
               ))}
 
             <Eye

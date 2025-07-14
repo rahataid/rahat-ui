@@ -12,6 +12,7 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useMemo } from 'react';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function PayoutView() {
   const params = useParams();
@@ -63,14 +64,16 @@ export default function PayoutView() {
           description="Track all the payout reports here"
         />
         <div className="flex flex-end gap-2">
-          <IconLabelBtn
-            Icon={Plus}
-            handleClick={() => {
-              route.push(`/projects/aa/${projectID}/payout/initiate-payout`);
-            }}
-            name="Initiate Payment"
-            variant="default"
-          />
+          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+            <IconLabelBtn
+              Icon={Plus}
+              handleClick={() => {
+                route.push(`/projects/aa/${projectID}/payout/initiate-payout`);
+              }}
+              name="Initiate Payment"
+              variant="default"
+            />
+          </RoleAuth>
         </div>
       </div>
       <div className="grid grid-cols-4 gap-4 mb-4">

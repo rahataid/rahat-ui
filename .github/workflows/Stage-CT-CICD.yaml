@@ -33,8 +33,8 @@ jobs:
           url: ${{ secrets.VAULT_URL }}
           token: ${{ secrets.VAULT_TOKEN }}
           secrets: |
-            github/data/general/docker/estya username | DOCKERHUB_USERNAME ;
-            github/data/general/docker/estya password | DOCKERHUB_TOKEN ;
+            github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
+            github/data/general/docker/esatya password | DOCKERHUB_TOKEN ;
             github/data/general/npmrc env | NPMRC ;
             github/data/rahat/rahat-ui/stage/ct ct-ui | ENV ;
 

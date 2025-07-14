@@ -122,8 +122,8 @@ export default function CommsActivitiesTable() {
             value={filters?.status || ''}
           /> */}
       </div>
-      <div className="mt-1 bg-card border rounded">
-        <ScrollArea className="h-[calc(530px)]">
+      <div className=" bg-card border rounded">
+        <ScrollArea className="h-[calc(100vh-320px)]">
           <Table>
             <TableHeader className="sticky top-0 bg-card">
               {table.getHeaderGroups().map((headerGroup) => (

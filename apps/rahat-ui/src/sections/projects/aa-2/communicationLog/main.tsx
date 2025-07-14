@@ -36,18 +36,6 @@ export default function CommunicationMainLogsView() {
         description="Track all the communication logs here"
       />
 
-      {/* {isLoadingCommsStats && isLoadingBenefStakeholdersStats ? (
-        <CommunicationsStatsSkeleton />
-      ) : (
-        <CommunicationsChartsStats
-          commsStatsData={commsStatsData}
-          statsBenefStakeholders={data}
-        />
-      )}
-
-      <div className=" mt-4">
-        <CommsActivitiesTable />
-      </div> */}
       <Tabs
         defaultValue={activeTab}
         onValueChange={setActiveTab}

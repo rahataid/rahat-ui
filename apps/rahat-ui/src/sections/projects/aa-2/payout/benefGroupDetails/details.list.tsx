@@ -28,6 +28,7 @@ import { RotateCcw, Ticket, Users } from 'lucide-react';
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
 import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const params = useParams();
@@ -198,14 +199,14 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             />
           ))}
           <DataCard
-            title="Payout Mode"
+            title="Payout Type"
             Icon={Ticket}
             smallNumber={payout?.type}
             className="rounded-sm"
             badge
           />
           <DataCard
-            title="Payout Mode"
+            title="Payout Method"
             Icon={Ticket}
             smallNumber={payout?.extras?.paymentProviderName}
             className="rounded-sm"

@@ -105,7 +105,7 @@ export default function PayoutView() {
               }}
               custom={true}
               projectAA={true}
-              donutSize="70%"
+              donutSize="80%"
               width="100%"
               height="100%"
               type="donut"
@@ -128,11 +128,11 @@ export default function PayoutView() {
                     value: statsPayout?.completionStatus?.NOT_COMPLETED || 0,
                   },
                 ],
-                colors: ['#F4A462', '#2A9D90'],
+                colors: ['#2A9D90', '#F4A462'],
               }}
               custom={true}
               projectAA={true}
-              donutSize="70%"
+              donutSize="80%"
               width="100%"
               height="100%"
               type="donut"

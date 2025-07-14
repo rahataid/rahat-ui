@@ -24,7 +24,12 @@ export function PaymentDialog({ formState, handleSubmit }: PaymentDialogProps) {
       <Button
         className="rounded-sm w-48"
         disabled={
-          !formState.method || Object.keys(formState.group).length === 0
+          !formState.method ||
+          Object.keys(formState.group).length === 0 ||
+          (formState.method === 'FSP' &&
+            Object.keys(formState.paymentProvider).length === 0) ||
+          (formState.mode === 'OFFLINE' &&
+            Object.keys(formState.vendor).length === 0)
         }
         onClick={() => setOpen(true)}
       >

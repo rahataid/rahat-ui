@@ -20,6 +20,8 @@ const BeneficiaryGroups = () => {
 
   const { data, isLoading } = useBeneficiariesGroups(id as UUID, {
     ...filters,
+    sort: 'createdAt',
+    order: 'desc',
   });
 
   const { beneficiariesGroups } = useBeneficiariesGroupStore((state) => ({

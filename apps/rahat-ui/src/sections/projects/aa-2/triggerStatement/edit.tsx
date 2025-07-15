@@ -34,7 +34,7 @@ export default function EditTrigger() {
   const ManualFormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter trigger title' }),
     isMandatory: z.boolean().optional(),
-    notes: z.string().optional(),
+    description: z.string().optional(),
   });
 
   const manualForm = useForm<z.infer<typeof ManualFormSchema>>({
@@ -42,13 +42,14 @@ export default function EditTrigger() {
     defaultValues: {
       title: '',
       isMandatory: false,
-      notes: '',
+      description: '',
     },
   });
 
   const AutomatedFormSchema = z
     .object({
       title: z.string().min(2, { message: 'Please enter trigger title' }),
+      description: z.string().optional(),
       source: z.string().min(1, { message: 'Please select data source' }),
       isMandatory: z.boolean().optional(),
       minLeadTimeDays: z.string().optional(),
@@ -212,6 +213,7 @@ export default function EditTrigger() {
     resolver: zodResolver(AutomatedFormSchema),
     defaultValues: {
       title: '',
+      description: '',
       source: '',
       maxLeadTimeDays: '',
       minLeadTimeDays: '',
@@ -239,7 +241,7 @@ export default function EditTrigger() {
   };
 
   const handleUpdate = async (data: any) => {
-    const { isMandatory, notes, title, source, ...rest } = data;
+    const { isMandatory, description, title, source, ...rest } = data;
     // Only include non-empty fields in triggerStatement
     const triggerStatement = Object.fromEntries(
       Object.entries(rest).filter(
@@ -250,7 +252,7 @@ export default function EditTrigger() {
     const payload = {
       title,
       source,
-      notes,
+      description: description,
       triggerStatement,
       phaseId: trigger?.phaseId,
       uuid: trigger?.uuid,
@@ -276,13 +278,11 @@ export default function EditTrigger() {
 
     formHandlers[triggerType as 'manual' | 'automated']?.();
   };
-
-  console.log(trigger);
   React.useEffect(() => {
     if (triggerType === 'manual') {
       manualForm.reset({
         title: trigger?.title,
-        notes: trigger?.notes,
+        description: trigger?.description,
         isMandatory: !trigger?.isMandatory,
       });
     } else if (triggerType === 'automated') {
@@ -292,7 +292,7 @@ export default function EditTrigger() {
         isMandatory: !trigger?.isMandatory,
         maxLeadTimeDays: trigger?.triggerStatement?.maxLeadTimeDays,
         minLeadTimeDays: trigger?.triggerStatement?.maxLeadTimeDays,
-        notes: trigger?.notes || '',
+        description: trigger?.description || '',
         probability: trigger?.triggerStatement?.probability,
         warningLevel: trigger?.triggerStatement?.warningLevel,
         dangerLevel: trigger?.triggerStatement?.dangerLevel,

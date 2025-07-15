@@ -50,6 +50,7 @@ export default function AddTriggerView() {
 
   const ManualFormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter trigger title' }),
+    description: z.string().optional(),
     isMandatory: z.boolean().optional(),
     notes: z.string().optional(),
   });
@@ -59,13 +60,14 @@ export default function AddTriggerView() {
     defaultValues: {
       title: '',
       isMandatory: false,
-      notes: '',
+      description: '',
     },
   });
 
   const AutomatedFormSchema = z
     .object({
       title: z.string().min(2, { message: 'Please enter trigger title' }),
+      description: z.string().optional(),
       source: z.string().min(1, { message: 'Please select data source' }),
       isMandatory: z.boolean().optional(),
       minLeadTimeDays: z.string().optional(),
@@ -228,12 +230,12 @@ export default function AddTriggerView() {
     resolver: zodResolver(AutomatedFormSchema),
     defaultValues: {
       title: '',
+      description: '',
       source: '',
       maxLeadTimeDays: '',
       minLeadTimeDays: '',
       probability: '',
       isMandatory: false,
-      notes: '',
       warningLevel: '',
       dangerLevel: '',
       forecast: '',
@@ -322,8 +324,8 @@ export default function AddTriggerView() {
         phaseId,
         isMandatory,
         title,
+        description,
         source,
-        notes,
         ...rest
       }) => {
         // Only include non-empty fields in triggerStatement
@@ -338,7 +340,7 @@ export default function AddTriggerView() {
           isMandatory,
           title,
           source,
-          notes,
+          description,
           triggerStatement,
         };
       },

@@ -19,9 +19,9 @@ const BeneficiaryGroups = () => {
   const router = useRouter();
 
   const { data, isLoading } = useBeneficiariesGroups(id as UUID, {
-    ...filters,
-    sort: 'createdAt',
+    sort: 'updatedAt',
     order: 'desc',
+    ...filters,
   });
 
   const { beneficiariesGroups } = useBeneficiariesGroupStore((state) => ({

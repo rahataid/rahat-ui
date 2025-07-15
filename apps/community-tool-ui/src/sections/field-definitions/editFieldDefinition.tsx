@@ -89,6 +89,7 @@ export default function EditFieldDefinition({
       isActive: data?.isActive || false,
       isTargeting: data?.isTargeting || false,
       fieldPopulate: data?.fieldPopulate?.data || [],
+      variations: formattedVariations,
     });
   }, [
     data?.variations,

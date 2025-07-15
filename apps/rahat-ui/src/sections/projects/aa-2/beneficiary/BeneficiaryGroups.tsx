@@ -2,16 +2,10 @@
 import {
   useBeneficiariesGroups,
   useBeneficiariesGroupStore,
-  usePagination,
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import {
-  CustomPagination,
-  NoResult,
-  SearchInput,
-  SpinnerLoader,
-} from 'apps/rahat-ui/src/common';
+import { NoResult, SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import { UUID } from 'crypto';
 import { LandmarkIcon, Phone, Users, Banknote } from 'lucide-react';
@@ -20,40 +14,29 @@ import React, { useCallback } from 'react';
 
 const BeneficiaryGroups = () => {
   const { id } = useParams();
-  const uuid = id as UUID;
   const searchParams = useSearchParams();
-  const {
-    pagination,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    setPagination,
-    filters,
-    setFilters,
-  } = usePagination();
+  const [filters, setFilters] = React.useState({ search: '' });
   const router = useRouter();
+
   const { data, isLoading } = useBeneficiariesGroups(id as UUID, {
-    page: pagination.page,
-    perPage: pagination.perPage,
-    sort: 'updatedAt',
-    order: 'desc',
     ...filters,
   });
-  const { beneficiariesGroups, beneficiariesGroupsMeta } =
-    useBeneficiariesGroupStore((state) => ({
-      beneficiariesGroups: state.beneficiariesGroups,
-      beneficiariesGroupsMeta: state.beneficiariesGroupsMeta,
-    }));
+
+  const { beneficiariesGroups } = useBeneficiariesGroupStore((state) => ({
+    beneficiariesGroups: state.beneficiariesGroups,
+  }));
+
   const handleSearch = useCallback(
     (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
       const value = event?.target?.value ?? '';
       setFilters({ ...filters, [key]: value });
     },
-    [filters],
+    [filters, setFilters],
   );
+
   React.useEffect(() => {
     if (searchParams.get('tab') === 'beneficiaryGroups') {
-      setFilters({});
+      setFilters({ search: '' });
     }
   }, [searchParams]);
   return (
@@ -67,7 +50,7 @@ const BeneficiaryGroups = () => {
             value={filters?.search || ''}
           />
         </div>
-        <ScrollArea className="h-[calc(100vh-360px)] mb-2">
+        <ScrollArea className="h-[calc(100vh-305px)] mb-2">
           {isLoading ? (
             <SpinnerLoader />
           ) : beneficiariesGroups.length > 0 ? (
@@ -75,10 +58,13 @@ const BeneficiaryGroups = () => {
               {beneficiariesGroups.map((i: any, index: number) => {
                 const groupPurposeName = i?.groupPurpose?.split('_')[0];
                 return (
-                  <div key={index} className="rounded-md border shadow p-4">
+                  <div
+                    key={index}
+                    className="border shadow p-4 rounded-xl overflow-hidden"
+                  >
                     <div className="flex flex-col space-y-2">
                       <div
-                        className="cursor-pointer rounded-md bg-secondary grid place-items-center h-28"
+                        className="cursor-pointer bg-secondary grid place-items-center h-28 rounded-xl"
                         onClick={() => {
                           router.push(
                             `/projects/aa/${id}/beneficiary/groupDetails/${i.uuid}`,
@@ -90,7 +76,7 @@ const BeneficiaryGroups = () => {
                         </div>
                       </div>
 
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center gap-2">
                         <p className="text-base capitalize">
                           {i?.name ?? 'N/A'}
                         </p>
@@ -134,26 +120,6 @@ const BeneficiaryGroups = () => {
             <NoResult message="No Beneficiary Group Available" />
           )}
         </ScrollArea>
-
-        <CustomPagination
-          meta={
-            beneficiariesGroupsMeta || {
-              total: 0,
-              currentPage: 0,
-              lastPage: 0,
-              perPage: 0,
-              next: null,
-              prev: null,
-            }
-          }
-          handleNextPage={setNextPage}
-          handlePrevPage={setPrevPage}
-          handlePageSizeChange={setPerPage}
-          currentPage={pagination.page}
-          perPage={pagination.perPage}
-          total={0}
-          setPagination={setPagination}
-        />
       </div>
     </>
   );

@@ -1,6 +1,6 @@
 import {
   useBeneficiariesGroupStore,
-  useSingleBeneficiaryGroup,
+  useGetBeneficiaryGroup,
   useSingleStakeholdersGroup,
   useStakeholdersGroupsStore,
   useUploadFile,
@@ -149,8 +149,7 @@ export default function EditCommunicationForm({
     stakeholderId,
   );
 
-  const { data: beneficiaryGroup, isLoading: isLoadingss } =
-    useSingleBeneficiaryGroup(projectId as UUID, beneficiaryId);
+  const { data: beneficiaryGroup } = useGetBeneficiaryGroup(beneficiaryId);
 
   React.useEffect(() => {
     const transportData = appTransports?.find(
@@ -184,10 +183,10 @@ export default function EditCommunicationForm({
     if (transportData?.validationAddress !== 'EMAIL') return;
 
     if (
-      beneficiaryGroup &&
-      Array.isArray(beneficiaryGroup?.groupedBeneficiaries)
+      beneficiaryGroup?.data &&
+      Array.isArray(beneficiaryGroup?.data?.groupedBeneficiaries)
     ) {
-      const hasValidEmail = beneficiaryGroup?.groupedBeneficiaries?.some(
+      const hasValidEmail = beneficiaryGroup?.data?.groupedBeneficiaries?.some(
         (s) => s?.Beneficiary?.pii?.email.trim() !== '',
       );
 

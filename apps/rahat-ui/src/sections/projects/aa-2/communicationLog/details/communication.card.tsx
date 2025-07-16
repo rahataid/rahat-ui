@@ -140,7 +140,7 @@ export function CommunicationDetailCard({
             <div className="mt-1 flex items-center gap-2 text-sm text-gray-500">
               <span> {activityCommunication?.transportName}</span>
               <span>•</span>
-              <span>{activityCommunication?.groupType}</span>
+              <span>s{activityCommunication?.groupType}</span>
               <span>•</span>
               <Badge
                 className={`ml-1 text-xs font-normal ${
@@ -148,7 +148,9 @@ export function CommunicationDetailCard({
                     ? 'text-red-400 bg-yellow-100'
                     : activityCommunication?.sessionStatus === 'COMPLETED'
                     ? 'text-green-700 bg-green-200'
-                    : 'text-red-700 bg-red-200'
+                    : activityCommunication.sessionStatus === 'FAILED'
+                    ? 'text-red-700 bg-red-200'
+                    : 'bg-gray-200'
                 }`}
               >
                 {activityCommunication?.sessionStatus.charAt(0).toUpperCase() +

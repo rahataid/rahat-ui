@@ -27,35 +27,38 @@ export default function PayoutView() {
     projectUUID: projectID,
   });
 
-  const { stellarTokenStats } = useFundAssignmentStore((state) => ({
-    stellarTokenStats: state.stellarTokenStats,
-  }));
-
   const payoutStats = useMemo(() => {
-    const getAmountByName = (name: string) =>
-      stellarTokenStats.find((item: any) => item.name === name)?.amount ??
-      'N/A';
-
     return [
       {
+        label: 'No. of Token Assigned',
+        subtitle: 'Token Balance',
+        value: statsPayout?.payoutStats?.tokenAssigned || 'N/A',
+      },
+      {
+        label: 'Amount Disbursed',
+        subtitle: ' ',
+        value: statsPayout?.payoutStats?.amountDisbursed || 'N/A',
+      },
+      {
+        label: 'No. of Tokens Disbursed',
+        subtitle: ' ',
+        value: statsPayout?.payoutStats?.tokenDisbursed || 'N/A',
+      },
+      {
         label: 'Project Balance',
-        value: getAmountByName('Disbursement Balance'),
+        subtitle: ' ',
+        value: statsPayout?.payoutStats?.projectBalance || 'N/A',
       },
-      {
-        label: 'Tokens Distributed',
-        value: getAmountByName('Disbursed Balance'),
-      },
-      {
-        label: 'Tokens Disbursed',
-        value: getAmountByName('Remaining Balance'),
-      },
+
       {
         label: '1 Token Value',
-        value: getAmountByName('Token Price'),
+        subtitle: ' ',
+        value: statsPayout?.payoutStats?.oneTokenValue || 'N/A',
       },
     ];
-  }, [stellarTokenStats]);
+  }, [statsPayout]);
 
+  console.log(statsPayout);
   return (
     <div className="p-4 ">
       <div className="flex justify-between items-center space-x-4">
@@ -76,7 +79,7 @@ export default function PayoutView() {
           </RoleAuth>
         </div>
       </div>
-      <div className="grid grid-cols-4 gap-4 mb-4">
+      <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
         {payoutStats.map((stat) => {
           return (
             <DataCard
@@ -84,6 +87,7 @@ export default function PayoutView() {
               title={stat.label}
               number={stat.value as string}
               className="rounded-sm"
+              subtitle={stat.subtitle}
             />
           );
         })}
@@ -95,10 +99,14 @@ export default function PayoutView() {
             <PieChart
               chart={{
                 series: [
-                  { label: 'FSP', value: statsPayout?.payoutTypes?.FSP || 0 },
+                  {
+                    label: 'FSP',
+                    value: statsPayout?.payoutOverview?.payoutTypes?.FSP || 0,
+                  },
                   {
                     label: 'CVA',
-                    value: statsPayout?.payoutTypes?.VENDOR || 0,
+                    value:
+                      statsPayout?.payoutOverview?.payoutTypes?.VENDOR || 0,
                   },
                 ],
                 colors: ['#F4A462', '#2A9D90'],
@@ -121,11 +129,15 @@ export default function PayoutView() {
                 series: [
                   {
                     label: 'Completed',
-                    value: statsPayout?.completionStatus?.COMPLETED || 0,
+                    value:
+                      statsPayout?.payoutOverview?.completionStatus
+                        ?.COMPLETED || 0,
                   },
                   {
                     label: 'Not Completed',
-                    value: statsPayout?.completionStatus?.NOT_COMPLETED || 0,
+                    value:
+                      statsPayout?.payoutOverview?.completionStatus
+                        ?.NOT_COMPLETED || 0,
                   },
                 ],
                 colors: ['#2A9D90', '#F4A462'],

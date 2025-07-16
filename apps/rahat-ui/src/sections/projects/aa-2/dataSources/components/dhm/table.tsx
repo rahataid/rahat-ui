@@ -9,7 +9,7 @@ type IProps = {
 
 export default function WaterLevelTable({ tableData, columns }: IProps) {
   const table = useReactTable({
-    data: tableData,
+    data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });

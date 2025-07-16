@@ -1,3 +1,4 @@
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
@@ -51,16 +52,18 @@ export default function TriggersPhaseCard({
             } text-xs`}
           />
 
-          <IconLabelBtn
-            variant="outline"
-            className={`border-primary text-primary ${
-              hideAddTrigger && 'hidden'
-            }`}
-            Icon={Plus}
-            name="Add Trigger"
-            handleClick={handleAddTrigger}
-            disabled={isActive}
-          />
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+            <IconLabelBtn
+              variant="outline"
+              className={`border-primary text-primary ${
+                hideAddTrigger && 'hidden'
+              }`}
+              Icon={Plus}
+              name="Add Trigger"
+              handleClick={handleAddTrigger}
+              disabled={isActive}
+            />
+          </RoleAuth>
         </div>
         <div className="flex justify-center mb-2 ">
           <ChartDonut

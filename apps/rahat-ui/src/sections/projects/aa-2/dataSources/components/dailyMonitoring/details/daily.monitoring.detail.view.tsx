@@ -23,6 +23,7 @@ import GLOFASCard from './glofas/glofas.card';
 import AccumulatedCard from './ncmrwf/ncmrwf.accumulated.card';
 import WeatherDashboard from './ncmrwf/ncmwrf.deterministic.problastic.weatherCard';
 import GaugereadingMonitoringCard from './gaugeReading/gaugeReading';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function DailyMonitoringDetailView() {
   const router = useRouter();
@@ -141,8 +142,12 @@ export default function DailyMonitoringDetailView() {
           path={`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`}
         />
         <div className="flex gap-4 items-center">
-          <EditButton path={dailyMonitoringEditPath} />
-          <DeleteButton name="project" handleContinueClick={onDelete} />
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+            <EditButton path={dailyMonitoringEditPath} />
+          </RoleAuth>
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+            <DeleteButton name="project" handleContinueClick={onDelete} />
+          </RoleAuth>
         </div>
       </div>
 

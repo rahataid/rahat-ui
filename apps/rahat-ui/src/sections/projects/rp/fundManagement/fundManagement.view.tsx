@@ -138,8 +138,6 @@ const FundManagementView = () => {
     contractSettings?.rahattoken?.address as `0x${string}`,
   );
 
-  console.log('chainTokenAllocations', chainTokenAllocations);
-
   useEffect(() => {
     if (
       projectBeneficiaries.isSuccess &&

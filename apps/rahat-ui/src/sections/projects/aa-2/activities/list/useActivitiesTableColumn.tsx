@@ -11,6 +11,7 @@ import { Eye, RefreshCcw } from 'lucide-react';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 // function getStatusBg(status: string) {
 //   if (status === 'NOT_STARTED') {
@@ -160,12 +161,17 @@ export default function useActivitiesTableColumn() {
               strokeWidth={1.5}
               onClick={() => handleEyeClick(row.original.id)}
             />
-            <RefreshCcw
-              className="hover:text-primary cursor-pointer"
-              size={20}
-              strokeWidth={1.5}
-              onClick={() => handleUpdateStatusIconClick(row.original.id)}
-            />
+            <RoleAuth
+              roles={[AARoles.ADMIN, AARoles.MANAGER]}
+              hasContent={false}
+            >
+              <RefreshCcw
+                className="hover:text-primary cursor-pointer"
+                size={20}
+                strokeWidth={1.5}
+                onClick={() => handleUpdateStatusIconClick(row.original.id)}
+              />
+            </RoleAuth>
           </div>
         );
       },

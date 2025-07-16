@@ -14,7 +14,7 @@ export default function PointWaterLevel({
   dangerLevel,
   warningLevel,
 }: IProps) {
-  const columns = usePointTableColumns();
+  const columns = usePointTableColumns({});
 
   return (
     <div className="grid grid-cols-2 gap-4">

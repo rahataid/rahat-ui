@@ -33,13 +33,20 @@ export default function useCommsLogsTableColumns(transportName: string) {
         return <div className="ml-8">{row?.original?.attempts}</div>;
       },
     },
-    {
-      accessorKey: 'duration',
-      header: 'Duration',
-      cell: ({ row }) => (
-        <div>{row?.original?.disposition?.cdr?.billableseconds || 'N/A'}</div>
-      ),
-    },
+    // hide duration column for EMAIL and SMS transports
+    ...(transportName !== 'EMAIL' && transportName !== 'SMS'
+      ? [
+          {
+            accessorKey: 'duration',
+            header: 'Duration',
+            cell: ({ row }) => (
+              <div>
+                {row?.original?.disposition?.cdr?.billableseconds || 'N/A'}
+              </div>
+            ),
+          },
+        ]
+      : []),
     {
       accessorKey: 'timeStamp',
       header: 'Timestamp',

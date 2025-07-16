@@ -8,6 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 function getStatusBg(status: string) {
   if (status === 'Not Started') {
     return 'bg-red-200 text-red-600';
@@ -67,7 +68,7 @@ export default function useCommsActivitiesTableColumns() {
       header: 'Date',
       cell: ({ row }) => (
         <div className="capitalize min-w-32">
-          {new Date(row.getValue('createdAt')).toLocaleString()}
+          {dateFormat(row.getValue('createdAt'))}
         </div>
       ),
     },

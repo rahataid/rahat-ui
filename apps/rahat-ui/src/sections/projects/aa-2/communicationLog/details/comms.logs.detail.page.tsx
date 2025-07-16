@@ -51,6 +51,7 @@ import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import * as XLSX from 'xlsx';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 type IHeadCardProps = {
   title: string;
   icon: LucideIcon;
@@ -247,7 +248,7 @@ export default function CommsLogsDetailPage() {
                 <div className="space-y-1">
                   <p className="text-sm text-gray-500">Triggered Date</p>
                   <p className="font-medium">
-                    {renderDateTime(logs?.sessionDetails?.createdAt)}
+                    {dateFormat(logs?.sessionDetails?.createdAt)}
                   </p>
                 </div>
 
@@ -345,16 +346,6 @@ export default function CommsLogsDetailPage() {
       </div>
     </div>
   );
-}
-
-function renderDateTime(dateTime: string) {
-  if (dateTime) {
-    const d = new Date(dateTime);
-    const localeDate = d.toLocaleDateString();
-    const localeTime = d.toLocaleTimeString();
-    return `${localeDate} ${localeTime}`;
-  }
-  return 'N/A';
 }
 
 function renderMessage(message: any) {

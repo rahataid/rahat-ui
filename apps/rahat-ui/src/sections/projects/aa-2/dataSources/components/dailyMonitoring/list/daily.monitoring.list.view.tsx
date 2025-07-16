@@ -30,6 +30,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 import useDailyMonitoringTableColumn from '../useDailyMonitoringTableColumn';
 import DailyMonitoringTable from './daily.monitoring.table';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function DailyMonitoringListView() {
   const params = useParams();
@@ -137,16 +138,17 @@ export default function DailyMonitoringListView() {
             Clear Date
           </Button>
         )}
-
-        <IconLabelBtn
-          handleClick={() =>
-            router.push(
-              `/projects/aa/${projectId}/data-sources/daily-monitoring/add`,
-            )
-          }
-          name="Add"
-          Icon={Plus}
-        />
+        <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+          <IconLabelBtn
+            handleClick={() =>
+              router.push(
+                `/projects/aa/${projectId}/data-sources/daily-monitoring/add`,
+              )
+            }
+            name="Add"
+            Icon={Plus}
+          />
+        </RoleAuth>
       </div>
       <div className="border bg-card rounded">
         <DailyMonitoringTable table={table} loading={isLoading} />

@@ -51,14 +51,7 @@ export default function GlofasInfoCard({ glofas }: IProps) {
   );
   return (
     <div className="flex flex-col space-y-4">
-      <div
-        className="p-4 rounded-sm border shadow flex justify-between space-x-4 cursor-pointer hover:shadow-md"
-        onClick={() =>
-          router.push(
-            `/projects/aa/${projectId}/data-sources/dhm/river-watch/${glofas?.id}`,
-          )
-        }
-      >
+      <div className="p-4 rounded-sm border shadow flex justify-between space-x-4">
         <div className="w-full">
           <div className="flex justify-between gap-4">
             <Heading

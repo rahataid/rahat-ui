@@ -38,25 +38,23 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
 
-
-  const benData = useFindUnSyncedBenefiicaries(id,{
-  });
-  const meta = benData?.data?.response?.meta
+  const benData = useFindUnSyncedBenefiicaries(id, {});
+  const meta = benData?.data?.response?.meta;
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
-    perPage:100,
+    perPage: 100,
     //  pagination.perPage,
     order: 'desc',
     sort: 'updatedAt',
     projectUUID: id,
     ...filters,
   });
-  const disbursements = useFindAllDisbursements(id,{
+  const disbursements = useFindAllDisbursements(id, {
     hideAssignedBeneficiaries: false,
-  },);
+  });
 
-  const {data:tokenBalance} = useReadRahatTokenBalanceOf({
+  const { data: tokenBalance } = useReadRahatTokenBalanceOf({
     address: contractSettings?.rahattoken?.address as `0x${string}`,
     args: [contractSettings?.rahatpayrollproject?.address as `0x${string}`],
     query: {
@@ -67,18 +65,15 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
   });
 
   useEffect(() => {
-    if(benData?.isSuccess){
+    if (benData?.isSuccess) {
       const unSyncedBeneficiaries = benData?.data?.data?.map((beneficiary) => {
         return {
-          name:beneficiary?.piiData?.name,
+          name: beneficiary?.piiData?.name,
           disbursementAmount: beneficiary?.Disbursements[0]?.amount || '0',
           walletAddress: beneficiary?.walletAddress,
         };
       });
-      if (
-        JSON.stringify(unSyncedBeneficiaries) !==
-        JSON.stringify(rowData)
-      ) {
+      if (JSON.stringify(unSyncedBeneficiaries) !== JSON.stringify(rowData)) {
         setRowData(unSyncedBeneficiaries);
       }
     }
@@ -100,7 +95,7 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
           <div className="flex flex-col gap-8 p-3">
             <div className="flex flex-col gap-2">
               <p>Beneficiaries Selected:</p>
-              <p>{benData?.data?.data?.length}</p>
+              <p>{stepData?.selectedBeneficiaries.length}</p>
             </div>
             <div className="flex flex-col gap-2">
               <p>Project Token:</p>
@@ -116,7 +111,8 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
               <p>Total Token to Send:</p>
               <p>
                 {rowData?.reduce(
-                  (acc: number, disbursement: any) => acc + Number(disbursement.disbursementAmount),
+                  (acc: number, disbursement: any) =>
+                    acc + Number(disbursement.disbursementAmount),
                   0,
                 )}{' '}
               </p>
@@ -130,7 +126,7 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
 
           <div className="flex flex-col gap-8 p-1">
             <ScrollArea className="h-96">
-              {rowData?.map((row: any) => (
+              {stepData?.selectedBeneficiaries?.map((row: any) => (
                 <div
                   key={row?.walletAddress}
                   className="grid gap-8 bg-neutral-100 m-2 p-4 rounded-sm"

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {
   CloudDownloadIcon,
-  FolderPlus,
   LandmarkIcon,
   Trash2Icon,
   UsersRound,
@@ -233,6 +232,7 @@ export default function GroupDetailView() {
               variant={'outline'}
               className={`${
                 (group?.data?.isGroupValidForAA ||
+                  !groupPurposeName ||
                   group?.data?.groupedBeneficiaries?.length === 0) &&
                 'hidden'
               } gap-2 text-gray-700 rounded-sm`}
@@ -248,14 +248,16 @@ export default function GroupDetailView() {
               <Trash2Icon className="w-4 h-4" />
               Delete Group
             </Button>
-            <Button
-              variant={'outline'}
-              className="border-blue-500 text-blue-500 gap-2 rounded-sm"
-              onClick={handleProjectAssignModalClick}
-            >
-              <FolderDot className="w-4 h-4" />
-              Assign To Project
-            </Button>
+            {group?.data?.isGroupValidForAA && (
+              <Button
+                variant={'outline'}
+                className="border-blue-500 text-blue-500 gap-2 rounded-sm"
+                onClick={handleProjectAssignModalClick}
+              >
+                <FolderDot className="w-4 h-4" />
+                Assign To Project
+              </Button>
+            )}
           </div>
         </div>
         <div className="flex gap-4">
@@ -271,7 +273,7 @@ export default function GroupDetailView() {
               className="border-solid w-1/3 rounded-xl"
               iconStyle="bg-white text-secondary-muted"
               title="Project Involved"
-              Icon={FolderPlus}
+              Icon={FolderDot}
             >
               <div className="flex gap-2 flex-wrap">
                 {group?.data?.beneficiaryGroupProject?.map(

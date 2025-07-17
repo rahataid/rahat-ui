@@ -7,7 +7,7 @@ import {
   useTriggerPayout,
 } from '@rahat-ui/query';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import * as React from 'react';
 
 import {
@@ -19,27 +19,16 @@ import {
   TableLoader,
 } from 'apps/rahat-ui/src/common';
 
-import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
-import { UUID } from 'crypto';
-import { RotateCcw, Ticket, Users } from 'lucide-react';
-import BeneficiariesGroupTable from './beneficiariesGroupTable';
-import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
+import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import { UUID } from 'crypto';
+import { House, RotateCcw, Ticket, Users } from 'lucide-react';
+import BeneficiariesGroupTable from './beneficiariesGroupTable';
+import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
+import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const params = useParams();
@@ -155,7 +144,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
     [filters],
   );
-
+  console.log(payout);
   return isLoading ? (
     <TableLoader />
   ) : (
@@ -168,8 +157,11 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <Heading
               title={`${payout?.beneficiaryGroupToken?.beneficiaryGroup?.name}`}
               description="List of all the payout transaction logs of selected group"
-              status={payout?.isCompleted ? 'Completed' : 'Not Completed'}
-              badgeClassName={isCompleteBgStatus(payout?.isCompleted)}
+              status={payout?.status
+                .toLowerCase()
+                .replace(/_/g, ' ')
+                .replace(/^./, (char) => char.toUpperCase())}
+              badgeClassName={isCompleteBgStatus(payout?.status)}
             />
           </div>
           <div className="flex gap-2">
@@ -177,21 +169,22 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               onConfirm={() => handleTriggerPayout()}
               payoutData={payout}
             />
-
-            <Button
-              className={`gap-2 text-sm ${
-                payout?.hasFailedPayoutRequests === false && 'hidden'
-              }`}
-              onClick={handleTriggerPayoutFailed}
-              disabled={triggerForPayoutFailed.isPending}
-            >
-              <RotateCcw
-                className={`${
-                  triggerForPayoutFailed.isPending ? 'animate-spin' : ''
-                } w-4 h-4`}
-              />
-              Retry Failed Requests
-            </Button>
+            <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+              <Button
+                className={`gap-2 text-sm ${
+                  payout?.hasFailedPayoutRequests === false && 'hidden'
+                }`}
+                onClick={handleTriggerPayoutFailed}
+                disabled={triggerForPayoutFailed.isPending}
+              >
+                <RotateCcw
+                  className={`${
+                    triggerForPayoutFailed.isPending ? 'animate-spin' : ''
+                  } w-4 h-4`}
+                />
+                Retry Failed Requests
+              </Button>
+            </RoleAuth>
           </div>
         </div>
 
@@ -206,19 +199,29 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             />
           ))}
           <DataCard
-            title="Payout Mode"
+            title="Payout Type"
             Icon={Ticket}
             smallNumber={payout?.type}
             className="rounded-sm"
             badge
           />
           <DataCard
-            title="Payout Mode"
+            title="Payout Method"
             Icon={Ticket}
             smallNumber={payout?.extras?.paymentProviderName}
             className="rounded-sm"
             badge
           />
+
+          {payout?.type === 'CVA' && payout?.mode === 'OFFLINE' && (
+            <DataCard
+              title="Vendor"
+              Icon={House}
+              smallNumber={payout?.vendor?.name}
+              className="rounded-sm"
+              badge
+            />
+          )}
         </div>
       </div>
 

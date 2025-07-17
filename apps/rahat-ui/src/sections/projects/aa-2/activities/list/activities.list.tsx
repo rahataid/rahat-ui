@@ -184,13 +184,15 @@ export default function ActivitiesList() {
           />
         </div>
         <div className="flex flex-col gap-2 lg:flex-row items-center justify-center">
-          <IconLabelBtn
-            Icon={CloudDownloadIcon}
-            handleClick={handleDownloadReport}
-            name="Download"
-            variant="outline"
-            className="rounded w-full"
-          />
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+            <IconLabelBtn
+              Icon={CloudDownloadIcon}
+              handleClick={handleDownloadReport}
+              name="Download"
+              variant="outline"
+              className="rounded w-full"
+            />
+          </RoleAuth>
           <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
             <IconLabelBtn
               Icon={Plus}

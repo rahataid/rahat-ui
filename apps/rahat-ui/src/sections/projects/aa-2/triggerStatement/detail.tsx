@@ -23,6 +23,7 @@ import {
   ForecastDataSection,
 } from './components';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function TriggerStatementDetail() {
   const router = useRouter();
@@ -82,37 +83,43 @@ export default function TriggerStatementDetail() {
           } text-xs`}
         />
         <div className="flex space-x-2">
-          <DeleteButton
-            className={`rounded flex gap-1 items-center text-sm font-medium ${
-              version && 'hidden'
-            }`}
-            name="trigger"
-            label="Delete"
-            handleContinueClick={handleDelete}
-            disabled={trigger?.isTriggered || trigger?.phase?.isActive}
-          />
-          <EditButton
-            className={`rounded flex gap-1 items-center text-sm font-medium ${
-              version && 'hidden'
-            }`}
-            label="Edit"
-            onFallback={() =>
-              router.push(
-                `/projects/aa/${id}/trigger-statements/${triggerRepeatKey}/edit`,
-              )
-            }
-            disabled={trigger?.phase?.isActive || trigger?.isTriggered}
-          />
-          {source === 'MANUAL' &&
-            !trigger?.phase?.isActive &&
-            !trigger?.isTriggered && (
-              <ActivateTriggerDialog
-                projectId={id}
-                repeatKey={triggerRepeatKey as string}
-                version={version}
-                notes={trigger?.notes}
-              />
-            )}
+          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+            <DeleteButton
+              className={`rounded flex gap-1 items-center text-sm font-medium ${
+                version && 'hidden'
+              }`}
+              name="trigger"
+              label="Delete"
+              handleContinueClick={handleDelete}
+              disabled={trigger?.isTriggered || trigger?.phase?.isActive}
+            />
+          </RoleAuth>
+          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+            <EditButton
+              className={`rounded flex gap-1 items-center text-sm font-medium ${
+                version && 'hidden'
+              }`}
+              label="Edit"
+              onFallback={() =>
+                router.push(
+                  `/projects/aa/${id}/trigger-statements/${triggerRepeatKey}/edit`,
+                )
+              }
+              disabled={trigger?.phase?.isActive || trigger?.isTriggered}
+            />
+          </RoleAuth>
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+            {source === 'MANUAL' &&
+              !trigger?.phase?.isActive &&
+              !trigger?.isTriggered && (
+                <ActivateTriggerDialog
+                  projectId={id}
+                  repeatKey={triggerRepeatKey as string}
+                  version={version}
+                  notes={trigger?.notes}
+                />
+              )}
+          </RoleAuth>
         </div>
       </div>
       <div

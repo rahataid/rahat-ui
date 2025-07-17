@@ -49,8 +49,10 @@ interface Props {
   };
   communityTool?: boolean;
   donutSize?: string;
-  width?: number | string;
-  height?: number | string;
+  
+  width?: number | string | undefined;
+  height?: number | string | undefined;
+
   projectAA?: boolean;
   type?:
     | 'line'

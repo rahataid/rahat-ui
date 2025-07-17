@@ -379,7 +379,7 @@ export default function AddDailyMonitoring() {
     <div className="px-4 py-2">
       <HeaderWithBack
         title={'Add Daily Monitoring'}
-        subtitle="Fill the form below  to add daily monitoring"
+        subtitle="Fill the form below to add daily monitoring"
         path={`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`}
       />
       <Form {...form}>

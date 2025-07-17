@@ -58,8 +58,10 @@ export default function RiverWatchDetails() {
           'river_basin'
         ],
       type: activeTab?.toUpperCase(),
-      from: activeTab === 'Daily' ? startDate : formattedDate,
-      to: activeTab === 'Daily' ? endDate : formattedDate,
+      // from: activeTab === 'Daily' ? startDate : formattedDate,
+      // to: activeTab === 'Daily' ? endDate : formattedDate,
+      from: formattedDate,
+      to: formattedDate,
     },
     activeTab,
   );

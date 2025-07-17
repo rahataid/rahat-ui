@@ -1,5 +1,6 @@
 'use client';
 
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import dynamic from 'next/dynamic';
 
 const TriggerStatementEditPage = dynamic(
@@ -13,5 +14,9 @@ const TriggerStatementEditPage = dynamic(
 );
 
 export default function Page() {
-  return <TriggerStatementEditPage />;
+  return (
+    <RoleAuth roles={[AARoles.ADMIN]}>
+      <TriggerStatementEditPage />
+    </RoleAuth>
+  );
 }

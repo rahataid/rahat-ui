@@ -18,6 +18,10 @@ export default function InputCalendar({
   selectedDate,
   setSelectedDate,
 }: IProps) {
+  const today = new Date();
+  const fourteenDaysAgo = new Date();
+  fourteenDaysAgo.setHours(0, 0, 0, 0);
+  fourteenDaysAgo.setDate(today.getDate() - 14);
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -33,9 +37,7 @@ export default function InputCalendar({
           mode="single"
           selected={selectedDate}
           onSelect={setSelectedDate}
-          disabled={(date) =>
-            date > new Date() || date < new Date('2025-01-01')
-          }
+          disabled={(date) => date > today || date < fourteenDaysAgo}
           initialFocus
         />
       </PopoverContent>

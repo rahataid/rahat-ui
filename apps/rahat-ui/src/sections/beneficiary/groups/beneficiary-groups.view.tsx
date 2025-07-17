@@ -3,7 +3,7 @@ import React, { memo, useEffect } from 'react';
 
 import { useBeneficiaryGroupsList, usePagination } from '@rahat-ui/query';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import { LandmarkIcon, Plus, Users } from 'lucide-react';
+import { LandmarkIcon, Phone, Plus, Users } from 'lucide-react';
 import SearchInput from '../../projects/components/search.input';
 import AddButton from '../../projects/components/add.btn';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import AssignBeneficiaryToProjectModal from './assignToProjectModal';
 import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
+import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 
 function BeneficiaryGroupsView() {
   const router = useRouter();
@@ -101,33 +102,42 @@ function BeneficiaryGroupsView() {
                     }}
                   >
                     <div className="flex-grow">
-                      <div className="mb-4">
+                      <div className="mb-2">
                         <div className="flex justify-between items-center">
                           <p className="text-lg font-semibold mb-1 text-[#3D3D51]">
                             {i?.name ?? 'N/A'}
                           </p>
-                          {i?.isGroupValidForAA && (
-                            <div>
-                              <LandmarkIcon
-                                strokeWidth={2}
-                                className="w-4 h-4 text-green-600"
-                              />
-                            </div>
+                          <div>
+                            {(i?.groupPurpose === GroupPurpose.BANK_TRANSFER ||
+                              i?.groupPurpose ===
+                                GroupPurpose.MOBILE_MONEY) && (
+                              <>
+                                {i?.groupPurpose ===
+                                  GroupPurpose.BANK_TRANSFER && (
+                                  <LandmarkIcon className="h-4 w-4 text-green-600" />
+                                )}
+                                {i?.groupPurpose ===
+                                  GroupPurpose.MOBILE_MONEY && (
+                                  <Phone className="h-4 w-4 text-green-600" />
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <div className="flex gap-2 items-center text-[#667085]">
+                            <Users size={18} strokeWidth={2} />
+                            {i?._count?.groupedBeneficiaries || 0} beneficiaries
+                          </div>
+                          {i?.groupPurpose && (
+                            <Badge className="text-gray-700 font-normal text-xs">
+                              {capitalizeFirstLetter(
+                                i?.groupPurpose?.split('_')[0] || '',
+                              )}
+                            </Badge>
                           )}
                         </div>
-
-                        <div className="flex gap-2 items-center text-[#667085]">
-                          <Users size={18} strokeWidth={2} />
-                          {i?._count?.groupedBeneficiaries || 0} beneficiaries
-                        </div>
-
-                        {i?.groupPurpose && (
-                          <Badge className="text-gray-700 font-normal text-[15px]/5">
-                            {capitalizeFirstLetter(
-                              i?.groupPurpose?.split('_')[0] || '',
-                            )}
-                          </Badge>
-                        )}
                       </div>
 
                       <div className="mb-3">

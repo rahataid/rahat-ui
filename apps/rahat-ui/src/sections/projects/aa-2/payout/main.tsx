@@ -37,7 +37,7 @@ export default function PayoutView() {
       {
         label: 'Amount Disbursed',
         subtitle: ' ',
-        value: statsPayout?.payoutStats?.amountDisbursed || 'N/A',
+        value: `Rs. ${statsPayout?.payoutStats?.amountDisbursed}` || 'N/A',
       },
       {
         label: 'No. of Tokens Disbursed',
@@ -47,7 +47,7 @@ export default function PayoutView() {
       {
         label: 'Project Balance',
         subtitle: ' ',
-        value: statsPayout?.payoutStats?.projectBalance || 'N/A',
+        value: `Rs. ${statsPayout?.payoutStats?.projectBalance}` || 'N/A',
       },
 
       {
@@ -73,8 +73,9 @@ export default function PayoutView() {
               handleClick={() => {
                 route.push(`/projects/aa/${projectID}/payout/initiate-payout`);
               }}
-              name="Initiate Payment"
+              name="Create Payout"
               variant="default"
+              payout-main-bug-refactor
             />
           </RoleAuth>
         </div>

@@ -131,7 +131,7 @@ export default function TriggerStatementDetail() {
           <Heading
             title={trigger?.title}
             titleStyle="text-lg/7"
-            description=""
+            description={trigger?.description}
           />
           <div
             className={`grid ${

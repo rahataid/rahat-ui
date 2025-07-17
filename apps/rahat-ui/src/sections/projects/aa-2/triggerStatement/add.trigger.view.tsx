@@ -52,7 +52,6 @@ export default function AddTriggerView() {
     title: z.string().min(2, { message: 'Please enter trigger title' }),
     description: z.string().optional(),
     isMandatory: z.boolean().optional(),
-    notes: z.string().optional(),
   });
 
   const manualForm = useForm<z.infer<typeof ManualFormSchema>>({
@@ -73,7 +72,6 @@ export default function AddTriggerView() {
       minLeadTimeDays: z.string().optional(),
       maxLeadTimeDays: z.string().optional(),
       probability: z.string().optional(),
-      notes: z.string().optional(),
       warningLevel: z.string().optional(),
       dangerLevel: z.string().optional(),
       forecast: z.string().optional(),

@@ -161,7 +161,7 @@ export default function BeneficiaryView({
           </div>
           <ElkenyaTable
             table={table}
-            tableHeight="h-[calc(100vh-571px)]"
+            tableHeight="h-[calc(100vh-500px)]"
             loading={isFetching}
           />
         </div>

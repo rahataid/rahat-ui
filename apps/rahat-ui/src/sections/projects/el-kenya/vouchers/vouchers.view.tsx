@@ -240,7 +240,11 @@ export default function VouchersView() {
               <p className="text-md font-medium mb-4">Total Vouchers</p>
               <div className="flex justify-center">
                 <ChartColumnStacked
-                  series={stackedColumnData?.series}
+                  series={stackedColumnData?.series.map((series: any) =>
+                    series.name === 'SINGLE_VISION'
+                      ? { ...series, name: 'Ready to Clip (R2C)' }
+                      : series,
+                  )}
                   categories={stackedColumnData?.categories as string[]}
                   stacked
                   custom

@@ -47,10 +47,19 @@ export const useElkenyaBeneficiaryTableColumns = ({
       accessorKey: 'voucherType',
       header: 'Voucher Type',
       cell: ({ row }) => {
+        const labelMap: Record<string, string> = {
+          SINGLE_VISION: 'Ready to Clip (R2C)',
+          READING_GLASSES: 'Reading Glasses',
+        };
+
         const voucherType = row.getValue('voucherType');
         const colors = getDynamicColor(voucherType as string);
         return (
-          <Badge className={colors}>{(voucherType as string) || 'N/A'}</Badge>
+          <Badge className={colors}>
+            {labelMap[voucherType as string] ||
+              (voucherType as string) ||
+              'N/A'}
+          </Badge>
         );
       },
     },

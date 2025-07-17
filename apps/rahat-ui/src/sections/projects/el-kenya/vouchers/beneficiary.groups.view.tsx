@@ -168,7 +168,7 @@ export default function BeneficiaryGroupsView({
             <p>Select all</p>
           </div>
         ) : null}
-        <ScrollArea className="h-[calc(100vh-554px)]">
+        <ScrollArea className="h-[calc(100vh-480px)]">
           {isFetching ? (
             <TableLoader />
           ) : paginatedGroups?.length > 0 ? (

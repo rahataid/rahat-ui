@@ -36,19 +36,17 @@ export default function Confirmation() {
     },
     {
       label: 'Token Assigned Per Beneficiary',
-      value: reserveTokenPayload.numberOfTokens,
+      value: reserveTokenPayload.tokenAmountPerBenef,
     },
     {
       label: 'Total Token Amount',
-      value:
-        group?.data?.groupedBeneficiaries.length *
-        reserveTokenPayload.numberOfTokens,
+      value: reserveTokenPayload.numberOfTokens,
     },
   ];
 
   const benefData = group?.data?.groupedBeneficiaries.map((i: any) => ({
     label: truncatedText(i.Beneficiary.walletAddress, 10),
-    value: reserveTokenPayload.numberOfTokens,
+    value: reserveTokenPayload.tokenAmountPerBenef,
   }));
 
   const handleSubmit = async () => {
@@ -59,6 +57,7 @@ export default function Confirmation() {
         reserveTokenPayload,
       });
       router.push(`/projects/aa/${projectUUID}/fund-management`);
+      console.log(reserveTokenPayload);
     } catch (e) {
       console.error('Creating reserve token::', e);
     }

@@ -1,5 +1,6 @@
 'use client';
 
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import dynamic from 'next/dynamic';
 
 const ConfigureThreshold = dynamic(
@@ -13,5 +14,9 @@ const ConfigureThreshold = dynamic(
 );
 
 export default function Page() {
-  return <ConfigureThreshold />;
+  return (
+    <RoleAuth roles={[AARoles.ADMIN]}>
+      <ConfigureThreshold />
+    </RoleAuth>
+  );
 }

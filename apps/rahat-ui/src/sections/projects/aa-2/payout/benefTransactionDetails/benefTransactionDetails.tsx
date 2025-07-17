@@ -19,6 +19,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import InfoItem from './infoItem';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useCallback } from 'react';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function BeneficiaryTransactionLogDetails() {
   const { id, uuid } = useParams();
@@ -50,16 +51,17 @@ export default function BeneficiaryTransactionLogDetails() {
           subtitle="Detaild view of the selected payout transaction log"
           title="Transaction Log Details"
         />
-
-        <Button
-          className={`gap-2 text-sm ${
-            !isPayoutTransactionFailed(data?.data?.status) && 'hidden'
-          }`}
-          onClick={handleTriggerSinglePayoutFailed}
-        >
-          <RotateCcw className="w-4 h-4" />
-          Retry
-        </Button>
+        <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+          <Button
+            className={`gap-2 text-sm ${
+              !isPayoutTransactionFailed(data?.data?.status) && 'hidden'
+            }`}
+            onClick={handleTriggerSinglePayoutFailed}
+          >
+            <RotateCcw className="w-4 h-4" />
+            Retry
+          </Button>
+        </RoleAuth>
       </div>
       <DataCard
         title="Token Assigned"
@@ -100,15 +102,23 @@ export default function BeneficiaryTransactionLogDetails() {
                   .join(' ')}
               </Badge>
             </InfoItem>
-            <InfoItem
-              label="Transaction Type"
-              value={data?.data?.transactionType}
-            />
-            <InfoItem label="Payout Type" value={data?.data?.payout?.type} />
-            <InfoItem
-              label="Payout Mode"
-              value={data?.data?.payout?.extras?.paymentProviderName}
-            />
+            <InfoItem label="Transaction Type">
+              <Badge className="text-muted-foreground">
+                {data?.data?.transactionType.split('_').join(' ')}
+              </Badge>
+            </InfoItem>
+            <InfoItem label="Payout Type">
+              <Badge className="text-muted-foreground">
+                {data?.data?.payout?.type.split('_').join(' ')}
+              </Badge>
+            </InfoItem>
+            <InfoItem label="Payout Mode">
+              <Badge className="text-muted-foreground">
+                {data?.data?.payout?.extras?.paymentProviderName
+                  .split('_')
+                  .join(' ')}
+              </Badge>
+            </InfoItem>
             <InfoItem
               label="Bank Name"
               value={data?.data?.Beneficiary?.extras?.bank_name}
@@ -131,7 +141,13 @@ export default function BeneficiaryTransactionLogDetails() {
               label="No. of Attempts"
               value={data?.data?.info?.numberOfAttempts}
             />
-            <InfoItem label="Message" value={data?.data?.info?.message} />
+            {data?.data?.info?.error && (
+              <InfoItem
+                label="Message"
+                value={data?.data?.info?.error}
+                failed
+              />
+            )}
           </div>
         </CardContent>
       </Card>

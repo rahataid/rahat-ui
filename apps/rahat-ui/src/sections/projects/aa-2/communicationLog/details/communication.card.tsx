@@ -122,6 +122,7 @@ export function CommunicationDetailCard({
 
     XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
   };
+  console.log(activityCommunication?.sessionStatus);
   return (
     <Card className="rounded-sm pb-0 flex flex-col justify-between">
       <CardHeader className="pb-2">
@@ -139,7 +140,7 @@ export function CommunicationDetailCard({
             <div className="mt-1 flex items-center gap-2 text-sm text-gray-500">
               <span> {activityCommunication?.transportName}</span>
               <span>•</span>
-              <span>{activityCommunication?.groupType}</span>
+              <span>s{activityCommunication?.groupType}</span>
               <span>•</span>
               <Badge
                 className={`ml-1 text-xs font-normal ${
@@ -147,7 +148,9 @@ export function CommunicationDetailCard({
                     ? 'text-red-400 bg-yellow-100'
                     : activityCommunication?.sessionStatus === 'COMPLETED'
                     ? 'text-green-700 bg-green-200'
-                    : 'text-red-700 bg-red-200'
+                    : activityCommunication.sessionStatus === 'FAILED'
+                    ? 'text-red-700 bg-red-200'
+                    : 'bg-gray-200'
                 }`}
               >
                 {activityCommunication?.sessionStatus.charAt(0).toUpperCase() +
@@ -195,6 +198,7 @@ export function CommunicationDetailCard({
             variant="outline"
             className="flex-1 gap-2 text-blue-600 border-blue-200"
             onClick={onViewDetails}
+            disabled={activityCommunication?.sessionStatus === 'NEW'}
           >
             View Details
             <ArrowRight className="h-4 w-4" />

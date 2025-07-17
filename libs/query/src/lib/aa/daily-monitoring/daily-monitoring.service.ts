@@ -80,6 +80,46 @@ export const useDailyMonitoring = (uuid: UUID, payload: any) => {
   return query;
 };
 
+export const useGaugeReading = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['gaugeReading', uuid, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.dailyMonitoring.getGaugeReading',
+          payload: {},
+        },
+      });
+      return mutate.response;
+    },
+  });
+  return query;
+};
+
+export const useGaugeForecast = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['gaugeForecast', uuid, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.dailyMonitoring.getGaugeForecast',
+          payload: {
+            ...payload,
+          },
+        },
+      });
+      return mutate.response;
+    },
+  });
+  return query;
+};
+
 export const useSingleMonitoring = (uuid: UUID, monitoringId: UUID) => {
   const q = useProjectAction();
 

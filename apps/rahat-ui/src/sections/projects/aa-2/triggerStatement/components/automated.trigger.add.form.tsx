@@ -27,7 +27,6 @@ type IProps = {
     minLeadTimeDays?: string;
     maxLeadTimeDays?: string;
     probability?: string;
-    notes?: string;
     warningLevel?: string;
     dangerLevel?: string;
     forecast?: string;

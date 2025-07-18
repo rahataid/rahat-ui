@@ -263,7 +263,7 @@ export default function GroupDetailView() {
               <Trash2Icon className="w-4 h-4" />
               Delete Group
             </Button>
-            {group?.data?.isGroupValidForAA && (
+            {(group?.data?.isGroupValidForAA || !groupPurposeName) && (
               <Button
                 variant={'outline'}
                 className="border-blue-500 text-blue-500 gap-2 rounded-sm"

@@ -14,12 +14,14 @@ type Props = {
   colors?: string[];
   xaxisLabels?: boolean;
   yaxisLabels?: boolean;
-  barHeight?: number;
+  barHeight?: number | string | undefined;
   categories?: any;
   series?: any;
   communityTool?: boolean;
   custom?: boolean;
   title?: string;
+  xaxisTitle?: string;
+  yaxisTitle?: string;
 };
 
 export default function ChartBar({
@@ -37,25 +39,35 @@ export default function ChartBar({
   communityTool = false,
   custom = false,
   title = '',
+  xaxisTitle = ' ',
+  yaxisTitle = ' ',
 }: Props) {
   const chartOptions = useChart({
     colors,
     stroke: { show: false },
     chart: {
       type: 'bar',
-      height: 500,
+      height: '100%',
     },
 
     plotOptions: {
       bar: {
         horizontal: horizontal,
         barHeight: barHeight,
-        columnWidth: '50px',
+        columnWidth: '50%',
         borderRadius: 4,
         borderRadiusApplication: 'end',
       },
     },
+
     xaxis: {
+      title: {
+        text: xaxisTitle,
+        style: {
+          fontSize: '12px',
+          fontWeight: 600,
+        },
+      },
       categories: communityTool ? ctCategories : categories,
       labels: {
         show:
@@ -83,6 +95,13 @@ export default function ChartBar({
       },
     },
     yaxis: {
+      title: {
+        text: yaxisTitle,
+        style: {
+          fontSize: '12px',
+          fontWeight: 600,
+        },
+      },
       labels: {
         show:
           (ctCategories?.length > 0 ? yaxisLabels : false) ||

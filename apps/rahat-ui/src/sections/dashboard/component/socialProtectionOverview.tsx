@@ -34,7 +34,7 @@ const SocialProtectionOverview = () => {
       </div>
 
       <div className="border rounded-sm p-2 flex flex-col w-full h-full min-h-[300px] col-span-1 lg:col-span-2 ">
-        <h1 className="text-lg font-medium">
+        <h1 className="text-sm font-medium">
           Household Receiving Social Protection Benefits
         </h1>
         <div className="flex-1 p-2">

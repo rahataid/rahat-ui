@@ -29,7 +29,7 @@ const AccessAndResilienceOverview = () => {
   return (
     <div className="grid grid-cols-1 md:lg:grid-cols-2 lg:grid-cols-4 gap-2 mt-2">
       <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px] col-span-1">
-        <h1 className="text-lg font-medium">Bank Account Access </h1>
+        <h1 className="text-sm font-medium">Bank Account Access </h1>
         <div className="w-full flex-1 p-4 pt-0">
           <PieChart
             chart={{
@@ -49,7 +49,7 @@ const AccessAndResilienceOverview = () => {
         </div>
       </div>
       <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px] col-span-1">
-        <h1 className="text-lg font-medium">
+        <h1 className="text-sm font-medium">
           Social Security Linked to Bank Account
         </h1>
         <div className="w-full flex-1 p-4 pt-0">
@@ -71,7 +71,7 @@ const AccessAndResilienceOverview = () => {
         </div>
       </div>
       <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px] col-span-1 lg:col-span-2">
-        <h1 className="text-lg font-medium">Bank Account</h1>
+        <h1 className="text-sm font-medium">Bank Account</h1>
 
         <div className="flex-1 overflow-y-auto max-h-[250px] p-2 scrollbar-hidden">
           <BarChart
@@ -89,7 +89,7 @@ const AccessAndResilienceOverview = () => {
       </div>
 
       <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px] col-span-1">
-        <h1 className="text-lg font-medium">Flood Impact in Last 5 Years</h1>
+        <h1 className="text-sm font-medium">Flood Impact in Last 5 Years</h1>
         <div className="w-full flex-1 p-4 pt-0">
           <PieChart
             chart={{
@@ -109,7 +109,7 @@ const AccessAndResilienceOverview = () => {
         </div>
       </div>
       <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px] col-span-1">
-        <h1 className="text-lg font-medium">
+        <h1 className="text-sm font-medium">
           Access To Early Warning Information
         </h1>
         <div className="w-full flex-1 p-4 pt-0">
@@ -132,7 +132,7 @@ const AccessAndResilienceOverview = () => {
         </div>
       </div>
       <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px] cols-span-1 lg:col-span-2">
-        <h1 className="text-lg font-medium">Information Channel Used</h1>
+        <h1 className="text-sm font-medium">Information Channel Used</h1>
         <div className="flex-1 p-2">
           <BarChart
             series={informationChannelsUsed.map((item) => item.beneficiaries)}

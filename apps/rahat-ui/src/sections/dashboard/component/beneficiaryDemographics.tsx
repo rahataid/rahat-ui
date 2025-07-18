@@ -25,7 +25,7 @@ const BeneficiaryDemographics = () => {
 
         {/* Pie Chart */}
         <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
-          <h1 className="text-lg font-medium">Gender Distribution</h1>
+          <h1 className="text-sm font-medium">Gender Distribution</h1>
           <div className="w-full flex-1 p-4 pt-0">
             <PieChart
               chart={{
@@ -49,7 +49,7 @@ const BeneficiaryDemographics = () => {
 
         {/* Bar Chart */}
         <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
-          <h1 className="text-lg font-medium">Payout Type</h1>
+          <h1 className="text-sm font-medium">Payout Type</h1>
           <div className="flex-1 p-2">
             <BarChart
               series={vulnerableStatusStats.map((item) => item.value)}

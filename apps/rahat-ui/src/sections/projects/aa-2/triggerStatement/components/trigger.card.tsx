@@ -7,6 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 type IProps = {
   projectId: string;
   triggerId: string;
@@ -99,7 +100,7 @@ export default function TriggerCard({
           riverBasin,
         )}`}
       </p>
-      <p className="text-muted-foreground text-sm/4">{time}</p>
+      <p className="text-muted-foreground text-sm/4">{dateFormat(time)}</p>
     </div>
   );
 }

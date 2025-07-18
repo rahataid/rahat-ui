@@ -1,3 +1,4 @@
+'use client';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
@@ -7,6 +8,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import {
+  CheckIcon,
   Copy,
   CopyCheck,
   Eye,
@@ -17,12 +19,16 @@ import {
   usePaymentProviders,
   useTriggerForOnePayoutFailed,
 } from '@rahat-ui/query';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { transactionBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
+import {
+  PayoutTransactionStatus,
+  transactionBgStatus,
+} from 'apps/rahat-ui/src/utils/get-status-bg';
 import { intlFormatDate } from 'apps/rahat-ui/src/utils';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 function getTransactionStatusColor(status: string) {
   switch (status.toLowerCase()) {
     case 'completed':
@@ -36,23 +42,42 @@ function getTransactionStatusColor(status: string) {
   }
 }
 
-export default function useBeneficiaryGroupDetailsLogColumns() {
+const editableStatuses = [
+  PayoutTransactionStatus.FIAT_TRANSACTION_INITIATED,
+  PayoutTransactionStatus.PENDING,
+  PayoutTransactionStatus.TOKEN_TRANSACTION_INITIATED,
+] as const;
+export default function useBeneficiaryGroupDetailsLogColumns(
+  payoutType: string,
+) {
   const { id, detailID } = useParams();
   const router = useRouter();
   const triggerForPayoutFailed = useTriggerForOnePayoutFailed();
+  const [pendingUuid, setPendingUuid] = useState<string | null>(null);
+
   const fspName = usePaymentProviders({ projectUUID: id as UUID });
   const { clickToCopy, copyAction } = useCopy();
+
   const handleTriggerSinglePayoutFailed = useCallback(
     async (uuid: string) => {
-      triggerForPayoutFailed.mutateAsync({
-        projectUUID: id as UUID,
-        payload: {
-          beneficiaryRedeemUuid: uuid,
-        },
-      });
+      setPendingUuid(uuid); // Start tracking this row
+      try {
+        await triggerForPayoutFailed.mutateAsync({
+          projectUUID: id as UUID,
+          payload: {
+            beneficiaryRedeemUuid: uuid,
+          },
+        });
+        setPendingUuid(null); // Clear after it's done
+      } catch (error) {
+        console.error(error);
+      }
     },
-    [triggerForPayoutFailed],
+    [triggerForPayoutFailed, id],
   );
+
+  console.log(fspName);
+
   const handleEyeClick = (uuid: any) => {
     router.push(
       `/projects/aa/${id}/payout/transaction-details/${uuid}?groupId=${detailID}`,
@@ -117,28 +142,28 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
         );
       },
     },
-    {
-      accessorKey: 'txHash',
-      header: 'Transaction Hash',
-      cell: ({ row }) => {
-        return (
-          <div>
-            {row?.original?.txHash ? (
-              <a
-                href={`https://stellar.expert/explorer/testnet/tx/${row?.original?.txHash}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-base text-blue-500 hover:underline cursor-pointer"
-              >
-                <p className="truncate w-20">{row?.original?.txHash}</p>
-              </a>
-            ) : (
-              'N/A'
-            )}
-          </div>
-        );
-      },
-    },
+    // {
+    //   accessorKey: 'txHash',
+    //   header: 'Transaction Hash',
+    //   cell: ({ row }) => {
+    //     return (
+    //       <div>
+    //         {row?.original?.txHash ? (
+    //           <a
+    //             href={`https://stellar.expert/explorer/testnet/tx/${row?.original?.txHash}`}
+    //             target="_blank"
+    //             rel="noopener noreferrer"
+    //             className="text-base text-blue-500 hover:underline cursor-pointer"
+    //           >
+    //             <p className="truncate w-20">{row?.original?.txHash}</p>
+    //           </a>
+    //         ) : (
+    //           'N/A'
+    //         )}
+    //       </div>
+    //     );
+    //   },
+    // },
 
     {
       accessorKey: 'transactionType',
@@ -165,18 +190,18 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
       header: 'Tokens Assigned',
       cell: ({ row }) => <div>{row.original?.amount}</div>,
     },
-    {
-      accessorKey: 'fspId',
-      header: 'FSP',
-      cell: ({ row }) => (
-        <div>
-          {fspName.data?.find((a) => a.id === row.original.fspId)?.name}
-        </div>
-      ),
-    },
+    // {
+    //   accessorKey: 'fspId',
+    //   header: 'FSP',
+    //   cell: ({ row }) => (
+    //     <div>
+    //       {fspName.data?.find((a) => a.id === row.original.fspId)?.name}
+    //     </div>
+    //   ),
+    // },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: 'Payout Status',
       cell: ({ row }) => {
         const status = row?.original?.status;
         return (
@@ -206,47 +231,64 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
       header: 'Actions',
       enableHiding: false,
       cell: ({ row }) => {
+        console.log('row', row);
         return (
           <div className="flex items-center space-x-2">
-            {row.original?.isCompleted === false && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild className="hover:cursor-pointer py-0">
-                    <TriangleAlertIcon
-                      className="w-6 h-6 xl:w-4 xl:h-4  text-red-500"
-                      strokeWidth={2.5}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="left"
-                    className="w-96 rounded-sm p-4 max-h-60 overflow-auto"
-                  >
-                    <div className="flex space-x-2 items-center">
+            {row.original?.isCompleted === false &&
+              !editableStatuses.includes(row.original.status) && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger
+                      asChild
+                      className="hover:cursor-pointer py-0"
+                    >
                       <TriangleAlertIcon
-                        size={16}
-                        strokeWidth={1.5}
-                        color="red"
+                        className="w-6 h-6 xl:w-4 xl:h-4  text-red-500"
+                        strokeWidth={2.5}
                       />
-                      <span className="font-semibold text-sm/6">
-                        Transaction Failed
-                      </span>
-                    </div>
-                    <p className="text-gray-500 text-sm mt-1 break-words">
-                      {row.original?.info?.error ?? 'Something went wrong!!'}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-            {row.original?.isCompleted === false && (
-              <RotateCcwIcon
-                className="w-6 h-6 xl:w-4 xl:h-4  text-blue-400 cursor-pointer"
-                strokeWidth={2.5}
-                onClick={() =>
-                  handleTriggerSinglePayoutFailed(row.original.uuid)
-                }
-              />
-            )}
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="left"
+                      className="w-96 rounded-sm p-4 max-h-60 overflow-auto"
+                    >
+                      <div className="flex space-x-2 items-center">
+                        <TriangleAlertIcon
+                          size={16}
+                          strokeWidth={1.5}
+                          color="red"
+                        />
+                        <span className="font-semibold text-sm/6">
+                          Transaction Failed
+                        </span>
+                      </div>
+                      <p className="text-gray-500 text-sm mt-1 break-words">
+                        {row.original?.info?.error ?? 'Something went wrong!!'}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+
+            {row.original?.isCompleted === false &&
+              payoutType === 'FSP' &&
+              !editableStatuses.includes(row.original.status) &&
+              (pendingUuid === row.original.uuid ? (
+                <CheckIcon
+                  className="w-6 h-6 xl:w-4 xl:h-4 text-green-500"
+                  strokeWidth={2.5}
+                />
+              ) : (
+                <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+                  <RotateCcwIcon
+                    className="w-6 h-6 xl:w-4 xl:h-4 text-blue-400 cursor-pointer"
+                    strokeWidth={2.5}
+                    onClick={() =>
+                      handleTriggerSinglePayoutFailed(row.original.uuid)
+                    }
+                  />
+                </RoleAuth>
+              ))}
+
             <Eye
               className="hover:text-primary cursor-pointer"
               size={20}

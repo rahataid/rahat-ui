@@ -36,6 +36,7 @@ import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
+
 const { NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED } = ACTIVITY_STATUS;
 const statusList = [NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED];
 
@@ -95,16 +96,6 @@ export default function UpdateStatus() {
       activityDocuments: [],
     },
   });
-
-  // useEffect(() => {
-  //   if (activityDetail) {
-  //     form.reset({
-  //       status: activityDetail.status || '',
-  //       notes: activityDetail.notes ?? '',
-  //       activityDocuments: activityDetail.activityDocuments || [],
-  //     });
-  //   }
-  // }, [activityDetail, form]);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -179,11 +170,17 @@ export default function UpdateStatus() {
         'activityDocuments',
         activityDetail.activityDocuments ?? [],
       );
-      // form.trigger('status');
     }
   }, [activityDetail, form]);
 
-  // console.log(activityDetail);
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <LoaderCircle size={32} className="text-primary animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className=" mx-auto p-4 md:p-6">
       <div className="flex flex-col space-y-0">

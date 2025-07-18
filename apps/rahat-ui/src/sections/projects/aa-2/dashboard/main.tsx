@@ -4,7 +4,15 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
 import { DataCard, Heading } from 'apps/rahat-ui/src/common';
-import { ChevronLeft, ChevronRight, Home, Users } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Home,
+  Icon,
+  User2Icon,
+  Users,
+  Users2Icon,
+} from 'lucide-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { CarouselDemo } from '../../components/carousel.demo';
@@ -30,12 +38,12 @@ const Main = () => {
 
   const stats = [
     {
-      icon: Users,
+      icon: <Users className="w-5 h-5 text-muted-foreground" />,
       label: 'Total Respondents',
       value: '250',
     },
     {
-      icon: Home,
+      icon: <Home className="w-5 h-5 text-muted-foreground" />,
       label: 'Total no. of Family Members',
       value: '300',
     },
@@ -72,8 +80,8 @@ const Main = () => {
         description="Overview of your system"
         titleStyle={'text-xl xl:text-3xl'}
       />
-      <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-start">
-        <div className="space-y-6 col-span-1 lg:col-span-1 ">
+      <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-start lg:h-5">
+        <div className="space-y-6 col-span-1 h-full">
           <div>
             <h1 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 mb-4">
               Project Name Goes Here
@@ -86,15 +94,22 @@ const Main = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 lg:gap-6">
-            {stats.map((stat, index) => (
-              <DataCard
-                title={stat.label}
-                Icon={stat.icon}
-                className="rounded-sm h-auto"
-                number={stat.value}
-                key={stat.label}
-              />
-            ))}
+            {stats.map((stat) => {
+              return (
+                <div className="flex items-center gap-6 py-8 " key={stat.label}>
+                  <div className="relative rounded-full p-3 bg-gray-100">
+                    {stat.icon}
+                  </div>
+
+                  <div className=" flex flex-col">
+                    <h3 className="text-base text-muted-foreground">
+                      {stat.label}
+                    </h3>
+                    <h2 className="text-xl font-bold">{stat.value}</h2>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -128,7 +143,7 @@ const Main = () => {
           </div>
         </div>
 
-        <div className="relative order-first lg:order-last col-span-1">
+        <div className="relative order-first lg:order-last col-span-1 h-full">
           <CarouselDemo />
         </div>
       </div>

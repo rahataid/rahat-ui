@@ -209,7 +209,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           <DataCard
             title="Payout Type"
             Icon={Ticket}
-            smallNumber={payout?.type}
+            smallNumber={payout?.type === 'VENDOR' ? 'CVA' : payout?.type}
             className="rounded-sm h-28"
             badge
           />

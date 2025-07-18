@@ -41,6 +41,7 @@ import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
+import LoaderRahat from 'apps/rahat-ui/src/components/LoaderRahat';
 
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
@@ -113,7 +114,7 @@ export default function GroupDetailView() {
 
   const groupPurposeName = React.useMemo(() => {
     return group?.data?.groupPurpose
-      ? group?.data?.groupPurpose.split('_')[1]
+      ? group?.data?.groupPurpose.split('_')[0]
       : '';
   }, [group?.data?.groupPurpose]);
 
@@ -148,7 +149,7 @@ export default function GroupDetailView() {
   }, []);
 
   return isLoading ? (
-    <TableLoader />
+    <LoaderRahat />
   ) : (
     <>
       <RemoveBenfGroupModal

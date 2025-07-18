@@ -22,7 +22,7 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
           onClick={() => route.push(`/projects/aa/${id}/payout/list`)}
           disabled={!payouts?.length}
         >
-          View all Transactions
+          View all Payout List
           <ArrowRight className="ml-1" size={14} strokeWidth={1.5} />
         </Button>
       </div>
@@ -41,7 +41,7 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
                   item?.beneficiaryGroupToken?.beneficiaryGroup?._count
                     ?.beneficiaries
                 }
-                dateTime={new Date(item?.updatedAt)?.toLocaleString()}
+                dateTime={item?.updatedAt}
                 onView={() =>
                   route.push(`/projects/aa/${id}/payout/details/${item?.uuid}`)
                 }

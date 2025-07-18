@@ -27,19 +27,19 @@ type IProps = {
     minLeadTimeDays?: string;
     maxLeadTimeDays?: string;
     probability?: string;
-    notes?: string;
     warningLevel?: string;
     dangerLevel?: string;
     forecast?: string;
     daysToConsiderPrior?: string;
     forecastStatus?: string;
+    description?: string;
   }>;
   phase: any;
 };
 
 export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
   const source = form.watch('source') || ' ';
-  console.log(source);
+
   return (
     <>
       <Form {...form}>
@@ -307,14 +307,14 @@ export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
             )}
             <FormField
               control={form.control}
-              name="notes"
+              name="description"
               render={({ field }) => {
                 return (
                   <FormItem className="col-span-2">
-                    <FormLabel>Trigger Notes</FormLabel>
+                    <FormLabel>Trigger description</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Write trigger notes here"
+                        placeholder="Write trigger description here"
                         {...field}
                       />
                     </FormControl>

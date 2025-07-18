@@ -18,7 +18,7 @@ export const PayoutTransactionFailedStatuses = [
 
 export const getStatusBg = (status: string) => {
   if (status === 'NOT_STARTED') {
-    return 'bg-red-200';
+    return 'bg-gray-200';
   }
 
   if (status === 'WORK_IN_PROGRESS') {
@@ -33,14 +33,20 @@ export const getStatusBg = (status: string) => {
     return 'bg-gray-200';
   }
 
-  return '';
+  return 'bg-red-200';
 };
 
-export const isCompleteBgStatus = (isComplete: boolean) => {
-  if (isComplete) {
+export const isCompleteBgStatus = (status: string) => {
+  if (status === 'COMPLETED') {
     return 'text-green-500 bg-green-100';
   }
-  return 'text-red-500 bg-red-100';
+  if (status === 'FAILED') {
+    return 'text-red-500 bg-red-100';
+  }
+  if (status === 'PENDING') {
+    return 'text-yellow-500 bg-yellow-100';
+  }
+  return 'text-blue-500 bg-gray-100';
 };
 
 export const transactionBgStatus = (

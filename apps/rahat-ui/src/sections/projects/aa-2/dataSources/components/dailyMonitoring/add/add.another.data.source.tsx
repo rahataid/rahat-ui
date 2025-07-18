@@ -34,11 +34,21 @@ export default function AddAnotherDataSource({
     rainfallForecastSelectItems,
     rainfallSelectItems,
     floodForecastSelectItems,
-    gauageReadingStationSelectItems,
+    gaugeReadingRainfallStationItems,
+    gaugeReadingRiverStationItems,
     possibility,
+    gaugeForecastDataSourceSelectItems,
   } = useSelectItems();
 
   const selectedDataSourceObjArray = form.watch('dataSource');
+  const selectedGaugeForecast = useWatch({
+    control: form.control,
+    name: fieldName('gaugeForecast'),
+  });
+  const gaugeReadingOptions =
+    selectedGaugeForecast === 'rainfallWatch'
+      ? gaugeReadingRainfallStationItems
+      : gaugeReadingRiverStationItems;
 
   const selectedSourceStringArray = selectedDataSourceObjArray?.map(
     (obj: any) => obj.source,
@@ -192,17 +202,37 @@ export default function AddAnotherDataSource({
           <>
             <SelectFormField
               form={form}
-              name={fieldName('station')}
-              label="Station"
-              placeholder="Select station"
-              selectItems={gauageReadingStationSelectItems}
+              name={fieldName('gaugeForecast')}
+              label="Forecast"
+              placeholder="Select forecast"
+              selectItems={gaugeForecastDataSourceSelectItems}
             />
-            <InputFormField
-              form={form}
-              name={fieldName('gaugeReading')}
-              label="Gauge Reading (mm)"
-              placeholder="Enter gauge reading"
-            />
+            {selectedGaugeForecast && (
+              <>
+                <SelectFormField
+                  key={`station-${selectedGaugeForecast}`}
+                  form={form}
+                  name={fieldName('station')}
+                  label="Station"
+                  placeholder={
+                    selectedGaugeForecast === 'riverWatch'
+                      ? 'Select River Station'
+                      : selectedGaugeForecast === 'rainfallWatch'
+                      ? 'Select Rainfall Station'
+                      : 'Select Station'
+                  }
+                  selectItems={gaugeReadingOptions}
+                />
+                <InputFormField
+                  form={form}
+                  name={fieldName('gaugeReading')}
+                  label={`Gauge Reading ${
+                    selectedGaugeForecast === 'riverWatch' ? '(m)' : '(mm)'
+                  }`}
+                  placeholder="Enter Gauge Reading"
+                />
+              </>
+            )}
           </>
         );
         break;
@@ -335,6 +365,11 @@ export default function AddAnotherDataSource({
     }
     return fields;
   };
+
+  useEffect(() => {
+    form.setValue(fieldName('station'), '');
+    form.setValue(fieldName('gaugeReading'), '');
+  }, [selectedGaugeForecast]);
 
   return (
     <div className="border border-dashed rounded-sm p-4 my-8">

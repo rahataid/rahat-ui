@@ -11,6 +11,7 @@ import { Pagination } from '@rumsan/sdk/types';
 export enum PayoutType {
   FSP = 'FSP',
   VENDOR = 'VENDOR',
+  CVA = 'CVA',
 }
 
 export enum PayoutMode {
@@ -23,7 +24,7 @@ interface Payout {
   perPage?: number;
   type?: PayoutType;
   mode?: PayoutMode;
-  status?: string;
+  payoutType?: string;
   groupName?: string;
   payoutProcessorId?: string;
 }
@@ -100,6 +101,24 @@ export const usePayouts = (projectUUID: UUID, payload: Payout) => {
   return query;
 };
 
+export const usePayoutStats = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['payout-stats', projectUUID],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.jobs.payout.getPayoutStats',
+          payload: {},
+        },
+      });
+      return mutate.data;
+    },
+  });
+  return query;
+};
 export const useSinglePayout = (projectUUID: UUID, payload: { uuid: UUID }) => {
   const q = useProjectAction();
 

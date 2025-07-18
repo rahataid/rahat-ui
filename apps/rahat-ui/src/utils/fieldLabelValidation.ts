@@ -29,4 +29,5 @@ export const fieldLabels: Record<string, string> = {
   status: 'Status',
   gaugeReading: 'Gauge Reading',
   station: 'Station Name',
+  gaugeForecast: 'Gauge Forecast',
 };

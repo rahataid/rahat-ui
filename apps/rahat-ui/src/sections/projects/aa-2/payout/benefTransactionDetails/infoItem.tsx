@@ -8,6 +8,7 @@ export default function InfoItem({
   link = false,
   copyable = false, // ⬅️ New prop to control copyability
   isLoading,
+  failed = false,
 }: {
   label: string;
   value?: string;
@@ -15,6 +16,7 @@ export default function InfoItem({
   link?: boolean;
   copyable?: boolean;
   isLoading?: boolean;
+  failed?: boolean;
 }) {
   const { clickToCopy, copyAction } = useCopy();
 
@@ -34,7 +36,11 @@ export default function InfoItem({
                 {value}
               </a>
             ) : (
-              <span className={`text-base ${copyable ? 'truncate w-24' : ''}`}>
+              <span
+                className={`text-base ${failed && 'text-red-400'} ${
+                  copyable ? 'truncate w-24' : ''
+                }`}
+              >
                 {value}
               </span>
             )}

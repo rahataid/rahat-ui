@@ -18,13 +18,14 @@ export type PaymentDialogProps = {
 };
 export function PaymentDialog({ formState, handleSubmit }: PaymentDialogProps) {
   const [open, setOpen] = useState(false);
-
+  console.log(formState?.group?.groupedBeneficiaries.length === 0);
   return (
     <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
       <Button
         className="rounded-sm w-48"
         disabled={
           !formState.method ||
+          formState?.group?.groupedBeneficiaries?.length === 0 ||
           Object.keys(formState.group).length === 0 ||
           (formState.method === 'FSP' &&
             Object.keys(formState.paymentProvider).length === 0) ||

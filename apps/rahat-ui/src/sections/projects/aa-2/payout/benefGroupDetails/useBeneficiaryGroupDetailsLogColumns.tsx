@@ -47,7 +47,9 @@ const editableStatuses = [
   PayoutTransactionStatus.PENDING,
   PayoutTransactionStatus.TOKEN_TRANSACTION_INITIATED,
 ] as const;
-export default function useBeneficiaryGroupDetailsLogColumns() {
+export default function useBeneficiaryGroupDetailsLogColumns(
+  payoutType: string,
+) {
   const { id, detailID } = useParams();
   const router = useRouter();
   const triggerForPayoutFailed = useTriggerForOnePayoutFailed();
@@ -74,7 +76,7 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
     [triggerForPayoutFailed, id],
   );
 
-  // console.log(triggerForPayoutFailed.isPending);
+  console.log(fspName);
 
   const handleEyeClick = (uuid: any) => {
     router.push(
@@ -229,6 +231,7 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
       header: 'Actions',
       enableHiding: false,
       cell: ({ row }) => {
+        console.log('row', row);
         return (
           <div className="flex items-center space-x-2">
             {row.original?.isCompleted === false &&
@@ -267,6 +270,7 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
               )}
 
             {row.original?.isCompleted === false &&
+              payoutType === 'FSP' &&
               !editableStatuses.includes(row.original.status) &&
               (pendingUuid === row.original.uuid ? (
                 <CheckIcon

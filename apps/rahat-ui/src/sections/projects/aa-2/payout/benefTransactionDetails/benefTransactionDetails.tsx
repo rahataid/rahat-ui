@@ -112,7 +112,9 @@ export default function BeneficiaryTransactionLogDetails() {
             </InfoItem>
             <InfoItem label="Payout Type">
               <Badge className="text-muted-foreground">
-                {data?.data?.payout?.type.split('_').join(' ')}
+                {data?.data?.payout?.type === 'VENDOR'
+                  ? 'CVA'
+                  : data?.data?.payout?.type}
               </Badge>
             </InfoItem>
             <InfoItem label="Payout Mode">

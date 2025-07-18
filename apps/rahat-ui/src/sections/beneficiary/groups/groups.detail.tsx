@@ -26,15 +26,21 @@ import ClientSidePagination from '../../projects/components/client.side.paginati
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import RemoveBenfGroupModal from './removeGroupModal';
-import ValidateBenefBankAccountByGroupUuid from './validateAccountModal';
+
+const RemoveBenfGroupModal = React.lazy(() => import('./removeGroupModal'));
+const ValidateBenefBankAccountByGroupUuid = React.lazy(
+  () => import('./validateAccountModal'),
+);
+const UpdateGroupProposeModal = React.lazy(() => import('./groupProposeModal'));
+const AssignBeneficiaryToProjectModal = React.lazy(
+  () => import('./assignToProjectModal'),
+);
+
 import * as XLSX from 'xlsx';
-import UpdateGroupProposeModal from './groupProposeModal';
 import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
-import AssignBeneficiaryToProjectModal from './assignToProjectModal';
 
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
@@ -105,10 +111,19 @@ export default function GroupDetailView() {
     },
   });
 
-  const groupPurposeName = group?.data?.groupPurpose?.split('_')[0];
-  const assignedGroupId = group?.data?.beneficiaryGroupProject?.map(
-    (benProject: any) => benProject.Project.id,
-  );
+  const groupPurposeName = React.useMemo(() => {
+    return group?.data?.groupPurpose
+      ? group?.data?.groupPurpose.split('_')[1]
+      : '';
+  }, [group?.data?.groupPurpose]);
+
+  const assignedGroupId = React.useMemo(() => {
+    return (
+      group?.data?.beneficiaryGroupProject?.map(
+        (benProject: any) => benProject.Project.id,
+      ) ?? []
+    );
+  }, [group?.data?.beneficiaryGroupProject]);
 
   const onFailedExports = () => {
     const rowsToDownload = data?.data || [];

@@ -22,6 +22,7 @@ import { CalendarIcon, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import { format } from 'date-fns';
+import ExternalLinks from './components/externalLink/linkContent';
 
 export default function DataSources() {
   const { activeTab, setActiveTab } = useActiveTab('dhm');
@@ -66,6 +67,12 @@ export default function DataSources() {
             >
               Gauge Reading
             </TabsTrigger>
+            <TabsTrigger
+            className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
+            value="externalLinks"
+          >
+            External Links
+          </TabsTrigger>
           </TabsList>
           {activeTab === 'gaugeReading' && (
             <div className="flex items-center">
@@ -120,6 +127,9 @@ export default function DataSources() {
         </TabsContent>
         <TabsContent value="gaugeReading">
           <GaugeReading date={date} />
+        </TabsContent>
+        <TabsContent value="externalLinks">
+          <ExternalLinks />
         </TabsContent>
       </Tabs>
     </div>

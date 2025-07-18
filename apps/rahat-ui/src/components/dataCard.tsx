@@ -13,7 +13,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { redirect } from 'next/navigation';
 
 type CardProps = {
   title: string;
@@ -25,6 +24,7 @@ type CardProps = {
   loading?: boolean;
   refresh?: VoidFunction;
   iconStyle?: string;
+  children?: React.ReactNode;
 };
 
 export default function DataCard({
@@ -37,6 +37,7 @@ export default function DataCard({
   subtitle,
   refresh,
   iconStyle,
+  children,
 }: CardProps) {
   return (
     <Card
@@ -102,6 +103,7 @@ export default function DataCard({
               <div className="text-xl font-normal text-primary">
                 {smallNumber}
               </div>
+              {children}
             </>
           )}
         </div>

@@ -3,6 +3,9 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
 
+import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+
 function getTransactionStatusColor(status: string) {
   switch (status.toLowerCase()) {
     case 'completed':
@@ -48,11 +51,17 @@ export default function usePayoutTransactionLogTableColumn() {
     {
       accessorKey: 'payoutType',
       header: 'Payout Type',
-      cell: ({ row }) => <div>{row.getValue('payoutType')}</div>,
+      cell: ({ row }) => (
+        <div>
+          {row.getValue('payoutType') === 'VENDOR'
+            ? 'CVA'
+            : row.getValue('payoutType')}
+        </div>
+      ),
     },
     {
       accessorKey: 'payoutMode',
-      header: 'Payout Mode',
+      header: 'Payout Method',
       cell: ({ row }) => <div>{row.getValue('payoutMode')}</div>,
     },
     {
@@ -62,11 +71,12 @@ export default function usePayoutTransactionLogTableColumn() {
         const status = row?.original?.status;
         return (
           <Badge
-            className={`rounded-xl capitalize ${getTransactionStatusColor(
-              status,
-            )}`}
+            className={`rounded-xl capitalize ${isCompleteBgStatus(status)}`}
           >
-            {status}
+            {status
+              .toLowerCase()
+              .replace(/_/g, ' ')
+              .replace(/^./, (char) => char.toUpperCase())}
           </Badge>
         );
       },
@@ -76,9 +86,7 @@ export default function usePayoutTransactionLogTableColumn() {
       header: 'Timestamp',
       cell: ({ row }) => {
         const time = row.getValue('timeStamp') as string;
-        return (
-          <div className="flex gap-1">{new Date(time).toLocaleString()}</div>
-        );
+        return <div className="flex gap-1">{dateFormat(time)}</div>;
       },
     },
 

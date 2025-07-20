@@ -41,12 +41,15 @@ export function DataCard({
   iconStyle,
   badge,
 }: CardProps) {
+  console.log(subtitle);
   return (
     <Card className={cn('flex flex-col rounded justify-center', className)}>
       <CardHeader className="pb-2 p-4">
         <div className="flex items-start justify-between ">
           <div className="flex items-center gap-3">
-            <CardTitle className="text-sm/6 font-semibold text-neutral-800 dark:text-white">
+            <CardTitle
+              className={`text-sm/6 font-semibold text-neutral-800 dark:text-white`}
+            >
               {title}
             </CardTitle>
             {refresh && (
@@ -70,9 +73,12 @@ export function DataCard({
             </div>
           )}
         </div>
-        {subtitle && (
-          <p className="text-sm text-muted-foreground">{subtitle}</p>
-        )}
+        {/* {subtitle && (
+          <p className="text-sm text-muted-foreground p-0">{subtitle ?? ' '}</p>
+        )} */}
+        <p className="text-sm text-muted-foreground p-0">
+          {subtitle?.trim() !== '' ? subtitle : '\u00A0'}
+        </p>
       </CardHeader>
       <CardContent className="flex items-center justify-between">
         <div>

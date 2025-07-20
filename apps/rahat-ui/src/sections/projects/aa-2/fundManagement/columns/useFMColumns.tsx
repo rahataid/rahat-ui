@@ -87,7 +87,9 @@ export const useFundManagementTableColumns = () => {
         const status = row.getValue('status') as FundStatus;
 
         return (
-          <Badge className={renderBadgeStyle(status)}>{status || 'N/A'}</Badge>
+          <Badge className={renderBadgeStyle(status)}>
+            {status.replace(/_/g, ' ') || 'N/A'}
+          </Badge>
         );
       },
     },

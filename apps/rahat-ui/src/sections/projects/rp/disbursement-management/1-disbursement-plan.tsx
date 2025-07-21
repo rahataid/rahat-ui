@@ -49,22 +49,21 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
 }) => {
   const { id } = useParams() as { id: UUID };
   const { pagination, filters, setNextPage, setPrevPage, setPerPage } =
-    usePagination();  
+    usePagination();
 
   const disbursements = useFindAllDisbursements(id, {
     hideAssignedBeneficiaries: false,
   });
 
-  const benData = useFindUnSyncedBenefiicaries(id,
-    {  
+  const benData = useFindUnSyncedBenefiicaries(id, {
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
     sort: 'updatedAt',
     projectUUID: id,
-    ...filters
+    ...filters,
   });
-  const meta = benData?.data?.response?.meta
+  const meta = benData?.data?.response?.meta;
   const bulkAssignDisbursement = useBulkCreateDisbursement(id);
 
   const [rowData, setRowData] = React.useState<Payment[]>([]);
@@ -96,12 +95,6 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
     },
     onRowSelectionChange: (e) => {
       setRowSelection(e);
-      handleStepDataChange({
-        target: {
-          name: 'selectedBeneficiaries',
-          value: Object.keys(e).map((key) => key),
-        },
-      });
     },
     // onRowSelectionChange: setRowSelection,
     state: {
@@ -113,26 +106,28 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   });
 
   useEffect(() => {
-    if(benData?.isSuccess){
+    handleStepDataChange({
+      target: {
+        name: 'selectedBeneficiaries',
+        value: table.getSelectedRowModel().rows.map((value) => value.original),
+      },
+    });
+  }, [rowSelection]);
+
+  useEffect(() => {
+    if (benData?.isSuccess) {
       const unSyncedBeneficiaries = benData?.data?.data?.map((beneficiary) => {
         return {
-          name:beneficiary?.piiData?.name,
+          name: beneficiary?.piiData?.name,
           disbursementAmount: beneficiary?.Disbursements[0]?.amount || '0',
           walletAddress: beneficiary?.walletAddress,
         };
       });
-      if (
-        JSON.stringify(unSyncedBeneficiaries) !==
-        JSON.stringify(rowData)
-      ) {
+      if (JSON.stringify(unSyncedBeneficiaries) !== JSON.stringify(rowData)) {
         setRowData(unSyncedBeneficiaries);
       }
     }
-  }, [
-    benData?.data,
-    benData?.isSuccess,
-    rowData,
-  ]);
+  }, [benData?.data, benData?.isSuccess, rowData]);
   return (
     <div className="grid grid-cols-12 gap-2">
       <div className="col-span-4">

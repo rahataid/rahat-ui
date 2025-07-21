@@ -71,7 +71,7 @@ export default function TokensOverview() {
           <DataCard
             className="rounded-sm"
             title={'1 Token Value'}
-            number={'Rs 10'}
+            number={'Rs 1'}
           />
           <a
             target="_blank"

@@ -45,12 +45,14 @@ export default function EditFieldDefinition({
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
     isTargeting: z.boolean(),
-    variations: z.array(
-      z.object({
-        id: z.string(),
-        text: z.string(),
-      }),
-    ),
+    variations: z
+      .array(
+        z.object({
+          id: z.string(),
+          text: z.string(),
+        }),
+      )
+      .optional(),
     fieldPopulate: z.array(
       z.object({
         label: z.string(),
@@ -89,6 +91,7 @@ export default function EditFieldDefinition({
       isActive: data?.isActive || false,
       isTargeting: data?.isTargeting || false,
       fieldPopulate: data?.fieldPopulate?.data || [],
+      variations: formattedVariations,
     });
   }, [
     data?.variations,

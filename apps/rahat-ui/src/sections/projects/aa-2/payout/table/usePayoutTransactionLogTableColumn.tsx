@@ -51,7 +51,13 @@ export default function usePayoutTransactionLogTableColumn() {
     {
       accessorKey: 'payoutType',
       header: 'Payout Type',
-      cell: ({ row }) => <div>{row.getValue('payoutType')}</div>,
+      cell: ({ row }) => (
+        <div>
+          {row.getValue('payoutType') === 'VENDOR'
+            ? 'CVA'
+            : row.getValue('payoutType')}
+        </div>
+      ),
     },
     {
       accessorKey: 'payoutMode',

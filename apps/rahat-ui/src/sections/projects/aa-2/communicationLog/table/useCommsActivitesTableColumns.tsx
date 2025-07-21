@@ -11,7 +11,7 @@ import {
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 function getStatusBg(status: string) {
   if (status === 'Not Started') {
-    return 'bg-red-200 text-red-600';
+    return 'bg-gray-200 text-black';
   }
 
   if (status === 'Work in Progress') {
@@ -22,7 +22,7 @@ function getStatusBg(status: string) {
     return 'bg-green-200 text-green-500';
   }
 
-  return 'bg-gray-200 text-black';
+  return 'bg-red-200 text-red-600';
 }
 
 function getPhaseColor(phase: string) {

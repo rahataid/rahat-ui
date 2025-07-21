@@ -6,7 +6,6 @@ import {
   HandCoins,
   LayoutDashboard,
   MessageSquareText,
-  Pencil,
   PlusSquare,
   Speech,
   UsersRound,
@@ -81,40 +80,40 @@ export const useNavItems = () => {
         },
       ],
     },
-    {
-      title: 'Actions',
-      children: [
-        // {
-        //   component: (
-        //     <>
-        //       <CreateTokenModal />
-        //     </>
-        //   ),
-        //   title: 'Create Token',
-        // },
+    // {
+    //   title: 'Actions',
+    //   children: [
+    //     {
+    //       component: (
+    //         <>
+    //           <CreateTokenModal />
+    //         </>
+    //       ),
+    //       title: 'Create Token',
+    //     },
 
-        // {
-        //   title: 'Close Project',
-        //   path: '/edit',
-        //   icon: <XCircle size={18} strokeWidth={1.5} />,
-        // },
-        {
-          title: 'Edit Project',
-          path: `/projects/rp/${id}/edit`,
-          icon: <Pencil size={18} strokeWidth={1.5} />,
-        },
-        {
-          title: 'Add Beneficiary',
-          path: `/projects/rp/${id}/beneficiary/add`,
-          icon: <PlusSquare size={18} strokeWidth={1.5} />,
-        },
-        // {
-        //   title: 'Add Campaign',
-        //   path: `/projects/rp/${id}/campaigns/add`,
-        //   icon: <Plus size={18} strokeWidth={1.5} />,
-        // },
-      ],
-    },
+    //     {
+    //       title: 'Close Project',
+    //       path: '/edit',
+    //       icon: <XCircle size={18} strokeWidth={1.5} />,
+    //     },
+    //     {
+    //       title: 'Edit Project',
+    //       path: `/projects/rp/${id}/edit`,
+    //       icon: <Pencil size={18} strokeWidth={1.5} />,
+    //     },
+    //     {
+    //       title: 'Add Beneficiary',
+    //       path: `/projects/rp/${id}/beneficiary/add`,
+    //       icon: <PlusSquare size={18} strokeWidth={1.5} />,
+    //     },
+    //     {
+    //       title: 'Add Campaign',
+    //       path: `/projects/rp/${id}/campaigns/add`,
+    //       icon: <Plus size={18} strokeWidth={1.5} />,
+    //     },
+    //   ],
+    // },
   ];
 
   return {

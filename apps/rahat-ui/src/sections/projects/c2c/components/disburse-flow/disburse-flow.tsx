@@ -130,9 +130,12 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       projectUUID: id,
     });
     console.log('SUCCESS', disbursement);
+    const resData = Array.isArray(disbursement)
+      ? disbursement?.[0]
+      : disbursement;
 
     route.push(
-      `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&disbursementUuid=${disbursement?.uuid}`,
+      `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm?amount=${stepData.disburseAmount}&&source=${stepData.treasurySource}&&beneficiary=${selectedBeneficiaries.length}&&disbursementUuid=${resData?.Disbursement?.uuid}`,
     );
   };
 

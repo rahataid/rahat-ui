@@ -7,16 +7,19 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { TooltipContent } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import { ColumnDef } from '@tanstack/react-table';
-import { formatdbDate } from 'apps/rahat-ui/src/utils';
+import {
+  formatDateFromBloackChain,
+  formatdbDate,
+} from 'apps/rahat-ui/src/utils';
 import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
-import { ArrowUpDown, Copy, CopyCheck } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Copy, CopyCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { formatEther, parseUnits } from 'viem';
 import { Transaction } from './types';
 import { useTokenDetails } from '@rahat-ui/query';
 import { useInfoByCurrentChain } from 'apps/rahat-ui/src/hooks/use-info-by-current-chain';
-const useTransactionColumn = () => {
+const useTransactionColumn = ({ setSorting }: any) => {
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
   const clickToCopy = (walletAddress: string, index: number) => {
     navigator.clipboard.writeText(walletAddress);
@@ -69,21 +72,39 @@ const useTransactionColumn = () => {
     {
       accessorKey: 'date',
       header: ({ column }) => {
+        const isSorted = column.getIsSorted();
+
+        const handleSort = () => {
+          setSorting((prevSorting: any) => {
+            const currentSort = prevSorting.find((s: any) => s.id === 'date');
+            return [{ id: 'date', desc: !currentSort?.desc }];
+          });
+        };
+
         return (
-          <Button
-            variant="ghost"
-            onClick={() =>
-              column.toggleSorting(column.getIsSorted() === 'desc')
-            }
+          <div
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={handleSort}
           >
             Timestamp
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
+            {isSorted === 'asc' ? (
+              <ArrowUp size={16} />
+            ) : (
+              <ArrowDown size={16} />
+            )}
+          </div>
         );
       },
+      enableSorting: true,
       cell: ({ row }) => (
-        <div className="capitalize">{formatdbDate(row.getValue('date'))}</div>
+        <div>{formatDateFromBloackChain(row.getValue('date'))}</div>
       ),
+      sortingFn: (rowA, rowB, columnId) => {
+        const dateA = new Date(rowA.getValue(columnId)).getTime();
+        const dateB = new Date(rowB.getValue(columnId)).getTime();
+
+        return dateA - dateB;
+      },
     },
     {
       accessorKey: 'blockNumber',

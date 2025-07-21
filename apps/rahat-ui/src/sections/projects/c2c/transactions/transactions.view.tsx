@@ -49,7 +49,8 @@ export default function TransactionView() {
   const { id } = useParams();
   const tokenDetails = useTokenDetails();
 
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState([{ id: 'date', desc: true }]);
+
   const [transactionList, setTransactionList] = React.useState<Transaction[]>(
     [],
   );
@@ -59,7 +60,9 @@ export default function TransactionView() {
     [],
   );
   const [rowsPerPage, setRowsPerPage] = React.useState(10); // State for rows per page
-  const columns = useTransactionColumn();
+  const columns = useTransactionColumn({
+    setSorting,
+  });
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
@@ -147,13 +150,13 @@ export default function TransactionView() {
           >
             Chain Transactions
           </TabsTrigger>
-          <TabsTrigger
+          {/* <TabsTrigger
             id="offramp-transactions"
             className="w-full data-[state=active]:bg-white"
             value="offramp-transactions"
           >
             Offramp Transactions
-          </TabsTrigger>
+          </TabsTrigger> */}
         </TabsList>
       </div>
       <div className="p-2 bg-secondary">
@@ -277,20 +280,24 @@ export default function TransactionView() {
                       className="border p-2"
                       title={tx?.extras?.senderAddress}
                     >
-                      {tx?.extras?.senderAddress}
+                      {tx?.extras?.senderAddress || 'N/A'}
                     </TableCell>
                     <TableCell className="border p-2">
-                      {tx.extras.cryptoAmount} {tx.token}
+                      {tx.extras?.cryptoAmount} {tx?.token || 'N/A'}
                     </TableCell>
                     <TableCell className="border p-2">
-                      {tx.extras.fiatTransactionAmount.toFixed(2)}{' '}
-                      {tx.extras.fiatCurrency}
+                      {tx.extras?.fiatTransactionAmount.toFixed(2)}{' '}
+                      {tx.extras?.fiatCurrency || 'N/A'}
                     </TableCell>
-                    <TableCell className="border p-2">{tx.chain}</TableCell>
+                    <TableCell className="border p-2">
+                      {tx?.chain || 'N/A'}
+                    </TableCell>
 
-                    <TableCell className="border p-2">{tx.status}</TableCell>
                     <TableCell className="border p-2">
-                      {new Date(tx.createdAt).toLocaleString()}
+                      {tx?.status || 'N/A'}
+                    </TableCell>
+                    <TableCell className="border p-2">
+                      {new Date(tx?.createdAt).toLocaleString()}
                     </TableCell>
                   </TableRow>
                 ))}

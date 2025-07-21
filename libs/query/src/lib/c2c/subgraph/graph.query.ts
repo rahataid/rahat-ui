@@ -33,7 +33,7 @@ export const TransactionDetails = `
 
 export const ReceivedTransactionDetails = `
   query ReceivedTransactionDetails($contractAddress: String) {
-    transfers(where: {to: $contractAddress}) {
+    transfers(where: {to: $contractAddress, value_gt: 0}) {
       value
       blockTimestamp
       from

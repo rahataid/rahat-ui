@@ -63,7 +63,7 @@ export function DisburseTable({
         />
         <BenBulkDisbursementAssignModel handleSubmit={handleBulkAssign} />
       </div>
-      {/* {table.getSelectedRowModel().rows.length ? (
+      {table.getSelectedRowModel().rows.length ? (
         <div
           className="flex items-end justify-end mb-2"
           style={{ maxWidth: '300px' }}
@@ -74,7 +74,7 @@ export function DisburseTable({
             value={stepData?.bulkInputAmount ?? ''}
             onChange={(e) => handleStepDataChange(e)}
           />
-          <Button
+          {/* <Button
             onClick={async () => {
               await bulkAssignDisbursement.mutateAsync({
                 amount: stepData.bulkInputAmount,
@@ -91,9 +91,9 @@ export function DisburseTable({
             }
           >
             Bulk Assign
-          </Button>
+          </Button> */}
         </div>
-      ) : null} */}
+      ) : null}
       <div className="rounded border bg-card">
         <TableComponent>
           <ScrollArea className="h-[calc(100vh-582px)]">

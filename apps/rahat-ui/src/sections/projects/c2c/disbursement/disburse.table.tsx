@@ -1,5 +1,5 @@
 'use client';
-import { useGetDisbursements, usePagination } from '@rahat-ui/query';
+import { useGetDisbursements } from '@rahat-ui/query';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -21,14 +21,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { UUID } from 'crypto';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
-import { useDisburseTableColumns } from './useDisburseTable';
 import { DataTablePagination } from '../transactions/dataTablePagination';
+import { useDisburseTableColumns } from './useDisburseTable';
 
 export function DisburseTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -37,7 +36,6 @@ export function DisburseTable() {
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const [rowSelection, setRowSelection] = React.useState({});
   const { id } = useParams() as { id: UUID };
   const { data, isLoading } = useGetDisbursements({

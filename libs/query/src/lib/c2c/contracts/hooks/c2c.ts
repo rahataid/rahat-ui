@@ -40,9 +40,11 @@ export const useTokenDetails = () => {
     (state) => state.settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
   const rahatTokenAddress = contractSettings?.rahattoken?.address;
+  console.log('rahatTokenAddress', rahatTokenAddress);
   const token = useReadRahatTokenDecimals({
     address: rahatTokenAddress,
   });
+  console.log('token', token);
 
   return token;
 };

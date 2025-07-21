@@ -49,7 +49,7 @@ const BeneficiaryDemographics = () => {
 
         {/* Bar Chart */}
         <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
-          <h1 className="text-sm font-medium">Payout Type</h1>
+          <h1 className="text-sm font-medium">Age Group</h1>
           <div className="flex-1 p-2">
             <BarChart
               series={vulnerableStatusStats.map((item) => item.value)}
@@ -62,6 +62,7 @@ const BeneficiaryDemographics = () => {
               width="100%"
               xaxisTitle="Age Group"
               yaxisTitle="No. of Beneficiaries"
+              columnWidth={'20%'}
             />
           </div>
         </div>

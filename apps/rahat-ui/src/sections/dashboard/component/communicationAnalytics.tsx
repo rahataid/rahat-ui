@@ -7,17 +7,17 @@ const CommunicationAnalytics = () => {
       category: 'Stakeholders',
       totalCommunicationSent: 23000,
       numberOfStakeholders: 5000,
-      avcsSuccessfullySent: 5000,
+      avcSuccessfullySent: 5000,
       smsSuccessfullySent: 2000,
       deliveryFailures: 1000,
     },
     {
       category: 'Beneficiaries',
       totalCommunicationSent: 23000,
-      avcsSuccessfullySent: 5000,
+      avcSuccessfullySent: 5000,
       voiceMessageDelivered: 2000,
       smsSuccessfullyDelivered: 1000,
-      deliveryFailures: 2000,
+      smsAndAvcDeliveryFailures: 2000,
       uniqueAvcRecipients: 1000,
     },
   ];
@@ -57,9 +57,14 @@ const CommunicationAnalytics = () => {
                 if (['category', 'totalCommunicationSent'].includes(key))
                   return null;
 
-                const label = key
-                  .replace(/([A-Z])/g, ' $1')
-                  .replace(/^./, (str) => str.toUpperCase());
+                const label =
+                  key === 'smsAndAvcDeliveryFailures'
+                    ? 'SMS & AVC Delivery Failures'
+                    : key
+                        .replace(/([A-Z])/g, ' $1')
+                        .replace(/^./, (str) => str.toUpperCase())
+                        .replace(/\bSms\b/gi, 'SMS')
+                        .replace(/\bAvc\b/gi, 'AVC');
 
                 return (
                   <div key={key} className="flex flex-col">

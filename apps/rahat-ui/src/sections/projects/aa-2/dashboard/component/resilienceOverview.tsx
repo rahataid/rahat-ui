@@ -65,7 +65,7 @@ const ResilienceOverview = (props: Props) => {
         {/* Header */}
         <div className="space-y-4">
           <h1 className="text-xl  font-bold text-gray-900">{project?.name}</h1>
-          <p className="text-gray-600 text-sm md:text-base leading-relaxed">
+          <p className="text-gray-600 text-sm md:text-base leading-relaxed text-justify">
             {project?.description}
           </p>
         </div>

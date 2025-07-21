@@ -73,7 +73,7 @@ const DigitalAccessOverview = () => {
             chart={{
               series: [
                 { label: 'Smartphone', value: 65 },
-                { label: 'Keypad', value: 25 },
+                { label: 'Keypad/Brick', value: 25 },
                 { label: 'Both', value: 10 },
               ],
               colors: ['#00796B', '#CFD8DC', '#4A90E2'],

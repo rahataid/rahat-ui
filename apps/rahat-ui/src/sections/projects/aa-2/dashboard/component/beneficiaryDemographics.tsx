@@ -51,6 +51,7 @@ const BeneficiaryDemographics = (props: Props) => {
             width="100%"
             xaxisTitle="Age Group"
             yaxisTitle="No. of Beneficiaries"
+            columnWidth={'20%'}
           />
         </div>
       </div>

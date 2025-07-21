@@ -116,11 +116,10 @@ const AccessAndResilienceOverview = () => {
           <PieChart
             chart={{
               series: [
-                { label: 'Smartphone', value: 65 },
-                { label: 'Keypad', value: 25 },
-                { label: 'Both', value: 10 },
+                { label: 'Yes', value: 75 },
+                { label: 'No', value: 25 },
               ],
-              colors: ['#00796B', '#CFD8DC', '#4A90E2'],
+              colors: ['#00796B', '#CFD8DC'],
             }}
             custom={true}
             projectAA={true}
@@ -145,6 +144,7 @@ const AccessAndResilienceOverview = () => {
             width="100%"
             xaxisTitle="Information Channel"
             yaxisTitle="No. of Beneficiaries"
+            columnWidth={'12%'}
           />
         </div>
       </div>

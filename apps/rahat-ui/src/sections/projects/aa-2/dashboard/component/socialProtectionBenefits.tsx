@@ -4,26 +4,26 @@ import React from 'react';
 
 type Props = {};
 const socialProtectionBenefits = [
-  { type: ' >70', households: 800 },
-  { type: ' Dalit >60', households: 950 },
-  { type: 'Child ', households: 630 },
-  { type: 'Single', households: 850 },
+  { type: 'Senior Citizen >70', households: 800 },
+  { type: 'Senior Citizen Dalit >60', households: 950 },
+  { type: 'Child Nutrition ', households: 630 },
+  { type: 'Single Women', households: 850 },
   { type: 'Widow', households: 620 },
-  { type: 'Red ', households: 900 },
-  { type: 'Blue ', households: 790 },
-  { type: 'Indigenous', households: 830 },
+  { type: 'Red Card', households: 900 },
+  { type: 'Blue Card', households: 790 },
+  { type: 'Indigenous Community', households: 830 },
 ];
 const SocialProtectionBenefits = (props: Props) => {
   return (
     <div className="grid grid-cols-1 gap-4">
       <div className="flex flex-col lg:flex-row gap-4 ">
         <DataCard
-          title="Pregant Female"
+          title="Pregnant Female"
           number="12"
           className="rounded-sm h-24  w-full"
         />
         <DataCard
-          title="Lactatiing Female"
+          title="Lactating Female"
           number="12"
           className="rounded-sm h-24 w-full"
         />
@@ -50,6 +50,7 @@ const SocialProtectionBenefits = (props: Props) => {
             width="100%"
             xaxisTitle="Type of SSA"
             yaxisTitle="No. of Household"
+            columnWidth={'15%'}
           />
         </div>
       </div>

@@ -22,6 +22,7 @@ type Props = {
   title?: string;
   xaxisTitle?: string;
   yaxisTitle?: string;
+  columnWidth?: string | number | undefined;
 };
 
 export default function ChartBar({
@@ -41,6 +42,7 @@ export default function ChartBar({
   title = '',
   xaxisTitle = ' ',
   yaxisTitle = ' ',
+  columnWidth = '50%',
 }: Props) {
   const chartOptions = useChart({
     colors,
@@ -49,12 +51,14 @@ export default function ChartBar({
       type: 'bar',
       height: '100%',
     },
-
+    dataLabels: {
+      enabled: false,
+    },
     plotOptions: {
       bar: {
         horizontal: horizontal,
         barHeight: barHeight,
-        columnWidth: '50%',
+        columnWidth: columnWidth,
         borderRadius: 4,
         borderRadiusApplication: 'end',
       },

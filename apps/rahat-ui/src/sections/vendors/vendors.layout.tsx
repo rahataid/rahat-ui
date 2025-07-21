@@ -6,7 +6,7 @@ import {
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
 // import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { FC } from 'react';
+import { FC, Fragment } from 'react';
 import { NavItem } from './nav-items.types';
 import VendorsNavView from './vendors.nav.view';
 
@@ -26,23 +26,18 @@ const VendorsLayout: FC<VendorsLayoutProps> = ({ children, menuItems }) => {
       </ResizablePanel>
     );
   };
+
   const renderChildren = () => {
     if (Array.isArray(children)) {
-      return children.map((child, index) => {
-        return (
-          <>
-            {/* <ResizableHandle withHandle /> */}
-            {renderResizablePanel(child, index)}
-          </>
-        );
-      });
+      return children.map((child, index) => (
+        <Fragment key={index}>
+          {index !== 0 && <ResizableHandle withHandle />}
+          {renderResizablePanel(child, index)}
+        </Fragment>
+      ));
     }
-    return (
-      <>
-        {/* <ResizableHandle /> */}
-        {renderResizablePanel(children)}
-      </>
-    );
+
+    return renderResizablePanel(children);
   };
 
   return (

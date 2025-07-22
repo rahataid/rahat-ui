@@ -35,6 +35,7 @@ import {
   CloudDownload,
   LucideIcon,
   Mail,
+  Mic,
   Text,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
@@ -258,7 +259,7 @@ export default function CommsLogsDetailPage() {
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 flex items-center justify-center">
                       {logs?.sessionDetails?.Transport?.name === 'VOICE' ? (
-                        <AudioLines />
+                        <Mic />
                       ) : logs?.sessionDetails?.Transport?.name === 'EMAIL' ? (
                         <Mail />
                       ) : (

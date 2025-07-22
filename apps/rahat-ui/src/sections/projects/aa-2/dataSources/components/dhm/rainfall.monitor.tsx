@@ -49,14 +49,14 @@ export function RainFallMonitor({
             <Radio className="w-4 h-4 mr-2 text-gray-500" />
             <div>
               <div className="text-gray-600">Station Index</div>
-              <div>{stationIndex}</div>
+              <div>{stationIndex || 'N/A'}</div>
             </div>
           </div>
           <div className="flex items-center">
             <MapPin className="w-4 h-4 mr-2 text-gray-500" />
             <div>
               <div className="text-gray-600">District</div>
-              <div>{district}</div>
+              <div>{district || 'N/A'}</div>
             </div>
           </div>
         </div>

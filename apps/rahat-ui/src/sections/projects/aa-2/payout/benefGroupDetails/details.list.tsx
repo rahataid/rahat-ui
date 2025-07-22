@@ -217,7 +217,9 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             title="Payout Method"
             Icon={Ticket}
             smallNumber={
-              payout?.type ? payout?.mode : payout?.extras?.paymentProviderName
+              payout?.type === 'VENDOR'
+                ? payout?.mode
+                : payout?.extras?.paymentProviderName
             }
             className="rounded-sm h-28"
             badge

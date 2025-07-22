@@ -19,16 +19,16 @@ import {
   TableLoader,
 } from 'apps/rahat-ui/src/common';
 
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
-import { House, RotateCcw, Ticket, Users } from 'lucide-react';
+import { RotateCcw, Store, Ticket, Users } from 'lucide-react';
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
 import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const params = useParams();
@@ -226,7 +226,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           {payout?.type === 'VENDOR' && payout?.mode === 'OFFLINE' && (
             <DataCard
               title="Vendor"
-              Icon={House}
+              Icon={Store}
               smallNumber={payout?.extras?.vendorName}
               className="rounded-sm h-28"
               badge

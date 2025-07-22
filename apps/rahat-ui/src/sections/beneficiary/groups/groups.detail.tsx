@@ -264,16 +264,17 @@ export default function GroupDetailView() {
               <Trash2Icon className="w-4 h-4" />
               Delete Group
             </Button>
-            {(group?.data?.isGroupValidForAA || !groupPurposeName) && (
-              <Button
-                variant={'outline'}
-                className="border-blue-500 text-blue-500 gap-2 rounded-sm"
-                onClick={handleProjectAssignModalClick}
-              >
-                <FolderDot className="w-4 h-4" />
-                Assign To Project
-              </Button>
-            )}
+            {(group?.data?.isGroupValidForAA || !groupPurposeName) &&
+              group?.data?.groupedBeneficiaries?.length !== 0 && (
+                <Button
+                  variant={'outline'}
+                  className="border-blue-500 text-blue-500 gap-2 rounded-sm"
+                  onClick={handleProjectAssignModalClick}
+                >
+                  <FolderDot className="w-4 h-4" />
+                  Assign To Project
+                </Button>
+              )}
           </div>
         </div>
         <div className="flex gap-4">

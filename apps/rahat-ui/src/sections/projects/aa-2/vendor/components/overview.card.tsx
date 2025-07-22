@@ -7,12 +7,20 @@ type Props = {
   loading: boolean;
 };
 export default function OverviewCard({ data, loading }: Props) {
-  const balance = data?.balances?.filter((a) => a.asset_code);
+  const isBalanceError = data?.balances?.name === 'NotFoundError';
+
+  const balance =
+    !isBalanceError && Array.isArray(data?.balances?.response)
+      ? data.balances.response.filter((a: any) => a?.asset_code)
+      : [];
+
   const series = [
-    parseFloat(balance?.[0]?.balance || '0'),
+    parseFloat(isBalanceError ? '0' : balance?.[0]?.balance || '0'),
     Number(data?.assignedTokens || 0),
     Number(data?.disbursedTokens || 0),
   ];
+
+  const vendorBalance = isBalanceError ? '-' : balance?.[0]?.balance || '0';
   return (
     <div className="border rounded-sm p-4">
       <div className="mb-4">
@@ -36,9 +44,7 @@ export default function OverviewCard({ data, loading }: Props) {
               colors={['#297AD6', '#2A9D90', '#E76E50']}
             />
           )}
-          <p className="text-primary font-semibold text-xl">
-            {balance?.[0]?.balance || 0}
-          </p>
+          <p className="text-primary font-semibold text-xl">{vendorBalance}</p>
           <p className="text-sm font-medium">Vendor Balance</p>
         </div>
         <div className="flex flex-col space-y-2">

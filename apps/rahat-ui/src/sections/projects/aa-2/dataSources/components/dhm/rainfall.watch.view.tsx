@@ -60,7 +60,7 @@ export default function RainfallWatchView() {
           return (
             <RainFallMonitor
               name={info?.name}
-              description={info?.description}
+              description={info?.basin}
               warningStatus={info?.status}
               stationIndex={info?.stationIndex}
               district={info?.district}

@@ -80,7 +80,9 @@ export default function ManageThreshold() {
   useEffect(() => {
     if (isSuccess) {
       setOpen(false);
-      router.push(`/projects/aa/${id}/phase/${phaseId as string}`);
+      router.push(
+        `/projects/aa/${id}/trigger-statements/phase/${phaseId as string}`,
+      );
     }
   }, [isSuccess]);
 
@@ -193,9 +195,12 @@ export default function ManageThreshold() {
                 type="button"
                 variant="secondary"
                 className=" px-8 "
-                onClick={() => router.back()}
+                onClick={() => {
+                  form.reset();
+                  // router.back()
+                }}
               >
-                Cancel
+                Reset
               </Button>
 
               <Dialog open={open} onOpenChange={(open) => setOpen(open)}>

@@ -86,6 +86,7 @@ export default function FundManagementList() {
         table={table}
         tableHeight="h-[calc(100vh-420px)]"
         loading={isLoading}
+        message="No Fund Management List Available"
       />
       <CustomPagination
         meta={

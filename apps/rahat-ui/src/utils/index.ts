@@ -146,3 +146,25 @@ export const intlFormatDate = (dateStr?: string) => {
     minute: 'numeric',
   }).format(date);
 };
+
+export const intlDateFormat = (dateStr?: string) => {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return '-';
+
+  const day = new Intl.DateTimeFormat('en-US', { day: '2-digit' }).format(date);
+  const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(
+    date,
+  );
+  const year = new Intl.DateTimeFormat('en-US', { year: 'numeric' }).format(
+    date,
+  );
+  const time = new Intl.DateTimeFormat('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
+  }).format(date);
+
+  return `${day} ${month}, ${year}, ${time}`;
+};

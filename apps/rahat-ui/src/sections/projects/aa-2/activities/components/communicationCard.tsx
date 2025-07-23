@@ -23,6 +23,7 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { SessionStatus } from '@rumsan/connect/src/types';
 import MessageWithToggle from './messageWithToggle';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 interface BaseCommunication {
   groupId: string;
@@ -41,7 +42,7 @@ interface EmailCommunication extends BaseCommunication {
 }
 
 interface IVRCommunication extends BaseCommunication {
-  transportName: 'IVR';
+  transportName: 'VOICE';
   message: Record<string, never>;
 }
 
@@ -61,7 +62,7 @@ export function CommunicationCard({
         return <MessageSquare className="h-5 w-5 text-gray-500" />;
       case 'EMAIL':
         return <Mail className="h-5 w-5 text-gray-500" />;
-      case 'IVR':
+      case 'VOICE':
         return <Mic className="h-5 w-5 text-gray-500" />;
       default:
         return <MessageSquare className="h-5 w-5 text-gray-500" />;
@@ -103,25 +104,30 @@ export function CommunicationCard({
               </h3>
               <div className="flex gap-2">
                 {activityCommunication?.sessionStatus === SessionStatus.NEW && (
-                  <Button
-                    className="items-center justify-center"
-                    variant="ghost"
-                    onClick={() =>
-                      triggerCommunication(
-                        activityId,
-                        activityCommunication?.communicationId,
-                      )
-                    }
-                    type="button"
+                  <RoleAuth
+                    roles={[AARoles.ADMIN, AARoles.MANAGER]}
+                    hasContent={false}
                   >
-                    {loadingButtons.includes(
-                      activityCommunication?.communicationId,
-                    ) ? (
-                      <LoaderCircle size={20} className={`animate-spin `} />
-                    ) : (
-                      <SendHorizonal size={18} strokeWidth={1.5} />
-                    )}
-                  </Button>
+                    <Button
+                      className="items-center justify-center"
+                      variant="ghost"
+                      onClick={() =>
+                        triggerCommunication(
+                          activityId,
+                          activityCommunication?.communicationId,
+                        )
+                      }
+                      type="button"
+                    >
+                      {loadingButtons.includes(
+                        activityCommunication?.communicationId,
+                      ) ? (
+                        <LoaderCircle size={20} className={`animate-spin `} />
+                      ) : (
+                        <SendHorizonal size={18} strokeWidth={1.5} />
+                      )}
+                    </Button>
+                  </RoleAuth>
                 )}
               </div>
             </div>
@@ -153,7 +159,7 @@ export function CommunicationCard({
               </div>
             )}
 
-            {activityCommunication?.transportName === 'IVR' &&
+            {activityCommunication?.transportName === 'VOICE' &&
               Object.keys(activityCommunication?.message).length !== 0 && (
                 <div className="mt-3">
                   <div className="pt-2">

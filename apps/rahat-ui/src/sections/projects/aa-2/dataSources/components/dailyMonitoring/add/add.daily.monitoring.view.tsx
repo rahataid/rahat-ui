@@ -88,6 +88,7 @@ export default function AddDailyMonitoring() {
           //gauge Reading
           gaugeReading: z.string().optional(),
           station: z.string().optional(),
+          gaugeForecast: z.string().optional(),
         })
         .superRefine((data, ctx) => {
           const validateFields = (fields: (keyof typeof data)[]) => {
@@ -216,7 +217,7 @@ export default function AddDailyMonitoring() {
               break;
 
             case 'Gauge Reading':
-              validateFields(['gaugeReading', 'station']);
+              validateFields(['gaugeReading', 'station', 'gaugeForecast']);
               if (
                 data.gaugeReading === undefined ||
                 data.gaugeReading === null ||
@@ -227,7 +228,7 @@ export default function AddDailyMonitoring() {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   path: ['gaugeReading'],
-                  message: 'Gauage Reading  must be a positive number.',
+                  message: 'Gauge Reading  must be a positive number.',
                 });
               } else if (!/^\d+(\.\d+)?$/.test(String(data.gaugeReading))) {
                 ctx.addIssue({
@@ -346,6 +347,7 @@ export default function AddDailyMonitoring() {
             source: item.source,
             gaugeReading: item?.gaugeReading,
             station: item?.station,
+            gaugeForecast: item?.gaugeForecast,
           });
           break;
         default:
@@ -377,7 +379,7 @@ export default function AddDailyMonitoring() {
     <div className="px-4 py-2">
       <HeaderWithBack
         title={'Add Daily Monitoring'}
-        subtitle="Fill the form below  to add daily monitoring"
+        subtitle="Fill the form below to add daily monitoring"
         path={`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`}
       />
       <Form {...form}>
@@ -431,10 +433,10 @@ export default function AddDailyMonitoring() {
               className="bg-red-100 text-red-600 w-36"
               onClick={() => {
                 form.reset();
-                router.push(dailyMonitoringListPath);
+                // router.push(dailyMonitoringListPath);
               }}
             >
-              Cancel
+              Clear
             </Button>
             <Button type="submit" className="w-32">
               Add

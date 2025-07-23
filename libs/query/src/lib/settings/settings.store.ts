@@ -1,6 +1,7 @@
 import { zustandStore } from '@rumsan/react-query';
 import { Chain, ChainFormatters } from 'viem';
 import { localPersistStorage } from '../../utils/zustand-store';
+import { StoreApi, UseBoundStore } from 'zustand';
 
 export type AppSettingsState = {
   chainSettings: Chain<ChainFormatters>;
@@ -58,30 +59,31 @@ export const initialAppSettings: AppSettingsState = {
   commsSettings: {},
 };
 
-export const useSettingsStore = zustandStore<AppSettings>(
-  (set) => ({
-    chainSettings: initialAppSettings.chainSettings,
-    contracts: initialAppSettings.contracts,
-    setChainSettings: (chainSettings) => set({ chainSettings }),
-    subGraphUrl: initialAppSettings.subGraphUrl,
-    setSubGraphUrlSettings: (subGraphUrl) => set({ subGraphUrl }),
-    accessManager: initialAppSettings.accessManager,
-    setAccessManagerSettings: (accessManager) => set({ accessManager }),
-    // rahatTreasury: initialAppSettings.rahatTreasury,
-    // setRahatTreasurySettings: (rahatTreasury) => set({ rahatTreasury }),
-    setContractSettings: (contracts) => set({ contracts }),
-    navSettings: initialAppSettings.navSettings,
-    setNavSettings: (navSettings) => set({ navSettings }),
-    roleOnChainSync: initialAppSettings.roleOnChainSync,
-    setRoleSync: (roleOnChainSync) => set({ roleOnChainSync }),
-    commsSettings: initialAppSettings.commsSettings,
-    setCommsSettings: (commsSettings) => set({ commsSettings }),
-  }),
-  {
-    devtoolsEnabled: true,
-    persistOptions: {
-      name: 'appSettingsStore',
-      storage: localPersistStorage,
+export const useSettingsStore: UseBoundStore<StoreApi<AppSettings>> =
+  zustandStore<AppSettings>(
+    (set) => ({
+      chainSettings: initialAppSettings.chainSettings,
+      contracts: initialAppSettings.contracts,
+      setChainSettings: (chainSettings) => set({ chainSettings }),
+      subGraphUrl: initialAppSettings.subGraphUrl,
+      setSubGraphUrlSettings: (subGraphUrl) => set({ subGraphUrl }),
+      accessManager: initialAppSettings.accessManager,
+      setAccessManagerSettings: (accessManager) => set({ accessManager }),
+      // rahatTreasury: initialAppSettings.rahatTreasury,
+      // setRahatTreasurySettings: (rahatTreasury) => set({ rahatTreasury }),
+      setContractSettings: (contracts) => set({ contracts }),
+      navSettings: initialAppSettings.navSettings,
+      setNavSettings: (navSettings) => set({ navSettings }),
+      roleOnChainSync: initialAppSettings.roleOnChainSync,
+      setRoleSync: (roleOnChainSync) => set({ roleOnChainSync }),
+      commsSettings: initialAppSettings.commsSettings,
+      setCommsSettings: (commsSettings) => set({ commsSettings }),
+    }),
+    {
+      devtoolsEnabled: true,
+      persistOptions: {
+        name: 'appSettingsStore',
+        storage: localPersistStorage,
+      },
     },
-  },
-);
+  );

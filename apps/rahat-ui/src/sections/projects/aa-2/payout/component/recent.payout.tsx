@@ -22,7 +22,7 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
           onClick={() => route.push(`/projects/aa/${id}/payout/list`)}
           disabled={!payouts?.length}
         >
-          View all Transactions
+          View all Payout List
           <ArrowRight className="ml-1" size={14} strokeWidth={1.5} />
         </Button>
       </div>
@@ -35,13 +35,17 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
                 beneficiaryGroupName={
                   item?.beneficiaryGroupToken?.beneficiaryGroup?.name
                 }
-                actions={item?.type}
-                merchentName={item?.extras?.paymentProviderName ?? 'N/A'}
+                actions={item?.type === 'VENDOR' ? 'CVA' : item?.type}
+                merchentName={
+                  item?.type === 'FSP'
+                    ? item?.extras?.paymentProviderName.split('_').join(' ')
+                    : item?.mode
+                }
                 beneficiariesCount={
                   item?.beneficiaryGroupToken?.beneficiaryGroup?._count
                     ?.beneficiaries
                 }
-                dateTime={new Date(item?.updatedAt)?.toLocaleString()}
+                dateTime={item?.updatedAt}
                 onView={() =>
                   route.push(`/projects/aa/${id}/payout/details/${item?.uuid}`)
                 }
@@ -52,9 +56,7 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
             </div>
           ))
         ) : (
-          <p className="text-sm font-medium text-muted-foreground">
-            No payouts found
-          </p>
+          <NoResult message="No Payout Available" />
         )}
       </div>
     </>

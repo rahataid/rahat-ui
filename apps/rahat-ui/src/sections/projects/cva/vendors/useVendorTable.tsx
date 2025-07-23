@@ -6,7 +6,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal } from 'lucide-react';
 
@@ -23,7 +23,8 @@ interface VendorTableProps {
 const vendorNames = ['Alice', 'Bob', 'Charlie', 'David', 'Eve', 'Frank'];
 
 //select random vendor name
-const randomVendorName = () => vendorNames[Math.floor(Math.random() * vendorNames.length)];
+const randomVendorName = () =>
+  vendorNames[Math.floor(Math.random() * vendorNames.length)];
 //endRegion
 
 export const useVendorTable = ({ handleViewClick }: VendorTableProps) => {
@@ -32,14 +33,18 @@ export const useVendorTable = ({ handleViewClick }: VendorTableProps) => {
       accessorKey: 'name',
       header: 'Name',
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('name') || randomVendorName()}</div>
+        <div className="capitalize">
+          {row.getValue('name') || randomVendorName()}
+        </div>
       ),
     },
     {
       accessorKey: 'walletAddress',
       header: 'Wallet Address',
       cell: ({ row }) => (
-        <div className="capitalize">{truncateEthAddress(row.getValue('walletAddress'))}</div>
+        <div className="capitalize">
+          {truncateEthAddress(row.getValue('walletAddress'))}
+        </div>
       ),
     },
     // {

@@ -22,6 +22,8 @@ import {
   DocumentsSection,
   ForecastDataSection,
 } from './components';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function TriggerStatementDetail() {
   const router = useRouter();
@@ -67,38 +69,57 @@ export default function TriggerStatementDetail() {
         <Heading
           title="Trigger Details"
           description="Detailed view of the selected trigger"
-          status={versionType && `V${versionType}`}
+          status={
+            versionType
+              ? `V${versionType}`
+              : trigger?.isTriggered && 'Triggered'
+          }
+          badgeClassName={`${
+            versionType
+              ? ''
+              : trigger?.isTriggered
+              ? 'text-red-500 bg-red-100'
+              : 'text-green-500 bg-green-100'
+          } text-xs`}
         />
         <div className="flex space-x-2">
-          <DeleteButton
-            className={`rounded flex gap-1 items-center text-sm font-medium ${
-              version && 'hidden'
-            }`}
-            name="trigger"
-            label="Delete"
-            handleContinueClick={handleDelete}
-            disabled={trigger?.isTriggered}
-          />
-          <EditButton
-            className={`rounded flex gap-1 items-center text-sm font-medium ${
-              version && 'hidden'
-            }`}
-            label="Edit"
-            onFallback={() =>
-              router.push(
-                `/projects/aa/${id}/trigger-statements/${triggerRepeatKey}/edit`,
-              )
-            }
-            disabled={trigger?.phase?.isActive || trigger?.isTriggered}
-          />
-          {source === 'MANUAL' && !trigger?.isTriggered && (
-            <ActivateTriggerDialog
-              projectId={id}
-              repeatKey={triggerRepeatKey as string}
-              version={version}
-              notes={trigger?.notes}
+          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+            <DeleteButton
+              className={`rounded flex gap-1 items-center text-sm font-medium ${
+                version && 'hidden'
+              }`}
+              name="trigger"
+              label="Delete"
+              handleContinueClick={handleDelete}
+              disabled={trigger?.isTriggered || trigger?.phase?.isActive}
             />
-          )}
+          </RoleAuth>
+          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+            <EditButton
+              className={`rounded flex gap-1 items-center text-sm font-medium ${
+                version && 'hidden'
+              }`}
+              label="Edit"
+              onFallback={() =>
+                router.push(
+                  `/projects/aa/${id}/trigger-statements/${triggerRepeatKey}/edit`,
+                )
+              }
+              disabled={trigger?.phase?.isActive || trigger?.isTriggered}
+            />
+          </RoleAuth>
+          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+            {source === 'MANUAL' &&
+              !trigger?.phase?.isActive &&
+              !trigger?.isTriggered && (
+                <ActivateTriggerDialog
+                  projectId={id}
+                  repeatKey={triggerRepeatKey as string}
+                  version={version}
+                  notes={trigger?.notes}
+                />
+              )}
+          </RoleAuth>
         </div>
       </div>
       <div
@@ -110,11 +131,11 @@ export default function TriggerStatementDetail() {
           <Heading
             title={trigger?.title}
             titleStyle="text-lg/7"
-            description=""
+            description={trigger?.description}
           />
           <div
             className={`grid ${
-              trigger?.isTriggered ? 'grid-cols-7' : 'grid-cols-5'
+              trigger?.isTriggered ? 'grid-cols-8' : 'grid-cols-6'
             } text-sm/4 text-muted-foreground mt-6`}
           >
             <div>
@@ -123,7 +144,15 @@ export default function TriggerStatementDetail() {
             </div>
             <div>
               <p className="mb-1">Phase</p>
-              <Badge>{trigger?.phase?.name || 'N/A'}</Badge>
+              <Badge
+                className={`${
+                  trigger?.phase?.name === 'READINESS'
+                    ? 'text-yellow-500 bg-yellow-100'
+                    : 'text-red-500 bg-red-100'
+                } text-xs`}
+              >
+                {trigger?.phase?.name || 'N/A'}
+              </Badge>
             </div>
             <div>
               <p className="mb-1">Trigger Type</p>
@@ -148,10 +177,16 @@ export default function TriggerStatementDetail() {
                 <p className="text-red-500">N/A</p>
               )}
             </div>
+            {trigger?.createdBy && (
+              <div>
+                <p className="mb-1">Created By</p>
+                <p>{trigger?.createdBy}</p>
+              </div>
+            )}
             {trigger?.isTriggered && (
               <div>
                 <p className="mb-1">Triggered At</p>
-                <p>{new Date(trigger?.triggeredAt).toLocaleString()}</p>
+                <p>{dateFormat(trigger?.triggeredAt)}</p>
               </div>
             )}
             {trigger?.triggeredBy && (
@@ -189,7 +224,7 @@ export default function TriggerStatementDetail() {
             <div className="bg-gray-100 rounded-sm p-4">
               <p className="text-sm/4 mb-1">{trigger?.notes}</p>
               <p className="text-gray-500 text-sm/4">
-                {new Date(trigger?.updatedAt).toLocaleString()}
+                {dateFormat(trigger?.updatedAt)}
               </p>
             </div>
           </div>

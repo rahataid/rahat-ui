@@ -67,6 +67,8 @@ export default function AddActivities() {
   const { data: users, isSuccess } = useUserList({
     page: 1,
     perPage: 9999,
+    sort: 'createdAt',
+    roles: 'admin , manager',
   });
   useActivitiesCategories(projectID as UUID);
   usePhases(projectID as UUID);
@@ -105,6 +107,7 @@ export default function AddActivities() {
       : `/projects/aa/${projectID}/activities/list/${phases
           .find((p) => p.uuid === phaseId)
           ?.name.toLowerCase()}`;
+
   useStakeholdersGroups(projectID as UUID, {
     page: 1,
     perPage: 100,
@@ -196,7 +199,7 @@ export default function AddActivities() {
 
   const selectedPhaseId = form.watch('phaseId');
   const selectedPhase = phases.find((d) => d.uuid === selectedPhaseId);
-
+  console.log(phases);
   React.useEffect(() => {
     form.setValue('activityDocuments', allFiles);
   }, [allFiles, setAllFiles]);
@@ -239,7 +242,6 @@ export default function AddActivities() {
     setCommunicationData(updatedCommunications);
   };
   const handleCreateActivities = async (data: z.infer<typeof FormSchema>) => {
-    console.log('objectadd');
     const manager =
       users?.data?.find((u) => u?.uuid === data.responsibility) || null;
     const { responsibility, activityCommunication, ...rest } = data;
@@ -353,7 +355,7 @@ export default function AddActivities() {
                       form.reset();
                     }}
                   >
-                    Cancel
+                    Clear
                   </Button>
                   <Button
                     className="w-36"

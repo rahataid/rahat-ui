@@ -23,7 +23,7 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 import HeaderWithBack from '../projects/components/header.with.back';
 import { Loader2, Wallet } from 'lucide-react';
@@ -52,6 +52,7 @@ const FormSchema = z.object({
 export default function EditUser() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
+  const searchParams = useSearchParams()?.get('split');
 
   const { data } = useUserGet(id);
   const user = data?.data;
@@ -101,7 +102,7 @@ export default function EditUser() {
           <HeaderWithBack
             title="Edit User"
             subtitle="Edit user detail"
-            path="/users"
+            path={searchParams ? '/users' : `/users/${id}`}
           />
           <div className="grid grid-cols-2 gap-4 border p-4 rounded-md">
             <>
@@ -201,30 +202,7 @@ export default function EditUser() {
                   );
                 }}
               />
-              <div className="col-span-2">
-                <FormField
-                  control={form.control}
-                  name="wallet"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Wallet Address</FormLabel>
-                        <FormControl>
-                          <div className="relative w-full">
-                            <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              type="text"
-                              placeholder="Enter wallet address"
-                              {...field}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-              </div>
+
               <FormField
                 control={form.control}
                 name="roles"
@@ -260,6 +238,29 @@ export default function EditUser() {
                   );
                 }}
               />
+
+              <FormField
+                control={form.control}
+                name="wallet"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Wallet Address</FormLabel>
+                      <FormControl>
+                        <div className="relative w-full">
+                          <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            type="text"
+                            placeholder="Enter wallet address"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
             </>
           </div>
         </div>
@@ -268,9 +269,12 @@ export default function EditUser() {
             className="px-14"
             type="button"
             variant="secondary"
-            onClick={() => router.push('/users')}
+            onClick={() => {
+              form.reset();
+              // router.push('/users')
+            }}
           >
-            Cancel
+            Reset
           </Button>
           {updateUser.isPending ? (
             <Button disabled>

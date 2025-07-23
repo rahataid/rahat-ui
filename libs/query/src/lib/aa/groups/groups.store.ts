@@ -1,5 +1,6 @@
 import { localStore, zustandStore } from '@rumsan/react-query';
 import { useBeneficiariesGroups } from './groups.service';
+import { StoreApi, UseBoundStore } from 'zustand';
 
 const initialStore = {
   stakeholdersGroups: [],
@@ -34,25 +35,27 @@ type BeneficiariesGroupsStore = BeneficiariesGroupState &
 type StakeholdersGroupsStore = StakeholdersGroupsState &
   StakeholdersGroupsStateAction;
 
-export const useBeneficiariesGroupStore =
-  zustandStore<BeneficiariesGroupsStore>(
-    (set) => ({
-      ...initialStore,
-      setBeneficiariesGroup: (beneficiariesGroups) =>
-        set({ beneficiariesGroups }),
-      setBeneficiariesGroupMeta: (meta) =>
-        set({ beneficiariesGroupsMeta: meta }),
-    }),
-    {
-      devtoolsEnabled: true,
-      persistOptions: {
-        name: 'aaBeneficiariesGroupStore',
-        storage: localStore,
-      },
+export const useBeneficiariesGroupStore: UseBoundStore<
+  StoreApi<BeneficiariesGroupsStore>
+> = zustandStore<BeneficiariesGroupsStore>(
+  (set) => ({
+    ...initialStore,
+    setBeneficiariesGroup: (beneficiariesGroups) =>
+      set({ beneficiariesGroups }),
+    setBeneficiariesGroupMeta: (meta) => set({ beneficiariesGroupsMeta: meta }),
+  }),
+  {
+    devtoolsEnabled: true,
+    persistOptions: {
+      name: 'aaBeneficiariesGroupStore',
+      storage: localStore,
     },
-  );
+  },
+);
 
-export const useStakeholdersGroupsStore = zustandStore<StakeholdersGroupsStore>(
+export const useStakeholdersGroupsStore: UseBoundStore<
+  StoreApi<StakeholdersGroupsStore>
+> = zustandStore<StakeholdersGroupsStore>(
   (set) => ({
     ...initialStore,
     setStakeholdersGroups: (stakeholdersGroups) => set({ stakeholdersGroups }),

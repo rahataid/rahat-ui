@@ -8,9 +8,11 @@ import {
   useFetchTokenStatsStellar,
   useFundAssignmentStore,
   usePayouts,
+  usePayoutStats,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useMemo } from 'react';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function PayoutView() {
   const params = useParams();
@@ -20,59 +22,65 @@ export default function PayoutView() {
     page: 1,
     perPage: 999,
   });
-
+  const { data: statsPayout, isLoading } = usePayoutStats(projectID);
   useFetchTokenStatsStellar({
     projectUUID: projectID,
   });
 
-  const { stellarTokenStats } = useFundAssignmentStore((state) => ({
-    stellarTokenStats: state.stellarTokenStats,
-  }));
-
   const payoutStats = useMemo(() => {
-    const getAmountByName = (name: string) =>
-      stellarTokenStats.find((item: any) => item.name === name)?.amount ??
-      'N/A';
-
     return [
       {
+        label: 'No. of Token Assigned',
+        subtitle: 'Token Balance',
+        value: statsPayout?.payoutStats?.tokenAssigned || 'N/A',
+      },
+      {
+        label: 'Amount Disbursed',
+        subtitle: ' ',
+        value: `Rs. ${statsPayout?.payoutStats?.amountDisbursed}` || 'N/A',
+      },
+      {
+        label: 'No. of Tokens Disbursed',
+        subtitle: ' ',
+        value: statsPayout?.payoutStats?.tokenDisbursed || 'N/A',
+      },
+      {
         label: 'Project Balance',
-        value: getAmountByName('Disbursement Balance'),
+        subtitle: ' ',
+        value: `Rs. ${statsPayout?.payoutStats?.projectBalance}` || 'N/A',
       },
-      {
-        label: 'Tokens Distributed',
-        value: getAmountByName('Disbursed Balance'),
-      },
-      {
-        label: 'Tokens Disbursed',
-        value: getAmountByName('Remaining Balance'),
-      },
+
       {
         label: '1 Token Value',
-        value: getAmountByName('Token Price'),
+        subtitle: ' ',
+        value: statsPayout?.payoutStats?.oneTokenValue || 'N/A',
       },
     ];
-  }, [stellarTokenStats]);
+  }, [statsPayout]);
 
+  console.log(statsPayout);
   return (
     <div className="p-4 ">
       <div className="flex justify-between items-center space-x-4">
         <Heading
           title="Payout"
-          description="Worem ipsum dolor sit amet, consectetur adipiscing elit"
+          description="Track all the payout reports here"
         />
         <div className="flex flex-end gap-2">
-          <IconLabelBtn
-            Icon={Plus}
-            handleClick={() => {
-              route.push(`/projects/aa/${projectID}/payout/initiate-payout`);
-            }}
-            name="Initiate Payment"
-            variant="default"
-          />
+          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+            <IconLabelBtn
+              Icon={Plus}
+              handleClick={() => {
+                route.push(`/projects/aa/${projectID}/payout/initiate-payout`);
+              }}
+              name="Create Payout"
+              variant="default"
+              payout-main-bug-refactor
+            />
+          </RoleAuth>
         </div>
       </div>
-      <div className="grid grid-cols-4 gap-4 mb-4">
+      <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
         {payoutStats.map((stat) => {
           return (
             <DataCard
@@ -80,31 +88,71 @@ export default function PayoutView() {
               title={stat.label}
               number={stat.value as string}
               className="rounded-sm"
+              subtitle={stat.subtitle}
             />
           );
         })}
       </div>
-      <div className="flex mt-4 gap-4">
-        <div className=" border rounded-sm p-4 h-[calc(50vh)]">
-          <h1 className="text-lg font-medium">Token Status</h1>
-          <PieChart
-            chart={{
-              series: [
-                {
-                  label: 'Project Balance',
-                  value: 23000,
-                },
-                {
-                  label: 'Tokens Distributed',
-                  value: 10000,
-                },
-              ],
-              colors: ['#F4A462', '#2A9D90'],
-            }}
-            custom={true}
-            projectAA={true}
-          />
+      <div className="flex flex-wrap mt-4 gap-4">
+        <div className="flex-1 border rounded-sm p-4">
+          <h1 className="text-lg font-medium mb-4">Payout Type</h1>
+          <div className="w-full aspect-square">
+            <PieChart
+              chart={{
+                series: [
+                  {
+                    label: 'FSP',
+                    value: statsPayout?.payoutOverview?.payoutTypes?.FSP || 0,
+                  },
+                  {
+                    label: 'CVA',
+                    value:
+                      statsPayout?.payoutOverview?.payoutTypes?.VENDOR || 0,
+                  },
+                ],
+                colors: ['#F4A462', '#2A9D90'],
+              }}
+              custom={true}
+              projectAA={true}
+              donutSize="80%"
+              width="100%"
+              height="100%"
+              type="donut"
+            />
+          </div>
         </div>
+
+        <div className="flex-1 border rounded-sm p-4">
+          <h1 className="text-lg font-medium mb-4">Total Payout</h1>
+          <div className="w-full aspect-square">
+            <PieChart
+              chart={{
+                series: [
+                  {
+                    label: 'Completed',
+                    value:
+                      statsPayout?.payoutOverview?.completionStatus
+                        ?.COMPLETED || 0,
+                  },
+                  {
+                    label: 'Not Completed',
+                    value:
+                      statsPayout?.payoutOverview?.completionStatus
+                        ?.NOT_COMPLETED || 0,
+                  },
+                ],
+                colors: ['#2A9D90', '#F4A462'],
+              }}
+              custom={true}
+              projectAA={true}
+              donutSize="80%"
+              width="100%"
+              height="100%"
+              type="donut"
+            />
+          </div>
+        </div>
+
         <div className="flex-[2] border rounded-sm p-4">
           <RecentPayout payouts={payouts} />
         </div>

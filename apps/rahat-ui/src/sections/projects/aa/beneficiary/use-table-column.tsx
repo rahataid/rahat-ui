@@ -12,7 +12,7 @@ import {
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 
 import BeneficiaryDetail from './beneficiary.detail';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
 export const useProjectBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();

@@ -1,5 +1,6 @@
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TriggerCard from './trigger.card';
+import { NoResult } from 'apps/rahat-ui/src/common';
 
 type IProps = {
   projectId: string;
@@ -38,15 +39,13 @@ export default function DynamicTriggersList({
               title={t?.title || 'N/A'}
               dataSource={t?.source === 'MANUAL' ? '' : t?.source}
               riverBasin={riverBasin || t?.phase.riverBasin}
-              time={new Date(t?.createdAt)?.toLocaleString()}
+              time={t?.createdAt}
               triggerType={t?.isMandatory ? 'Mandatory' : 'Optional'}
               version={t?.version}
             />
           ))
         ) : (
-          <p className="text-sm font-medium text-muted-foreground">
-            No triggers found
-          </p>
+          <NoResult message="No Trigger Available" />
         )}
       </div>
     </ScrollArea>

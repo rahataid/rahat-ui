@@ -12,7 +12,7 @@ import HealthWorkersView from './health.workers.view';
 import { Check, Copy, CopyCheck, User } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import React from 'react';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { DialogComponent } from '../../../../components/dialog';

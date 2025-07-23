@@ -16,10 +16,11 @@ import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { HeaderWithBack, Heading } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
+import { Tag, TagInput } from 'emblor';
 
 export default function EditStakeholders() {
   const router = useRouter();
@@ -31,9 +32,11 @@ export default function EditStakeholders() {
     uuid: stakeholdersId,
   });
   const redirectTo = searchParams?.get('from');
-  console.log(' stakeholders', stakeholder);
   const updateStakeholder = useUpdateStakeholders();
-
+  const [variationTags, setVariationTags] = useState<Tag[]>([]);
+  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
+  const [unsavedSupportAreaInput, setUnsavedSupportAreaInput] =
+    useState<string>('');
   const isValidPhoneNumberRefinement = (value: string | undefined) => {
     if (value === undefined || value === '') return true; // If phone number is empty or undefined, it's considered valid
     return isValidPhoneNumber(value);
@@ -63,6 +66,14 @@ export default function EditStakeholders() {
       .min(2, { message: 'Please enter organization.' }),
     district: z.string().min(2, { message: 'Please enter district.' }),
     municipality: z.string().min(2, { message: 'Please enter municipality' }),
+    supportArea: z
+      .array(
+        z.object({
+          id: z.string(),
+          text: z.string(),
+        }),
+      )
+      .optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -75,11 +86,19 @@ export default function EditStakeholders() {
       organization: stakeholder?.organization || '',
       district: stakeholder?.district || '',
       municipality: stakeholder?.municipality || '',
+      supportArea: stakeholder?.supportArea || ' ',
     },
   });
 
   useEffect(() => {
     if (stakeholder) {
+      const supportAreaTags = (stakeholder.supportArea || []).map((a) => ({
+        id: a,
+        text: a,
+      }));
+
+      setVariationTags(supportAreaTags);
+
       form.reset({
         name: stakeholder.name || '',
         phone: stakeholder.phone || '',
@@ -88,6 +107,7 @@ export default function EditStakeholders() {
         organization: stakeholder.organization || '',
         district: stakeholder.district || '',
         municipality: stakeholder.municipality || '',
+        supportArea: supportAreaTags,
       });
     }
   }, [stakeholder, form]);
@@ -95,11 +115,34 @@ export default function EditStakeholders() {
   const routeNav = redirectTo
     ? `/projects/aa/${projectId}/stakeholders?tab=stakeholders`
     : `/projects/aa/${projectId}/stakeholders/${stakeholdersId}`;
+
+  const handleSupportAreaKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (e.key === 'Enter') {
+      // Prevent form submission on Enter
+      e.preventDefault();
+      if (unsavedSupportAreaInput.trim() !== '') {
+        const newTag: Tag = {
+          id: new Date().getTime().toString(),
+          text: unsavedSupportAreaInput.trim(),
+        };
+        const updatedTags = [...variationTags, newTag];
+        setVariationTags(updatedTags);
+        form.setValue('supportArea', updatedTags);
+        setUnsavedSupportAreaInput('');
+      }
+    }
+  };
   const handleEditStakeholders = async (data: z.infer<typeof FormSchema>) => {
     try {
+      const payload = {
+        ...data,
+        supportArea: data?.supportArea?.map((t) => t.text), // back to string[]
+      };
       await updateStakeholder.mutateAsync({
         projectUUID: projectId,
-        stakeholderPayload: { uuid: stakeholdersId, ...data },
+        stakeholderPayload: { uuid: stakeholdersId, ...payload },
       });
       router.push(routeNav);
       form.reset();
@@ -132,25 +175,84 @@ export default function EditStakeholders() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleEditStakeholders)}>
           <div className="p-4 rounded-sm shadow border bg-card gap-3">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <Label>Stakeholders Name</Label>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="Enter a Stakeholder Name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
+            <div className="grid grid-cols-2 gap-4 mb-4 mt-5">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Label>Stakeholders Name</Label>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Enter a Stakeholder Name"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <FormField
+                control={form.control}
+                name="supportArea"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Label className="flex gap-2 items-center ">
+                        Support Area{' '}
+                        {unsavedSupportAreaInput && (
+                          <span className="text-sm text-red-400 ml-1">
+                            Press Enter to add.
+                          </span>
+                        )}
+                      </Label>
+                      <FormControl>
+                        <TagInput
+                          {...field}
+                          tags={variationTags}
+                          setTags={(newTags) => {
+                            setVariationTags(newTags);
+                            form.setValue(
+                              'supportArea',
+                              newTags as [Tag, ...Tag[]],
+                            );
+                          }}
+                          placeholder="Enter a Support Area"
+                          className="min-h-[23px]"
+                          styleClasses={{
+                            inlineTagsContainer:
+                              'border-input rounded shadow-xs p-1 gap-1 ' +
+                              'focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500',
+                            input:
+                              'w-full rounded-sm min-w-[80px] shadow-none px-2 h-7',
+                            tag: {
+                              body: 'h-7 relative rounded-sm border border-input font-medium text-xs ps-2 pe-7',
+                              closeButton:
+                                'absolute -inset-y-px -end-px p-0 rounded-e-md flex size-7 transition-[color,box-shadow] outline-none focus-visible:ring-2 focus-visible:ring-blue-500 text-muted-foreground/80 hover:text-foreground',
+                            },
+                          }}
+                          activeTagIndex={activeTagIndex}
+                          setActiveTagIndex={setActiveTagIndex}
+                          inputProps={{
+                            value: unsavedSupportAreaInput,
+                            onChange: (
+                              e: React.ChangeEvent<HTMLInputElement>,
+                            ) => setUnsavedSupportAreaInput(e.target.value),
+                            onKeyDown: handleSupportAreaKeyDown,
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            </div>
+
             <div className="grid grid-cols-2 gap-4 mb-4 mt-5">
               <FormField
                 control={form.control}
@@ -228,41 +330,6 @@ export default function EditStakeholders() {
                 }}
               />
 
-              {/* <FormField
-                control={form.control}
-                name="district"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <Select
-                        value={field.value || ''}
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                        }}
-                      >
-                        <Label>District</Label>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select District" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectGroup>
-                            {Object.values(DISTRICTS_OF_NEPAL).map(
-                              (district) => (
-                                <SelectItem value={district} key={district}>
-                                  {district}
-                                </SelectItem>
-                              ),
-                            )}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              /> */}
               <FormField
                 control={form.control}
                 name="district"
@@ -282,41 +349,7 @@ export default function EditStakeholders() {
                   );
                 }}
               />
-              {/* <FormField
-                control={form.control}
-                name="municipality"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <Select
-                        value={field.value || ''}
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                        }}
-                      >
-                        <Label>Municipality</Label>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a municipality" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectGroup>
-                            {MUNICIPALITIES_OF_NEPAL.map(
-                              (municipality, index) => (
-                                <SelectItem value={municipality} key={index}>
-                                  {municipality}
-                                </SelectItem>
-                              ),
-                            )}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              /> */}
+
               <FormField
                 control={form.control}
                 name="municipality"
@@ -342,15 +375,21 @@ export default function EditStakeholders() {
                 type="button"
                 variant="secondary"
                 className=" px-8"
-                onClick={() =>
-                  router.push(
-                    `/projects/aa/${projectId}/stakeholders/${stakeholdersId}`,
-                  )
+                onClick={() => {
+                  form.reset();
+
+                  setUnsavedSupportAreaInput('');
+                }}
+              >
+                Reset
+              </Button>
+              <Button
+                className="w-32"
+                disabled={
+                  form.formState.isSubmitting ||
+                  unsavedSupportAreaInput.trim() !== ''
                 }
               >
-                Cancel
-              </Button>
-              <Button className="w-32" disabled={form.formState.isSubmitting}>
                 Update
               </Button>
             </div>

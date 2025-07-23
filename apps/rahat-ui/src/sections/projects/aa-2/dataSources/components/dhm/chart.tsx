@@ -2,21 +2,41 @@
 
 import React from 'react';
 import dynamic from 'next/dynamic';
+import { format } from 'date-fns';
 const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 type ChartProps = {
   data: Record<string, any>[]; // accepts any shape with datetime
+  dangerLevel?: string;
+  warningLevel?: string;
+  yaxisTitle?: string;
+  unit?: string;
 };
 
-const TimeSeriesChart = ({ data }: ChartProps) => {
+const TimeSeriesChart = ({
+  data,
+  dangerLevel,
+  warningLevel,
+  yaxisTitle = 'Water Level (m)',
+  unit = '',
+}: ChartProps) => {
   if (!data || data.length === 0) return null;
 
   const keys = Object.keys(data[0]).filter((key) => key !== 'datetime');
 
+  const sortedData = [...data].sort(
+    (a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime(),
+  );
+
   const series = keys.map((key) => ({
     name: key === 'value' ? 'average' : key,
-    data: data.map((d) => [new Date(d.datetime).getTime(), d[key]]),
+    data: sortedData.map((d) => [new Date(d.datetime).getTime(), d[key]]),
   }));
+
+  const minTime = new Date(sortedData[0].datetime).getTime();
+  const maxTime = new Date(
+    sortedData[sortedData.length - 1].datetime,
+  ).getTime();
 
   const options: ApexCharts.ApexOptions = {
     chart: {
@@ -25,17 +45,52 @@ const TimeSeriesChart = ({ data }: ChartProps) => {
     },
     xaxis: {
       type: 'datetime',
+      min: minTime,
+      max: maxTime,
       title: {
         text: 'Time Stamp',
       },
+      labels: {
+        formatter: function (value) {
+          return format(new Date(value), 'h:mm a');
+        },
+        rotate: 0,
+      },
+      tooltip: { enabled: false },
     },
     yaxis: {
       title: {
-        text: 'Water Level (m)',
+        text: yaxisTitle,
       },
+      ...(warningLevel && {
+        min:
+          Math.min(
+            ...data.flatMap((d) => keys.map((key) => d[key])),
+            Number(warningLevel),
+            Number(dangerLevel),
+          ) - 0.5,
+      }),
+      ...(dangerLevel && {
+        max:
+          Math.max(
+            ...data.flatMap((d) => keys.map((key) => d[key])),
+            Number(warningLevel),
+            Number(dangerLevel),
+          ) + 0.5,
+      }),
     },
     tooltip: {
-      x: { format: 'dd MMM HH:mm' },
+      shared: false,
+      x: {
+        formatter: function (value) {
+          return format(new Date(value), 'PPp');
+        },
+      },
+      y: {
+        formatter: function (value) {
+          return `${value} ${unit}`;
+        },
+      },
     },
     dataLabels: { enabled: false },
     stroke: {
@@ -50,6 +105,42 @@ const TimeSeriesChart = ({ data }: ChartProps) => {
         opacityTo: 0,
         stops: [0, 90, 100],
       },
+    },
+    annotations: {
+      yaxis: [
+        ...(warningLevel
+          ? [
+              {
+                y: warningLevel,
+                borderColor: '#FFA500', // orange
+                label: {
+                  borderColor: '#FFA500',
+                  style: {
+                    color: '#fff',
+                    background: '#FFA500',
+                  },
+                  text: 'Warning Level',
+                },
+              },
+            ]
+          : []),
+        ...(dangerLevel
+          ? [
+              {
+                y: dangerLevel,
+                borderColor: '#FF0000', // red
+                label: {
+                  borderColor: '#FF0000',
+                  style: {
+                    color: '#fff',
+                    background: '#FF0000',
+                  },
+                  text: 'Danger Level',
+                },
+              },
+            ]
+          : []),
+      ],
     },
   };
 

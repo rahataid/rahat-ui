@@ -158,9 +158,15 @@ export default function ExcelUploader() {
           <Button
             type="button"
             variant="secondary"
-            onClick={() => router.push('/beneficiary')}
+            onClick={() => {
+              setData([]);
+              setFileName('No File Choosen');
+              setSelectedFile(null);
+
+              // router.push('/beneficiary')
+            }}
           >
-            Cancel
+            Clear
           </Button>
           {/* {addBeneficiary.isPending ? (
         <Button disabled>

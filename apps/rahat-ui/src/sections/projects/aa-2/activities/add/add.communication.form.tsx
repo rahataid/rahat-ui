@@ -29,6 +29,21 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { get } from 'react-hook-form';
+import { AudioRecorder } from '../components/recorder';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { MicIcon, Trash2, UploadIcon } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
 
 type IProps = {
   form: any;
@@ -54,6 +69,31 @@ export default function AddCommunicationForm({
     '',
   );
   const [address, setAddress] = React.useState(false);
+
+  const [customFileName, setCustomFileName] = React.useState('');
+
+  const [isRecording, setIsRecording] = React.useState(false);
+  const [isFinished, setIsFinished] = React.useState(false);
+  const [timer, setTimer] = React.useState(0);
+  const [recordedFile, setRecordedFile] = React.useState<string | null>(null);
+  const [chunks, setChunks] = React.useState<Blob[]>([]);
+  const [isPaused, setIsPaused] = React.useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = React.useState(false);
+
+  const mediaRef = React.useRef<MediaRecorder | null>(null);
+  const timerRef = React.useRef<any>(null);
+  const streamRef = React.useRef<MediaStream | null>(null);
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const animationRef = React.useRef<number | null>(null);
+  const analyserRef = React.useRef<AnalyserNode | null>(null);
+  const audioCtxRef = React.useRef<AudioContext | null>(null);
+  const isResettingRef = React.useRef(false);
+
+  const pad = (num: number) => String(num).padStart(2, '0');
+  const hh = pad(Math.floor(timer / 3600));
+  const mm = pad(Math.floor((timer % 3600) / 60));
+  const ss = pad(timer % 60);
+
   const [isPlaying, setIsPlaying] = React.useState(false);
   const fileUpload = useUploadFile();
 
@@ -64,6 +104,7 @@ export default function AddCommunicationForm({
   const beneficiaryGroups = useBeneficiariesGroupStore(
     (state) => state.beneficiariesGroups,
   );
+  console.log(beneficiaryGroups);
 
   const activityCommunication = form.watch('activityCommunication') || {};
 
@@ -89,18 +130,6 @@ export default function AddCommunicationForm({
     !!get(form.formState.errors, fieldName('groupId')) ||
     !activityCommunication.transportId ||
     isMessage;
-
-  // const stakeholdersGroups = [
-  //   { id: '1', uuid: 'stkh-123', name: 'Health Workers' },
-  //   { id: '2', uuid: 'stkh-456', name: 'NGO Representatives' },
-  //   { id: '3', uuid: 'stkh-789', name: 'Community Leaders' },
-  // ];
-
-  // const beneficiaryGroups = [
-  //   { id: '1', uuid: 'benf-101', name: 'Senior Citizens' },
-  //   { id: '2', uuid: 'benf-202', name: 'Pregnant Women' },
-  //   { id: '3', uuid: 'benf-303', name: 'Disabled Individuals' },
-  // ];
 
   const stakeholderId = groupType === 'STAKEHOLDERS' && groupId;
   const beneficiaryId = groupType === 'BENEFICIARY' && groupId;
@@ -188,18 +217,22 @@ export default function AddCommunicationForm({
     let groups = <SelectLabel>Please select group type</SelectLabel>;
     switch (selectedGroupType) {
       case 'STAKEHOLDERS':
-        groups = stakeholdersGroups.map((group: any) => (
-          <SelectItem key={group.id} value={group.uuid}>
-            {group.name}
-          </SelectItem>
-        ));
+        groups = stakeholdersGroups
+          .filter((a) => a?._count?.stakeholders > 0)
+          .map((group: any) => (
+            <SelectItem key={group.id} value={group.uuid}>
+              {group?.name}
+            </SelectItem>
+          ));
         break;
       case 'BENEFICIARY':
-        groups = beneficiaryGroups.map((group: any) => (
-          <SelectItem key={group.id} value={group.uuid}>
-            {group.name}
-          </SelectItem>
-        ));
+        groups = beneficiaryGroups
+          .filter((group: any) => group._count.groupedBeneficiaries > 0)
+          .map((group: any) => (
+            <SelectItem key={group.id} value={group.uuid}>
+              {group.name}
+            </SelectItem>
+          ));
         break;
       default:
         break;
@@ -209,17 +242,29 @@ export default function AddCommunicationForm({
   };
 
   const handleAudioFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>,
+    fileOrEvent: File | React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const formData = new FormData();
-      formData.append('file', file);
+    let file: File | undefined;
+
+    // If it's from <input>, extract the file
+    if ('target' in fileOrEvent) {
+      file = fileOrEvent.target.files?.[0];
+    } else {
+      file = fileOrEvent;
+    }
+
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
       const { data: afterUpload } = await fileUpload.mutateAsync(formData);
       setAudioFile(afterUpload);
-      // event.target.value = '';
+      // resetRecording(); // if this was from recording flow
+    } catch (err) {
+      console.error('File upload failed', err);
     }
-    // setIsPlaying(false);
   };
 
   React.useEffect(() => {
@@ -260,6 +305,190 @@ export default function AddCommunicationForm({
       mediaURL: '',
     });
   };
+  const updateTimer = () => {
+    setTimer((t) => t + 1);
+    timerRef.current = setTimeout(updateTimer, 1000);
+  };
+
+  const startRecording = async () => {
+    try {
+      isResettingRef.current = false;
+      setRecordedFile(null);
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+
+      const ctx = new AudioContext();
+      const analyser = ctx.createAnalyser();
+      const source = ctx.createMediaStreamSource(stream);
+      source.connect(analyser);
+
+      analyserRef.current = analyser;
+      audioCtxRef.current = ctx;
+
+      const recorder = new MediaRecorder(stream);
+      mediaRef.current = recorder;
+
+      const localChunks: Blob[] = [];
+      recorder.ondataavailable = (e) => {
+        localChunks.push(e.data);
+      };
+      recorder.onstop = () => {
+        if (isResettingRef.current) {
+          isResettingRef.current = false;
+          return; // 🧹 skip blob creation on reset
+        }
+        const blob = new Blob(localChunks, { type: 'audio/wav' });
+        const url = URL.createObjectURL(blob);
+        setRecordedFile(url);
+        setChunks(localChunks);
+        setIsFinished(true);
+      };
+
+      recorder.start();
+      setIsRecording(true);
+      setTimer(0);
+      updateTimer();
+    } catch (error) {
+      console.error(error);
+      alert('Microphone access is required.');
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRef.current?.state !== 'inactive') {
+      mediaRef.current?.stop();
+    }
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+
+    stopAll();
+    setIsPaused(false);
+  };
+
+  const resetRecording = () => {
+    isResettingRef.current = true;
+    mediaRef.current?.stop(); // stop the recorder
+    stopAll(); // cleanup audio stream, timer, etc.
+    setChunks([]);
+    setRecordedFile(null); // clear local preview URL
+    setIsFinished(false);
+    setAudioFile({ fileName: '', mediaURL: '' }); // clear uploaded file
+    form.setValue(fieldName('audioURL'), ''); // reset form field
+    fileUpload.reset(); // reset upload state
+    setIsPaused(false);
+  };
+  const pauseRecording = () => {
+    if (mediaRef.current?.state === 'recording') {
+      mediaRef.current.pause();
+      setIsPaused(true);
+      clearTimeout(timerRef.current);
+    }
+  };
+
+  const resumeRecording = () => {
+    if (mediaRef.current?.state === 'paused') {
+      mediaRef.current.resume();
+      setIsPaused(false);
+      updateTimer(); // resume timerresumeRecording
+    }
+  };
+  const stopAll = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setIsRecording(false);
+    analyserRef.current?.disconnect();
+    audioCtxRef.current?.close();
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    if (animationRef.current) cancelAnimationFrame(animationRef.current);
+  };
+  React.useEffect(() => {
+    if (!selectedTransport || !appTransports?.length) return;
+
+    const transportData = appTransports.find(
+      (t) => t.cuid === selectedTransport,
+    );
+
+    const newContentType =
+      transportData?.validationContent as ValidationContent;
+
+    if (newContentType) {
+      setContentType(newContentType);
+
+      // 🧼 Reset fields if type changes
+      if (newContentType === ValidationContent.TEXT) {
+        form.setValue(fieldName('message'), '');
+        form.setValue(fieldName('audioURL'), {});
+      } else if (newContentType === ValidationContent.URL) {
+        form.setValue(fieldName('audioURL'), {});
+        setAudioFile({ fileName: '', mediaURL: '' });
+        setRecordedFile(null);
+        fileUpload.reset();
+      }
+    }
+
+    setAddress(transportData?.validationAddress === 'EMAIL');
+  }, [selectedTransport]);
+
+  // React.useEffect(() => {
+  //   const selectedGroupType = form.watch(fieldName('groupType'));
+  //   const selectedGroupId = form.watch(fieldName('groupId'));
+
+  //   if (!selectedGroupId || !selectedGroupType) return;
+
+  //   if (selectedGroupType === 'STAKEHOLDERS') {
+  //     const selectedGroup = stakeholdersGroups.find(
+  //       (g) => g.uuid === selectedGroupId,
+  //     );
+
+  //     if (selectedGroup?.stakeholders?.length === 0) {
+  //       form.setError(fieldName('groupId'), {
+  //         type: 'manual',
+  //         message: 'Selected stakeholder group is empty.',
+  //       });
+  //     } else {
+  //       form.clearErrors(fieldName('groupId'));
+  //     }
+  //   }
+
+  //   if (selectedGroupType === 'BENEFICIARY') {
+  //     const selectedGroup = beneficiaryGroups.find(
+  //       (g) => g.uuid === selectedGroupId,
+  //     );
+
+  //     if (selectedGroup?.groupedBeneficiaries?.length === 2) {
+  //       form.setError(fieldName('groupId'), {
+  //         type: 'manual',
+  //         message: 'Selected beneficiary group is empty.',
+  //       });
+  //     } else {
+  //       form.clearErrors(fieldName('groupId'));
+  //     }
+  //   }
+  // }, [
+  //   form.watch(fieldName('groupType')),
+  //   form.watch(fieldName('groupId')),
+  //   stakeholdersGroups,
+  //   beneficiaryGroups,
+  // ]);
+
+  const removeFile = () => {
+    form.setValue(fieldName('audioURL'), {});
+    setAudioFile({ fileName: '', mediaURL: '' });
+    setRecordedFile(null);
+    fileUpload.reset();
+  };
+  const isVoiceTransport =
+    transportData?.name?.toLowerCase().includes('voice') ||
+    transportData?.name?.toLowerCase().includes('ivr');
+
+  const isVoiceAudioMissing =
+    isVoiceTransport &&
+    (!activityCommunication.audioURL ||
+      (typeof activityCommunication.audioURL === 'string' &&
+        activityCommunication.audioURL.trim() === '') ||
+      (typeof activityCommunication.audioURL === 'object' &&
+        !activityCommunication.audioURL.mediaURL));
 
   return (
     <div className="border border-dashed rounded p-4 my-8">
@@ -338,55 +567,131 @@ export default function AddCommunicationForm({
             </FormItem>
           )}
         />
-        {contentType === ValidationContent.URL && (
-          <FormField
-            control={form.control}
-            name={fieldName('audioURL')}
-            render={() => {
-              return (
-                <FormItem>
-                  <FormLabel>Upload audio</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="file"
-                      accept="audio/*"
-                      onChange={handleAudioFileChange}
-                    />
-                  </FormControl>
-                  <div className="flex justify-end">
-                    {fileUpload.isPending && (
-                      <p className="text-green-600 text-xs">uploading...</p>
-                    )}
 
-                    {fileUpload.isError && (
-                      <p className="text-red-600 text-xs">upload error</p>
-                    )}
+        {contentType === ValidationContent.URL && !fileUpload.isSuccess && (
+          <div className="col-span-2">
+            <Tabs defaultValue="upload" className="items-center">
+              <TabsList className="">
+                <TabsTrigger value="upload" className="group gap-2">
+                  <UploadIcon className="w-5 h-5" />
+                  Upload
+                </TabsTrigger>
+                <TabsTrigger value="record" className="group gap-2">
+                  <MicIcon className="w-5 h-5" />
+                  Record
+                </TabsTrigger>
+              </TabsList>
 
-                    {fileUpload.isSuccess && (
-                      <p className="text-green-600 text-xs">upload complete</p>
-                    )}
-                  </div>
+              <TabsContent value="upload">
+                <FormField
+                  control={form.control}
+                  name={fieldName('audioURL')}
+                  render={() => (
+                    <FormItem className="col-span-2">
+                      <FormControl>
+                        <Input
+                          type="file"
+                          accept="audio/*"
+                          onChange={handleAudioFileChange}
+                        />
+                      </FormControl>
+                      <div className="flex justify-end">
+                        {fileUpload.isPending && (
+                          <p className="text-green-600 text-xs">uploading...</p>
+                        )}
+                        {fileUpload.isError && (
+                          <p className="text-red-600 text-xs">upload error</p>
+                        )}
+                        {fileUpload.isSuccess && (
+                          <p className="text-green-600 text-xs">
+                            upload complete
+                          </p>
+                        )}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </TabsContent>
+              <TabsContent value="record">
+                <FormField
+                  control={form.control}
+                  name={fieldName('audioURL')}
+                  render={() => {
+                    return (
+                      <FormItem>
+                        <FormControl>
+                          <AudioRecorder
+                            isRecording={isRecording}
+                            isFinished={isFinished}
+                            timer={`${hh}:${mm}:${ss}`}
+                            recordedFile={recordedFile}
+                            chunks={chunks}
+                            setChunks={setChunks}
+                            startRecording={startRecording}
+                            stopRecording={stopRecording}
+                            resetRecording={resetRecording}
+                            animationRef={animationRef}
+                            analyserRef={analyserRef}
+                            resumeRecording={resumeRecording}
+                            pauseRecording={pauseRecording}
+                            isPaused={isPaused}
+                            handleUpload={() => {
+                              setShowConfirmDialog(true);
+                            }}
+                            canvasRef={canvasRef}
+                            fileUploadPending={fileUpload.isPending}
+                          />
+                        </FormControl>
+                        <div className="flex justify-end">
+                          {fileUpload.isPending && (
+                            <p className="text-green-600 text-xs">
+                              uploading...
+                            </p>
+                          )}
 
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
+                          {fileUpload.isError && (
+                            <p className="text-red-600 text-xs">upload error</p>
+                          )}
+
+                          {fileUpload.isSuccess && (
+                            <p className="text-green-600 text-xs">
+                              upload complete
+                            </p>
+                          )}
+                        </div>
+
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              </TabsContent>
+            </Tabs>
+          </div>
         )}
+
         {contentType === ValidationContent.URL &&
           audioFile?.fileName &&
           audioFile?.mediaURL && (
-            <div className="pt-2">
+            <div className="pt-2 w-full">
               <h3 className="text-sm font-medium mb-2">
                 {audioFile?.fileName}
               </h3>
-              <audio
-                src={audioFile?.mediaURL}
-                controls
-                className="w-full h-10 "
-                onPlay={() => setIsPlaying(true)}
-                onPause={() => setIsPlaying(false)}
-              />
+              <div className="flex gap-2 items-center justify-center">
+                <audio
+                  src={audioFile?.mediaURL}
+                  controls
+                  className="w-full h-10 bg-none"
+                  onPlay={() => setIsPlaying(true)}
+                  onPause={() => setIsPlaying(false)}
+                />
+                <Trash2
+                  onClick={() => removeFile()}
+                  className="h-5 w-5s hover:cursor-pointer"
+                  color="red"
+                />
+              </div>
             </div>
           )}
 
@@ -410,13 +715,39 @@ export default function AddCommunicationForm({
           <FormField
             control={form.control}
             name={fieldName('message')}
+            rules={{
+              validate: (value) => {
+                if (!value) return true;
+
+                if (/[\u0900-\u097F]/.test(value)) {
+                  return (
+                    value.length <= 350 ||
+                    'Nepali message cannot exceed 350 characters'
+                  );
+                } else {
+                  return (
+                    value.length <= 700 ||
+                    'English message cannot exceed 700 characters'
+                  );
+                }
+              },
+            }}
             render={({ field }) => {
+              const isNep = /[\u0900-\u097F]/.test(field.value || '');
+              const maxLen = isNep ? 350 : 700;
               return (
                 <FormItem className="col-span-2">
                   <FormLabel>Message</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Write message" {...field} />
+                    <Textarea
+                      placeholder="Write message"
+                      {...field}
+                      maxLength={maxLen}
+                    />
                   </FormControl>
+                  <div className="text-right text-xs text-muted-foreground">
+                    {field.value?.length || 0} / {maxLen} characters
+                  </div>
                   <FormMessage />
                 </FormItem>
               );
@@ -437,11 +768,55 @@ export default function AddCommunicationForm({
           variant="outline"
           onClick={handleSave}
           type="button"
-          disabled={isSaveDisabled}
+          disabled={isSaveDisabled || isVoiceAudioMissing}
         >
           Save
         </Button>
       </div>
+
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle>Enter a file name</DialogTitle>
+            <DialogDescription>
+              <Input
+                placeholder="Enter file name"
+                value={customFileName}
+                onChange={(e) => setCustomFileName(e.target.value)}
+              />
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => setShowConfirmDialog(false)}
+              type="button"
+            >
+              Cancel
+            </Button>
+
+            <Button
+              onClick={() => {
+                const blob = new Blob(chunks, { type: 'audio/wav' });
+                const file = new File([blob], `${customFileName}.wav`, {
+                  type: 'audio/wav',
+                });
+                handleAudioFileChange(file);
+                setShowConfirmDialog(false);
+              }}
+              type="button"
+              disabled={!customFileName}
+            >
+              Confirm Upload
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

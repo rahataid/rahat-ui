@@ -26,7 +26,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useGetReferredVoucherTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Tooltip,

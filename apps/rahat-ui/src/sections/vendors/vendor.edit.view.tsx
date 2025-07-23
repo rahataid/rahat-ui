@@ -25,9 +25,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
 import { UUID } from 'crypto';
 import HeaderWithBack from '../projects/components/header.with.back';
-import {
-  Gender,
-} from '@rahataid/sdk/enums';
+import { Gender } from '@rahataid/sdk/enums';
 import { useGetVendor, useUpdateVendor } from '@rahat-ui/query';
 
 export default function EditVendors() {
@@ -77,12 +75,11 @@ export default function EditVendors() {
     }
   }, [vendor, form.reset]);
 
-
   const handleEditVendor = async (data: z.infer<typeof FormSchema>) => {
     await updateVendor.mutateAsync({
       uuid: id,
-      payload: { ...data }
-    })
+      payload: { ...data },
+    });
     router.push('/vendors');
   };
 
@@ -231,9 +228,12 @@ export default function EditVendors() {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => router.push('/vendors')}
+              onClick={() => {
+                form.reset();
+                // router.push('/vendors')
+              }}
             >
-              Cancel
+              Reset
             </Button>
             {updateVendor.isPending ? (
               <Button disabled>

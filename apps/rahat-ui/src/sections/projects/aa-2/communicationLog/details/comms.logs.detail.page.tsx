@@ -10,33 +10,6 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 // import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import Loader from 'apps/rahat-ui/src/components/table.loader';
-import { UUID } from 'crypto';
-import {
-  AudioLines,
-  CloudDownload,
-  Component,
-  Download,
-  Hash,
-  LucideIcon,
-  Mail,
-  MessageSquareMore,
-  MessageSquareWarning,
-  RefreshCcw,
-  Text,
-  Timer,
-  UsersRound,
-} from 'lucide-react';
-import { useParams } from 'next/navigation';
-import React, { useMemo } from 'react';
-import { Player } from 'react-simple-player';
-import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
-import {
-  Back,
-  CustomPagination,
-  Heading,
-  SearchInput,
-} from 'apps/rahat-ui/src/common';
 import {
   Card,
   CardContent,
@@ -44,12 +17,32 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import CommsLogsTable from '../table/comms.logs.table';
-import CardSkeleton from 'apps/rahat-ui/src/common/cardSkeleton';
-import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
-import * as XLSX from 'xlsx';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import {
+  Back,
+  CustomPagination,
+  Heading,
+  SearchInput,
+} from 'apps/rahat-ui/src/common';
+import CardSkeleton from 'apps/rahat-ui/src/common/cardSkeleton';
+import SelectComponent from 'apps/rahat-ui/src/common/select.component';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import { UUID } from 'crypto';
+import {
+  AudioLines,
+  CloudDownload,
+  LucideIcon,
+  Mail,
+  Text,
+} from 'lucide-react';
+import { useParams } from 'next/navigation';
+import React, { useMemo } from 'react';
+import * as XLSX from 'xlsx';
+import CommsLogsTable from '../table/comms.logs.table';
+import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
+import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 type IHeadCardProps = {
   title: string;
   icon: LucideIcon;
@@ -72,20 +65,25 @@ export default function CommsLogsDetailPage() {
     setFilters,
   } = usePagination();
 
-  const columns = useCommsLogsTableColumns();
-
   // logs?.sessionLogs
-
+  const debounceSearch = useDebounce(filters, 500);
   const { data: logs, isLoading } = useGetCommunicationLogs(
     projectID as UUID,
     communicationId,
     activityId,
   );
-
+  const columns = useCommsLogsTableColumns(
+    logs?.sessionDetails?.Transport?.name,
+  );
+  const cleanFilters = Object.fromEntries(
+    Object.entries(debounceSearch).filter(
+      ([_, v]) => v !== '' && v !== null && v !== undefined,
+    ),
+  );
   const { data: activityDetail, isLoading: isLoadingActivity } =
     useSingleActivity(projectID as UUID, activityId);
   const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
-    useListSessionLogs(sessionId, { ...pagination, ...filters });
+    useListSessionLogs(sessionId, { ...pagination, ...cleanFilters });
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
 
@@ -161,10 +159,13 @@ export default function CommsLogsDetailPage() {
     XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
   };
 
-  // if (isLoading || isLoadingSessionLogs) {
-  //   return <Loader />;
-  // }
-
+  const handleSearch = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
+      const value = event?.target?.value ?? '';
+      setFilters({ ...filters, [key]: value });
+    },
+    [filters],
+  );
   return (
     <div className="p-4">
       <div className="flex flex-col space-y-0">
@@ -194,7 +195,11 @@ export default function CommsLogsDetailPage() {
           ) : (
             <Card className="p-4 rounded-sm bg-white">
               <CardTitle className="flex gap-2 pb-2">
-                <Badge>{activityDetail?.phase?.name}</Badge>
+                <Badge
+                  className={`${getPhaseColor(activityDetail?.phase?.name)}`}
+                >
+                  {activityDetail?.phase?.name}
+                </Badge>
                 <Badge
                   className={`rounded-xl capitalize text-xs font-normal ${getStatusBg(
                     activityDetail?.status,
@@ -238,7 +243,7 @@ export default function CommsLogsDetailPage() {
                 <div className="space-y-1">
                   <p className="text-sm text-gray-500">Triggered Date</p>
                   <p className="font-medium">
-                    {renderDateTime(logs?.sessionDetails?.createdAt)}
+                    {dateFormat(logs?.sessionDetails?.createdAt)}
                   </p>
                 </div>
 
@@ -248,11 +253,11 @@ export default function CommsLogsDetailPage() {
                   <p className="font-medium">{logsMeta?.total}</p>
                 </div>
 
-                {/* IVR Status */}
+                {/* VOICE Status */}
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 flex items-center justify-center">
-                      {logs?.sessionDetails?.Transport?.name === 'IVR' ? (
+                      {logs?.sessionDetails?.Transport?.name === 'VOICE' ? (
                         <AudioLines />
                       ) : logs?.sessionDetails?.Transport?.name === 'EMAIL' ? (
                         <Mail />
@@ -288,17 +293,14 @@ export default function CommsLogsDetailPage() {
             <Card className="col-span-1 md:col-span-2 w-full rounded-sm">
               <CardHeader className="flex flex-row items-center justify-center gap-2 pb-0 pt-0.5 space-y-0 px-2">
                 <SearchInput
-                  name="audience"
                   className="w-full"
-                  value={
-                    (table.getColumn('audience')?.getFilterValue() as string) ??
-                    filters?.audience
-                  }
-                  onSearch={(event) => handleFilterChange(event)}
+                  value={filters.address}
+                  name="Audience"
+                  onSearch={(e) => handleSearch(e, 'address')}
                 />
                 <SelectComponent
                   name="Status"
-                  options={['ALL', 'SUCCESS', 'PENDING', 'FAILED']}
+                  options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
                   onChange={(value) =>
                     handleFilterChange({
                       target: { name: 'status', value },
@@ -341,17 +343,8 @@ export default function CommsLogsDetailPage() {
   );
 }
 
-function renderDateTime(dateTime: string) {
-  if (dateTime) {
-    const d = new Date(dateTime);
-    const localeDate = d.toLocaleDateString();
-    const localeTime = d.toLocaleTimeString();
-    return `${localeDate} ${localeTime}`;
-  }
-  return 'N/A';
-}
-
 function renderMessage(message: any) {
+  console.log(message);
   if (typeof message === 'string') {
     return message;
   }
@@ -359,7 +352,7 @@ function renderMessage(message: any) {
     <div className="bg-gray-50 p-3 rounded-sm">
       <p className="text-center mb-2">{message?.fileName} </p>
 
-      <audio src={message?.audioURL} controls className="w-full h-10 " />
+      <audio src={message?.mediaURL} controls className="w-full h-10 " />
     </div>
   );
 }

@@ -25,7 +25,7 @@ import {
 import { ArrowUpDown } from 'lucide-react';
 import * as React from 'react';
 import { useRPBeneficiaryTransactions } from '@rahat-ui/query';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import Pagination from 'apps/rahat-ui/src/components/pagination';
 
 const data = [

@@ -50,8 +50,8 @@ export default function AddTriggerView() {
 
   const ManualFormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter trigger title' }),
+    description: z.string().optional(),
     isMandatory: z.boolean().optional(),
-    notes: z.string().optional(),
   });
 
   const manualForm = useForm<z.infer<typeof ManualFormSchema>>({
@@ -59,19 +59,19 @@ export default function AddTriggerView() {
     defaultValues: {
       title: '',
       isMandatory: false,
-      notes: '',
+      description: '',
     },
   });
 
   const AutomatedFormSchema = z
     .object({
       title: z.string().min(2, { message: 'Please enter trigger title' }),
+      description: z.string().optional(),
       source: z.string().min(1, { message: 'Please select data source' }),
       isMandatory: z.boolean().optional(),
       minLeadTimeDays: z.string().optional(),
       maxLeadTimeDays: z.string().optional(),
       probability: z.string().optional(),
-      notes: z.string().optional(),
       warningLevel: z.string().optional(),
       dangerLevel: z.string().optional(),
       forecast: z.string().optional(),
@@ -228,12 +228,12 @@ export default function AddTriggerView() {
     resolver: zodResolver(AutomatedFormSchema),
     defaultValues: {
       title: '',
+      description: '',
       source: '',
       maxLeadTimeDays: '',
       minLeadTimeDays: '',
       probability: '',
       isMandatory: false,
-      notes: '',
       warningLevel: '',
       dangerLevel: '',
       forecast: '',
@@ -322,8 +322,8 @@ export default function AddTriggerView() {
         phaseId,
         isMandatory,
         title,
+        description,
         source,
-        notes,
         ...rest
       }) => {
         // Only include non-empty fields in triggerStatement
@@ -338,7 +338,7 @@ export default function AddTriggerView() {
           isMandatory,
           title,
           source,
-          notes,
+          description,
           triggerStatement,
         };
       },
@@ -418,9 +418,16 @@ export default function AddTriggerView() {
               type="button"
               variant="outline"
               className="w-40 mr-2"
-              onClick={() => router.push(triggerViewPath)}
+              onClick={() => {
+                if (activeTab === 'automated') {
+                  automatedForm.reset();
+                } else {
+                  manualForm.reset();
+                }
+                // router.push(triggerViewPath)
+              }}
             >
-              Cancel
+              Clear
             </Button>
             <ConfirmAddTrigger
               open={open}

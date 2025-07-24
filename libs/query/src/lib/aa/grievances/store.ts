@@ -17,17 +17,18 @@ type AAGrievancesStateAction = {
 
 type AAGrievancesStore = AAGrievancesState & AAGrievancesStateAction;
 
-export const useAAGrievancesStore = zustandStore<AAGrievancesStore>(
-  (set) => ({
-    ...initialStore,
-    setGrievances: (grievances: any) => set({ grievances }),
-    setGrievanceDetails: (grievanceDetails: any) => set({ grievanceDetails }),
-  }),
-  {
-    devtoolsEnabled: true,
-    persistOptions: {
-      name: 'aaGrievancesStore',
-      storage: localStore,
+export const useAAGrievancesStore: () => AAGrievancesStore =
+  zustandStore<AAGrievancesStore>(
+    (set) => ({
+      ...initialStore,
+      setGrievances: (grievances: any) => set({ grievances }),
+      setGrievanceDetails: (grievanceDetails: any) => set({ grievanceDetails }),
+    }),
+    {
+      devtoolsEnabled: true,
+      persistOptions: {
+        name: 'aaGrievancesStore',
+        storage: localStore,
+      },
     },
-  },
-);
+  );

@@ -1,4 +1,5 @@
 import { localStore, zustandStore } from '@rumsan/react-query';
+import { StoreApi, UseBoundStore } from 'zustand';
 
 const initialStore = {
   grievances: [],
@@ -17,7 +18,7 @@ type AAGrievancesStateAction = {
 
 type AAGrievancesStore = AAGrievancesState & AAGrievancesStateAction;
 
-export const useAAGrievancesStore: () => AAGrievancesStore =
+export const useAAGrievancesStore: UseBoundStore<StoreApi<AAGrievancesStore>> =
   zustandStore<AAGrievancesStore>(
     (set) => ({
       ...initialStore,

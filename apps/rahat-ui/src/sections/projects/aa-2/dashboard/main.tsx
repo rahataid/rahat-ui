@@ -1,43 +1,28 @@
 'use client';
 
-import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
-import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@rahat-ui/shadcn/src/components/ui/carousel';
-import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
-import { DataCard, Heading } from 'apps/rahat-ui/src/common';
-import { Home, Users } from 'lucide-react';
-import Image from 'next/image';
+import { Heading } from 'apps/rahat-ui/src/common';
 import { useState } from 'react';
-import ResilienceOverview from './component/resilienceOverview';
 import BeneficiaryDemographics from './component/beneficiaryDemographics';
-import SocialProtectionBenefits from './component/socialProtectionBenefits';
 import CommunicationAnalytics from './component/communicationAnalytics';
+import ResilienceOverview from './component/resilienceOverview';
+import SocialProtectionBenefits from './component/socialProtectionBenefits';
+import {
+  useAAStations,
+  useProjectInfo,
+  useProjectStore,
+} from '@rahat-ui/query';
+import { Project } from '@rahataid/sdk/project/project.types';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 const Main = () => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const project = useProjectStore((state) => state.singleProject) as Project;
+  console.log(project);
+  const { id } = useParams();
+  const projectId = id as UUID;
+  useAAStations(projectId);
 
-  const images = [
-    {
-      src: '/images/humanitarian-image.png',
-      alt: 'Woman carrying child in humanitarian context',
-    },
-    // Add more images here as needed
-  ];
-
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
-
+  useProjectInfo(projectId);
   return (
     <div className="space-y-3 p-5">
       <Heading

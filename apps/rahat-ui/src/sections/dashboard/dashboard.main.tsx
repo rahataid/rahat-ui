@@ -1,4 +1,8 @@
-import { usePagination } from '@rahat-ui/query';
+import {
+  usePagination,
+  useProjectAction,
+  useProjectList,
+} from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Heading } from '../../common';
 import SelectComponent from '../../common/select.component';
@@ -8,6 +12,8 @@ import CommunicationAnalytics from './component/communicationAnalytics';
 import DigitalAccessOverview from './component/digitalAccessOverview';
 import SocialProtectionOverview from './component/socialProtectionOverview';
 import { MUNICIPALITY, WARDS } from './constant';
+import { filterVendorsGeoJson } from '../../utils/getVendorInfo';
+import { useEffect, useState } from 'react';
 
 // const socialProtectionBenefits = [
 //   { type: ' >70', households: 800 },
@@ -59,6 +65,38 @@ import { MUNICIPALITY, WARDS } from './constant';
 // ];
 const DashboardMain = () => {
   const { filters, setFilters } = usePagination();
+  const reportData = [
+    {
+      name: 'BENEFICIARIES',
+      data: `${process.env.NEXT_PUBLIC_API_HOST_URL}/v1/beneficiaries/stats`,
+    },
+  ];
+
+  const [dataForMap, setDataForMap] = useState<any>();
+
+  const getVendors = useProjectAction();
+
+  const projectsList = useProjectList();
+
+  const project = projectsList?.data?.data.find((item) => item.type === 'el');
+  const elUuid = project ? project.uuid : null;
+
+  const fetchVendors = async () => {
+    const response = await getVendors.mutateAsync({
+      uuid: elUuid as '${string}-${string}-${string}-${string}-${string}',
+      data: {
+        action: 'elProject.getVendorStats',
+        payload: {},
+      },
+    });
+    setDataForMap(filterVendorsGeoJson(response));
+  };
+
+  useEffect(() => {
+    if (!elUuid) return;
+    fetchVendors();
+  }, [elUuid]);
+
   const handleFilterChange = (e: {
     target: { name: string; value: string };
   }) => {

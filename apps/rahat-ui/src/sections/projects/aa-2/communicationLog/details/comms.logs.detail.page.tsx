@@ -3,6 +3,7 @@ import {
   useListSessionLogs,
   usePagination,
   useRetryFailedBroadcast,
+  useSessionRetryFailed,
   useSingleActivity,
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -21,6 +22,7 @@ import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import {
   Back,
   CustomPagination,
+  DataCard,
   Heading,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
@@ -35,10 +37,11 @@ import {
   CloudDownload,
   LucideIcon,
   Mail,
+  RefreshCcw,
   Text,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import * as XLSX from 'xlsx';
 import CommsLogsTable from '../table/comms.logs.table';
 import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
@@ -55,6 +58,7 @@ export default function CommsLogsDetailPage() {
     commsIdXactivityIdXsessionId as string
   ).split('%40');
 
+  const [retryDisabled, setRetryDisabled] = useState(false);
   const {
     pagination,
     setNextPage,
@@ -87,20 +91,38 @@ export default function CommsLogsDetailPage() {
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
 
-  const mutateRetry = useRetryFailedBroadcast(
-    projectID as UUID,
-    communicationId,
-    activityId,
-  );
+  const mutateRetry = useSessionRetryFailed();
+  // const retryFailed = async () => {
+  //   mutateRetry.mutateAsync({ cuid: sessionId, includeFailed: true });
+  // };
 
   const retryFailed = async () => {
-    mutateRetry.mutateAsync();
+    try {
+      const res = await mutateRetry.mutateAsync({
+        cuid: sessionId,
+        includeFailed: true,
+      });
+
+      if (res?.data?.count === 2) {
+        setRetryDisabled(true);
+      }
+    } catch (error) {
+      console.error('Retry failed:', error);
+    }
   };
 
   const failedCount = useMemo(() => {
     return (
       sessionLogs?.httpReponse?.data?.data?.filter(
         (log: any) => log?.status === BroadcastStatus.FAIL,
+      ) ?? []
+    );
+  }, [sessionLogs]);
+
+  const successCount = useMemo(() => {
+    return (
+      sessionLogs?.httpReponse?.data?.data?.filter(
+        (log: any) => log?.status === BroadcastStatus.SUCCESS,
       ) ?? []
     );
   }, [sessionLogs]);
@@ -179,51 +201,88 @@ export default function CommsLogsDetailPage() {
               title={`Communication Details`}
               description="Here is the detailed view of selected communication"
             />
-
-            <Button
-              variant="outline"
-              className=" gap-2"
-              onClick={onFailedExports}
-              disabled={failedCount.length === 0}
-            >
-              Failed Exports
-              <CloudDownload className="h-4 w-4" />
-            </Button>
+            <div className="flex gap-2 flex-col md:flex-row">
+              <Button
+                variant="outline"
+                className=" gap-2 h-7"
+                onClick={onFailedExports}
+                disabled={failedCount.length === 0}
+              >
+                <CloudDownload className="h-3.5 w-3.5" />
+                Failed Exports Attempts
+              </Button>
+              {failedCount.length > 0 &&
+                logs?.sessionDetails?.Transport?.name === 'VOICE' && (
+                  <Button
+                    type="button"
+                    onClick={retryFailed}
+                    disabled={retryDisabled || mutateRetry.isPending}
+                    className=" gap-2 h-7"
+                  >
+                    <RefreshCcw className="h-3.5 w-3.5" />
+                    Retry Failed Requests
+                  </Button>
+                )}
+            </div>
           </div>
           {isLoadingActivity ? (
             <CardSkeleton />
           ) : (
-            <Card className="p-4 rounded-sm bg-white">
-              <CardTitle className="flex gap-2 pb-2">
-                <Badge
-                  className={`${getPhaseColor(activityDetail?.phase?.name)}`}
-                >
-                  {activityDetail?.phase?.name}
-                </Badge>
-                <Badge
-                  className={`rounded-xl capitalize text-xs font-normal ${getStatusBg(
-                    activityDetail?.status,
-                  )}`}
-                >
-                  {activityDetail?.status
-                    .toLowerCase()
-                    .split('_')
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                    .join(' ')}
-                </Badge>
-              </CardTitle>
-              <CardContent className="pl-1 pb-1  font-semibold flex flex-col gap-1">
-                <Label className="text-muted-foreground text-xs">
-                  Activity Title:
-                </Label>
-                <Label className="text-base space-y-1 font-semibold">
-                  {activityDetail?.title}
-                </Label>
-              </CardContent>
-              <CardFooter className="pl-1 pb-2 text-sm text-muted-foreground">
-                {activityDetail?.description}
-              </CardFooter>
-            </Card>
+            <div className="flex flex-col lg:flex-row gap-4 w-full">
+              {/* Left Section (Activity Card) — 1/3 on large screens */}
+              <div className="flex-[2]">
+                <Card className="p-4 rounded-sm bg-white h-full">
+                  <CardTitle className="flex gap-2 pb-2">
+                    <Badge
+                      className={`${getPhaseColor(
+                        activityDetail?.phase?.name,
+                      )}`}
+                    >
+                      {activityDetail?.phase?.name}
+                    </Badge>
+                    <Badge
+                      className={`rounded-xl capitalize text-xs font-normal ${getStatusBg(
+                        activityDetail?.status,
+                      )}`}
+                    >
+                      {activityDetail?.status
+                        .toLowerCase()
+                        .split('_')
+                        .map(
+                          (word) =>
+                            word.charAt(0).toUpperCase() + word.slice(1),
+                        )
+                        .join(' ')}
+                    </Badge>
+                  </CardTitle>
+                  <CardContent className="pl-1 pb-1  font-semibold flex flex-col gap-1">
+                    <Label className="text-muted-foreground text-xs">
+                      Activity Title:
+                    </Label>
+                    <Label className="text-base space-y-1 font-semibold">
+                      {activityDetail?.title}
+                    </Label>
+                  </CardContent>
+                  <CardFooter className="pl-1 pb-2 text-sm text-muted-foreground">
+                    {activityDetail?.description}
+                  </CardFooter>
+                </Card>
+              </div>
+
+              {/* Right Section (Data Cards) — 2/3 on large screens */}
+              <div className=" flex-1 flex flex-wrap gap-4">
+                <DataCard
+                  title="Successfully Delivered"
+                  number={successCount.length ?? 0}
+                  className="rounded-sm w-full"
+                />
+                <DataCard
+                  title="Failed Delivered"
+                  number={failedCount.length ?? 0}
+                  className="rounded-sm w-full"
+                />
+              </div>
+            </div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 ">

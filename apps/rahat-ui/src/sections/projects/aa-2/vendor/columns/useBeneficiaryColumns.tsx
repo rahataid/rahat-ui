@@ -4,9 +4,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@radix-ui/react-tooltip';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { truncateAddress } from 'apps/rahat-ui/src/utils/string';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
@@ -42,7 +42,7 @@ export const useVendorsBeneficiaryTableColumns = () => {
                 clickToCopy(row?.getValue('walletAddress'), row?.original?.uuid)
               }
             >
-              <p>{truncateEthAddress(row?.getValue('walletAddress'))}</p>
+              <p>{truncateAddress(row?.getValue('walletAddress'))}</p>
               {copyAction === row?.original?.uuid ? (
                 <CopyCheck size={15} strokeWidth={1.5} />
               ) : (

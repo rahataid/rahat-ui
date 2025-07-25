@@ -1,13 +1,11 @@
 import * as React from 'react';
-import CoreBtnComponent from 'apps/rahat-ui/src/components/core.btn';
-import HeaderWithBack from '../../projects/components/header.with.back';
 import {
   CloudDownloadIcon,
-  FolderPlus,
   LandmarkIcon,
   Trash2Icon,
   UsersRound,
   Phone,
+  FolderDot,
 } from 'lucide-react';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import MembersTable from './members.table';
@@ -19,29 +17,38 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import {
-  useBeneficiaryList,
   useExportBeneficiariesFailedBankAccount,
   useGetBeneficiaryGroup,
   usePagination,
 } from '@rahat-ui/query';
 import { useBeneficiaryTableColumns } from '../useBeneficiaryColumns';
 import ClientSidePagination from '../../projects/components/client.side.pagination';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import RemoveBenfGroupModal from './removeGroupModal';
-import ValidateBenefBankAccountByGroupUuid from './validateAccountModal';
+
+const RemoveBenfGroupModal = React.lazy(() => import('./removeGroupModal'));
+const ValidateBenefBankAccountByGroupUuid = React.lazy(
+  () => import('./validateAccountModal'),
+);
+const UpdateGroupProposeModal = React.lazy(() => import('./groupProposeModal'));
+const AssignBeneficiaryToProjectModal = React.lazy(
+  () => import('./assignToProjectModal'),
+);
+
 import * as XLSX from 'xlsx';
-import UpdateGroupProposeModal from './groupProposeModal';
 import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
+import LoaderRahat from 'apps/rahat-ui/src/components/LoaderRahat';
+
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
   const validateModal = useBoolean();
   const removeModal = useBoolean();
   const groupProposeModal = useBoolean();
+  const projectModal = useBoolean();
 
   const handleAssignModalClick = () => {
     validateModal.onTrue();
@@ -55,32 +62,19 @@ export default function GroupDetailView() {
     groupProposeModal.onTrue();
   };
 
-  const {
-    pagination,
-    selectedListItems,
-    setSelectedListItems,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    setPagination,
-    setFilters,
-    filters,
-  } = usePagination();
+  const handleProjectAssignModalClick = () => {
+    projectModal.onTrue();
+  };
 
-  React.useEffect(() => {
-    setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
-  }, []);
+  const { selectedListItems, setSelectedListItems, setPagination } =
+    usePagination();
+  const columns = useBeneficiaryTableColumns();
+  const { data } = useExportBeneficiariesFailedBankAccount(Id);
 
-  const searchParams = useSearchParams();
-
-  const isAssignedToProject = searchParams.get('isAssignedToProject');
-  const isGroupValidForAA = searchParams.get('isGroupValidForAA');
   const groupedBeneficiaries = [] as any;
   const { data: group, isLoading } = useGetBeneficiaryGroup(Id);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const columns = useBeneficiaryTableColumns();
-  const { data } = useExportBeneficiariesFailedBankAccount(Id);
   const tableData = React.useMemo(() => {
     if (group) {
       const groupPurpose = group?.data?.groupPurpose;
@@ -118,16 +112,19 @@ export default function GroupDetailView() {
     },
   });
 
-  const groupPurposeName = group?.data?.groupPurpose?.split('_')[0];
+  const groupPurposeName = React.useMemo(() => {
+    return group?.data?.groupPurpose
+      ? group?.data?.groupPurpose.split('_')[0]
+      : '';
+  }, [group?.data?.groupPurpose]);
 
-  // React.useEffect(() => {
-  //   if (groupedBeneficiaries) {
-  //     setTableData(groupedBeneficiaries)
-  //   }
-  //   if (Beneficiaries) {
-  //     setTableData(Beneficiaries);
-  //   }
-  // }, []);
+  const assignedGroupId = React.useMemo(() => {
+    return (
+      group?.data?.beneficiaryGroupProject?.map(
+        (benProject: any) => benProject.Project.id,
+      ) ?? []
+    );
+  }, [group?.data?.beneficiaryGroupProject]);
 
   const onFailedExports = () => {
     const rowsToDownload = data?.data || [];
@@ -147,8 +144,12 @@ export default function GroupDetailView() {
     );
   };
 
+  React.useEffect(() => {
+    setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
+  }, []);
+
   return isLoading ? (
-    <TableLoader />
+    <LoaderRahat />
   ) : (
     <>
       <RemoveBenfGroupModal
@@ -166,13 +167,14 @@ export default function GroupDetailView() {
         validateModal={groupProposeModal}
       />
 
+      <AssignBeneficiaryToProjectModal
+        beneficiaryGroupDetail={group?.data}
+        projectModal={projectModal}
+        assignedGroupId={assignedGroupId}
+      />
+
       <div className="p-4">
         <div className="flex justify-between items-center">
-          {/* <HeaderWithBack
-            title={group?.data?.name}
-            subtitle="Here is a detailed view of the selected beneficiary group"
-            path="/beneficiary?tab=beneficiaryGroups"
-          /> */}
           <div>
             <Back path="/beneficiary?tab=beneficiaryGroups" />
             <Heading
@@ -242,17 +244,16 @@ export default function GroupDetailView() {
                   )}
                 </Button>
               )}
-            <Button
-              variant={'outline'}
-              className={`${
-                (group?.data?.isGroupValidForAA ||
-                  group?.data?.groupedBeneficiaries?.length === 0) &&
-                'hidden'
-              } gap-2 text-gray-700 rounded-sm`}
-              onClick={onFailedExports}
-            >
-              <CloudDownloadIcon className="w-4 h-4" /> Export Failed
-            </Button>
+            {group?.data?.isAnyBeneficiaryInvalid && (
+              <Button
+                variant={'outline'}
+                className={` gap-2 text-gray-700 rounded-sm`}
+                onClick={onFailedExports}
+              >
+                <CloudDownloadIcon className="w-4 h-4" /> Export Failed
+              </Button>
+            )}
+
             <Button
               variant={'outline'}
               className="border-red-500 text-red-500 gap-2 rounded-sm"
@@ -261,15 +262,50 @@ export default function GroupDetailView() {
               <Trash2Icon className="w-4 h-4" />
               Delete Group
             </Button>
+            {(group?.data?.isGroupValidForAA || !groupPurposeName) &&
+              group?.data?.groupedBeneficiaries?.length !== 0 && (
+                <Button
+                  variant={'outline'}
+                  className="border-blue-500 text-blue-500 gap-2 rounded-sm"
+                  onClick={handleProjectAssignModalClick}
+                >
+                  <FolderDot className="w-4 h-4" />
+                  Assign To Project
+                </Button>
+              )}
           </div>
         </div>
-        <DataCard
-          className="border-solid w-1/3 rounded-md"
-          iconStyle="bg-white text-secondary-muted"
-          title="Total Beneficiaries"
-          Icon={UsersRound}
-          number={group?.data?.groupedBeneficiaries?.length}
-        />
+        <div className="flex gap-4">
+          <DataCard
+            className="border-solid w-1/3 rounded-xl"
+            iconStyle="bg-white text-secondary-muted"
+            title="Total Beneficiaries"
+            Icon={UsersRound}
+            number={group?.data?.groupedBeneficiaries?.length}
+          />
+          {group?.data?.beneficiaryGroupProject?.length > 0 && (
+            <DataCard
+              className="border-solid w-1/3 rounded-xl"
+              iconStyle="bg-white text-secondary-muted"
+              title="Project Involved"
+              Icon={FolderDot}
+            >
+              <div className="flex gap-2 flex-wrap">
+                {group?.data?.beneficiaryGroupProject?.map(
+                  (benProject: any) => (
+                    <Badge
+                      key={benProject.Project.id}
+                      className="text-sm font-normal"
+                    >
+                      {benProject.Project.name}
+                    </Badge>
+                  ),
+                )}
+              </div>
+            </DataCard>
+          )}
+        </div>
+
         <MembersTable
           table={table}
           groupedBeneficiaries={groupedBeneficiaries}

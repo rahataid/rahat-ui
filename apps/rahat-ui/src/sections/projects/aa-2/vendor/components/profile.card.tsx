@@ -1,13 +1,14 @@
 'use client';
-import { useAAVendorsStore } from '@rahat-ui/query';
+import { useGetVendor } from '@rahat-ui/query';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { Phone, User, MapPinIcon, CopyCheck, Copy } from 'lucide-react';
-import React from 'react';
+import { Copy, CopyCheck, Phone, User } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 export default function ProfileCard() {
-  const { vendorDetails } = useAAVendorsStore((state) => ({
-    vendorDetails: state.vendorDetails,
-  }));
+  const { vendorId } = useParams();
+  const vendorDetails = useGetVendor(vendorId as UUID);
+
   const { clickToCopy, copyAction } = useCopy();
   return (
     <div className="border rounded-sm p-4">
@@ -22,13 +23,17 @@ export default function ProfileCard() {
           <User />
         </div>
         <div className="flex flex-col items-center">
-          <p className="text-lg font-semibold">{vendorDetails?.name}</p>
+          <p className="text-lg font-semibold">
+            {vendorDetails?.data?.data?.name}
+          </p>
           <div className="flex items-center">
             <div className="text-sm text-muted-foreground truncate w-32 overflow-hidden mr-2">
-              {vendorDetails?.walletAddress || 'N/A'}
+              {vendorDetails?.data?.data?.wallet || 'N/A'}
             </div>
             <button
-              onClick={() => clickToCopy(vendorDetails?.walletAddress || '', 1)}
+              onClick={() =>
+                clickToCopy(vendorDetails?.data?.data?.wallet || '', 1)
+              }
               className="ml-2 text-sm text-gray-500"
             >
               {copyAction === 1 ? (
@@ -45,16 +50,7 @@ export default function ProfileCard() {
         <div>
           <p className="text-sm font medium">Phone Number</p>
           <p className="text-sm text-muted-foreground">
-            {vendorDetails?.phone}
-          </p>
-        </div>
-      </div>
-      <div className="flex space-x-4 items-center">
-        <MapPinIcon className="text-muted-foreground" />
-        <div>
-          <p className="text-sm font medium">Address</p>
-          <p className="text-sm text-muted-foreground">
-            {vendorDetails?.location ?? 'N/A'}
+            {vendorDetails?.data?.data?.phone}
           </p>
         </div>
       </div>

@@ -244,18 +244,16 @@ export default function GroupDetailView() {
                   )}
                 </Button>
               )}
-            <Button
-              variant={'outline'}
-              className={`${
-                (group?.data?.isGroupValidForAA ||
-                  !groupPurposeName ||
-                  group?.data?.groupedBeneficiaries?.length === 0) &&
-                'hidden'
-              } gap-2 text-gray-700 rounded-sm`}
-              onClick={onFailedExports}
-            >
-              <CloudDownloadIcon className="w-4 h-4" /> Export Failed
-            </Button>
+            {group?.data?.isAnyBeneficiaryInvalid && (
+              <Button
+                variant={'outline'}
+                className={` gap-2 text-gray-700 rounded-sm`}
+                onClick={onFailedExports}
+              >
+                <CloudDownloadIcon className="w-4 h-4" /> Export Failed
+              </Button>
+            )}
+
             <Button
               variant={'outline'}
               className="border-red-500 text-red-500 gap-2 rounded-sm"

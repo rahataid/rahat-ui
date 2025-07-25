@@ -1,16 +1,52 @@
 import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import React from 'react';
 
-type Props = {};
-const vulnerableStatusStats = [
-  { label: '<12', value: 7500 },
-  { label: '13–18', value: 1920 },
-  { label: '19–29', value: 5620 },
-  { label: '30–45', value: 8140 },
-  { label: '46–59', value: 1610 },
-  { label: '>60', value: 8290 },
-];
-const BeneficiaryDemographics = (props: Props) => {
+type Props = {
+  data: {
+    benefStats: any[];
+    triggeersStats: any[];
+  };
+};
+// const vulnerableStatusStats = [
+//   { label: '<12', value: 7500 },
+//   { label: '13–18', value: 1920 },
+//   { label: '19–29', value: 5620 },
+//   { label: '30–45', value: 8140 },
+//   { label: '46–59', value: 1610 },
+//   { label: '>60', value: 8290 },
+// ];
+const BeneficiaryDemographics = ({
+  benefStats,
+  triggeersStats,
+  projectId,
+}: any) => {
+  // Get gender stats from BENEFICIARY_GENDER
+  const genderStats =
+    benefStats.find((s) => s.name === 'BENEFICIARY_GENDER')?.data ?? [];
+  const genderPieData = genderStats.map((item: any) => ({
+    label: item.id,
+    value: item.count,
+  }));
+
+  // Define consistent gender chart colors
+  const genderColorsMap: Record<string, string> = {
+    MALE: '#4A90E2',
+    FEMALE: '#F06292',
+    OTHER: '#9B59B6',
+    UNKNOWN: '#F1C40F',
+  };
+  const genderColors = genderPieData.map(
+    (item) => genderColorsMap[item.label] || '#CCCCCC',
+  );
+
+  // Get age group stats from BENEFICIARY_AGEGROUPS
+  const ageStats =
+    benefStats.find((s) => s.name === 'BENEFICIARY_AGEGROUPS')?.data ?? [];
+
+  const ageChartData = ageStats.map((item: any) => ({
+    label: item.id,
+    value: item.count,
+  }));
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ">
       <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
@@ -18,13 +54,8 @@ const BeneficiaryDemographics = (props: Props) => {
         <div className="w-full flex-1 p-4 pt-0">
           <PieChart
             chart={{
-              series: [
-                { label: 'MALE', value: 100 },
-                { label: 'FEMALE', value: 200 },
-                { label: 'OTHER', value: 80 },
-                { label: 'UNKNOWN', value: 50 },
-              ],
-              colors: ['#4A90E2', '#F06292', '#9B59B6', '#F1C40F'],
+              series: genderPieData,
+              colors: genderColors,
             }}
             custom={true}
             projectAA={true}
@@ -41,8 +72,8 @@ const BeneficiaryDemographics = (props: Props) => {
         <h1 className="text-sm font-medium">Age Groups</h1>
         <div className="flex-1 p-2">
           <BarChart
-            series={vulnerableStatusStats.map((item) => item.value)}
-            categories={vulnerableStatusStats.map((item) => item.label)}
+            series={ageChartData.map((item) => item.value)}
+            categories={ageChartData.map((item) => item.label)}
             colors={['#4A90E2']}
             xaxisLabels={true}
             yaxisLabels={true}

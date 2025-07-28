@@ -3,6 +3,7 @@ import {
   useListSessionLogs,
   usePagination,
   useRetryFailedBroadcast,
+  useSessionBroadCastCount,
   useSessionRetryFailed,
   useSingleActivity,
 } from '@rahat-ui/query';
@@ -92,9 +93,7 @@ export default function CommsLogsDetailPage() {
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
 
   const mutateRetry = useSessionRetryFailed();
-  // const retryFailed = async () => {
-  //   mutateRetry.mutateAsync({ cuid: sessionId, includeFailed: true });
-  // };
+  const count = useSessionBroadCastCount([sessionId]);
 
   const retryFailed = async () => {
     try {
@@ -110,22 +109,6 @@ export default function CommsLogsDetailPage() {
       console.error('Retry failed:', error);
     }
   };
-
-  const failedCount = useMemo(() => {
-    return (
-      sessionLogs?.httpReponse?.data?.data?.filter(
-        (log: any) => log?.status === BroadcastStatus.FAIL,
-      ) ?? []
-    );
-  }, [sessionLogs]);
-
-  const successCount = useMemo(() => {
-    return (
-      sessionLogs?.httpReponse?.data?.data?.filter(
-        (log: any) => log?.status === BroadcastStatus.SUCCESS,
-      ) ?? []
-    );
-  }, [sessionLogs]);
 
   const logsGroupName = useMemo(() => {
     if (logs?.groupName.length > 20) {
@@ -206,12 +189,13 @@ export default function CommsLogsDetailPage() {
                 variant="outline"
                 className=" gap-2 h-7"
                 onClick={onFailedExports}
-                disabled={failedCount.length === 0}
+                disabled={count?.data?.data?.FAIL === 0}
               >
                 <CloudDownload className="h-3.5 w-3.5" />
                 Failed Exports Attempts
               </Button>
-              {failedCount.length > 0 &&
+              {count?.data?.data?.FAIL &&
+                count?.data?.data?.FAIL > 0 &&
                 logs?.sessionDetails?.Transport?.name === 'VOICE' && (
                   <Button
                     type="button"
@@ -273,13 +257,13 @@ export default function CommsLogsDetailPage() {
               <div className=" flex-1 flex flex-wrap gap-4">
                 <DataCard
                   title="Successfully Delivered"
-                  number={successCount.length ?? 0}
-                  className="rounded-sm w-full"
+                  smallNumber={(count?.data?.data?.SUCCESS ?? 0).toString()}
+                  className="rounded-sm w-full h-20 pt-4"
                 />
                 <DataCard
                   title="Failed Delivered"
-                  number={failedCount.length ?? 0}
-                  className="rounded-sm w-full"
+                  smallNumber={(count?.data?.data?.FAIL ?? 0).toString()}
+                  className="rounded-sm w-full h-20 pt-4"
                 />
               </div>
             </div>

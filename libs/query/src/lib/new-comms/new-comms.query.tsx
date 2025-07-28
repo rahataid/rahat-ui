@@ -23,9 +23,8 @@ export const useListSessionLogs = (sessionId: string, payload: any) => {
 
   const query = useQuery({
     queryFn: () =>
-      newCommunicationService.session.listBroadcasts(sessionId, {
-        params: payload,
-      }),
+      newCommunicationService.session.listBroadcasts(sessionId, payload),
+
     queryKey: [TAGS.NEW_COMMS.LIST_TRANSPORTS, sessionId],
   });
   return query;
@@ -41,6 +40,7 @@ export const useSessionRetryFailed = () => {
         payload.cuid,
         payload.includeFailed,
       ),
+
     mutationKey: [TAGS.NEW_COMMS.RETRY_FAILED],
     onSuccess: (_, variables) => {
       newQueryClient.invalidateQueries({
@@ -51,4 +51,15 @@ export const useSessionRetryFailed = () => {
   });
 
   return mutation;
+};
+
+export const useSessionBroadCastCount = (sessions: string[]) => {
+  const { newCommunicationService } = useNewCommunicationQuery();
+
+  const query = useQuery({
+    queryFn: () => newCommunicationService.session.broadcastCount({ sessions }),
+
+    queryKey: [TAGS.NEW_COMMS.LIST_TRANSPORTS, sessions],
+  });
+  return query;
 };

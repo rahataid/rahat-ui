@@ -1,5 +1,6 @@
 'use client';
 import {
+  useGetPayoutLogDetails,
   useGetPayoutLogs,
   usePagination,
   useSinglePayout,
@@ -49,18 +50,18 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const { data: payout, isLoading } = useSinglePayout(projectId, {
     uuid: payoutId,
   });
-  const debounsSearch = useDebounce(filters, 500);
-  const { data: payoutlogs, isLoading: payoutLogsLoading } = useGetPayoutLogs(
-    projectId,
-    {
+  const debounceSearch = useDebounce(filters, 500);
+  const { data: payoutLogs, isLoading: payoutLogsLoading } =
+    useGetPayoutLogDetails(projectId, {
       payoutUUID: payoutId,
-      ...debounsSearch,
+      uuid: payoutId,
+      ...debounceSearch,
       page: pagination.page,
       perPage: pagination.perPage,
       sort: 'updatedAt',
       order: 'desc',
-    },
-  );
+    });
+
   const triggerForPayoutFailed = useTriggerForPayoutFailed();
   const triggerPayout = useTriggerPayout();
   const columns = useBeneficiaryGroupDetailsLogColumns(payout?.type);
@@ -83,7 +84,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
   const table = useReactTable({
     manualPagination: true,
-    data: payoutlogs?.data || [],
+    data: payoutLogs?.response?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -305,7 +306,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
         <BeneficiariesGroupTable table={table} loading={payoutLogsLoading} />
         <CustomPagination
           meta={
-            payoutlogs?.response?.meta || {
+            payoutLogs?.response?.meta || {
               total: 0,
               currentPage: 0,
               lastPage: 0,
@@ -319,7 +320,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           handlePageSizeChange={setPerPage}
           currentPage={pagination.page}
           perPage={pagination.perPage}
-          total={payoutlogs?.response?.meta?.total}
+          total={payoutLogs?.response?.meta?.total}
         />
       </div>
     </div>

@@ -157,6 +157,25 @@ export const useGetPayoutLogs = (projectUUID: UUID, payload: any) => {
   return query;
 };
 
+export const useGetPayoutLogDetails = (projectUUID: UUID, payload: any) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['payout', projectUUID, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.payout.getPayoutDetails',
+          payload: payload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
 export const useGetPayoutLog = (projectUUID: UUID, payload: any) => {
   const q = useProjectAction();
 

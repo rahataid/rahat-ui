@@ -188,7 +188,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
     {
       accessorKey: 'tokensAssigned',
       header: 'Tokens Assigned',
-      cell: ({ row }) => <div>{row.original?.amount}</div>,
+      cell: ({ row }) => <div>{row.original?.tokensAssigned}</div>,
     },
     // {
     //   accessorKey: 'fspId',
@@ -200,17 +200,17 @@ export default function useBeneficiaryGroupDetailsLogColumns(
     //   ),
     // },
     {
-      accessorKey: 'status',
+      accessorKey: 'payoutStatus',
       header: 'Payout Status',
       cell: ({ row }) => {
-        const status = row?.original?.status;
+        const status = row?.original?.payoutStatus;
         return (
           <Badge className={`rounded-xl w-auto ${transactionBgStatus(status)}`}>
             {status
-              .toLowerCase()
-              .split('_')
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ')}
+              ?.toLowerCase()
+              ?.split('_')
+              ?.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              ?.join(' ')}
           </Badge>
         );
       },
@@ -221,7 +221,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       cell: ({ row }) => (
         <div className="flex items-center gap-4">
           {/* {new Date(row.getValue('createdAt')).toLocaleString()}{' '} */}
-          {intlFormatDate(row?.original?.createdAt)}
+          {intlFormatDate(row?.original?.timestamp)}
         </div>
       ),
     },

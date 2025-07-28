@@ -41,7 +41,10 @@ export default function AddAnotherDataSource({
   } = useSelectItems();
 
   const selectedDataSourceObjArray = form.watch('dataSource');
-  const selectedGaugeForecast = form.watch(fieldName('gaugeForecast'));
+  const selectedGaugeForecast = useWatch({
+    control: form.control,
+    name: fieldName('gaugeForecast'),
+  });
   const gaugeReadingOptions =
     selectedGaugeForecast === 'rainfallWatch'
       ? gaugeReadingRainfallStationItems
@@ -207,10 +210,17 @@ export default function AddAnotherDataSource({
             {selectedGaugeForecast && (
               <>
                 <SelectFormField
+                  key={`station-${selectedGaugeForecast}`}
                   form={form}
                   name={fieldName('station')}
                   label="Station"
-                  placeholder="Select station"
+                  placeholder={
+                    selectedGaugeForecast === 'riverWatch'
+                      ? 'Select River Station'
+                      : selectedGaugeForecast === 'rainfallWatch'
+                      ? 'Select Rainfall Station'
+                      : 'Select Station'
+                  }
                   selectItems={gaugeReadingOptions}
                 />
                 <InputFormField
@@ -219,7 +229,7 @@ export default function AddAnotherDataSource({
                   label={`Gauge Reading ${
                     selectedGaugeForecast === 'riverWatch' ? '(m)' : '(mm)'
                   }`}
-                  placeholder="Enter gauge reading"
+                  placeholder="Enter Gauge Reading"
                 />
               </>
             )}
@@ -355,6 +365,11 @@ export default function AddAnotherDataSource({
     }
     return fields;
   };
+
+  useEffect(() => {
+    form.setValue(fieldName('station'), '');
+    form.setValue(fieldName('gaugeReading'), '');
+  }, [selectedGaugeForecast]);
 
   return (
     <div className="border border-dashed rounded-sm p-4 my-8">

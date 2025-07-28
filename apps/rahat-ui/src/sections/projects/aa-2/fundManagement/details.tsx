@@ -57,7 +57,7 @@ export default function FundManagementDetail() {
           path={`/projects/aa/${projectID}/fund-management?tab=fundManagementList`}
           title={data?.title}
           subtitle={`Detailed view of reserved fund`}
-          status={data?.status}
+          status={data?.status.replace(/_/g, ' ')}
           badgeClassName={
             data?.status === 'DISBURSED'
               ? 'bg-green-100 text-green-500'
@@ -65,7 +65,7 @@ export default function FundManagementDetail() {
               ? 'bg-blue-100 text-blue-500'
               : ['FAILED', 'ERROR'].includes(data?.status)
               ? 'bg-red-100 text-red-500'
-              : 'bg-red-200'
+              : 'bg-gray-200'
           }
         />
       </div>

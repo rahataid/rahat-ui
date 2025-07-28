@@ -11,6 +11,7 @@ import { GeistSans } from 'geist/font/sans';
 import { RSQueryProvider } from '@rumsan/react-query/providers/rs-query-provider';
 import { SecondPanelProvider } from '../providers/second-panel-provider';
 import { NewCommunicationQueryProvider } from '@rahat-ui/community-query';
+import { PostHogProvider } from '../providers/PostHogProvider';
 
 export const metadata = {
   title: 'Welcome to Rahat',
@@ -28,27 +29,29 @@ export default function RootLayout({
     <>
       <html lang="en">
         <body>
-          <Wagmi>
-            <QueryProvider>
-              <RSQueryProvider>
-                {/* <NewCommunicationQueryProvider> */}
-                <ServiceProvider>
-                  <SecondPanelProvider>
-                    <ThemeProvider
-                      attribute="class"
-                      defaultTheme="light"
-                      disableTransitionOnChange
-                    >
-                      <main className={GeistSans.className}>{children}</main>
-                      <ToastContainer />
-                      <Toaster />
-                    </ThemeProvider>
-                  </SecondPanelProvider>
-                </ServiceProvider>
-                {/* </NewCommunicationQueryProvider> */}
-              </RSQueryProvider>
-            </QueryProvider>
-          </Wagmi>
+          <PostHogProvider>
+            <Wagmi>
+              <QueryProvider>
+                <RSQueryProvider>
+                  {/* <NewCommunicationQueryProvider> */}
+                  <ServiceProvider>
+                    <SecondPanelProvider>
+                      <ThemeProvider
+                        attribute="class"
+                        defaultTheme="light"
+                        disableTransitionOnChange
+                      >
+                        <main className={GeistSans.className}>{children}</main>
+                        <ToastContainer />
+                        <Toaster />
+                      </ThemeProvider>
+                    </SecondPanelProvider>
+                  </ServiceProvider>
+                  {/* </NewCommunicationQueryProvider> */}
+                </RSQueryProvider>
+              </QueryProvider>
+            </Wagmi>
+          </PostHogProvider>
         </body>
       </html>
     </>

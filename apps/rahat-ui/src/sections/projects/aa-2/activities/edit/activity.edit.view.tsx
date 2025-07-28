@@ -173,6 +173,11 @@ export default function EditActivity() {
   const uploadFile = useUploadFile();
   const updateActivity = useUpdateActivities();
   const { id: projectID, activityID } = useParams();
+  const [isRecording, setIsRecording] = React.useState(false);
+  const [isFinished, setIsFinished] = React.useState(false);
+  const [recordedFile, setRecordedFile] = React.useState<string | null>(null);
+  const [isAudioUploaded, setIsAudioUploaded] = React.useState(false);
+
   const { data: users, isSuccess } = useUserList({
     page: 1,
     perPage: 9999,
@@ -298,6 +303,8 @@ export default function EditActivity() {
     name: 'activityCommunication', // unique name for your Field Array
   });
 
+  const activityCommunication = form.watch('activityCommunication') || [];
+
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -348,7 +355,6 @@ export default function EditActivity() {
   }, [activityDetail]);
 
   const handleUpdateActivity = async (data: z.infer<typeof FormSchema>) => {
-    // console.log(data);
     let payload;
 
     const activityCommunicationPayload = [];
@@ -431,6 +437,29 @@ export default function EditActivity() {
     });
   }, [activityDetail, form]);
 
+  const isVoiceAudioMissing = activityCommunication.some((comm) => {
+    const transport = appTransports?.find((t) => t.cuid === comm.transportId);
+    if (!transport) return false;
+
+    // Assuming transport name or type indicates voice, e.g., 'IVR', 'Voice', or so.
+    // Replace 'Voice' with your actual voice transport name or logic
+    const isVoiceType =
+      transport.name?.toLowerCase().includes('voice') ||
+      transport.name?.toLowerCase().includes('ivr');
+
+    if (isVoiceType) {
+      // comm.audioURL can be string or object. Check if empty:
+      if (!comm.audioURL) return true;
+      if (typeof comm.audioURL === 'string' && comm.audioURL.trim() === '')
+        return true;
+      if (typeof comm.audioURL === 'object') {
+        // Check mediaURL inside audioURL object
+        if (!comm.audioURL.mediaURL || comm.audioURL.mediaURL.trim() === '')
+          return true;
+      }
+    }
+    return false;
+  });
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleUpdateActivity)}>
@@ -465,7 +494,10 @@ export default function EditActivity() {
                     disabled={
                       updateActivity?.isPending ||
                       uploadFile?.isPending ||
-                      audioUploading
+                      audioUploading ||
+                      (!isFinished && isRecording && !isAudioUploaded) ||
+                      (isFinished && !!recordedFile && !isAudioUploaded) ||
+                      isVoiceAudioMissing
                     }
                   >
                     Update
@@ -755,6 +787,13 @@ export default function EditActivity() {
                 onClose={() => {
                   activityCommunicationRemove(index);
                 }}
+                isFinished={isFinished}
+                isRecording={isRecording}
+                recordedFile={recordedFile}
+                setIsFinished={setIsFinished}
+                setIsRecording={setIsRecording}
+                setRecordedFile={setRecordedFile}
+                setAudioIsUploaded={setIsAudioUploaded}
               />
             ))}
             <Button

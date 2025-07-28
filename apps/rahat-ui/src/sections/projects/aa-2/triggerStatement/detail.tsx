@@ -83,7 +83,7 @@ export default function TriggerStatementDetail() {
           } text-xs`}
         />
         <div className="flex space-x-2">
-          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
             <DeleteButton
               className={`rounded flex gap-1 items-center text-sm font-medium ${
                 version && 'hidden'
@@ -94,7 +94,7 @@ export default function TriggerStatementDetail() {
               disabled={trigger?.isTriggered || trigger?.phase?.isActive}
             />
           </RoleAuth>
-          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
             <EditButton
               className={`rounded flex gap-1 items-center text-sm font-medium ${
                 version && 'hidden'
@@ -131,7 +131,7 @@ export default function TriggerStatementDetail() {
           <Heading
             title={trigger?.title}
             titleStyle="text-lg/7"
-            description=""
+            description={trigger?.description}
           />
           <div
             className={`grid ${

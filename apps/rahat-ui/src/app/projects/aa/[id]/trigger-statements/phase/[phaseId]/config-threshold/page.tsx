@@ -15,7 +15,7 @@ const ConfigureThreshold = dynamic(
 
 export default function Page() {
   return (
-    <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]}>
+    <RoleAuth roles={[AARoles.ADMIN]}>
       <ConfigureThreshold />
     </RoleAuth>
   );

@@ -27,7 +27,7 @@ export default function SelectComponent({
       <SelectTrigger className={className}>
         <SelectValue placeholder={`Select ${name}`} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="h-32">
         <SelectGroup>
           {options?.map((o: string) => (
             <SelectItem value={o} key={o}>

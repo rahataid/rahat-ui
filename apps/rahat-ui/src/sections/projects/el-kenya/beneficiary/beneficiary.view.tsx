@@ -143,7 +143,7 @@ export default function BeneficiaryView() {
 
   useEffect(() => {
     if (enabled && isFetched) {
-      generateExcel(consumerData.data, 'Consumer', 8);
+      generateExcel(consumerData.data, 'Beneficiary', 8);
       setEnabled(false);
     }
   }, [enabled, isFetched]);

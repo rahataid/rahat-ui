@@ -35,8 +35,12 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
                 beneficiaryGroupName={
                   item?.beneficiaryGroupToken?.beneficiaryGroup?.name
                 }
-                actions={item?.type}
-                merchentName={item?.extras?.paymentProviderName ?? 'N/A'}
+                actions={item?.type === 'VENDOR' ? 'CVA' : item?.type}
+                merchentName={
+                  item?.type === 'FSP'
+                    ? item?.extras?.paymentProviderName.split('_').join(' ')
+                    : item?.mode
+                }
                 beneficiariesCount={
                   item?.beneficiaryGroupToken?.beneficiaryGroup?._count
                     ?.beneficiaries

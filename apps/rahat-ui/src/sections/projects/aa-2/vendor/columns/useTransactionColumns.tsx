@@ -2,6 +2,7 @@ import React from 'react';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { truncateAddress } from 'apps/rahat-ui/src/utils/string';
 
 export const useVendorsTransactionTableColumns = () => {
   const columns: ColumnDef<any>[] = [
@@ -13,9 +14,7 @@ export const useVendorsTransactionTableColumns = () => {
     {
       accessorKey: 'txHash',
       header: 'TxHash',
-      cell: ({ row }) => (
-        <div>{truncateEthAddress(row.getValue('txHash'))}</div>
-      ),
+      cell: ({ row }) => <div>{truncateAddress(row.getValue('txHash'))}</div>,
     },
     {
       accessorKey: 'status',
@@ -23,10 +22,10 @@ export const useVendorsTransactionTableColumns = () => {
       cell: ({ row }) => (
         <Badge
           className={
-            row.original?.fspId === null ? 'bg-red-500 ' : 'bg-green-500'
+            row.original?.fspId === null ? 'bg-green-500 ' : 'bg-red-500'
           }
         >
-          {row.original?.fspId === null ? 'Offline' : 'Online'}
+          {row.original?.fspId === null ? 'Online' : 'Offline'}
         </Badge>
       ),
     },

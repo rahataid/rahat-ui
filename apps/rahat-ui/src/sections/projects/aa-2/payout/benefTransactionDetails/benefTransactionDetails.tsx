@@ -41,6 +41,7 @@ export default function BeneficiaryTransactionLogDetails() {
   if (payoutLogsLoading) {
     return <TableLoader />;
   }
+  console.log('first', data?.data?.payout);
   return (
     <div className="p-4 md:p-6  space-y-6">
       <div className=" flex justify-between items-center">
@@ -51,17 +52,19 @@ export default function BeneficiaryTransactionLogDetails() {
           subtitle="Detaild view of the selected payout transaction log"
           title="Transaction Log Details"
         />
-        <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
-          <Button
-            className={`gap-2 text-sm ${
-              !isPayoutTransactionFailed(data?.data?.status) && 'hidden'
-            }`}
-            onClick={handleTriggerSinglePayoutFailed}
-          >
-            <RotateCcw className="w-4 h-4" />
-            Retry
-          </Button>
-        </RoleAuth>
+        {data?.data?.payout?.type === 'FSP' && (
+          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+            <Button
+              className={`gap-2 text-sm ${
+                !isPayoutTransactionFailed(data?.data?.status) && 'hidden'
+              }`}
+              onClick={handleTriggerSinglePayoutFailed}
+            >
+              <RotateCcw className="w-4 h-4" />
+              Retry
+            </Button>
+          </RoleAuth>
+        )}
       </div>
       <DataCard
         title="Token Assigned"
@@ -109,14 +112,20 @@ export default function BeneficiaryTransactionLogDetails() {
             </InfoItem>
             <InfoItem label="Payout Type">
               <Badge className="text-muted-foreground">
-                {data?.data?.payout?.type.split('_').join(' ')}
+                {data?.data?.payout?.type === 'VENDOR'
+                  ? 'CVA'
+                  : data?.data?.payout?.type}
               </Badge>
             </InfoItem>
             <InfoItem label="Payout Mode">
               <Badge className="text-muted-foreground">
-                {data?.data?.payout?.extras?.paymentProviderName
-                  .split('_')
-                  .join(' ')}
+                {/* { || } */}
+
+                {data?.data?.payout?.type === 'FSP'
+                  ? data?.data?.payout?.extras?.paymentProviderName
+                      .split('_')
+                      .join(' ')
+                  : data?.data?.payout?.mode}
               </Badge>
             </InfoItem>
             <InfoItem

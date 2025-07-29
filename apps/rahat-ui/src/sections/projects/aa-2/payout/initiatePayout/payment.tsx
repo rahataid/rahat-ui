@@ -182,14 +182,14 @@ export default function PaymentInitiation() {
         switch (formState.mode) {
           case PayoutMode.ONLINE:
             payload = {
-              type: PayoutType.CVA,
+              type: PayoutType.CVA && PayoutType.VENDOR,
               mode: PayoutMode.ONLINE,
               groupId: formState?.group?.tokensReserved?.uuid,
             };
             break;
           case PayoutMode.OFFLINE:
             payload = {
-              type: PayoutType.CVA,
+              type: PayoutType.CVA && PayoutType.VENDOR,
               mode: PayoutMode.OFFLINE,
               groupId: formState?.group?.tokensReserved?.uuid,
               payoutProcessorId: formState?.vendor?.uuid,
@@ -206,6 +206,7 @@ export default function PaymentInitiation() {
     if (!payload) {
       return;
     }
+    // console.log(payload);
 
     await initiatePayout.mutateAsync({
       projectUUID: projectID,

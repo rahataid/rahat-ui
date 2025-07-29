@@ -5,7 +5,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
-import { FC } from 'react';
+import { FC, Fragment } from 'react';
 import { NavItem } from './nav-items.types';
 
 type BeneficiaryLayoutProps = {
@@ -18,32 +18,26 @@ const BeneficiaryLayout: FC<BeneficiaryLayoutProps> = ({
   menuItems,
 }) => {
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
-    const defaultSize = index === 1 ? 20 : 70;
+    const defaultSize = index === 1 ? 25 : 70;
     return (
       <ResizablePanel minSize={20} defaultSize={defaultSize} key={index}>
         {children}
       </ResizablePanel>
     );
   };
+
   const renderChildren = () => {
     if (Array.isArray(children)) {
-      return children.map((child, index) => {
-        return (
-          <>
-            <ResizableHandle />
-            {renderResizablePanel(child, index)}
-          </>
-        );
-      });
+      return children.map((child, index) => (
+        <Fragment key={index}>
+          {index !== 0 && <ResizableHandle withHandle />}
+          {renderResizablePanel(child, index)}
+        </Fragment>
+      ));
     }
-    return (
-      <>
-        <ResizableHandle />
-        {renderResizablePanel(children)}
-      </>
-    );
-  };
 
+    return renderResizablePanel(children);
+  };
   return (
     <ResizablePanelGroup direction="horizontal">
       {renderChildren()}

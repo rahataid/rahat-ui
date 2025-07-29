@@ -45,6 +45,7 @@ interface BaseCommunication {
 interface EmailCommunication extends BaseCommunication {
   transportName: 'EMAIL' | 'SMS';
   message: string;
+  subject?: string;
 }
 
 interface IVRCommunication extends BaseCommunication {
@@ -127,7 +128,7 @@ export function CommunicationDetailCard({
 
     XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
   };
-  console.log(activityCommunication?.sessionStatus);
+  console.log(activityCommunication);
   return (
     <Card className="rounded-sm pb-0 flex flex-col justify-between">
       <CardHeader className="pb-2">
@@ -145,7 +146,7 @@ export function CommunicationDetailCard({
             <div className="mt-1 flex items-center gap-2 text-sm text-gray-500">
               <span> {activityCommunication?.transportName}</span>
               <span>•</span>
-              <span>s{activityCommunication?.groupType}</span>
+              <span>{activityCommunication?.groupType}</span>
               <span>•</span>
               <Badge
                 className={`ml-1 text-xs font-normal ${
@@ -168,8 +169,13 @@ export function CommunicationDetailCard({
       <CardContent className="pb-4 min-h-[60px] flex-grow">
         {(activityCommunication?.transportName === 'EMAIL' ||
           activityCommunication?.transportName === 'SMS') && (
-          <div className="mt-3">
-            <p className="text-sm text-gray-700 py-2.5">
+          <div className="flex flex-col gap-0">
+            {activityCommunication?.transportName === 'EMAIL' && (
+              <p className="text-sm text-gray-700">
+                {activityCommunication?.subject}
+              </p>
+            )}
+            <p className="text-sm text-gray-700 py-1.5">
               {activityCommunication?.message}
             </p>
           </div>

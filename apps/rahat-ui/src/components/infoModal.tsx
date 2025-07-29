@@ -9,8 +9,8 @@ import {
 interface IInfoModalProps {
   title: string;
   description?: string;
-  children?: React.ReactNode;
   removeModal: RemoveModalType;
+  link: string;
 }
 
 type RemoveModalType = {
@@ -23,7 +23,8 @@ const InfoModal = ({
   removeModal,
   title,
   description,
-  children,
+
+  link,
 }: IInfoModalProps) => {
   return (
     <Dialog open={removeModal.value} onOpenChange={removeModal.onToggle}>
@@ -33,7 +34,13 @@ const InfoModal = ({
         </DialogHeader>
         <div className="space-y-4">
           <p className="text-sm text-gray-600">{description}</p>
-          {children}
+          <a
+            target="_blank"
+            href={link}
+            className="text-blue-500 hover:text-blue-700 text-sm font-medium inline-block"
+          >
+            Learn More
+          </a>
         </div>
       </DialogContent>
     </Dialog>

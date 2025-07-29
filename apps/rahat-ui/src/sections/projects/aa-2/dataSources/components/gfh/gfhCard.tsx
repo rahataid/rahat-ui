@@ -1,4 +1,5 @@
 import React from 'react';
+import dynamic from 'next/dynamic';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 
 import {
@@ -9,7 +10,7 @@ import {
   RadioTower,
 } from 'lucide-react';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-const InfoModal = React.lazy(
+const InfoModal = dynamic(
   () => import('apps/rahat-ui/src/components/infoModal'),
 );
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
@@ -45,15 +46,8 @@ const GFHCard = ({
         removeModal={googleFloodHubInfoModal}
         title="Gauge thresholds"
         description="The historical and forecasted river levels. The risk level is determined by comparing the forecast with the predefined thresholds (based on past flood events)."
-      >
-        <a
-          target="_blank"
-          href="https://support.google.com/flood-hub/answer/15636998"
-          className="text-blue-500 hover:text-blue-700 text-sm font-medium inline-block"
-        >
-          Learn More
-        </a>
-      </InfoModal>
+        link="https://support.google.com/flood-hub/answer/15636998"
+      />
 
       <Card className="px-4 py-3 rounded-xl mb-4">
         {/* title */}

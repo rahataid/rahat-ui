@@ -87,3 +87,29 @@ export const useGetTxnRedemptionRequestList = (payload: any) => {
 
   return query;
 };
+
+export const useGetVendorBeneficiaries = (payload: any) => {
+  const q = useProjectAction<any[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: ['vendor.get_beneficiaries', restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'vendor.get_beneficiaries',
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return query;
+};

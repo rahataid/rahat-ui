@@ -25,11 +25,6 @@ export const useProjectVendorTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
     },
     {
-      accessorKey: 'location',
-      header: 'Location',
-      cell: ({ row }) => <div>{row.getValue('location')}</div>,
-    },
-    {
       id: 'actions',
       header: 'Actions',
       enableHiding: false,

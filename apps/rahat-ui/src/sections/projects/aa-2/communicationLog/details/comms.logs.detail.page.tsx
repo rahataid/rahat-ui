@@ -59,7 +59,6 @@ export default function CommsLogsDetailPage() {
     commsIdXactivityIdXsessionId as string
   ).split('%40');
 
-  const [retryDisabled, setRetryDisabled] = useState(false);
   const {
     pagination,
     setNextPage,
@@ -92,8 +91,8 @@ export default function CommsLogsDetailPage() {
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
 
-  const mutateRetry = useSessionRetryFailed();
   const count = useSessionBroadCastCount([sessionId]);
+  const mutateRetry = useSessionRetryFailed();
 
   const retryFailed = async () => {
     try {
@@ -101,10 +100,6 @@ export default function CommsLogsDetailPage() {
         cuid: sessionId,
         includeFailed: true,
       });
-
-      if (res?.data?.count === 2) {
-        setRetryDisabled(true);
-      }
     } catch (error) {
       console.error('Retry failed:', error);
     }
@@ -194,13 +189,16 @@ export default function CommsLogsDetailPage() {
                 <CloudDownload className="h-3.5 w-3.5" />
                 Failed Exports Attempts
               </Button>
-              {count?.data?.data?.FAIL &&
+              {count?.data?.data &&
                 count?.data?.data?.FAIL > 0 &&
                 logs?.sessionDetails?.Transport?.name === 'VOICE' && (
                   <Button
                     type="button"
                     onClick={retryFailed}
-                    disabled={retryDisabled || mutateRetry.isPending}
+                    disabled={
+                      mutateRetry.isPending
+                      // logs?.sessionDetails?.maxAttempts === 3
+                    }
                     className=" gap-2 h-7"
                   >
                     <RefreshCcw className="h-3.5 w-3.5" />

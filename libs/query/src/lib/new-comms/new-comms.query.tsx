@@ -25,7 +25,7 @@ export const useListSessionLogs = (sessionId: string, payload: any) => {
     queryFn: () =>
       newCommunicationService.session.listBroadcasts(sessionId, payload),
 
-    queryKey: [TAGS.NEW_COMMS.LIST_TRANSPORTS, sessionId],
+    queryKey: ['TAGS.NEW_COMMS.LIST_TRANSPORTS', { type: sessionId }],
   });
   return query;
 };
@@ -43,8 +43,10 @@ export const useSessionRetryFailed = () => {
 
     mutationKey: [TAGS.NEW_COMMS.RETRY_FAILED],
     onSuccess: (_, variables) => {
+      const sessionId = variables.cuid;
+      console.log('Retry success for:', sessionId);
       newQueryClient.invalidateQueries({
-        queryKey: [TAGS.NEW_COMMS.LIST_TRANSPORTS, variables.cuid],
+        queryKey: ['TAGS.NEW_COMMS.LIST_TRANSPORTS', { type: sessionId }],
       });
       Swal.fire('Retry Successfully', '', 'success');
     },

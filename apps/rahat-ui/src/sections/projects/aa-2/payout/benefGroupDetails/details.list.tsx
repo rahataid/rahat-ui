@@ -70,11 +70,10 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     projectUUID: projectId,
     payoutUUID: payoutId,
   });
-  console.log('es', exportPayoutLogs);
 
   const handleDownload = () => {
     const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(exportPayoutLogs?.data);
+    const worksheet = XLSX.utils.json_to_sheet(exportPayoutLogs);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');
     XLSX.writeFile(workbook, 'payout-logs.xlsx');
   };
@@ -189,7 +188,6 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                   payoutlogs?.data?.length < 0 && 'hidden'
                 }`}
                 onClick={handleDownload}
-                disabled={true}
                 variant={'outline'}
               >
                 <CloudDownload className={`w-4 h-4`} />

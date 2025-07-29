@@ -46,6 +46,8 @@ const TimeSeriesChart = ({
     chart: {
       type: 'area',
       zoom: { enabled: false },
+      offsetX: 0,
+      offsetY: 10,
     },
     xaxis: {
       type: 'datetime',

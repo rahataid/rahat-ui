@@ -38,11 +38,8 @@ import {
   CloudDownload,
   LucideIcon,
   Mail,
-
   RefreshCcw,
-
   Mic,
-
   Text,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
@@ -260,12 +257,12 @@ export default function CommsLogsDetailPage() {
                 <DataCard
                   title="Successfully Delivered"
                   smallNumber={(count?.data?.data?.SUCCESS ?? 0).toString()}
-                  className="rounded-sm w-full h-20 pt-4"
+                  className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
                 <DataCard
                   title="Failed Delivered"
                   smallNumber={(count?.data?.data?.FAIL ?? 0).toString()}
-                  className="rounded-sm w-full h-20 pt-4"
+                  className="rounded-sm w-full h-20 pt-10 pb-8"
                 />
               </div>
             </div>

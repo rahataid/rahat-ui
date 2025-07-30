@@ -1,5 +1,10 @@
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { Copy, CopyCheckIcon } from 'lucide-react';
+import { useParams } from 'next/navigation';
 
 export default function InfoItem({
   label,
@@ -18,7 +23,12 @@ export default function InfoItem({
   isLoading?: boolean;
   failed?: boolean;
 }) {
+  const { id } = useParams();
+  const projectId = id as string;
   const { clickToCopy, copyAction } = useCopy();
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
 
   return (
     <div className="space-y-1 break-words">
@@ -28,7 +38,13 @@ export default function InfoItem({
           <>
             {link ? (
               <a
-                href={`https://stellar.expert/explorer/testnet/tx/${value}`}
+                href={`https://stellar.expert/explorer/${
+                  settings?.[projectId]?.[
+                    PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS
+                  ]?.['network'] === 'mainnet'
+                    ? 'public'
+                    : 'testnet'
+                }/tx/${value}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer truncate w-24"

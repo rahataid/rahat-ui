@@ -5,6 +5,7 @@ import { Eye } from 'lucide-react';
 
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 
 function getTransactionStatusColor(status: string) {
   switch (status.toLowerCase()) {
@@ -45,8 +46,21 @@ export default function usePayoutTransactionLogTableColumn() {
 
     {
       accessorKey: 'totalTokenAssigned',
-      header: 'Total Token Assigned',
-      cell: ({ row }) => <div>{row.getValue('totalTokenAssigned')}</div>,
+      header: 'Total Amount Disbursed',
+      cell: ({ row }) => (
+        <div>Rs. {row.original.totalTokenAssigned * ONE_TOKEN_VALUE}</div>
+      ),
+    },
+    {
+      accessorKey: 'amountperBenef',
+      header: 'Amount per beneficiary',
+      cell: ({ row }) => (
+        <div>
+          Rs.
+          {(row.original.totalTokenAssigned * 1) /
+            row.original.totalBeneficiaries}
+        </div>
+      ),
     },
     {
       accessorKey: 'payoutType',

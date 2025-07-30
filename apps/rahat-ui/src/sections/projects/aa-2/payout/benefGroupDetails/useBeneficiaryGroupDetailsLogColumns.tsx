@@ -29,6 +29,7 @@ import {
 } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { intlFormatDate } from 'apps/rahat-ui/src/utils';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 function getTransactionStatusColor(status: string) {
   switch (status.toLowerCase()) {
     case 'completed':
@@ -75,8 +76,6 @@ export default function useBeneficiaryGroupDetailsLogColumns(
     },
     [triggerForPayoutFailed, id],
   );
-
-  console.log(fspName);
 
   const handleEyeClick = (uuid: any) => {
     router.push(
@@ -142,29 +141,36 @@ export default function useBeneficiaryGroupDetailsLogColumns(
         );
       },
     },
-    // {
-    //   accessorKey: 'txHash',
-    //   header: 'Transaction Hash',
-    //   cell: ({ row }) => {
-    //     return (
-    //       <div>
-    //         {row?.original?.txHash ? (
-    //           <a
-    //             href={`https://stellar.expert/explorer/testnet/tx/${row?.original?.txHash}`}
-    //             target="_blank"
-    //             rel="noopener noreferrer"
-    //             className="text-base text-blue-500 hover:underline cursor-pointer"
-    //           >
-    //             <p className="truncate w-20">{row?.original?.txHash}</p>
-    //           </a>
-    //         ) : (
-    //           'N/A'
-    //         )}
-    //       </div>
-    //     );
-    //   },
-    // },
+    {
+      accessorKey: 'txHash',
+      header: 'Transaction Hash',
+      cell: ({ row }) => {
+        return (
+          <div>
+            {row?.original?.txHash ? (
+              <a
+                href={`https://stellar.expert/explorer/testnet/tx/${row?.original?.txHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-base text-blue-500 hover:underline cursor-pointer"
+              >
+                <p className="truncate w-20">{row?.original?.txHash}</p>
+              </a>
+            ) : (
+              'N/A'
+            )}
+          </div>
+        );
+      },
+    },
 
+    {
+      accessorKey: 'tokensAssigned',
+      header: 'Amount Disbursed',
+      cell: ({ row }) => (
+        <div>Rs. {row.original?.amount * ONE_TOKEN_VALUE}</div>
+      ),
+    },
     {
       accessorKey: 'transactionType',
       header: 'Transaction Type',
@@ -186,20 +192,6 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       },
     },
     {
-      accessorKey: 'tokensAssigned',
-      header: 'Tokens Assigned',
-      cell: ({ row }) => <div>{row.original?.amount}</div>,
-    },
-    // {
-    //   accessorKey: 'fspId',
-    //   header: 'FSP',
-    //   cell: ({ row }) => (
-    //     <div>
-    //       {fspName.data?.find((a) => a.id === row.original.fspId)?.name}
-    //     </div>
-    //   ),
-    // },
-    {
       accessorKey: 'status',
       header: 'Payout Status',
       cell: ({ row }) => {
@@ -219,9 +211,12 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       accessorKey: 'createdAt',
       header: 'Timestamp',
       cell: ({ row }) => (
-        <div className="flex items-center gap-4">
-          {/* {new Date(row.getValue('createdAt')).toLocaleString()}{' '} */}
-          {intlFormatDate(row?.original?.createdAt)}
+        <div className="flex  flex-col text-[10px]">
+          <span>{intlFormatDate(row?.original?.createdAt)}</span>
+
+          {row?.original?.status.endsWith('COMPLETED') && (
+            <span>{intlFormatDate(row.original?.updatedAt)}</span>
+          )}
         </div>
       ),
     },

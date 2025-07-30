@@ -29,6 +29,7 @@ import { RotateCcw, Store, Ticket, Users } from 'lucide-react';
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
 import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
+import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const params = useParams();
@@ -65,22 +66,8 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const triggerPayout = useTriggerPayout();
   const columns = useBeneficiaryGroupDetailsLogColumns(payout?.type);
 
-  const tableData = React.useMemo(() => {
-    const benefs =
-      payout?.beneficiaryGroupToken?.beneficiaryGroup?.beneficiaries ?? [];
-    const data = benefs?.length
-      ? benefs?.map((b: any) => ({
-          walletAddress: 'N/A',
-          transactionWalletId: 'N/A',
-          bankTransactionId: 'N/A',
-          tokensAssigned: 'N/A',
-          status: 'N/A',
-          timeStamp: b?.updatedAt,
-        }))
-      : [];
-    return data;
-  }, [payout]);
-
+  console.log('table', payoutlogs);
+  console.log('single', payout);
   const table = useReactTable({
     manualPagination: true,
     data: payoutlogs?.data || [],
@@ -124,16 +111,18 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
   const payoutStats = [
     {
-      label: 'Total Beneficiaries',
+      label: 'Total no, of Beneficiaries',
       value:
         payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
           ?.beneficiaries ?? 0,
-      icon: Users,
+      infoIcon: true,
+      infoToolTip: 'This shows the total number of beneficiaries',
     },
     {
-      label: 'Total Tokens',
-      value: payout?.beneficiaryGroupToken?.numberOfTokens,
-      icon: Ticket,
+      label: 'Total Amount Disbursed',
+      value: payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE,
+      infoIcon: true,
+      infoToolTip: 'This shows the total number of amount disbursed',
     },
   ];
 
@@ -191,49 +180,70 @@ export default function BeneficiaryGroupTransactionDetailsList() {
         </div>
 
         <div
-          className={`grid grid-cols-1 md:grid-cols-2 ${
-            payout?.type === 'VENDOR' && payout?.mode === 'OFFLINE'
-              ? 'lg:grid-cols-5'
-              : 'lg:grid-cols-4'
-          } gap-4`}
+          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4  gap-4`}
         >
           {payoutStats?.map((item) => (
             <DataCard
               key={item.label}
               title={item.label}
-              Icon={item.icon}
               number={item.value}
-              className="rounded-sm h-28"
+              className="rounded-sm h-24 pt-2"
+              infoIcon={item.infoIcon}
+              infoTooltip={item.infoToolTip}
             />
           ))}
           <DataCard
             title="Payout Type"
-            Icon={Ticket}
+            infoIcon={true}
+            infoTooltip="This shows the payout type"
             smallNumber={payout?.type === 'VENDOR' ? 'CVA' : payout?.type}
-            className="rounded-sm h-28"
+            className="rounded-sm h-24"
             badge
           />
           <DataCard
             title="Payout Method"
-            Icon={Ticket}
+            infoIcon={true}
+            infoTooltip="This shows the payout method"
             smallNumber={
               payout?.type === 'VENDOR'
                 ? payout?.mode
                 : payout?.extras?.paymentProviderName
             }
-            className="rounded-sm h-28"
+            className="rounded-sm h-24"
             badge
           />
 
           {payout?.type === 'VENDOR' && payout?.mode === 'OFFLINE' && (
             <DataCard
               title="Vendor"
-              Icon={Store}
+              infoIcon={true}
+              infoTooltip="This shows the vendor name"
               smallNumber={payout?.extras?.vendorName}
-              className="rounded-sm h-28"
+              className="rounded-sm h-24"
               badge
             />
           )}
+          <DataCard
+            title="Successful Transaction"
+            number={payout?.totalSuccessRequests}
+            className="rounded-sm h-24"
+            infoIcon={true}
+            infoTooltip="This shows the total success transaction"
+          />
+          <DataCard
+            title="Failed Transaction"
+            number={payout?.totalFailedPayoutRequests}
+            className="rounded-sm h-24"
+            infoIcon={true}
+            infoTooltip="This shows the total failed transaction"
+          />
+          <DataCard
+            title="Payout Gap"
+            number={payout?.payoutGap}
+            className="rounded-sm h-24"
+            infoIcon={true}
+            infoTooltip="This shows the payout gap"
+          />
         </div>
       </div>
 

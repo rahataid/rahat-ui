@@ -14,7 +14,13 @@ import {
   transactionBgStatus,
 } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { UUID } from 'crypto';
-import { ArrowUpRight, Coins, ExternalLink, RotateCcw } from 'lucide-react';
+import {
+  ArrowUpRight,
+  Coins,
+  ExternalLink,
+  RotateCcw,
+  Ticket,
+} from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import InfoItem from './infoItem';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -42,7 +48,7 @@ export default function BeneficiaryTransactionLogDetails() {
   if (payoutLogsLoading) {
     return <TableLoader />;
   }
-  console.log('first', data?.data?.payout);
+  console.log('first', data?.data);
 
   const handleRedirect = () => {
     router.push(
@@ -75,12 +81,47 @@ export default function BeneficiaryTransactionLogDetails() {
           </RoleAuth>
         )}
       </div>
-      <DataCard
-        title="Token Assigned"
-        Icon={Coins}
-        number={data?.data?.amount}
-        className="max-w-md rounded-sm"
-      />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+        <DataCard
+          title="Amount Disbursed"
+          Icon={Coins}
+          smallNumber={
+            data?.data?.status.endsWith('COMPLETED')
+              ? `Rs. ${data?.data?.amount}`
+              : 'Rs 0'
+          }
+          className="h-24 w-full rounded-sm pt-1"
+        />
+        {data?.data?.status.endsWith('COMPLETED') && (
+          <>
+            <DataCard
+              title="Payout Type"
+              Icon={Ticket}
+              badge={true}
+              smallNumber={
+                data?.data?.payout?.type === 'VENDOR'
+                  ? 'CVA'
+                  : data?.data?.payout?.type
+              }
+              className="h-24 w-full rounded-sm"
+            />
+
+            <DataCard
+              title="Payout Method"
+              Icon={Ticket}
+              badge={true}
+              smallNumber={
+                data?.data?.payout?.type === 'FSP'
+                  ? data?.data?.payout?.extras?.paymentProviderName
+                      .split('_')
+                      .join(' ')
+                  : data?.data?.payout?.mode
+              }
+              className="h-24 w-full rounded-sm"
+            />
+          </>
+        )}
+      </div>
 
       <Card className="rounded-sm">
         <CardContent className="space-y-6 p-4 ">
@@ -126,32 +167,19 @@ export default function BeneficiaryTransactionLogDetails() {
                 {data?.data?.transactionType.split('_').join(' ')}
               </Badge>
             </InfoItem>
-            <InfoItem label="Payout Type">
-              <Badge className="text-muted-foreground">
-                {data?.data?.payout?.type === 'VENDOR'
-                  ? 'CVA'
-                  : data?.data?.payout?.type}
-              </Badge>
-            </InfoItem>
-            <InfoItem label="Payout Mode">
-              <Badge className="text-muted-foreground">
-                {/* { || } */}
 
-                {data?.data?.payout?.type === 'FSP'
-                  ? data?.data?.payout?.extras?.paymentProviderName
-                      .split('_')
-                      .join(' ')
-                  : data?.data?.payout?.mode}
-              </Badge>
-            </InfoItem>
-            <InfoItem
-              label="Bank Name"
-              value={data?.data?.Beneficiary?.extras?.bank_name}
-            />
-            <InfoItem
-              label="Bank Account Number"
-              value={data?.data?.Beneficiary?.extras?.bank_ac_number}
-            />
+            {data?.data?.payout?.type === 'FSP' && (
+              <>
+                <InfoItem
+                  label="Bank Name"
+                  value={data?.data?.Beneficiary?.extras?.bank_name}
+                />
+                <InfoItem
+                  label="Bank Account Number"
+                  value={data?.data?.Beneficiary?.extras?.bank_ac_number}
+                />
+              </>
+            )}
 
             <InfoItem
               label="Created At"
@@ -162,10 +190,16 @@ export default function BeneficiaryTransactionLogDetails() {
               label="Updated At"
               value={intlFormatDate(data?.data?.updatedAt)}
             />
-            <InfoItem
-              label="No. of Attempts"
-              value={data?.data?.info?.numberOfAttempts}
-            />
+
+            {data?.data?.payout?.type === 'FSP' && (
+              <>
+                <InfoItem
+                  label="No. of Attempts"
+                  value={data?.data?.info?.numberOfAttempts}
+                />
+              </>
+            )}
+
             {data?.data?.info?.error && (
               <InfoItem
                 label="Message"

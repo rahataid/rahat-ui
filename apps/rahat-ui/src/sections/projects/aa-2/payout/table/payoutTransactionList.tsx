@@ -58,6 +58,7 @@ export default function PayoutTransactionList() {
         : [],
     [payouts],
   );
+
   const table = useReactTable({
     manualPagination: true,
     data: tableData,

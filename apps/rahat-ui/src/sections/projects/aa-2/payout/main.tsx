@@ -30,30 +30,20 @@ export default function PayoutView() {
   const payoutStats = useMemo(() => {
     return [
       {
-        label: 'No. of Token Assigned',
-        subtitle: 'Token Balance',
-        value: statsPayout?.payoutStats?.tokenAssigned || 'N/A',
+        label: 'No. of Beneficiaries Receiving Cash',
+        // subtitle: '',
+        value: statsPayout?.payoutStats?.beneficiaries || 'N/A',
+        infoIcon: true,
+        infoTooltip:
+          'This shows the total number of beneficiaries who have received cash',
       },
       {
-        label: 'Amount Disbursed',
-        subtitle: ' ',
-        value: `Rs. ${statsPayout?.payoutStats?.amountDisbursed}` || 'N/A',
-      },
-      {
-        label: 'No. of Tokens Disbursed',
-        subtitle: ' ',
-        value: statsPayout?.payoutStats?.tokenDisbursed || 'N/A',
-      },
-      {
-        label: 'Project Balance',
-        subtitle: ' ',
-        value: `Rs. ${statsPayout?.payoutStats?.projectBalance}` || 'N/A',
-      },
-
-      {
-        label: '1 Token Value',
-        subtitle: ' ',
-        value: statsPayout?.payoutStats?.oneTokenValue || 'N/A',
+        label: 'Total Cash Distibution',
+        // subtitle: ' ',
+        value:
+          `Rs. ${statsPayout?.payoutStats?.totalCashDistribution}` || 'N/A',
+        infoIcon: true,
+        infoTooltip: 'This shows the total cash distrubution',
       },
     ];
   }, [statsPayout]);
@@ -80,15 +70,16 @@ export default function PayoutView() {
           </RoleAuth>
         </div>
       </div>
-      <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-4">
         {payoutStats.map((stat) => {
           return (
             <DataCard
               key={stat.label}
               title={stat.label}
               number={stat.value as string}
-              className="rounded-sm"
-              subtitle={stat.subtitle}
+              className="rounded-sm h-32"
+              infoIcon={stat.infoIcon}
+              infoTooltip={stat.infoTooltip}
             />
           );
         })}
@@ -123,25 +114,23 @@ export default function PayoutView() {
         </div>
 
         <div className="flex-1 border rounded-sm p-4">
-          <h1 className="text-lg font-medium mb-4">Total Payout</h1>
+          <h1 className="text-lg font-medium mb-4">Payout Status</h1>
           <div className="w-full aspect-square">
             <PieChart
               chart={{
                 series: [
                   {
-                    label: 'Completed',
+                    label: 'Success',
                     value:
-                      statsPayout?.payoutOverview?.completionStatus
-                        ?.COMPLETED || 0,
+                      statsPayout?.payoutOverview?.payoutStatus?.SUCCESS || 0,
                   },
                   {
-                    label: 'Not Completed',
+                    label: 'Failed',
                     value:
-                      statsPayout?.payoutOverview?.completionStatus
-                        ?.NOT_COMPLETED || 0,
+                      statsPayout?.payoutOverview?.payoutStatus?.FAILED || 0,
                   },
                 ],
-                colors: ['#2A9D90', '#F4A462'],
+                colors: ['#2A9D90', '#DC3545'],
               }}
               custom={true}
               projectAA={true}

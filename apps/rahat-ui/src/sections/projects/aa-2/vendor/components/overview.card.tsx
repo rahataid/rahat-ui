@@ -10,8 +10,8 @@ export default function OverviewCard({ data, loading }: Props) {
   const isBalanceError = data?.balances?.name === 'NotFoundError';
 
   const balance =
-    !isBalanceError && Array.isArray(data?.balances?.response)
-      ? data.balances.response.filter((a: any) => a?.asset_code)
+    !isBalanceError && Array.isArray(data?.balances)
+      ? data?.balances?.filter((a: any) => a?.asset_code)
       : [];
 
   const series = [10, 20];

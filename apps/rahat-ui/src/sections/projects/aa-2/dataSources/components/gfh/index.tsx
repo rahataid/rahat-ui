@@ -80,7 +80,7 @@ const GFHDetails = () => {
               dangerLevel={riverInfo.dangerLevel}
               extremeLevel={riverInfo.extremeDangerLevel}
               data={riverInfo.history}
-              xDateFormat="M/d"
+              xDateFormat="MMMM d"
               yaxisTitle="Discharge in m³/s"
             />
           </div>

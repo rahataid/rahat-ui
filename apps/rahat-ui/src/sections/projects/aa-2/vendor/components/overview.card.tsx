@@ -1,4 +1,5 @@
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import { trimDecimalZeros } from 'apps/rahat-ui/src/utils/string';
 import { ChartDonut } from 'libs/shadcn/src/components/charts';
 import React from 'react';
 
@@ -16,7 +17,11 @@ export default function OverviewCard({ data, loading }: Props) {
 
   const series = [10, 20];
 
-  const vendorBalance = isBalanceError ? '-' : balance?.[0]?.balance || '0';
+  const vendorBalance = isBalanceError
+    ? '-'
+    : balance?.[0]?.balance
+    ? trimDecimalZeros(balance?.[0]?.balance)
+    : '0';
   return (
     <div className="border rounded-sm p-4">
       <div className="mb-4">

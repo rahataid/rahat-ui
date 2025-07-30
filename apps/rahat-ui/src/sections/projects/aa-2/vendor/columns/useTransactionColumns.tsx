@@ -6,6 +6,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import { Copy, CopyCheck } from 'lucide-react';
 import { useParams } from 'next/navigation';
 
@@ -21,7 +22,13 @@ export const useVendorsTransactionTableColumns = () => {
     {
       accessorKey: 'topic',
       header: 'Topic',
-      cell: ({ row }) => <div>{row.original?.transactionType}</div>,
+      cell: ({ row }) => (
+        <div>
+          {row.original?.transactionType
+            ? formatEnumString(row.original?.transactionType)
+            : 'N/A'}
+        </div>
+      ),
     },
     {
       accessorKey: 'txHash',

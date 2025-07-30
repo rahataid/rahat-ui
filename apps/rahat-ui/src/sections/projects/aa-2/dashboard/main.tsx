@@ -11,6 +11,7 @@ import {
   useProjectDashboardReporting,
   useProjectInfo,
   useProjectStore,
+  useStellarSettings,
 } from '@rahat-ui/query';
 import { Project } from '@rahataid/sdk/project/project.types';
 import { useParams } from 'next/navigation';
@@ -22,12 +23,15 @@ const Main = () => {
   console.log(project);
   const { id } = useParams();
   const projectId = id as UUID;
-  useAAStations(projectId);
 
+  useAAStations(projectId);
   useProjectInfo(projectId);
+  useStellarSettings(projectId);
+
 
   const { data, isLoading } = useProjectDashboardReporting(projectId);
   if (isLoading) return <DashboardSkeleton />;
+
   return (
     <div className="space-y-3 p-5">
       <Heading

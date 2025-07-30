@@ -14,8 +14,8 @@ import {
   transactionBgStatus,
 } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { UUID } from 'crypto';
-import { Coins, RotateCcw } from 'lucide-react';
-import { useParams, useSearchParams } from 'next/navigation';
+import { ArrowUpRight, Coins, ExternalLink, RotateCcw } from 'lucide-react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import InfoItem from './infoItem';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useCallback } from 'react';
@@ -23,6 +23,7 @@ import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function BeneficiaryTransactionLogDetails() {
   const { id, uuid } = useParams();
+  const router = useRouter();
   const groupId = useSearchParams().get('groupId');
 
   const triggerForPayoutFailed = useTriggerForOnePayoutFailed();
@@ -42,6 +43,14 @@ export default function BeneficiaryTransactionLogDetails() {
     return <TableLoader />;
   }
   console.log('first', data?.data?.payout);
+
+  const handleRedirect = () => {
+    router.push(
+      `/beneficiary/${data?.data?.Beneficiary?.uuid}?projectId=${id}&groupId=${
+        groupId as string
+      }&txnDetailsId=${uuid}`,
+    );
+  };
   return (
     <div className="p-4 md:p-6  space-y-6">
       <div className=" flex justify-between items-center">
@@ -75,6 +84,13 @@ export default function BeneficiaryTransactionLogDetails() {
 
       <Card className="rounded-sm">
         <CardContent className="space-y-6 p-4 ">
+          <div className="inline-flex items-center gap-3 text-lg font-semibold text-[#2c2f3c] ">
+            Beneficiary Details
+            <ArrowUpRight
+              className="w-5 h-5 text-blue-500 hover:cursor-pointer"
+              onClick={handleRedirect}
+            />
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <InfoItem
               label="Beneficiary Wallet Address"

@@ -21,10 +21,10 @@ const GFHDetails = () => {
   }));
 
   const { data: riverWatch, isLoading } = useGFHWaterLevels(projectId, {
-    riverBasin: 'Doda river at East-West Highway',
-    // settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-    //   'river_basin'
-    // ],
+    riverBasin:
+      settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+        'river_basin'
+      ],
   });
 
   const riverInfo = React.useMemo(() => {

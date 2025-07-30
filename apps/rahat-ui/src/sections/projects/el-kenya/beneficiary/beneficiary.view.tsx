@@ -1,4 +1,5 @@
 import {
+  useListConsentConsumer,
   usePagination,
   useProjectBeneficiaries,
   useProjectStore,
@@ -11,6 +12,7 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
+import * as XLSX from 'xlsx';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useElkenyaBeneficiaryTableColumns } from './use.beneficiary.table.columns';
 import React, { useEffect } from 'react';
@@ -37,6 +39,7 @@ export default function BeneficiaryView() {
   const router = useRouter();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  const [enabled, setEnabled] = React.useState(false);
 
   const [defaultValue, setDefaultValue] = React.useState<string>('beneficiary');
 
@@ -78,6 +81,18 @@ export default function BeneficiaryView() {
     projectUUID: id,
     ...filters,
   });
+
+  const {
+    data: consumerData,
+    refetch,
+    isFetched,
+  } = useListConsentConsumer(
+    {
+      projectUUID: id,
+      ...filters,
+    },
+    enabled,
+  );
 
   const meta = beneficiaries?.response?.meta;
 
@@ -122,6 +137,29 @@ export default function BeneficiaryView() {
     setDefaultValue(value);
   };
 
+  const handleDownload = () => {
+    setEnabled(true);
+  };
+
+  useEffect(() => {
+    if (enabled && isFetched) {
+      generateExcel(consumerData.data, 'Beneficiary', 8);
+      setEnabled(false);
+    }
+  }, [enabled, isFetched]);
+
+  const generateExcel = (data: any, title: string, numberOfColumns: number) => {
+    const wb = XLSX.utils.book_new();
+
+    const ws = XLSX.utils.json_to_sheet(data);
+
+    const columnWidths = 25;
+    ws['!cols'] = Array(numberOfColumns).fill({ wch: columnWidths });
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    XLSX.writeFile(wb, `${title}.xlsx`);
+  };
   return (
     <Tabs value={defaultValue} onValueChange={onTabChange}>
       <div className="flex justify-between items-center p-4 pb-0">
@@ -221,6 +259,15 @@ export default function BeneficiaryView() {
                 value={filters?.voucherAssignmentStatus || ''}
                 showSelect={false}
               />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleDownload}
+                className="w-full rounded-sm sm:w-auto"
+              >
+                <CloudDownload size={18} className="mr-1" />
+                {enabled ? 'Downloading...' : 'Download'}
+              </Button>
             </div>
             {Object.keys(filters).length != 0 && (
               <FiltersTags

@@ -64,9 +64,12 @@ export const useVendorsTransactionTableColumns = () => {
       header: 'Status',
       cell: ({ row }) => (
         <Badge
-          className={
-            row.original?.fspId === null ? 'bg-green-500 ' : 'bg-green-500'
-          }
+          className="text-xs font-normal"
+          style={{
+            backgroundColor:
+              row.original?.fspId === null ? '#ECFDF3' : '#ECFDF3', //#F2F4F7',
+            color: row.original?.fspId === null ? '#027A48' : '#027A48', //#344054',
+          }}
         >
           {row.original?.fspId === null ? 'Online' : 'Online'}
         </Badge>

@@ -1,18 +1,16 @@
-import React, { useCallback, useEffect, useState } from 'react';
 // import { dFMTransactionsData } from '../static';
-import { BarChart } from 'libs/shadcn/src/components/charts';
-import { DataCard, Heading, TransactionCard } from 'apps/rahat-ui/src/common';
-import { useParams } from 'next/navigation';
 import {
   useFetchTokenStatsStellar,
   useGroupsReservedFunds,
   usePagination,
-  useProjectAction,
 } from '@rahat-ui/query';
-import TokenOverviewSkeleton from './token.overview.skeleton';
-import { UUID } from 'crypto';
 import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
+import { DataCard, Heading, TransactionCard } from 'apps/rahat-ui/src/common';
+import { INFO_TOOL_TIPS } from 'apps/rahat-ui/src/constants/aa.constants';
 import { useChains } from 'connectkit';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
+import TokenOverviewSkeleton from './token.overview.skeleton';
 
 export default function TokensOverview() {
   const uuid = useParams().id;
@@ -49,10 +47,6 @@ export default function TokensOverview() {
     ];
   };
 
-  const disbursedValue = groupsFundsData?.data
-    ?.filter((item) => item.status === 'DISBURSED')
-    .reduce((acc, dat) => acc + dat.numberOfTokens, 0);
-  console.log(groupsFundsData);
   return (
     <>
       <Heading
@@ -61,29 +55,76 @@ export default function TokensOverview() {
         description="Overview of your tokens"
       />
       {!isLoading ? (
-        <div className="grid xl:grid-cols-3  lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
-          <DataCard
-            className="rounded-sm"
-            title={'Token Disbursed'}
-            number={disbursedValue}
-          />
+        <div className="grid xl:grid-cols-4  lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
+          {data?.data.map((item, index) => {
+            const isToken = item.name === 'Token';
+            const isTokenPrice = item.name === 'Token Price';
+            const isBudget = item.name === 'Budget Assigned';
+            const infoTooltip = INFO_TOOL_TIPS[item.name];
 
-          <DataCard
-            className="rounded-sm"
-            title={'1 Token Value'}
-            number={'Rs 1'}
-          />
-          <a
-            target="_blank"
-            href={`https://stellar.expert/explorer/testnet/asset/RAHAT-GCVLRQHGZYG32HZE3PKZ52NX5YFCNFDBUZDLUXQYMRS6WVBWSUOP5IYE-2`}
-            className="cursor-pointer"
-          >
-            <DataCard
-              className="rounded-sm "
-              title={'Token'}
-              number={'Rahat'}
-            />
-          </a>
+            if (isToken) {
+              return (
+                <a
+                  key={index}
+                  target="_blank"
+                  href={`https://stellar.expert/explorer/testnet/asset/${item.value}-GCVLRQHGZYG32HZE3PKZ52NX5YFCNFDBUZDLUXQYMRS6WVBWSUOP5IYE-2`}
+                  className="cursor-pointer"
+                >
+                  <DataCard
+                    className="rounded-sm "
+                    title={item.name}
+                    number={item.value}
+                    infoIcon={!!infoTooltip}
+                    infoTooltip={infoTooltip}
+                    subtitle=" "
+                  />
+                </a>
+              );
+            }
+
+            if (isTokenPrice) {
+              return (
+                <DataCard
+                  key={index}
+                  className="rounded-sm "
+                  title="1 Token Value"
+                  number={`Rs ${item.value}`}
+                  infoIcon={!!infoTooltip}
+                  infoTooltip={infoTooltip}
+                  subtitle=" "
+                />
+              );
+            }
+
+            if (isBudget) {
+              return (
+                <DataCard
+                  key={index}
+                  className="rounded-sm "
+                  title="Budget Assigned"
+                  number={`Rs ${item.value}`}
+                  infoIcon={!!infoTooltip}
+                  infoTooltip={infoTooltip}
+                  subtitle=" "
+                />
+              );
+            }
+            return (
+              <DataCard
+                key={index}
+                className="rounded-sm "
+                title={item.name}
+                number={String(item.value)}
+                infoIcon={!!infoTooltip}
+                infoTooltip={infoTooltip}
+                subtitle={
+                  item.name === 'Average Duration'
+                    ? 'Activation Trigger to Successful Disbursement'
+                    : ' '
+                }
+              />
+            );
+          })}
         </div>
       ) : (
         <TokenOverviewSkeleton number={[1, 2, 3, 4, 5]} />

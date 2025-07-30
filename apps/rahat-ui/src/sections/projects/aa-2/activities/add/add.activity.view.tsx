@@ -136,7 +136,6 @@ export default function AddActivities() {
       phaseId: z.string().min(1, { message: 'Please select phase' }),
       categoryId: z.string().min(1, { message: 'Please select category' }),
       leadTime: z.string().optional(),
-      // duration: z.string().optional(),
       description: z
         .string()
         .optional()
@@ -181,19 +180,6 @@ export default function AddActivities() {
         path: ['leadTime'],
       },
     );
-  // .refine(
-  //   (data) => {
-  //     const selectedPhase = phases.find((p) => p.uuid === data.phaseId);
-  //     if (selectedPhase?.name !== 'PREPAREDNESS') {
-  //       return data.duration && data.duration.length > 0;
-  //     }
-  //     return true;
-  //   },
-  //   {
-  //     message: 'Duration is required for this phase',
-  //     path: ['duration'],
-  //   },
-  // );
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -298,13 +284,7 @@ export default function AddActivities() {
   const handleCreateActivities = async (data: z.infer<typeof FormSchema>) => {
     const manager =
       users?.data?.find((u) => u?.uuid === data.responsibility) || null;
-    const {
-      responsibility,
-      activityCommunication,
-      // duration,
-      // leadTime,
-      ...rest
-    } = data;
+    const { responsibility, activityCommunication, ...rest } = data;
     const payloadData = {
       manager: manager
         ? {
@@ -315,7 +295,6 @@ export default function AddActivities() {
           }
         : null,
       activityCommunication: communicationData,
-      // leadTime: `${leadTime} ${duration}`,
       ...rest,
     };
     let payload;
@@ -593,10 +572,12 @@ export default function AddActivities() {
                     control={form.control}
                     name="leadTime"
                     render={({ field }) => {
-                      // Split value for controlled input/select
-                      let [lead, unit] = field.value?.split(' ') ?? ['', ''];
+                      const [lead, unitValue] = field.value?.split(' ') ?? [
+                        '',
+                        '',
+                      ];
                       // Default unit to 'days' if not set
-                      if (!unit) unit = 'days';
+                      const unit = !unitValue ? 'days' : unitValue;
                       return (
                         <FormItem>
                           <FormLabel>Lead Time</FormLabel>
@@ -604,6 +585,7 @@ export default function AddActivities() {
                             <Input
                               type="text"
                               placeholder="Enter lead time"
+                              className="col-span-3 rounded-r-none"
                               value={lead}
                               onChange={(e) => {
                                 const newLead = e.target.value.replace(
@@ -614,7 +596,6 @@ export default function AddActivities() {
                                   newLead ? `${newLead} ${unit}` : '',
                                 );
                               }}
-                              className="col-span-3 border-r-0 rounded-r-none"
                             />
                             <Select
                               value={unit}
@@ -625,15 +606,13 @@ export default function AddActivities() {
                               }}
                             >
                               <FormControl>
-                                <SelectTrigger className="rounded-l-0">
-                                  {/* No placeholder, always show selected value */}
+                                <SelectTrigger className="rounded-l-none">
                                   <SelectValue />
                                 </SelectTrigger>
                               </FormControl>
-                              <SelectContent className="rounded-l-0">
+                              <SelectContent>
                                 {DurationData.map((item) => (
                                   <SelectItem
-                                    className="rounded-l-0"
                                     key={item.value}
                                     value={item.value}
                                   >

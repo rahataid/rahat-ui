@@ -243,7 +243,6 @@ export default function EditActivity() {
       phaseId: z.string().min(1, { message: 'Please select phase' }),
       categoryId: z.string().min(1, { message: 'Please select category' }),
       leadTime: z.string().optional(),
-      duration: z.string().optional(),
       description: z
         .string()
         .optional()
@@ -294,19 +293,6 @@ export default function EditActivity() {
         message: 'Lead time is required for this phase',
         path: ['leadTime'],
       },
-    )
-    .refine(
-      (data) => {
-        const selectedPhase = phases.find((p) => p.uuid === data.phaseId);
-        if (selectedPhase?.name !== 'PREPAREDNESS') {
-          return data.duration && data.duration.length > 0;
-        }
-        return true;
-      },
-      {
-        message: 'Duration is required for this phase',
-        path: ['duration'],
-      },
     );
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -317,8 +303,7 @@ export default function EditActivity() {
       source: activityDetail?.phase?.source?.source[0],
       phaseId: activityDetail?.phaseId,
       categoryId: activityDetail?.categoryId,
-      leadTime: activityDetail?.leadTime?.split(' ')[0] || '',
-      duration: activityDetail?.leadTime?.split(' ')[1] || '',
+      leadTime: activityDetail?.leadTime,
       description: activityDetail?.description,
       activityDocuments: activityDetail?.activityDocuments,
       activityCommunication: activityDetail?.activityCommunication,
@@ -405,9 +390,6 @@ export default function EditActivity() {
   const handleUpdateActivity = async (data: z.infer<typeof FormSchema>) => {
     let payload;
 
-    // Combine leadTime and duration into a single string like in add activity
-    const leadTimeString = `${data.leadTime} ${data.duration}`;
-
     const activityCommunicationPayload = [];
     if (data?.activityCommunication?.length) {
       for (const comms of data.activityCommunication) {
@@ -454,19 +436,15 @@ export default function EditActivity() {
           });
         }
       }
-      const { duration, ...dataWithoutDuration } = data;
       payload = {
         uuid: activityID,
-        ...dataWithoutDuration,
-        leadTime: leadTimeString,
+        ...data,
         activityCommunication: activityCommunicationPayload,
       };
     } else {
-      const { duration, ...dataWithoutDuration } = data;
       payload = {
         uuid: activityID,
-        ...dataWithoutDuration,
-        leadTime: leadTimeString,
+        ...data,
       };
     }
     try {
@@ -487,8 +465,7 @@ export default function EditActivity() {
       source: activityDetail?.phase?.source?.source[0],
       phaseId: activityDetail?.phaseId,
       categoryId: activityDetail?.categoryId,
-      leadTime: activityDetail?.leadTime?.split(' ')[0] || '',
-      duration: activityDetail?.leadTime?.split(' ')[1] || '',
+      leadTime: activityDetail?.leadTime,
       description: activityDetail?.description,
       activityDocuments: activityDetail?.activityDocuments,
       activityCommunication: activityDetail?.activityCommunication,
@@ -720,51 +697,48 @@ export default function EditActivity() {
                     }}
                   />
                 )}
+
                 {selectedPhaseId && selectedPhase?.name !== 'PREPAREDNESS' && (
-                  <div className="grid grid-cols-6 gap-1">
-                    <div className="col-span-4">
-                      <FormField
-                        control={form.control}
-                        name="leadTime"
-                        render={({ field }) => {
-                          return (
-                            <FormItem>
-                              <FormLabel>Lead Time</FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="text"
-                                  placeholder="Enter lead time"
-                                  {...field}
-                                  onChange={(e) => {
-                                    const value = e.target.value;
-                                    // Allow only digits (0-9)
-                                    if (/^\d*$/.test(value)) {
-                                      field.onChange(e); // Only update if valid
-                                    }
-                                  }}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          );
-                        }}
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <FormField
-                        control={form.control}
-                        name="duration"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Duration</FormLabel>
+                  <FormField
+                    control={form.control}
+                    name="leadTime"
+                    render={({ field }) => {
+                      const [lead, unitValue] = field.value?.split(' ') ?? [
+                        '',
+                        '',
+                      ];
+                      // Default unit to 'days' if not set
+                      const unit = !unitValue ? 'days' : unitValue;
+                      return (
+                        <FormItem>
+                          <FormLabel>Lead Time</FormLabel>
+                          <div className="grid grid-cols-4">
+                            <Input
+                              type="text"
+                              placeholder="Enter lead time"
+                              className="col-span-3 rounded-r-none "
+                              value={lead}
+                              onChange={(e) => {
+                                const newLead = e.target.value.replace(
+                                  /\D/g,
+                                  '',
+                                );
+                                field.onChange(
+                                  newLead ? `${newLead} ${unit}` : '',
+                                );
+                              }}
+                            />
                             <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                              value={field.value}
+                              value={unit}
+                              onValueChange={(val) => {
+                                field.onChange(
+                                  lead ? `${lead} ${val}` : ` ${val}`,
+                                );
+                              }}
                             >
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select duration" />
+                                <SelectTrigger className="rounded-l-none">
+                                  <SelectValue />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
@@ -778,12 +752,12 @@ export default function EditActivity() {
                                 ))}
                               </SelectContent>
                             </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
                 )}
 
                 <FormField

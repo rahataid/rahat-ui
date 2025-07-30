@@ -21,10 +21,10 @@ const GFHDetails = () => {
   }));
 
   const { data: riverWatch, isLoading } = useGFHWaterLevels(projectId, {
-    riverBasin:
-      settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-        'river_basin'
-      ],
+    riverBasin: 'Doda river at East-West Highway',
+    // settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+    //   'river_basin'
+    // ],
   });
 
   const riverInfo = React.useMemo(() => {
@@ -80,7 +80,7 @@ const GFHDetails = () => {
               dangerLevel={riverInfo.dangerLevel}
               extremeLevel={riverInfo.extremeDangerLevel}
               data={riverInfo.history}
-              xDateFormat="M/d"
+              xDateFormat="MMMM d"
               yaxisTitle="Discharge in m³/s"
             />
           </div>

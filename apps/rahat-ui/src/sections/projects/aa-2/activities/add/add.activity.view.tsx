@@ -136,7 +136,7 @@ export default function AddActivities() {
       phaseId: z.string().min(1, { message: 'Please select phase' }),
       categoryId: z.string().min(1, { message: 'Please select category' }),
       leadTime: z.string().optional(),
-      duration: z.string().optional(),
+      // duration: z.string().optional(),
       description: z
         .string()
         .optional()
@@ -180,20 +180,20 @@ export default function AddActivities() {
         message: 'Lead time is required for this phase',
         path: ['leadTime'],
       },
-    )
-    .refine(
-      (data) => {
-        const selectedPhase = phases.find((p) => p.uuid === data.phaseId);
-        if (selectedPhase?.name !== 'PREPAREDNESS') {
-          return data.duration && data.duration.length > 0;
-        }
-        return true;
-      },
-      {
-        message: 'Duration is required for this phase',
-        path: ['duration'],
-      },
     );
+  // .refine(
+  //   (data) => {
+  //     const selectedPhase = phases.find((p) => p.uuid === data.phaseId);
+  //     if (selectedPhase?.name !== 'PREPAREDNESS') {
+  //       return data.duration && data.duration.length > 0;
+  //     }
+  //     return true;
+  //   },
+  //   {
+  //     message: 'Duration is required for this phase',
+  //     path: ['duration'],
+  //   },
+  // );
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -204,7 +204,7 @@ export default function AddActivities() {
       phaseId: phaseId || '',
       categoryId: '',
       leadTime: '',
-      duration: '',
+      // duration: '',
       description: '',
       isAutomated: false,
       activityDocuments: [],
@@ -301,8 +301,8 @@ export default function AddActivities() {
     const {
       responsibility,
       activityCommunication,
-      duration,
-      leadTime,
+      // duration,
+      // leadTime,
       ...rest
     } = data;
     const payloadData = {
@@ -315,7 +315,7 @@ export default function AddActivities() {
           }
         : null,
       activityCommunication: communicationData,
-      leadTime: `${leadTime} ${duration}`,
+      // leadTime: `${leadTime} ${duration}`,
       ...rest,
     };
     let payload;
@@ -589,78 +589,51 @@ export default function AddActivities() {
                   />
                 )}
                 {selectedPhaseId && selectedPhase?.name !== 'PREPAREDNESS' && (
-                  <div className="grid grid-cols-6 gap-1">
-                    <div className="col-span-4">
-                      <FormField
-                        control={form.control}
-                        name="leadTime"
-                        render={({ field }) => {
-                          return (
-                            <FormItem>
-                              <FormLabel>Lead Time</FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="text"
-                                  placeholder="Enter lead time"
-                                  {...field}
-                                  onChange={(e) => {
-                                    const value = e.target.value;
-                                    // Allow only digits (0-9)
-                                    if (/^\d*$/.test(value)) {
-                                      field.onChange(e); // Only update if valid
-                                    }
-                                  }}
-                                  onKeyDown={(e) => {
-                                    const invalidKeys = [
-                                      'e',
-                                      'E',
-                                      '+',
-                                      '-',
-                                      '.',
-                                      ',',
-                                      '*',
-                                      '/',
-                                      '@',
-                                      '#',
-                                      '$',
-                                      '%',
-                                      '^',
-                                      '&',
-                                      '(',
-                                      ')',
-                                    ];
-                                    if (invalidKeys.includes(e.key)) {
-                                      e.preventDefault();
-                                    }
-                                  }}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          );
-                        }}
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <FormField
-                        control={form.control}
-                        name="duration"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Duration</FormLabel>
+                  <FormField
+                    control={form.control}
+                    name="leadTime"
+                    render={({ field }) => {
+                      // Split value for controlled input/select
+                      let [lead, unit] = field.value?.split(' ') ?? ['', ''];
+                      // Default unit to 'days' if not set
+                      if (!unit) unit = 'days';
+                      return (
+                        <FormItem>
+                          <FormLabel>Lead Time</FormLabel>
+                          <div className="grid grid-cols-4">
+                            <Input
+                              type="text"
+                              placeholder="Enter lead time"
+                              value={lead}
+                              onChange={(e) => {
+                                const newLead = e.target.value.replace(
+                                  /\D/g,
+                                  '',
+                                );
+                                field.onChange(
+                                  newLead ? `${newLead} ${unit}` : '',
+                                );
+                              }}
+                              className="col-span-3 border-r-0 rounded-r-none"
+                            />
                             <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                              value={field.value}
+                              value={unit}
+                              onValueChange={(val) => {
+                                field.onChange(
+                                  lead ? `${lead} ${val}` : ` ${val}`,
+                                );
+                              }}
                             >
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select duration" />
+                                <SelectTrigger className="rounded-l-0">
+                                  {/* No placeholder, always show selected value */}
+                                  <SelectValue />
                                 </SelectTrigger>
                               </FormControl>
-                              <SelectContent>
+                              <SelectContent className="rounded-l-0">
                                 {DurationData.map((item) => (
                                   <SelectItem
+                                    className="rounded-l-0"
                                     key={item.value}
                                     value={item.value}
                                   >
@@ -669,12 +642,12 @@ export default function AddActivities() {
                                 ))}
                               </SelectContent>
                             </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
                 )}
 
                 <FormField

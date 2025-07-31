@@ -2,6 +2,7 @@
 import {
   useGetPayoutLogs,
   usePagination,
+  usePayoutExportLogs,
   useSinglePayout,
   useTriggerForPayoutFailed,
   useTriggerPayout,
@@ -25,10 +26,17 @@ import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
-import { RotateCcw, Store, StoreIcon, Ticket, User, Users } from 'lucide-react';
+import {
+  CloudDownload,
+  RotateCcw,
+  Ticket,
+  User,
+  StoreIcon,
+} from 'lucide-react';
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
 import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
+import * as XLSX from 'xlsx';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
@@ -65,6 +73,17 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const triggerForPayoutFailed = useTriggerForPayoutFailed();
   const triggerPayout = useTriggerPayout();
   const columns = useBeneficiaryGroupDetailsLogColumns(payout?.type);
+  const { data: exportPayoutLogs } = usePayoutExportLogs({
+    projectUUID: projectId,
+    payoutUUID: payoutId,
+  });
+
+  const handleDownload = () => {
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(exportPayoutLogs);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');
+    XLSX.writeFile(workbook, 'payout-logs.xlsx');
+  };
 
   console.log('table', payoutlogs);
   console.log('single', payout);
@@ -154,7 +173,6 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
     [filters],
   );
-  console.log(payout);
   return isLoading ? (
     <TableLoader />
   ) : (
@@ -174,30 +192,42 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               badgeClassName={isCompleteBgStatus(payout?.status)}
             />
           </div>
-          {payout?.type === 'FSP' && (
+          {
             <div className="flex gap-2">
               <PayoutConfirmationDialog
                 onConfirm={() => handleTriggerPayout()}
                 payoutData={payout}
               />
-              <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
-                <Button
-                  className={`gap-2 text-sm ${
-                    payout?.hasFailedPayoutRequests === false && 'hidden'
-                  }`}
-                  onClick={handleTriggerPayoutFailed}
-                  disabled={triggerForPayoutFailed.isPending}
-                >
-                  <RotateCcw
-                    className={`${
-                      triggerForPayoutFailed.isPending ? 'animate-spin' : ''
-                    } w-4 h-4`}
-                  />
-                  Retry Failed Requests
-                </Button>
-              </RoleAuth>
+              {payout?.type === 'FSP' && (
+                <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+                  <Button
+                    className={`gap-2 text-sm ${
+                      payout?.hasFailedPayoutRequests === false && 'hidden'
+                    }`}
+                    onClick={handleTriggerPayoutFailed}
+                    disabled={triggerForPayoutFailed.isPending}
+                  >
+                    <RotateCcw
+                      className={`${
+                        triggerForPayoutFailed.isPending ? 'animate-spin' : ''
+                      } w-4 h-4`}
+                    />
+                    Retry Failed Requests
+                  </Button>
+                </RoleAuth>
+              )}
+              <Button
+                className={`gap-2 text-sm ${
+                  payoutlogs?.data?.length < 0 && 'hidden'
+                }`}
+                onClick={handleDownload}
+                variant={'outline'}
+              >
+                <CloudDownload className={`w-4 h-4`} />
+                Download Payout Logs
+              </Button>
             </div>
-          )}
+          }
         </div>
 
         <div
@@ -211,7 +241,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <DataCard
               key={item.label}
               title={item.label}
-              number={item.value}
+              // number={item.value}
               className="rounded-sm h-[119px]"
               infoIcon={item.infoIcon}
               infoTooltip={item.infoToolTip}

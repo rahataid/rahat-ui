@@ -1,38 +1,77 @@
 import { DataCard } from 'apps/rahat-ui/src/common';
 import React from 'react';
+type Props = {
+  data: {
+    benefStats: any[];
+    triggeersStats: any[];
+  };
+};
+const CommunicationAnalytics = ({
+  benefStats,
+  triggeersStats,
+  projectId,
+}: any) => {
+  const getTriggerDataByName = (name: string) =>
+    triggeersStats.find((item) => item.name.includes(name))?.data;
 
-const CommunicationAnalytics = () => {
-  const communicationData = [
-    {
+  // ✅ Cards: Get counts
+  const activitiesWithComm =
+    getTriggerDataByName('ACTIVITIES_WITH_COMM')?.count || 0;
+  const activitiesAutomated =
+    getTriggerDataByName('ACTIVITIES_AUTOMATED')?.count || 0;
+
+  // ✅ Comms data
+  const commsStats = getTriggerDataByName('COMMS_STATS');
+
+  const formatCommsStats = () => {
+    const stakeholders = commsStats?.stakeholder || {};
+    const beneficiaries = commsStats?.beneficiary || {};
+
+    const stakeholderStats = {
       category: 'Stakeholders',
-      totalCommunicationSent: 23000,
-      numberOfStakeholders: 5000,
-      avcSuccessfullySent: 5000,
-      smsSuccessfullySent: 2000,
-      deliveryFailures: 1000,
-    },
-    {
+      totalCommunicationSent:
+        (stakeholders?.SMS?.TOTAL || 0) +
+        (stakeholders?.EMAIL?.TOTAL || 0) +
+        (stakeholders?.VOICE?.TOTAL || 0),
+      numberOfStakeholders: benefStats?.find(
+        (stat) => stat.name === 'STAKEHOLDERS_TOTAL',
+      )?.data?.count,
+      avcSuccessfullySent: stakeholders?.VOICE?.SUCCESS || 0,
+      smsSuccessfullySent: stakeholders?.SMS?.SUCCESS || 0,
+      deliveryFailures: stakeholders?.VOICE?.FAIL || 0,
+    };
+
+    const beneficiaryStats = {
       category: 'Beneficiaries',
-      totalCommunicationSent: 23000,
-      avcSuccessfullySent: 5000,
-      voiceMessageDelivered: 2000,
-      smsSuccessfullyDelivered: 1000,
-      smsAndAvcDeliveryFailures: 2000,
-      uniqueAvcRecipients: 1000,
-    },
-  ];
+      totalCommunicationSent:
+        (beneficiaries?.SMS?.TOTAL || 0) +
+        (beneficiaries?.VOICE?.TOTAL || 0) +
+        (beneficiaries?.['Prabhu SMS']?.TOTAL || 0),
+      avcSuccessfullySent: beneficiaries?.VOICE?.SUCCESS || 0,
+      voiceMessageDelivered: beneficiaries?.VOICE?.SUCCESS || 0,
+      smsSuccessfullyDelivered:
+        (beneficiaries?.SMS?.SUCCESS || 0) +
+        (beneficiaries?.['Prabhu SMS']?.SUCCESS || 0),
+      smsAndAvcDeliveryFailures: beneficiaries?.VOICE?.FAIL || 0,
+      uniqueAvcRecipients: 0, // Not available in current data
+    };
+
+    return [stakeholderStats, beneficiaryStats];
+  };
+
+  const communicationData = formatCommsStats();
   return (
     <>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ">
         <DataCard
           title="Activities with Communication"
           className="rounded-sm"
-          smallNumber="10"
+          number={activitiesWithComm.toString()}
         />
         <DataCard
           title="Activities Automated"
           className="rounded-sm"
-          smallNumber="10"
+          number={activitiesAutomated.toString()}
         />
       </div>
 
@@ -70,7 +109,8 @@ const CommunicationAnalytics = () => {
                   <div key={key} className="flex flex-col">
                     <span className="text-sm text-gray-500">{label}</span>
                     <span className="font-semibold text-gray-800">
-                      {value.toLocaleString()}
+                      {/* {value.toLocaleString()} */}
+                      {value}
                     </span>
                   </div>
                 );

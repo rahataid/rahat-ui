@@ -8,21 +8,28 @@ import ResilienceOverview from './component/resilienceOverview';
 import SocialProtectionBenefits from './component/socialProtectionBenefits';
 import {
   useAAStations,
+  useProjectDashboardReporting,
   useProjectInfo,
   useProjectStore,
+  useStellarSettings,
 } from '@rahat-ui/query';
 import { Project } from '@rahataid/sdk/project/project.types';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
+import DashboardSkeleton from './dashboard.skeleton';
 
 const Main = () => {
-  const project = useProjectStore((state) => state.singleProject) as Project;
-  console.log(project);
   const { id } = useParams();
   const projectId = id as UUID;
-  useAAStations(projectId);
 
+  useAAStations(projectId);
   useProjectInfo(projectId);
+  useStellarSettings(projectId);
+
+
+  const { data, isLoading } = useProjectDashboardReporting(projectId);
+  if (isLoading) return <DashboardSkeleton />;
+
   return (
     <div className="space-y-3 p-5">
       <Heading
@@ -31,10 +38,27 @@ const Main = () => {
         titleStyle={'text-xl xl:text-3xl'}
       />
 
-      <ResilienceOverview />
-      <BeneficiaryDemographics />
-      <SocialProtectionBenefits />
-      <CommunicationAnalytics />
+      <ResilienceOverview
+        benefStats={data?.benefStats}
+        triggeersStats={data?.triggeersStats}
+        projectId={projectId}
+      />
+      <BeneficiaryDemographics
+        benefStats={data?.benefStats}
+        triggeersStats={data?.triggeersStats}
+        projectId={projectId}
+      />
+      <SocialProtectionBenefits
+        benefStats={data?.benefStats}
+        triggeersStats={data?.triggeersStats}
+        projectId={projectId}
+      />
+
+      <CommunicationAnalytics
+        benefStats={data?.benefStats}
+        triggeersStats={data?.triggeersStats}
+        projectId={projectId}
+      />
     </div>
   );
 };

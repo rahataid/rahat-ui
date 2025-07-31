@@ -17,8 +17,6 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 
 const Main = () => {
-  const project = useProjectStore((state) => state.singleProject) as Project;
-  console.log(project);
   const { id } = useParams();
   const projectId = id as UUID;
 

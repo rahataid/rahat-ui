@@ -264,7 +264,8 @@ export const useGFHWaterLevels = (uuid: UUID, payload: any) => {
         });
         return mutate.data;
       } catch (error: any) {
-        const errorMessage = error?.response?.data?.message || 'Failed to fetch GFH water levels';
+        const errorMessage =
+          error?.response?.data?.message || 'Failed to fetch GFH water levels';
         toast.fire({
           title: 'Error loading GFH water levels',
           text: errorMessage,
@@ -383,10 +384,13 @@ export const useActivateTrigger = () => {
       qc.invalidateQueries({ queryKey: ['triggerstatement'] });
       toast.fire({
         title: 'Trigger activated.',
-        text: 'This trigger will be saved in Steller block. You can view details of this from trigger details page.',
+        text: 'This trigger will be saved in Stellar block. You can view details of this from trigger details page.',
         timer: 10000,
         icon: 'success',
         width: '500px',
+        showCloseButton: true,
+        closeButtonHtml:
+          '<span style="color: #ef4444; font-size: 20px; font-weight: bold; position: absolute; top: 10px; right: 15px; cursor: pointer;">&times;</span>',
       });
     },
     onError: (error: any) => {

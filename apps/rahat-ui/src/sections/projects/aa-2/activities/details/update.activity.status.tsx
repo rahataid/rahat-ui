@@ -92,9 +92,9 @@ export default function UpdateStatus() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      status: '',
-      notes: '',
-      activityDocuments: [],
+      status: activityDetail?.status || '',
+      notes: activityDetail?.notes || '',
+      activityDocuments: activityDetail?.activityDocuments || [],
     },
   });
 

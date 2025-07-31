@@ -24,7 +24,11 @@ import {
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { useListSessionLogs, usePagination } from '@rahat-ui/query';
+import {
+  useListSessionLogs,
+  usePagination,
+  useSessionBroadCastCount,
+} from '@rahat-ui/query';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import * as XLSX from 'xlsx';
 
@@ -76,6 +80,7 @@ export function CommunicationDetailCard({
       ...filters,
     });
   const router = useRouter();
+  const count = useSessionBroadCastCount([activityCommunication?.sessionId]);
 
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -98,13 +103,13 @@ export function CommunicationDetailCard({
     );
   };
 
-  const failedCount = useMemo(() => {
-    return (
-      sessionLogs?.httpReponse?.data?.data?.filter(
-        (log: any) => log?.status === BroadcastStatus.FAIL,
-      ) ?? []
-    );
-  }, [sessionLogs]);
+  // const failedCount = useMemo(() => {
+  //   return (
+  //     sessionLogs?.httpReponse?.data?.data?.filter(
+  //       (log: any) => log?.status === BroadcastStatus.FAIL,
+  //     ) ?? []
+  //   );
+  // }, [sessionLogs]);
   const onFailedExports = () => {
     const logs = sessionLogs?.httpReponse?.data?.data?.filter(
       (log: any) => log?.status === BroadcastStatus.FAIL,
@@ -195,7 +200,7 @@ export function CommunicationDetailCard({
             variant="outline"
             className=" gap-2"
             onClick={onFailedExports}
-            disabled={failedCount.length === 0}
+            disabled={count?.data?.data?.FAIL === 0}
           >
             Failed Exports
             <CloudDownload className="h-4 w-4" />

@@ -17,7 +17,8 @@ type IProps = {
   title: string;
   dataSource: string;
   riverBasin: string;
-  time: string;
+  createdAt: string;
+  triggeredAt?: string;
   triggerType?: string;
   version?: number;
   id?: number;
@@ -32,7 +33,8 @@ export default function TriggerCard({
   title,
   dataSource,
   riverBasin,
-  time,
+  createdAt,
+  triggeredAt,
   triggerType,
   version,
   id,
@@ -100,7 +102,16 @@ export default function TriggerCard({
           riverBasin,
         )}`}
       </p>
-      <p className="text-muted-foreground text-sm/4">{dateFormat(time)}</p>
+      {createdAt && (
+        <p className="text-muted-foreground text-sm/4 mb-1">
+          Created at : {dateFormat(createdAt)}
+        </p>
+      )}
+      {triggeredAt && (
+        <p className="text-muted-foreground text-sm/4">
+          Triggered at : {dateFormat(triggeredAt)}
+        </p>
+      )}
     </div>
   );
 }

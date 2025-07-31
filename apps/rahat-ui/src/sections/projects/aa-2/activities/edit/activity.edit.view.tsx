@@ -719,12 +719,9 @@ export default function EditActivity() {
                               className="col-span-3 rounded-r-none "
                               value={lead}
                               onChange={(e) => {
-                                const newLead = e.target.value.replace(
-                                  /\D/g,
-                                  '',
-                                );
+                                const newLead = e.target.value;
                                 field.onChange(
-                                  newLead ? `${newLead} ${unit}` : '',
+                                  newLead ? `${newLead} ${unit}` : ` ${unit}`,
                                 );
                               }}
                             />

@@ -190,7 +190,6 @@ export default function AddActivities() {
       phaseId: phaseId || '',
       categoryId: '',
       leadTime: '',
-      // duration: '',
       description: '',
       isAutomated: false,
       activityDocuments: [],
@@ -588,12 +587,9 @@ export default function AddActivities() {
                               className="col-span-3 rounded-r-none"
                               value={lead}
                               onChange={(e) => {
-                                const newLead = e.target.value.replace(
-                                  /\D/g,
-                                  '',
-                                );
+                                const newLead = e.target.value;
                                 field.onChange(
-                                  newLead ? `${newLead} ${unit}` : '',
+                                  newLead ? `${newLead} ${unit}` : ` ${unit}`,
                                 );
                               }}
                             />

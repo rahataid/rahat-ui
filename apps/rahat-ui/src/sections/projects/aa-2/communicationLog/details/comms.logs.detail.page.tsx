@@ -38,7 +38,7 @@ import {
   Mic,
   Text,
 } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import React, { useMemo } from 'react';
 import * as XLSX from 'xlsx';
 import CommsLogsTable from '../table/comms.logs.table';
@@ -55,6 +55,9 @@ export default function CommsLogsDetailPage() {
   const [communicationId, activityId, sessionId] = (
     commsIdXactivityIdXsessionId as string
   ).split('%40');
+
+  const searchParams = useSearchParams();
+  const from = searchParams.get('from');
 
   const {
     pagination,
@@ -167,12 +170,17 @@ export default function CommsLogsDetailPage() {
     },
     [filters],
   );
+
+  const path = useMemo(() => {
+    return from === 'activities'
+      ? `/projects/aa/${projectID}/activities/${activityId}?from="mainPage"`
+      : `/projects/aa/${projectID}/communication-logs/details/${activityId}`;
+  }, [from, projectID, activityId]);
+
   return (
     <div className="p-4">
       <div className="flex flex-col space-y-0">
-        <Back
-          path={`/projects/aa/${projectID}/communication-logs/details/${activityId}`}
-        />
+        <Back path={path} />
 
         <div className="mt-1 flex flex-col pb-1 gap-2">
           <div className="flex justify-between">

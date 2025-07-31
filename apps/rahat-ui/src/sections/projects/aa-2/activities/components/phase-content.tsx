@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import TaskCard from './phase-card';
 import { NoResult, SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { Expand } from 'lucide-react';
 import {
@@ -10,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import PhaseCard from './phase-card';
 import { useParams, useRouter } from 'next/navigation';
 

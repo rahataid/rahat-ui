@@ -6,7 +6,12 @@ import { Eye } from 'lucide-react';
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 function getTransactionStatusColor(status: string) {
   switch (status.toLowerCase()) {
     case 'completed':
@@ -35,20 +40,37 @@ export default function usePayoutTransactionLogTableColumn() {
       accessorKey: 'groupName',
       header: 'Group Name',
       cell: ({ row }) => (
-        <div className="w-80">{row.getValue('groupName')}</div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="truncate w-30 hover:cursor-pointer">
+                {row.getValue('groupName')}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              align="start"
+              className="w-80 rounded-sm text-justify "
+            >
+              <p>{row.getValue('groupName')}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       ),
     },
     {
       accessorKey: 'totalBeneficiaries',
       header: 'Total Beneficiaries',
-      cell: ({ row }) => <div>{row.getValue('totalBeneficiaries')}</div>,
+      cell: ({ row }) => (
+        <div className="w-5">{row.getValue('totalBeneficiaries')}</div>
+      ),
     },
 
     {
       accessorKey: 'totalTokenAssigned',
       header: 'Total Amount Disbursed',
       cell: ({ row }) => (
-        <div>Rs. {row.original.totalTokenAssigned * ONE_TOKEN_VALUE}</div>
+        <div className="">Rs. {row.original.totalSuccessAmount}</div>
       ),
     },
     {
@@ -56,7 +78,7 @@ export default function usePayoutTransactionLogTableColumn() {
       header: 'Amount per beneficiary',
       cell: ({ row }) => (
         <div>
-          Rs.
+          Rs. {''}
           {(row.original.totalTokenAssigned * 1) /
             row.original.totalBeneficiaries}
         </div>
@@ -100,7 +122,7 @@ export default function usePayoutTransactionLogTableColumn() {
       header: 'Timestamp',
       cell: ({ row }) => {
         const time = row.getValue('timeStamp') as string;
-        return <div className="flex gap-1">{dateFormat(time)}</div>;
+        return <div className="flex gap-1 text-[10px]">{dateFormat(time)}</div>;
       },
     },
 

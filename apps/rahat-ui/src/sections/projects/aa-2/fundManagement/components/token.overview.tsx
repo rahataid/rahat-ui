@@ -55,76 +55,225 @@ export default function TokensOverview() {
         description="Overview of your tokens"
       />
       {!isLoading ? (
-        <div className="grid xl:grid-cols-4  lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
-          {data?.data.map((item, index) => {
-            const isToken = item.name === 'Token';
-            const isTokenPrice = item.name === 'Token Price';
-            const isBudget = item.name === 'Budget Assigned';
-            const infoTooltip = INFO_TOOL_TIPS[item.name];
+        // <div className="grid xl:grid-cols-4  lg:grid-cols-3 grid-cols-1 gap-4 mb-4">
+        //   {data?.data.map((item, index) => {
+        //     const isToken = item.name === 'Token';
+        //     const isTokenPrice = item.name === 'Token Price';
+        //     const isBudget = item.name === 'Budget Assigned';
+        //     const infoTooltip = INFO_TOOL_TIPS[item.name];
 
-            if (isToken) {
-              return (
-                <a
-                  key={index}
-                  target="_blank"
-                  href={`https://stellar.expert/explorer/testnet/asset/${item.value}-GCVLRQHGZYG32HZE3PKZ52NX5YFCNFDBUZDLUXQYMRS6WVBWSUOP5IYE-2`}
-                  className="cursor-pointer"
-                >
+        //     if (isToken) {
+        //       return (
+        //         <a
+        //           key={index}
+        //           target="_blank"
+        //           href={`https://stellar.expert/explorer/testnet/asset/${item.value}-GCVLRQHGZYG32HZE3PKZ52NX5YFCNFDBUZDLUXQYMRS6WVBWSUOP5IYE-2`}
+        //           className="cursor-pointer"
+        //         >
+        //           <DataCard
+        //             className="rounded-sm h-[119px]"
+        //             title={item.name}
+        //             number={item.value}
+        //             infoIcon={!!infoTooltip}
+        //             infoTooltip={infoTooltip}
+        //             subtitle=" "
+        //           />
+        //         </a>
+        //       );
+        //     }
+
+        //     if (isTokenPrice) {
+        //       return (
+        //         <DataCard
+        //           key={index}
+        //           className="rounded-sm h-[119px]"
+        //           title="1 Token Value"
+        //           number={`Rs ${item.value}`}
+        //           infoIcon={!!infoTooltip}
+        //           infoTooltip={infoTooltip}
+        //           subtitle=" "
+        //         />
+        //       );
+        //     }
+
+        //     if (isBudget) {
+        //       return (
+        //         <DataCard
+        //           key={index}
+        //           className="rounded-sm h-[119px]"
+        //           title="Budget Assigned"
+        //           number={`Rs ${item.value}`}
+        //           infoIcon={!!infoTooltip}
+        //           infoTooltip={infoTooltip}
+        //           subtitle=" "
+        //         />
+        //       );
+        //     }
+        //     return (
+        //       <DataCard
+        //         key={index}
+        //         className="rounded-sm h-[119px] p-0"
+        //         title={item.name}
+        //         number={String(item.value)}
+        //         infoIcon={!!infoTooltip}
+        //         infoTooltip={infoTooltip}
+        //         subtitle={
+        //           item.name === 'Average Duration'
+        //             ? 'Activation Trigger to Successful Disbursement'
+        //             : ' '
+        //         }
+        //       />
+        //     );
+        //   })}
+        // </div>
+        <div className="space-y-4 mb-4">
+          {/* First Row - 4 Columns */}
+          <div className="grid xl:grid-cols-4 lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
+            {data?.data.slice(0, 4).map((item, index) => {
+              const isToken = item.name === 'Token';
+              const isTokenPrice = item.name === 'Token Price';
+              const isBudget = item.name === 'Budget Assigned';
+              const infoTooltip = INFO_TOOL_TIPS[item.name];
+
+              if (isToken) {
+                return (
+                  <a
+                    key={index}
+                    target="_blank"
+                    href={`https://stellar.expert/explorer/testnet/asset/${item.value}-GCVLRQHGZYG32HZE3PKZ52NX5YFCNFDBUZDLUXQYMRS6WVBWSUOP5IYE-2`}
+                    className="cursor-pointer"
+                  >
+                    <DataCard
+                      className="rounded-sm h-[119px]"
+                      title={item.name}
+                      number={item.value}
+                      infoIcon={!!infoTooltip}
+                      infoTooltip={infoTooltip}
+                      subtitle=" "
+                    />
+                  </a>
+                );
+              }
+
+              if (isTokenPrice) {
+                return (
                   <DataCard
-                    className="rounded-sm "
-                    title={item.name}
-                    number={item.value}
+                    key={index}
+                    className="rounded-sm h-[119px]"
+                    title="1 Token Value"
+                    number={`Rs ${item.value}`}
                     infoIcon={!!infoTooltip}
                     infoTooltip={infoTooltip}
                     subtitle=" "
                   />
-                </a>
-              );
-            }
+                );
+              }
 
-            if (isTokenPrice) {
+              if (isBudget) {
+                return (
+                  <DataCard
+                    key={index}
+                    className="rounded-sm h-[119px]"
+                    title="Budget Assigned"
+                    number={`Rs ${item.value}`}
+                    infoIcon={!!infoTooltip}
+                    infoTooltip={infoTooltip}
+                    subtitle=" "
+                  />
+                );
+              }
+
               return (
                 <DataCard
                   key={index}
-                  className="rounded-sm "
-                  title="1 Token Value"
-                  number={`Rs ${item.value}`}
+                  className="rounded-sm h-[119px] p-0"
+                  title={item.name}
+                  number={String(item.value)}
                   infoIcon={!!infoTooltip}
                   infoTooltip={infoTooltip}
-                  subtitle=" "
+                  subtitle={
+                    item.name === 'Average Duration'
+                      ? 'Activation Trigger to Successful Disbursement'
+                      : ' '
+                  }
                 />
               );
-            }
+            })}
+          </div>
 
-            if (isBudget) {
+          {/* Second Row - 3 Columns */}
+          <div className="grid xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+            {data?.data.slice(4).map((item, index) => {
+              const isToken = item.name === 'Token';
+              const isTokenPrice = item.name === 'Token Price';
+              const isBudget = item.name === 'Budget Assigned';
+              const infoTooltip = INFO_TOOL_TIPS[item.name];
+
+              // if (isToken) {
+              //   return (
+              //     <a
+              //       key={index}
+              //       target="_blank"
+              //       href={`https://stellar.expert/explorer/testnet/asset/${item.value}-GCVLRQHGZYG32HZE3PKZ52NX5YFCNFDBUZDLUXQYMRS6WVBWSUOP5IYE-2`}
+              //       className="cursor-pointer"
+              //     >
+              //       <DataCard
+              //         className="rounded-sm h-[119px]"
+              //         title={item.name}
+              //         number={item.value}
+              //         infoIcon={!!infoTooltip}
+              //         infoTooltip={infoTooltip}
+              //         subtitle=" "
+              //       />
+              //     </a>
+              //   );
+              // }
+
+              // if (isTokenPrice) {
+              //   return (
+              //     <DataCard
+              //       key={index}
+              //       className="rounded-sm h-[119px]"
+              //       title="1 Token Value"
+              //       number={`Rs ${item.value}`}
+              //       infoIcon={!!infoTooltip}
+              //       infoTooltip={infoTooltip}
+              //       subtitle=" "
+              //     />
+              //   );
+              // }
+
+              // if (isBudget) {
+              //   return (
+              //     <DataCard
+              //       key={index}
+              //       className="rounded-sm h-[119px]"
+              //       title="Budget Assigned"
+              //       number={`Rs ${item.value}`}
+              //       infoIcon={!!infoTooltip}
+              //       infoTooltip={infoTooltip}
+              //       subtitle=" "
+              //     />
+              //   );
+              // }
+
               return (
                 <DataCard
                   key={index}
-                  className="rounded-sm "
-                  title="Budget Assigned"
-                  number={`Rs ${item.value}`}
+                  className="rounded-sm h-[119px] p-0"
+                  title={item.name}
+                  number={String(item.value)}
                   infoIcon={!!infoTooltip}
                   infoTooltip={infoTooltip}
-                  subtitle=" "
+                  subtitle={
+                    item.name === 'Average Duration'
+                      ? 'Activation Trigger to Successful Disbursement'
+                      : ' '
+                  }
                 />
               );
-            }
-            return (
-              <DataCard
-                key={index}
-                className="rounded-sm "
-                title={item.name}
-                number={String(item.value)}
-                infoIcon={!!infoTooltip}
-                infoTooltip={infoTooltip}
-                subtitle={
-                  item.name === 'Average Duration'
-                    ? 'Activation Trigger to Successful Disbursement'
-                    : ' '
-                }
-              />
-            );
-          })}
+            })}
+          </div>
         </div>
       ) : (
         <TokenOverviewSkeleton number={[1, 2, 3, 4, 5]} />
@@ -132,7 +281,7 @@ export default function TokensOverview() {
       <div className="flex flex-wrap flex-col xl:flex-row mt-4 gap-4">
         <div className="flex-1 border rounded-sm p-4">
           <h1 className="text-lg font-medium mb-4">Token Status</h1>
-          <div className="w-full aspect-square">
+          <div className="w-full aspect-video">
             <PieChart
               title="Token Status"
               chart={{
@@ -149,13 +298,14 @@ export default function TokensOverview() {
           </div>
         </div>
 
-        <div className="flex-[2] border rounded-sm p-4">
+        <div className="flex-[2] border rounded-sm p-4  overflow-hidden">
           <TransactionCard
             cardTitle="Recent Transactions"
             cardData={groupsFundsData?.data?.filter(
               (item) => item.status !== 'NOT_DISBURSED',
             )}
             loading={isLoading}
+            cardHeight="h-[calc(80vh-350px)]"
           />
         </div>
       </div>

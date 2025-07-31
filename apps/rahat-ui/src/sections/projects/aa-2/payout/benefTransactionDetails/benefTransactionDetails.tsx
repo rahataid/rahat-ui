@@ -26,6 +26,7 @@ import InfoItem from './infoItem';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useCallback } from 'react';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 
 export default function BeneficiaryTransactionLogDetails() {
   const { id, uuid } = useParams();
@@ -37,6 +38,8 @@ export default function BeneficiaryTransactionLogDetails() {
   const { data, isLoading: payoutLogsLoading } = useGetPayoutLog(id as UUID, {
     uuid,
   });
+  const { status, transactionType, amount } = data?.data || {};
+
   const handleTriggerSinglePayoutFailed = useCallback(async () => {
     triggerForPayoutFailed.mutateAsync({
       projectUUID: id as UUID,
@@ -45,11 +48,33 @@ export default function BeneficiaryTransactionLogDetails() {
       },
     });
   }, [triggerForPayoutFailed]);
+
+  let totalSuccessAmount = 0;
+  let totalFailedAmount = 0;
+
+  // Success Amount Logic
+  if (
+    (status === 'COMPLETED' && transactionType === 'VENDOR_REIMBURSEMENT') ||
+    ((status === 'FIAT_TRANSFER_COMPLETED' ||
+      status === 'TOKEN_TRANSACTION_COMPLETED') &&
+      transactionType === 'TOKEN_TRANSFER')
+  ) {
+    totalSuccessAmount = amount * ONE_TOKEN_VALUE;
+  }
+
+  // Failed Amount Logic
+  if (
+    (status !== 'COMPLETED' && transactionType === 'VENDOR_REIMBURSEMENT') ||
+    ((status !== 'FAIT_TRANSFER_COMPLETED' ||
+      status !== 'TOKEN_TRANSACTION_COMPLETED') &&
+      transactionType === 'FIAT_TRANSFER')
+  ) {
+    totalFailedAmount = 0; // or you can assign actual amount if required
+  }
+
   if (payoutLogsLoading) {
     return <TableLoader />;
   }
-  console.log('first', data?.data);
-
   const handleRedirect = () => {
     router.push(
       `/beneficiary/${data?.data?.Beneficiary?.uuid}?projectId=${id}&groupId=${
@@ -81,15 +106,20 @@ export default function BeneficiaryTransactionLogDetails() {
           </RoleAuth>
         )}
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
+        <DataCard
+          title="Actual Budget"
+          Icon={Coins}
+          smallNumber={`Rs. ${data?.data?.amount * ONE_TOKEN_VALUE}`}
+          className="h-24 w-full rounded-sm pt-1"
+        />
+
         <DataCard
           title="Amount Disbursed"
           Icon={Coins}
-          smallNumber={
-            data?.data?.status.endsWith('COMPLETED')
-              ? `Rs. ${data?.data?.amount}`
-              : 'Rs 0'
-          }
+          smallNumber={`Rs. ${
+            totalSuccessAmount.toString() || totalFailedAmount.toString()
+          }`}
           className="h-24 w-full rounded-sm pt-1"
         />
         {data?.data?.status.endsWith('COMPLETED') && (

@@ -54,6 +54,7 @@ export default function PayoutTransactionList() {
                 : d?.mode,
             status: d?.status ?? 'N/A',
             timeStamp: d?.updatedAt,
+            totalSuccessAmount: d?.totalSuccessAmount,
           }))
         : [],
     [payouts],

@@ -12,47 +12,62 @@ import { Home, Users } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 
-type Props = {};
+type Props = {
+  benefStats: any[];
+  triggeersStats: any[];
+};
 
-const ResilienceOverview = (props: Props) => {
+const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
   const project = useProjectStore((p) => p.singleProject);
-  console.log('projectname', project);
+  const getStat = (name: string) =>
+    benefStats?.find((stat: any) => stat.name === name)?.data?.count ?? 0;
+
   const stats = [
     {
       icon: <Users className="w-5 h-5 text-muted-foreground" />,
       label: 'Total Respondents',
-      value: '250',
+      value: getStat('TOTAL_RESPONDENTS'),
     },
     {
       icon: <Home className="w-5 h-5 text-muted-foreground" />,
       label: 'Total no. of Family Members',
-      value: '300',
+      value: getStat('TOTAL_NUMBER_FAMILY_MEMBERS'),
     },
   ];
 
-  const progressMetrics = [
-    {
-      title: 'PREPAREDNESS',
-      percentage: 65,
-      color: 'bg-teal-500',
-      bgColor: 'bg-teal-50',
-      borderColor: 'border-teal-200',
-    },
-    {
-      title: 'READINESS',
-      percentage: 65,
-      color: 'bg-yellow-500',
-      bgColor: 'bg-yellow-50',
-      borderColor: 'border-yellow-200',
-    },
-    {
-      title: 'ACTIVATION',
-      percentage: 65,
-      color: 'bg-red-500',
-      bgColor: 'bg-red-50',
-      borderColor: 'border-red-200',
-    },
-  ];
+  const activitiesData = triggeersStats?.find((stat: any) =>
+    stat.name.startsWith(`ACTIVITIES_${projectId.toUpperCase()}`),
+  )?.data;
+
+  const progressMetrics =
+    activitiesData?.map((item: any) => {
+      const phaseName = item.phase?.name ?? 'UNKNOWN';
+      const percentage = parseFloat(item.completedPercentage);
+      const colors: any = {
+        PREPAREDNESS: {
+          color: 'bg-teal-500',
+          bgColor: 'bg-teal-50',
+          borderColor: 'border-teal-200',
+        },
+        READINESS: {
+          color: 'bg-yellow-500',
+          bgColor: 'bg-yellow-50',
+          borderColor: 'border-yellow-200',
+        },
+        ACTIVATION: {
+          color: 'bg-red-500',
+          bgColor: 'bg-red-50',
+          borderColor: 'border-red-200',
+        },
+      };
+
+      return {
+        title: phaseName,
+        percentage,
+        ...(colors[phaseName] || {}),
+      };
+    }) ?? [];
+
   const imageList = [
     { src: '/projects/aa_1.jpg' },
     { src: '/projects/aa_2.jpg' },

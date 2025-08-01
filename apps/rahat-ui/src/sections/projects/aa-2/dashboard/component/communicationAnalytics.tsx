@@ -66,12 +66,12 @@ const CommunicationAnalytics = ({
         <DataCard
           title="Activities with Communication"
           className="rounded-sm"
-          smallNumber={activitiesWithComm.toString()}
+          number={activitiesWithComm.toString()}
         />
         <DataCard
           title="Activities Automated"
           className="rounded-sm"
-          smallNumber={activitiesAutomated.toString()}
+          number={activitiesAutomated.toString()}
         />
       </div>
 

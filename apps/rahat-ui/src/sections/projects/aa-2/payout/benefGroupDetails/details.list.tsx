@@ -2,6 +2,7 @@
 import {
   useGetPayoutLogs,
   usePagination,
+  usePayoutExportLogs,
   useSinglePayout,
   useTriggerForPayoutFailed,
   useTriggerPayout,
@@ -19,16 +20,17 @@ import {
   TableLoader,
 } from 'apps/rahat-ui/src/common';
 
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
-import { House, RotateCcw, Ticket, Users } from 'lucide-react';
+import { CloudDownload, RotateCcw, Store, Ticket, Users } from 'lucide-react';
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
 import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
-import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import * as XLSX from 'xlsx';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const params = useParams();
@@ -64,23 +66,17 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const triggerForPayoutFailed = useTriggerForPayoutFailed();
   const triggerPayout = useTriggerPayout();
   const columns = useBeneficiaryGroupDetailsLogColumns(payout?.type);
+  const { data: exportPayoutLogs } = usePayoutExportLogs({
+    projectUUID: projectId,
+    payoutUUID: payoutId,
+  });
 
-  const tableData = React.useMemo(() => {
-    const benefs =
-      payout?.beneficiaryGroupToken?.beneficiaryGroup?.beneficiaries ?? [];
-    const data = benefs?.length
-      ? benefs?.map((b: any) => ({
-          walletAddress: 'N/A',
-          transactionWalletId: 'N/A',
-          bankTransactionId: 'N/A',
-          tokensAssigned: 'N/A',
-          status: 'N/A',
-          timeStamp: b?.updatedAt,
-        }))
-      : [];
-    return data;
-  }, [payout]);
-
+  const handleDownload = () => {
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(exportPayoutLogs);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');
+    XLSX.writeFile(workbook, 'payout-logs.xlsx');
+  };
   const table = useReactTable({
     manualPagination: true,
     data: payoutlogs?.data || [],
@@ -144,7 +140,6 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
     [filters],
   );
-  console.log(payout);
   return isLoading ? (
     <TableLoader />
   ) : (
@@ -164,30 +159,42 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               badgeClassName={isCompleteBgStatus(payout?.status)}
             />
           </div>
-          {payout?.type === 'FSP' && (
+          {
             <div className="flex gap-2">
               <PayoutConfirmationDialog
                 onConfirm={() => handleTriggerPayout()}
                 payoutData={payout}
               />
-              <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
-                <Button
-                  className={`gap-2 text-sm ${
-                    payout?.hasFailedPayoutRequests === false && 'hidden'
-                  }`}
-                  onClick={handleTriggerPayoutFailed}
-                  disabled={triggerForPayoutFailed.isPending}
-                >
-                  <RotateCcw
-                    className={`${
-                      triggerForPayoutFailed.isPending ? 'animate-spin' : ''
-                    } w-4 h-4`}
-                  />
-                  Retry Failed Requests
-                </Button>
-              </RoleAuth>
+              {payout?.type === 'FSP' && (
+                <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+                  <Button
+                    className={`gap-2 text-sm ${
+                      payout?.hasFailedPayoutRequests === false && 'hidden'
+                    }`}
+                    onClick={handleTriggerPayoutFailed}
+                    disabled={triggerForPayoutFailed.isPending}
+                  >
+                    <RotateCcw
+                      className={`${
+                        triggerForPayoutFailed.isPending ? 'animate-spin' : ''
+                      } w-4 h-4`}
+                    />
+                    Retry Failed Requests
+                  </Button>
+                </RoleAuth>
+              )}
+              <Button
+                className={`gap-2 text-sm ${
+                  payoutlogs?.data?.length < 0 && 'hidden'
+                }`}
+                onClick={handleDownload}
+                variant={'outline'}
+              >
+                <CloudDownload className={`w-4 h-4`} />
+                Download Payout Logs
+              </Button>
             </div>
-          )}
+          }
         </div>
 
         <div
@@ -217,7 +224,9 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             title="Payout Method"
             Icon={Ticket}
             smallNumber={
-              payout?.type ? payout?.mode : payout?.extras?.paymentProviderName
+              payout?.type === 'VENDOR'
+                ? payout?.mode
+                : payout?.extras?.paymentProviderName
             }
             className="rounded-sm h-28"
             badge
@@ -226,7 +235,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           {payout?.type === 'VENDOR' && payout?.mode === 'OFFLINE' && (
             <DataCard
               title="Vendor"
-              Icon={House}
+              Icon={Store}
               smallNumber={payout?.extras?.vendorName}
               className="rounded-sm h-28"
               badge
@@ -244,45 +253,61 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             value={filters?.search || ''}
           />
 
-          <SelectComponent
-            name="Transaction Type"
-            options={[
-              'ALL',
-              'TOKEN_TRANSFER',
-              'FIAT_TRANSFER',
-              'VENDOR_REIMBURSEMENT',
-            ]}
-            onChange={(value) =>
-              handleFilterChange({
-                target: { name: 'transactionType', value },
-              })
-            }
-            value={filters?.transactionType || ''}
-            className="flex-[1]"
-          />
+          {payout?.type === 'FSP' && (
+            <SelectComponent
+              name="Transaction Type"
+              options={[
+                'ALL',
+                'TOKEN_TRANSFER',
+                'FIAT_TRANSFER',
+                'VENDOR_REIMBURSEMENT',
+              ]}
+              onChange={(value) =>
+                handleFilterChange({
+                  target: { name: 'transactionType', value },
+                })
+              }
+              value={filters?.transactionType || ''}
+              className="flex-[1]"
+            />
+          )}
 
-          <SelectComponent
-            name="Status"
-            options={[
-              'ALL',
-              'PENDING',
-              'TOKEN_TRANSACTION_INITIATED',
-              'TOKEN_TRANSACTION_COMPLETED',
-              'TOKEN_TRANSACTION_FAILED',
-              'FIAT_TRANSACTION_INITIATED',
-              'FIAT_TRANSACTION_COMPLETED',
-              'FIAT_TRANSACTION_FAILED',
-              'COMPLETED',
-              'FAILED',
-            ]}
-            onChange={(value) =>
-              handleFilterChange({
-                target: { name: 'transactionStatus', value },
-              })
-            }
-            value={filters?.transactionStatus || ''}
-            className="flex-[1]"
-          />
+          {payout?.type === 'FSP' ? (
+            <SelectComponent
+              name="Status"
+              options={[
+                'ALL',
+                'PENDING',
+                'TOKEN_TRANSACTION_INITIATED',
+                'TOKEN_TRANSACTION_COMPLETED',
+                'TOKEN_TRANSACTION_FAILED',
+                'FIAT_TRANSACTION_INITIATED',
+                'FIAT_TRANSACTION_COMPLETED',
+                'FIAT_TRANSACTION_FAILED',
+                'COMPLETED',
+                'FAILED',
+              ]}
+              onChange={(value) =>
+                handleFilterChange({
+                  target: { name: 'transactionStatus', value },
+                })
+              }
+              value={filters?.transactionStatus || ''}
+              className="flex-[1]"
+            />
+          ) : (
+            <SelectComponent
+              name="Status"
+              options={['ALL', 'PENDING', 'COMPLETED', 'FAILED']}
+              onChange={(value) =>
+                handleFilterChange({
+                  target: { name: 'transactionStatus', value },
+                })
+              }
+              value={filters?.transactionStatus || ''}
+              className="flex-[1]"
+            />
+          )}
         </div>
         <BeneficiariesGroupTable table={table} loading={payoutLogsLoading} />
         <CustomPagination

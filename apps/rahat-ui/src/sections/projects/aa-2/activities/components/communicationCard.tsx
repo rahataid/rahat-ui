@@ -11,6 +11,7 @@ import {
   Send,
   Play,
   Pause,
+  ArrowUpRight,
   SendHorizonal,
   LoaderCircle,
 } from 'lucide-react';
@@ -24,6 +25,7 @@ import { UUID } from 'crypto';
 import { SessionStatus } from '@rumsan/connect/src/types';
 import MessageWithToggle from './messageWithToggle';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import Link from 'next/link';
 
 interface BaseCommunication {
   groupId: string;
@@ -32,6 +34,7 @@ interface BaseCommunication {
   communicationId: string;
   groupName: string;
   sessionStatus: string;
+  sessionId: string;
   onSend?: () => void;
   onEdit?: () => void;
 }
@@ -73,8 +76,6 @@ export function CommunicationCard({
   const trigger = useTriggerCommunication();
   const activityId = activityID as string;
 
-  const [showFull, setShowFull] = useState(false);
-  const maxLength = 150;
   const triggerCommunication = async (
     activityId: string,
     communicationId: string,
@@ -99,9 +100,19 @@ export function CommunicationCard({
           </div>
           <div className="flex-1">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-gray-900">
-                {activityCommunication?.groupName}
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="font-medium text-gray-900">
+                  {activityCommunication?.groupName}
+                </h3>
+                {activityCommunication?.sessionStatus !== SessionStatus.NEW && (
+                  <Link
+                    href={`/projects/aa/${projectId}/communication-logs/commsdetails/${activityCommunication?.communicationId}@${activityId}@${activityCommunication?.sessionId}?from=activities`}
+                    className="items-center justify-center hover:bg-gray-100"
+                  >
+                    <ArrowUpRight size={20} className="text-blue-800" />
+                  </Link>
+                )}
+              </div>
               <div className="flex gap-2">
                 {activityCommunication?.sessionStatus === SessionStatus.NEW && (
                   <RoleAuth

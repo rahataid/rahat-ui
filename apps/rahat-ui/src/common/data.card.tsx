@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from 'libs/shadcn/src/components/ui/card';
 import { cn } from 'libs/shadcn/src/utils';
-import { LucideIcon, RefreshCcw } from 'lucide-react';
+import { Info, LucideIcon, RefreshCcw } from 'lucide-react';
 import { TableLoader } from './table.loader';
 import {
   TooltipContent,
@@ -27,6 +27,8 @@ type CardProps = {
   refresh?: VoidFunction;
   iconStyle?: string;
   badge?: boolean;
+  infoIcon?: boolean;
+  infoTooltip?: string;
 };
 
 export function DataCard({
@@ -40,6 +42,8 @@ export function DataCard({
   refresh,
   iconStyle,
   badge,
+  infoIcon,
+  infoTooltip,
 }: CardProps) {
   console.log(subtitle);
   return (
@@ -52,6 +56,24 @@ export function DataCard({
             >
               {title}
             </CardTitle>
+            {infoIcon && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info
+                      size={16}
+                      className="text-muted-foreground cursor-help hover:text-primary transition-colors"
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                      {infoTooltip ||
+                        'Additional information about this metric'}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
             {refresh && (
               <RefreshCcw
                 size={14}
@@ -76,7 +98,7 @@ export function DataCard({
         {/* {subtitle && (
           <p className="text-sm text-muted-foreground p-0">{subtitle ?? ' '}</p>
         )} */}
-        <p className="text-sm text-muted-foreground p-0">
+        <p className="text-sm text-muted-foreground p-0 mt-0">
           {subtitle?.trim() !== '' ? subtitle : '\u00A0'}
         </p>
       </CardHeader>

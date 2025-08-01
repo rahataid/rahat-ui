@@ -34,11 +34,11 @@ const BeneficiaryDetail = () => {
       </div>
 
       <div className="flex">
-        <div className="flex border rounded-lg flex-col gap-4 p-4 mx-4  w-full">
+        <div className="flex border rounded-xl flex-col gap-4 p-4 mx-4  w-full">
           <BeneficiaryInfo beneficiary={details} />
         </div>
 
-        <div className="flex border flex-col rounded-lg  gap-4 p-4 mx-4  w-full ">
+        <div className="flex border flex-col rounded-xl  gap-4 p-4 mx-4  w-full ">
           <TransactionLogs />
         </div>
       </div>

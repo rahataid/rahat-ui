@@ -130,39 +130,35 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
   const payoutStats = [
     {
-      label: 'Total Actual Budget',
+      label: 'Actual Budget',
       smallNumber: `Rs. ${payout?.totalSuccessAmount}` ?? 0,
-      infoIcon: payout?.type === 'VENDOR' ? false : true,
-      infoToolTip: 'This shows the total number of budget',
-      icon: payout?.type === 'VENDOR' ? User : undefined,
+      infoIcon: true,
+      infoToolTip: 'Total Actual Budget',
     },
     {
-      label: 'Total amount disbursed in this payout',
+      label: 'Amount Disbursed',
       smallNumber: `Rs. ${
         payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE
       }`,
-      infoIcon: payout?.type === 'VENDOR' ? false : true,
-      infoToolTip: 'This shows the total number of amount disbursed',
-      icon: payout?.type === 'VENDOR' ? Ticket : undefined,
+      infoIcon: true,
+      infoToolTip: 'Total amount disbursed in this payout',
     },
     {
-      label: 'Type of Payout',
-      infoIcon: payout?.type === 'VENDOR' ? false : true,
-      infoTooltip: 'This shows the payout type',
+      label: 'Payout Type',
+      infoIcon: true,
+      infoToolTip: 'Type of Payout',
       smallNumber: payout?.type === 'VENDOR' ? 'CVA' : payout?.type,
       badge: true,
-      icon: payout?.type === 'VENDOR' ? Ticket : undefined,
     },
     {
-      label: 'Payment Method',
-      infoIcon: payout?.type === 'VENDOR' ? false : true,
-      infoTooltip: 'This shows the payment method',
+      label: 'Payout Method',
+      infoIcon: true,
+      infoToolTip: 'Payment Method',
       smallNumber:
         payout?.type === 'VENDOR'
           ? payout?.mode
           : payout?.extras?.paymentProviderName,
       badge: true,
-      icon: payout?.type === 'VENDOR' ? Ticket : undefined,
     },
   ];
 
@@ -176,7 +172,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   return isLoading ? (
     <TableLoader />
   ) : (
-    <div className="p-4">
+    <div className="p-4 pb-0">
       <div className="flex flex-col space-y-0">
         <Back path={`/projects/aa/${projectId}/payout/list`} />
 
@@ -241,66 +237,62 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <DataCard
               key={item.label}
               title={item.label}
-              // number={item.value}
-              className="rounded-sm h-[119px]"
+              className="rounded-sm h-[80px] pt-10 pb-8"
               infoIcon={item.infoIcon}
               infoTooltip={item.infoToolTip}
               badge={item.badge}
               smallNumber={item.smallNumber}
-              Icon={item.icon}
             />
           ))}
 
           {payout?.type === 'VENDOR' && payout?.mode === 'OFFLINE' && (
             <DataCard
               title="Vendor"
-              infoIcon={false}
+              infoIcon={true}
               infoTooltip="This shows the vendor name"
               smallNumber={payout?.extras?.vendorName}
-              className="rounded-sm h-[119px]"
+              className="rounded-sm h-[80px] pt-10 pb-8"
               badge
-              Icon={StoreIcon}
             />
           )}
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-4 pt-4">
+        <div className="grid lg:grid-cols-4 gap-4 pt-2">
           <DataCard
-            title="Total number of beneficiaries in the group"
+            title="Total no. of Beneficiaries"
             smallNumber={
               payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
                 ?.beneficiaries ?? 0
             }
-            className="rounded-sm h-[119px]"
+            className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="This shows the payout gap"
-            Icon={payout?.type === 'VENDOR' ? User : undefined}
+            infoTooltip="Total number of beneficiaries in the group"
           />
           <DataCard
-            title="Total number of Sucessful Transactions"
+            title="Sucessful Transactions"
             smallNumber={payout?.totalSuccessRequests}
-            className="rounded-sm h-[119px]"
+            className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="This shows the total success transaction"
+            infoTooltip="Total number of Sucessful Transactions"
           />
           <DataCard
-            title=" Total number of Failed Transactions"
+            title="Failed Transactions"
             smallNumber={payout?.totalFailedPayoutRequests}
-            className="rounded-sm h-[119px]"
+            className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="This shows the total failed transaction"
+            infoTooltip="Total number of Failed Transactions"
           />
           <DataCard
-            title="Gap between Activation phsae triggerd and payout disbursed"
+            title="Payout Gap"
             smallNumber={payout?.payoutGap}
-            className="rounded-sm h-[119px]"
-            infoIcon={false}
-            infoTooltip="This shows the payout gap"
+            className="rounded-sm h-[80px] pt-10 pb-8 "
+            infoIcon={true}
+            infoTooltip="Gap between Activation phsae triggerd and payout disbursed"
           />
         </div>
       </div>
 
-      <div className="rounded-sm border border-gray-100 space-y-2 p-4 mt-2">
+      <div className="rounded-sm border border-gray-100 space-y-2 p-2 mt-2">
         <div className="flex gap-2">
           <SearchInput
             className="w-full flex-[4]"

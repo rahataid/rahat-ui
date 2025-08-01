@@ -11,10 +11,12 @@ export const ONE_TOKEN_VALUE = 1;
 
 export const INFO_TOOL_TIPS: Record<string, string> = {
   'Token Disbursed': 'Total number of tokens disbursed to beneficiaries.',
-  'Budget Assigned': 'Total budget allocated for this program.',
+  'Budget Assigned': 'Total budget allocated for this project',
   Token: 'Name of the token being used.',
   'Token Price': 'The monetary value of a single token.',
   'Total Beneficiaries': 'Total number of people receiving tokens.',
-  'Average Disbursement time': 'Time taken on average to disburse tokens.',
-  'Average Duration': 'Average time duration for all transactions.',
+  'Average Disbursement time':
+    'Average time taken for the token to be disbursed to the beneficiary wallet',
+  'Average Duration':
+    'Gap between Activation phase triggered and successful disbursement',
 };

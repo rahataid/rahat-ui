@@ -214,9 +214,10 @@ export default function useBeneficiaryGroupDetailsLogColumns(
         <div className="flex  flex-col text-[10px]">
           <span>{intlFormatDate(row?.original?.createdAt)}</span>
 
-          {row?.original?.status.endsWith('COMPLETED') && (
-            <span>{intlFormatDate(row.original?.updatedAt)}</span>
-          )}
+          {row?.original?.status.endsWith('COMPLETED') &&
+            row.original.payoutType === 'FSP' && (
+              <span>{intlFormatDate(row.original?.updatedAt)}</span>
+            )}
         </div>
       ),
     },

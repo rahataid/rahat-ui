@@ -1,8 +1,10 @@
 // import { dFMTransactionsData } from '../static';
 import {
+  PROJECT_SETTINGS_KEYS,
   useFetchTokenStatsStellar,
   useGroupsReservedFunds,
   usePagination,
+  useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import { DataCard, Heading, TransactionCard } from 'apps/rahat-ui/src/common';
@@ -26,7 +28,9 @@ export default function TokensOverview() {
     sort: 'updatedAt',
     order: 'desc',
   });
-
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
   const tokenStatus = () => {
     let disbursedValue = 0;
     let failedValue = 0;
@@ -55,77 +59,6 @@ export default function TokensOverview() {
         description="Overview of your tokens"
       />
       {!isLoading ? (
-        // <div className="grid xl:grid-cols-4  lg:grid-cols-3 grid-cols-1 gap-4 mb-4">
-        //   {data?.data.map((item, index) => {
-        //     const isToken = item.name === 'Token';
-        //     const isTokenPrice = item.name === 'Token Price';
-        //     const isBudget = item.name === 'Budget Assigned';
-        //     const infoTooltip = INFO_TOOL_TIPS[item.name];
-
-        //     if (isToken) {
-        //       return (
-        //         <a
-        //           key={index}
-        //           target="_blank"
-        //           href={`https://stellar.expert/explorer/testnet/asset/${item.value}-GCVLRQHGZYG32HZE3PKZ52NX5YFCNFDBUZDLUXQYMRS6WVBWSUOP5IYE-2`}
-        //           className="cursor-pointer"
-        //         >
-        //           <DataCard
-        //             className="rounded-sm h-[119px]"
-        //             title={item.name}
-        //             number={item.value}
-        //             infoIcon={!!infoTooltip}
-        //             infoTooltip={infoTooltip}
-        //             subtitle=" "
-        //           />
-        //         </a>
-        //       );
-        //     }
-
-        //     if (isTokenPrice) {
-        //       return (
-        //         <DataCard
-        //           key={index}
-        //           className="rounded-sm h-[119px]"
-        //           title="1 Token Value"
-        //           number={`Rs ${item.value}`}
-        //           infoIcon={!!infoTooltip}
-        //           infoTooltip={infoTooltip}
-        //           subtitle=" "
-        //         />
-        //       );
-        //     }
-
-        //     if (isBudget) {
-        //       return (
-        //         <DataCard
-        //           key={index}
-        //           className="rounded-sm h-[119px]"
-        //           title="Budget Assigned"
-        //           number={`Rs ${item.value}`}
-        //           infoIcon={!!infoTooltip}
-        //           infoTooltip={infoTooltip}
-        //           subtitle=" "
-        //         />
-        //       );
-        //     }
-        //     return (
-        //       <DataCard
-        //         key={index}
-        //         className="rounded-sm h-[119px] p-0"
-        //         title={item.name}
-        //         number={String(item.value)}
-        //         infoIcon={!!infoTooltip}
-        //         infoTooltip={infoTooltip}
-        //         subtitle={
-        //           item.name === 'Average Duration'
-        //             ? 'Activation Trigger to Successful Disbursement'
-        //             : ' '
-        //         }
-        //       />
-        //     );
-        //   })}
-        // </div>
         <div className="space-y-4 mb-4">
           {/* First Row - 4 Columns */}
           <div className="grid xl:grid-cols-4 lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
@@ -139,14 +72,23 @@ export default function TokensOverview() {
                 return (
                   <a
                     key={index}
+                    href={`https://stellar.expert/explorer/${
+                      settings?.[projectId]?.[
+                        PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS
+                      ]?.['network'] === 'mainnet'
+                        ? 'public'
+                        : 'testnet'
+                    }/asset/${
+                      item.value
+                    }-GCVLRQHGZYG32HZE3PKZ52NX5YFCNFDBUZDLUXQYMRS6WVBWSUOP5IYE-2`}
                     target="_blank"
-                    href={`https://stellar.expert/explorer/testnet/asset/${item.value}-GCVLRQHGZYG32HZE3PKZ52NX5YFCNFDBUZDLUXQYMRS6WVBWSUOP5IYE-2`}
+                    rel="noopener noreferrer"
                     className="cursor-pointer"
                   >
                     <DataCard
-                      className="rounded-sm h-[119px]"
+                      className="rounded-sm h-[116px]"
                       title={item.name}
-                      number={item.value}
+                      smallNumber={item.value}
                       infoIcon={!!infoTooltip}
                       infoTooltip={infoTooltip}
                       subtitle=" "
@@ -159,9 +101,9 @@ export default function TokensOverview() {
                 return (
                   <DataCard
                     key={index}
-                    className="rounded-sm h-[119px]"
+                    className="rounded-sm h-[116px]"
                     title="1 Token Value"
-                    number={`Rs ${item.value}`}
+                    smallNumber={`Rs ${item.value}`}
                     infoIcon={!!infoTooltip}
                     infoTooltip={infoTooltip}
                     subtitle=" "
@@ -173,9 +115,9 @@ export default function TokensOverview() {
                 return (
                   <DataCard
                     key={index}
-                    className="rounded-sm h-[119px]"
+                    className="rounded-sm h-[116px]"
                     title="Budget Assigned"
-                    number={`Rs ${item.value}`}
+                    smallNumber={`Rs ${item.value}`}
                     infoIcon={!!infoTooltip}
                     infoTooltip={infoTooltip}
                     subtitle=" "
@@ -186,9 +128,9 @@ export default function TokensOverview() {
               return (
                 <DataCard
                   key={index}
-                  className="rounded-sm h-[119px] p-0"
+                  className="rounded-sm h-[116px] p-0"
                   title={item.name}
-                  number={String(item.value)}
+                  smallNumber={String(item.value)}
                   infoIcon={!!infoTooltip}
                   infoTooltip={infoTooltip}
                   subtitle={
@@ -218,7 +160,7 @@ export default function TokensOverview() {
               //       className="cursor-pointer"
               //     >
               //       <DataCard
-              //         className="rounded-sm h-[119px]"
+              //         className="rounded-sm h-[116px]"
               //         title={item.name}
               //         number={item.value}
               //         infoIcon={!!infoTooltip}
@@ -233,7 +175,7 @@ export default function TokensOverview() {
               //   return (
               //     <DataCard
               //       key={index}
-              //       className="rounded-sm h-[119px]"
+              //       className="rounded-sm h-[116px]"
               //       title="1 Token Value"
               //       number={`Rs ${item.value}`}
               //       infoIcon={!!infoTooltip}
@@ -247,7 +189,7 @@ export default function TokensOverview() {
               //   return (
               //     <DataCard
               //       key={index}
-              //       className="rounded-sm h-[119px]"
+              //       className="rounded-sm h-[116px]"
               //       title="Budget Assigned"
               //       number={`Rs ${item.value}`}
               //       infoIcon={!!infoTooltip}
@@ -260,9 +202,9 @@ export default function TokensOverview() {
               return (
                 <DataCard
                   key={index}
-                  className="rounded-sm h-[119px] p-0"
+                  className="rounded-sm h-[116px] p-0"
                   title={item.name}
-                  number={String(item.value)}
+                  smallNumber={String(item.value)}
                   infoIcon={!!infoTooltip}
                   infoTooltip={infoTooltip}
                   subtitle={

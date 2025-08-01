@@ -30,20 +30,19 @@ export default function PayoutView() {
   const payoutStats = useMemo(() => {
     return [
       {
-        label: 'Total number of beneficiaries recieving cash',
+        label: 'No. of Beneficiaries Recieving Cash',
         // subtitle: '',
         value: statsPayout?.payoutStats?.beneficiaries || 'N/A',
         infoIcon: true,
-        infoTooltip:
-          'This shows the total number of beneficiaries who have received cash',
+        infoTooltip: 'Total number of beneficiaries recieving cash',
       },
       {
-        label: 'Total amount of cash distributed to the beneficiaries',
+        label: 'Total Cash Distribution',
         // subtitle: ' ',
         value:
           `Rs. ${statsPayout?.payoutStats?.totalCashDistribution}` || 'N/A',
         infoIcon: true,
-        infoTooltip: 'This shows the total cash distrubution',
+        infoTooltip: 'Total amount of cash distributed to the beneficiaries',
       },
     ];
   }, [statsPayout]);

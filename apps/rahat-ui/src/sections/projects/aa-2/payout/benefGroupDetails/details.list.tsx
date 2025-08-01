@@ -131,15 +131,15 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const payoutStats = [
     {
       label: 'Actual Budget',
-      smallNumber: `Rs. ${payout?.totalSuccessAmount}` ?? 0,
+      smallNumber: `Rs. ${
+        payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE
+      }`,
       infoIcon: true,
       infoToolTip: 'Total Actual Budget',
     },
     {
       label: 'Amount Disbursed',
-      smallNumber: `Rs. ${
-        payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE
-      }`,
+      smallNumber: `Rs. ${payout?.totalSuccessAmount}` ?? 0,
       infoIcon: true,
       infoToolTip: 'Total amount disbursed in this payout',
     },

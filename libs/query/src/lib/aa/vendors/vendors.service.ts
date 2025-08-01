@@ -92,10 +92,8 @@ export const useGetVendorBeneficiaries = (payload: any) => {
   const q = useProjectAction<any[]>();
   const { projectUUID, ...restPayload } = payload;
 
-  const restPayloadString = JSON.stringify(restPayload);
-
   const query = useQuery({
-    queryKey: ['vendor.get_beneficiaries', restPayloadString],
+    queryKey: ['vendor.get_beneficiaries', projectUUID, restPayload],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,

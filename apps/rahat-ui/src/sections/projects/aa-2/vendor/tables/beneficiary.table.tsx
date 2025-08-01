@@ -11,8 +11,9 @@ import {
 import { DemoTable, Heading, SearchInput } from 'apps/rahat-ui/src/common';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useParams } from 'next/navigation';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useVendorsBeneficiaryTableColumns } from '../columns/useBeneficiaryColumns';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 interface VendorsBeneficiaryListProps {
   beneficiaryData?: {
@@ -44,12 +45,25 @@ export default function VendorsBeneficiaryList({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
+  const handleSearch = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
+      const value = event?.target?.value ?? '';
+      setFilters({ ...filters, [key]: value });
+    },
+    [filters],
+  );
+
+  const debounceSearch = useDebounce(filters, 500);
+  console.log(debounceSearch, 'xxxx');
+
+  const [mode, setMode] = useState<'online' | 'offline'>('offline');
+
   const { data, isLoading } = useGetVendorBeneficiaries({
     projectUUID: id,
     vendorUuid: vendorId,
-    payoutMode: PayoutMode.OFFLINE,
+    payoutMode: mode === 'online' ? PayoutMode.ONLINE : PayoutMode.OFFLINE,
     ...pagination,
-    ...filters,
+    name: debounceSearch.name,
   });
 
   const tableData = useMemo(() => {
@@ -78,20 +92,45 @@ export default function VendorsBeneficiaryList({
     },
   });
 
+  const handleModeChange = (newMode: 'online' | 'offline') => {
+    setMode(newMode);
+    setPagination({ ...pagination, page: 1 });
+  };
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
+      <div className="flex border-b mb-4">
+        <button
+          onClick={() => handleModeChange('online')}
+          className={`py-2 px-4 text-sm font-medium ${
+            mode === 'online'
+              ? 'border-b-2 border-primary text-primary'
+              : 'text-muted-foreground'
+          }`}
+        >
+          Online
+        </button>
+        <button
+          onClick={() => handleModeChange('offline')}
+          className={`py-2 px-4 text-sm font-medium ${
+            mode === 'offline'
+              ? 'border-b-2 border-primary text-primary'
+              : 'text-muted-foreground'
+          }`}
+        >
+          Offline
+        </button>
+      </div>
       <Heading
-        title="Offline Beneficiaries"
+        title={`${mode === 'online' ? 'Online' : 'Offline'} Beneficiaries`}
         titleStyle="text-lg"
-        description="List of all the offline beneficiaries"
+        description={`List of all the ${mode} beneficiaries`}
       />
       <SearchInput
-        className="w-full"
-        name=""
-        value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-        onSearch={(event) =>
-          table.getColumn('name')?.setFilterValue(event.target.value)
-        }
+        className="w-full flex-[4]"
+        name="name"
+        onSearch={(e) => handleSearch(e, 'name')}
+        value={filters?.name || ''}
       />
       <DemoTable
         table={table}

@@ -26,11 +26,18 @@ import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
-import { CloudDownload, RotateCcw, Store, Ticket, Users } from 'lucide-react';
+import {
+  CloudDownload,
+  RotateCcw,
+  Ticket,
+  User,
+  StoreIcon,
+} from 'lucide-react';
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
 import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
 import * as XLSX from 'xlsx';
+import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const params = useParams();
@@ -77,6 +84,9 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');
     XLSX.writeFile(workbook, 'payout-logs.xlsx');
   };
+
+  console.log('table', payoutlogs);
+  console.log('single', payout);
   const table = useReactTable({
     manualPagination: true,
     data: payoutlogs?.data || [],
@@ -120,16 +130,35 @@ export default function BeneficiaryGroupTransactionDetailsList() {
 
   const payoutStats = [
     {
-      label: 'Total Beneficiaries',
-      value:
-        payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
-          ?.beneficiaries ?? 0,
-      icon: Users,
+      label: 'Actual Budget',
+      smallNumber: `Rs. ${
+        payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE
+      }`,
+      infoIcon: true,
+      infoToolTip: `Total allocated budget for this beneficiary ${"group's"} payout`,
     },
     {
-      label: 'Total Tokens',
-      value: payout?.beneficiaryGroupToken?.numberOfTokens,
-      icon: Ticket,
+      label: 'Amount Disbursed',
+      smallNumber: `Rs. ${payout?.totalSuccessAmount}` ?? 0,
+      infoIcon: true,
+      infoToolTip: 'Total amount disbursed in this payout',
+    },
+    {
+      label: 'Payout Type',
+      infoIcon: true,
+      infoToolTip: 'Type of Payout',
+      smallNumber: payout?.type === 'VENDOR' ? 'CVA' : payout?.type,
+      badge: true,
+    },
+    {
+      label: 'Payout Method',
+      infoIcon: true,
+      infoToolTip: 'Payment Method',
+      smallNumber:
+        payout?.type === 'VENDOR'
+          ? payout?.mode
+          : payout?.extras?.paymentProviderName,
+      badge: true,
     },
   ];
 
@@ -140,10 +169,11 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
     [filters],
   );
+  console.log(payoutlogs?.data?.length, 'payoutlogs data length');
   return isLoading ? (
     <TableLoader />
   ) : (
-    <div className="p-4">
+    <div className="p-4 pb-0">
       <div className="flex flex-col space-y-0">
         <Back path={`/projects/aa/${projectId}/payout/list`} />
 
@@ -185,7 +215,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               )}
               <Button
                 className={`gap-2 text-sm ${
-                  payoutlogs?.data?.length < 0 && 'hidden'
+                  payoutlogs?.data?.length === 0 && 'hidden'
                 }`}
                 onClick={handleDownload}
                 variant={'outline'}
@@ -208,43 +238,62 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             <DataCard
               key={item.label}
               title={item.label}
-              Icon={item.icon}
-              number={item.value}
-              className="rounded-sm h-28"
+              className="rounded-sm h-[80px] pt-10 pb-8"
+              infoIcon={item.infoIcon}
+              infoTooltip={item.infoToolTip}
+              badge={item.badge}
+              smallNumber={item.smallNumber}
             />
           ))}
-          <DataCard
-            title="Payout Type"
-            Icon={Ticket}
-            smallNumber={payout?.type === 'VENDOR' ? 'CVA' : payout?.type}
-            className="rounded-sm h-28"
-            badge
-          />
-          <DataCard
-            title="Payout Method"
-            Icon={Ticket}
-            smallNumber={
-              payout?.type === 'VENDOR'
-                ? payout?.mode
-                : payout?.extras?.paymentProviderName
-            }
-            className="rounded-sm h-28"
-            badge
-          />
 
           {payout?.type === 'VENDOR' && payout?.mode === 'OFFLINE' && (
             <DataCard
               title="Vendor"
-              Icon={Store}
+              infoIcon={true}
+              infoTooltip="This shows the vendor name"
               smallNumber={payout?.extras?.vendorName}
-              className="rounded-sm h-28"
+              className="rounded-sm h-[80px] pt-10 pb-8"
               badge
             />
           )}
         </div>
+
+        <div className="grid lg:grid-cols-4 gap-4 pt-2">
+          <DataCard
+            title="Total no. of Beneficiaries"
+            smallNumber={
+              payout?.beneficiaryGroupToken?.beneficiaryGroup?._count
+                ?.beneficiaries ?? 0
+            }
+            className="rounded-sm h-[80px] pt-10 pb-8 "
+            infoIcon={true}
+            infoTooltip="Total number of beneficiaries in the group"
+          />
+          <DataCard
+            title="Successful Transactions"
+            smallNumber={payout?.totalSuccessRequests}
+            className="rounded-sm h-[80px] pt-10 pb-8 "
+            infoIcon={true}
+            infoTooltip="Total number of Successful Transactions"
+          />
+          <DataCard
+            title="Failed Transactions"
+            smallNumber={payout?.totalFailedPayoutRequests}
+            className="rounded-sm h-[80px] pt-10 pb-8 "
+            infoIcon={true}
+            infoTooltip="Total number of Failed Transactions"
+          />
+          <DataCard
+            title="Payout Gap"
+            smallNumber={payout?.payoutGap}
+            className="rounded-sm h-[80px] pt-10 pb-8 "
+            infoIcon={true}
+            infoTooltip="Gap between Activation phsae triggerd and payout disbursed"
+          />
+        </div>
       </div>
 
-      <div className="rounded-sm border border-gray-100 space-y-2 p-4 mt-2">
+      <div className="rounded-sm border border-gray-100 space-y-2 p-2 mt-2">
         <div className="flex gap-2">
           <SearchInput
             className="w-full flex-[4]"

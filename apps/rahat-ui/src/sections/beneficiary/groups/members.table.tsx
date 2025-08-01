@@ -51,8 +51,8 @@ export default function MembersTable({
           ) : null}
         </div>
         <div className="bg-card border rounded">
-          <TableComponent>
-            <ScrollArea className="h-[calc(100vh-496px)]">
+          <ScrollArea className="h-[calc(100vh-496px)]">
+            <TableComponent>
               <TableHeader className="sticky top-0 bg-card">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
@@ -113,8 +113,8 @@ export default function MembersTable({
                   </TableRow>
                 )}
               </TableBody>
-            </ScrollArea>
-          </TableComponent>
+            </TableComponent>
+          </ScrollArea>
         </div>
       </div>
     </>

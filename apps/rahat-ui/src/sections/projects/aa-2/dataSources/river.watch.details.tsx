@@ -65,6 +65,11 @@ export default function RiverWatchDetails() {
     },
     activeTab,
   );
+
+  const riverWatchInfoList = riverWatch?.info ?? [];
+
+  // This can be modified later to handle multiple rivers if needed
+  const primaryRiverWatchInfo = riverWatchInfoList[0] ?? null;
   return (
     <div className="p-4">
       <Back />
@@ -77,21 +82,21 @@ export default function RiverWatchDetails() {
           <TableLoader />
         ) : (
           <div className="flex flex-col gap-4">
-            <Info riverWatch={riverWatch} />
+            <Info riverWatch={primaryRiverWatchInfo} />
             <WaterLevelView
               activeTab={activeTab}
               setActiveTab={setActiveTab}
-              data={riverWatch}
+              data={primaryRiverWatchInfo}
               selectedDate={pickedDate}
               setSelectedDate={setPickedDate}
             />
             <RiverWatchMap
               coordinates={[
                 {
-                  latitude: riverWatch?.info?.latitude,
-                  longitude: riverWatch?.info?.longitude,
-                  name: riverWatch?.info?.name,
-                  stationIndex: riverWatch?.info?.stationIndex,
+                  latitude: primaryRiverWatchInfo?.latitude,
+                  longitude: primaryRiverWatchInfo?.longitude,
+                  name: primaryRiverWatchInfo?.name,
+                  stationIndex: primaryRiverWatchInfo?.stationIndex,
                 },
               ]}
             />

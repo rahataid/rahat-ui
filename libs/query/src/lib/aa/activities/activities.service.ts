@@ -157,20 +157,38 @@ export const useSingleActivity = (
   activityId: string | string[],
 ) => {
   const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
 
   const query = useQuery({
     queryKey: ['activity', uuid, activityId],
     queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: 'ms.activities.getOne',
-          payload: {
-            uuid: activityId,
+      try {
+        const mutate = await q.mutateAsync({
+          uuid,
+          data: {
+            action: 'ms.activities.getOne',
+            payload: {
+              uuid: activityId,
+            },
           },
-        },
-      });
-      return mutate.data;
+        });
+        return mutate.data;
+      } catch (error: any) {
+        const errorMessage =
+          error?.response?.data?.message || 'Failed to fetch activity';
+        toast.fire({
+          title: 'Error loading activity',
+          text: errorMessage,
+          icon: 'error',
+        });
+        throw error;
+      }
     },
   });
   return query;

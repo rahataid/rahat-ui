@@ -1363,6 +1363,44 @@ export const useProjectInfo = (uuid: UUID) => {
   return query;
 };
 
+export const useStellarSettings = (uuid: UUID) => {
+  const q = useProjectAction([PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS]);
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+
+  const query = useQuery({
+    queryKey: ['settings.get.stellar.settings', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  useEffect(() => {
+    if (!isEmpty(query.data)) {
+      const settingsToUpdate = {
+        ...settings,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS]: query?.data.value,
+        },
+      };
+      setSettings(settingsToUpdate);
+    }
+  }, [query.data]);
+  return query;
+};
+
 export const useOfframp = (uuid: UUID) => {
   const q = useProjectAction([PROJECT_SETTINGS_KEYS.OFFRAMP]);
   const { setSettings, settings } = useProjectSettingsStore((state) => ({

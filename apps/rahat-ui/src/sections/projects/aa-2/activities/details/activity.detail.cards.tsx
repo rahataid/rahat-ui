@@ -84,19 +84,21 @@ export default function ActivityDetailCards({
               </TooltipContent>
             </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild className="hover:cursor-pointer">
-                <p className="text-gray-600 text-sm mt-1  leading-tight">
-                  {activityDetail?.description?.substring(0, 100)}...
-                </p>
-              </TooltipTrigger>
-              <TooltipContent
-                side="bottom"
-                className="w-80 rounded-sm text-justify"
-              >
-                <p>{activityDetail?.description}</p>
-              </TooltipContent>
-            </Tooltip>
+            {activityDetail?.description && (
+              <Tooltip>
+                <TooltipTrigger asChild className="hover:cursor-pointer">
+                  <p className="text-gray-600 text-sm mt-1  leading-tight">
+                    {activityDetail?.description?.substring(0, 100)}...
+                  </p>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="bottom"
+                  className="w-80 rounded-sm text-justify"
+                >
+                  <p>{activityDetail?.description}</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </TooltipProvider>
           <div className="text-gray-500 text-sm mt-2 flex flex-wrap gap-2">
             <span>{activityDetail?.phase?.riverBasin}</span>

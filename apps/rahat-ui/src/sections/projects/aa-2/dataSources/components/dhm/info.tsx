@@ -9,27 +9,27 @@ export function Info({ riverWatch }: any) {
       {
         icon: RadioTower,
         label: 'Station Index',
-        value: riverWatch?.info?.stationIndex,
+        value: riverWatch?.stationIndex,
       },
       {
         icon: Globe,
         label: 'Latitude',
-        value: riverWatch?.info?.latitude,
+        value: riverWatch?.latitude,
       },
       {
         icon: Globe,
         label: 'Longitude',
-        value: riverWatch?.info?.longitude,
+        value: riverWatch?.longitude,
       },
       {
         icon: TrendingUp,
         label: 'Elevation',
-        value: riverWatch?.info?.elevation,
+        value: riverWatch?.elevation,
       },
       {
         icon: MapPin,
         label: 'District',
-        value: riverWatch?.info?.district,
+        value: riverWatch?.district,
       },
     ],
     [riverWatch],
@@ -50,12 +50,12 @@ export function Info({ riverWatch }: any) {
       <div className="p-4 rounded-sm border shadow w-full">
         <div className="flex justify-between gap-4">
           <Heading
-            title={riverWatch?.info?.name}
+            title={riverWatch?.name}
             titleStyle="text-xl/6 font-semibold"
-            description={riverWatch?.info?.description}
+            description={riverWatch?.description}
           />
           <div>
-            <Badge>{riverWatch?.info?.steady}</Badge>
+            <Badge>{riverWatch?.steady}</Badge>
           </div>
         </div>
         <div className="grid grid-cols-5 gap-2">
@@ -77,17 +77,17 @@ export function Info({ riverWatch }: any) {
       </div>
       <div
         className={`p-4 rounded-sm border shadow text-center w-64 ${renderCardColor(
-          riverWatch?.info?.status,
+          riverWatch?.status,
         )}`}
       >
         <p className="text-primary font-semibold text-3xl/10">
-          {riverWatch?.info?.waterLevel?.value}
+          {riverWatch?.waterLevel?.value}
         </p>
         <p className="text-sm/6 font-medium">Water Level</p>
         <p className="text-gray-500 text-sm/6">
-          {new Date(riverWatch?.info?.waterLevel?.datetime).toLocaleString()}
+          {new Date(riverWatch?.waterLevel?.datetime).toLocaleString()}
         </p>
-        <Badge>{riverWatch?.info?.status}</Badge>
+        <Badge>{riverWatch?.status}</Badge>
       </div>
     </div>
   );

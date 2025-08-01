@@ -44,29 +44,29 @@ export function RainFallMonitor({
             </Badge>
           </div>
         </div>
-        <div className="flex mt-4 text-sm gap-6">
+        <div className="flex text-sm gap-6">
           <div className="flex items-center mr-8">
             <Radio className="w-4 h-4 mr-2 text-gray-500" />
             <div>
               <div className="text-gray-600">Station Index</div>
-              <div>{stationIndex}</div>
+              <div>{stationIndex || 'N/A'}</div>
             </div>
           </div>
           <div className="flex items-center">
             <MapPin className="w-4 h-4 mr-2 text-gray-500" />
             <div>
               <div className="text-gray-600">District</div>
-              <div>{district}</div>
+              <div>{district || 'N/A'}</div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex-[2] md:flex-[3] p-4 ">
-        <div className="border grid grid-cols-5 rounded-sm shadow-sm p-4">
+      <div className="flex-[2] md:flex-[3]">
+        <div className="border grid grid-cols-5 rounded-sm shadow-sm">
           {timeIntervals.map((interval, index) => (
             <div key={index} className="p-4   text-center">
-              <div className="text-primary font-semibold">
+              <div className="text-primary font-medium text-sm">
                 {interval.warningLevel !== undefined
                   ? `${interval.warningLevel}mm`
                   : 'N/A'}

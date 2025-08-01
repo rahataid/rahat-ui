@@ -208,6 +208,10 @@ export default function BeneficiaryTransactionLogDetails() {
                   label="Bank Account Number"
                   value={data?.data?.Beneficiary?.extras?.bank_ac_number}
                 />
+                <InfoItem
+                  label="Bank Account Name"
+                  value={data?.data?.Beneficiary?.extras?.bank_ac_name}
+                />
               </>
             )}
 

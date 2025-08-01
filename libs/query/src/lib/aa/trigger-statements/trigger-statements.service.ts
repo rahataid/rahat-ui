@@ -241,6 +241,44 @@ export const useGlofasWaterLevels = (uuid: UUID, payload: any) => {
   return query;
 };
 
+export const useGFHWaterLevels = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  const query = useQuery({
+    queryKey: ['gfhwaterlevels', uuid],
+    queryFn: async () => {
+      try {
+        const mutate = await q.mutateAsync({
+          uuid,
+          data: {
+            action: 'ms.waterLevels.getGfh',
+            payload: payload,
+          },
+        });
+        return mutate.data;
+      } catch (error: any) {
+        const errorMessage =
+          error?.response?.data?.message || 'Failed to fetch GFH water levels';
+        toast.fire({
+          title: 'Error loading GFH water levels',
+          text: errorMessage,
+          icon: 'error',
+        });
+        throw error;
+      }
+    },
+  });
+
+  return query;
+};
+
 export const useAATriggerStatements = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
   const { setTriggers } = useAAStationsStore((state) => ({
@@ -346,10 +384,13 @@ export const useActivateTrigger = () => {
       qc.invalidateQueries({ queryKey: ['triggerstatement'] });
       toast.fire({
         title: 'Trigger activated.',
-        text: 'This trigger will be saved in Steller block. You can view details of this from trigger details page.',
+        text: 'This trigger will be saved in Stellar block. You can view details of this from trigger details page.',
         timer: 10000,
         icon: 'success',
         width: '500px',
+        showCloseButton: true,
+        closeButtonHtml:
+          '<span style="color: #ef4444; font-size: 20px; font-weight: bold; position: absolute; top: 10px; right: 15px; cursor: pointer;">&times;</span>',
       });
     },
     onError: (error: any) => {

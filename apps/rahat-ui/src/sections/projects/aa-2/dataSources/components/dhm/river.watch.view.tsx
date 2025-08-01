@@ -30,27 +30,32 @@ export default function RiverWatchView() {
     to: formattedDate,
   });
 
+  const riverWatchInfoList = riverWatch?.info ?? [];
+
+  // modification required to handle multiple rivers
+  const primaryRiverWatchInfo = riverWatchInfoList[0] ?? null;
+
   const cardData = React.useMemo(
     () => [
       {
         icon: RadioTower,
         label: 'Station Index',
-        value: riverWatch?.info?.stationIndex,
+        value: primaryRiverWatchInfo?.stationIndex,
       },
       {
         icon: MapPin,
         label: 'District',
-        value: riverWatch?.info?.district,
+        value: primaryRiverWatchInfo?.district,
       },
       {
         icon: TriangleAlert,
         label: 'Warning Level',
-        value: riverWatch?.info?.warning_level,
+        value: primaryRiverWatchInfo?.warning_level,
       },
       {
         icon: Skull,
         label: 'Danger Level',
-        value: riverWatch?.info?.danger_level,
+        value: primaryRiverWatchInfo?.danger_level,
       },
     ],
     [riverWatch],
@@ -70,7 +75,7 @@ export default function RiverWatchView() {
     return <TableLoader />;
   }
 
-  if (!riverWatch || !riverWatch.info) {
+  if (!riverWatch || !primaryRiverWatchInfo) {
     return (
       <div className="p-4">
         <NoResult message="No River Watch Data" />
@@ -90,12 +95,12 @@ export default function RiverWatchView() {
         <div className="w-full">
           <div className="flex justify-between gap-4">
             <Heading
-              title={riverWatch?.info?.name}
+              title={primaryRiverWatchInfo?.name}
               titleStyle="text-xl/6 font-semibold"
-              description={riverWatch?.info?.description}
+              description={primaryRiverWatchInfo?.description}
             />
             <div>
-              <Badge>{riverWatch?.info?.steady}</Badge>
+              <Badge>{primaryRiverWatchInfo?.steady}</Badge>
             </div>
           </div>
           <div className="grid grid-cols-4 gap-4">
@@ -117,17 +122,19 @@ export default function RiverWatchView() {
         </div>
         <div
           className={`p-4 rounded-sm border shadow text-center w-64 ${renderCardColor(
-            riverWatch?.info?.status,
+            primaryRiverWatchInfo?.status,
           )}`}
         >
           <p className="text-primary font-semibold text-3xl/10">
-            {riverWatch?.info?.waterLevel?.value}
+            {primaryRiverWatchInfo?.waterLevel?.value}
           </p>
           <p className="text-sm/6 font-medium">Water Level</p>
           <p className="text-gray-500 text-sm/6">
-            {new Date(riverWatch?.info?.waterLevel?.datetime).toLocaleString()}
+            {new Date(
+              primaryRiverWatchInfo?.waterLevel?.datetime,
+            ).toLocaleString()}
           </p>
-          <Badge>{riverWatch?.info?.status}</Badge>
+          <Badge>{primaryRiverWatchInfo?.status}</Badge>
         </div>
       </div>
     </div>

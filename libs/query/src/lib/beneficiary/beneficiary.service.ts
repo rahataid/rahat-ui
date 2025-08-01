@@ -336,8 +336,12 @@ export const useUpdateGroupPropose = () => {
   return useMutation({
     mutationFn: (payload: any) =>
       updateGroupPropose(payload.uuid, payload.selectedPurpose),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [GET_BENEFICIARY_GROUP] });
+    onSuccess: (_data, variables) => {
+      if (variables?.uuid) {
+        qc.invalidateQueries({
+          queryKey: ['GET_BENEFICIARY_GROUP', variables.uuid],
+        });
+      }
       toast.fire({
         title: 'Group propose updated successfully',
         icon: 'success',

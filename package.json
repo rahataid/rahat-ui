@@ -52,7 +52,7 @@
     "@rahataid/sdk": "0.0.34",
     "@rumsan/communication": "^0.0.23",
     "@rumsan/communication-query": "^0.0.11",
-    "@rumsan/connect": "1.0.0",
+    "@rumsan/connect": "1.0.7",
     "@rumsan/core": "^3.0.133",
     "@rumsan/extensions": "0.0.38",
     "@rumsan/prisma": "^1.0.125",

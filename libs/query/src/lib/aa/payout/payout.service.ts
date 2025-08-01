@@ -389,3 +389,32 @@ export const usePaymentProviders = ({ projectUUID }: { projectUUID: UUID }) => {
     refetchOnWindowFocus: false,
   });
 };
+
+export const usePayoutExportLogs = ({
+  projectUUID,
+  payoutUUID,
+}: {
+  projectUUID: UUID;
+  payoutUUID: string;
+}) => {
+  const q = useProjectAction();
+
+  return useQuery({
+    queryKey: ['aa.jobs.payout.exportPayoutLogs', projectUUID],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.jobs.payout.exportPayoutLogs',
+          payload: {
+            payoutUUID,
+          },
+        },
+      });
+      return mutate.data;
+    },
+    enabled: !!projectUUID,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+};

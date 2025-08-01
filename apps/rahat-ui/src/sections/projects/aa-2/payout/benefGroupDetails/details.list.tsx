@@ -135,7 +135,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
         payout?.beneficiaryGroupToken?.numberOfTokens * ONE_TOKEN_VALUE
       }`,
       infoIcon: true,
-      infoToolTip: 'Total Actual Budget',
+      infoToolTip: `Total allocated budget for this beneficiary ${"group's"} payout`,
     },
     {
       label: 'Amount Disbursed',
@@ -169,6 +169,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
     [filters],
   );
+  console.log(payoutlogs?.data?.length, 'payoutlogs data length');
   return isLoading ? (
     <TableLoader />
   ) : (
@@ -214,7 +215,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               )}
               <Button
                 className={`gap-2 text-sm ${
-                  payoutlogs?.data?.length < 0 && 'hidden'
+                  payoutlogs?.data?.length === 0 && 'hidden'
                 }`}
                 onClick={handleDownload}
                 variant={'outline'}
@@ -269,11 +270,11 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             infoTooltip="Total number of beneficiaries in the group"
           />
           <DataCard
-            title="Sucessful Transactions"
+            title="Successful Transactions"
             smallNumber={payout?.totalSuccessRequests}
             className="rounded-sm h-[80px] pt-10 pb-8 "
             infoIcon={true}
-            infoTooltip="Total number of Sucessful Transactions"
+            infoTooltip="Total number of Successful Transactions"
           />
           <DataCard
             title="Failed Transactions"

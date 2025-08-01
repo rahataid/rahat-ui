@@ -21,14 +21,16 @@ export default function PayoutConfirmationDialog({
   payoutData,
   onConfirm,
 }: IProps) {
-  console.log(payoutData);
+  console.log(payoutData, ' payoutData in PayoutConfirmationDialog');
   return (
     <AlertDialog>
       <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
         <AlertDialogTrigger asChild>
           <Button
             className={`bg-blue-600 hover:bg-blue-700 text-white ${
-              payoutData?.isPayoutTriggered && 'hidden'
+              (!payoutData?.isPayoutTriggered ||
+                payoutData?.type === 'VENDOR') &&
+              'hidden'
             }`}
           >
             Trigger Payout

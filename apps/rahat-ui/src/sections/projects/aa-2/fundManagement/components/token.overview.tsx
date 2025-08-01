@@ -244,7 +244,8 @@ export default function TokensOverview() {
           <TransactionCard
             cardTitle="Recent Transactions"
             cardData={groupsFundsData?.data?.filter(
-              (item) => item.status !== 'NOT_DISBURSED',
+              (item) =>
+                item.status !== 'NOT_DISBURSED' && item.status !== 'STARTED',
             )}
             loading={isLoading}
             cardHeight="h-[calc(80vh-350px)]"

@@ -215,18 +215,18 @@ export default function EditTrigger() {
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({
     resolver: zodResolver(AutomatedFormSchema),
     defaultValues: {
-      title: trigger?.title || '',
-      description: trigger?.description || '',
-      source: trigger?.source || '',
-      maxLeadTimeDays: trigger?.triggerStatement?.maxLeadTimeDays || '',
-      minLeadTimeDays: trigger?.triggerStatement?.minLeadTimeDays || '',
-      probability: trigger?.triggerStatement?.probability || '',
-      isMandatory: !trigger?.isMandatory || false,
-      warningLevel: trigger?.triggerStatement?.warningLevel || '',
-      dangerLevel: trigger?.triggerStatement?.dangerLevel || '',
-      forecast: trigger?.triggerStatement?.forecast || '',
-      daysToConsiderPrior: trigger?.triggerStatement?.daysToConsiderPrior || '',
-      forecastStatus: trigger?.triggerStatement?.forecastStatus || '',
+      title: '',
+      description: '',
+      source: '',
+      maxLeadTimeDays: '',
+      minLeadTimeDays: '',
+      probability: '',
+      isMandatory: false,
+      warningLevel: '',
+      dangerLevel: '',
+      forecast: '',
+      daysToConsiderPrior: '',
+      forecastStatus: '',
     },
   });
 
@@ -303,12 +303,15 @@ export default function EditTrigger() {
         forecastStatus: trigger?.triggerStatement?.forecastStatus,
       });
     }
-  }, [trigger]);
+  }, [trigger, triggerType, manualForm, automatedForm]);
+
+  if (isLoading) {
+    return <LoaderRahat />;
+  }
 
   return (
     <>
-      {isLoading && <LoaderRahat />}
-      <div className={`p-4 ${isLoading && 'hidden'}`}>
+      <div className={'p-4'}>
         <Back />
         <Heading
           title={`Edit ${capitalizeFirstLetter(triggerType || '')} Trigger`}

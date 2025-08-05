@@ -78,6 +78,8 @@ export default function VendorsBeneficiaryList({
           benTokens: beneficiary?.benTokens,
           walletAddress: beneficiary?.walletAddress,
           uuid: beneficiary?.uuid,
+          txHash: beneficiary?.txHash,
+          status: beneficiary?.status,
         };
       });
     } else {

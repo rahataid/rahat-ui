@@ -34,27 +34,13 @@ export const useVendorsTransactionTableColumns = () => {
       accessorKey: 'walletAddress',
       header: 'Beneficiary Wallet Address',
       cell: ({ row }) => {
-        console.log('row', row);
         if (!row.original?.beneficiaryWalletAddress) {
           return <div>N/A</div>;
         }
         return (
           <div className="flex flex-row">
-            <div className="w-20 truncate">
-              <a
-                href={`https://stellar.expert/explorer/${
-                  settings?.[projectId]?.[
-                    PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS
-                  ]?.['network'] === 'mainnet'
-                    ? 'public'
-                    : 'testnet'
-                }/tx/${row?.original?.beneficiaryWalletAddress}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-400 hover:underline cursor-pointer text-[#475263] text-[14px] leading-[16px] font-normal"
-              >
-                {row.original?.beneficiaryWalletAddress}
-              </a>
+            <div className="w-20 truncate text-[14px] leading-[16px] font-normal !text-[#475263]">
+              {row.original?.beneficiaryWalletAddress}
             </div>
             <button
               onClick={() =>

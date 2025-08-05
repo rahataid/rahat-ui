@@ -124,13 +124,15 @@ export default function TransactionCard({ transaction, loading }: Props) {
         <ScrollArea className=" h-[calc(350px)]">
           {transaction?.map((txn) => {
             return (
-              <Transaction
-                key={txn.hash}
-                amount={txn.amount}
-                date={txn.date}
-                hash={txn.hash}
-                title={txn.title}
-              />
+              <div className="mb-4">
+                <Transaction
+                  key={txn.hash}
+                  amount={txn.amount}
+                  date={txn.date}
+                  hash={txn.hash}
+                  title={txn.title}
+                />
+              </div>
             );
           })}
         </ScrollArea>

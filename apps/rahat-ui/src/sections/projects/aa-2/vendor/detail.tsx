@@ -33,7 +33,7 @@ export default function Detail() {
         title="Vendor Details"
         description="Detailed view of the selected vendor"
       />
-      <Tabs defaultValue={activeTab} onValueChange={(val) => setActiveTab(val)}>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="border bg-secondary rounded">
           <TabsTrigger
             value="vendorOverview"
@@ -48,7 +48,7 @@ export default function Detail() {
             Transaction History
           </TabsTrigger>
           <TabsTrigger
-            value="beneficairyList"
+            value="beneficiaryList"
             className="w-full data-[state=active]:bg-white"
           >
             Beneficiary List
@@ -76,7 +76,7 @@ export default function Detail() {
           <VendorsTransactionsHistory />
         </TabsContent>
 
-        <TabsContent value="beneficairyList">
+        <TabsContent value="beneficiaryList">
           <VendorsBeneficiaryList />
         </TabsContent>
 

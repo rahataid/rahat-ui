@@ -10,14 +10,22 @@ import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { truncateAddress } from 'apps/rahat-ui/src/utils/string';
 import { PayoutMode } from 'libs/query/src/lib/aa';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 export const useVendorsBeneficiaryTableColumns = (mode: PayoutMode) => {
-  const { id } = useParams();
+  const { id, vendorId } = useParams();
   const router = useRouter();
 
+  const params = useSearchParams();
+  const tab = params.get('tab') as string;
+  const subTab = params.get('subTab') as string;
+  const perPage = params.get('perPage') as string;
+  const page = params.get('page') as string;
+
   const handleViewClick = (beneficiaryId: string) => {
-    router.push(`/projects/aa/${id}/beneficiary/${beneficiaryId}`);
+    router.push(
+      `/projects/aa/${id}/beneficiary/${beneficiaryId}?vendorId=${vendorId}&tab=${tab}&subTab=${subTab}&perPage=${perPage}&page=${page}`,
+    );
   };
 
   const { clickToCopy, copyAction } = useCopy();

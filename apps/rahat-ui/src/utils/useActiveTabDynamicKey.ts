@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 export function useActiveTabDynamicKey(queryKey: string, defaultValue: string) {
   const searchParams = useSearchParams();
@@ -18,6 +18,12 @@ export function useActiveTabDynamicKey(queryKey: string, defaultValue: string) {
     },
     [searchParams, pathname, router, queryKey],
   );
+
+  useEffect(() => {
+    if (!searchParams.get(queryKey)) {
+      setActiveTab(defaultValue);
+    }
+  }, [searchParams, queryKey, defaultValue, setActiveTab]);
 
   return {
     activeTab,

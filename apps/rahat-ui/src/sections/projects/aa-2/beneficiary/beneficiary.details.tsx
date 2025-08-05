@@ -11,8 +11,13 @@ const BeneficiaryDetail = () => {
   const projectId = params.id as UUID;
   const beneficiaryId = params.uuid as UUID;
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('groupId');
-  const redirectToFund = searchParams.get('fundId');
+  const redirectTo = searchParams.get('groupId') as string;
+  const redirectToFund = searchParams.get('fundId') as string;
+  const vendorId = searchParams.get('vendorId') as string;
+  const tab = searchParams.get('tab') as string;
+  const subTab = searchParams.get('subTab') as string;
+  const perPage = searchParams.get('perPage') as string;
+  const page = searchParams.get('page') as string;
   const details = useProjectBeneficiaryDetail({
     projectUUID: projectId,
     uuid: beneficiaryId,
@@ -21,6 +26,8 @@ const BeneficiaryDetail = () => {
     ? `/projects/aa/${projectId}/beneficiary/groupDetails/${redirectTo}`
     : redirectToFund
     ? `/projects/aa/${projectId}/fund-management/${redirectToFund}`
+    : vendorId
+    ? `/projects/aa/${projectId}/vendors/${vendorId}?tab=${tab}&subTab=${subTab}&perPage=${perPage}&page=${page}`
     : `/projects/aa/${projectId}/beneficiary`;
 
   return (

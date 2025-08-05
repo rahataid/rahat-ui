@@ -64,11 +64,12 @@ export default function useCommsActivitiesTableColumns() {
       ),
     },
     {
-      accessorKey: 'createdAt',
+      accessorKey: 'updatedAt',
       header: 'Date',
       cell: ({ row }) => (
         <div className="capitalize min-w-32">
-          {dateFormat(row.getValue('createdAt'))}
+          {/* {dateFormat(row.original.updatedAt, 'MMMM d, yyyy')} */}
+          {dateFormat(row.original.updatedAt)}
         </div>
       ),
     },

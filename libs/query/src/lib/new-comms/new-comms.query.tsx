@@ -25,7 +25,7 @@ export const useListSessionLogs = (sessionId: string, payload: any) => {
     queryFn: () =>
       newCommunicationService.session.listBroadcasts(sessionId, payload),
 
-    queryKey: ['TAGS.NEW_COMMS.LIST_TRANSPORTS', { type: sessionId }],
+    queryKey: ['TAGS.NEW_COMMS.LIST_TRANSPORTS', payload],
   });
   return query;
 };

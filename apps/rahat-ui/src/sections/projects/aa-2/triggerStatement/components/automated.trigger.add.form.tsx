@@ -94,7 +94,11 @@ export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      key={field.value}
+                    >
                       <FormLabel>Source</FormLabel>
                       <FormControl>
                         <SelectTrigger>

@@ -140,6 +140,7 @@ export const useActivitiesHavingComms = (uuid: UUID, payload: any) => {
     id: d?.uuid,
     title: d?.title,
     createdAt: d?.createdAt,
+    updatedAt: d?.updatedAt,
     phase: d?.phase?.name,
     status: d?.status,
     activityCommunication: d?.activityCommunication,

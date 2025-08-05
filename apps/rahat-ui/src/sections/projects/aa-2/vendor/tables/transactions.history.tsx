@@ -55,7 +55,6 @@ export default function VendorsTransactionsHistory() {
     },
     [filters],
   );
-  console.log('tx history table', txnTable?.response?.meta);
   return (
     <div className=" space-y-1">
       <Heading

@@ -31,40 +31,101 @@ export const useVendorsTransactionTableColumns = () => {
       ),
     },
     {
-      accessorKey: 'txHash',
-      header: 'TxHash',
-      cell: ({ row }) => (
-        <div className="flex flex-row">
-          <div className="w-20 truncate">
-            <a
-              href={`https://stellar.expert/explorer/${
-                settings?.[projectId]?.[
-                  PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS
-                ]?.['network'] === 'mainnet'
-                  ? 'public'
-                  : 'testnet'
-              }/tx/${row?.original?.txHash}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-base text-blue-500 hover:underline cursor-pointer "
+      accessorKey: 'walletAddress',
+      header: 'Beneficiary Wallet Address',
+      cell: ({ row }) => {
+        console.log('row', row);
+        if (!row.original?.beneficiaryWalletAddress) {
+          return <div>N/A</div>;
+        }
+        return (
+          <div className="flex flex-row">
+            <div className="w-20 truncate">
+              <a
+                href={`https://stellar.expert/explorer/${
+                  settings?.[projectId]?.[
+                    PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS
+                  ]?.['network'] === 'mainnet'
+                    ? 'public'
+                    : 'testnet'
+                }/tx/${row?.original?.beneficiaryWalletAddress}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-400 hover:underline cursor-pointer text-[#475263] text-[14px] leading-[16px] font-normal"
+              >
+                {row.original?.beneficiaryWalletAddress}
+              </a>
+            </div>
+            <button
+              onClick={() =>
+                clickToCopy(
+                  row.original?.beneficiaryWalletAddress,
+                  row.original?.beneficiaryWalletAddress,
+                )
+              }
+              className="ml-2 text-sm text-gray-500"
             >
-              {row.getValue('txHash')}
-            </a>
+              {copyAction === row.original?.beneficiaryWalletAddress ? (
+                <CopyCheck className="w-4 h-4" />
+              ) : (
+                <Copy className="w-4 h-4" />
+              )}
+            </button>
           </div>
-          <button
-            onClick={() =>
-              clickToCopy(row.getValue('txHash'), row.getValue('txHash'))
-            }
-            className="ml-2 text-sm text-gray-500"
-          >
-            {copyAction === row.getValue('txHash') ? (
-              <CopyCheck className="w-4 h-4" />
-            ) : (
-              <Copy className="w-4 h-4" />
-            )}
-          </button>
+        );
+      },
+    },
+    {
+      accessorKey: 'amount',
+      header: 'Amount Disbursed',
+      cell: ({ row }) => (
+        <div>
+          {row.original?.amount
+            ? `Rs. ${Intl.NumberFormat('en-IN').format(row.original?.amount)}`
+            : 'N/A'}
         </div>
       ),
+    },
+    {
+      accessorKey: 'txHash',
+      header: 'TxHash',
+      cell: ({ row }) => {
+        if (!row.original?.txHash) {
+          return <div>N/A</div>;
+        }
+        return (
+          <div className="flex flex-row">
+            <div className="w-20 truncate">
+              <a
+                href={`https://stellar.expert/explorer/${
+                  settings?.[projectId]?.[
+                    PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS
+                  ]?.['network'] === 'mainnet'
+                    ? 'public'
+                    : 'testnet'
+                }/tx/${row?.original?.txHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-base text-blue-500 hover:underline cursor-pointer "
+              >
+                {row.getValue('txHash')}
+              </a>
+            </div>
+            <button
+              onClick={() =>
+                clickToCopy(row.getValue('txHash'), row.getValue('txHash'))
+              }
+              className="ml-2 text-sm text-gray-500"
+            >
+              {copyAction === row.getValue('txHash') ? (
+                <CopyCheck className="w-4 h-4" />
+              ) : (
+                <Copy className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+        );
+      },
     },
     {
       accessorKey: 'status',
@@ -78,7 +139,7 @@ export const useVendorsTransactionTableColumns = () => {
             color: row.original?.fspId === null ? '#027A48' : '#027A48', //#344054',
           }}
         >
-          {row.original?.fspId === null ? 'Online' : 'Online'}
+          {row.original?.fspId === null ? 'Online' : 'Offline'}
         </Badge>
       ),
     },

@@ -10,10 +10,11 @@ import {
 } from '@tanstack/react-table';
 import { DemoTable, Heading, SearchInput } from 'apps/rahat-ui/src/common';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { useParams } from 'next/navigation';
-import React, { useMemo, useState } from 'react';
-import { useVendorsBeneficiaryTableColumns } from '../columns/useBeneficiaryColumns';
+import { useActiveTabDynamicKey } from 'apps/rahat-ui/src/utils/useActiveTabDynamicKey';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import { useParams } from 'next/navigation';
+import React, { useMemo } from 'react';
+import { useVendorsBeneficiaryTableColumns } from '../columns/useBeneficiaryColumns';
 
 interface VendorsBeneficiaryListProps {
   beneficiaryData?: {
@@ -29,6 +30,10 @@ export default function VendorsBeneficiaryList({
   loading,
 }: VendorsBeneficiaryListProps) {
   const { id, vendorId } = useParams();
+  const { activeTab, setActiveTab } = useActiveTabDynamicKey(
+    'subTab',
+    PayoutMode.ONLINE,
+  );
 
   const {
     pagination,
@@ -54,16 +59,14 @@ export default function VendorsBeneficiaryList({
   );
 
   const debounceSearch = useDebounce(filters, 500);
-  console.log(debounceSearch, 'xxxx');
-
-  const [mode, setMode] = useState<'online' | 'offline'>('offline');
 
   const { data, isLoading } = useGetVendorBeneficiaries({
     projectUUID: id,
     vendorUuid: vendorId,
-    payoutMode: mode === 'online' ? PayoutMode.ONLINE : PayoutMode.OFFLINE,
+    payoutMode:
+      activeTab === PayoutMode.ONLINE ? PayoutMode.ONLINE : PayoutMode.OFFLINE,
     ...pagination,
-    name: debounceSearch.name,
+    walletAddress: debounceSearch.walletAddress,
   });
 
   const tableData = useMemo(() => {
@@ -80,7 +83,7 @@ export default function VendorsBeneficiaryList({
       return [];
     }
   }, [data?.response?.data]);
-  const columns = useVendorsBeneficiaryTableColumns();
+  const columns = useVendorsBeneficiaryTableColumns(activeTab as PayoutMode);
   const table = useReactTable({
     manualPagination: true,
     data: tableData || [],
@@ -92,8 +95,8 @@ export default function VendorsBeneficiaryList({
     },
   });
 
-  const handleModeChange = (newMode: 'online' | 'offline') => {
-    setMode(newMode);
+  const handleModeChange = (newMode: PayoutMode) => {
+    setActiveTab(newMode);
     setPagination({ ...pagination, page: 1 });
   };
 
@@ -101,9 +104,9 @@ export default function VendorsBeneficiaryList({
     <div className="space-y-4">
       <div className="flex border-b mb-4">
         <button
-          onClick={() => handleModeChange('online')}
+          onClick={() => handleModeChange(PayoutMode.ONLINE)}
           className={`py-2 px-4 text-sm font-medium ${
-            mode === 'online'
+            activeTab === PayoutMode.ONLINE
               ? 'border-b-2 border-primary text-primary'
               : 'text-muted-foreground'
           }`}
@@ -111,9 +114,9 @@ export default function VendorsBeneficiaryList({
           Online
         </button>
         <button
-          onClick={() => handleModeChange('offline')}
+          onClick={() => handleModeChange(PayoutMode.OFFLINE)}
           className={`py-2 px-4 text-sm font-medium ${
-            mode === 'offline'
+            activeTab === PayoutMode.OFFLINE
               ? 'border-b-2 border-primary text-primary'
               : 'text-muted-foreground'
           }`}
@@ -122,15 +125,17 @@ export default function VendorsBeneficiaryList({
         </button>
       </div>
       <Heading
-        title={`${mode === 'online' ? 'Online' : 'Offline'} Beneficiaries`}
+        title={`${
+          activeTab === PayoutMode.ONLINE ? 'Online' : 'Offline'
+        } Beneficiaries`}
         titleStyle="text-lg"
-        description={`List of all the ${mode} beneficiaries`}
+        description={`List of all the ${activeTab} beneficiaries`}
       />
       <SearchInput
         className="w-full flex-[4]"
-        name="name"
-        onSearch={(e) => handleSearch(e, 'name')}
-        value={filters?.name || ''}
+        name="walletAddress"
+        onSearch={(e) => handleSearch(e, 'walletAddress')}
+        value={filters?.walletAddress || ''}
       />
       <DemoTable
         table={table}

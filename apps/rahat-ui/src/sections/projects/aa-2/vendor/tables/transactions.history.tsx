@@ -14,6 +14,7 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { useGetTxnRedemptionRequestList, usePagination } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 export default function VendorsTransactionsHistory() {
   const { id, vendorId } = useParams();
@@ -28,12 +29,13 @@ export default function VendorsTransactionsHistory() {
     setPerPage,
     setPrevPage,
   } = usePagination();
+  const debounceSearch = useDebounce(filters, 500);
 
   const { data: txnTable, isLoading } = useGetTxnRedemptionRequestList({
     projectUUID: id,
     uuid: vendorId,
     ...pagination,
-    ...filters,
+    txHash: debounceSearch.txHash,
   });
   const columns = useVendorsTransactionTableColumns();
   const table = useReactTable({
@@ -53,7 +55,7 @@ export default function VendorsTransactionsHistory() {
     },
     [filters],
   );
-  console.log(txnTable?.response?.meta);
+  console.log('tx history table', txnTable?.response?.meta);
   return (
     <div className=" space-y-1">
       <Heading
@@ -64,7 +66,7 @@ export default function VendorsTransactionsHistory() {
 
       <SearchInput
         className="w-full"
-        name="transaction hash"
+        name="txHash"
         onSearch={(e) => handleSearch(e, 'txHash')}
         value={filters?.txHash || ''}
       />

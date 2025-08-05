@@ -5,12 +5,14 @@ import {
   TooltipTrigger,
 } from '@radix-ui/react-tooltip';
 import { ColumnDef } from '@tanstack/react-table';
+import { Badge } from 'apps/rahat-ui/src/common/badge';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { truncateAddress } from 'apps/rahat-ui/src/utils/string';
+import { PayoutMode } from 'libs/query/src/lib/aa';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
-export const useVendorsBeneficiaryTableColumns = () => {
+export const useVendorsBeneficiaryTableColumns = (mode: PayoutMode) => {
   const { id } = useParams();
   const router = useRouter();
 
@@ -21,43 +23,128 @@ export const useVendorsBeneficiaryTableColumns = () => {
   const { clickToCopy, copyAction } = useCopy();
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'name',
-      header: 'Beneficiary Name',
-      cell: ({ row }) => <div>{row.getValue('name') || 'N/A'}</div>,
+      accessorKey: 'walletAddress',
+      header: 'Wallet Address',
+      cell: ({ row }) => {
+        if (!row?.getValue('walletAddress')) return <div>N/A</div>;
+        return (
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger
+                className="flex items-center gap-3 cursor-pointer"
+                onClick={() =>
+                  clickToCopy(
+                    row?.getValue('walletAddress'),
+                    row?.original?.uuid,
+                  )
+                }
+              >
+                <p>{truncateAddress(row?.getValue('walletAddress'))}</p>
+                {copyAction === row?.original?.uuid ? (
+                  <CopyCheck size={15} strokeWidth={1.5} />
+                ) : (
+                  <Copy
+                    className="text-slate-500"
+                    size={15}
+                    strokeWidth={1.5}
+                  />
+                )}
+              </TooltipTrigger>
+              <TooltipContent className="bg-secondary" side="bottom">
+                <p className="text-xs font-medium">
+                  {copyAction === row?.original?.uuid
+                    ? 'copied'
+                    : 'click to copy'}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      },
     },
     {
       accessorKey: 'benTokens',
-      header: 'Tokens',
+      header: 'Token',
       cell: ({ row }) => <div>{row.getValue('benTokens') || 'N/A'}</div>,
     },
     {
-      accessorKey: 'walletAddress',
-      header: 'Wallet Address',
+      accessorKey: 'txHash',
+      header: 'TxHash',
+      cell: ({ row }) => {
+        const txHash = row?.getValue('txHash') as string;
+        const uuid = row?.original?.uuid as number;
+
+        if (!txHash) return <div>N/A</div>;
+
+        return (
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger
+                className="flex items-center gap-3 cursor-pointer"
+                onClick={() => clickToCopy(txHash, uuid)}
+              >
+                <p>{truncateAddress(txHash)}</p>
+                {copyAction === uuid ? (
+                  <CopyCheck size={15} strokeWidth={1.5} />
+                ) : (
+                  <Copy
+                    className="text-slate-500"
+                    size={15}
+                    strokeWidth={1.5}
+                  />
+                )}
+              </TooltipTrigger>
+              <TooltipContent className="bg-secondary" side="bottom">
+                <p className="text-xs font-medium">
+                  {copyAction === uuid ? 'copied' : 'click to copy'}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      },
+    },
+    {
+      accessorKey: 'amountDisbursed',
+      header: 'Amount Disbursed',
       cell: ({ row }) => (
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger
-              className="flex items-center gap-3 cursor-pointer"
-              onClick={() =>
-                clickToCopy(row?.getValue('walletAddress'), row?.original?.uuid)
-              }
-            >
-              <p>{truncateAddress(row?.getValue('walletAddress'))}</p>
-              {copyAction === row?.original?.uuid ? (
-                <CopyCheck size={15} strokeWidth={1.5} />
-              ) : (
-                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
-              )}
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary" side="bottom">
-              <p className="text-xs font-medium">
-                {copyAction === row?.original?.uuid
-                  ? 'copied'
-                  : 'click to copy'}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <div>
+          {row.getValue('benTokens')
+            ? `Rs. ${row.getValue('benTokens')}`
+            : 'N/A'}
+        </div>
+      ),
+    },
+    ...(mode === PayoutMode.OFFLINE
+      ? [
+          {
+            accessorKey: 'syncStatus',
+            header: 'Sync Status',
+            cell: ({ row }) => (
+              <Badge
+                type={
+                  row.original?.syncStatus === 'SYNCED' ? 'primary' : 'warning'
+                }
+                label={
+                  row.original?.syncStatus === 'SYNCED' ? 'Synced' : 'Pending'
+                }
+              />
+            ),
+          },
+        ]
+      : []),
+    {
+      accessorKey: 'tokenStatus',
+      header: 'Token Status',
+      cell: ({ row }) => (
+        <Badge
+          type={
+            row.original?.tokenStatus === 'REDEEMED' ? 'primary' : 'warning'
+          }
+          label={
+            row.original?.tokenStatus === 'REDEEMED' ? 'Redeemed' : 'Pending'
+          }
+        />
       ),
     },
     {

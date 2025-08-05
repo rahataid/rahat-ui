@@ -15,6 +15,7 @@ import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { useParams } from 'next/navigation';
 import React, { useMemo } from 'react';
 import { useVendorsBeneficiaryTableColumns } from '../columns/useBeneficiaryColumns';
+import { toTitleCase } from 'apps/rahat-ui/src/utils/string';
 
 interface VendorsBeneficiaryListProps {
   beneficiaryData?: {
@@ -129,7 +130,7 @@ export default function VendorsBeneficiaryList({
           activeTab === PayoutMode.ONLINE ? 'Online' : 'Offline'
         } Beneficiaries`}
         titleStyle="text-lg"
-        description={`List of all the ${activeTab} beneficiaries`}
+        description={`List of all the ${toTitleCase(activeTab)} beneficiaries`}
       />
       <SearchInput
         className="w-full flex-[4]"

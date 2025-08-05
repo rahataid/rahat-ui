@@ -57,7 +57,7 @@ const Main = () => {
           triggeersStats={data?.triggeersStats}
           projectId={projectId}
         />
-        <div className="mb-2">
+        <div className="mb-2 h-full">
           <MapView projectId={projectId} />
         </div>
       </div>

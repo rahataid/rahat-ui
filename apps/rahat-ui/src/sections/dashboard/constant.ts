@@ -1,4 +1,4 @@
-export const WARDS = Array.from({ length: 32 }, (_, i) => `WARD${i + 1}`);
+export const WARDS = Array.from({ length: 32 }, (_, i) => `${i + 1}`);
 
 // export const MUNICIPALITY = Array.from(
 //   { length: 32 },

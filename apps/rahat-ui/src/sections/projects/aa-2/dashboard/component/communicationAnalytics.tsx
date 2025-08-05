@@ -11,6 +11,7 @@ const CommunicationAnalytics = ({
   triggeersStats,
   projectId,
 }: any) => {
+  // console.log(triggeersStats);
   const getTriggerDataByName = (name: string) =>
     triggeersStats.find((item) => item.name.includes(name))?.data;
 
@@ -22,6 +23,12 @@ const CommunicationAnalytics = ({
 
   // ✅ Comms data
   const commsStats = getTriggerDataByName('COMMS_STATS');
+  const benefCountsSession = getTriggerDataByName(
+    `BENEFICIARY_${projectId?.toUpperCase()}`,
+  )?.sessionCount;
+  const stakeholdersCountsSession = getTriggerDataByName(
+    `STAKEHOLDERS_${projectId?.toUpperCase()}`,
+  )?.sessionCount;
 
   const formatCommsStats = () => {
     const stakeholders = commsStats?.stakeholder || {};
@@ -29,10 +36,7 @@ const CommunicationAnalytics = ({
 
     const stakeholderStats = {
       category: 'Stakeholders',
-      totalCommunicationSent:
-        (stakeholders?.SMS?.TOTAL || 0) +
-        (stakeholders?.EMAIL?.TOTAL || 0) +
-        (stakeholders?.VOICE?.TOTAL || 0),
+      totalCommunicationSent: stakeholdersCountsSession,
       numberOfStakeholders: benefStats?.find(
         (stat) => stat.name === 'STAKEHOLDERS_TOTAL',
       )?.data?.count,
@@ -43,10 +47,7 @@ const CommunicationAnalytics = ({
 
     const beneficiaryStats = {
       category: 'Beneficiaries',
-      totalCommunicationSent:
-        (beneficiaries?.SMS?.TOTAL || 0) +
-        (beneficiaries?.VOICE?.TOTAL || 0) +
-        (beneficiaries?.['Prabhu SMS']?.TOTAL || 0),
+      totalCommunicationSent: benefCountsSession,
       avcSuccessfullySent: beneficiaries?.VOICE?.SUCCESS || 0,
       voiceMessageDelivered: beneficiaries?.VOICE?.SUCCESS || 0,
       smsSuccessfullyDelivered:
@@ -88,7 +89,7 @@ const CommunicationAnalytics = ({
               {item.category}
             </h4>
             <div className="text-3xl font-bold text-blue-600 my-3">
-              {item.totalCommunicationSent.toLocaleString()}
+              {item.totalCommunicationSent}
             </div>
 
             <div className="grid grid-cols-2 gap-y-3 gap-x-4 mt-4">

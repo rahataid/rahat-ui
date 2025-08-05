@@ -57,7 +57,7 @@ export function ProjectNav({
         {component}
       </div>
       <div className="flex gap-4 items-center">
-        <ConnectWallet />
+        {/* <ConnectWallet />  this button is remove for aa project */}
 
         <DropdownMenu>
           <DropdownMenuTrigger>

@@ -1,9 +1,14 @@
 'use client';
 
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/components/tooltip';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { cn } from '@rahat-ui/shadcn/src';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Card,
   CardContent,
@@ -86,9 +91,21 @@ export default function PhaseCard({
             </div>
           </RoleAuth>
         </div>
-        <p className="text-sm font-medium text-gray-900 truncate  w-52  xxl:w-96">
-          {title}
-        </p>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild className="hover:cursor-pointer py-0">
+              <h3 className="text-sm font-medium text-gray-900 truncate w-[320px]">
+                {title}
+              </h3>
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              className="w-80 rounded-sm text-justify"
+            >
+              <p>{title}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <p className="text-sm text-gray-500">
           {location ?? ''} • {leadTime}
         </p>

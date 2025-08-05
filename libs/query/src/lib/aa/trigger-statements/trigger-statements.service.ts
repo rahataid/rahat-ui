@@ -264,7 +264,8 @@ export const useGFHWaterLevels = (uuid: UUID, payload: any) => {
         });
         return mutate.data;
       } catch (error: any) {
-        const errorMessage = error?.response?.data?.message || 'Failed to fetch GFH water levels';
+        const errorMessage =
+          error?.response?.data?.message || 'Failed to fetch GFH water levels';
         toast.fire({
           title: 'Error loading GFH water levels',
           text: errorMessage,
@@ -323,6 +324,13 @@ export const useSingleTriggerStatement = (
   version: boolean,
 ) => {
   const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
 
   const action = version ? 'ms.revertPhase.getOne' : 'ms.triggers.getOne';
   const payload = version
@@ -335,14 +343,29 @@ export const useSingleTriggerStatement = (
   const query = useQuery({
     queryKey: ['triggerStatement', uuid, payload],
     queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: action,
-          payload,
-        },
-      });
-      return mutate.data;
+      try {
+        const mutate = await q.mutateAsync({
+          uuid,
+          data: {
+            action: action,
+            payload,
+          },
+        });
+        return mutate.data;
+      } catch (error: any) {
+        const errorMessage =
+          error?.response?.data?.message ||
+          `Failed to fetch ${
+            version ? 'version' : 'trigger statement'
+          } details`;
+
+        toast.fire({
+          title: `Error loading ${version ? 'version' : 'trigger statement'}`,
+          text: errorMessage,
+          icon: 'error',
+        });
+        throw error;
+      }
     },
   });
   return query;
@@ -383,10 +406,13 @@ export const useActivateTrigger = () => {
       qc.invalidateQueries({ queryKey: ['triggerstatement'] });
       toast.fire({
         title: 'Trigger activated.',
-        text: 'This trigger will be saved in Steller block. You can view details of this from trigger details page.',
+        text: 'This trigger will be saved in Stellar block. You can view details of this from trigger details page.',
         timer: 10000,
         icon: 'success',
         width: '500px',
+        showCloseButton: true,
+        closeButtonHtml:
+          '<span style="color: #ef4444; font-size: 20px; font-weight: bold; position: absolute; top: 10px; right: 15px; cursor: pointer;">&times;</span>',
       });
     },
     onError: (error: any) => {

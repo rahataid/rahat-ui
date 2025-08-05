@@ -39,7 +39,8 @@ export default function DynamicTriggersList({
               title={t?.title || 'N/A'}
               dataSource={t?.source === 'MANUAL' ? '' : t?.source}
               riverBasin={riverBasin || t?.phase.riverBasin}
-              time={t?.createdAt}
+              createdAt={t?.createdAt}
+              triggeredAt={t?.triggeredAt}
               triggerType={t?.isMandatory ? 'Mandatory' : 'Optional'}
               version={t?.version}
             />

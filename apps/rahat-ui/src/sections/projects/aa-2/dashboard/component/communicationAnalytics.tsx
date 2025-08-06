@@ -23,12 +23,12 @@ const CommunicationAnalytics = ({
 
   // ✅ Comms data
   const commsStats = getTriggerDataByName('COMMS_STATS');
-  const benefCountsSession = getTriggerDataByName(
-    `BENEFICIARY_${projectId?.toUpperCase()}`,
-  )?.sessionCount;
-  const stakeholdersCountsSession = getTriggerDataByName(
-    `STAKEHOLDERS_${projectId?.toUpperCase()}`,
-  )?.sessionCount;
+  const benefCountsSession =
+    getTriggerDataByName(`BENEFICIARY_${projectId?.toUpperCase()}`)
+      ?.sessionCount || 0;
+  const stakeholdersCountsSession =
+    getTriggerDataByName(`STAKEHOLDERS_${projectId?.toUpperCase()}`)
+      ?.sessionCount || 0;
 
   const formatCommsStats = () => {
     const stakeholders = commsStats?.stakeholder || {};

@@ -62,26 +62,28 @@ function MarkerDetails({
   );
 }
 
-export default function MapView({ projectId }: { projectId: UUID }) {
+export default function MapView({
+  projectId,
+  benefStats,
+}: {
+  projectId: UUID;
+  benefStats: any;
+}) {
   const { filters, setFilters } = usePagination();
   const { data: mapLocation, isLoading: mapLoading } =
     useProjectDashboardBeneficiaryMapLocation(projectId, filters);
 
   const project = useProjectStore((p) => p.singleProject);
-
-  const transformedMuncipalityData =
-    MUNICIPALITY?.map((item) => ({
-      label: item as string,
-      value: item as string,
-    })) || [];
-
-  transformedMuncipalityData.unshift({ label: 'All', value: '' });
+  const uniueWard =
+    benefStats?.find((stat) => stat.name === 'UNIQUE_WARDS')?.data || [];
 
   const transformedWardNumber =
-    WARDS.map((item) => ({
-      label: item.toString(),
-      value: item.toString(),
-    })) || [];
+    (uniueWard &&
+      uniueWard.map((item) => ({
+        label: item.ward.toString(),
+        value: item.ward.toString(),
+      }))) ||
+    [];
 
   transformedWardNumber.unshift({ label: 'All', value: '' });
 
@@ -122,9 +124,6 @@ export default function MapView({ projectId }: { projectId: UUID }) {
   };
 
   const handleSelect = (key: string, value: string) => {
-    if (key === 'Location') {
-      setFilters({ ...filters, location: value });
-    }
     if (key === 'Ward') {
       setFilters({ ...filters, ward_no: value });
     }
@@ -133,18 +132,16 @@ export default function MapView({ projectId }: { projectId: UUID }) {
     <div>
       <div className="flex justify-between">
         <Heading
-          title={`Map View (${project?.name})`}
+          title={`Map View (${
+            project?.name && project.name.includes(' in ')
+              ? project?.name?.split(' in ')[1]
+              : project?.name
+          })`}
           description="Track beneficiary locations"
           titleStyle={'text-xl'}
         />
 
         <div className="flex flex-row gap-3 lg:gap-4">
-          <SearchDropdownComponent
-            transformedData={transformedMuncipalityData}
-            title={'Location'}
-            handleSelect={handleSelect}
-          />
-
           <SearchDropdownComponent
             transformedData={transformedWardNumber}
             title={'Ward'}
@@ -153,7 +150,7 @@ export default function MapView({ projectId }: { projectId: UUID }) {
         </div>
       </div>
 
-      <div className="relative bg-card shadow-sm border rounded-sm p-1  h-[600px] z-0">
+      <div className="relative bg-card shadow-sm border rounded-sm p-1  h-[400px] z-0">
         <Map
           ref={mapRef}
           initialViewState={{
@@ -167,12 +164,7 @@ export default function MapView({ projectId }: { projectId: UUID }) {
         >
           <NavigationControl position="bottom-right" />
           <GeolocateControl position="bottom-right" />
-          {selectedMarker ? (
-            <MarkerDetails
-              selectedMarker={selectedMarker}
-              closeSelectedMarker={() => setSelectedMarker(null)}
-            />
-          ) : null}
+
           {mappedCoordinate?.map((item, index) => (
             <Marker
               key={index}

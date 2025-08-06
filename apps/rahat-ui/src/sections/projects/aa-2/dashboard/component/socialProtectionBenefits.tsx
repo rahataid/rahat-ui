@@ -47,26 +47,26 @@ const SocialProtectionBenefits = ({
   const lactatingCount = fieldMapData.no_of_lactating_women || 0;
   const disabilityCount = fieldMapData.no_of_persons_with_disability || 0;
   return (
-    <div className="grid grid-cols-1 gap-4">
-      <div className="flex flex-col lg:flex-row gap-4 ">
+    <div className="grid grid-cols-1 md:lg:grid-cols-2 lg:grid-cols-3 gap-2 mt-2">
+      <div className="flex flex-col gap-2 col-span-1">
         <DataCard
           title="Pregnant Female"
           number={pregnantCount.toString()}
-          className="rounded-sm h-24 w-full"
+          className="rounded-sm  w-full"
         />
         <DataCard
           title="Lactating Female"
           number={lactatingCount.toString()}
-          className="rounded-sm h-24 w-full"
+          className="rounded-sm  w-full"
         />
         <DataCard
           title="People with Disabilities"
           number={disabilityCount.toString()}
-          className="rounded-sm h-24 w-full"
+          className="rounded-sm  w-full"
         />
       </div>
 
-      <div className="border rounded-sm p-2 flex flex-col w-full h-full min-h-[400px] ">
+      <div className="border rounded-sm p-2 flex flex-col w-full h-full min-h-[400px] col-span-1 lg:col-span-2 ">
         <h1 className="text-sm font-medium">
           Household Receiving Social Protection Benefits
         </h1>

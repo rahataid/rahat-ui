@@ -16,6 +16,8 @@ import MapView from './component/mapView';
 import ResilienceOverview from './component/resilienceOverview';
 import SocialProtectionBenefits from './component/socialProtectionBenefits';
 import DashboardSkeleton from './dashboard.skeleton';
+import DigitalAccessOverview from './component/digitalAccessOverview';
+import AccessAndResilienceOverview from './component/accessPieAndBar';
 
 const Main = () => {
   const { id } = useParams();
@@ -47,18 +49,20 @@ const Main = () => {
           triggeersStats={data?.triggeersStats}
           projectId={projectId}
         />
+        <DigitalAccessOverview stats={data.benefStats} />
         <SocialProtectionBenefits
           benefStats={data?.benefStats}
           triggeersStats={data?.triggeersStats}
           projectId={projectId}
         />
+        <AccessAndResilienceOverview data={data?.benefStats} />
         <CommunicationAnalytics
           benefStats={data?.benefStats}
           triggeersStats={data?.triggeersStats}
           projectId={projectId}
         />
         <div className="mb-2 h-full">
-          <MapView projectId={projectId} />
+          <MapView projectId={projectId} benefStats={data?.benefStats} />
         </div>
       </div>
     </>

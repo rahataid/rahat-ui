@@ -69,9 +69,10 @@ const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
     }) ?? [];
 
   const imageList = [
-    { src: '/projects/aa_1.jpg' },
-    { src: '/projects/aa_2.jpg' },
-    { src: '/projects/aa_3.jpg' },
+    { src: '/projects/project0.png' },
+    { src: '/projects/project1.png' },
+    { src: '/projects/project2.png' },
+    { src: '/projects/project3.png' },
   ];
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2  min-h-[400px] gap-4">

@@ -1,6 +1,11 @@
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { Eye, ArrowLeftRight, Dot } from 'lucide-react';
-
+import {
+  TooltipContent,
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+} from 'libs/shadcn/src/components/ui/tooltip';
 interface GroupCardProps {
   beneficiaryGroupName: string;
   actions: string;
@@ -26,9 +31,20 @@ export default function RecentPaymentCard({
           <ArrowLeftRight className="text-muted-foreground w-8 h-8" />
         </div>
         <div className="flex flex-col">
-          <div className="font-semibold text-sm text-foreground">
-            {beneficiaryGroupName}
-          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="font-semibold text-sm text-foreground truncate w-20">
+                  {beneficiaryGroupName}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className="font-semibold text-sm text-foreground ">
+                  {beneficiaryGroupName}
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <div className=" flex text-sm text-muted-foreground">
             {actions}
             <Dot /> {merchentName}

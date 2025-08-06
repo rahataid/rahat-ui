@@ -32,14 +32,14 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
       </div>
 
       <DataCard
-        className="border-solid w-1/2 rounded-md"
+        className="border-solid w-1/2 rounded-xl"
         iconStyle="bg-white text-secondary-muted"
         title="Token Assigned"
         Icon={Coins}
         number={beneficiary?.benTokens || 0}
       />
 
-      <div className="grid grid-cols-3 gap-6 px-6 py-4">
+      <div className="grid grid-cols-3 gap-6 py-4">
         <DataItem label="Age" value={beneficiary?.projectData?.age || 'N/A'} />
         <DataItem
           label="Gender"
@@ -49,23 +49,33 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
           label="Phone Number"
           value={beneficiary?.extras?.phone || 'N/A'}
         />
-        <DataItem
-          label="Address"
-          value={beneficiary?.projectData?.location || 'N/A'}
-        />
+        <div>
+          <h1 className="text-lg text-black">Address</h1>
+          <div className=" text-sm text-muted-foreground font-medium flex gap-1 capitalize">
+            <p>{beneficiary?.extras?.location || ''}</p>
+            {beneficiary?.extras?.ward_no && (
+              <p>ward no - {beneficiary?.extras?.ward_no}</p>
+            )}
+            <p>
+              {!beneficiary?.extras?.location &&
+                !beneficiary?.extras?.ward_no &&
+                'N/A'}
+            </p>
+          </div>
+        </div>
         <DataItem
           label="Banking Status"
-          value={beneficiary?.projectData?.bankedStatus}
+          value={beneficiary?.projectData?.bankedStatus?.split('_').join(' ')}
           isBadge
         />
         <DataItem
           label="Phone Type"
-          value={beneficiary?.projectData?.phoneStatus}
+          value={beneficiary?.projectData?.phoneStatus?.split('_').join(' ')}
           isBadge
         />
         <DataItem
           label="Internet Type"
-          value={beneficiary?.projectData?.internetStatus}
+          value={beneficiary?.projectData?.internetStatus?.split('_').join(' ')}
           isBadge
         />
       </div>

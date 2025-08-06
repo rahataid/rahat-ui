@@ -10,12 +10,15 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 type TransactionProps = {
-  id: number;
+  uuid: string;
   txHash: string;
   transactionType: string;
-  address: string;
   tokenAmount: number;
-  date: string;
+  createdAt: string;
+  payoutType: string;
+  mode: string;
+  extras?: any;
+  vendorName?: string;
 };
 
 const TransactionLogs = () => {
@@ -56,15 +59,30 @@ const TransactionLogs = () => {
                 </div>
                 <div>
                   <p className="text-sm font-semibold">Amount Disbursed</p>
-                  <p className="text-sm text-muted-foreground">
-                    {txn?.transactionType?.split('_').join(' ')}
-                  </p>
+                  <div className="text-sm text-muted-foreground flex items-center gap-1 text-gray-500">
+                    <p>
+                      {txn?.payoutType === 'VENDOR? ' ? 'CVA' : txn?.payoutType}
+                    </p>
+                    {txn?.mode && <span>•</span>}
+                    <p>
+                      {txn?.payoutType === 'FSP'
+                        ? txn?.extras?.paymentProviderName.split('_').join(' ')
+                        : txn?.mode}
+                    </p>
+                    {txn?.mode === 'OFFLINE' && txn?.vendorName && (
+                      <>
+                        <span>•</span>
+                        <p>{txn?.vendorName}</p>
+                      </>
+                    )}
+                  </div>
+
                   <div className="flex items-center">
                     <p className="text-sm text-muted-foreground truncate w-48 overflow-hidden">
                       {txn?.txHash}
                     </p>
                     <button
-                      onClick={() => clickToCopy(txn?.txHash, txn?.txHash)}
+                      onClick={() => clickToCopy(txn?.txHash, txn?.uuid)}
                       className="ml-2 text-sm text-gray-500"
                     >
                       {copyAction === txn?.txHash ? (
@@ -74,7 +92,6 @@ const TransactionLogs = () => {
                       )}
                     </button>
                   </div>
-                  <p className="text-xs text-gray-400">{txn?.date}</p>
                 </div>
               </div>
               <div>
@@ -82,7 +99,7 @@ const TransactionLogs = () => {
                   +RS. {txn?.tokenAmount}
                 </p>
                 <p className="text-sm text-gray-400">
-                  {dateFormat(txn?.date, 'dd MMMM, yyyy')}
+                  {dateFormat(txn?.createdAt, 'dd MMMM, yyyy')}
                 </p>
               </div>
             </div>

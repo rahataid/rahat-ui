@@ -165,6 +165,10 @@ export default function MapView({
           <NavigationControl position="bottom-right" />
           <GeolocateControl position="bottom-right" />
 
+          <div className="absolute top-2 right-2 bg-white p-2 rounded shadow-lg z-10 text-xs flex justify-center items-center gap-2">
+            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+            <div>Beneficiary</div>
+          </div>
           {mappedCoordinate?.map((item, index) => (
             <Marker
               key={index}

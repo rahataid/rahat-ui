@@ -61,7 +61,7 @@ const TransactionLogs = () => {
                   <p className="text-sm font-semibold">Amount Disbursed</p>
                   <div className="text-sm text-muted-foreground flex items-center gap-1 text-gray-500">
                     <p>
-                      {txn?.payoutType === 'VENDOR? ' ? 'CVA' : txn?.payoutType}
+                      {txn?.payoutType === 'VENDOR' ? 'CVA' : txn?.payoutType}
                     </p>
                     {txn?.mode && <span>•</span>}
                     <p>
@@ -78,9 +78,19 @@ const TransactionLogs = () => {
                   </div>
 
                   <div className="flex items-center">
-                    <p className="text-sm text-muted-foreground truncate w-48 overflow-hidden">
+                    <a
+                      href={`https://stellar.expert/explorer/testnet/tx/${txn?.txHash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-base text-blue-500 hover:underline cursor-pointer"
+                    >
+                      <p className="text-sm truncate w-48 overflow-hidden">
+                        {txn?.txHash}
+                      </p>
+                    </a>
+                    {/* <p className="text-sm text-muted-foreground truncate w-48 overflow-hidden">
                       {txn?.txHash}
-                    </p>
+                    </p> */}
                     <button
                       onClick={() => clickToCopy(txn?.txHash, txn?.uuid)}
                       className="ml-2 text-sm text-gray-500"
@@ -96,10 +106,13 @@ const TransactionLogs = () => {
               </div>
               <div>
                 <p className="text-sm text-end font-semibold text-green-600">
-                  +RS. {txn?.tokenAmount}
+                  RS. {txn?.tokenAmount}
                 </p>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-end text-gray-400">
                   {dateFormat(txn?.createdAt, 'dd MMMM, yyyy')}
+                </p>
+                <p className="text-sm text-end text-gray-400">
+                  {dateFormat(txn?.createdAt, 'hh:mm:ss a')}
                 </p>
               </div>
             </div>

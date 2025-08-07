@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import { Coins, User } from 'lucide-react';
 import {
@@ -23,9 +23,7 @@ import {
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 
-type Props = {};
-
-const BeneficiaryGroupsDetails = (props: Props) => {
+const BeneficiaryGroupsDetails = () => {
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
@@ -40,7 +38,7 @@ const BeneficiaryGroupsDetails = (props: Props) => {
     [],
   );
 
-  const tableData = React.useMemo(() => {
+  const tableData = useMemo(() => {
     if (groupDetails) {
       return groupDetails?.groupedBeneficiaries?.map((d: any) => ({
         walletAddress: d?.Beneficiary?.walletAddress,

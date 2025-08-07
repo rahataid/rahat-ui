@@ -1,6 +1,6 @@
 import {
   useBeneficiariesGroupStore,
-  useSingleBeneficiaryGroup,
+  useGetBeneficiaryGroup,
   useSingleStakeholdersGroup,
   useStakeholdersGroupsStore,
   useUploadFile,
@@ -139,8 +139,7 @@ export default function AddCommunicationForm({
     stakeholderId,
   );
 
-  const { data: beneficiaryGroup, isLoading: isLoadingss } =
-    useSingleBeneficiaryGroup(projectId as UUID, beneficiaryId);
+  const { data: beneficiaryGroup } = useGetBeneficiaryGroup(beneficiaryId);
 
   /* validate group email is to check if there are any missing  emails in beneficiaries group and stakeholders group before adding any  data 
    for the communication type email
@@ -192,7 +191,7 @@ export default function AddCommunicationForm({
     });
 
     validateGroupEmails({
-      group: beneficiaryGroup?.groupedBeneficiaries,
+      group: beneficiaryGroup?.data?.groupedBeneficiaries,
       type: 'beneficiaries',
       extractEmail: (s) => s?.Beneficiary?.pii?.email,
       form,

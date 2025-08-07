@@ -39,12 +39,10 @@ const BeneficiaryGroupsDetails = (props: Props) => {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  console.log(groupDetails?.groupedBeneficiaries);
   const tableData = React.useMemo(() => {
     if (groupDetails) {
-      return groupDetails?.groupedBeneficiaries?.map((d: any) => ({
-        walletAddress: d?.Beneficiary?.walletAddress,
-        name: d?.Beneficiary?.pii?.name,
+      return groupDetails?.beneficiaries?.map((d: any) => ({
+        walletAddress: d?.beneficiary?.walletAddress,
         benefId: d?.beneficiaryId,
       }));
     } else return [];
@@ -84,19 +82,14 @@ const BeneficiaryGroupsDetails = (props: Props) => {
           iconStyle="bg-white text-secondary-muted"
           title="Total Beneficiaries"
           Icon={User}
-          number={groupDetails?.groupedBeneficiaries?.length || 0}
+          number={groupDetails?.beneficiaries?.length || 0}
         />
         <DataCard
           className="border-solid w-1/4 rounded-md"
           iconStyle="bg-white text-secondary-muted"
           title="Total Token Assigned"
           Icon={Coins}
-          number={
-            groupDetails?.groupedBeneficiaries?.reduce(
-              (sum, item) => sum + item.tokensReserved,
-              0,
-            ) || 0
-          }
+          number={groupDetails?.tokensReserved || 0}
         />
       </div>
       <div className="p-4 rounded-sm border">

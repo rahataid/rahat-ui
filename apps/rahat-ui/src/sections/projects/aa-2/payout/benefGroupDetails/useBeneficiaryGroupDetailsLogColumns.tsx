@@ -168,7 +168,12 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       accessorKey: 'tokensAssigned',
       header: 'Amount Disbursed',
       cell: ({ row }) => (
-        <div>Rs. {row.original?.amount * ONE_TOKEN_VALUE}</div>
+        <div>
+          Rs.{' '}
+          {row?.original?.status === 'FIAT_TRANSACTION_FAILED'
+            ? 0
+            : row.original?.amount * ONE_TOKEN_VALUE}
+        </div>
       ),
     },
     {
@@ -196,6 +201,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       header: 'Payout Status',
       cell: ({ row }) => {
         const status = row?.original?.status;
+        console.log(row?.original?.payout?.type, 'sdda');
         return (
           <Badge className={`rounded-xl w-auto ${transactionBgStatus(status)}`}>
             {status
@@ -213,9 +219,10 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       cell: ({ row }) => (
         <div className="flex  flex-col text-[10px]">
           <span>{intlFormatDate(row?.original?.createdAt)}</span>
+          {/* <span>{intlFormatDate(row.original?.updatedAt)}</span> */}
 
-          {row?.original?.status.endsWith('COMPLETED') &&
-            row.original.payoutType === 'FSP' && (
+          {row?.original?.payout?.type === 'FSP' &&
+            row?.original?.status.includes('COMPLETED') && (
               <span>{intlFormatDate(row.original?.updatedAt)}</span>
             )}
         </div>

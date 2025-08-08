@@ -27,3 +27,11 @@ export const formatTokenAmount = (
 
   return `${value} ${assetCode}`;
 };
+
+export const getAssetCode = (
+  settings: any,
+  projectId: string,
+): string | undefined => {
+  return settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS]
+    ?.assetcode;
+};

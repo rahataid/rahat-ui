@@ -25,7 +25,7 @@ export default function RedemptionRequestTable() {
 
   const { data, isLoading } = useVendorTokenRedemptionList({
     projectUUID: id,
-    uuid: vendorId,
+    vendorUuid: vendorId,
     ...pagination,
   });
 

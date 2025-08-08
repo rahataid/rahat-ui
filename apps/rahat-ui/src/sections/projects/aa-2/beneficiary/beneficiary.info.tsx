@@ -52,7 +52,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
         <div>
           <h1 className="text-lg text-black">Address</h1>
           <div className=" text-sm text-muted-foreground font-medium flex gap-1 capitalize">
-            <p>{beneficiary?.extras?.location || ''}</p>
+            <p>{beneficiary?.projectData?.location || ''}</p>
             {beneficiary?.extras?.ward_no && (
               <p>ward no - {beneficiary?.extras?.ward_no}</p>
             )}

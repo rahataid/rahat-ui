@@ -30,7 +30,11 @@ export default function RecentPaymentCard({
   status,
 }: GroupCardProps) {
   return (
-    <div className="flex items-center justify-between p-1  bg-white">
+    <div
+      className={`flex items-center justify-between p-1  bg-white ${
+        status === 'NOT_STARTED' && 'hidden'
+      }`}
+    >
       {/* Left Icon + Title + Description */}
       <div className="flex items-center gap-4">
         <div className="p-2 rounded-full bg-muted">
@@ -69,7 +73,7 @@ export default function RecentPaymentCard({
             {actions === 'CVA' && merchentName === 'OFFLINE' && (
               <>
                 <Dot />
-                vendorName
+                {vendorName}
               </>
             )}
             <Dot />

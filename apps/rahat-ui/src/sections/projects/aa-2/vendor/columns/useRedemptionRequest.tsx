@@ -4,11 +4,12 @@ import { ColumnDef } from '@tanstack/react-table';
 import { IProjectRedemption } from '../types';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { useProjectSettingsStore } from '@rahat-ui/query';
-import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
+import { getAssetCode, getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { TOKEN_TO_AMOUNT_MULTIPLIER } from '@rahat-ui/query';
-import { Check } from 'lucide-react';
+import { Check, Copy, CopyCheck } from 'lucide-react';
+import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 
 export const useRedemptionRequestColumn = () => {
   const { id }: { id: UUID } = useParams();
@@ -16,6 +17,7 @@ export const useRedemptionRequestColumn = () => {
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
+  const { clickToCopy, copyAction } = useCopy();
 
   const columns: ColumnDef<IProjectRedemption>[] = [
     {
@@ -64,6 +66,48 @@ export const useRedemptionRequestColumn = () => {
             : 'Requested'}
         </Badge>
       ),
+    },
+    {
+      accessorKey: 'transactionHash',
+      header: 'TxHash',
+      cell: ({ row }) => {
+        if (!row.original?.transactionHash) {
+          return <div>N/A</div>;
+        }
+        return (
+          <div className="flex flex-row">
+            <div className="w-20 truncate">
+              <a
+                href={getStellarTxUrl(
+                  settings,
+                  id,
+                  row?.original?.transactionHash,
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-base text-blue-500 hover:underline cursor-pointer "
+              >
+                {row.getValue('transactionHash')}
+              </a>
+            </div>
+            <button
+              onClick={() =>
+                clickToCopy(
+                  row.getValue('transactionHash'),
+                  row.getValue('transactionHash'),
+                )
+              }
+              className="ml-2 text-sm text-gray-500"
+            >
+              {copyAction === row.getValue('transactionHash') ? (
+                <CopyCheck className="w-4 h-4" />
+              ) : (
+                <Copy className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+        );
+      },
     },
     {
       accessorKey: 'approvedBy',

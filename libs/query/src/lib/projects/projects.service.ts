@@ -619,6 +619,31 @@ export const useProjectBeneficiaryDetail = (payload: any) => {
   return query?.data;
 };
 
+export const useBeneficiaryRedeemInfo = (payload: any) => {
+  const q = useProjectAction();
+  const { projectUUID, beneficiaryUUID } = payload;
+
+  const query = useQuery({
+    queryKey: [
+      'aaProject.beneficiary.getRedeemInfo',
+      { projectUUID, beneficiaryUUID },
+    ],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.beneficiary.getRedeemInfo',
+          payload: {
+            beneficiaryUUID,
+          },
+        },
+      });
+      return mutate?.data;
+    },
+  });
+  return query;
+};
+
 export const useListELRedemption = (
   payload: Pagination & { uuid: UUID },
 ): any => {

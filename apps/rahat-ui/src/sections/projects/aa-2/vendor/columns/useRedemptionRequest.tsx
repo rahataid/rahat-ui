@@ -8,6 +8,7 @@ import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { TOKEN_TO_AMOUNT_MULTIPLIER } from '@rahat-ui/query';
+import { Check } from 'lucide-react';
 
 export const useRedemptionRequestColumn = () => {
   const { id }: { id: UUID } = useParams();
@@ -59,7 +60,7 @@ export const useRedemptionRequestColumn = () => {
           {row.original?.redemptionStatus === 'APPROVED'
             ? 'Approved'
             : row.original?.redemptionStatus === 'STELLAR_VERIFIED'
-            ? 'Requested*'
+            ? 'Requested ✓'
             : 'Requested'}
         </Badge>
       ),

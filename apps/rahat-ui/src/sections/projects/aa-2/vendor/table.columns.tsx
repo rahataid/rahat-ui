@@ -5,7 +5,7 @@ import { useUserStore } from '@rumsan/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { UUID } from 'crypto';
-import { Eye } from 'lucide-react';
+import { Check, Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { IProjectVendor } from './types';
 import {
@@ -134,7 +134,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
           {row.original?.redemptionStatus === 'APPROVED'
             ? 'Approved'
             : row.original?.redemptionStatus === 'STELLAR_VERIFIED'
-            ? 'Requested*'
+            ? 'Requested ✓'
             : 'Requested'}
         </Badge>
       ),

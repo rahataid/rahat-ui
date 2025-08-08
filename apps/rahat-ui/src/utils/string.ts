@@ -35,3 +35,15 @@ export function toTitleCase(text: string): string {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 }
+
+export const formatNumber = (
+  num: number,
+  style?: 'indian' | 'international',
+) => {
+  const locales = {
+    indian: 'en-IN',
+    international: 'en-US',
+  };
+
+  return new Intl.NumberFormat(locales[style || 'indian']).format(num);
+};

@@ -7,7 +7,9 @@ export interface IProjectVendor {
 
 export interface IProjectRedemption {
   tokenAmount: string;
-  status: string;
+  redemptionStatus: string;
+  totalAmount: string;
+  approvedAt: Date;
+  createdAt: Date;
   approvedBy: string;
-  approvedDate: Date;
 }

@@ -1,4 +1,7 @@
-import { useGetVendorStellarStats } from '@rahat-ui/query/lib/aa';
+import {
+  useGetVendorRedemptionStats,
+  useGetVendorStellarStats,
+} from '@rahat-ui/query/lib/aa';
 import {
   Tabs,
   TabsContent,
@@ -25,6 +28,12 @@ export default function Detail() {
     uuid: vendorId,
     take: 10,
   });
+
+  const { data: redemptionStats, isLoading: redemptionStatsLoading } =
+    useGetVendorRedemptionStats({
+      projectUUID: id,
+      vendorUuid: vendorId,
+    });
 
   return (
     <div className="p-4">
@@ -64,7 +73,12 @@ export default function Detail() {
         <TabsContent value="vendorOverview">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
             <ProfileCard />
-            <OverviewCard data={data?.data} loading={isLoading} />
+            <OverviewCard
+              data={data?.data}
+              loading={isLoading}
+              redemptionStats={redemptionStats?.data}
+              redemptionStatsLoading={redemptionStatsLoading}
+            />
             <TransactionCard
               transaction={data?.data?.transactions}
               loading={isLoading}

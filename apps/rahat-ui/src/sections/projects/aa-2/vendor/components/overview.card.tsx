@@ -1,3 +1,4 @@
+import { TOKEN_TO_AMOUNT_MULTIPLIER } from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { formatNumber, trimDecimalZeros } from 'apps/rahat-ui/src/utils/string';
 import { ChartDonut } from 'libs/shadcn/src/components/charts';
@@ -75,7 +76,9 @@ export default function OverviewCard({
             <p className="text-xs">Amount Disbursed</p>
             <p className="text-2xl font-semibold">
               {vendorBalance
-                ? `Rs. ${formatNumber(Number(vendorBalance))}`
+                ? `Rs. ${formatNumber(
+                    Number(vendorBalance) * TOKEN_TO_AMOUNT_MULTIPLIER,
+                  )}`
                 : 'N/A'}
             </p>
           </div>
@@ -84,7 +87,8 @@ export default function OverviewCard({
             <p className="text-2xl font-semibold">
               {redemptionStats?.totalTokensApproved
                 ? `Rs. ${formatNumber(
-                    Number(redemptionStats?.totalTokensApproved),
+                    Number(redemptionStats?.totalTokensApproved) *
+                      TOKEN_TO_AMOUNT_MULTIPLIER,
                   )}`
                 : 'N/A'}
             </p>

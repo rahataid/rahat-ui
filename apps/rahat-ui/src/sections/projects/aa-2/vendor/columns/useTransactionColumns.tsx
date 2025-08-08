@@ -1,4 +1,7 @@
-import { useProjectSettingsStore } from '@rahat-ui/query';
+import {
+  TOKEN_TO_AMOUNT_MULTIPLIER,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
@@ -62,13 +65,20 @@ export const useVendorsTransactionTableColumns = () => {
     {
       accessorKey: 'amount',
       header: 'Amount Disbursed',
-      cell: ({ row }) => (
-        <div>
-          {row.original?.amount
-            ? `Rs. ${Intl.NumberFormat('en-IN').format(row.original?.amount)}`
-            : 'N/A'}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const amountNum = Number(row.original?.amount) || 0;
+        const convertedAmount = amountNum * TOKEN_TO_AMOUNT_MULTIPLIER;
+
+        return (
+          <div>
+            {amountNum > 0
+              ? `Rs. ${Intl.NumberFormat('en-IN').format(
+                  Math.round(convertedAmount),
+                )}`
+              : 'N/A'}
+          </div>
+        );
+      },
     },
     {
       accessorKey: 'txHash',

@@ -1,11 +1,11 @@
-import {
-  PROJECT_SETTINGS_KEYS,
-  useProjectSettingsStore,
-} from '@rahat-ui/query';
+import { useProjectSettingsStore } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
+import {
+  formatTokenAmount,
+  getStellarTxUrl,
+} from 'apps/rahat-ui/src/utils/stellar';
 import { toTitleCase } from 'apps/rahat-ui/src/utils/string';
 import { PayoutMode } from 'libs/query/src/lib/aa';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
@@ -69,10 +69,7 @@ export const useVendorsBeneficiaryTableColumns = (mode: PayoutMode) => {
       cell: ({ row }) => (
         <div>
           {row.getValue('benTokens')
-            ? `${row.getValue('benTokens')} ${
-                settings?.[id]?.[PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS]
-                  ?.assetcode
-              }`
+            ? formatTokenAmount(row.getValue('benTokens'), settings, id)
             : 'N/A'}
         </div>
       ),

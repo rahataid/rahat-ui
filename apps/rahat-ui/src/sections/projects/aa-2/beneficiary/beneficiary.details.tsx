@@ -5,6 +5,7 @@ import { HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useProjectBeneficiaryDetail } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { getBeneficiaryRedirectRoute } from 'apps/rahat-ui/src/utils/navigation';
 
 const BeneficiaryDetail = () => {
   const params = useParams();
@@ -22,14 +23,16 @@ const BeneficiaryDetail = () => {
     projectUUID: projectId,
     uuid: beneficiaryId,
   });
-  const navRoute = redirectTo
-    ? `/projects/aa/${projectId}/beneficiary/groupDetails/${redirectTo}`
-    : redirectToFund
-    ? `/projects/aa/${projectId}/fund-management/${redirectToFund}`
-    : vendorId
-    ? `/projects/aa/${projectId}/vendors/${vendorId}?tab=${tab}&subTab=${subTab}&perPage=${perPage}&page=${page}`
-    : `/projects/aa/${projectId}/beneficiary`;
 
+  const navRoute = getBeneficiaryRedirectRoute(projectId, {
+    redirectTo,
+    redirectToFund,
+    vendorId,
+    tab,
+    subTab,
+    perPage,
+    page,
+  });
   return (
     <div className="p-4 ">
       <div className="flex justify-between items-center">

@@ -5,6 +5,7 @@ import {
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { Heading } from 'apps/rahat-ui/src/common';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { ArrowLeftRight, Copy, CopyCheck } from 'lucide-react';
@@ -45,13 +46,7 @@ const Transaction = ({ amount, date, hash, title }: Txn) => {
           <div className="flex gap-1">
             <a
               target="_blank"
-              href={`https://stellar.expert/explorer/${
-                settings?.[projectId]?.[
-                  PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS
-                ]?.['network'] === 'mainnet'
-                  ? 'public'
-                  : 'testnet'
-              }/tx/${hash}`}
+              href={getStellarTxUrl(settings, projectId, hash as string)}
               className="cursor-pointer text-[14px] font-normal text-[#297AD6] leading-[16px]"
             >
               <p className="text-sm font-medium truncate w-24">{hash}</p>

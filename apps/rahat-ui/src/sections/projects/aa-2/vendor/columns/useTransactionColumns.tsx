@@ -1,11 +1,9 @@
-import {
-  PROJECT_SETTINGS_KEYS,
-  useProjectSettingsStore,
-} from '@rahat-ui/query';
+import { useProjectSettingsStore } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import { Copy, CopyCheck } from 'lucide-react';
 import { useParams } from 'next/navigation';
@@ -83,13 +81,11 @@ export const useVendorsTransactionTableColumns = () => {
           <div className="flex flex-row">
             <div className="w-20 truncate">
               <a
-                href={`https://stellar.expert/explorer/${
-                  settings?.[projectId]?.[
-                    PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS
-                  ]?.['network'] === 'mainnet'
-                    ? 'public'
-                    : 'testnet'
-                }/tx/${row?.original?.txHash}`}
+                href={getStellarTxUrl(
+                  settings,
+                  projectId,
+                  row?.original?.txHash,
+                )}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer "

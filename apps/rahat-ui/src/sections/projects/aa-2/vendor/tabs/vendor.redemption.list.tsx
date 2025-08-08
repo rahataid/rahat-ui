@@ -34,7 +34,7 @@ export const VendorRedemptionList = ({ id }: { id: UUID }) => {
   const debounceSearch = useDebounce(filters, 500);
 
   const searchParams = useSearchParams();
-  const columns = useProjectVendorRedemptionTableColumns(id);
+  const columns = useProjectVendorRedemptionTableColumns();
 
   const { data, isLoading } = useGetVendorTokenRedemptionList({
     projectUUID: id,

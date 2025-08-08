@@ -53,7 +53,8 @@ export const useProjectVendorTableColumns = () => {
   return columns;
 };
 
-export const useProjectVendorRedemptionTableColumns = (id: UUID) => {
+export const useProjectVendorRedemptionTableColumns = () => {
+  const { id }: { id: UUID } = useParams();
   const { user } = useUserStore((s) => ({ user: s.user }));
 
   const approveVendorTokenRedemption = useApproveVendorTokenRedemption();

@@ -168,7 +168,12 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       accessorKey: 'tokensAssigned',
       header: 'Amount Disbursed',
       cell: ({ row }) => (
-        <div>Rs. {row.original?.amount * ONE_TOKEN_VALUE}</div>
+        <div>
+          Rs.{' '}
+          {row?.original?.status === 'FIAT_TRANSACTION_FAILED'
+            ? 0
+            : row.original?.amount * ONE_TOKEN_VALUE}
+        </div>
       ),
     },
     {

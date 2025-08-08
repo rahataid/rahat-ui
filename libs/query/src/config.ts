@@ -155,3 +155,5 @@ export const MS_CAM_ACTIONS = {
     PROJECT_SETTINGS: 'cambodia.app.project_settings',
   },
 };
+
+export const TOKEN_TO_AMOUNT_MULTIPLIER = 1;

@@ -99,7 +99,7 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
               width="100%"
               xaxisTitle="Information Channel"
               yaxisTitle="No. of Beneficiaries"
-              columnWidth="12%"
+              columnWidth="20%"
             />
           </div>
         </div>

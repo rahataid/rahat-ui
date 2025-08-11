@@ -88,7 +88,7 @@ const CommunicationAnalytics = ({
             <h4 className="text-md font-medium text-gray-500 mt-1">
               {item.category}
             </h4>
-            <div className="text-3xl font-bold text-blue-600 my-3">
+            <div className="text-3xl font-bold text-primary my-3">
               {item.totalCommunicationSent}
             </div>
 

@@ -1,3 +1,15 @@
+import {
+  usePagination,
+  useProjectDashboardBeneficiaryMapLocation,
+  useProjectStore,
+} from '@rahat-ui/query';
+import * as turf from '@turf/turf';
+import { Heading } from 'apps/rahat-ui/src/common';
+import SearchDropdownComponent from 'apps/rahat-ui/src/common/searchDropdownComponent';
+import { communityMapboxBasicConfig } from 'apps/rahat-ui/src/utils/map-config';
+import { UUID } from 'crypto';
+import { Dot } from 'lucide-react';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import * as React from 'react';
 import Map, {
   GeolocateControl,
@@ -6,23 +18,6 @@ import Map, {
   NavigationControl,
   Popup,
 } from 'react-map-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
-import { Dot } from 'lucide-react';
-import * as turf from '@turf/turf';
-import { communityMapboxBasicConfig } from 'apps/rahat-ui/src/utils/map-config';
-import {
-  usePagination,
-  useProjectDashboardBeneficiaryMapLocation,
-  useProjectStore,
-} from '@rahat-ui/query';
-import { Heading } from 'apps/rahat-ui/src/common';
-import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import { UUID } from 'crypto';
-import {
-  MUNICIPALITY,
-  WARDS,
-} from 'apps/rahat-ui/src/sections/dashboard/constant';
-import SearchDropdownComponent from 'apps/rahat-ui/src/common/searchDropdownComponent';
 
 const DEFAULT_LAT = 28.7628028;
 const DEFAULT_LNG = 80.3671506;
@@ -132,11 +127,7 @@ export default function MapView({
     <div>
       <div className="flex justify-between">
         <Heading
-          title={`Map View (${
-            project?.name && project.name.includes(' in ')
-              ? project?.name?.split(' in ')[1]
-              : project?.name
-          })`}
+          title={`Map View`}
           description="Track beneficiary locations"
           titleStyle={'text-xl'}
         />
@@ -150,7 +141,7 @@ export default function MapView({
         </div>
       </div>
 
-      <div className="relative bg-card shadow-sm border rounded-sm p-1  h-[400px] z-0">
+      <div className="relative bg-card shadow-sm border rounded-sm p-1 w-full  h-[400px] z-0">
         <Map
           ref={mapRef}
           initialViewState={{

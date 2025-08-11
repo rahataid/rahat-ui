@@ -8,16 +8,6 @@ type Props = {
     triggeersStats: any[];
   };
 };
-const socialProtectionBenefits = [
-  { type: 'Senior Citizen >70', households: 800 },
-  { type: 'Senior Citizen Dalit >60', households: 950 },
-  { type: 'Child Nutrition ', households: 630 },
-  { type: 'Single Women', households: 850 },
-  { type: 'Widow', households: 620 },
-  { type: 'Red Card', households: 900 },
-  { type: 'Blue Card', households: 790 },
-  { type: 'Indigenous Community', households: 830 },
-];
 
 const SSA_LABELS: Record<string, string> = {
   senior_citizen__70: 'Senior Citizen >70',
@@ -82,7 +72,7 @@ const SocialProtectionBenefits = ({
             width="100%"
             xaxisTitle="Type of SSA"
             yaxisTitle="No. of Household"
-            columnWidth={'15%'}
+            columnWidth={'20%'}
           />
         </div>
       </div>

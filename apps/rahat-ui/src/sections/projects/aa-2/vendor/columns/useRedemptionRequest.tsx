@@ -25,7 +25,7 @@ export const useRedemptionRequestColumn = () => {
       header: 'Token Amount',
       cell: ({ row }) => (
         <div>
-          {row.original.tokenAmount} {getAssetCode(settings, id)}
+          {row.original?.tokenAmount} {getAssetCode(settings, id)}
         </div>
       ),
     },
@@ -34,9 +34,9 @@ export const useRedemptionRequestColumn = () => {
       header: 'Total Amount',
       cell: ({ row }) => (
         <div>
-          {row.original?.totalAmount
+          {row.original?.tokenAmount
             ? `Rs. ${
-                Number(row.original?.totalAmount) * TOKEN_TO_AMOUNT_MULTIPLIER
+                Number(row.original?.tokenAmount) * TOKEN_TO_AMOUNT_MULTIPLIER
               }`
             : 'N/A'}
         </div>

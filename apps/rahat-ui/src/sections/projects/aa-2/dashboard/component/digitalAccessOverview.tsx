@@ -1,13 +1,14 @@
 'use client';
 
 import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
+import { stat } from 'fs';
 import React from 'react';
 
 const chartTitles: Record<string, string> = {
-  MOBILE_ACCESS: 'Access to Mobile Phones',
-  INTERNET_ACCESS: 'Internet Access',
-  DIGITAL_WALLET_USE: 'Digital Wallet Use',
-  TYPE_OF_PHONE: 'Types of Phone',
+  DO_YOU_HAVE_ACCESS_TO_MOBILE_PHONES: 'DO_YOU_HAVE_ACCESS_TO_MOBILE_PHONES',
+  DO_YOU_HAVE_ACCESS_TO_INTERNET: 'DO_YOU_HAVE_ACCESS_TO_INTERNET',
+  USE_DIGITAL_WALLETS: 'USE_DIGITAL_WALLETS',
+  TYPE_OF_PHONE: 'TYPE_OF_PHONE',
 };
 
 const defaultColors = ['#00796B', '#CFD8DC', '#4A90E2', '#FFB300'];
@@ -18,11 +19,17 @@ interface Props {
 
 const DigitalAccessOverview = ({ stats }: Props) => {
   const filteredStats = stats.filter((stat) => chartTitles[stat.name]);
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-2 mt-2">
       {filteredStats.map((stat) => {
-        const title = chartTitles[stat.name];
+        let title = chartTitles[stat.name]
+          .replace(/^DO_YOU_HAVE_/, '') // remove prefix
+          .replace(/_/g, ' ') // replace all underscores
+          .toLowerCase()
+          .replace(/^\w/, (c) => c.toUpperCase());
+        if (title === 'Use digital wallets') {
+          title = 'Digital wallet use';
+        }
         const chartData = stat.data.map((d: any) => ({
           label: d.id,
           value: d.count,

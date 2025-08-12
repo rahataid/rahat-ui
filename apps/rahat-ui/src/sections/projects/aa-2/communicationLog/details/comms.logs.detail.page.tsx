@@ -44,7 +44,7 @@ import {
 } from 'lucide-react';
 
 import { useParams, useSearchParams } from 'next/navigation';
-import React, { useMemo,useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import * as XLSX from 'xlsx';
 import CommsLogsTable from '../table/comms.logs.table';
@@ -282,7 +282,7 @@ export default function CommsLogsDetailPage() {
             <Card className="w-full col-span-1 bg-white rounded-sm">
               <CardContent className="p-6 space-y-6">
                 {/* Beneficiary Group */}
-                <div className="space-y-1">
+                <div>
                   <p className="text-sm text-gray-500">
                     {logs?.communicationDetail?.groupType
                       ? logs?.communicationDetail?.groupType + ' ' + 'GROUP'
@@ -292,7 +292,7 @@ export default function CommsLogsDetailPage() {
                 </div>
 
                 {/* Triggered Date */}
-                <div className="space-y-1">
+                <div>
                   <p className="text-sm text-gray-500">Triggered Date</p>
                   <p className="font-medium">
                     {dateFormat(logs?.sessionDetails?.createdAt)}
@@ -300,10 +300,19 @@ export default function CommsLogsDetailPage() {
                 </div>
 
                 {/* Total Audience */}
-                <div className="space-y-1">
+                <div>
                   <p className="text-sm text-gray-500">Total Audience</p>
                   <p className="font-medium">{logsMeta?.total}</p>
                 </div>
+
+                {logs?.sessionDetails?.status === 'COMPLETED' && (
+                  <div>
+                    <p className="text-sm text-gray-500">Completed At</p>
+                    <p className="font-medium">
+                      {dateFormat(logs?.sessionDetails?.updatedAt)}
+                    </p>
+                  </div>
+                )}
 
                 {/* VOICE Status */}
                 <div className="flex items-center gap-3">

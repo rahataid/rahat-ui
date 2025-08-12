@@ -12,11 +12,6 @@ import { Home, Users } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 
-type Props = {
-  benefStats: any[];
-  triggeersStats: any[];
-};
-
 const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
   const project = useProjectStore((p) => p.singleProject);
   const getStat = (name: string) =>

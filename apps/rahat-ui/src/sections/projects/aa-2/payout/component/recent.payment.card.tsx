@@ -61,10 +61,7 @@ export default function RecentPaymentCard({
                 status as string,
               )}`}
             >
-              {status
-                ?.toLowerCase()
-                .replace(/_/g, ' ')
-                .replace(/^./, (char) => char.toUpperCase())}
+              {status?.toUpperCase().replace(/_/g, ' ')}
             </Badge>
           </div>
 
@@ -77,13 +74,10 @@ export default function RecentPaymentCard({
               </>
             )}
             <Dot />
-
-            <Badge className="text-xs text-muted-foreground">
-              {merchentName
-                .toLowerCase()
-                .replace(/_/g, ' ')
-                .replace(/^./, (char) => char.toUpperCase())}
-            </Badge>
+            {merchentName
+              .toUpperCase()
+              .replace(/_/g, ' ')
+              .replace(/^./, (char) => char.toUpperCase())}
           </div>
           <div className="text-sm text-muted-foreground">
             {beneficiariesCount} beneficiaries

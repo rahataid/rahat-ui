@@ -169,10 +169,11 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       header: 'Amount Disbursed',
       cell: ({ row }) => (
         <div>
-          Rs.{' '}
-          {row?.original?.status === 'FIAT_TRANSACTION_FAILED'
-            ? 0
-            : row.original?.amount * ONE_TOKEN_VALUE}
+          Rs.
+          {row?.original?.status === 'FIAT_TRANSACTION_COMPLETED' ||
+          row.original?.status === 'COMPLETED'
+            ? row.original?.amount * ONE_TOKEN_VALUE
+            : 0}
         </div>
       ),
     },

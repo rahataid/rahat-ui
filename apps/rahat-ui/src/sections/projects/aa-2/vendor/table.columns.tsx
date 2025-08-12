@@ -3,7 +3,9 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useUserStore } from '@rumsan/react-query';
 import { ColumnDef } from '@tanstack/react-table';
+import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
 import { UUID } from 'crypto';
 import { Check, Copy, CopyCheck, Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -14,13 +16,19 @@ import {
 } from '@rahat-ui/query';
 import { getAssetCode, getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { Pagination } from '@rumsan/sdk/types';
 
-export const useProjectVendorTableColumns = () => {
+export const useProjectVendorTableColumns = (pagination: Pagination) => {
   const { id } = useParams();
   const router = useRouter();
 
   const handleViewClick = (vendorId: string) => {
-    router.push(`/projects/aa/${id}/vendors/${vendorId}`);
+    setPaginationToLocalStorage(`${PaginationTableName.VENDOR_LIST}`);
+    router.push(
+      `/projects/aa/${id}/vendors/${vendorId}#pagination=${encodeURIComponent(
+        JSON.stringify(pagination),
+      )}`,
+    );
   };
 
   const columns: ColumnDef<IProjectVendor>[] = [

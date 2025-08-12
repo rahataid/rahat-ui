@@ -66,7 +66,7 @@ export default function ChartBar({
 
     xaxis: {
       title: {
-        text: `${xaxisTitle}sl`,
+        text: `${xaxisTitle}`,
         style: {
           fontSize: '12px',
           fontWeight: 600,

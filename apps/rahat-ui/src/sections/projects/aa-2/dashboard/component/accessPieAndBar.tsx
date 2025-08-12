@@ -78,6 +78,7 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
               horizontal={true}
               height={Math.max(beneficiaryCountByBank.length * 30, 200)}
               width="100%"
+              xaxisTitle="No of Beneficiaries"
             />
           </div>
         </div>
@@ -99,7 +100,7 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
               width="100%"
               xaxisTitle="Information Channel"
               yaxisTitle="No. of Beneficiaries"
-              columnWidth="20%"
+              columnWidth="23%"
             />
           </div>
         </div>

@@ -1,7 +1,10 @@
 import { useProjectSettingsStore } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Pagination } from '@rumsan/sdk/types';
 import { ColumnDef } from '@tanstack/react-table';
+import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
 import {
   formatTokenAmount,
   getStellarTxUrl,
@@ -11,7 +14,10 @@ import { PayoutMode } from 'libs/query/src/lib/aa';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
-export const useVendorsBeneficiaryTableColumns = (mode: PayoutMode) => {
+export const useVendorsBeneficiaryTableColumns = (
+  mode: PayoutMode,
+  pagination: Pagination,
+) => {
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
@@ -21,12 +27,17 @@ export const useVendorsBeneficiaryTableColumns = (mode: PayoutMode) => {
   const params = useSearchParams();
   const tab = params.get('tab') as string;
   const subTab = params.get('subTab') as string;
-  const perPage = params.get('perPage') as string;
-  const page = params.get('page') as string;
 
   const handleViewClick = (beneficiaryId: string) => {
+    setPaginationToLocalStorage(
+      mode === PayoutMode.ONLINE
+        ? PaginationTableName.VENDOR_ONLINE_BENEFICIARY_LIST
+        : PaginationTableName.VENDOR_OFFLINE_BENEFICIARY_LIST,
+    );
     router.push(
-      `/projects/aa/${id}/beneficiary/${beneficiaryId}?vendorId=${vendorId}&tab=${tab}&subTab=${subTab}&perPage=${perPage}&page=${page}`,
+      `/projects/aa/${id}/beneficiary/${beneficiaryId}?vendorId=${vendorId}&tab=${tab}&subTab=${subTab}#pagination=${encodeURIComponent(
+        JSON.stringify(pagination),
+      )}`,
     );
   };
 

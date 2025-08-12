@@ -33,7 +33,7 @@ export default function CommunicationMainLogsView() {
     <div className=" flex flex-col p-4">
       <Heading
         title="Communications Logs"
-        description="Track all the communication logs here"
+        description="Track all the activity based logs here"
       />
 
       <Tabs
@@ -43,7 +43,9 @@ export default function CommunicationMainLogsView() {
       >
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="communicationLog">Communication Log</TabsTrigger>
+          <TabsTrigger value="communicationLog">
+            Activity Based Logs
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
           {isLoadingCommsStats && isLoadingBenefStakeholdersStats ? (

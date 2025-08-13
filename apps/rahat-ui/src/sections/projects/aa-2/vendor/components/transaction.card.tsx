@@ -1,11 +1,8 @@
-import {
-  PROJECT_SETTINGS_KEYS,
-  useProjectSettingsStore,
-} from '@rahat-ui/query';
+import { useProjectSettingsStore } from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { Heading } from 'apps/rahat-ui/src/common';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
+import { getAssetCode, getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { ArrowLeftRight, Copy, CopyCheck } from 'lucide-react';
@@ -75,11 +72,7 @@ const Transaction = ({ amount, date, hash, title }: Txn) => {
       </div>
       <div>
         <p className="font-semibold text-[14px] leading-[24px]">
-          {amount}{' '}
-          {
-            settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS]
-              ?.assetcode
-          }
+          {amount} {getAssetCode(settings, projectId)}
         </p>
       </div>
     </div>

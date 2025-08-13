@@ -17,6 +17,7 @@ import { UUID } from 'crypto';
 import { useSearchParams } from 'next/navigation';
 import React from 'react';
 import { useProjectVendorRedemptionTableColumns } from '../table.columns';
+import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 
 export const VendorRedemptionList = ({ id }: { id: UUID }) => {
   const [columnVisibility, setColumnVisibility] =
@@ -40,6 +41,7 @@ export const VendorRedemptionList = ({ id }: { id: UUID }) => {
     projectUUID: id,
     ...pagination,
     name: debounceSearch.name,
+    status: debounceSearch.status,
   });
 
   const table = useReactTable({
@@ -59,6 +61,29 @@ export const VendorRedemptionList = ({ id }: { id: UUID }) => {
     },
     [filters],
   );
+  const handleFilterChange = (event: any) => {
+    if (event && event.target) {
+      const { name, value } = event.target;
+      const filterValue =
+        value === 'ALL'
+          ? ''
+          : value === 'APPROVED'
+          ? 'APPROVED'
+          : value === 'REQUESTED'
+          ? 'REQUESTED'
+          : value;
+
+      table.getColumn(name)?.setFilterValue(filterValue);
+      setFilters({
+        ...filters,
+        [name]: filterValue,
+      });
+    }
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+  };
 
   React.useEffect(() => {
     if (searchParams.get('tab') === 'vendorRedemptionList') {
@@ -70,10 +95,27 @@ export const VendorRedemptionList = ({ id }: { id: UUID }) => {
     <div className="rounded border bg-card p-4">
       <div className="flex justify-between space-x-2 mb-2">
         <SearchInput
-          className="w-full"
+          className="w-full flex-[4]"
           name="name"
           onSearch={(e) => handleSearch(e, 'name')}
           value={filters?.name || ''}
+        />
+        <SelectComponent
+          name="Status"
+          options={['ALL', 'APPROVED', 'REQUESTED']}
+          onChange={(value) =>
+            handleFilterChange({
+              target: { name: 'status', value },
+            })
+          }
+          value={
+            filters?.status === 'APPROVED'
+              ? 'APPROVED'
+              : filters?.status === 'REQUESTED'
+              ? 'REQUESTED'
+              : filters?.status || ''
+          }
+          className="flex-[1]"
         />
       </div>
       <DemoTable

@@ -32,6 +32,8 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
           payouts?.map((item, index) => (
             <div key={item.id}>
               <RecentPaymentCard
+                status={item.status}
+                vendorName={item?.extras?.vendorName}
                 beneficiaryGroupName={
                   item?.beneficiaryGroupToken?.beneficiaryGroup?.name
                 }

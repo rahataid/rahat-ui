@@ -66,18 +66,22 @@ export default function ChartBar({
 
     xaxis: {
       title: {
-        text: xaxisTitle,
+        text: `${xaxisTitle}`,
         style: {
           fontSize: '12px',
           fontWeight: 600,
         },
       },
+
       categories: communityTool ? ctCategories : categories,
       labels: {
         show:
           (ctCategories?.length > 0 ? xaxisLabels : false) ||
           (categories?.length > 0 && xaxisLabels),
         formatter: (value: string) => value,
+        trim: true,
+        rotate: 0,
+        hideOverlappingLabels: false,
       },
       axisBorder: {
         show: false,
@@ -113,6 +117,9 @@ export default function ChartBar({
       },
     },
     tooltip: {
+      y: {
+        formatter: (val: number) => val.toString(),
+      },
       x: {
         show: true,
       },
@@ -125,6 +132,7 @@ export default function ChartBar({
       type="bar"
       series={[
         {
+          name: '',
           data: communityTool ? ctSeries : series,
         },
       ]}
@@ -141,6 +149,7 @@ export default function ChartBar({
           type="bar"
           series={[
             {
+              name: '',
               data: communityTool ? ctSeries : series,
             },
           ]}

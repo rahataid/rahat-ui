@@ -3,7 +3,7 @@ import React from 'react';
 
 const AccessAndResilienceOverview = () => {
   const bankAccounts = [
-    { bank: 'NIC Asia Bank Limited', accounts: 0 },
+    { bank: 'NIC Asia Bank Limited', accounts: 12 },
     { bank: 'Global IME', accounts: 250 },
     { bank: 'Agricultural', accounts: 140 },
     { bank: 'NIC Asia', accounts: 180 },

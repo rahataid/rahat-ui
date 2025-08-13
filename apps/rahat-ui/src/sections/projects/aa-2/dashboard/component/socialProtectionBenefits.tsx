@@ -8,16 +8,6 @@ type Props = {
     triggeersStats: any[];
   };
 };
-const socialProtectionBenefits = [
-  { type: 'Senior Citizen >70', households: 800 },
-  { type: 'Senior Citizen Dalit >60', households: 950 },
-  { type: 'Child Nutrition ', households: 630 },
-  { type: 'Single Women', households: 850 },
-  { type: 'Widow', households: 620 },
-  { type: 'Red Card', households: 900 },
-  { type: 'Blue Card', households: 790 },
-  { type: 'Indigenous Community', households: 830 },
-];
 
 const SSA_LABELS: Record<string, string> = {
   senior_citizen__70: 'Senior Citizen >70',
@@ -47,26 +37,26 @@ const SocialProtectionBenefits = ({
   const lactatingCount = fieldMapData.no_of_lactating_women || 0;
   const disabilityCount = fieldMapData.no_of_persons_with_disability || 0;
   return (
-    <div className="grid grid-cols-1 gap-4">
-      <div className="flex flex-col lg:flex-row gap-4 ">
+    <div className="grid grid-cols-1 md:lg:grid-cols-2 lg:grid-cols-3 gap-2 mt-2">
+      <div className="flex flex-col gap-2 col-span-1">
         <DataCard
           title="Pregnant Female"
           number={pregnantCount.toString()}
-          className="rounded-sm h-24 w-full"
+          className="rounded-sm  w-full"
         />
         <DataCard
           title="Lactating Female"
           number={lactatingCount.toString()}
-          className="rounded-sm h-24 w-full"
+          className="rounded-sm  w-full"
         />
         <DataCard
           title="People with Disabilities"
           number={disabilityCount.toString()}
-          className="rounded-sm h-24 w-full"
+          className="rounded-sm  w-full"
         />
       </div>
 
-      <div className="border rounded-sm p-2 flex flex-col w-full h-full min-h-[400px] ">
+      <div className="border rounded-sm p-2 flex flex-col w-full h-full min-h-[400px] col-span-1 lg:col-span-2 ">
         <h1 className="text-sm font-medium">
           Household Receiving Social Protection Benefits
         </h1>
@@ -82,7 +72,7 @@ const SocialProtectionBenefits = ({
             width="100%"
             xaxisTitle="Type of SSA"
             yaxisTitle="No. of Household"
-            columnWidth={'15%'}
+            columnWidth={'20%'}
           />
         </div>
       </div>

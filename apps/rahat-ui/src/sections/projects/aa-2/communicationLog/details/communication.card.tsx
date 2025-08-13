@@ -31,6 +31,7 @@ import {
 } from '@rahat-ui/query';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import * as XLSX from 'xlsx';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 interface BaseCommunication {
   groupId: string;
@@ -40,6 +41,7 @@ interface BaseCommunication {
   groupName: string;
   sessionStatus: string;
   sessionId: string;
+  completedAt: string;
 }
 
 interface EmailCommunication extends BaseCommunication {
@@ -163,6 +165,11 @@ export function CommunicationDetailCard({
                   activityCommunication?.sessionStatus.slice(1).toLowerCase()}
               </Badge>
             </div>
+            {activityCommunication?.sessionStatus === 'COMPLETED' && (
+              <p className="mt-1 text-sm text-gray-500">
+                Completed at: {dateFormat(activityCommunication.completedAt)}
+              </p>
+            )}
           </div>
         </div>
       </CardHeader>

@@ -7,14 +7,7 @@ type Props = {
     triggeersStats: any[];
   };
 };
-// const vulnerableStatusStats = [
-//   { label: '<12', value: 7500 },
-//   { label: '13–18', value: 1920 },
-//   { label: '19–29', value: 5620 },
-//   { label: '30–45', value: 8140 },
-//   { label: '46–59', value: 1610 },
-//   { label: '>60', value: 8290 },
-// ];
+
 const BeneficiaryDemographics = ({
   benefStats,
   triggeersStats,

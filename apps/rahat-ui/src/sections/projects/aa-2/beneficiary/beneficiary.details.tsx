@@ -17,8 +17,7 @@ const BeneficiaryDetail = () => {
   const vendorId = searchParams.get('vendorId') as string;
   const tab = searchParams.get('tab') as string;
   const subTab = searchParams.get('subTab') as string;
-  const perPage = searchParams.get('perPage') as string;
-  const page = searchParams.get('page') as string;
+  const pagination = searchParams.get('pagination') as string;
   const details = useProjectBeneficiaryDetail({
     projectUUID: projectId,
     uuid: beneficiaryId,
@@ -30,9 +29,9 @@ const BeneficiaryDetail = () => {
     vendorId,
     tab,
     subTab,
-    perPage,
-    page,
+    pagination,
   });
+
   return (
     <div className="p-4 ">
       <div className="flex justify-between items-center">

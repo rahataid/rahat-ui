@@ -142,7 +142,7 @@ export default function PayoutView() {
         </div>
 
         <div className="flex-[2] border rounded-sm p-4">
-          <RecentPayout payouts={payouts} />
+          <RecentPayout payouts={payouts?.data} />
         </div>
       </div>
     </div>

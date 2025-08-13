@@ -1,4 +1,3 @@
-// utils/getBeneficiaryRedirectRoute.ts
 export const getBeneficiaryRedirectRoute = (
   projectId: string,
   options: {
@@ -7,11 +6,10 @@ export const getBeneficiaryRedirectRoute = (
     vendorId?: string | null;
     tab?: string | null;
     subTab?: string | null;
-    perPage?: string | null;
-    page?: string | null;
+    pagination?: string | null;
   },
 ): string => {
-  const { redirectTo, redirectToFund, vendorId, tab, subTab, perPage, page } =
+  const { redirectTo, redirectToFund, vendorId, tab, subTab, pagination } =
     options;
 
   if (redirectTo) {
@@ -23,8 +21,21 @@ export const getBeneficiaryRedirectRoute = (
   }
 
   if (vendorId) {
-    return `/projects/aa/${projectId}/vendors/${vendorId}?tab=${tab}&subTab=${subTab}&perPage=${perPage}&page=${page}`;
+    return `/projects/aa/${projectId}/vendors/${vendorId}?tab=${tab}&subTab=${subTab}&isBackFromBeneficiaryDetail=true#pagination=${encodeURIComponent(
+      JSON.stringify(pagination),
+    )}`;
   }
 
   return `/projects/aa/${projectId}/beneficiary`;
+};
+
+export const getVendorRedirectRoute = (
+  projectId: string,
+  options: {
+    pagination?: string | null;
+  },
+): string => {
+  return `/projects/aa/${projectId}/vendors?isBackFromVendorDetail=true#pagination=${encodeURIComponent(
+    JSON.stringify(options?.pagination),
+  )}`;
 };

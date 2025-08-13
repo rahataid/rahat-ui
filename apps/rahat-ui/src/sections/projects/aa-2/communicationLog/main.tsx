@@ -15,6 +15,7 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
+import { IndividualLogTab } from './components/IndividualLogs';
 
 export default function CommunicationMainLogsView() {
   const { id: ProjectId } = useParams();
@@ -43,7 +44,8 @@ export default function CommunicationMainLogsView() {
       >
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="communicationLog">Communication Log</TabsTrigger>
+          <TabsTrigger value="communicationLog">Activity Based Log</TabsTrigger>
+          <TabsTrigger value="individualLog">Individual Logs</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
           {isLoadingCommsStats && isLoadingBenefStakeholdersStats ? (
@@ -57,6 +59,9 @@ export default function CommunicationMainLogsView() {
         </TabsContent>
         <TabsContent value="communicationLog">
           <CommsActivitiesTable />
+        </TabsContent>
+        <TabsContent value="individualLog">
+          <IndividualLogTab />
         </TabsContent>
       </Tabs>
     </div>

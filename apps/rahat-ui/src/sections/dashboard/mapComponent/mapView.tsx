@@ -11,12 +11,6 @@ import { Dot } from 'lucide-react';
 import * as turf from '@turf/turf';
 import { communityMapboxBasicConfig } from 'apps/rahat-ui/src/utils/map-config';
 
-const DEFAULT_LAT = 28.7628028;
-const DEFAULT_LNG = 80.3671506;
-
-const KARNALI_RIVER_LAT = 28.7628028;
-const KARNALI_RIVER_LNG = 80.3671506;
-
 const MARKER_TYPE = {
   BENEFICIARY: 'BENEFICIARY',
 };
@@ -68,7 +62,13 @@ export default function MapView({
       type: MARKER_TYPE?.BENEFICIARY,
     })) || [];
 
-  console.log(mappedCoordinate);
+  console.log(mappedCoordinate, 'map');
+
+  const DEFAULT_LAT = mappedCoordinate[0]?.latitude;
+  const DEFAULT_LNG = mappedCoordinate[0]?.longitude;
+
+  const KARNALI_RIVER_LAT = mappedCoordinate[0]?.latitude;
+  const KARNALI_RIVER_LNG = mappedCoordinate[0]?.longitude;
   const zoomToSelectedLoc = (e: React.SyntheticEvent, benef: IBENEF) => {
     e.stopPropagation();
     setSelectedMarker(benef);

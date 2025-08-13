@@ -26,6 +26,7 @@ import { SessionStatus } from '@rumsan/connect/src/types';
 import MessageWithToggle from './messageWithToggle';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import Link from 'next/link';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 interface BaseCommunication {
   groupId: string;
@@ -35,6 +36,7 @@ interface BaseCommunication {
   groupName: string;
   sessionStatus: string;
   sessionId: string;
+  completedAt: string;
   onSend?: () => void;
   onEdit?: () => void;
 }
@@ -93,8 +95,8 @@ export function CommunicationCard({
 
   return (
     <Card className="mb-4 rounded-sm">
-      <CardContent className="pt-2 px-2 pb-2">
-        <div className="flex items-start gap-4">
+      <CardContent className="pt-2 px-3 pb-2">
+        <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
             {getIcon()}
           </div>
@@ -160,35 +162,38 @@ export function CommunicationCard({
                   activityCommunication?.sessionStatus.slice(1).toLowerCase()}
               </Badge>
             </div>
-
-            {(activityCommunication?.transportName === 'EMAIL' ||
-              activityCommunication?.transportName === 'SMS') && (
-              <div className="mt-3">
-                <MessageWithToggle
-                  message={activityCommunication?.message ?? ''}
-                />
-              </div>
+            {activityCommunication?.sessionStatus === 'COMPLETED' && (
+              <p className="mt-1 text-sm text-gray-500">
+                Completed at: {dateFormat(activityCommunication.completedAt)}
+              </p>
             )}
-
-            {activityCommunication?.transportName === 'VOICE' &&
-              Object.keys(activityCommunication?.message).length !== 0 && (
-                <div className="mt-3">
-                  <div className="pt-2">
-                    <h3 className="text-sm font-medium mb-2">
-                      {activityCommunication?.message?.fileName}
-                    </h3>
-                    <audio
-                      src={activityCommunication?.message?.mediaURL}
-                      controls
-                      className="w-full h-10 "
-                      onPlay={() => setIsPlaying(true)}
-                      onPause={() => setIsPlaying(false)}
-                    />
-                  </div>
-                </div>
-              )}
           </div>
         </div>
+
+        {(activityCommunication?.transportName === 'EMAIL' ||
+          activityCommunication?.transportName === 'SMS') && (
+          <div className="mt-3">
+            <MessageWithToggle message={activityCommunication?.message ?? ''} />
+          </div>
+        )}
+
+        {activityCommunication?.transportName === 'VOICE' &&
+          Object.keys(activityCommunication?.message).length !== 0 && (
+            <div className="mt-3">
+              <div className="pt-2">
+                <h3 className="text-sm font-medium mb-2">
+                  {activityCommunication?.message?.fileName}
+                </h3>
+                <audio
+                  src={activityCommunication?.message?.mediaURL}
+                  controls
+                  className="w-full h-10 "
+                  onPlay={() => setIsPlaying(true)}
+                  onPause={() => setIsPlaying(false)}
+                />
+              </div>
+            </div>
+          )}
       </CardContent>
     </Card>
   );

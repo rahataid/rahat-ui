@@ -1,8 +1,6 @@
-import {
-  PROJECT_SETTINGS_KEYS,
-  useProjectSettingsStore,
-} from '@rahat-ui/query';
+import { useProjectSettingsStore } from '@rahat-ui/query';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
 import { Copy, CopyCheckIcon } from 'lucide-react';
 import { useParams } from 'next/navigation';
 
@@ -38,13 +36,7 @@ export default function InfoItem({
           <>
             {link ? (
               <a
-                href={`https://stellar.expert/explorer/${
-                  settings?.[projectId]?.[
-                    PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS
-                  ]?.['network'] === 'mainnet'
-                    ? 'public'
-                    : 'testnet'
-                }/tx/${value}`}
+                href={getStellarTxUrl(settings, projectId, value)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer truncate w-24"

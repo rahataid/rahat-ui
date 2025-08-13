@@ -1,10 +1,15 @@
-import React from 'react';
-import { ArrowLeftRight, Copy, CopyCheck } from 'lucide-react';
-import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
-import { Heading } from 'apps/rahat-ui/src/common';
-import { format } from 'date-fns';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import { Heading } from 'apps/rahat-ui/src/common';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
+import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
+import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
+import { ArrowLeftRight, Copy, CopyCheck } from 'lucide-react';
+import { useParams } from 'next/navigation';
 
 type Txn = {
   title?: string;
@@ -19,20 +24,30 @@ type Props = {
   transaction: Txn[];
 };
 
-const Transaction = ({ amount, date, hash }: Txn) => {
+const Transaction = ({ amount, date, hash, title }: Txn) => {
+  const { id } = useParams();
+  const projectId = id as string;
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
   const { clickToCopy, copyAction } = useCopy();
   return (
     <div className="flex justify-between space-x-4 items-center">
       <div className="flex space-x-4 items-center">
         <div className="p-2 rounded-full bg-muted">
-          <ArrowLeftRight size={16} />
+          <ArrowLeftRight size={22} />
         </div>
         <div>
+          <div>
+            <p className="font-normal text-[14px] leading-[16px] text-[#37404C]">
+              {title ? formatEnumString(title) : 'N/A'}
+            </p>
+          </div>
           <div className="flex gap-1">
             <a
               target="_blank"
-              href={`https://stellar.expert/explorer/testnet/tx/${hash}`}
-              className="cursor-pointer"
+              href={getStellarTxUrl(settings, projectId, hash as string)}
+              className="cursor-pointer text-[14px] font-normal text-[#297AD6] leading-[16px]"
             >
               <p className="text-sm font-medium truncate w-24">{hash}</p>
             </a>
@@ -43,7 +58,7 @@ const Transaction = ({ amount, date, hash }: Txn) => {
               {copyAction === 1 ? <CopyCheck size={16} /> : <Copy size={16} />}
             </span>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-[14px] font-normal text-[#64748B] leading-[16px]">
             {date
               ? Intl.DateTimeFormat('en-US', {
                   year: 'numeric',
@@ -52,13 +67,20 @@ const Transaction = ({ amount, date, hash }: Txn) => {
                   hour12: true,
                   hour: 'numeric',
                   minute: 'numeric',
+                  second: 'numeric',
                 }).format(new Date(date))
               : 'N/A'}
           </p>
         </div>
       </div>
       <div>
-        <p className="text-red-500 text-sm">{amount} </p>
+        <p className="font-semibold text-[14px] leading-[24px]">
+          {amount}{' '}
+          {
+            settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS]
+              ?.assetcode
+          }
+        </p>
       </div>
     </div>
   );
@@ -97,12 +119,15 @@ export default function TransactionCard({ transaction, loading }: Props) {
         <ScrollArea className=" h-[calc(350px)]">
           {transaction?.map((txn) => {
             return (
-              <Transaction
-                key={txn.hash}
-                amount={txn.amount}
-                date={txn.date}
-                hash={txn.hash}
-              />
+              <div className="mb-4">
+                <Transaction
+                  key={txn.hash}
+                  amount={txn.amount}
+                  date={txn.date}
+                  hash={txn.hash}
+                  title={txn.title}
+                />
+              </div>
             );
           })}
         </ScrollArea>

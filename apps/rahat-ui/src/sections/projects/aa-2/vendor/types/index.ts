@@ -12,4 +12,5 @@ export interface IProjectRedemption {
   approvedAt: Date;
   createdAt: Date;
   approvedBy: string;
+  transactionHash: string;
 }

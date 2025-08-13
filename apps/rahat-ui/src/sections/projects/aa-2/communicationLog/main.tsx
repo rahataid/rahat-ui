@@ -34,7 +34,7 @@ export default function CommunicationMainLogsView() {
     <div className=" flex flex-col p-4">
       <Heading
         title="Communications Logs"
-        description="Track all the communication logs here"
+        description="Track all the activity based logs here"
       />
 
       <Tabs

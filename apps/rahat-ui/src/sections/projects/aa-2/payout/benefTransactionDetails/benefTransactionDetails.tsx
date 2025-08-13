@@ -55,7 +55,7 @@ export default function BeneficiaryTransactionLogDetails() {
   // Success Amount Logic
   if (
     (status === 'COMPLETED' && transactionType === 'VENDOR_REIMBURSEMENT') ||
-    ((status === 'FIAT_TRANSFER_COMPLETED' ||
+    ((status === 'FIAT_TRANSACTION_COMPLETED' ||
       status === 'TOKEN_TRANSACTION_COMPLETED') &&
       transactionType === 'TOKEN_TRANSFER')
   ) {
@@ -65,7 +65,7 @@ export default function BeneficiaryTransactionLogDetails() {
   // Failed Amount Logic
   if (
     (status !== 'COMPLETED' && transactionType === 'VENDOR_REIMBURSEMENT') ||
-    ((status !== 'FAIT_TRANSFER_COMPLETED' ||
+    ((status !== 'FAIT_TRANSACTION_COMPLETED' ||
       status !== 'TOKEN_TRANSACTION_COMPLETED') &&
       transactionType === 'FIAT_TRANSFER')
   ) {

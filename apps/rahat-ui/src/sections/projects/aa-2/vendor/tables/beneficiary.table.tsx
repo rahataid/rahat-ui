@@ -12,10 +12,12 @@ import { DemoTable, Heading, SearchInput } from 'apps/rahat-ui/src/common';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useActiveTabDynamicKey } from 'apps/rahat-ui/src/utils/useActiveTabDynamicKey';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import React, { useMemo } from 'react';
 import { useVendorsBeneficiaryTableColumns } from '../columns/useBeneficiaryColumns';
 import { toTitleCase } from 'apps/rahat-ui/src/utils/string';
+import { getPaginationFromLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
+import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
 
 interface VendorsBeneficiaryListProps {
   beneficiaryData?: {
@@ -86,7 +88,11 @@ export default function VendorsBeneficiaryList({
       return [];
     }
   }, [data?.response?.data]);
-  const columns = useVendorsBeneficiaryTableColumns(activeTab as PayoutMode);
+
+  const columns = useVendorsBeneficiaryTableColumns(
+    activeTab as PayoutMode,
+    pagination,
+  );
   const table = useReactTable({
     manualPagination: true,
     data: tableData || [],
@@ -102,6 +108,23 @@ export default function VendorsBeneficiaryList({
     setActiveTab(newMode);
     setPagination({ ...pagination, page: 1 });
   };
+
+  const searchParams = useSearchParams();
+
+  const [isPaginationReady, setIsPaginationReady] = React.useState(false);
+
+  React.useEffect(() => {
+    const isBackFromDetail =
+      searchParams.get('isBackFromBeneficiaryDetail') === 'true';
+    const prevPagination = getPaginationFromLocalStorage(
+      activeTab === PayoutMode.ONLINE
+        ? PaginationTableName.VENDOR_ONLINE_BENEFICIARY_LIST
+        : PaginationTableName.VENDOR_OFFLINE_BENEFICIARY_LIST,
+      isBackFromDetail,
+    );
+    setPagination(prevPagination);
+    setIsPaginationReady(true);
+  }, [searchParams, setPagination, activeTab]);
 
   return (
     <div className="space-y-4">
@@ -145,15 +168,17 @@ export default function VendorsBeneficiaryList({
         tableHeight={'h-[calc(400px)]'}
         loading={isLoading}
       />
-      <CustomPagination
-        currentPage={pagination.page}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-        perPage={pagination?.perPage}
-        total={data?.response?.meta?.total || 0}
-      />
+      {isPaginationReady && (
+        <CustomPagination
+          currentPage={pagination.page}
+          handleNextPage={setNextPage}
+          handlePrevPage={setPrevPage}
+          handlePageSizeChange={setPerPage}
+          meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+          perPage={pagination?.perPage}
+          total={data?.response?.meta?.total || 0}
+        />
+      )}
     </div>
   );
 }

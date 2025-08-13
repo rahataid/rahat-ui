@@ -95,7 +95,7 @@ export const usePayouts = (projectUUID: UUID, payload: Payout) => {
           payload: payload,
         },
       });
-      return mutate.data;
+      return mutate;
     },
   });
   return query;

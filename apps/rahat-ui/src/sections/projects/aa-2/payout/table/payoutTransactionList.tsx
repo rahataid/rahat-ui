@@ -40,8 +40,8 @@ export default function PayoutTransactionList() {
 
   const tableData = React.useMemo(
     () =>
-      payouts?.length
-        ? payouts?.map((d: any) => ({
+      payouts?.data?.length
+        ? payouts?.data?.map((d: any) => ({
             uuid: d?.uuid,
             groupName: d?.beneficiaryGroupToken?.beneficiaryGroup?.name,
             totalBeneficiaries:
@@ -92,6 +92,7 @@ export default function PayoutTransactionList() {
     },
     [filters],
   );
+  console.log(payouts);
   return (
     <div className="p-4">
       <div className="flex flex-col space-y-0">
@@ -133,20 +134,19 @@ export default function PayoutTransactionList() {
         </div>
         <PayoutTable table={table} loading={isLoading} />
         <CustomPagination
-          meta={{
-            total: 0,
-            currentPage: 0,
-            lastPage: 0,
-            perPage: 0,
-            next: null,
-            prev: null,
-          }}
+          currentPage={pagination.page}
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}
-          currentPage={pagination.page}
-          perPage={pagination.perPage}
-          total={0}
+          setPagination={setPagination}
+          meta={
+            (payouts?.response?.meta as any) || {
+              total: 0,
+              currentPage: 0,
+            }
+          }
+          perPage={pagination?.perPage}
+          total={payouts?.response?.meta?.total || 0}
         />
       </div>
     </div>

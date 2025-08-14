@@ -1,4 +1,5 @@
 import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
+import { Heading } from 'apps/rahat-ui/src/common';
 import React from 'react';
 
 type Props = {
@@ -41,42 +42,49 @@ const BeneficiaryDemographics = ({
     value: item.count,
   }));
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ">
-      <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
-        <h1 className="text-sm font-medium">Gender Distribution</h1>
-        <div className="w-full flex-1 p-4 pt-0">
-          <PieChart
-            chart={{
-              series: genderPieData,
-              colors: genderColors,
-            }}
-            custom={true}
-            projectAA={true}
-            donutSize="80%"
-            width="100%"
-            height="100%"
-            type="donut"
-          />
+    <div className="flex flex-col">
+      <Heading
+        title="Beneficiary Demographics"
+        titleStyle="text-lg"
+        description="Summary of household statistics"
+      />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ">
+        <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
+          <h1 className="text-sm font-medium">Gender Distribution</h1>
+          <div className="w-full flex-1 p-4 pt-0">
+            <PieChart
+              chart={{
+                series: genderPieData,
+                colors: genderColors,
+              }}
+              custom={true}
+              projectAA={true}
+              donutSize="80%"
+              width="100%"
+              height="100%"
+              type="donut"
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Bar Chart */}
-      <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
-        <h1 className="text-sm font-medium">Age Groups</h1>
-        <div className="flex-1 p-2">
-          <BarChart
-            series={ageChartData.map((item) => item.value)}
-            categories={ageChartData.map((item) => item.label)}
-            colors={['#4A90E2']}
-            xaxisLabels={true}
-            yaxisLabels={true}
-            barHeight={20}
-            height="100%"
-            width="100%"
-            xaxisTitle="Age Group"
-            yaxisTitle="No. of Beneficiaries"
-            columnWidth={'20%'}
-          />
+        {/* Bar Chart */}
+        <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
+          <h1 className="text-sm font-medium">Age Groups</h1>
+          <div className="flex-1 p-2">
+            <BarChart
+              series={ageChartData.map((item) => item.value)}
+              categories={ageChartData.map((item) => item.label)}
+              colors={['#4A90E2']}
+              xaxisLabels={true}
+              yaxisLabels={true}
+              barHeight={20}
+              height="100%"
+              width="100%"
+              xaxisTitle="Age Group"
+              yaxisTitle="No. of Beneficiaries"
+              columnWidth={'20%'}
+            />
+          </div>
         </div>
       </div>
     </div>

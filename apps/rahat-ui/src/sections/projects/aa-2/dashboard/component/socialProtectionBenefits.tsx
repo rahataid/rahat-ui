@@ -1,5 +1,5 @@
 import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
-import { DataCard } from 'apps/rahat-ui/src/common';
+import { DataCard, Heading } from 'apps/rahat-ui/src/common';
 import React from 'react';
 
 type Props = {
@@ -37,43 +37,57 @@ const SocialProtectionBenefits = ({
   const lactatingCount = fieldMapData.no_of_lactating_women || 0;
   const disabilityCount = fieldMapData.no_of_persons_with_disability || 0;
   return (
-    <div className="grid grid-cols-1 md:lg:grid-cols-2 lg:grid-cols-3 gap-2 mt-2">
-      <div className="flex flex-col gap-2 col-span-1">
-        <DataCard
-          title="Pregnant Female"
-          number={pregnantCount.toString()}
-          className="rounded-sm  w-full"
+    <div className="flex flex-col gap-4 mt-4">
+      {/* Vulnerable Groups Cards */}
+      <div className="flex flex-col">
+        <Heading
+          title="Vulnerable Groups"
+          titleStyle="text-lg"
+          description="Household members with specific needs or requiring special support"
         />
-        <DataCard
-          title="Lactating Female"
-          number={lactatingCount.toString()}
-          className="rounded-sm  w-full"
-        />
-        <DataCard
-          title="People with Disabilities"
-          number={disabilityCount.toString()}
-          className="rounded-sm  w-full"
-        />
-      </div>
-
-      <div className="border rounded-sm p-2 flex flex-col w-full h-full min-h-[400px] col-span-1 lg:col-span-2 ">
-        <h1 className="text-sm font-medium">
-          Household Receiving Social Protection Benefits
-        </h1>
-        <div className="flex-1 p-2">
-          <BarChart
-            series={ssaBarData.map((item) => item.value)}
-            categories={ssaBarData.map((item) => item.label)}
-            colors={['#4A90E2']}
-            xaxisLabels={true}
-            yaxisLabels={true}
-            barHeight={20}
-            height="100%"
-            width="100%"
-            xaxisTitle="Type of SSA"
-            yaxisTitle="No. of Household"
-            columnWidth={'20%'}
+        <div className="flex flex-col gap-4 mt-0 md:flex-row">
+          <DataCard
+            title="Pregnant Female"
+            number={pregnantCount.toString()}
+            className="rounded-sm  w-full"
           />
+          <DataCard
+            title="Lactating Female"
+            number={lactatingCount.toString()}
+            className="rounded-sm  w-full"
+          />
+          <DataCard
+            title="People with Disabilities"
+            number={disabilityCount.toString()}
+            className="rounded-sm  w-full"
+          />
+        </div>
+      </div>
+      <div className="flex flex-col">
+        <Heading
+          title="Social Protection Benefits"
+          titleStyle="text-lg"
+          description="Households receiving government support"
+        />
+        <div className=" border rounded-sm p-4">
+          <h1 className="text-sm font-medium">
+            Household Receiving Social Protection Benefits
+          </h1>
+          <div className="flex-1 h-full min-h-[300px]">
+            <BarChart
+              series={ssaBarData.map((item) => item.value)}
+              categories={ssaBarData.map((item) => item.label)}
+              colors={['#4A90E2']}
+              xaxisLabels={true}
+              yaxisLabels={true}
+              barHeight={20}
+              height="100%"
+              width="100%"
+              xaxisTitle="Type of SSA"
+              yaxisTitle="No. of Household"
+              columnWidth={'20%'}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
-import { Heading } from 'apps/rahat-ui/src/common';
+import { DataCard, Heading } from 'apps/rahat-ui/src/common';
+import { Home, Users } from 'lucide-react';
 import React from 'react';
 
 type Props = {
@@ -41,6 +42,21 @@ const BeneficiaryDemographics = ({
     label: item.id,
     value: item.count,
   }));
+  const getStat = (name: string) =>
+    benefStats?.find((stat: any) => stat.name === name)?.data?.count ?? 0;
+
+  const stats = [
+    {
+      icon: <Users className="w-5 h-5 text-muted-foreground" />,
+      label: 'Total Respondents',
+      value: getStat('TOTAL_RESPONDENTS'),
+    },
+    {
+      icon: <Home className="w-5 h-5 text-muted-foreground" />,
+      label: 'Total no. of Family Members',
+      value: getStat('TOTAL_NUMBER_FAMILY_MEMBERS'),
+    },
+  ];
   return (
     <div className="flex flex-col">
       <Heading
@@ -48,7 +64,19 @@ const BeneficiaryDemographics = ({
         titleStyle="text-lg"
         description="Summary of household statistics"
       />
+
+      {/* <div className="flex flex-col gap-4 mt-0 md:flex-row"></div> */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ">
+        {stats.map((stat) => {
+          return (
+            <DataCard
+              title={stat.label}
+              number={stat.value.toString()}
+              className="rounded-sm  w-full"
+              key={stat.label}
+            />
+          );
+        })}
         <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
           <h1 className="text-sm font-medium">Gender Distribution</h1>
           <div className="w-full flex-1 p-4 pt-0">

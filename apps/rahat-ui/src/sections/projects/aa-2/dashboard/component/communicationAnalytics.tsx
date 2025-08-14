@@ -49,7 +49,6 @@ const CommunicationAnalytics = ({
       category: 'Beneficiaries',
       totalCommunicationSent: benefCountsSession,
       avcSuccessfullySent: beneficiaries?.VOICE?.SUCCESS || 0,
-      voiceMessageDelivered: beneficiaries?.VOICE?.SUCCESS || 0,
       smsSuccessfullyDelivered:
         (beneficiaries?.SMS?.SUCCESS || 0) +
         (beneficiaries?.['Prabhu SMS']?.SUCCESS || 0),

@@ -15,21 +15,6 @@ import React from 'react';
 
 const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
   const project = useProjectStore((p) => p.singleProject);
-  const getStat = (name: string) =>
-    benefStats?.find((stat: any) => stat.name === name)?.data?.count ?? 0;
-
-  const stats = [
-    {
-      icon: <Users className="w-5 h-5 text-muted-foreground" />,
-      label: 'Total Respondents',
-      value: getStat('TOTAL_RESPONDENTS'),
-    },
-    {
-      icon: <Home className="w-5 h-5 text-muted-foreground" />,
-      label: 'Total no. of Family Members',
-      value: getStat('TOTAL_NUMBER_FAMILY_MEMBERS'),
-    },
-  ];
 
   const activitiesData = triggeersStats?.find((stat: any) =>
     stat.name.startsWith(`ACTIVITIES_${projectId.toUpperCase()}`),
@@ -73,33 +58,13 @@ const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2  min-h-[400px] gap-4">
       {/* Left Content Section */}
-      <div className="flex flex-col justify-between space-y-6">
+      <div className="flex flex-col justify-between space-y-2">
         {/* Header */}
         <div className="space-y-4">
           <h1 className="text-xl  font-bold text-gray-900">{project?.name}</h1>
           <p className="text-gray-600 text-sm md:text-base leading-relaxed text-justify">
             {project?.description}
           </p>
-        </div>
-
-        {/* Statistics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {stats.map((stat) => {
-            return (
-              <div className="flex items-center gap-6 py-4" key={stat.label}>
-                <div className="relative rounded-full p-3 bg-gray-100">
-                  {stat.icon}
-                </div>
-
-                <div className=" flex flex-col">
-                  <h3 className="text-base text-muted-foreground">
-                    {stat.label}
-                  </h3>
-                  <h2 className="text-xl font-bold">{stat.value}</h2>
-                </div>
-              </div>
-            );
-          })}
         </div>
 
         {/* Progress Cards */}

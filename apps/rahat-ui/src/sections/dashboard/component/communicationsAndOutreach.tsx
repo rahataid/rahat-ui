@@ -1,8 +1,13 @@
 import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import { DataCard, Heading } from 'apps/rahat-ui/src/common';
+import { BroadcastStats } from 'apps/rahat-ui/src/types/dashboard';
 import React from 'react';
 
-const CommunicationsAndOutreach = () => {
+const CommunicationsAndOutreach = ({
+  commsStats,
+}: {
+  commsStats: BroadcastStats;
+}) => {
   return (
     <div className="flex flex-col mt-4">
       <Heading
@@ -14,7 +19,7 @@ const CommunicationsAndOutreach = () => {
         <DataCard
           title="Total Communication Sent"
           className="rounded-sm"
-          smallNumber="10"
+          number={commsStats?.messageStats?.totalMessages.toString()}
         />
       </div>
 
@@ -23,8 +28,18 @@ const CommunicationsAndOutreach = () => {
           <h1 className="text-sm font-medium">Communication Channels Used</h1>
           <div className="flex-1 p-2">
             <BarChart
-              series={[20, 50, 40, 80]}
-              categories={['SMS', 'Voice', 'Email', 'IVR']}
+              series={
+                commsStats?.transportStats?.map(
+                  (item) => item.totalRecipients,
+                ) || []
+              }
+              categories={
+                commsStats?.transportStats?.map(
+                  (item) =>
+                    item.name.charAt(0).toUpperCase() +
+                    item.name.slice(1).toLowerCase(),
+                ) || []
+              }
               colors={['#4A90E2']}
               xaxisLabels={true}
               yaxisLabels={true}
@@ -45,10 +60,13 @@ const CommunicationsAndOutreach = () => {
             <PieChart
               chart={{
                 series: [
-                  { label: 'Success', value: 10 },
+                  {
+                    label: 'Success',
+                    value: commsStats?.messageStats?.successRate,
+                  },
                   {
                     label: 'Failure',
-                    value: 20,
+                    value: 100 - commsStats?.messageStats?.successRate,
                   },
                 ],
                 colors: ['#388E3C', '#D32F2F'],

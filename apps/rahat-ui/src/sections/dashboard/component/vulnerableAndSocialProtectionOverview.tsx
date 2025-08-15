@@ -103,7 +103,7 @@ const VulnerableAndSocialProtectionOverview = ({
           titleStyle="text-lg"
           description="Household members with specific needs or requiring special support"
         />
-        <div className="flex gap-4 mt-0">
+        <div className="flex gap-4 mt-0 flex-col md:flex-row">
           <DataCard
             title="Pregnant Females"
             number={String(vulnerableCount.no_of_pregnant_women ?? 0)}

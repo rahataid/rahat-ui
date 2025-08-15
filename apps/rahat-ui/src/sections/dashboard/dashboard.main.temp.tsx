@@ -13,7 +13,6 @@ import CommunicationsAndOutreach from './component/communicationsAndOutreach';
 const DashboardMain = () => {
   const { data, isLoading } = useGetStatsCore();
 
-  console.log(data);
   if (isLoading) return <DashboardSkeleton />;
   return (
     <div className=" p-2">
@@ -22,11 +21,11 @@ const DashboardMain = () => {
       </div>
 
       <ScrollArea className="p-4 h-[calc(100vh-150px)]">
-        <BeneficiaryDemographics benefStats={data} />
-        <VulnerableAndSocialProtectionOverview statsData={data} />
-        <AccessAndInclusion statsData={data} />
-        <DisasterImpactAndEarlyWarning statsData={data} />
-        <CommunicationsAndOutreach />
+        <BeneficiaryDemographics benefStats={data?.benefStats} />
+        <VulnerableAndSocialProtectionOverview statsData={data?.benefStats} />
+        <AccessAndInclusion statsData={data?.benefStats} />
+        <DisasterImpactAndEarlyWarning statsData={data?.benefStats} />
+        <CommunicationsAndOutreach commsStats={data.commsStats} />
       </ScrollArea>
     </div>
   );

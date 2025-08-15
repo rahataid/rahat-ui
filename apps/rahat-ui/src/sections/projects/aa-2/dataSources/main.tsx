@@ -72,7 +72,7 @@ export default function DataSources() {
               className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
               value="gfh"
             >
-              Global Flood Hub
+              Google Flood Hub
             </TabsTrigger>
             <TabsTrigger
               className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"

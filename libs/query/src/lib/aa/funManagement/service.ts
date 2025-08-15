@@ -1,9 +1,25 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
-import { useEffect } from 'react';
+import { act, useEffect } from 'react';
 import { useFundAssignmentStore } from './store';
+import { useSwal } from 'libs/query/src/swal';
+import { UUID } from 'crypto';
 
+export type InitiateFundTransfer = {
+  from: string;
+  to: string;
+  alias: string;
+  amount: string;
+  proof: string;
+  description: string;
+};
+export type ConfirmReceipt = {
+  from: string;
+  to: string;
+  amount: string;
+  alias?: string;
+};
 export const useFetchTokenStatsStellar = (payload: any) => {
   const projectBalance = useProjectAction();
   const { setStellarTokenStats, setStellarTransaction } =
@@ -39,4 +55,138 @@ export const useFetchTokenStatsStellar = (payload: any) => {
     }
   }, [query?.data?.data]);
   return query;
+};
+
+export const useInitateFundTransfer = (projectUUID: UUID) => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({ payload }: { payload: InitiateFundTransfer }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.cash-tracker.executeAction',
+          payload: { ...payload, action: 'initiate_transfer' },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Fund transferred successfully.',
+        icon: 'success',
+      });
+      // Invalidate the transactions query to refresh the data
+      queryClient.invalidateQueries({
+        queryKey: ['aa.cash-tracker.getTransactions', projectUUID],
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while fund transfer.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useGetTransactions = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['aa.cash-tracker.getTransactions', projectUUID],
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
+        data: {
+          action: 'aa.cash-tracker.getTransactions',
+          payload: {},
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
+export const useGetBalance = (projectUUID: UUID) => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: async (smartAddress: string) => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
+        data: {
+          action: 'aa.cash-tracker.executeAction',
+          payload: {
+            from: smartAddress,
+            action: 'get_cash_balance',
+          },
+        },
+      });
+      return mutate;
+    },
+    onSuccess: (value) => {
+      q.reset();
+      queryClient.invalidateQueries({
+        queryKey: ['aa.cash-tracker.getTransactions', projectUUID],
+      });
+    },
+  });
+  return mutation;
+};
+
+export const useGetCash = (projectUUID: UUID) => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({ payload }: { payload: ConfirmReceipt }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.cash-tracker.executeAction',
+          payload: { ...payload, action: 'get_cash_from' },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Confirmed successfully.',
+        icon: 'success',
+      });
+      // Invalidate the transactions query to refresh the data
+      queryClient.invalidateQueries({
+        queryKey: ['aa.cash-tracker.getTransactions', projectUUID],
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while confirm.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
 };

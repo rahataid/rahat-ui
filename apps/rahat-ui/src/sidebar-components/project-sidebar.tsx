@@ -21,6 +21,7 @@ type ProjectNavViewProps = {
 };
 
 export function ProjectSidebar(menuItems: ProjectNavViewProps) {
+ console.log('menuItems', menuItems);
   const router = useRouter();
   return (
     <Sidebar collapsible="icon">

@@ -50,6 +50,9 @@ export const useSessionRetryFailed = () => {
       });
       Swal.fire('Retry Successfully', '', 'success');
     },
+    onError: (error: any) => {
+      Swal.fire('Retry Failed', error?.response.data.message, 'error');
+    },
   });
 
   return mutation;

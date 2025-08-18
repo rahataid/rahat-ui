@@ -77,6 +77,7 @@ const CommunicationsAndOutreach = ({
               width="100%"
               height="100%"
               type="donut"
+              showPercentage={true}
             />
           </div>
         </div>

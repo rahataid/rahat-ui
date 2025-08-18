@@ -57,7 +57,10 @@ const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
           <div className="flex-1 p-2">
             <BarChart
               series={channelUsageStats.map((item: any) => item.count)}
-              categories={channelUsageStats.map((item: any) => item.id)}
+              // categories={channelUsageStats.map((item: any) => item.id)}
+              categories={channelUsageStats.map((item: any) =>
+                item.id.replace(/([A-Z])/g, ' $1').trim(),
+              )}
               colors={['#4A90E2']}
               xaxisLabels={true}
               yaxisLabels={true}

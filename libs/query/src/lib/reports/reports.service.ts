@@ -27,3 +27,15 @@ export const useGetProjectDatasource = (projectUUID?: UUID) => {
     },
   });
 };
+
+export const useGetStatsCore = () => {
+  const { rumsanService } = useRSQuery();
+
+  return useQuery({
+    queryKey: ['coreStats'],
+    queryFn: async () => {
+      const res = await rumsanService.client.get(`/beneficiaries/stats`);
+      return res.data.data;
+    },
+  });
+};

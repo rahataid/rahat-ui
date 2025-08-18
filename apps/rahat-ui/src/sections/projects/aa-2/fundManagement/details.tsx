@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import { useSingleGroupReservedFunds } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { DataCard, HeaderWithBack } from 'apps/rahat-ui/src/common';
+import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 
 // export const FMTokensData = [
 //   {
@@ -46,7 +47,7 @@ export default function FundManagementDetail() {
     },
     {
       name: '1 Token Value',
-      amount: 'Rs. 10',
+      amount: ONE_TOKEN_VALUE,
     },
   ];
 

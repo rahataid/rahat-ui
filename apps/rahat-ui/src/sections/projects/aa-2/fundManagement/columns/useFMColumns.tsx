@@ -72,8 +72,18 @@ export const useFundManagementTableColumns = () => {
     },
     {
       accessorKey: 'tokens',
-      header: 'Tokens',
+      header: 'Total Tokens',
       cell: ({ row }) => <div>{row?.original?.numberOfTokens}</div>,
+    },
+    {
+      accessorKey: 'tokensperBenef',
+      header: 'Token Per Beneficiary',
+      cell: ({ row }) => (
+        <div>
+          {row?.original?.numberOfTokens /
+            row.original.group.groupedBeneficiaries.length}
+        </div>
+      ),
     },
     {
       accessorKey: 'createdBy',

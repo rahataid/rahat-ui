@@ -7,16 +7,20 @@ const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 type ChartProps = {
   data: Record<string, any>[]; // accepts any shape with datetime
-  dangerLevel?: string;
-  warningLevel?: string;
+  dangerLevel?: string | number;
+  warningLevel?: string | number;
+  extremeLevel?: string | number;
   yaxisTitle?: string;
   unit?: string;
+  xDateFormat?: string; // format for x-axis date labels
 };
 
 const TimeSeriesChart = ({
   data,
   dangerLevel,
   warningLevel,
+  extremeLevel,
+  xDateFormat = 'h:mm a',
   yaxisTitle = 'Water Level (m)',
   unit = '',
 }: ChartProps) => {
@@ -42,6 +46,8 @@ const TimeSeriesChart = ({
     chart: {
       type: 'area',
       zoom: { enabled: false },
+      offsetX: 0,
+      offsetY: 10,
     },
     xaxis: {
       type: 'datetime',
@@ -52,7 +58,7 @@ const TimeSeriesChart = ({
       },
       labels: {
         formatter: function (value) {
-          return format(new Date(value), 'h:mm a');
+          return format(new Date(value), xDateFormat);
         },
         rotate: 0,
       },
@@ -68,6 +74,7 @@ const TimeSeriesChart = ({
             ...data.flatMap((d) => keys.map((key) => d[key])),
             Number(warningLevel),
             Number(dangerLevel),
+            Number(extremeLevel),
           ) - 0.5,
       }),
       ...(dangerLevel && {
@@ -76,6 +83,7 @@ const TimeSeriesChart = ({
             ...data.flatMap((d) => keys.map((key) => d[key])),
             Number(warningLevel),
             Number(dangerLevel),
+            Number(extremeLevel),
           ) + 0.5,
       }),
     },
@@ -136,6 +144,22 @@ const TimeSeriesChart = ({
                     background: '#FF0000',
                   },
                   text: 'Danger Level',
+                },
+              },
+            ]
+          : []),
+        ...(extremeLevel
+          ? [
+              {
+                y: extremeLevel,
+                borderColor: '#A51D1D', // dark red
+                label: {
+                  borderColor: '#A51D1D',
+                  style: {
+                    color: '#fff',
+                    background: '#A51D1D',
+                  },
+                  text: 'Extreme Level',
                 },
               },
             ]

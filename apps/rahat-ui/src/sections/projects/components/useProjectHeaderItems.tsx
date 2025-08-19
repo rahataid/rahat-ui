@@ -1,6 +1,5 @@
-import { useProjectStore } from '@rahat-ui/query';
+import { useProject, useProjectStore } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,13 +10,16 @@ import {
 import { ProjectTypes } from '@rahataid/sdk/enums';
 import { useNavData } from 'apps/rahat-ui/src/app/config-nav';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
+import { UUID } from 'crypto';
 import { X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 
 export const useProjectHeaderItems = (projectType: string) => {
-  const router = useRouter();
+  const { id } = useParams();
+  useProject(id as UUID);
+
   const project = useProjectStore((p) => p.singleProject);
   const { data, subData } = useNavData();
   const currentPath = usePathname();

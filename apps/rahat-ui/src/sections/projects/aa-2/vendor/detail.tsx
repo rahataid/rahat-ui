@@ -73,7 +73,7 @@ export default function Detail() {
           <VendorsTransactionsHistory />
         </TabsContent>
         <TabsContent value="beneficairyList">
-          <VendorsBeneficiaryList beneficiaryList={[]} loading={false} />
+          <VendorsBeneficiaryList />
         </TabsContent>
         <TabsContent value="redemptionRequest">
           <RedemptionRequestTable />

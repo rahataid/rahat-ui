@@ -6,7 +6,7 @@ import {
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
 // import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { FC } from 'react';
+import { FC, Fragment } from 'react';
 import { NavItem } from './nav-items.types';
 import UserNavView from './user.nav.view';
 import { Tabs } from '@rahat-ui/shadcn/src/components/ui/tabs';
@@ -28,25 +28,19 @@ const UserLayout: FC<UserLayoutProps> = ({ children, menuItems }) => {
       </ResizablePanel>
     );
   };
+
   const renderChildren = () => {
     if (Array.isArray(children)) {
-      return children.map((child, index) => {
-        return (
-          <>
-            {/* <ResizableHandle withHandle /> */}
-            {renderResizablePanel(child, index)}
-          </>
-        );
-      });
+      return children.map((child, index) => (
+        <Fragment key={index}>
+          {index !== 0 && <ResizableHandle withHandle />}
+          {renderResizablePanel(child, index)}
+        </Fragment>
+      ));
     }
-    return (
-      <>
-        <ResizableHandle />
-        {renderResizablePanel(children)}
-      </>
-    );
-  };
 
+    return renderResizablePanel(children);
+  };
   return (
     <ResizablePanelGroup direction="horizontal">
       {/* <ResizablePanel

@@ -1,54 +1,74 @@
 import {
+  PayoutMode,
+  useGetVendorBeneficiaries,
+  usePagination,
+} from '@rahat-ui/query';
+import {
   getCoreRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { UUID } from 'crypto';
+import { DemoTable, Heading, SearchInput } from 'apps/rahat-ui/src/common';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useParams } from 'next/navigation';
 import React, { useMemo } from 'react';
 import { useVendorsBeneficiaryTableColumns } from '../columns/useBeneficiaryColumns';
-import {
-  ClientSidePagination,
-  DemoTable,
-  Heading,
-  SearchInput,
-} from 'apps/rahat-ui/src/common';
 
 interface VendorsBeneficiaryListProps {
-  beneficiaryList: any;
+  beneficiaryData?: {
+    success: boolean;
+    data: any[];
+    meta: any;
+  };
   loading?: boolean;
 }
 
 export default function VendorsBeneficiaryList({
-  beneficiaryList,
+  beneficiaryData,
   loading,
 }: VendorsBeneficiaryListProps) {
-  const { id } = useParams() as { id: UUID };
+  const { id, vendorId } = useParams();
+
+  const {
+    pagination,
+    selectedListItems,
+    setSelectedListItems,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    filters,
+    setFilters,
+    setPagination,
+    resetSelectedListItems,
+  } = usePagination();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+
+  const { data, isLoading } = useGetVendorBeneficiaries({
+    projectUUID: id,
+    vendorUuid: vendorId,
+    payoutMode: PayoutMode.OFFLINE,
+    ...pagination,
+    ...filters,
+  });
+
   const tableData = useMemo(() => {
-    if (beneficiaryList?.length > 0) {
-      return beneficiaryList.map((beneficiary: any) => {
+    if (data?.response?.data?.length > 0) {
+      return data?.response?.data?.map((beneficiary: any) => {
         return {
-          phone: beneficiary?.piiData?.phone,
-          type:
-            beneficiary?.Disbursement?.Beneficiary?.type ||
-            beneficiary?.Beneficiary?.type,
-          glassesStatus:
-            beneficiary?.Disbursement?.Beneficiary?.glassesStatus ||
-            beneficiary?.Beneficiary?.glassesStatus,
-          voucherStatus:
-            beneficiary?.Disbursement?.Beneficiary?.voucherStatus ||
-            beneficiary?.Beneficiary?.voucherStatus,
+          name: beneficiary?.name,
+          benTokens: beneficiary?.benTokens,
+          walletAddress: beneficiary?.walletAddress,
+          uuid: beneficiary?.uuid,
         };
       });
     } else {
       return [];
     }
-  }, [beneficiaryList]);
-
+  }, [data?.response?.data]);
   const columns = useVendorsBeneficiaryTableColumns();
   const table = useReactTable({
+    manualPagination: true,
     data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -57,6 +77,7 @@ export default function VendorsBeneficiaryList({
       columnVisibility,
     },
   });
+
   return (
     <div className="space-y-2">
       <Heading
@@ -75,9 +96,17 @@ export default function VendorsBeneficiaryList({
       <DemoTable
         table={table}
         tableHeight={'h-[calc(400px)]'}
-        loading={loading}
+        loading={isLoading}
       />
-      <ClientSidePagination table={table} />
+      <CustomPagination
+        currentPage={pagination.page}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+        perPage={pagination?.perPage}
+        total={data?.response?.meta?.total || 0}
+      />
     </div>
   );
 }

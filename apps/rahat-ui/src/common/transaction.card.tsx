@@ -14,6 +14,7 @@ interface IProps {
   cardDesc?: string;
   cardData: any;
   loading?: boolean;
+  cardHeight?: string;
 }
 
 export function TransactionCard({
@@ -21,6 +22,7 @@ export function TransactionCard({
   cardTitle,
   cardDesc = '',
   loading = false,
+  cardHeight = 'h-[calc(80vh-200px)]',
 }: IProps) {
   return (
     <div className=" rounded-md p-4">
@@ -29,7 +31,7 @@ export function TransactionCard({
         titleStyle="text-sm/6 text-muted-foreground font-semibold"
         description={cardDesc}
       />
-      <ScrollArea className=" h-[calc(80vh-200px)] scrollbar-hidden">
+      <ScrollArea className={` ${cardHeight} scrollbar-hidden`}>
         {loading ? (
           <div className=" pt-3 flex flex-col space-y-2">
             {Array.from({ length: 4 }).map((_, index) => (

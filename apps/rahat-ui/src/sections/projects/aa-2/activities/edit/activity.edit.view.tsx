@@ -55,6 +55,7 @@ import { toast } from 'react-toastify';
 import { Back, Heading, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { useUserList } from '@rumsan/react-query';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
+import { DurationData } from '../add/add.activity.view';
 
 // const activityDetail = {
 //   id: 4,
@@ -230,53 +231,69 @@ export default function EditActivity() {
     subject: '',
     audioURL: { mediaURL: '', fileName: '' },
   };
-  const FormSchema = z.object({
-    title: z.string().min(2, { message: 'Title must be at least 4 character' }),
-    responsibility: z
-      .string()
-      .min(2, { message: 'Please enter responsibility' }),
-    source: z.string().min(2, { message: 'Please enter source' }),
-    phaseId: z.string().min(1, { message: 'Please select phase' }),
-    categoryId: z.string().min(1, { message: 'Please select category' }),
-    leadTime: z.string().min(1, { message: 'Please enter lead time' }),
-    description: z
-      .string()
-      .optional()
-      .refine((val) => !val || val.length > 4, {
-        message: 'Must be at least 5 characters',
-      }),
-    isAutomated: z.boolean().optional(),
-    activityDocuments: z
-      .array(
-        z.object({
-          mediaURL: z.string(),
-          fileName: z.string(),
+  const FormSchema = z
+    .object({
+      title: z
+        .string()
+        .min(2, { message: 'Title must be at least 4 character' }),
+      responsibility: z
+        .string()
+        .min(2, { message: 'Please enter responsibility' }),
+      source: z.string().min(2, { message: 'Please enter source' }),
+      phaseId: z.string().min(1, { message: 'Please select phase' }),
+      categoryId: z.string().min(1, { message: 'Please select category' }),
+      leadTime: z.string().optional(),
+      description: z
+        .string()
+        .optional()
+        .refine((val) => !val || val.length > 4, {
+          message: 'Must be at least 5 characters',
         }),
-      )
-      .optional(),
-    activityCommunication: z.array(
-      z.object({
-        groupType: z.string().min(1, { message: 'Please select group type' }),
-        groupId: z.string().min(1, { message: 'Please select group' }),
-        transportId: z
-          .string()
-          .min(1, { message: 'Please select communication type' }),
-        message: z.string().or(z.object({})).optional(),
-        subject: z.string().optional(),
-        audioURL: z
-          .string()
-          .or(
-            z.object({
-              mediaURL: z.string().optional(),
-              fileName: z.string().optional(),
-            }),
-          )
-          .optional(),
-        sessionId: z.string().optional(),
-        communicationId: z.string().optional(),
-      }),
-    ),
-  });
+      isAutomated: z.boolean().optional(),
+      activityDocuments: z
+        .array(
+          z.object({
+            mediaURL: z.string(),
+            fileName: z.string(),
+          }),
+        )
+        .optional(),
+      activityCommunication: z.array(
+        z.object({
+          groupType: z.string().min(1, { message: 'Please select group type' }),
+          groupId: z.string().min(1, { message: 'Please select group' }),
+          transportId: z
+            .string()
+            .min(1, { message: 'Please select communication type' }),
+          message: z.string().or(z.object({})).optional(),
+          subject: z.string().optional(),
+          audioURL: z
+            .string()
+            .or(
+              z.object({
+                mediaURL: z.string().optional(),
+                fileName: z.string().optional(),
+              }),
+            )
+            .optional(),
+          sessionId: z.string().optional(),
+          communicationId: z.string().optional(),
+        }),
+      ),
+    })
+    .refine(
+      (data) => {
+        const selectedPhase = phases.find((p) => p.uuid === data.phaseId);
+        if (selectedPhase?.name !== 'PREPAREDNESS') {
+          return data.leadTime && data.leadTime.length > 0;
+        }
+        return true;
+      },
+      {
+        message: 'Lead time is required for this phase',
+        path: ['leadTime'],
+      },
+    );
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -308,22 +325,38 @@ export default function EditActivity() {
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
-      if (isDuplicateFile) {
-        return toast.error('Cannot upload duplicate files.');
-      }
-      if (!validateFile(file)) {
-        return;
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const filesArray = Array.from(files);
+
+      for (const file of filesArray) {
+        const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
+        if (isDuplicateFile) {
+          toast.error(`Cannot upload duplicate file: ${file.name}`);
+          continue;
+        }
+
+        if (!validateFile(file)) {
+          continue;
+        }
+
+        const newId = nextId.current++;
+        setDocuments((prev) => [...prev, { id: newId, name: file.name }]);
+
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          const { data: afterUpload } = await uploadFile.mutateAsync(formData);
+          setAllFiles((prev) => [...prev, afterUpload]);
+        } catch (error) {
+          // Remove the document from the list if upload fails
+          setDocuments((prev) => prev.filter((doc) => doc.name !== file.name));
+          toast.error(`Failed to upload ${file.name}`);
+        }
       }
 
-      const newId = nextId.current++;
-      setDocuments((prev) => [...prev, { id: newId, name: file.name }]);
-      const formData = new FormData();
-      formData.append('file', file);
-      const { data: afterUpload } = await uploadFile.mutateAsync(formData);
-      setAllFiles((prev) => [...prev, afterUpload]);
+      // Reset the input value to allow selecting the same files again
+      event.target.value = '';
     }
   };
 
@@ -409,7 +442,10 @@ export default function EditActivity() {
         activityCommunication: activityCommunicationPayload,
       };
     } else {
-      payload = { uuid: activityID, ...data };
+      payload = {
+        uuid: activityID,
+        ...data,
+      };
     }
     try {
       await updateActivity.mutateAsync({
@@ -661,32 +697,65 @@ export default function EditActivity() {
                     }}
                   />
                 )}
-                <FormField
-                  control={form.control}
-                  name="leadTime"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Lead Time (hours)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="Enter lead time"
-                            {...field}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              // Allow only digits (0-9)
-                              if (/^\d*$/.test(value)) {
-                                field.onChange(e); // Only update if valid
-                              }
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
+
+                {selectedPhaseId && selectedPhase?.name !== 'PREPAREDNESS' && (
+                  <FormField
+                    control={form.control}
+                    name="leadTime"
+                    render={({ field }) => {
+                      const [lead, unitValue] = field.value?.split(' ') ?? [
+                        '',
+                        '',
+                      ];
+                      // Default unit to 'days' if not set
+                      const unit = !unitValue ? 'days' : unitValue;
+                      return (
+                        <FormItem>
+                          <FormLabel>Lead Time</FormLabel>
+                          <div className="grid grid-cols-4">
+                            <Input
+                              type="text"
+                              placeholder="Enter lead time"
+                              className="col-span-3 rounded-r-none "
+                              value={lead}
+                              onChange={(e) => {
+                                const newLead = e.target.value;
+                                field.onChange(
+                                  newLead ? `${newLead} ${unit}` : ` ${unit}`,
+                                );
+                              }}
+                            />
+                            <Select
+                              value={unit}
+                              onValueChange={(val) => {
+                                field.onChange(
+                                  lead ? `${lead} ${val}` : ` ${val}`,
+                                );
+                              }}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="rounded-l-none">
+                                  <SelectValue />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {DurationData.map((item) => (
+                                  <SelectItem
+                                    key={item.value}
+                                    value={item.value}
+                                  >
+                                    {item.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                )}
 
                 <FormField
                   control={form.control}
@@ -729,6 +798,7 @@ export default function EditActivity() {
                           <Input
                             className="opacity-0 cursor-pointer"
                             type="file"
+                            multiple
                             onChange={handleFileChange}
                           />
                         </div>

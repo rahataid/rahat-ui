@@ -23,7 +23,7 @@ function FundProgressTracker({
                   <div
                     className={`absolute top-4  left-16 h-1 ${
                       transfers?.find((t: any) => t.alias === balance?.alias)
-                        ?.received > 0
+                        ?.received > 0 || index === 0
                         ? 'bg-green-500'
                         : 'bg-gray-200'
                     }`}
@@ -40,6 +40,7 @@ function FundProgressTracker({
                     status={isConfirmed ? 'confirmed' : 'pending'}
                     balance={balance.balance}
                     received={balance.received}
+                    index={index}
                   />
                 </div>
               </div>

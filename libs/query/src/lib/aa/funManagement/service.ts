@@ -121,12 +121,13 @@ export const useGetTransactions = (projectUUID: UUID) => {
   return query;
 };
 
-export const useGetBalance = (projectUUID: UUID) => {
+export const useGetBalance = (projectUUID: UUID, smartAddress: string) => {
   const q = useProjectAction();
-  const queryClient = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: async (smartAddress: string) => {
-      const mutate = await q.mutateAsync({
+
+  const query = useQuery({
+    queryKey: ['aa.cash-tracker.getBalance', projectUUID, smartAddress],
+    queryFn: async () => {
+      const response = await q.mutateAsync({
         uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
         data: {
           action: 'aa.cash-tracker.executeAction',
@@ -136,16 +137,11 @@ export const useGetBalance = (projectUUID: UUID) => {
           },
         },
       });
-      return mutate;
-    },
-    onSuccess: (value) => {
-      q.reset();
-      queryClient.invalidateQueries({
-        queryKey: ['aa.cash-tracker.getTransactions', projectUUID],
-      });
+      return response;
     },
   });
-  return mutation;
+
+  return query;
 };
 
 export const useGetCash = (projectUUID: UUID) => {

@@ -98,7 +98,9 @@ export default function ActivitiesDetailView() {
               Icon={RefreshCcw}
               handleClick={() =>
                 router.push(
-                  `/projects/aa/${projectId}/activities/${activityId}/update-status?from=detailPage`,
+                  `/projects/aa/${projectId}/activities/${activityId}/update-status?from=detailPage${
+                    redirectTo ? `&backFrom=${redirectTo}` : ''
+                  }`,
                 )
               }
               name="Update Status"

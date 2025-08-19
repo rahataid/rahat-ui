@@ -34,11 +34,8 @@ import { AARoles, RoleAuth } from '@rahat-ui/auth';
 // }
 
 export default function useActivitiesTableColumn() {
-  const { id: projectID } = useParams();
+  const { id: projectID, title } = useParams();
   const router = useRouter();
-
-  const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('from');
 
   const handleEyeClick = (activityId: any) => {
     setPaginationToLocalStorage();
@@ -47,7 +44,7 @@ export default function useActivitiesTableColumn() {
 
   const handleUpdateStatusIconClick = (activityId: any) => {
     router.push(
-      `/projects/aa/${projectID}/activities/${activityId}/update-status?from=${redirectTo}`,
+      `/projects/aa/${projectID}/activities/${activityId}/update-status?from=${title}`,
     );
   };
 

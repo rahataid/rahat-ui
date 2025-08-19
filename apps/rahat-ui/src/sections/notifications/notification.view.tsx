@@ -120,7 +120,7 @@ export default function NotificationsView() {
                             onClick={() => toggleExpand(notification.id)}
                             className="text-blue-600 text-xs p-0 h-auto leading-none"
                           >
-                            Collapse
+                            View less
                           </Button>
                         )}
                       </div>

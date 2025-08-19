@@ -85,7 +85,7 @@ const truncateDescription = (description?: string, maxLength = 20) => {
       </button>
     </div>
 
-    {/* Notification List */}
+   
     <div className="flex-1 overflow-y-auto">
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
@@ -144,7 +144,7 @@ const truncateDescription = (description?: string, maxLength = 20) => {
                                     className="text-blue-600 text-xs p-0 h-auto leading-none"
                                     onClick={() => toggleExpand(notification.id)}
                                   >
-                                    Collapse
+                                    View less
                                   </Button>
                                 )}
                               </div>

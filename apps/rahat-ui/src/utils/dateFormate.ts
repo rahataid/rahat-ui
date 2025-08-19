@@ -1,4 +1,4 @@
-import { formatDate, formatDistanceToNow, parseISO } from 'date-fns';
+import { differenceInHours, format, formatDate, formatDistanceToNow, isYesterday, parseISO } from 'date-fns';
 
 export const dateFormat = (
   date: Date | string | undefined | null,
@@ -13,12 +13,25 @@ export const dateFormat = (
   }
 };
 
-   export const formatTimestamp = (createdAt: string) => {
-    try {
-      const date = parseISO(createdAt); 
-      return formatDistanceToNow(date, { addSuffix: true }); 
-    } catch (error) {
-      return createdAt; 
+export const formatTimestamp = (createdAt: string): string => {
+  try {
+    const date = parseISO(createdAt);
+
+    // Check if the date is yesterday
+    if (isYesterday(date)) {
+      return format(date, 'MMMM d, yyyy, h:mm:ss a'); 
     }
-  };
+
+    
+    const hoursDifference = differenceInHours(new Date(), date);
+    if (hoursDifference < 24) {
+      return formatDistanceToNow(date, { addSuffix: true }); 
+    }
+
+   
+    return formatDistanceToNow(date, { addSuffix: true });
+  } catch (error) {
+    return createdAt;
+  }
+}
 

@@ -6,6 +6,7 @@ import React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useGetAllNotificatons } from '@rahat-ui/query';
 import { formatTimestamp } from '../../utils/dateFormate';
+import { Notification } from '@rahat-ui/types';
 
 
 
@@ -15,16 +16,11 @@ export default function NotificationsView() {
 
   const router = useRouter();
 
-
-
-
-
-
   const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>({});
  
 
  
-  const toggleExpand = (id: string) => {
+  const toggleExpand = (id: number) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
@@ -63,7 +59,7 @@ export default function NotificationsView() {
             </div>
 
             <div className="divide-y divide-gray-200">
-              {notificationData?.map((notification:any) => {
+              {notificationData?.map((notification:Notification) => {
                 const isExpanded = expanded[notification.id] || false;
 
                 return (
@@ -96,7 +92,7 @@ export default function NotificationsView() {
                             )}
                             <p className="text-xs text-gray-500">{formatTimestamp(notification.createdAt)}</p>
                           </div>
-                          {!notification.isRead && (
+                          {!notification.notify&& (
                             <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2" />
                           )}
                         </div>

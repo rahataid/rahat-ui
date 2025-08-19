@@ -8,18 +8,8 @@ import { X, Bell } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { formatTimestamp } from "../utils/dateFormate";
+import { Notification } from "@rahat-ui/types";
 
-interface Notification {
-  id:  number;
-  title: string;
-  createdAt: string;
-
-  description?: string; 
-  notify: boolean;
-  group:string;
-  projectId:string | null
-  
-}
 
 interface NotificationPanelProps {
   isOpen: boolean;
@@ -105,7 +95,7 @@ const truncateDescription = (description?: string, maxLength = 20) => {
               </div>
             ) : (
               <div className="divide-y">
-                {displayedNotifications.map((notification) => {
+                {displayedNotifications.map((notification:Notification) => {
                   const isExpanded = expanded[notification.id] || false;
                   const truncatedDesc = truncateDescription(notification.description);
 

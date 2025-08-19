@@ -23,8 +23,8 @@ export default function ActivitiesDetailView() {
     activityId,
   );
   const activitiesListPath = redirectTo
-    ? `/projects/aa/${projectId}/activities`
-    : `/projects/aa/${projectId}/activities/list/${activityDetail?.phase?.name.toLowerCase()}`;
+    ? `/projects/aa/${projectId}/activities/list/${redirectTo}`
+    : `/projects/aa/${projectId}/activities`;
 
   const deleteActivity = useDeleteActivities();
 

@@ -39,7 +39,9 @@ export default function useActivitiesTableColumn() {
 
   const handleEyeClick = (activityId: any) => {
     setPaginationToLocalStorage();
-    router.push(`/projects/aa/${projectID}/activities/${activityId}`);
+    router.push(
+      `/projects/aa/${projectID}/activities/${activityId}?from=${title}`,
+    );
   };
 
   const handleUpdateStatusIconClick = (activityId: any) => {

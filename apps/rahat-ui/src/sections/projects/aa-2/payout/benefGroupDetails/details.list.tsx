@@ -85,8 +85,6 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     XLSX.writeFile(workbook, 'payout-logs.xlsx');
   };
 
-  console.log('table', payoutlogs);
-  console.log('single', payout);
   const table = useReactTable({
     manualPagination: true,
     data: payoutlogs?.data || [],
@@ -169,7 +167,6 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
     [filters],
   );
-  console.log(payoutlogs?.data?.length, 'payoutlogs data length');
   return isLoading ? (
     <TableLoader />
   ) : (
@@ -359,23 +356,21 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           )}
         </div>
         <BeneficiariesGroupTable table={table} loading={payoutLogsLoading} />
+
         <CustomPagination
-          meta={
-            payoutlogs?.response?.meta || {
-              total: 0,
-              currentPage: 0,
-              lastPage: 0,
-              perPage: 0,
-              next: null,
-              prev: null,
-            }
-          }
+          currentPage={pagination.page}
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}
-          currentPage={pagination.page}
-          perPage={pagination.perPage}
-          total={payoutlogs?.response?.meta?.total}
+          setPagination={setPagination}
+          meta={
+            (payoutlogs?.response?.meta as any) || {
+              total: 0,
+              currentPage: 0,
+            }
+          }
+          perPage={pagination?.perPage}
+          total={payoutlogs?.response?.meta?.total || 0}
         />
       </div>
     </div>

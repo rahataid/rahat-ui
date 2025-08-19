@@ -103,7 +103,7 @@ export function CashTracker() {
           from: flow.from,
           to: flow.to,
           amount: flow.amount,
-          timestamp: now,
+          timestamp: flow?.timestamp || now,
           status: flow.type === 'sent' ? 'sent' : ('received' as const),
           transactionHash: flow.transactionHash, // Include transaction hash if needed
           comments: '', // optional

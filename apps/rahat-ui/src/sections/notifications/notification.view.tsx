@@ -70,7 +70,7 @@ export default function NotificationsView() {
                   <div
                     key={notification.id}
                     className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
-                      !notification.isRead && 'bg-blue-50/50'
+                      !notification.notify && 'bg-blue-50/50'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-4">
@@ -80,7 +80,7 @@ export default function NotificationsView() {
                             <div className="flex items-center gap-2 mb-1">
                               <h3 className="text-sm font-medium text-gray-900">{notification.title}</h3>
                               {notification.projectId && (
-                                <span className="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded">
+                                <span className="text-xs text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
                                   {notification.projectId}
                                 </span>
                               )}

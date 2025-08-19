@@ -119,9 +119,17 @@ const truncateDescription = (description?: string, maxLength = 20) => {
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-col gap-1">
-                            <p className="text-sm font-medium text-gray-900 leading-5">
+                            {/* <p className="text-sm font-medium text-gray-900 leading-5">
                               {notification.title}
-                            </p>
+                            </p> */}
+                            <div className="flex items-center gap-2 flex-wrap">
+                          <p className="text-sm font-medium text-gray-900 leading-5">{notification.title}</p>
+                          {notification.projectId && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-50 text-gray-600">
+                              {notification.projectId}
+                            </span>
+                          )}
+                        </div>
                             {notification.description && (
                               <div className="flex items-center gap-2">
                                 <p className="text-sm text-gray-600">

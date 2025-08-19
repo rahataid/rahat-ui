@@ -1,54 +1,61 @@
 import { localStore, zustandStore } from '@rumsan/react-query';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-interface I {
+interface Notification {
   id: number;
-  uuid: string;
-  name: string;
-  isDeleted: boolean;
+  title: string;
   createdAt: string;
+  description?: string;
+  notify: boolean;
+  group: string;
+  projectId: string | null;
 }
 
 const initialStore = {
-  categories: [],
-  phases: [],
-  hazardTypes: [],
-  activities: [],
-  activitiesMeta: {},
+  notifications: [],
+  meta: {},
 };
 
-type ActivitiesState = {
-  categories: I[];
-  phases: I[];
-  hazardTypes: I[];
-  activities: any;
-  activitiesMeta: any;
+type NotificationState = {
+  notifications: Notification[];
+  meta: any;
 };
 
-type ActivitiesStateAction = {
-  setCategories: (categories: I[]) => void;
-  setPhases: (phases: I[]) => void;
-  setHazardTypes: (hazardTypes: I[]) => void;
-  setActivities: (activities: any) => void;
-  setActivitiesMeta: (meta: any) => void;
+type NotificationStateAction = {
+  setNotifications: (notifications: Notification[]) => void;
+  addNotification: (notification: Notification) => void;
+  updateNotification: (id: number, updates: Partial<Notification>) => void;
+  removeNotification: (id: number) => void;
+  setMeta: (meta: any) => void;
 };
 
-type ActivitiesStore = ActivitiesState & ActivitiesStateAction;
+type NotificationStore = NotificationState & NotificationStateAction;
 
-export const useNotificationStore: UseBoundStore<StoreApi<ActivitiesStore>> =
-  zustandStore<ActivitiesStore>(
+export const useNotificationStore: UseBoundStore<StoreApi<NotificationStore>> =
+  zustandStore<NotificationStore>(
     (set) => ({
       ...initialStore,
-      setCategories: (categories) => set({ categories }),
-      setPhases: (phases) => set({ phases }),
-      setHazardTypes: (hazardTypes) => set({ hazardTypes }),
-      setActivities: (activities) => set({ activities }),
-      setActivitiesMeta: (meta) => set({ activitiesMeta: meta }),
+      setNotifications: (notifications) => set({ notifications }),
+      addNotification: (notification) =>
+        set((state) => ({
+          notifications: [...state.notifications, notification],
+        })),
+      updateNotification: (id, updates) =>
+        set((state) => ({
+          notifications: state.notifications.map((n) =>
+            n.id === id ? { ...n, ...updates } : n
+          ),
+        })),
+      removeNotification: (id) =>
+        set((state) => ({
+          notifications: state.notifications.filter((n) => n.id !== id),
+        })),
+      setMeta: (meta) => set({ meta }),
     }),
     {
       devtoolsEnabled: true,
       persistOptions: {
-        name: 'notificationStore',
+        name: 'aaNotificationStore',
         storage: localStore,
       },
     },

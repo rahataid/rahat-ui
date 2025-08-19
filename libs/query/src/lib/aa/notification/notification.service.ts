@@ -1,22 +1,20 @@
 'use client';
 import { useEffect } from 'react';
 import {
-  keepPreviousData,
-  useMutation,
+ 
   useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
-import { useGeneralAction, useProjectAction, useProjectSettingsStore } from '../../projects';
 
-import { UUID } from 'crypto';
-import { useSwal } from 'libs/query/src/swal';
-import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
+} from '@tanstack/react-query';
+import { useGeneralAction } from '../../projects';
+
+import { useNotificationStore } from './notification.store';
 
 export const useGetAllNotificatons = () => {
   const q = useGeneralAction()
-  // const { setCategories } = useActivitiesStore((state) => ({
-  //   setCategories: state.setCategories,
-  // }));
+  const { setNotifications } = useNotificationStore((state) => ({
+    setNotifications: state.setNotifications,
+  }));
+ 
 
   const query = useQuery({
     queryKey: ['notifications'],
@@ -31,11 +29,11 @@ export const useGetAllNotificatons = () => {
     },
   });
 
-  // useEffect(() => {
-  //   if (query.data) {
-  //     setCategories(query?.data);
-  //   }
-  // }, [query.data]);
+  useEffect(() => {
+    if (query.data) {
+      setNotifications(query?.data);
+    }
+  }, [query.data]);
   return query;
 };
 

@@ -42,6 +42,12 @@ export default  function NotificationPanel({
 
 const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>({});
 
+const truncateDescription = (description?: string, maxLength = 20) => {
+  if (!description) return "";
+  return description.length > maxLength
+    ? `${description.slice(0, maxLength)}...`
+    : description;
+};
 
 
   const displayedNotifications = notifications.slice(0, 4);
@@ -56,31 +62,31 @@ const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>({});
 
   return (
     <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/20 z-[49]" onClick={onClose} />
+    {/* Backdrop */}
+    <div className="fixed inset-0 bg-black/20 z-[49]" onClick={onClose} />
 
-      <div className="fixed top-16 right-20 z-[50] flex items-start">
-        <div className="bg-white rounded-lg shadow-xl w-[30rem] max-w-lg max-h-[80vh] flex flex-col">
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b">
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-semibold">Notifications</h2>
-              {lengthOfNotification > 0 && (
-                <span className="bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {lengthOfNotification}
-                </span>
-              )}
-            </div>
-            <button
-              onClick={onClose}
-              className="h-8 w-8 p-0 text-gray-500 hover:text-gray-700"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
+<div className="fixed top-16 right-20 z-[50] flex items-start">
+  <div className="bg-white rounded-lg shadow-xl w-[30rem] max-w-lg max-h-[80vh] flex flex-col">
+    {/* Header */}
+    <div className="flex items-center justify-between p-4 border-b">
+      <div className="flex items-center gap-2">
+        <h2 className="text-lg font-semibold">Notifications</h2>
+        {lengthOfNotification > 0 && (
+          <span className="bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+            {lengthOfNotification}
+          </span>
+        )}
+      </div>
+      <button
+        onClick={onClose}
+        className="h-8 w-8 p-0 text-gray-500 hover:text-gray-700"
+      >
+        <X className="h-4 w-4" />
+      </button>
+    </div>
 
-          {/* Notification List */}
-          <div className="flex-1 overflow-y-auto">
+    {/* Notification List */}
+    <div className="flex-1 overflow-y-auto">
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
                 <p className="text-sm text-gray-500">Loading notifications...</p>
@@ -101,6 +107,7 @@ const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>({});
               <div className="divide-y">
                 {displayedNotifications.map((notification) => {
                   const isExpanded = expanded[notification.id] || false;
+                  const truncatedDesc = truncateDescription(notification.description);
 
                   return (
                     <div
@@ -112,33 +119,35 @@ const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>({});
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-4 flex-wrap">
-                              <p className="text-sm font-medium text-gray-900 leading-5">
-                                {notification.title}
-                              </p>
-                              {notification.description && !isExpanded && (
-                                <Button
-                                  variant="link"
-                                  className="text-blue-600 text-xs p-0 h-auto leading-none"
-                                  onClick={() => toggleExpand(notification.id)}
-                                >
-                                  View all
-                                </Button>
-                              )}
-                              {notification.description && isExpanded && (
-                                <Button
-                                  variant="link"
-                                  className="text-blue-600 text-xs p-0 h-auto leading-none"
-                                  onClick={() => toggleExpand(notification.id)}
-                                >
-                                  Collapse
-                                </Button>
-                              )}
-                            </div>
-                            {isExpanded && notification.description && (
-                              <p className="text-sm text-gray-600">
-                                {notification.description}
-                              </p>
+                            <p className="text-sm font-medium text-gray-900 leading-5">
+                              {notification.title}
+                            </p>
+                            {notification.description && (
+                              <div className="flex items-center gap-2">
+                                <p className="text-sm text-gray-600">
+                                  {isExpanded
+                                    ? notification.description
+                                    : truncatedDesc}
+                                </p>
+                                {!isExpanded && (
+                                  <Button
+                                    variant="link"
+                                    className="text-blue-600 text-xs p-0 h-auto leading-none"
+                                    onClick={() => toggleExpand(notification.id)}
+                                  >
+                                    View all
+                                  </Button>
+                                )}
+                                {isExpanded && (
+                                  <Button
+                                    variant="link"
+                                    className="text-blue-600 text-xs p-0 h-auto leading-none"
+                                    onClick={() => toggleExpand(notification.id)}
+                                  >
+                                    Collapse
+                                  </Button>
+                                )}
+                              </div>
                             )}
                             <p className="text-xs text-gray-500">
                               {formatTimestamp(notification.createdAt)}
@@ -156,24 +165,24 @@ const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>({});
             )}
           </div>
 
-          {/* Footer */}
-          {notifications.length > 0 && (
-            <div className="p-4 border-t">
-              <div className="flex justify-end">
-                <Link href="/notifications" onClick={onClose}>
-                  <Button
-                    variant="ghost"
-                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                  >
-                    See all notifications →
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          )}
+    {/* Footer */}
+    {notifications.length > 0 && (
+      <div className="p-4 border-t">
+        <div className="flex justify-end">
+          <Link href="/notifications" onClick={onClose}>
+            <Button
+              variant="ghost"
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            >
+              See all notifications →
+            </Button>
+          </Link>
         </div>
       </div>
-    </>
+    )}
+  </div>
+</div>
+  </>
 
     
     

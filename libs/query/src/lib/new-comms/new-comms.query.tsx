@@ -51,7 +51,13 @@ export const useSessionRetryFailed = () => {
       Swal.fire('Retry Successfully', '', 'success');
     },
     onError: (error: any) => {
-      Swal.fire('Retry Failed', error?.response.data.message, 'error');
+      Swal.fire(
+        'You’ve reached the maximum number of retries',
+        error?.response.data.message === 'Session is completed'
+          ? 'No further retries possible'
+          : error?.response.data.message,
+        'error',
+      );
     },
   });
 

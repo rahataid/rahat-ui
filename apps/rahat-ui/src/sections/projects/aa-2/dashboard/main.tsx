@@ -49,12 +49,12 @@ const Main = () => {
           triggeersStats={data?.triggeersStats}
           projectId={projectId}
         />
-        <DigitalAccessOverview stats={data.benefStats} />
         <SocialProtectionBenefits
           benefStats={data?.benefStats}
           triggeersStats={data?.triggeersStats}
           projectId={projectId}
         />
+        <DigitalAccessOverview stats={data.benefStats} />
         <AccessAndResilienceOverview data={data?.benefStats} />
         <CommunicationAnalytics
           benefStats={data?.benefStats}

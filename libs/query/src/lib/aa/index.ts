@@ -10,3 +10,4 @@ export * from './communication';
 export * from './funManagement';
 export * from './vendors';
 export * from './payout';
+export * from './notification';

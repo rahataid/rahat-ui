@@ -1,4 +1,4 @@
-import { formatDate } from 'date-fns';
+import { formatDate, formatDistanceToNow, parseISO } from 'date-fns';
 
 export const dateFormat = (
   date: Date | string | undefined | null,
@@ -12,3 +12,13 @@ export const dateFormat = (
     return '';
   }
 };
+
+   export const formatTimestamp = (createdAt: string) => {
+    try {
+      const date = parseISO(createdAt); 
+      return formatDistanceToNow(date, { addSuffix: true }); 
+    } catch (error) {
+      return createdAt; 
+    }
+  };
+

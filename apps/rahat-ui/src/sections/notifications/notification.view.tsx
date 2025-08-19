@@ -3,63 +3,25 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { X } from 'lucide-react';
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import { useGetAllNotificatons } from '@rahat-ui/query';
+import { formatTimestamp } from '../../utils/dateFormate';
 
-interface Notification {
-  id: string;
-  title: string;
-  description?: string;
-  timestamp: string;
-  isRead: boolean;
-  category?: string;
-}
 
-const mockNotifications: Notification[] = [
-  {
-    id: '1',
-    title: 'This is a demo for notification title',
-    description: 'This is a product description. This was something we want and sometimes we are very long so we...',
-    timestamp: '4h ago',
-    isRead: false,
-    category: 'CLICK TO LAUNCH',
-  },
-  {
-    id: '2',
-    title: 'This is a demo for notification title',
-    description:
-      'This is a product description. This was something we want and sometimes we are very long so we need to be careful.',
-    timestamp: '4h ago',
-    isRead: false,
-  },
-  {
-    id: '3',
-    title: 'Something has happened',
-    timestamp: '4h ago',
-    isRead: false,
-  },
-  {
-    id: '4',
-    title: 'Activation has been activated',
-    timestamp: '4h ago',
-    isRead: true,
-    category: 'CLICK TO LAUNCH',
-  },
-  {
-    id: '5',
-    title: 'This is a demo for notification title back!',
-    timestamp: '4h ago',
-    isRead: true,
-  },
-];
 
 export default function NotificationsView() {
-  const [notifications, setNotifications] = React.useState<Notification[]>(mockNotifications);
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const {data:notificationData} = useGetAllNotificatons()
+  const  lenthOfNotification = notificationData?.length || 0;
+
   const router = useRouter();
 
 
+
+
+
+
   const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>({});
-  const [isOpen, setIsOpen] = React.useState(true); 
+ 
 
  
   const toggleExpand = (id: string) => {
@@ -90,9 +52,9 @@ export default function NotificationsView() {
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
                   <h1 className="text-xl font-semibold text-gray-900">Notifications</h1>
-                  {unreadCount > 0 && (
+                  {lenthOfNotification > 0 && (
                     <span className="bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {unreadCount}
+                      {lenthOfNotification}
                     </span>
                   )}
                 </div>
@@ -101,7 +63,7 @@ export default function NotificationsView() {
             </div>
 
             <div className="divide-y divide-gray-200">
-              {notifications.map((notification) => {
+              {notificationData?.map((notification:any) => {
                 const isExpanded = expanded[notification.id] || false;
 
                 return (
@@ -117,9 +79,9 @@ export default function NotificationsView() {
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
                               <h3 className="text-sm font-medium text-gray-900">{notification.title}</h3>
-                              {notification.category && (
+                              {notification.projectId && (
                                 <span className="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded">
-                                  {notification.category}
+                                  {notification.projectId}
                                 </span>
                               )}
                             </div>
@@ -132,7 +94,7 @@ export default function NotificationsView() {
                                 {notification.description}
                               </p>
                             )}
-                            <p className="text-xs text-gray-500">{notification.timestamp}</p>
+                            <p className="text-xs text-gray-500">{formatTimestamp(notification.createdAt)}</p>
                           </div>
                           {!notification.isRead && (
                             <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2" />

@@ -19,16 +19,18 @@ import { useUserStore } from '@rumsan/react-query';
 import { useAuthStore } from '@rumsan/react-query/auth';
 import { toast } from 'react-toastify';
 import { paths } from '../routes/paths';
-import ThemeSwitch from './themeToggleSwitch';
+
 import ConnectWallet from './wallet/connect-wallet';
 import SearchInput from '../sections/projects/components/search.input';
 import React from 'react';
-import { Bell } from 'lucide-react';
 
 
-import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
-const ShowNotificationModal = React.lazy(()=> import('./notification.panal'));
+
+
+import { NotificationButton } from './notification-button';
+
+
 
 
 export function Nav({ hasDefaultHeader = true }) {
@@ -36,6 +38,7 @@ export function Nav({ hasDefaultHeader = true }) {
     user: state.user,
     clearUser: state.clearUser,
   }));
+ 
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const handleLogout = () => {
     clearUser();
@@ -45,13 +48,8 @@ export function Nav({ hasDefaultHeader = true }) {
     toast.success('Logged out successfully.');
     setTimeout(() => window.location.reload(), 1000);
   };
-  const notificationModal = useBoolean()
-  const handleNotification =()=>{
 
-notificationModal.onTrue()
-  }
-  
-
+ 
 
 
 
@@ -61,22 +59,7 @@ notificationModal.onTrue()
         <SearchInput className="w-1/4" name="" onSearch={() => {}} isDisabled />
         <div className="flex space-x-6 items-center">
 
-        <button
-           
-              onClick={handleNotification}
-         
-              className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors" 
-            >
-              <Bell className="h-6 w-6" 
-                  
-              
-              />
-              {1 > 0 && (
-                <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-                  {3}
-                </span>
-              )}
-            </button>
+  <NotificationButton unreadCount={3}/>
           <ConnectWallet />
           <DropdownMenu>
             <DropdownMenuTrigger>
@@ -131,11 +114,7 @@ notificationModal.onTrue()
           </DropdownMenu>
         </div>
        
-        <ShowNotificationModal
-            isOpen={notificationModal.value}
-            onClose={notificationModal.onFalse}
-           // notifications={notifications}
-          />
+  
       </div>
     )
   );

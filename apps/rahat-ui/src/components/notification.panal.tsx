@@ -1,101 +1,73 @@
 "use client";
 
+
 import { Button } from "@rahat-ui/shadcn/src/components/ui/button";
+
+
 import { X, Bell } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { formatTimestamp } from "../utils/dateFormate";
 
 interface Notification {
-  id: string;
+  id:  number;
   title: string;
-  timestamp: string;
-  isRead: boolean;
+  createdAt: string;
+
+  description?: string; 
+  notify: boolean;
+  group:string;
+  projectId:string | null
+  
 }
 
 interface NotificationPanelProps {
   isOpen: boolean;
   onClose: () => void;
   notifications?: Notification[];
+  lengthOfNotification?: number;
   onMarkAsRead?: (id: string) => void;
+  isLoading?: boolean;
 }
 
 export default  function NotificationPanel({
   isOpen,
   onClose,
   onMarkAsRead,
+  notifications = [],
+  lengthOfNotification= 0,
+  isLoading = false,
+  
 }: NotificationPanelProps) {
-  const notifications = [
-    {
-      id: "1",
-      title: "This is a demo for notification title",
-      timestamp: "4h ago",
-      isRead: false,
-    },
-    {
-      id: "2",
-      title: "Something has happened",
-      timestamp: "4h ago",
-      isRead: false,
-    },
-    {
-      id: "3",
-      title: "Activation has been activated",
-      timestamp: "4h ago",
-      isRead: true,
-    },
-    {
-      id: "4",
-      title: "This is a demo for notification title back or the organization and there is another !",
-      timestamp: "4h ago",
-      isRead: true,
-    },
-    {
-      id: "5",
-      title: "This is a demo for notification title back!",
-      timestamp: "4h ago",
-      isRead: true,
-    },
-    {
-      id: "6",
-      title: "This is a sixth demo for notification title back!",
-      timestamp: "4h ago",
-      isRead: true,
-    }
-  ];
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>({});
+
+
+
   const displayedNotifications = notifications.slice(0, 4);
-  // Function to truncate title to half its length
-  const truncateTitle = (title: string, maxLength: number) => {
-    const halfLength = Math.floor(maxLength / 2);
-    return title.length > maxLength ? `${title.slice(0, halfLength)}…` : title;
-  };
 
-  if (!isOpen) return null;
-  // State to track which notifications are expanded
-  const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>({});
-
-  // Toggle expansion for a specific notification
-  const toggleExpand = (id: string) => {
+  const toggleExpand = (id: number) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  if (!isOpen) return null;
+ 
+
+
   return (
     <>
-{/* Backdrop */}
-<div
-        className="fixed inset-0 bg-black/20 z-[49]"
-        onClick={onClose}
-      />
-  
-      <div className="fixed top-16 right-20 z-[50] flex items-start ">
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-black/20 z-[49]" onClick={onClose} />
+
+      <div className="fixed top-16 right-20 z-[50] flex items-start">
         <div className="bg-white rounded-lg shadow-xl w-[30rem] max-w-lg max-h-[80vh] flex flex-col">
-     
+          {/* Header */}
           <div className="flex items-center justify-between p-4 border-b">
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-semibold">Notifications</h2>
-              {unreadCount > 0 && (
+              {lengthOfNotification > 0 && (
                 <span className="bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {unreadCount}
+                  {lengthOfNotification}
                 </span>
               )}
             </div>
@@ -107,9 +79,13 @@ export default  function NotificationPanel({
             </button>
           </div>
 
-        
+          {/* Notification List */}
           <div className="flex-1 overflow-y-auto">
-            {notifications.length === 0 ? (
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+                <p className="text-sm text-gray-500">Loading notifications...</p>
+              </div>
+            ) : notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
                 <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                   <Bell className="h-6 w-6 text-gray-400" />
@@ -118,55 +94,58 @@ export default  function NotificationPanel({
                   It's quiet now
                 </h3>
                 <p className="text-sm text-gray-500 max-w-xs">
-                  Your notifications will appear here once there's something new
-                  to review
+                  Your notifications will appear here once there's something new to review
                 </p>
               </div>
             ) : (
               <div className="divide-y">
                 {displayedNotifications.map((notification) => {
-                  const maxTitleLength = 30; // Adjust this value based on your design
-                  const truncatedTitle = truncateTitle(notification.title, maxTitleLength);
-                  const isTruncated = notification.title.length > maxTitleLength;
                   const isExpanded = expanded[notification.id] || false;
 
                   return (
                     <div
                       key={notification.id}
                       className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
-                        !notification.isRead && 'bg-blue-50/50'
+                        !notification.notify && "bg-blue-50/50"
                       }`}
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <p className="text-sm font-medium text-gray-900 leading-5">
-                              {isExpanded ? notification.title : truncatedTitle}
-                            </p>
-                            {isTruncated && !isExpanded && (
-                              <Button
-                                variant="link"
-                                className="text-blue-600 text-xs p-0 h-auto leading-none"
-                                onClick={() => toggleExpand(notification.id)}
-                              >
-                                View all
-                              </Button>
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-4 flex-wrap">
+                              <p className="text-sm font-medium text-gray-900 leading-5">
+                                {notification.title}
+                              </p>
+                              {notification.description && !isExpanded && (
+                                <Button
+                                  variant="link"
+                                  className="text-blue-600 text-xs p-0 h-auto leading-none"
+                                  onClick={() => toggleExpand(notification.id)}
+                                >
+                                  View all
+                                </Button>
+                              )}
+                              {notification.description && isExpanded && (
+                                <Button
+                                  variant="link"
+                                  className="text-blue-600 text-xs p-0 h-auto leading-none"
+                                  onClick={() => toggleExpand(notification.id)}
+                                >
+                                  Collapse
+                                </Button>
+                              )}
+                            </div>
+                            {isExpanded && notification.description && (
+                              <p className="text-sm text-gray-600">
+                                {notification.description}
+                              </p>
                             )}
-                            {isExpanded && (
-                              <Button
-                                variant="link"
-                                className="text-blue-600 text-xs p-0 h-auto leading-none"
-                                onClick={() => toggleExpand(notification.id)}
-                              >
-                                Collapse
-                              </Button>
-                            )}
-                            <p className="text-xs text-gray-500 mt-1">
-                              {notification.timestamp}
+                            <p className="text-xs text-gray-500">
+                              {formatTimestamp(notification.createdAt)}
                             </p>
                           </div>
                         </div>
-                        {!notification.isRead && (
+                        {!notification.notify && (
                           <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2" />
                         )}
                       </div>
@@ -177,11 +156,15 @@ export default  function NotificationPanel({
             )}
           </div>
 
+          {/* Footer */}
           {notifications.length > 0 && (
             <div className="p-4 border-t">
               <div className="flex justify-end">
                 <Link href="/notifications" onClick={onClose}>
-                  <Button variant="ghost" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                  <Button
+                    variant="ghost"
+                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                  >
                     See all notifications →
                   </Button>
                 </Link>
@@ -191,6 +174,7 @@ export default  function NotificationPanel({
         </div>
       </div>
     </>
+
     
     
   );

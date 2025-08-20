@@ -1,5 +1,6 @@
 import {
   PROJECT_SETTINGS_KEYS,
+  useGetBalance,
   useInitateFundTransfer,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
@@ -12,20 +13,22 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 
 import { UUID } from 'crypto';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Upload } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import { useUserCurrentUser } from '@rumsan/react-query';
+import { Entities } from './cash.tracker';
 
 export default function InitiateFundTransfer({}: {}) {
   const [formData, setFormData] = useState({
     from: '',
     to: '',
     amount: '',
-    currency: 'NPR',
+    currency: 'USD',
     comments: '',
     proof: '',
   });
@@ -37,10 +40,27 @@ export default function InitiateFundTransfer({}: {}) {
     (s) => s.settings?.[id]?.[PROJECT_SETTINGS_KEYS.ENTITIES],
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { data: currentUser } = useUserCurrentUser();
+  const currentEntity = useMemo(() => {
+    return stakeholders?.find(
+      (e: Entities) => e.address === currentUser?.data?.wallet,
+    );
+  }, [currentUser, stakeholders]);
+
+  const donar = useMemo(() => {
+    return stakeholders?.find((e: Entities) => e.alias === 'UNICEF Donor');
+  }, [currentUser, stakeholders]);
+  const { data: balance } = useGetBalance(
+    id,
+    currentEntity?.smartaccount || '',
+  );
+
+  const { data: budget } = useGetBalance(id, donar?.smartaccount || '');
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    initiateFundTransfer.mutateAsync({
+    await initiateFundTransfer.mutateAsync({
       payload: {
         from: formData.from,
         to: formData.to,
@@ -57,7 +77,7 @@ export default function InitiateFundTransfer({}: {}) {
       from: '',
       to: '',
       amount: '',
-      currency: 'NPR',
+      currency: 'USD',
       comments: '',
       proof: '',
     });
@@ -98,11 +118,11 @@ export default function InitiateFundTransfer({}: {}) {
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-gray-50 p-4 rounded-md">
           <p className="text-sm text-gray-500">Project Budget</p>
-          <p className="text-xl font-bold">{0}</p>
+          <p className="text-xl font-bold">{budget?.data?.formatted || 0}</p>
         </div>
         <div className="bg-gray-50 p-4 rounded-md">
           <p className="text-sm text-gray-500">Balance</p>
-          <p className="text-xl font-bold">{0}</p>
+          <p className="text-xl font-bold">{balance?.data?.formatted || 0}</p>
         </div>
       </div>
 
@@ -225,7 +245,21 @@ export default function InitiateFundTransfer({}: {}) {
           <Button type="button" variant="outline">
             Cancel
           </Button>
-          <Button type="submit">Confirm</Button>
+          <Button
+            type="submit"
+            disabled={
+              initiateFundTransfer.isPending ||
+              !formData.from ||
+              !formData.to ||
+              !formData.amount
+            }
+          >
+            {initiateFundTransfer.isPending ? (
+              <span>Submitting...</span>
+            ) : (
+              'Submit'
+            )}
+          </Button>
         </div>
       </form>
     </div>

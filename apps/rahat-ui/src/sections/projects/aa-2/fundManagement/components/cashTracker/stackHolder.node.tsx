@@ -5,25 +5,27 @@ function StakeholderNode({
   status,
   balance,
   received,
+  index,
 }: {
   name: string;
   status: string;
   balance: number;
   received: number;
+  index?: number;
 }) {
   return (
     <div className="flex flex-col items-center ">
       <div
         className={`w-8 h-8 rounded-full flex items-center justify-center z-10 
         ${
-          status === 'confirmed'
+          status === 'confirmed' || index === 0
             ? 'bg-green-500 text-white'
             : status === 'pending'
             ? 'bg-amber-500 text-white'
             : 'bg-red-500 text-white'
         }`}
       >
-        {status === 'confirmed' ? (
+        {status === 'confirmed' || index === 0 ? (
           <Check size={16} />
         ) : status === 'pending' ? (
           <Info size={16} />

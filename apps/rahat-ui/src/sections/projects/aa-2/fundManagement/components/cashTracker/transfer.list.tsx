@@ -1,9 +1,7 @@
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { Entities, FundTransfer } from './cash.tracker';
-import { ConfirmReceipt, useGetCash } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { AlertCircle, ArrowRight, Check, Clock } from 'lucide-react';
 
 function TransferList({
@@ -14,12 +12,6 @@ function TransferList({
   entities: Entities[];
 }) {
   const id = useParams().id as UUID;
-  const getCash = useGetCash(id);
-  const confirmReceipt = (payload: ConfirmReceipt) => {
-    getCash.mutateAsync({
-      payload: payload,
-    });
-  };
 
   return (
     <div className="divide-y">
@@ -92,28 +84,6 @@ function TransferList({
                   ? 'Pending'
                   : 'Blocked'}
               </Badge>
-
-              {transfer.status === 'pending' && (
-                <Button
-                  size="sm"
-                  onClick={() =>
-                    confirmReceipt({
-                      from:
-                        entities.find((value) => value.alias === transfer.to)
-                          ?.smartaccount || '',
-
-                      to:
-                        entities.find((value) => value.alias === transfer.from)
-                          ?.smartaccount || '',
-                      alias: transfer.to,
-                      amount: transfer.amount.toString(),
-                    })
-                  }
-                  className="whitespace-nowrap"
-                >
-                  Confirm Receipt
-                </Button>
-              )}
             </div>
           </div>
         ))

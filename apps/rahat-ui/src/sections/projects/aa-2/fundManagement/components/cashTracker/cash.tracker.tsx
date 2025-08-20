@@ -80,40 +80,48 @@ export function CashTracker() {
     const now = new Date().toISOString();
     const uniqueTransactionHashes = new Set();
 
-    return transactions?.data?.entityOutcomes?.flatMap((entity: any) => {
-      // Map pending transactions
-      const pendingTransfers = entity.pending.map((p: any, index: number) => ({
-        id: `${entity.alias}-pending-${index}`, // unique ID for pending
-        from: entity.alias,
-        to: p.to,
-        amount: p.amount,
-        timestamp: now,
-        status: 'pending' as const,
-        comments: '', // optional
-      }));
-      // Map successful transactions (flows) and filter duplicates
-      const successfulTransfers = entity.flows
-        .filter((flow: any) => {
-          if (uniqueTransactionHashes.has(flow.transactionHash)) {
-            return false; // Skip duplicate transactions
-          }
-          uniqueTransactionHashes.add(flow.transactionHash);
-          return true;
-        })
-        .map((flow: any, index: number) => ({
-          id: `${entity.alias}-flow-${index}`, // unique ID for flows
-          from: flow.from,
-          to: flow.to,
-          amount: flow.amount,
-          timestamp: flow?.timestamp || now,
-          status: flow.type === 'sent' ? 'sent' : ('received' as const),
-          transactionHash: flow.transactionHash, // Include transaction hash if needed
-          comments: '', // optional
-        }));
+    const allTransfers = transactions?.data?.entityOutcomes?.flatMap(
+      (entity: any) => {
+        // Map pending transactions
+        const pendingTransfers = entity.pending.map(
+          (p: any, index: number) => ({
+            id: `${entity.alias}-pending-${index}`, // unique ID for pending
+            from: entity.alias,
+            to: p.to,
+            amount: p.amount,
+            timestamp: p.timestamp || now,
+            status: 'pending' as const,
+            comments: '', // optional
+          }),
+        );
+        // Map successful transactions (flows) and filter duplicates
+        const successfulTransfers = entity.flows
+          .filter((flow: any) => {
+            if (uniqueTransactionHashes.has(flow.transactionHash)) {
+              return false; // Skip duplicate transactions
+            }
+            uniqueTransactionHashes.add(flow.transactionHash);
+            return true;
+          })
+          .map((flow: any, index: number) => ({
+            id: `${entity.alias}-flow-${index}`, // unique ID for flows
+            from: flow.from,
+            to: flow.to,
+            amount: flow.amount,
+            timestamp: flow?.timestamp,
+            status: flow.type === 'sent' ? 'sent' : ('received' as const),
+            transactionHash: flow.transactionHash, // Include transaction hash if needed
+            comments: '', // optional
+          }));
 
-      // Combine pending and successful transactions
-      return [...pendingTransfers, ...successfulTransfers];
-    });
+        // Combine pending and successful transactions
+        return [...pendingTransfers, ...successfulTransfers];
+      },
+    );
+    return allTransfers?.sort(
+      (a: any, b: any) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    );
   }, [isFetched, transactions]);
 
   //get current entity pending transfer
@@ -123,7 +131,6 @@ export function CashTracker() {
         transfer.status === 'pending' && transfer.to === currentEntity?.alias,
     );
   }, [transfers, currentEntity]);
-  console.log('pendingTransfers', pendingTransfers, currentEntity);
   const [balances, setBalance] = useState<
     { alias: string; balance: number; received: number; sent: number }[]
   >([]);

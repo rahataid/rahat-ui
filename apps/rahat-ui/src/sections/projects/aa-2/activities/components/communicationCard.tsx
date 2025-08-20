@@ -29,6 +29,7 @@ import Link from 'next/link';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 interface BaseCommunication {
+  communicationTitle?: string;
   groupId: string;
   groupType: string;
   transportId: string;
@@ -178,16 +179,19 @@ export function CommunicationCard({
           </div>
         </div>
 
+        <h4 className="font-normal mb-0 space-y-0 text-muted-foreground">
+          {activityCommunication?.communicationTitle}
+        </h4>
         {(activityCommunication?.transportName === 'EMAIL' ||
           activityCommunication?.transportName === 'SMS') && (
-          <div className="mt-3">
+          <div className="mt-1">
             <MessageWithToggle message={activityCommunication?.message ?? ''} />
           </div>
         )}
 
         {activityCommunication?.transportName === 'VOICE' &&
           Object.keys(activityCommunication?.message).length !== 0 && (
-            <div className="mt-3">
+            <div className="mt-1">
               <div className="pt-2">
                 <h3 className="text-sm font-medium mb-2">
                   {activityCommunication?.message?.fileName}

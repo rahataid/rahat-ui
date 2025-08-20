@@ -20,7 +20,7 @@ import {
   useTriggerForOnePayoutFailed,
 } from '@rahat-ui/query';
 import { useCallback, useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import {
@@ -55,7 +55,8 @@ export default function useBeneficiaryGroupDetailsLogColumns(
   const router = useRouter();
   const triggerForPayoutFailed = useTriggerForOnePayoutFailed();
   const [pendingUuid, setPendingUuid] = useState<string | null>(null);
-
+  const searchParams = useSearchParams();
+  const navigation = searchParams.get('from');
   const fspName = usePaymentProviders({ projectUUID: id as UUID });
   const { clickToCopy, copyAction } = useCopy();
 
@@ -79,7 +80,9 @@ export default function useBeneficiaryGroupDetailsLogColumns(
 
   const handleEyeClick = (uuid: any) => {
     router.push(
-      `/projects/aa/${id}/payout/transaction-details/${uuid}?groupId=${detailID}`,
+      `/projects/aa/${id}/payout/transaction-details/${uuid}?groupId=${detailID}&${
+        navigation ? `from=${navigation}` : ''
+      }`,
     );
   };
   const columns: ColumnDef<any>[] = [

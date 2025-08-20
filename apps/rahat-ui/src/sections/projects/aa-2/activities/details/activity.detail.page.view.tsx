@@ -26,6 +26,12 @@ export default function ActivitiesDetailView() {
     ? `/projects/aa/${projectId}/activities/list/${redirectTo}`
     : `/projects/aa/${projectId}/activities`;
 
+  const redirectUpdatePath = redirectTo
+    ? `/projects/aa/${projectId}/activities/${activityId}/edit?${
+        redirectTo ? `&backFrom=${redirectTo}` : ''
+      }`
+    : `/projects/aa/${projectId}/activities/${activityId}/edit`;
+
   const deleteActivity = useDeleteActivities();
 
   const removeActivity = () => {
@@ -82,13 +88,7 @@ export default function ActivitiesDetailView() {
                 dialogTitle="Edit Activity"
                 dialogDescription="Are you sure you want to edit this activity?"
                 confirmButtonText="Edit"
-                handleClick={() =>
-                  router.push(
-                    `/projects/aa/${projectId}/activities/${activityId}/edit?${
-                      redirectTo ? `&backFrom=${redirectTo}` : ''
-                    }`,
-                  )
-                }
+                handleClick={() => router.push(redirectUpdatePath)}
                 buttonClassName="rounded-sm w-full"
                 confirmButtonClassName="rounded-sm w-full bg-primary"
                 variant="outline"

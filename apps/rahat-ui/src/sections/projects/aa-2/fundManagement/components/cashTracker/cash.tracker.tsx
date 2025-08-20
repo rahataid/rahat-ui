@@ -62,8 +62,10 @@ export function CashTracker() {
   const { data: transactions, isFetched } = useGetTransactions(uuid);
   const { data: currentUser } = useUserCurrentUser();
   const currentEntity = useMemo(() => {
-    return entities?.find(
-      (e: Entities) => e.address === currentUser?.data?.wallet,
+    return entities?.find((e: Entities) =>
+      currentUser?.data?.roles?.includes(
+        e.alias.toLowerCase().replace(/\s+/g, ''),
+      ),
     );
   }, [currentUser, entities]);
 
@@ -121,7 +123,7 @@ export function CashTracker() {
         transfer.status === 'pending' && transfer.to === currentEntity?.alias,
     );
   }, [transfers, currentEntity]);
-
+  console.log('pendingTransfers', pendingTransfers, currentEntity);
   const [balances, setBalance] = useState<
     { alias: string; balance: number; received: number; sent: number }[]
   >([]);

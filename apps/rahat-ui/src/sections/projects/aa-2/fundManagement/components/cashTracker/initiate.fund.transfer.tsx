@@ -13,7 +13,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 
 import { UUID } from 'crypto';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Upload } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -42,10 +42,18 @@ export default function InitiateFundTransfer({}: {}) {
 
   const { data: currentUser } = useUserCurrentUser();
   const currentEntity = useMemo(() => {
-    return stakeholders?.find(
-      (e: Entities) => e.address === currentUser?.data?.wallet,
+    return stakeholders?.find((e: Entities) =>
+      currentUser?.data?.roles?.includes(
+        e.alias.toLowerCase().replace(/\s+/g, ''),
+      ),
     );
   }, [currentUser, stakeholders]);
+
+  useEffect(() => {
+    if (currentEntity) {
+      setFormData((prev) => ({ ...prev, from: currentEntity.smartaccount }));
+    }
+  }, [currentEntity]);
 
   const donar = useMemo(() => {
     return stakeholders?.find((e: Entities) => e.alias === 'UNICEF Donor');
@@ -131,12 +139,7 @@ export default function InitiateFundTransfer({}: {}) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label>From</Label>
-            <Select
-              value={formData.from}
-              onValueChange={(value) =>
-                setFormData({ ...formData, from: value })
-              }
-            >
+            <Select value={formData.from} disabled>
               <SelectTrigger>
                 <SelectValue placeholder="Select sender" />
               </SelectTrigger>

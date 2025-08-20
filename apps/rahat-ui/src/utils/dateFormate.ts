@@ -16,20 +16,21 @@ export const dateFormat = (
 export const formatTimestamp = (createdAt: string): string => {
   try {
     const date = parseISO(createdAt);
+    const now = new Date();
 
-    // Check if the date is yesterday
     if (isYesterday(date)) {
       return format(date, 'MMMM d, yyyy, h:mm:ss a'); 
     }
 
     
-    const hoursDifference = differenceInHours(new Date(), date);
+    const hoursDifference = differenceInHours(now, date);
     if (hoursDifference < 24) {
       return formatDistanceToNow(date, { addSuffix: true }); 
     }
 
    
-    return formatDistanceToNow(date, { addSuffix: true });
+  
+    return format(date, 'MMMM d, yyyy, h:mm:ss a'); 
   } catch (error) {
     return createdAt;
   }

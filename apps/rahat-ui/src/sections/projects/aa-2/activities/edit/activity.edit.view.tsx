@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -171,6 +171,7 @@ import { DurationData } from '../add/add.activity.view';
 
 export default function EditActivity() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const uploadFile = useUploadFile();
   const updateActivity = useUpdateActivities();
   const { id: projectID, activityID } = useParams();
@@ -178,6 +179,7 @@ export default function EditActivity() {
   const [isFinished, setIsFinished] = React.useState(false);
   const [recordedFile, setRecordedFile] = React.useState<string | null>(null);
   const [isAudioUploaded, setIsAudioUploaded] = React.useState(false);
+  const redirectTo = searchParams.get('from');
 
   const { data: users, isSuccess } = useUserList({
     page: 1,
@@ -220,10 +222,11 @@ export default function EditActivity() {
   });
   const appTransports = useListAllTransports();
 
-  const activityDetailPath = `/projects/aa/${projectID}/activities/${activityID}`;
-  const activitiesListPath = `/projects/aa/${projectID}/activities`;
-
+  const redirectUpdatePath = redirectTo
+    ? `/projects/aa/${projectID}/activities/${activityID}?from=${redirectTo}`
+    : `/projects/aa/${projectID}/activities/${activityID}`;
   const newCommunicationSchema = {
+    communicationTitle: '',
     groupType: '',
     groupId: '',
     transportId: '',
@@ -260,6 +263,9 @@ export default function EditActivity() {
         .optional(),
       activityCommunication: z.array(
         z.object({
+          communicationTitle: z
+            .string()
+            .min(2, { message: 'Please enter communication title' }),
           groupType: z.string().min(1, { message: 'Please select group type' }),
           groupId: z.string().min(1, { message: 'Please select group' }),
           transportId: z
@@ -399,6 +405,7 @@ export default function EditActivity() {
 
         if (selectedTransport?.validationContent === ValidationContent.URL) {
           activityCommunicationPayload.push({
+            communicationTitle: comms.communicationTitle,
             groupType: comms.groupType,
             groupId: comms.groupId,
             transportId: comms.transportId,
@@ -413,6 +420,7 @@ export default function EditActivity() {
           selectedTransport?.validationAddress === ValidationAddress.EMAIL
         ) {
           activityCommunicationPayload.push({
+            communicationTitle: comms.communicationTitle,
             groupType: comms.groupType,
             groupId: comms.groupId,
             transportId: comms.transportId,
@@ -425,6 +433,7 @@ export default function EditActivity() {
           });
         } else {
           activityCommunicationPayload.push({
+            communicationTitle: comms.communicationTitle,
             groupType: comms.groupType,
             groupId: comms.groupId,
             transportId: comms.transportId,
@@ -452,7 +461,7 @@ export default function EditActivity() {
         projectUUID: projectID as UUID,
         activityUpdatePayload: payload,
       });
-      router.push(activityDetailPath);
+      router.push(redirectUpdatePath);
     } catch (e) {
       console.error('Error::', e);
     }
@@ -501,7 +510,7 @@ export default function EditActivity() {
       <form onSubmit={form.handleSubmit(handleUpdateActivity)}>
         <div className="p-4">
           <div className=" mb-2 flex flex-col space-y-0">
-            <Back path={`/projects/aa/${projectID}/activities/${activityID}`} />
+            <Back path={redirectUpdatePath} />
 
             <div className="mt-4 flex justify-between items-center">
               <div>

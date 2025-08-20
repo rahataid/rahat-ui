@@ -440,6 +440,23 @@ export default function EditCommunicationForm({
       <div className="grid grid-cols-2 gap-4">
         <FormField
           control={form.control}
+          name={fieldName('communicationTitle')}
+          render={({ field }) => (
+            <FormItem className="col-span-2">
+              <FormLabel>Communication Title</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter communication title"
+                  {...field}
+                  disabled={isSessionComplete}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name={fieldName('groupType')}
           render={({ field }) => (
             <FormItem>

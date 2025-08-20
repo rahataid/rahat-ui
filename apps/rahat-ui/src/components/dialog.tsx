@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
@@ -25,8 +26,10 @@ export function DialogComponent({
   onCancel,
   onSubmit,
 }: IProps) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="max-w-xl">
         <DialogHeader>
@@ -42,11 +45,21 @@ export function DialogComponent({
             className="w-full"
             variant="secondary"
             type="button"
-            onClick={onCancel}
+            onClick={() => {
+              onCancel();
+              setOpen(false);
+            }}
           >
             Cancel
           </Button>
-          <Button className="w-full" type="submit" onClick={onSubmit}>
+          <Button
+            className="w-full"
+            type="submit"
+            onClick={() => {
+              onSubmit();
+              setOpen(false);
+            }}
+          >
             Confirm
           </Button>
         </DialogFooter>

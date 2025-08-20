@@ -100,3 +100,32 @@ export const useRetryFailedBroadcast = (
 
 //   return query?.data?.data;
 // };
+
+
+export const useGetVoiceLogs = (
+  uuid: UUID,
+  communicationId?: string,
+  activityId?: string,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['voicelogs', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.activities.getComms',
+          payload: {
+           filters:{
+            transportName: 'VOICE',
+           }
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};

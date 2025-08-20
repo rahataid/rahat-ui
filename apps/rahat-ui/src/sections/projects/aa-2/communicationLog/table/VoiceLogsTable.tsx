@@ -14,11 +14,17 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import SearchAndFilterToolbar from '../components/SearchAndFilterToolbar';
 import React, { useState } from 'react';
-import { usePagination } from '@rahat-ui/query';
+import { useGetVoiceLogs, usePagination } from '@rahat-ui/query';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 export default function VoiceLogsTable({ data }: { data: any[] }) {
+const {id:projectId} = useParams();
+
   const columns = useVoiceLogsTableColumns();
+  const {data:voiceLogs} = useGetVoiceLogs(projectId as UUID);
+ console.log('voiceLogsharuuuuuu', voiceLogs);
    const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
       usePagination();
 

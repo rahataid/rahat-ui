@@ -52,7 +52,7 @@ export const useProjectAction = <T = any>(key?: string[]) => {
   >(
     {
       mutationKey: key || ['projectAction'],
-      mutationFn: projectClient.projectActions,
+      mutationFn: projectClient.projectActions
     },
     queryClient,
   );

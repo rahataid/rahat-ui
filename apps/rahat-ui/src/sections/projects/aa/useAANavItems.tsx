@@ -67,7 +67,13 @@ export const useNavItems = () => {
           icon: <Coins size={18} strokeWidth={2} />,
           wrapper: (children: React.ReactNode) => (
             <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.MANAGER]}
+              roles={[
+                AARoles.ADMIN,
+                AARoles.MANAGER,
+                AARoles.UNICEF_DONOR,
+                AARoles.UNICEF_FIELD_OFFICE,
+                AARoles.UNICEF_HEAD_OFFICE,
+              ]}
               hasContent={false}
             >
               {children}

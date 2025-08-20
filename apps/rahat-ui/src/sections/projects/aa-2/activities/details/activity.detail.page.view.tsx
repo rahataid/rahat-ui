@@ -84,7 +84,9 @@ export default function ActivitiesDetailView() {
                 confirmButtonText="Edit"
                 handleClick={() =>
                   router.push(
-                    `/projects/aa/${projectId}/activities/${activityId}/edit`,
+                    `/projects/aa/${projectId}/activities/${activityId}/edit?${
+                      redirectTo ? `&backFrom=${redirectTo}` : ''
+                    }`,
                   )
                 }
                 buttonClassName="rounded-sm w-full"

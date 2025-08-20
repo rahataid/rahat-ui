@@ -20,7 +20,7 @@ import { IconLabelBtn, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useTriggerCommunication } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { SessionStatus } from '@rumsan/connect/src/types';
 import MessageWithToggle from './messageWithToggle';
@@ -74,6 +74,8 @@ export function CommunicationCard({
     }
   };
   const { id: projectId, activityID } = useParams();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('from');
   const [loadingButtons, setLoadingButtons] = React.useState<string[]>([]);
   const trigger = useTriggerCommunication();
   const activityId = activityID as string;
@@ -108,7 +110,13 @@ export function CommunicationCard({
                 </h3>
                 {activityCommunication?.sessionStatus !== SessionStatus.NEW && (
                   <Link
-                    href={`/projects/aa/${projectId}/communication-logs/commsdetails/${activityCommunication?.communicationId}@${activityId}@${activityCommunication?.sessionId}?from=activities`}
+                    href={`/projects/aa/${projectId}/communication-logs/commsdetails/${
+                      activityCommunication?.communicationId
+                    }@${activityId}@${
+                      activityCommunication?.sessionId
+                    }?from=activities${
+                      redirectTo ? `&backFrom=${redirectTo}` : ''
+                    }`}
                     className="items-center justify-center hover:bg-gray-100"
                   >
                     <ArrowUpRight size={20} className="text-blue-800" />

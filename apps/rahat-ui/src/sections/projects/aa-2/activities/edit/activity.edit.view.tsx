@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -171,6 +171,8 @@ import { DurationData } from '../add/add.activity.view';
 
 export default function EditActivity() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const backFrom = searchParams.get('backFrom');
   const uploadFile = useUploadFile();
   const updateActivity = useUpdateActivities();
   const { id: projectID, activityID } = useParams();
@@ -501,7 +503,11 @@ export default function EditActivity() {
       <form onSubmit={form.handleSubmit(handleUpdateActivity)}>
         <div className="p-4">
           <div className=" mb-2 flex flex-col space-y-0">
-            <Back path={`/projects/aa/${projectID}/activities/${activityID}`} />
+            <Back
+              path={`/projects/aa/${projectID}/activities/${activityID}${
+                backFrom ? `?from=${backFrom}` : ''
+              }`}
+            />
 
             <div className="mt-4 flex justify-between items-center">
               <div>

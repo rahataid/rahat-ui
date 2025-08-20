@@ -15,7 +15,10 @@ const NotificationPanel = dynamic(() => import('./notification.panal'), {
 export function NotificationButton({ unreadCount = 0 }) {
   const {data:notificationData, isLoading} = useGetAllNotificatons()
 
-  const  lenthOfNotification = notificationData?.length || 0;
+
+
+  const  lenthOfNotification = notificationData?.response?.meta?.total
+
   const notificationModal = useBoolean();
 
   const handleNotification = () => {
@@ -38,7 +41,7 @@ export function NotificationButton({ unreadCount = 0 }) {
       <NotificationPanel
         isOpen={notificationModal.value}
         onClose={notificationModal.onFalse}
-        notifications={notificationData || []}
+        notifications={notificationData?.data || []}
         lengthOfNotification={lenthOfNotification || 0}
         isLoading={isLoading}
       />

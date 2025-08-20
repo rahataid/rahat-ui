@@ -1,4 +1,4 @@
-import { differenceInHours, format, formatDate, formatDistanceToNow, isYesterday, parseISO } from 'date-fns';
+import { differenceInHours, format, formatDate, formatDistanceToNow, formatDistanceToNowStrict, isYesterday, parseISO } from 'date-fns';
 
 export const dateFormat = (
   date: Date | string | undefined | null,
@@ -25,7 +25,7 @@ export const formatTimestamp = (createdAt: string): string => {
     
     const hoursDifference = differenceInHours(now, date);
     if (hoursDifference < 24) {
-      return formatDistanceToNow(date, { addSuffix: true }); 
+      return formatDistanceToNowStrict(date, { addSuffix: true }); 
     }
 
    

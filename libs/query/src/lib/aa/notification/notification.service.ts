@@ -24,14 +24,15 @@ export const useGetAllNotificatons = () => {
           action: 'notification.list',
           payload: {},
         },
+    
       });
-      return mutate.data;
+      return mutate
     },
   });
 
   useEffect(() => {
     if (query.data) {
-      setNotifications(query?.data);
+     setNotifications(query?.data.data);
     }
   }, [query.data]);
   return query;

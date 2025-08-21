@@ -40,9 +40,9 @@ export default function NotificationsView() {
               <X className="w-4 h-4" />
             </Button>
 
-            <div className="bg-white rounded-[1rem] shadow-sm w-[50.75rem] h-[52.56rem] p-[2.5rem] gap-[0.875rem] flex flex-col justify-center items-center">
-              <div className="flex flex-col gap-1 text-center">
-                <div className="flex items-center gap-2 justify-center">
+            <div className="bg-white rounded-[1rem] shadow-sm w-[50.75rem] h-[52.56rem] p-[2.5rem] gap-[0.875rem] flex flex-col">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
                   <h1 className="text-xl font-semibold text-gray-900">Notifications</h1>
                   {lenthOfNotification > 0 && (
                     <span className="bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -51,9 +51,12 @@ export default function NotificationsView() {
                   )}
                 </div>
                 <p className="text-sm text-gray-500">Here is the list of all your notifications</p>
+                {lenthOfNotification > 0 && (
+                  <p className="text-sm text-gray-500">{lenthOfNotification} Notifications</p>
+                )}
               </div>
 
-              <div className="flex-1 w-full overflow-y-auto">
+              <div className="flex-1 overflow-y-auto">
                 {notificationData?.data?.map((notification: Notification) => {
                   const isExpanded = expanded[notification.id] || false;
                   const truncatedDesc = truncateDescription(notification.description, 60);

@@ -77,13 +77,14 @@ export const useVendorsBeneficiaryTableColumns = (
     {
       accessorKey: 'benTokens',
       header: 'Token Amount',
-      cell: ({ row }) => (
-        <div>
-          {row.getValue('benTokens')
+      cell: ({ row }) => {
+        const status = row.original?.status;
+        return status === 'COMPLETED'
+          ? row.getValue('benTokens')
             ? formatTokenAmount(row.getValue('benTokens'), settings, id)
-            : 'N/A'}
-        </div>
-      ),
+            : 'N/A'
+          : 'N/A';
+      },
     },
     {
       accessorKey: 'txHash',
@@ -124,13 +125,14 @@ export const useVendorsBeneficiaryTableColumns = (
     {
       accessorKey: 'amountDisbursed',
       header: 'Amount Disbursed',
-      cell: ({ row }) => (
-        <div>
-          {row.getValue('benTokens')
+      cell: ({ row }) => {
+        const status = row.original?.status;
+        return status === 'COMPLETED'
+          ? row.getValue('benTokens')
             ? `Rs. ${row.getValue('benTokens')}`
-            : 'N/A'}
-        </div>
-      ),
+            : 'N/A'
+          : 'N/A';
+      },
     },
     ...(mode === PayoutMode.OFFLINE
       ? [

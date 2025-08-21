@@ -8,7 +8,8 @@ import { useGetAllNotificatons } from '@rahat-ui/query';
 import { formatTimestamp } from '../../utils/dateFormate';
 import { Notification } from '@rahat-ui/types';
 import { truncateDescription } from '../../utils/truncateDescription';
-
+import { max } from 'lodash';
+import { kMaxLength } from 'buffer';
 
 export default function NotificationsView() {
   const {data: notificationData} = useGetAllNotificatons();
@@ -64,9 +65,9 @@ export default function NotificationsView() {
                   return (
                     <div
                       key={notification.id}
-                      className={`p-4 bg-gray-100 hover:bg-gray-200 cursor-pointer transition-colors ${
+                      className={`p-4 bg-gray-100 hover:bg-gray-200 cursor-pointer transition-colors rounded-[0.75rem] ${
                         !notification.notify && 'bg-blue-50/50'
-                      }`}
+                      } mb-[0.875rem] last:mb-0`}
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">

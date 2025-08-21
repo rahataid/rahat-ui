@@ -61,7 +61,9 @@ export default function OverviewCard({
           <div className="border rounded-md p-4 bg-blue-50">
             <p className="text-xs">Token Disbursed</p>
             <p className="text-2xl font-semibold">
-              {vendorBalance ? formatNumber(Number(vendorBalance)) : 'N/A'}
+              {data?.disbursedTokens
+                ? formatNumber(Number(data?.disbursedTokens))
+                : 'N/A'}
             </p>
           </div>
           <div className="border rounded-md p-4 bg-blue-50">
@@ -75,9 +77,9 @@ export default function OverviewCard({
           <div className="border rounded-md p-4 bg-green-50">
             <p className="text-xs">Amount Disbursed</p>
             <p className="text-2xl font-semibold">
-              {vendorBalance
+              {data?.disbursedTokens
                 ? `Rs. ${formatNumber(
-                    Number(vendorBalance) * TOKEN_TO_AMOUNT_MULTIPLIER,
+                    Number(data?.disbursedTokens) * TOKEN_TO_AMOUNT_MULTIPLIER,
                   )}`
                 : 'N/A'}
             </p>

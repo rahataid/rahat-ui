@@ -171,9 +171,7 @@ export const useVendorsBeneficiaryTableColumns = (
             color: row.original?.status === 'COMPLETED' ? '#027A48' : '#027A48', //#344054',
           }}
         >
-          {row.original?.status === 'COMPLETED'
-            ? toTitleCase(row.original?.status)
-            : 'N/A'}
+          {row.original?.status === 'COMPLETED' ? 'Redeemed' : 'Pending'}
         </Badge>
       ),
     },

@@ -79,7 +79,7 @@ export default function NotificationsView() {
                               <div className="flex items-center gap-2 mb-1">
                                 <h3 className="text-sm font-medium text-gray-900">{notification.title}</h3>
                                 {notification.projectId && (
-                                  <span className="text-xs text-gray-700 bg-gray-200 px-2 py-0.5 rounded">
+                                  <span className="px-3 py-1 rounded-full bg-gray-200 text-gray-700 text-xs">
                                     {notification.project.name}
                                   </span>
                                 )}

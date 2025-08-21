@@ -1,8 +1,9 @@
-import { useAAVendorsList, usePagination } from '@rahat-ui/query';
+import {
+  useGetVendorTokenRedemptionList,
+  usePagination,
+} from '@rahat-ui/query';
 import {
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
@@ -12,13 +13,11 @@ import {
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
-import React from 'react';
-import {
-  useProjectVendorRedemptionTableColumns,
-  useProjectVendorTableColumns,
-} from '../table.columns';
 import { UUID } from 'crypto';
 import { useSearchParams } from 'next/navigation';
+import React from 'react';
+import { useProjectVendorRedemptionTableColumns } from '../table.columns';
+import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 
 export const VendorRedemptionList = ({ id }: { id: UUID }) => {
   const [columnVisibility, setColumnVisibility] =
@@ -33,26 +32,24 @@ export const VendorRedemptionList = ({ id }: { id: UUID }) => {
     setPagination,
   } = usePagination();
 
+  const debounceSearch = useDebounce(filters, 500);
+
   const searchParams = useSearchParams();
-  const debouncedSearch = useDebounce(filters, 500);
   const columns = useProjectVendorRedemptionTableColumns();
-  // const { data: vendors, isLoading } = useAAVendorsList({
-  //   projectUUID: id,
-  //   page: pagination.page,
-  //   perPage: pagination.perPage,
-  //   order: 'desc',
-  //   sort: 'createdAt',
-  //   ...(debouncedSearch as any),
-  // });
+
+  const { data, isLoading } = useGetVendorTokenRedemptionList({
+    projectUUID: id,
+    ...pagination,
+    name: debounceSearch.name,
+    status: debounceSearch.status,
+  });
 
   const table = useReactTable({
     manualPagination: true,
-    data: [],
+    data: data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    getFilteredRowModel: getFilteredRowModel(),
     state: {
       columnVisibility,
     },
@@ -64,26 +61,68 @@ export const VendorRedemptionList = ({ id }: { id: UUID }) => {
     },
     [filters],
   );
+  const handleFilterChange = (event: any) => {
+    if (event && event.target) {
+      const { name, value } = event.target;
+      const filterValue =
+        value === 'ALL'
+          ? ''
+          : value === 'APPROVED'
+          ? 'APPROVED'
+          : value === 'REQUESTED'
+          ? 'REQUESTED'
+          : value;
+
+      table.getColumn(name)?.setFilterValue(filterValue);
+      setFilters({
+        ...filters,
+        [name]: filterValue,
+      });
+    }
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+  };
 
   React.useEffect(() => {
     if (searchParams.get('tab') === 'vendorRedemptionList') {
       setFilters({});
     }
   }, [searchParams]);
+
   return (
     <div className="rounded border bg-card p-4">
       <div className="flex justify-between space-x-2 mb-2">
         <SearchInput
-          className="w-full"
+          className="w-full flex-[4]"
           name="name"
-          onSearch={(e) => handleSearch(e, 'search')}
-          value={filters?.search || ''}
+          onSearch={(e) => handleSearch(e, 'name')}
+          value={filters?.name || ''}
+        />
+        <SelectComponent
+          name="Status"
+          options={['ALL', 'APPROVED', 'REQUESTED']}
+          onChange={(value) =>
+            handleFilterChange({
+              target: { name: 'status', value },
+            })
+          }
+          value={
+            filters?.status === 'APPROVED'
+              ? 'APPROVED'
+              : filters?.status === 'REQUESTED'
+              ? 'REQUESTED'
+              : filters?.status || ''
+          }
+          className="flex-[1]"
         />
       </div>
       <DemoTable
         table={table}
         tableHeight="h-[500px]"
         message="No Vendor Redemption Requests"
+        loading={isLoading}
       />
       <CustomPagination
         currentPage={pagination.page}
@@ -91,16 +130,18 @@ export const VendorRedemptionList = ({ id }: { id: UUID }) => {
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}
         setPagination={setPagination}
-        meta={{
-          total: 0,
-          lastPage: 0,
-          currentPage: 0,
-          perPage: 0,
-          prev: null,
-          next: null,
-        }}
+        meta={
+          (data?.response?.meta as any) || {
+            total: 0,
+            lastPage: 0,
+            currentPage: 0,
+            perPage: 0,
+            prev: null,
+            next: null,
+          }
+        }
         perPage={pagination?.perPage}
-        total={0}
+        total={data?.response?.meta?.total || 0}
       />
     </div>
   );

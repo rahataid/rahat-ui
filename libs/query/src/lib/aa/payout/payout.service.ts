@@ -95,7 +95,7 @@ export const usePayouts = (projectUUID: UUID, payload: Payout) => {
           payload: payload,
         },
       });
-      return mutate.data;
+      return mutate;
     },
   });
   return query;
@@ -400,7 +400,7 @@ export const usePayoutExportLogs = ({
   const q = useProjectAction();
 
   return useQuery({
-    queryKey: ['aa.jobs.payout.exportPayoutLogs', projectUUID],
+    queryKey: ['aa.jobs.payout.exportPayoutLogs', payoutUUID],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,

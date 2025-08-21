@@ -324,6 +324,13 @@ export const useSingleTriggerStatement = (
   version: boolean,
 ) => {
   const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
 
   const action = version ? 'ms.revertPhase.getOne' : 'ms.triggers.getOne';
   const payload = version
@@ -336,14 +343,29 @@ export const useSingleTriggerStatement = (
   const query = useQuery({
     queryKey: ['triggerStatement', uuid, payload],
     queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: action,
-          payload,
-        },
-      });
-      return mutate.data;
+      try {
+        const mutate = await q.mutateAsync({
+          uuid,
+          data: {
+            action: action,
+            payload,
+          },
+        });
+        return mutate.data;
+      } catch (error: any) {
+        const errorMessage =
+          error?.response?.data?.message ||
+          `Failed to fetch ${
+            version ? 'version' : 'trigger statement'
+          } details`;
+
+        toast.fire({
+          title: `Error loading ${version ? 'version' : 'trigger statement'}`,
+          text: errorMessage,
+          icon: 'error',
+        });
+        throw error;
+      }
     },
   });
   return query;

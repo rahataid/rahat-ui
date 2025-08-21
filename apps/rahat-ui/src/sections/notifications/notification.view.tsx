@@ -7,7 +7,9 @@ import { useParams, useRouter } from 'next/navigation';
 import { useGetAllNotificatons } from '@rahat-ui/query';
 import { formatTimestamp } from '../../utils/dateFormate';
 import { Notification } from '@rahat-ui/types';
-import { truncateDescription } from '../../utils/truncateDescription';
+import { truncateDescription, truncateDescriptionForPage } from '../../utils/truncateDescription';
+import { max } from 'lodash';
+import { kMaxLength } from 'buffer';
 
 
 
@@ -63,7 +65,7 @@ export default function NotificationsView() {
               <div>
                 {notificationData?.data?.map((notification: Notification) => {
                   const isExpanded = expanded[notification.id] || false;
-                  const truncatedDesc = truncateDescription(notification.description);
+                  const truncatedDesc = truncateDescription(notification.description, 60);
 
                   return (
                     <div

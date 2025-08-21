@@ -37,10 +37,10 @@ export default function NotificationPanel({
 
   return (
     <>
-      <div className="fixed top-16 right-20 z-[50] flex items-start">
-        <div className="bg-white rounded-2xl shadow-2xl w-[30rem] max-w-lg max-h-[80vh] flex flex-col overflow-hidden rounded-2xl">
+      <div className="fixed top-[4rem] left-[77.88rem] z-[50] flex items-start">
+        <div className="bg-white rounded-[1rem] border border-gray-200 w-[30rem] h-[25.25rem] flex flex-col overflow-hidden p-[1rem] gap-[1rem]">
           {/* Header */}
-          <div className="flex items-center justify-between p-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-semibold">Notifications</h2>
               {lengthOfNotification > 0 && (

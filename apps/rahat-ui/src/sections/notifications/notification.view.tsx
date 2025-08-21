@@ -7,23 +7,17 @@ import { useParams, useRouter } from 'next/navigation';
 import { useGetAllNotificatons } from '@rahat-ui/query';
 import { formatTimestamp } from '../../utils/dateFormate';
 import { Notification } from '@rahat-ui/types';
-import { truncateDescription, truncateDescriptionForPage } from '../../utils/truncateDescription';
-import { max } from 'lodash';
-import { kMaxLength } from 'buffer';
-
+import { truncateDescription } from '../../utils/truncateDescription';
 
 
 export default function NotificationsView() {
-  const {data:notificationData} = useGetAllNotificatons()
-  const  lenthOfNotification = notificationData?.response?.meta?.total
-
+  const {data: notificationData} = useGetAllNotificatons();
+  const lenthOfNotification = notificationData?.response?.meta?.total;
 
   const router = useRouter();
 
   const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>({});
- 
 
- 
   const toggleExpand = (id: number) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
@@ -33,11 +27,10 @@ export default function NotificationsView() {
   };
 
   return (
-
-<div className="min-h-screen bg-gray-50 flex">
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto p-6 relative">
+    <div className="min-h-screen bg-gray-50 flex justify-center items-center">
+      <div className="flex flex-col">
+        <div className="overflow-y-auto">
+          <div className="relative">
             <Button
               variant="ghost"
               size="icon"
@@ -47,22 +40,20 @@ export default function NotificationsView() {
               <X className="w-4 h-4" />
             </Button>
 
-            <div className="bg-white rounded-lg shadow-sm">
-              <div className="px-6 py-4"> 
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    <h1 className="text-xl font-semibold text-gray-900">Notifications</h1>
-                    {lenthOfNotification > 0 && (
-                      <span className="bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                        {lenthOfNotification}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-500">Here is the list of all your notifications</p>
+            <div className="bg-white rounded-[1rem] shadow-sm w-[50.75rem] h-[52.56rem] p-[2.5rem] gap-[0.875rem] flex flex-col justify-center items-center">
+              <div className="flex flex-col gap-1 text-center">
+                <div className="flex items-center gap-2 justify-center">
+                  <h1 className="text-xl font-semibold text-gray-900">Notifications</h1>
+                  {lenthOfNotification > 0 && (
+                    <span className="bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {lenthOfNotification}
+                    </span>
+                  )}
                 </div>
+                <p className="text-sm text-gray-500">Here is the list of all your notifications</p>
               </div>
 
-              <div>
+              <div className="flex-1 w-full overflow-y-auto">
                 {notificationData?.data?.map((notification: Notification) => {
                   const isExpanded = expanded[notification.id] || false;
                   const truncatedDesc = truncateDescription(notification.description, 60);
@@ -136,6 +127,5 @@ export default function NotificationsView() {
         </div>
       </div>
     </div>
-
   );
 }

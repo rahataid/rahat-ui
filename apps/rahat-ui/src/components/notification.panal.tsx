@@ -80,6 +80,7 @@ const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>({});
         <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
           <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
             <Bell className="h-6 w-6 text-gray-400" />
+            <span className="absolute w-10 h-0.5 bg-gray-400 transform rotate-45 origin-center"></span>
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
             It's quiet now

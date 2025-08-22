@@ -10,8 +10,13 @@ import {
 } from '@rahat-ui/query';
 import { useRouter } from 'next/navigation';
 import { truncatedText } from 'apps/community-tool-ui/src/utils';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import dynamic from 'next/dynamic';
+const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
 
 export default function Confirmation() {
+  const errorModule = useBoolean();
+  const [errorData, setErrorData] = React.useState(null);
   const router = useRouter();
   const { assignedFundData } = useFundAssignmentStore((state) => ({
     assignedFundData: state.assignedFundData,
@@ -52,18 +57,23 @@ export default function Confirmation() {
   const handleSubmit = async () => {
     reserveTokenPayload.totalTokensReserved = cardData[4].value;
     try {
-      await reserveTokenForGroups.mutateAsync({
+      const data = await reserveTokenForGroups.mutateAsync({
         projectUUID,
         reserveTokenPayload,
       });
+      if (data?.status === 'error') {
+        errorModule.onTrue();
+        setErrorData(data);
+        return;
+      }
       router.push(`/projects/aa/${projectUUID}/fund-management`);
-      console.log(reserveTokenPayload);
     } catch (e) {
       console.error('Creating reserve token::', e);
     }
   };
   return (
     <div className="p-4">
+      <ErrorInfoPopupModel validateModal={errorModule} errorData={errorData} />
       <HeaderWithBack
         path={``}
         title="Confirmation"

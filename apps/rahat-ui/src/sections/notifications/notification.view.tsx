@@ -65,7 +65,7 @@ export default function NotificationsView() {
                   return (
                     <div
                       key={notification.id}
-                      className={`p-4 bg-gray-100 hover:bg-gray-200 cursor-pointer transition-colors rounded-[0.75rem] ${
+                      className={`p-4 bg-[#EAF2FB] hover:bg-[#EAF2FB] cursor-pointer transition-colors rounded-[0.75rem] ${
                         !notification.notify && 'bg-blue-50/50'
                       } mb-[0.875rem] last:mb-0`}
                     >

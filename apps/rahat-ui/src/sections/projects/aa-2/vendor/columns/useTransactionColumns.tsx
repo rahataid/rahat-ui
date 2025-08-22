@@ -127,11 +127,12 @@ export const useVendorsTransactionTableColumns = () => {
           className="text-xs font-normal"
           style={{
             backgroundColor:
-              row.original?.fspId === null ? '#ECFDF3' : '#F2F4F7', //#F2F4F7',
-            color: row.original?.fspId === null ? '#027A48' : '#344054', //#344054',
+              row.original?.info?.mode === 'OFFLINE' ? '#ECFDF3' : '#F2F4F7',
+            color:
+              row.original?.info?.mode === 'OFFLINE' ? '#027A48' : '#344054',
           }}
         >
-          {row.original?.fspId === null ? 'Online' : 'Offline'}
+          {row.original?.info?.mode === 'OFFLINE' ? 'Offline' : 'Online'}
         </Badge>
       ),
     },

@@ -47,7 +47,7 @@ export default function FundManagementDetail() {
     },
     {
       name: '1 Token Value',
-      amount: ONE_TOKEN_VALUE,
+      amount: `Rs. ${ONE_TOKEN_VALUE}`,
     },
   ];
 

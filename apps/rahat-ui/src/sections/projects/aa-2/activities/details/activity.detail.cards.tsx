@@ -47,10 +47,10 @@ export default function ActivityDetailCards({
               )} text-xs font-normal px-2 py-1 rounded-sm`}
             >
               {activityDetail?.status
-                .toLowerCase()
-                .split('_')
-                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ')}
+                ?.toLowerCase()
+                ?.split('_')
+                ?.map((word) => word?.charAt(0)?.toUpperCase() + word?.slice(1))
+                ?.join(' ')}
             </span>
           </div>
           <TooltipProvider>

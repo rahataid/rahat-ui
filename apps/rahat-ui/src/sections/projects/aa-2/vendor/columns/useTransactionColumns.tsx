@@ -127,9 +127,9 @@ export const useVendorsTransactionTableColumns = () => {
           className="text-xs font-normal"
           style={{
             backgroundColor:
-              row.original?.info?.mode === 'OFFLINE' ? '#ECFDF3' : '#F2F4F7',
+              row.original?.info?.mode === 'OFFLINE' ? '#F2F4F7' : '#ECFDF3',
             color:
-              row.original?.info?.mode === 'OFFLINE' ? '#027A48' : '#344054',
+              row.original?.info?.mode === 'OFFLINE' ? '#344054' : '#027A48',
           }}
         >
           {row.original?.info?.mode === 'OFFLINE' ? 'Offline' : 'Online'}

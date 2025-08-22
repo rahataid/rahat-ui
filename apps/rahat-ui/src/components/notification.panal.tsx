@@ -27,7 +27,9 @@ export default function NotificationPanel({
 }: NotificationPanelProps) {
   const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>({});
 
-  const displayedNotifications = notifications.slice(0, 4);
+
+ const displayedNotifications = notifications.slice(0, 4);
+ 
 
   const toggleExpand = (id: number) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));

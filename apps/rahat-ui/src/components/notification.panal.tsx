@@ -27,7 +27,6 @@ export default function NotificationPanel({
 }: NotificationPanelProps) {
   const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>({});
 
-
   const displayedNotifications = notifications.slice(0, 4);
 
   const toggleExpand = (id: number) => {
@@ -38,9 +37,9 @@ export default function NotificationPanel({
 
   return (
     <div className="fixed top-[64px] right-8 z-[100]">
-      <div className="bg-white rounded-[16px] border border-gray-200 w-[480px] min-h-[200px] flex flex-col">
+      <div className="bg-white rounded-[16px] border border-gray-200 w-[90vw] min-w-[300px] max-w-[480px] min-h-[200px] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4">
+        <div className="flex items-center justify-between p-2">
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-semibold">Notifications</h2>
             {lengthOfNotification > 0 && (
@@ -137,7 +136,7 @@ export default function NotificationPanel({
 
         {/* Footer */}
         {notifications.length > 0 && (
-          <div className="p-2">
+          <div className="p-1">
             <div className="flex justify-end">
               <Link href="/notifications" onClick={onClose}>
                 <Button

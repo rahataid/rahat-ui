@@ -166,19 +166,27 @@ export default function useBeneficiaryGroupDetailsLogColumns(
         );
       },
     },
-
     {
       accessorKey: 'tokensAssigned',
       header: 'Amount Disbursed',
-      cell: ({ row }) => (
-        <div>
-          Rs.
-          {row?.original?.status === 'FIAT_TRANSACTION_COMPLETED' ||
-          row.original?.status === 'COMPLETED'
-            ? row.original?.amount * ONE_TOKEN_VALUE
-            : 0}
-        </div>
-      ),
+      cell: ({ row }) => {
+        if (payoutType === 'FSP')
+          return (
+            <div>
+              Rs.{' '}
+              {row?.original?.status === 'FIAT_TRANSACTION_COMPLETED' ||
+              row.original?.status === 'COMPLETED'
+                ? row.original?.amount * ONE_TOKEN_VALUE
+                : 0}
+            </div>
+          );
+        else
+          return (
+            <div>
+              {row?.original?.amount ? `Rs. ${row?.original?.amount}` : 'Rs. 0'}
+            </div>
+          );
+      },
     },
     {
       accessorKey: 'transactionType',

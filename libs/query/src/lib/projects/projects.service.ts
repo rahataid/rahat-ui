@@ -161,9 +161,15 @@ export const useAssignBenGroupToProject = () => {
     },
     onSuccess: async (_data, variables) => {
       q.reset();
-      await queryClient.invalidateQueries({
-        queryKey: ['GET_BENEFICIARY_GROUP', variables.beneficiaryGroupUUID],
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['GET_BENEFICIARY_GROUP', variables.beneficiaryGroupUUID],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [TAGS.GET_BENEFICIARIES_GROUPS],
+        }),
+      ]);
+
       toast.fire({
         title: 'Beneficiary group assigned Successfully',
         icon: 'success',

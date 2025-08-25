@@ -127,7 +127,8 @@ export default function GroupDetailView() {
 
   const isAssignToAA = React.useMemo(() => {
     return group?.data?.beneficiaryGroupProject?.some(
-      (benProject: BenProjectType) => benProject?.Project?.name === 'AA',
+      (benProject: BenProjectType) =>
+        benProject?.Project?.name?.toLowerCase() === 'aa',
     );
   }, [group?.data?.beneficiaryGroupProject]);
 

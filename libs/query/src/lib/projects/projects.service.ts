@@ -57,6 +57,25 @@ export const useProjectAction = <T = any>(key?: string[]) => {
     queryClient,
   );
 };
+export const useGeneralAction = <T = any>() => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const projectClient = getProjectClient(rumsanService.client);
+  return useMutation<
+    FormattedResponse<T>,
+    Error,
+    {
+     
+      data: ProjectActions;
+    },
+    unknown
+  >(
+    {
+      mutationKey:  ['generalAction'],
+      mutationFn: projectClient.generalActions,
+    },
+    queryClient,
+  );
+};
 
 export const useAssignBenToProject = () => {
   const q = useProjectAction();

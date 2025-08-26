@@ -172,6 +172,7 @@ import { DurationData } from '../add/add.activity.view';
 export default function EditActivity() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const backFrom = searchParams.get('backFrom');
   const uploadFile = useUploadFile();
   const updateActivity = useUpdateActivities();
   const { id: projectID, activityID } = useParams();
@@ -223,8 +224,10 @@ export default function EditActivity() {
   const appTransports = useListAllTransports();
 
   const redirectUpdatePath = redirectTo
-    ? `/projects/aa/${projectID}/activities/${activityID}?from=${redirectTo}`
-    : `/projects/aa/${projectID}/activities/${activityID}`;
+    ? `/projects/aa/${projectID}/activities/${activityID}`
+    : `/projects/aa/${projectID}/activities/${activityID}${
+        backFrom ? `?from=${backFrom}` : ''
+      }`;
   const newCommunicationSchema = {
     communicationTitle: '',
     groupType: '',

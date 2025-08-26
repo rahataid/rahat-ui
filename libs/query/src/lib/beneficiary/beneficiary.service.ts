@@ -340,6 +340,7 @@ export const useUpdateGroupPropose = () => {
       if (variables?.uuid) {
         await qc.invalidateQueries({
           queryKey: ['GET_BENEFICIARY_GROUP', variables.uuid],
+          exact: false,
         });
       }
       toast.fire({

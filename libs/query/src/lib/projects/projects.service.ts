@@ -164,9 +164,11 @@ export const useAssignBenGroupToProject = () => {
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: ['GET_BENEFICIARY_GROUP', variables.beneficiaryGroupUUID],
+          exact: false,
         }),
         queryClient.invalidateQueries({
           queryKey: [TAGS.GET_BENEFICIARIES_GROUPS],
+          exact: false,
         }),
       ]);
 

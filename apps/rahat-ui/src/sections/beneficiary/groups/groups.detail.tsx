@@ -47,6 +47,7 @@ type BenProjectType = {
   Project: {
     id: number;
     name: string;
+    type: string;
   };
 };
 
@@ -128,7 +129,7 @@ export default function GroupDetailView() {
   const isAssignToAA = React.useMemo(() => {
     return group?.data?.beneficiaryGroupProject?.some(
       (benProject: BenProjectType) =>
-        benProject?.Project?.name?.toLowerCase() === 'aa',
+        benProject?.Project?.type?.toLowerCase() === 'aa',
     );
   }, [group?.data?.beneficiaryGroupProject]);
 

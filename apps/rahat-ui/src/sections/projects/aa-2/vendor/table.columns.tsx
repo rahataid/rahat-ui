@@ -17,6 +17,7 @@ import { UUID } from 'crypto';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { IProjectVendor } from './types';
+import { toast } from 'react-toastify';
 // import { DialogComponent } from '../activities/details/dialog.reuse';
 
 export const useProjectVendorTableColumns = (pagination: Pagination) => {
@@ -76,19 +77,22 @@ export const useProjectVendorRedemptionTableColumns = () => {
   const handleApproveClick = async (row: any) => {
     try {
       if (row?.redemptionStatus === 'APPROVED') {
-        console.error('Already approved');
-        return;
+        throw new Error('Status is already Approved');
       }
 
       approveVendorTokenRedemption.mutateAsync({
         projectUUID: id,
         payload: {
-          redemptionStatus: 'APPROVED',
+          redemptionStatus:
+            row?.original?.redemptionStatus === 'STELLAR_VERIFIED'
+              ? 'STELLAR_VERIFIED'
+              : 'REQUESTED',
           uuid: row.original?.uuid,
         },
       });
     } catch (e) {
       console.error(e);
+      return toast.error(e?.message || 'Failed to approve redemption request');
     }
   };
 

@@ -23,8 +23,7 @@ function getStatusBg(status: string) {
 
 
 export default function useVoiceLogsTableColumns() {
-  const router = useRouter();
- const { id  } = useParams()
+
    const [isPlaying, setIsPlaying] = React.useState(false);
   const columns: ColumnDef< any>[] = [
    {
@@ -61,11 +60,11 @@ export default function useVoiceLogsTableColumns() {
       cell: ({ row }) => {
         
         return (
-          <div >
+          <div className="relative w-[249px] h-[32px]">
   <audio
     src={row.getValue('media_url')}
     controls
-   className="w-[249px] h-[32px] p-[6px_16px] rounded-[56px]"
+   className="w-full h-full p-[6px_16px] rounded-[56px]"
     onPlay={() => setIsPlaying(true)}
     onPause={() => setIsPlaying(false)}
     
@@ -84,7 +83,10 @@ export default function useVoiceLogsTableColumns() {
       ),
       cell: ({ row }) => (
         <div className="flex items-center space-x-2 gap-2">
-          {new Date(row.getValue('timestamp')).toLocaleString()}
+      {new Date(row.original.timestamp).toLocaleString('en-US', {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+          })}
         
         </div>
       ),

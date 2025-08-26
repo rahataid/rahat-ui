@@ -6,58 +6,42 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import useVoiceLogsTableColumns from './useVoiceLogsTableColumns';
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import {
   ScrollArea,
   ScrollBar,
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-
-import React, { useState } from 'react';
-import { useGetVoiceLogs, usePagination } from '@rahat-ui/query';
-
-import { useParams } from 'next/navigation';
-import { UUID } from 'crypto';
+import React from 'react';
 import { CustomPagination, NoResult, SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 
+interface ReusableLogsTableProps<T> {
+  data: T[];
+  columns: any;
+  filters: Record<string, string>;
+  setFilters: (filters: Record<string, string>) => void;
+  pagination: any;
+  setPagination: (pagination: any) => void;
+  isLoading: boolean;
+  meta: any; 
+}
 
-export default function VoiceLogsTable() {
-const {id:projectId} = useParams();
-const {
-  pagination,
+export default function CommonLogsTable<T>({
+  data,
+  columns,
   filters,
-  setNextPage,
-  setPrevPage,
-  setPerPage,
-  selectedListItems,
-  setSelectedListItems,
   setFilters,
+  pagination,
   setPagination,
-} = usePagination();
-
-  const columns = useVoiceLogsTableColumns();
-  const {voiceLogs, isLoading, voiceLogMeta} = useGetVoiceLogs(projectId as UUID,"voice", {...pagination, filters});
-
- 
-
- 
-
-  
-    React.useEffect(() => {
-      setPagination({ page: 1, perPage: 10 });
-    }, []);
-
-
-
-
+  isLoading,
+  meta,
+}: ReusableLogsTableProps<T>) {
   const table = useReactTable({
     manualPagination: true,
-    data: voiceLogs ||   [],
+    data: data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-
 
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
@@ -75,59 +59,51 @@ const {
     });
   };
 
-
   return (
     <>
       <div className="flex justify-between gap-2">
         <SearchInput
-         name="title"
-         className="w-[100%]"
-         value={
-           (table.getColumn('communication_title')?.getFilterValue() as string) ??
-           filters?.title
-         }
-         onSearch={(event) => handleFilterChange(event)}
-        
-        
+          name="title"
+          className="w-[100%]"
+          value={
+            (table.getColumn('communication_title')?.getFilterValue() as string) ??
+            filters?.title
+          }
+          onSearch={(event) => handleFilterChange(event)}
         />
-
- <SearchInput
-         name="group"
-         className="w-[100%]"
-         value={
-           (table.getColumn('groupName')?.getFilterValue() as string) ??
-           filters?.group
-         }
-         onSearch={(event) => handleFilterChange(event)}
-        
-        
+        <SearchInput
+          name="group"
+          className="w-[100%]"
+          value={
+            (table.getColumn('groupName')?.getFilterValue() as string) ??
+            filters?.group
+          }
+          onSearch={(event) => handleFilterChange(event)}
         />
-         <SelectComponent
-                  name="type"
-                  options={['BENEFICIARY', 'STAKEHOLDER']}
-                  onChange={(value) =>
-                    handleFilterChange({
-                      target: { name: 'group_type', value },
-                    })
-                  }
-                  value={filters?.type || ''}
-                />
-                <SelectComponent
-                  name="status"
-                  options={['Work in Progress', 'COMPLETED', 'Failed', 'Not Started', 'PENDING']}
-                  onChange={(value) =>
-                    handleFilterChange({
-                      target: { name: 'status', value },
-                    })
-                  }
-                  value={filters?.status || ''}
-                />
+        <SelectComponent
+          name="group"
+          options={['BENEFICIARY', 'STAKEHOLDER']}
+          onChange={(value) =>
+            handleFilterChange({
+              target: { name: 'group_type', value },
+            })
+          }
+          value={filters?.type || ''}
+        />
+        <SelectComponent
+          name="status"
+          options={['Work in Progress', 'COMPLETED', 'Failed', 'PENDING']}
+          onChange={(value) =>
+            handleFilterChange({
+              target: { name: 'status', value },
+            })
+          }
+          value={filters?.status || ''}
+        />
       </div>
       <div className="bg-card border rounded mt-4">
-    
         <ScrollArea className="h-[calc(100vh-320px)]">
-        <Table>
-         
+          <Table>
             <TableHeader className="sticky top-0 bg-card">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -174,36 +150,27 @@ const {
                 </TableRow>
               )}
             </TableBody>
-            </Table>
-               <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-       
-          <CustomPagination
-          meta={voiceLogMeta || {
-total: 0,
-currentPage: 0,
-lastPage: 0,
-perPage: 0,
-next: null,
-prev: null,
-
-
-
-          }} 
-          handleNextPage={setNextPage}
-          handlePrevPage={setPrevPage}
-        
-          handlePageSizeChange={setPerPage}
-          setPagination={setPagination}
-          
+          </Table>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+        <CustomPagination
+          meta={meta || {
+            total: 0,
+            currentPage: 0,
+            lastPage: 0,
+            perPage: 0,
+            next: null,
+            prev: null,
+          }}
+          handleNextPage={() => setPagination({ ...pagination, page: pagination.page + 1 })}
+          handlePrevPage={() => setPagination({ ...pagination, page: pagination.page - 1 })}
+          handlePageSizeChange={(value) =>
+            setPagination({ ...pagination, perPage: Number(value), page: 1 })
+          }
           currentPage={pagination.page}
           perPage={pagination.perPage}
-          total = {voiceLogMeta?.lastPage || 0}
+          total={meta?.total || 0}
         />
-        
-   
-      
-       
       </div>
     </>
   );

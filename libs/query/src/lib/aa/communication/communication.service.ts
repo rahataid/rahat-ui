@@ -104,7 +104,7 @@ export const useRetryFailedBroadcast = (
 // };
 
 
-export const useGetVoiceLogs = (
+export const useGetIndividualLogs = (
   uuid: UUID,
   communication: string,
   payload?:any
@@ -125,8 +125,8 @@ export const useGetVoiceLogs = (
             transportName: communication,
             title:payload?.filters?.title || '',
             groupName:payload?.filters?.group || '',
-            groupType:payload?.filters?.type || '',
-            sessionStatus:payload?.filters?.status || '',
+            groupType:payload?.filters?.group || '',
+            sessionStatus:payload?.filters?.status  || '',
             
        
            },
@@ -140,9 +140,10 @@ export const useGetVoiceLogs = (
     },
   });
 
+
   return {
-  voiceLogs:query?.data?.data,
+  IndividualLogs:query?.data?.data,
   isLoading:query.isLoading,
-  voiceLogMeta: query?.data?.response.meta
+  IndividualMeta: query?.data?.response.meta
   }
 };

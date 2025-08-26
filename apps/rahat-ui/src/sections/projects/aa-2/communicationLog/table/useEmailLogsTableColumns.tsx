@@ -84,7 +84,10 @@ export default function useEmailLogsTableColumns() {
       ),
        cell: ({ row }) => (
          <div className="flex items-center space-x-2 gap-2">
-           {new Date(row.getValue('timestamp')).toLocaleString()}
+          {new Date(row.original.timestamp).toLocaleString('en-US', {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+          })}
          </div>
        ),
      },

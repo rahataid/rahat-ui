@@ -31,7 +31,7 @@ export default function CommunicationMainLogsView() {
   );
   const { activeTab, setActiveTab } = useActiveTab('overview');
   return (
-    <div className=" flex flex-col p-4">
+    <div className="flex flex-col p-4">
       <Heading
         title="Communications Logs"
         description="Track all the activity based logs here"
@@ -42,10 +42,31 @@ export default function CommunicationMainLogsView() {
         onValueChange={setActiveTab}
         className="items-center"
       >
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="communicationLog">Activity Based Log</TabsTrigger>
-          <TabsTrigger value="individualLog">Individual Logs</TabsTrigger>
+        <TabsList className="grid grid-cols-3 gap-1.5 w-[414px] h-[40px] bg-[#F0F1F3] rounded-md p-1">
+          <TabsTrigger
+            value="overview"
+            className={`${
+              activeTab === 'overview' ? 'bg-white no-underline text-black' : 'text-black'
+            } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
+          >
+            Overview
+          </TabsTrigger>
+          <TabsTrigger
+            value="communicationLog"
+            className={`${
+              activeTab === 'communicationLog' ? 'bg-white no-underline text-black' : 'text-black'
+            } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
+          >
+            Activity Based Log
+          </TabsTrigger>
+          <TabsTrigger
+            value="individualLog"
+            className={`${
+              activeTab === 'individualLog' ? 'bg-white no-underline text-black' : 'text-black'
+            } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
+          >
+            Individual Logs
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
           {isLoadingCommsStats && isLoadingBenefStakeholdersStats ? (

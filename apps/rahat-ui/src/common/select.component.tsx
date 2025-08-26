@@ -22,12 +22,13 @@ export default function SelectComponent({
   value,
   onChange,
 }: Iprops) {
+  const contentClassName = name ==='group'?'h-20 ':'h-32';
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger className={className}>
         <SelectValue placeholder={`Select ${name}`} />
       </SelectTrigger>
-      <SelectContent className="h-32">
+      <SelectContent className={contentClassName}>
         <SelectGroup>
           {options?.map((o: string) => (
             <SelectItem value={o} key={o}>

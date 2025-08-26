@@ -1,19 +1,25 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@rahat-ui/shadcn/src/components/ui/tabs";
-import VoiceLogsTable from "../table/VoiceLogsTable";
-import SmsLogsTable from "../table/SmsLogsTable";
-import EmailLogsTable from "../table/EmailLogsTable";
-import { useSearchParams, useRouter } from "next/navigation"; // Import useSearchParams and useRouter
-import { useEffect } from "react";
+import { useSearchParams, useRouter, useParams } from "next/navigation";
+import { useEffect, useMemo } from "react";
+import { useGetIndividualLogs, usePagination } from "@rahat-ui/query";
+import CommonLogsTable from "../table/useIndividualCommonLogstable";
+import useVoiceLogsTableColumns from "../table/useVoiceLogsTableColumns";
+import useSmsLogsTableColumns from "../table/useSmsLogsTableColumns";
+import useEmailLogsTableColumns from "../table/useEmailLogsTableColumns";
+import { UUID } from "crypto";
+import { VoiceLogsTab } from "../table/VoiceLogsTab";
+import { SmsLogsTab } from "../table/SmsLogsTab";
+import { EmailLogsTab } from "../table/EmailLogs.tab";
 
 export function IndividualLogTab() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { id } = useParams() as { id: UUID };
 
-  const tab = searchParams.get("tab") || "individualLog"; 
-  const subTab = searchParams.get("subTab") || "voice"; 
+  const tab = searchParams.get("tab") || "individualLog";
+  const subTab = searchParams.get("subTab") || "voice";
 
   useEffect(() => {
-   
     if (tab === "individualLog" && !searchParams.get("subTab")) {
       router.replace(`?tab=individualLog&subTab=voice`);
     }
@@ -23,9 +29,12 @@ export function IndividualLogTab() {
     router.push(`?tab=individualLog&subTab=${value}`);
   };
 
+ 
+
+  
   return (
     <div className="bg-white rounded-lg">
-      <Tabs className="p-6" defaultValue={subTab} onValueChange={handleSubTabChange}>
+      <Tabs className="p-1" defaultValue={subTab} onValueChange={handleSubTabChange}>
         <TabsList className="grid w-fit grid-cols-3 mb-4">
           <TabsTrigger
             value="voice"
@@ -53,13 +62,13 @@ export function IndividualLogTab() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="voice">
-          <VoiceLogsTable />
+        <VoiceLogsTab id={id } />
         </TabsContent>
         <TabsContent value="sms">
-          <SmsLogsTable />
+        <SmsLogsTab id ={id}/>
         </TabsContent>
         <TabsContent value="email">
-          <EmailLogsTable />
+         <EmailLogsTab id ={id}/>
         </TabsContent>
       </Tabs>
     </div>

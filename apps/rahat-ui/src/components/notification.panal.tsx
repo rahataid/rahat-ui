@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { Button } from "@rahat-ui/shadcn/src/components/ui/button";
-import { X, Bell, ChevronDown, ChevronUp } from "lucide-react";
-import Link from "next/link";
-import React from "react";
-import { formatTimestamp } from "../utils/dateFormate";
-import { Notification } from "@rahat-ui/types";
-import { truncateDescription } from "../utils/truncateDescription";
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { X, Bell, ChevronDown, ChevronUp } from 'lucide-react';
+import Link from 'next/link';
+import React from 'react';
+import { formatTimestamp } from '../utils/dateFormate';
+import { Notification } from '@rahat-ui/types';
+import { truncateDescription } from '../utils/truncateDescription';
 
 interface NotificationPanelProps {
   isOpen: boolean;
@@ -25,11 +25,11 @@ export default function NotificationPanel({
   lengthOfNotification = 0,
   isLoading = false,
 }: NotificationPanelProps) {
-  const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>({});
+  const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>(
+    {},
+  );
 
-
- const displayedNotifications = notifications.slice(0, 4);
- 
+  const displayedNotifications = notifications.slice(0, 4);
 
   const toggleExpand = (id: number) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -74,7 +74,8 @@ export default function NotificationPanel({
                 It's quiet now
               </h3>
               <p className="text-sm text-gray-500 max-w-xs text-center">
-                Your notifications will appear here once there's something new to review
+                Your notifications will appear here once there's something new
+                to review
               </p>
             </div>
           ) : (
@@ -95,7 +96,7 @@ export default function NotificationPanel({
                         </span>
                       )}
                     </div>
-                    
+
                     {notification.description && (
                       <div className="mb-1 flex items-start justify-between">
                         <p className="text-sm text-gray-600">
@@ -121,12 +122,12 @@ export default function NotificationPanel({
                         </button>
                       </div>
                     )}
-                    
+
                     <p className="text-xs text-gray-500">
                       {formatTimestamp(notification.createdAt)}
                     </p>
                   </div>
-                  
+
                   {!notification.notify && (
                     <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-1" />
                   )}

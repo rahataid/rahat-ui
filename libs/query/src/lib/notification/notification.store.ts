@@ -43,7 +43,7 @@ export const useNotificationStore: UseBoundStore<StoreApi<NotificationStore>> =
       updateNotification: (id, updates) =>
         set((state) => ({
           notifications: state.notifications.map((n) =>
-            n.id === id ? { ...n, ...updates } : n
+            n.id === id ? { ...n, ...updates } : n,
           ),
         })),
       removeNotification: (id) =>

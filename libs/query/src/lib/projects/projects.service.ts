@@ -52,7 +52,7 @@ export const useProjectAction = <T = any>(key?: string[]) => {
   >(
     {
       mutationKey: key || ['projectAction'],
-      mutationFn: projectClient.projectActions
+      mutationFn: projectClient.projectActions,
     },
     queryClient,
   );
@@ -64,13 +64,12 @@ export const useGeneralAction = <T = any>() => {
     FormattedResponse<T>,
     Error,
     {
-     
       data: ProjectActions;
     },
     unknown
   >(
     {
-      mutationKey:  ['generalAction'],
+      mutationKey: ['generalAction'],
       mutationFn: projectClient.generalActions,
     },
     queryClient,

@@ -12,7 +12,7 @@ export * from './lib/settings';
 export * from './lib/aa';
 export * from './lib/upload';
 export * from './lib/reports';
-export * from './lib/notification'
+export * from './lib/notification';
 export * from './lib/auth-apps';
 export * from './lib/el-kenya';
 export * from './lib/el-cambodia';

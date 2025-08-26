@@ -6,22 +6,14 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import { useGetAllNotificatons } from '@rahat-ui/query';
 
-
-
-
 const NotificationPanel = dynamic(() => import('./notification.panal'), {
   ssr: false,
 });
 
 export function NotificationButton({ unreadCount = 0 }) {
-  const {data, totalNotifications, isLoading} = useGetAllNotificatons()
+  const { data, totalNotifications, isLoading } = useGetAllNotificatons();
 
   const notifications = data?.pages.flatMap((page) => page.data || []) || [];
-  
-
-  
-
-
 
   const notificationModal = useBoolean();
 
@@ -45,7 +37,7 @@ export function NotificationButton({ unreadCount = 0 }) {
       <NotificationPanel
         isOpen={notificationModal.value}
         onClose={notificationModal.onFalse}
-        notifications={ notifications || []}
+        notifications={notifications || []}
         lengthOfNotification={totalNotifications || 0}
         isLoading={isLoading}
       />

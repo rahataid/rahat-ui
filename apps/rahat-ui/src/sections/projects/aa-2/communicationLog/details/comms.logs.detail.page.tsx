@@ -58,7 +58,7 @@ type IHeadCardProps = {
 
 export default function CommsLogsDetailPage() {
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
- 
+
   const [communicationId, activityId, sessionId] = (
     commsIdXactivityIdXsessionId as string
   ).split('%40');

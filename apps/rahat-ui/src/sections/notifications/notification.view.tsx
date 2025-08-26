@@ -2,20 +2,14 @@
 
 import { Button } from "@rahat-ui/shadcn/src/components/ui/button";
 import { X, Bell, ChevronDown, ChevronUp } from "lucide-react";
-import React from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useGetAllNotificatons, usePagination } from "@rahat-ui/query";
+import { useGetAllNotificatons } from "@rahat-ui/query";
 import { formatTimestamp } from "../../utils/dateFormate";
 import { Notification } from "@rahat-ui/types";
 import { truncateDescription } from "../../utils/truncateDescription";
 
 export default function NotificationsView() {
-  const {
-    pagination,
-    setPerPage,
-    setPagination,
-  } = usePagination();
-
   const {
     data,
     fetchNextPage,
@@ -27,11 +21,11 @@ export default function NotificationsView() {
   } = useGetAllNotificatons();
 
   const notifications = data?.pages.flatMap((page) => page.data || []) || [];
-  console.log("Notifications:", notifications, "Count:", notifications.length);
-  console.log("hasNextPage:", hasNextPage, "totalNotifications:", totalNotifications);
+
 
   const router = useRouter();
   const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>({});
+  const loaderRef = useRef<HTMLDivElement>(null);
 
   const toggleExpand = (id: number) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -41,8 +35,37 @@ export default function NotificationsView() {
     router.back();
   };
 
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      console.log("Observer triggered:", target.isIntersecting, "hasNextPage:", hasNextPage, "isFetchingNextPage:", isFetchingNextPage);
+      if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    [fetchNextPage, hasNextPage, isFetchingNextPage]
+  );
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(handleObserver, {
+      root: null,
+      rootMargin: "20px",
+      threshold: 0.1,
+    });
+    const currentLoader = loaderRef.current;
+    if (currentLoader) {
+      observer.observe(currentLoader);
+    }
+    return () => {
+      if (currentLoader) {
+        observer.unobserve(currentLoader);
+      }
+      observer.disconnect();
+    };
+  }, [handleObserver]);
+
   return (
-    <div className="min-h-screen bg-gray-50 flex justify-center items-center">
+    <div className="min-h-screen bg-gray-50 flex justify-center items-center overflow-x-hidden">
       <div className="flex flex-col">
         <div className="relative">
           <Button
@@ -70,7 +93,7 @@ export default function NotificationsView() {
               )}
             </div>
 
-            <div className="flex-1 max-h-[80vh] overflow-y-auto">
+            <div className="flex-1" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center min-h-[200px]">
                   <p className="text-sm text-gray-500">Loading notifications...</p>
@@ -165,24 +188,14 @@ export default function NotificationsView() {
                       </div>
                     );
                   })}
+                  {hasNextPage && (
+                    <div ref={loaderRef} className="h-10 flex items-center justify-center">
+                      <p className="text-sm text-gray-500">Loading more...</p>
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-
-            <div className="p-1 flex justify-center">
-              {hasNextPage  ? (
-                <Button
-                  onClick={() => fetchNextPage()}
-                  disabled={isFetchingNextPage}
-                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                >
-                  {isFetchingNextPage ? "Loading..." : "Load More"}
-                </Button>
-              ) : (
-                notifications.length > 0 && (
-                  <p className="text-sm text-gray-500">No more notifications to load</p>
-                )
-              )}
+              &nbsp; 
             </div>
           </div>
         </div>

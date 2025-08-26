@@ -1,22 +1,23 @@
-import { useApproveVendorTokenRedemption } from '@rahat-ui/query/lib/aa';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useUserStore } from '@rumsan/react-query';
-import { ColumnDef } from '@tanstack/react-table';
-import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
-import { UUID } from 'crypto';
-import { Check, Copy, CopyCheck, Eye } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import { IProjectVendor } from './types';
 import {
   TOKEN_TO_AMOUNT_MULTIPLIER,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
-import { getAssetCode, getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
-import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { useApproveVendorTokenRedemption } from '@rahat-ui/query/lib/aa';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useUserStore } from '@rumsan/react-query';
 import { Pagination } from '@rumsan/sdk/types';
+import { ColumnDef } from '@tanstack/react-table';
+import { DialogComponent } from 'apps/rahat-ui/src/components/dialog';
+import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
+import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
+import { getAssetCode, getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
+import { UUID } from 'crypto';
+import { Copy, CopyCheck, Eye } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { IProjectVendor } from './types';
+// import { DialogComponent } from '../activities/details/dialog.reuse';
 
 export const useProjectVendorTableColumns = (pagination: Pagination) => {
   const { id } = useParams();
@@ -73,12 +74,12 @@ export const useProjectVendorRedemptionTableColumns = () => {
   const { clickToCopy, copyAction } = useCopy();
 
   const handleApproveClick = async (row: any) => {
-    console.log('handle approve click');
     try {
       if (row?.redemptionStatus === 'APPROVED') {
         console.error('Already approved');
         return;
       }
+
       approveVendorTokenRedemption.mutateAsync({
         projectUUID: id,
         payload: {
@@ -124,31 +125,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
         </div>
       ),
     },
-    {
-      accessorKey: 'redemptionStatus',
-      header: 'Status',
-      cell: ({ row }) => (
-        <Badge
-          className="text-xs font-normal"
-          style={{
-            backgroundColor:
-              row.original?.redemptionStatus === 'APPROVED'
-                ? '#ECFDF3'
-                : '#EFF8FF',
-            color:
-              row.original?.redemptionStatus === 'APPROVED'
-                ? '#027A48'
-                : '#175CD3',
-          }}
-        >
-          {row.original?.redemptionStatus === 'APPROVED'
-            ? 'Approved'
-            : row.original?.redemptionStatus === 'STELLAR_VERIFIED'
-            ? 'Requested ✓'
-            : 'Requested'}
-        </Badge>
-      ),
-    },
+
     {
       accessorKey: 'transactionHash',
       header: 'TxHash',
@@ -192,6 +169,31 @@ export const useProjectVendorRedemptionTableColumns = () => {
       },
     },
     {
+      accessorKey: 'redemptionStatus',
+      header: 'Status',
+      cell: ({ row }) => (
+        <Badge
+          className="text-xs font-normal"
+          style={{
+            backgroundColor:
+              row.original?.redemptionStatus === 'APPROVED'
+                ? '#ECFDF3'
+                : '#EFF8FF',
+            color:
+              row.original?.redemptionStatus === 'APPROVED'
+                ? '#027A48'
+                : '#175CD3',
+          }}
+        >
+          {row.original?.redemptionStatus === 'APPROVED'
+            ? 'Approved'
+            : row.original?.redemptionStatus === 'STELLAR_VERIFIED'
+            ? 'Requested ✓'
+            : 'Requested'}
+        </Badge>
+      ),
+    },
+    {
       accessorKey: 'approvedBy',
       header: 'Approved By',
       cell: ({ row }) => (
@@ -203,37 +205,39 @@ export const useProjectVendorRedemptionTableColumns = () => {
       ),
     },
     {
-      accessorKey: 'approvedAt',
-      header: 'Approved Date',
-      cell: ({ row }) => (
-        <div>
-          {row.original?.redemptionStatus === 'APPROVED' &&
-          row.getValue('approvedAt')
-            ? dateFormat(row.getValue('approvedAt'))
-            : 'N/A'}
-        </div>
-      ),
-    },
-    {
       id: 'actions',
       header: 'Actions',
       enableHiding: false,
       cell: ({ row }) => {
         const status = row.original?.redemptionStatus?.toLowerCase();
         return (
-          <div className="flex items-center justify-center">
-            {status === 'approved' ? (
-              <div className="text-[#2A9D90]">Approved</div>
-            ) : (
-              <Button
-                variant="ghost"
-                className="text-[#297AD6]"
-                onClick={() => handleApproveClick(row)}
-              >
-                Approve
-              </Button>
-            )}
-          </div>
+          <>
+            <div className="flex items-center justify-start">
+              {status === 'approved' ? (
+                <div className="font-inter font-normal text-[12px] leading-[20px] tracking-[0] text-[#475263]">
+                  <div>Approved on:</div>
+                  <div>
+                    {row.original?.redemptionStatus === 'APPROVED' &&
+                    row.original?.approvedAt
+                      ? dateFormat(row.original?.approvedAt)
+                      : 'N/A'}
+                  </div>
+                </div>
+              ) : (
+                <DialogComponent
+                  onSubmit={() => handleApproveClick(row)}
+                  onCancel={() => null}
+                  title="Approve Redemption Request"
+                  subtitle="Are you sure you want to approve this redemption request?"
+                  trigger={
+                    <div className="cursor-pointer select-none text-[#297AD6]">
+                      Approve
+                    </div>
+                  }
+                />
+              )}
+            </div>
+          </>
         );
       },
     },

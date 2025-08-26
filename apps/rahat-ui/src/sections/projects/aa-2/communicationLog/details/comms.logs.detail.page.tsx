@@ -65,6 +65,7 @@ export default function CommsLogsDetailPage() {
 
   const searchParams = useSearchParams();
   const from = searchParams.get('from');
+  const backFrom = searchParams.get('backFrom');
 
   const {
     pagination,
@@ -177,7 +178,9 @@ export default function CommsLogsDetailPage() {
 
   const path = useMemo(() => {
     return from === 'activities'
-      ? `/projects/aa/${projectID}/activities/${activityId}?from="mainPage"`
+      ? `/projects/aa/${projectID}/activities/${activityId}${
+          backFrom ? `?from=${backFrom}` : ''
+        }`
       : `/projects/aa/${projectID}/communication-logs/details/${activityId}`;
   }, [from, projectID, activityId]);
 

@@ -1,8 +1,8 @@
 'use client';
-import CommingSoonView from 'apps/rahat-ui/src/sections/projects/aidlink/commingSoon';
+import { AidLinkMultiSigWalletMainView } from 'apps/rahat-ui/src/sections/projects/aidlink';
 
 const Page = () => {
-  return <CommingSoonView />;
+  return <AidLinkMultiSigWalletMainView />;
 };
 
 export default Page;

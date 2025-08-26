@@ -1,246 +1,65 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@rahat-ui/shadcn/src/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@rahat-ui/shadcn/src/components/ui/tabs";
 import VoiceLogsTable from "../table/VoiceLogsTable";
 import SmsLogsTable from "../table/SmsLogsTable";
 import EmailLogsTable from "../table/EmailLogsTable";
-
+import { useSearchParams, useRouter } from "next/navigation"; // Import useSearchParams and useRouter
+import { useEffect } from "react";
 
 export function IndividualLogTab() {
-  const mockVoiceLogs = [
-    {
-      id: 1,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Ban GC",
-      groupName: "Ruhsani Ban GC",
-      groupType: "Beneficiary",
-      message: "2023",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-    {
-      id: 2,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Stak GC",
-      groupName: "Ruhsani Stak GC",
-      groupType: "Stakeholder",
-      message: "2023",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-    // ... existing voice logs
-  ]
-  
-  const mockSmsLogs = [
-    {
-      id: 1,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Ban GC",
-      groupName: "Ruhsani Ban GC",
-      groupType: "Beneficiary",
-      message: "This message has been sent successfully to all beneficiaries...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-    {
-      id: 2,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Stak GC",
-      groupName: "Ruhsani Stak GC",
-      groupType: "Stakeholder",
-      message: "This message has been sent successfully to all stakeholders...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-    {
-      id: 3,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Stak GC",
-      groupName: "Ruhsani Stak GC",
-      groupType: "Stakeholder",
-      message: "This message has been sent successfully to all stakeholders...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-    {
-      id: 4,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Stak GC",
-      groupName: "Ruhsani Stak GC",
-      groupType: "Stakeholder",
-      message: "This message has been sent successfully to all stakeholders...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-    {
-      id: 5,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Ban GC",
-      groupName: "Ruhsani Ban GC",
-      groupType: "Beneficiary",
-      message: "This message has been sent successfully to all beneficiaries...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Work in Progress",
-    },
-    {
-      id: 6,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Stak GC",
-      groupName: "Ruhsani Stak GC",
-      groupType: "Stakeholder",
-      message: "This message has been sent successfully to all stakeholders...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-    {
-      id: 7,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Ban GC",
-      groupName: "Ruhsani Ban GC",
-      groupType: "Beneficiary",
-      message: "This message has been sent successfully to all beneficiaries...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Failed",
-    },
-    {
-      id: 8,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Ban GC",
-      groupName: "Ruhsani Ban GC",
-      groupType: "Beneficiary",
-      message: "This message has been sent successfully to all beneficiaries...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-    {
-      id: 9,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Stak GC",
-      groupName: "Ruhsani Stak GC",
-      groupType: "Stakeholder",
-      message: "This message has been sent successfully to all stakeholders...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-    {
-      id: 10,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Ban GC",
-      groupName: "Ruhsani Ban GC",
-      groupType: "Beneficiary",
-      message: "This message has been sent successfully to all beneficiaries...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-  ]
-  
-  const mockEmailLogs = [
-    {
-      id: 1,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Ban GC",
-      groupName: "Ruhsani Ban GC",
-      groupType: "Beneficiary",
-      subject: "Test Message",
-      message: "This message has been sent successfully to all beneficiaries...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-    {
-      id: 2,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Stak GC",
-      groupName: "Ruhsani Stak GC",
-      groupType: "Stakeholder",
-      subject: "Test Message",
-      message: "This message has been sent successfully to all stakeholders...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-    {
-      id: 3,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Stak GC",
-      groupName: "Ruhsani Stak GC",
-      groupType: "Stakeholder",
-      subject: "Test Message",
-      message: "This message has been sent successfully to all stakeholders...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-    {
-      id: 4,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Stak GC",
-      groupName: "Ruhsani Stak GC",
-      groupType: "Stakeholder",
-      subject: "Test Message",
-      message: "This message has been sent successfully to all stakeholders...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-    {
-      id: 5,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Ban GC",
-      groupName: "Ruhsani Ban GC",
-      groupType: "Beneficiary",
-      subject: "Test Message",
-      message: "This message has been sent successfully to all beneficiaries...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Work in Progress",
-    },
-    {
-      id: 6,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Stak GC",
-      groupName: "Ruhsani Stak GC",
-      groupType: "Stakeholder",
-      subject: "Test Message",
-      message: "This message has been sent successfully to all stakeholders...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-    {
-      id: 7,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Ban GC",
-      groupName: "Ruhsani Ban GC",
-      groupType: "Beneficiary",
-      subject: "Test Message",
-      message: "This message has been sent successfully to all beneficiaries...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Failed",
-    },
-    {
-      id: 8,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Ban GC",
-      groupName: "Ruhsani Ban GC",
-      groupType: "Beneficiary",
-      subject: "Test Message",
-      message: "This message has been sent successfully to all beneficiaries...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-    {
-      id: 9,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Stak GC",
-      groupName: "Ruhsani Stak GC",
-      groupType: "Stakeholder",
-      subject: "Test Message",
-      message: "This message has been sent successfully to all stakeholders...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-    {
-      id: 10,
-      title: "Inform the Banks and Namaste Pay about the upcoming flood in Ruhsani Ban GC",
-      groupName: "Ruhsani Ban GC",
-      groupType: "Beneficiary",
-      subject: "Test Message",
-      message: "This message has been sent successfully to all beneficiaries...",
-      timestamp: "21 July, 2025, 06:12:35 PM",
-      status: "Completed",
-    },
-  ]
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const tab = searchParams.get("tab") || "individualLog"; 
+  const subTab = searchParams.get("subTab") || "voice"; 
+
+  useEffect(() => {
+   
+    if (tab === "individualLog" && !searchParams.get("subTab")) {
+      router.replace(`?tab=individualLog&subTab=voice`);
+    }
+  }, [tab, searchParams, router]);
+
+  const handleSubTabChange = (value: string) => {
+    router.push(`?tab=individualLog&subTab=${value}`);
+  };
 
   return (
-    <div className="bg-white rounded-lg border">
-      <Tabs defaultValue="voice" className="p-6">
+    <div className="bg-white rounded-lg">
+      <Tabs className="p-6" defaultValue={subTab} onValueChange={handleSubTabChange}>
         <TabsList className="grid w-fit grid-cols-3 mb-4">
-          <TabsTrigger value="voice">Voice</TabsTrigger>
-          <TabsTrigger value="sms">SMS</TabsTrigger>
-          <TabsTrigger value="email">Email</TabsTrigger>
+          <TabsTrigger
+            value="voice"
+            className={`font-inter font-medium text-[14px] leading-[24px] tracking-[0%] ${
+              subTab === "voice" ? "underline decoration-[2px] decoration-[#297AD6]" : ""
+            }`}
+          >
+            Voice
+          </TabsTrigger>
+          <TabsTrigger
+            value="sms"
+            className={`font-inter font-medium text-[14px] leading-[24px] tracking-[0%] ${
+              subTab === "sms" ? "underline decoration-[2px] decoration-[#297AD6]" : ""
+            }`}
+          >
+            SMS
+          </TabsTrigger>
+          <TabsTrigger
+            value="email"
+            className={`font-inter font-medium text-[14px] leading-[24px] tracking-[0%] ${
+              subTab === "email" ? "underline decoration-[2px] decoration-[#297AD6]" : ""
+            }`}
+          >
+            Email
+          </TabsTrigger>
         </TabsList>
-        
         <TabsContent value="voice">
-       
-          <VoiceLogsTable data={mockVoiceLogs} />
+          <VoiceLogsTable />
         </TabsContent>
         <TabsContent value="sms">
-          <SmsLogsTable data={mockSmsLogs} />
+          <SmsLogsTable />
         </TabsContent>
         <TabsContent value="email">
-          <EmailLogsTable data={mockEmailLogs} />
+          <EmailLogsTable />
         </TabsContent>
       </Tabs>
     </div>

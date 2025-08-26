@@ -6,37 +6,63 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import {  flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import useSmsLogsTableColumns from './useSmsLogsTableColumns';
 import {
   ScrollArea,
   ScrollBar,
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import SearchAndFilterToolbar from '../components/SearchAndFilterToolbar';
-import { useState } from 'react';
-import { usePagination } from '@rahat-ui/query';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
-export default function SmsLogsTable({ data }: { data: any[] }) {
-  const columns = useSmsLogsTableColumns();
-  const [filters, setFilters] = useState({});
-    const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
-         usePagination();
-          // Static data for pagination
-     const mockMeta = {
-        
-         total: 0,
-         currentPage: 0,
-         lastPage: 0,
-         perPage: 0,
-         next: null,
-         prev: null,
-       
-     };
-   
+
+import { useGetVoiceLogs, usePagination } from '@rahat-ui/query';
+
+import { useParams, useSearchParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import { CustomPagination, NoResult, SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
+import SelectComponent from 'apps/rahat-ui/src/common/select.component';
+
+
+
+export default function SmsLogsTable() {
+ const {id:projectId} = useParams();
+ const {
+   pagination,
+   filters,
+   setNextPage,
+   setPrevPage,
+   setPerPage,
+   selectedListItems,
+   setSelectedListItems,
+   setFilters,
+   setPagination,
+ } = usePagination();
+const columns = useSmsLogsTableColumns();
+
+  
+     const searchParams = useSearchParams()
+     const tab = searchParams.get('subTab') 
+     const {voiceLogs, isLoading, voiceLogMeta}= useGetVoiceLogs(projectId as UUID,tab as string,{ ...pagination, filters});
+     
+     const handleFilterChange = (event: any) => {
+      if (event && event.target) {
+        const { name, value } = event.target;
+        const filterValue = value === 'ALL' ? '' : value;
+        table.getColumn(name)?.setFilterValue(filterValue);
+        setFilters({
+          ...filters,
+          [name]: filterValue,
+        });
+      }
+      setPagination({
+        ...pagination,
+        page: 1,
+      });
+    };
+  
 
   const table = useReactTable({
-    data,
+  manualPagination: true,
+    data: voiceLogs || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -44,13 +70,52 @@ export default function SmsLogsTable({ data }: { data: any[] }) {
   return (
  <>
   <div className="flex justify-between gap-2">
-         <SearchAndFilterToolbar
-           table={table}
-           filters={filters}
-           setFilters={setFilters}
-           setPagination={setPagination}
-           pagination={pagination}
-         />
+         <SearchInput
+                 name="title"
+                 className="w-[100%]"
+                 value={
+                   (table.getColumn('communication_title')?.getFilterValue() as string) ??
+                   filters?.title
+                 }
+                 onSearch={(event) => handleFilterChange(event)}
+                
+                
+                />
+        
+         <SearchInput
+                 name="group"
+                 className="w-[100%]"
+                 value={
+                   (table.getColumn('groupName')?.getFilterValue() as string) ??
+                   filters?.group
+                 }
+                 onSearch={(event) => handleFilterChange(event)}
+                
+                
+                />
+                 <SelectComponent
+                          name="type"
+                          options={['BENEFICIARY', 'STAKEHOLDER']}
+                          onChange={(value) =>
+                            handleFilterChange({
+                              target: { name: 'group_type', value },
+                            })
+                          }
+                          value={filters?.type || ''}
+                        />
+                        <SelectComponent
+                          name="status"
+                          options={['Work in Progress', 'COMPLETED', 'Failed', 'Not Started', 'PENDING']}
+                          onChange={(value) =>
+                            handleFilterChange({
+                              target: { name: 'status', value },
+                            })
+                          }
+                          value={filters?.status || ''}
+                        />
+
+
+
        </div>
  
  <div className=" bg-card border rounded mt-4">
@@ -97,7 +162,7 @@ export default function SmsLogsTable({ data }: { data: any[] }) {
                 colSpan={columns.length}
                 className="h-24 text-center"
               >
-                {/* {isLoading ? <SpinnerLoader /> : <NoResult />} */}
+                {isLoading ? <SpinnerLoader /> : <NoResult />}
               </TableCell>
             </TableRow>
           )}
@@ -107,23 +172,26 @@ export default function SmsLogsTable({ data }: { data: any[] }) {
     </ScrollArea>
 
           <CustomPagination
-          meta={mockMeta} // Pass the static pagination metadata
-          handleNextPage={() => {
-            if (pagination.page < mockMeta.lastPage) {
-              setPagination({ ...pagination, page: pagination.page + 1 });
-            }
-          }}
-          handlePrevPage={() => {
-            if (pagination.page > 1) {
-              setPagination({ ...pagination, page: pagination.page - 1 });
-            }
-          }}
-        
-          handlePageSizeChange={(value) => {
-            setPagination({ ...pagination, perPage: Number(value), page: 1 });
-          }}
-          currentPage={pagination.page}
-          perPage={pagination.perPage}
+         meta={voiceLogMeta || {
+          total: 0,
+          currentPage: 0,
+          lastPage: 0,
+          perPage: 0,
+          next: null,
+          prev: null,
+          
+          
+          
+                    }} 
+                    handleNextPage={setNextPage}
+                    handlePrevPage={setPrevPage}
+                  
+                    handlePageSizeChange={setPerPage}
+                    setPagination={setPagination}
+                    
+                    currentPage={pagination.page}
+                    perPage={pagination.perPage}
+                    total = {voiceLogMeta?.lastPage || 0}
         />
     
     {/* <ClientSidePagination table={table} /> */}

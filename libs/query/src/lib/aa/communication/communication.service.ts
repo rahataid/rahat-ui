@@ -2,6 +2,8 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
+import { title } from 'process';
+import { group } from 'console';
 
 export const useGetCommunicationLogs = (
   uuid: UUID,
@@ -104,13 +106,15 @@ export const useRetryFailedBroadcast = (
 
 export const useGetVoiceLogs = (
   uuid: UUID,
-  communicationId?: string,
-  activityId?: string,
+  communication: string,
+  payload?:any
+  
 ) => {
   const q = useProjectAction();
 
+
   const query = useQuery({
-    queryKey: ['voicelogs', uuid],
+    queryKey: ['communicationLogs', uuid, communication, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -118,14 +122,27 @@ export const useGetVoiceLogs = (
           action: 'ms.activities.getComms',
           payload: {
            filters:{
-            transportName: 'VOICE',
-           }
+            transportName: communication,
+            title:payload?.filters?.title || '',
+            groupName:payload?.filters?.group || '',
+            groupType:payload?.filters?.type || '',
+            sessionStatus:payload?.filters?.status || '',
+            
+       
+           },
+              
+           page:payload.page,
+           perPage:payload.perPage
           },
         },
       });
-      return mutate.data;
+      return mutate 
     },
   });
 
-  return query;
+  return {
+  voiceLogs:query?.data?.data,
+  isLoading:query.isLoading,
+  voiceLogMeta: query?.data?.response.meta
+  }
 };

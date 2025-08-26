@@ -1,14 +1,38 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye } from 'lucide-react';
+import { ArrowUpDown,Eye } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import React from 'react';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+
+
+function getStatusBg(status: string) {
+  if (status === 'Not Started') {
+    return 'bg-gray-200 text-black';
+  }
+
+  if (status === 'Work in Progress') {
+    return 'bg-orange-200 text-yellow-600';
+  }
+
+  if (status === 'COMPLETED') {
+    return 'bg-green-200 text-green-500';
+  }
+
+  return 'bg-red-200 text-red-600';
+}
+
 
 export default function useVoiceLogsTableColumns() {
-  const columns: ColumnDef<any>[] = [
+  const router = useRouter();
+ const { id  } = useParams()
+   const [isPlaying, setIsPlaying] = React.useState(false);
+  const columns: ColumnDef< any>[] = [
    {
-    accessorKey: 'title',
+    accessorKey: 'communication_title',
     header: 'Communication Title',
     cell: ({ row }) => (
       <div className="truncate w-48 hover:cursor-pointer">
-        {row.getValue('title')}
+        {row.getValue('communication_title')}
       </div>
     ),
    }
@@ -23,60 +47,77 @@ export default function useVoiceLogsTableColumns() {
       ),
     },
     {
-      accessorKey: 'groupType',
+      accessorKey: 'group_type',
       header: 'Group Type',
       cell: ({ row }) => (
         <div className="truncate w-48 hover:cursor-pointer">
-          {row.getValue('groupType')}
+          {row.getValue('group_type')}
         </div>
       ),
     },
     {
-      accessorKey: 'message',
+      accessorKey: 'media_url',
       header: 'Message',
-      cell: ({ row }) => (
-        <div className="truncate w-48 hover:cursor-pointer">
-          <audio
-            src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" 
-            controls
-            controlsList="nodownload noplaybackrate" 
-            className="w-full h-12"
-          />
-        </div>
-      ),
+      cell: ({ row }) => {
+        
+        return (
+          <div >
+  <audio
+    src={row.getValue('media_url')}
+    controls
+   className="w-[249px] h-[32px] p-[6px_16px] rounded-[56px]"
+    onPlay={() => setIsPlaying(true)}
+    onPause={() => setIsPlaying(false)}
+    
+  />
+</div>
+        )
+      },
     },
     {
       accessorKey: 'timestamp',
-      header: 'Timestamp',
+      header: () => (
+        <div className="flex items-center space-x-2">
+          <span>Timestamp</span>
+          <ArrowUpDown className="cursor-pointer" />
+        </div>
+      ),
       cell: ({ row }) => (
         <div className="flex items-center space-x-2 gap-2">
           {new Date(row.getValue('timestamp')).toLocaleString()}
+        
         </div>
       ),
     },
     {
-      accessorKey: 'status',
-      header: 'Status',
-      cell: ({ row }) => (
-        <div className="text-center">
-          {row.getValue('status')}
-        </div>
-      ),
+      accessorKey: "sessionStatus",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.getValue("sessionStatus") as string;
+       const className = getStatusBg(status as string);
+     
+
+        return <Badge className={className}>{status}</Badge>;
+        
+      },
     },
     {
       id: 'actions',
       header: 'Actions',
       enableHiding: false,
       cell: ({ row }) => {
+      console.log('row original', row.original)
+     
+
         return (
           <div className="flex items-center space-x-2">
             <Eye
               className="hover:text-primary cursor-pointer"
-              size={20}
+              size={20} 
               strokeWidth={1.5}
               // onClick={() =>
               //   router.push(
-              //     `/projects/aa/${id}/communication-logs/details/${row.original.id}`,
+              //     `/projects/aa/${id}/communication-logs/individualdetails/${row.original.communicationId}@${row.original.activityId}@${row.original.sessionId}`,
               //   )
               // }
             />

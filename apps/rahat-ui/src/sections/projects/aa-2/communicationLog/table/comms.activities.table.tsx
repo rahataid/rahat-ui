@@ -25,7 +25,6 @@ import { useActivitiesHavingComms, usePagination } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import useCommsActivitiesTableColumns from './useCommsActivitesTableColumns';
 import {
-
   CustomPagination,
   NoResult,
   SearchInput,
@@ -84,6 +83,7 @@ export default function CommsActivitiesTable() {
     },
     [filters],
   );
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between gap-2">

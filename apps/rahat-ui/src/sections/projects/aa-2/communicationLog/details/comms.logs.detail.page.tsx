@@ -97,6 +97,7 @@ export default function CommsLogsDetailPage() {
     useSingleActivity(projectID as UUID, activityId);
   const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
     useListSessionLogs(sessionId, { ...pagination, ...cleanFilters });
+  console.log(sessionLogs, 'sessionLogs from sesssionLogs');
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
 

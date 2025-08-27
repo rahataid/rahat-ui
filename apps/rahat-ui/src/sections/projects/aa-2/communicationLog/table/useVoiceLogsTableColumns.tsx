@@ -23,6 +23,8 @@ function getStatusBg(status: string) {
 
 
 export default function useVoiceLogsTableColumns() {
+  const router = useRouter();
+  const { id } = useParams();
 
    const [isPlaying, setIsPlaying] = React.useState(false);
   const columns: ColumnDef< any>[] = [
@@ -117,11 +119,11 @@ export default function useVoiceLogsTableColumns() {
               className="hover:text-primary cursor-pointer"
               size={20} 
               strokeWidth={1.5}
-              // onClick={() =>
-              //   router.push(
-              //     `/projects/aa/${id}/communication-logs/individualdetails/${row.original.communicationId}@${row.original.activityId}@${row.original.sessionId}`,
-              //   )
-              // }
+              onClick={() =>
+                router.push(
+                  `/projects/aa/${id}/communication-logs/voicedetails/${row.original.communicationId}@${row.original.sessionId}`,
+                )
+              }
             />
           </div>
         );

@@ -64,13 +64,12 @@ export const useGeneralAction = <T = any>() => {
     FormattedResponse<T>,
     Error,
     {
-     
       data: ProjectActions;
     },
     unknown
   >(
     {
-      mutationKey:  ['generalAction'],
+      mutationKey: ['generalAction'],
       mutationFn: projectClient.generalActions,
     },
     queryClient,
@@ -133,6 +132,7 @@ export const useAssignBenToProject = () => {
 
 export const useAssignBenGroupToProject = () => {
   const q = useProjectAction();
+  const queryClient = useQueryClient();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -148,7 +148,7 @@ export const useAssignBenGroupToProject = () => {
       projectUUID: UUID;
       beneficiaryGroupUUID: UUID;
     }) => {
-      return q.mutateAsync({
+      const response = await q.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'beneficiary.assign_group_to_project',
@@ -157,9 +157,21 @@ export const useAssignBenGroupToProject = () => {
           },
         },
       });
+      return response?.data;
     },
-    onSuccess: () => {
+    onSuccess: async (_data, variables) => {
       q.reset();
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['GET_BENEFICIARY_GROUP', variables.beneficiaryGroupUUID],
+          exact: false,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [TAGS.GET_BENEFICIARIES_GROUPS],
+          exact: false,
+        }),
+      ]);
+
       toast.fire({
         title: 'Beneficiary group assigned Successfully',
         icon: 'success',

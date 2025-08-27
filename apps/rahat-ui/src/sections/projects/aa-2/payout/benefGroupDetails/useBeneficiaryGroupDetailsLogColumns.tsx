@@ -245,7 +245,11 @@ export default function useBeneficiaryGroupDetailsLogColumns(
         } else {
           return (
             <div className="flex flex-col text-[10px]">
-              <span>{intlFormatDate(updatedAt)}</span>
+              {status === 'COMPLETED' ? (
+                <span>{intlFormatDate(updatedAt)}</span>
+              ) : (
+                <span>{intlFormatDate(createdAt)}</span>
+              )}
             </div>
           );
         }

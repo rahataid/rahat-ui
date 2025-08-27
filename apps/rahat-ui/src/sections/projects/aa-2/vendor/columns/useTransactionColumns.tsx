@@ -141,7 +141,7 @@ export const useVendorsTransactionTableColumns = () => {
       header: 'Timestamp',
       cell: ({ row }) => (
         <div>
-          {row?.original?.createdAt ? dateFormat(row?.original?.updatedAt) : ''}
+          {row?.original?.updatedAt ? dateFormat(row?.original?.updatedAt) : ''}
         </div>
       ),
     },

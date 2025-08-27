@@ -35,6 +35,8 @@ export default function VendorsTransactionsHistory() {
     uuid: vendorId,
     ...pagination,
     name: debounceSearch.name,
+    orderBy: 'updatedAt',
+    order: 'desc',
   });
 
   const columns = useVendorsTransactionTableColumns();

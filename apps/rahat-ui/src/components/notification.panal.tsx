@@ -1,12 +1,11 @@
-"use client";
+'use client';
 
-import { Button } from "@rahat-ui/shadcn/src/components/ui/button";
-import { X, Bell, ChevronDown, ChevronUp } from "lucide-react";
-import Link from "next/link";
-import React from "react";
-import { formatTimestamp } from "../utils/dateFormate";
-import { Notification } from "@rahat-ui/types";
-import { truncateDescription } from "../utils/truncateDescription";
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { X, Bell } from 'lucide-react';
+import Link from 'next/link';
+import React from 'react';
+import { Notification } from '@rahat-ui/types';
+import NotificationItems from '../sections/notifications/notificationItems';
 
 interface NotificationPanelProps {
   isOpen: boolean;
@@ -25,15 +24,7 @@ export default function NotificationPanel({
   lengthOfNotification = 0,
   isLoading = false,
 }: NotificationPanelProps) {
-  const [expanded, setExpanded] = React.useState<{ [key: string]: boolean }>({});
-
-
- const displayedNotifications = notifications.slice(0, 4);
- 
-
-  const toggleExpand = (id: number) => {
-    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
+  const displayedNotifications = notifications.slice(0, 4);
 
   if (!isOpen) return null;
 
@@ -71,66 +62,20 @@ export default function NotificationPanel({
                 <span className="absolute w-10 h-0.5 bg-gray-400 transform rotate-45 origin-center"></span>
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                It's quiet now
+                It&#39;s quiet now
               </h3>
               <p className="text-sm text-gray-500 max-w-xs text-center">
-                Your notifications will appear here once there's something new to review
+                Your notifications will appear here once there&#39;s something
+                new to review
               </p>
             </div>
           ) : (
             <div className="space-y-1">
               {displayedNotifications.map((notification: Notification) => (
-                <div
+                <NotificationItems
                   key={notification.id}
-                  className="rounded-[12px] p-3 bg-[#EAF2FB] flex items-start gap-3"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="text-sm font-medium text-gray-900">
-                        {notification.title}
-                      </p>
-                      {notification.projectId && (
-                        <span className="px-2 py-1 rounded-full bg-gray-200 text-gray-700 text-xs whitespace-nowrap">
-                          {notification.project.name}
-                        </span>
-                      )}
-                    </div>
-                    
-                    {notification.description && (
-                      <div className="mb-1 flex items-start justify-between">
-                        <p className="text-sm text-gray-600">
-                          {expanded[notification.id]
-                            ? notification.description
-                            : truncateDescription(notification.description, 50)}
-                        </p>
-                        <button
-                          onClick={() => toggleExpand(notification.id)}
-                          className="text-blue-600 text-xs ml-2 flex items-center gap-1 flex-shrink-0"
-                        >
-                          {expanded[notification.id] ? (
-                            <>
-                              <ChevronUp className="h-3 w-3" />
-                              View Less
-                            </>
-                          ) : (
-                            <>
-                              <ChevronDown className="h-3 w-3" />
-                              View All
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    )}
-                    
-                    <p className="text-xs text-gray-500">
-                      {formatTimestamp(notification.createdAt)}
-                    </p>
-                  </div>
-                  
-                  {!notification.notify && (
-                    <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-1" />
-                  )}
-                </div>
+                  notification={notification}
+                />
               ))}
             </div>
           )}

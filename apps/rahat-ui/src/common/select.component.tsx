@@ -22,7 +22,7 @@ export default function SelectComponent({
   value,
   onChange,
 }: Iprops) {
-  const contentClassName = name ==='group'?'h-20 ':'h-32';
+  const contentClassName = name === 'Group Type' ? 'h-30 ' : 'h-32';
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger className={className}>
@@ -30,9 +30,13 @@ export default function SelectComponent({
       </SelectTrigger>
       <SelectContent className={contentClassName}>
         <SelectGroup>
-          {options?.map((o: string) => (
-            <SelectItem value={o} key={o}>
-              {o.replace(/_/g, ' ')}
+          {options?.map((status: string) => (
+            <SelectItem value={status} key={status}>
+              {status
+                .toLowerCase()
+                .split('_')
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ')}
             </SelectItem>
           ))}
         </SelectGroup>

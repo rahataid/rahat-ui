@@ -103,15 +103,12 @@ export const useRetryFailedBroadcast = (
 //   return query?.data?.data;
 // };
 
-
 export const useGetIndividualLogs = (
   uuid: UUID,
   communication: string,
-  payload?:any
-  
+  payload?: any,
 ) => {
   const q = useProjectAction();
-
 
   const query = useQuery({
     queryKey: ['communicationLogs', uuid, communication, payload],
@@ -121,29 +118,26 @@ export const useGetIndividualLogs = (
         data: {
           action: 'ms.activities.getComms',
           payload: {
-           filters:{
-            transportName: communication,
-            title:payload?.filters?.title || '',
-            groupName:payload?.filters?.group || '',
-            groupType:payload?.filters?.group || '',
-            sessionStatus:payload?.filters?.status  || '',
-            
-       
-           },
-              
-           page:payload.page,
-           perPage:payload.perPage
+            filters: {
+              transportName: communication,
+              title: payload?.filters?.title || '',
+              groupName: payload?.filters?.group_name || '',
+              groupType: payload?.filters?.group_type || '',
+              sessionStatus: payload?.filters?.sessionStatus || '',
+            },
+
+            page: payload.page,
+            perPage: payload.perPage,
           },
         },
       });
-      return mutate 
+      return mutate;
     },
   });
 
-
   return {
-  IndividualLogs:query?.data?.data,
-  isLoading:query.isLoading,
-  IndividualMeta: query?.data?.response.meta
-  }
+    IndividualLogs: query?.data?.data,
+    isLoading: query.isLoading,
+    IndividualMeta: query?.data?.response.meta,
+  };
 };

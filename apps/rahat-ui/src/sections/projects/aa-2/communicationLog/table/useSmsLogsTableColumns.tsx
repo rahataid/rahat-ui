@@ -23,13 +23,9 @@ function getStatusBg(status: string) {
   return 'bg-red-200 text-red-600';
 }
 
-
-
 export default function useSmsLogsTableColumns() {
   const columns: ColumnDef<any>[] = [
-
     {
-
       accessorKey: 'communication_title',
       header: 'Communication Title',
       cell: ({ row }) => (
@@ -49,7 +45,6 @@ export default function useSmsLogsTableColumns() {
           </Tooltip>
         </TooltipProvider>
       ),
-
     },
     {
       accessorKey: 'groupName',
@@ -119,7 +114,7 @@ export default function useSmsLogsTableColumns() {
       header: () => (
         <div className="flex items-center space-x-2">
           <span>Timestamp</span>
-          <ArrowUpDown className="cursor-pointer" />
+          {/* <ArrowUpDown className="cursor-pointer" /> */}
         </div>
       ),
       cell: ({ row }) => (
@@ -135,34 +130,33 @@ export default function useSmsLogsTableColumns() {
       accessorKey: 'sessionStatus',
       header: 'Status',
       cell: ({ row }) => {
-          const status = row.getValue("sessionStatus") as string;
-                       const className = getStatusBg(status as string);
-                     
-          return <Badge className={className}>{status}</Badge>;
+        const status = row.getValue('sessionStatus') as string;
+        const className = getStatusBg(status as string);
+
+        return <Badge className={className}>{status}</Badge>;
       },
     },
-       {
-          id: 'actions',
-          header: 'Actions',
-          enableHiding: false,
-          cell: ({ row }) => {
-            return (
-              <div className="flex items-center space-x-2">
-                <Eye
-                  className="hover:text-primary cursor-pointer"
-                  size={20}
-                  strokeWidth={1.5}
-                  // onClick={() =>
-                  //   router.push(
-                  //     `/projects/aa/${id}/communication-logs/details/${row.original.id}`,
-                  //   )
-                  // }
-                />
-              </div>
-            );
-          },
-        },
-   
+    {
+      id: 'actions',
+      header: 'Actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center space-x-2">
+            <Eye
+              className="hover:text-primary cursor-pointer"
+              size={20}
+              strokeWidth={1.5}
+              // onClick={() =>
+              //   router.push(
+              //     `/projects/aa/${id}/communication-logs/details/${row.original.id}`,
+              //   )
+              // }
+            />
+          </div>
+        );
+      },
+    },
   ];
 
   return columns;

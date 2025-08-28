@@ -1,11 +1,7 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@rahat-ui/shadcn/src/components/ui/tabs";
 import { useSearchParams, useRouter, useParams } from "next/navigation";
 import { useEffect, useMemo } from "react";
-import { useGetIndividualLogs, usePagination } from "@rahat-ui/query";
-import CommonLogsTable from "../table/useIndividualCommonLogstable";
-import useVoiceLogsTableColumns from "../table/useVoiceLogsTableColumns";
-import useSmsLogsTableColumns from "../table/useSmsLogsTableColumns";
-import useEmailLogsTableColumns from "../table/useEmailLogsTableColumns";
+
 import { UUID } from "crypto";
 import { VoiceLogsTab } from "../table/VoiceLogsTab";
 import { SmsLogsTab } from "../table/SmsLogsTab";

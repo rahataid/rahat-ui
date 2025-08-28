@@ -19,112 +19,105 @@ function getStatusBg(status: string) {
 }
 
 export default function useEmailLogsTableColumns() {
-
-
-  const columns: ColumnDef< any>[] = [
+  const columns: ColumnDef<any>[] = [
     {
-     accessorKey: 'communication_title',
-     header: 'Communication Title',
-     cell: ({ row }) => (
-       <div className="truncate w-48 hover:cursor-pointer">
-         {row.getValue('communication_title')}
-       </div>
-     ),
-    }
-     ,
-     {
-       accessorKey: 'groupName',
-       header: 'Group Name',
-       cell: ({ row }) => (
-         <div className="truncate w-48 hover:cursor-pointer">
-           {row.getValue('groupName')}
-         </div>
-       ),
-     },
-     {
-       accessorKey: 'group_type',
-       header: 'Group Type',
-       cell: ({ row }) => (
-         <div className="truncate w-48 hover:cursor-pointer">
-           {row.getValue('group_type')}
-         </div>
-       ),
-     },
-     {
+      accessorKey: 'communication_title',
+      header: 'Communication Title',
+      cell: ({ row }) => (
+        <div className="truncate w-48 hover:cursor-pointer">
+          {row.getValue('communication_title')}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'groupName',
+      header: 'Group Name',
+      cell: ({ row }) => (
+        <div className="truncate w-48 hover:cursor-pointer">
+          {row.getValue('groupName')}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'group_type',
+      header: 'Group Type',
+      cell: ({ row }) => (
+        <div className="truncate w-48 hover:cursor-pointer">
+          {row.getValue('group_type')}
+        </div>
+      ),
+    },
+    {
       accessorKey: 'subject',
       header: 'Subject',
       cell: ({ row }) => {
-        
         return (
           <div className="truncate w-48 hover:cursor-pointer">
-             {row.getValue('subject')}
-        </div>
-        )
+            {row.getValue('subject')}
+          </div>
+        );
       },
     },
-     {
-       accessorKey: 'message',
-       header: 'Message',
-       cell: ({ row }) => {
-         
-         return (
-           <div className="truncate w-48 hover:cursor-pointer">
-              {row.getValue('message')}
-         </div>
-         )
-       },
-     },
-     {
-       accessorKey: 'timestamp',
-       header: () => (
+    {
+      accessorKey: 'message',
+      header: 'Message',
+      cell: ({ row }) => {
+        return (
+          <div className="truncate w-48 hover:cursor-pointer">
+            {row.getValue('message')}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'timestamp',
+      header: () => (
         <div className="flex items-center space-x-2">
           <span>Timestamp</span>
-          <ArrowUpDown className="cursor-pointer" />
+          {/* <ArrowUpDown className="cursor-pointer" /> */}
         </div>
       ),
-       cell: ({ row }) => (
-         <div className="flex items-center space-x-2 gap-2">
+      cell: ({ row }) => (
+        <div className="flex items-center space-x-2 gap-2">
           {new Date(row.original.timestamp).toLocaleString('en-US', {
             dateStyle: 'medium',
             timeStyle: 'short',
           })}
-         </div>
-       ),
-     },
-     {
-       accessorKey: 'sessionStatus',
-       header: 'Status',
-       cell: ({ row }) => {
-         const status = row.getValue("sessionStatus") as string;
-               const className = getStatusBg(status as string);
-             
-        
-                return <Badge className={className}>{status}</Badge>;
-       }
-     },
-     {
-       id: 'actions',
-       header: 'Actions',
-       enableHiding: false,
-       cell: ({ row }) => {
-         return (
-           <div className="flex items-center space-x-2">
-             <Eye
-               className="hover:text-primary cursor-pointer"
-               size={20}
-               strokeWidth={1.5}
-               // onClick={() =>
-               //   router.push(
-               //     `/projects/aa/${id}/communication-logs/details/${row.original.id}`,
-               //   )
-               // }
-             />
-           </div>
-         );
-       },
-     },
-    
-   ];
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'sessionStatus',
+      header: 'Status',
+      cell: ({ row }) => {
+        const status = row.getValue('sessionStatus') as string;
+        const className = getStatusBg(status as string);
+
+        return <Badge className={className}>{status}</Badge>;
+      },
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center space-x-2">
+            <Eye
+              className="hover:text-primary cursor-pointer"
+              size={20}
+              strokeWidth={1.5}
+              // onClick={() =>
+              //   router.push(
+              //     `/projects/aa/${id}/communication-logs/details/${row.original.id}`,
+              //   )
+              // }
+            />
+          </div>
+        );
+      },
+    },
+  ];
 
   return columns;
 }

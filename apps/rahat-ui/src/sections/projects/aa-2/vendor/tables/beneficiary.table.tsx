@@ -18,6 +18,7 @@ import { useVendorsBeneficiaryTableColumns } from '../columns/useBeneficiaryColu
 import { toTitleCase } from 'apps/rahat-ui/src/utils/string';
 import { getPaginationFromLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
 import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 interface VendorsBeneficiaryListProps {
   beneficiaryData?: {
@@ -71,6 +72,21 @@ export default function VendorsBeneficiaryList({
     ...pagination,
     walletAddress: debounceSearch.walletAddress,
   });
+
+  const onlineQuery = useGetVendorBeneficiaries({
+    projectUUID: id,
+    vendorUuid: vendorId,
+    payoutMode: PayoutMode.ONLINE,
+  });
+
+  const offlineQuery = useGetVendorBeneficiaries({
+    projectUUID: id,
+    vendorUuid: vendorId,
+    payoutMode: PayoutMode.OFFLINE,
+  });
+
+  const totalOnlineBeneficiary = onlineQuery?.data?.response?.meta?.total;
+  const totalOfflineBeneficiary = offlineQuery?.data?.response?.meta?.total;
 
   const tableData = useMemo(() => {
     if (data?.response?.data?.length > 0) {
@@ -131,23 +147,37 @@ export default function VendorsBeneficiaryList({
       <div className="flex border-b mb-4">
         <button
           onClick={() => handleModeChange(PayoutMode.ONLINE)}
-          className={`py-2 px-4 text-sm font-medium ${
+          className={`py-2 px-4 text-sm font-medium flex items-center gap-2 ${
             activeTab === PayoutMode.ONLINE
               ? 'border-b-2 border-primary text-primary'
               : 'text-muted-foreground'
           }`}
         >
           Online
+          <Badge
+            className={`h-5 min-w-[20px] justify-center text-white px-2 py-0 ${
+              activeTab === PayoutMode.ONLINE ? 'bg-[#297AD6]' : 'bg-[#8390A2]'
+            }`}
+          >
+            {totalOnlineBeneficiary}
+          </Badge>
         </button>
         <button
           onClick={() => handleModeChange(PayoutMode.OFFLINE)}
-          className={`py-2 px-4 text-sm font-medium ${
+          className={`py-2 px-4 text-sm font-medium flex items-center gap-2 ${
             activeTab === PayoutMode.OFFLINE
               ? 'border-b-2 border-primary text-primary'
               : 'text-muted-foreground'
           }`}
         >
           Offline
+          <Badge
+            className={`h-5 min-w-[20px] justify-center text-white px-2 py-0 ${
+              activeTab === PayoutMode.OFFLINE ? 'bg-[#297AD6]' : 'bg-[#8390A2]'
+            }`}
+          >
+            {totalOfflineBeneficiary}
+          </Badge>
         </button>
       </div>
       <Heading

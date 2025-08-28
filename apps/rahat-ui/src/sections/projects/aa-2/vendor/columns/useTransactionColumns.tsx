@@ -127,11 +127,12 @@ export const useVendorsTransactionTableColumns = () => {
           className="text-xs font-normal"
           style={{
             backgroundColor:
-              row.original?.fspId === null ? '#ECFDF3' : '#ECFDF3', //#F2F4F7',
-            color: row.original?.fspId === null ? '#027A48' : '#027A48', //#344054',
+              row.original?.info?.mode === 'OFFLINE' ? '#F2F4F7' : '#ECFDF3',
+            color:
+              row.original?.info?.mode === 'OFFLINE' ? '#344054' : '#027A48',
           }}
         >
-          {row.original?.fspId === null ? 'Online' : 'Offline'}
+          {row.original?.info?.mode === 'OFFLINE' ? 'Offline' : 'Online'}
         </Badge>
       ),
     },
@@ -140,7 +141,7 @@ export const useVendorsTransactionTableColumns = () => {
       header: 'Timestamp',
       cell: ({ row }) => (
         <div>
-          {row?.original?.createdAt ? dateFormat(row?.original?.createdAt) : ''}
+          {row?.original?.updatedAt ? dateFormat(row?.original?.updatedAt) : ''}
         </div>
       ),
     },

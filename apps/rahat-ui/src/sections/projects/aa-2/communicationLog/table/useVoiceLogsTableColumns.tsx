@@ -22,6 +22,8 @@ function getStatusBg(status: string) {
 
 export default function useVoiceLogsTableColumns() {
   const [isPlaying, setIsPlaying] = React.useState(false);
+  const { id } = useParams();
+  const router = useRouter();
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'communication_title',
@@ -107,7 +109,7 @@ export default function useVoiceLogsTableColumns() {
               strokeWidth={1.5}
               onClick={() =>
                 router.push(
-                  `/projects/aa/${id}/communication-logs/voicedetails/${row.original.communicationId}@${row.original.sessionId}`,
+                  `/projects/aa/${id}/communication-logs/voicedetails/${row.original.communicationId}@${row.original.activityId}@${row.original.sessionId}`,
                 )
               }
             />

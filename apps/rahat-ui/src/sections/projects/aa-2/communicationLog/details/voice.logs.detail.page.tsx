@@ -141,11 +141,11 @@ const communicationData = [
 ];
 
 export default function VoiceLogsDetailPage() {
-  const { id: projectID, commsIdXsessionId } = useParams();
+  const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
 
-  const [communicationId, sessionId] = (commsIdXsessionId as string).split(
-    '%40',
-  );
+  const [communicationId, activityId, sessionId] = (
+    commsIdXactivityIdXsessionId as string
+  ).split('%40');
 
   const searchParams = useSearchParams();
   const from = searchParams.get('from');

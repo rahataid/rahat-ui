@@ -340,6 +340,19 @@ const ImportBeneficiary = () => {
     );
   }, [data]);
 
+  const handleClearButtonClick = () => {
+    setData([]);
+    setFileName('No File Choosen');
+    setSelectedFile(null);
+    setDuplicatePhonesOnUpload(new Set());
+    setDuplicateEmails(new Set());
+    setDuplicatePhonesFromServer(new Set());
+    setInvalidPhoneStrings(new Set());
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+  };
+
   const handleUpload = () => {
     console.log('handle upload clicked');
   };
@@ -485,18 +498,7 @@ const ImportBeneficiary = () => {
             type="button"
             className="w-48"
             variant="outline"
-            onClick={() => {
-              setData([]);
-              setFileName('No File Choosen');
-              setSelectedFile(null);
-              setDuplicatePhonesOnUpload(new Set());
-              setDuplicateEmails(new Set());
-              setDuplicatePhonesFromServer(new Set());
-              setInvalidPhoneStrings(new Set());
-              if (inputRef.current) {
-                inputRef.current.value = '';
-              }
-            }}
+            onClick={handleClearButtonClick}
           >
             Clear
           </Button>

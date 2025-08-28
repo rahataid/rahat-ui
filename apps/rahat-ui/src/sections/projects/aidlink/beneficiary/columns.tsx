@@ -79,7 +79,7 @@ export const useProjectBeneficiaryTableColumns = () => {
               strokeWidth={1.5}
               onClick={() =>
                 router.push(
-                  `/projects/aa/${id}/beneficiary/${row.original.uuid}`,
+                  `/projects/aidlink/${id}/beneficiary/${row.original.uuid}`,
                 )
               }
             />

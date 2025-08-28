@@ -12,8 +12,15 @@ import {
 import BeneficiaryGroups from './beneficiaryGroups';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import BeneficiaryTable from './beneficiaryTable';
+import { IconLabelBtn } from 'apps/rahat-ui/src/common';
+import { CloudDownload } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+
 function BeneficiaryView() {
   const { activeTab, setActiveTab } = useActiveTab('beneficiary');
+  const router = useRouter();
+  const params = useParams();
+  const projectId = params.id;
 
   return (
     <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
@@ -50,6 +57,15 @@ function BeneficiaryView() {
             Beneficiary Groups
           </TabsTrigger>
         </TabsList>
+
+        <IconLabelBtn
+          name="Import Beneficiaries"
+          Icon={CloudDownload}
+          handleClick={() =>
+            router.push(`/projects/aidlink/${projectId}/beneficiary/import`)
+          }
+          variant="outline"
+        />
       </div>
       <TabsContent value="beneficiary">
         <div className="px-4">

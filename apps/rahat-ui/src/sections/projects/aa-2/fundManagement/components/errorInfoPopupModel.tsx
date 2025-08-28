@@ -36,7 +36,9 @@ const ErrorInfoPopupModel = ({ validateModal, errorData }: IProps) => {
         <DialogHeader>
           <DialogTitle>{errorData?.message}</DialogTitle>
           <DialogDescription>
-            {`Please remove beneficiaries with these wallet addresses from current group ${errorData?.groupName} and try again.`}
+            {`Please remove beneficiaries with these wallet addresses from selected group (${(
+              <span className="font-semibold">{errorData?.groupName}</span>
+            )}) and try again.`}
           </DialogDescription>
         </DialogHeader>
 

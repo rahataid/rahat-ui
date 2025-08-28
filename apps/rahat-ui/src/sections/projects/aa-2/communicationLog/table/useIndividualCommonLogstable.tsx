@@ -78,7 +78,7 @@ export default function CommonLogsTable<T>({
       <div className="flex justify-between gap-2 mb-2">
         <SearchInput
           name="title"
-          placeholder="Search Title..."
+          placeholder="Search Communication Title..."
           className="w-[100%]"
           value={filters.communication_title}
           onSearch={(event) => handleFilterChange(event)}

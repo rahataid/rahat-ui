@@ -6,14 +6,27 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import {
   ScrollArea,
   ScrollBar,
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import React from 'react';
-import { CustomPagination, NoResult, SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
+import {
+  CustomPagination,
+  NoResult,
+  SearchInput,
+  SpinnerLoader,
+} from 'apps/rahat-ui/src/common';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
+import { ACTIVITY_STATUS } from 'apps/rahat-ui/src/constants/aa.constants';
+const { WORK_IN_PROGRESS, COMPLETED, DELAYED, PENDING, ALL } = ACTIVITY_STATUS;
+const statusList = [WORK_IN_PROGRESS, COMPLETED, DELAYED, PENDING, ALL];
 
 interface ReusableLogsTableProps<T> {
   data: T[];
@@ -23,7 +36,7 @@ interface ReusableLogsTableProps<T> {
   pagination: any;
   setPagination: (pagination: any) => void;
   isLoading: boolean;
-  meta: any; 
+  meta: any;
 }
 
 export default function CommonLogsTable<T>({
@@ -46,6 +59,7 @@ export default function CommonLogsTable<T>({
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
+
       const filterValue = value === 'ALL' ? '' : value;
       table.getColumn(name)?.setFilterValue(filterValue);
       setFilters({
@@ -61,48 +75,45 @@ export default function CommonLogsTable<T>({
 
   return (
     <>
-      <div className="flex justify-between gap-2">
+      <div className="flex justify-between gap-2 mb-2">
         <SearchInput
           name="title"
+          placeholder="Search Title..."
           className="w-[100%]"
-          value={
-            (table.getColumn('communication_title')?.getFilterValue() as string) ??
-            filters?.title
-          }
+          value={filters.communication_title}
           onSearch={(event) => handleFilterChange(event)}
         />
         <SearchInput
-          name="group"
+          name="group_name"
+          placeholder="Search Group Name..."
           className="w-[100%]"
-          value={
-            (table.getColumn('groupName')?.getFilterValue() as string) ??
-            filters?.group
-          }
+          value={filters.groupName}
           onSearch={(event) => handleFilterChange(event)}
         />
         <SelectComponent
-          name="group"
-          options={['BENEFICIARY', 'STAKEHOLDER']}
+          name="Group Type"
+          options={['BENEFICIARY', 'STAKEHOLDERS', 'ALL']}
           onChange={(value) =>
             handleFilterChange({
               target: { name: 'group_type', value },
             })
           }
-          value={filters?.type || ''}
+          value={filters?.group_type || ''}
         />
+
         <SelectComponent
           name="status"
-          options={['Work in Progress', 'COMPLETED', 'Failed', 'PENDING']}
+          options={statusList}
           onChange={(value) =>
             handleFilterChange({
-              target: { name: 'status', value },
+              target: { name: 'sessionStatus', value },
             })
           }
-          value={filters?.status || ''}
+          value={filters?.sessionStatus || ''}
         />
       </div>
-      <div className="bg-card border rounded mt-4">
-        <ScrollArea className="h-[calc(100vh-320px)]">
+      <div className=" border-gray-100 overflow-hidden rounded-lg border ">
+        <ScrollArea className="h-[calc(100vh-390px)]">
           <Table>
             <TableHeader className="sticky top-0 bg-card">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -154,16 +165,22 @@ export default function CommonLogsTable<T>({
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
         <CustomPagination
-          meta={meta || {
-            total: 0,
-            currentPage: 0,
-            lastPage: 0,
-            perPage: 0,
-            next: null,
-            prev: null,
-          }}
-          handleNextPage={() => setPagination({ ...pagination, page: pagination.page + 1 })}
-          handlePrevPage={() => setPagination({ ...pagination, page: pagination.page - 1 })}
+          meta={
+            meta || {
+              total: 0,
+              currentPage: 0,
+              lastPage: 0,
+              perPage: 0,
+              next: null,
+              prev: null,
+            }
+          }
+          handleNextPage={() =>
+            setPagination({ ...pagination, page: pagination.page + 1 })
+          }
+          handlePrevPage={() =>
+            setPagination({ ...pagination, page: pagination.page - 1 })
+          }
           handlePageSizeChange={(value) =>
             setPagination({ ...pagination, perPage: Number(value), page: 1 })
           }

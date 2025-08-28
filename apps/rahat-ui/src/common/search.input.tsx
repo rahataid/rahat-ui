@@ -6,6 +6,7 @@ import { cn } from 'libs/shadcn/src';
 type IProps = {
   name: string;
   className?: string;
+  placeholder?: string;
   onSearch:
     | VoidFunction
     | ((event: React.ChangeEvent<HTMLInputElement>) => void);
@@ -16,6 +17,7 @@ type IProps = {
 export function SearchInput({
   name,
   className,
+  placeholder,
   onSearch,
   isDisabled = false,
   value,
@@ -35,7 +37,7 @@ export function SearchInput({
       />
       <Input
         name={name}
-        placeholder={`Search ${name}...`}
+        placeholder={placeholder || `Search ${name}...`}
         className="pl-8"
         value={value}
         onChange={onSearch}

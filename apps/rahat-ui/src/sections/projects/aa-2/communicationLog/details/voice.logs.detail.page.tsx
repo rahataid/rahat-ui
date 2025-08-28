@@ -175,7 +175,6 @@ export default function VoiceLogsDetailPage() {
       ...pagination,
       ...cleanFilters,
     });
-  console.log('sessionLogs', sessionLogs);
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
 

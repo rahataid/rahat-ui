@@ -18,7 +18,7 @@ export function NotificationButton({ unreadCount = 0 }) {
   const notificationModal = useBoolean();
 
   const handleNotification = () => {
-    notificationModal.onTrue();
+    notificationModal.onToggle();
   };
 
   return (

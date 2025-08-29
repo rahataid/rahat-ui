@@ -12,26 +12,43 @@ import {
 import BeneficiaryGroups from './beneficiaryGroups';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import BeneficiaryTable from './beneficiaryTable';
+import { AddButton } from 'apps/rahat-ui/src/common';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
 function BeneficiaryView() {
+  const { id: projectUUID } = useParams() as { id: UUID };
   const { activeTab, setActiveTab } = useActiveTab('beneficiary');
 
   return (
     <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
-      <TabsContent value="beneficiary">
+      <div className="flex justify-between gap-4 items-end">
         <div>
-          <h1 className="font-bold text-2xl text-label pl-4">Beneficiaries</h1>
+          <TabsContent value="beneficiary">
+            <div>
+              <h1 className="font-bold text-2xl text-label pl-4">
+                Beneficiaries
+              </h1>
+            </div>
+          </TabsContent>
+          <TabsContent value="beneficiaryGroups">
+            <div>
+              <h1 className="font-bold text-2xl text-label pl-4">
+                Beneficiary Groups
+              </h1>
+            </div>
+          </TabsContent>
+          <p className="text-muted-foreground text-left pl-4 mb-0 pb-0">
+            Overview of your humanitarian aid project
+          </p>
         </div>
-      </TabsContent>
-      <TabsContent value="beneficiaryGroups">
-        <div>
-          <h1 className="font-bold text-2xl text-label pl-4">
-            Beneficiary Groups
-          </h1>
-        </div>
-      </TabsContent>
-      <p className="text-muted-foreground text-left pl-4 mb-0 pb-0">
-        Overview of your humanitarian aid project
-      </p>
+        {activeTab === 'beneficiaryGroups' && (
+          <AddButton
+            className="mr-4"
+            name="Group"
+            path={`/projects/aidlink/${projectUUID}/beneficiary/groups/add`}
+          />
+        )}
+      </div>
 
       <div className="flex justify-between items-center p-4">
         <TabsList className="border bg-secondary rounded">

@@ -74,8 +74,8 @@ export default function PaymentInitiation() {
 
   const { data: beneficiaryGroups } = useBeneficiariesGroups(projectID, {
     perPage: '100',
-    tokenAssigned: true,
-    hasPayout: false,
+    // tokenAssigned: true,
+    // hasPayout: false,
   });
   const [formState, setFormState] = useState<PaymentState>(initialFormState);
   const {
@@ -132,7 +132,7 @@ export default function PaymentInitiation() {
     },
   });
 
-  console.log(formState);
+  console.log('da', paymentProviders);
   const handleChange = <K extends keyof PaymentState>(
     key: K,
     value: PaymentState[K],

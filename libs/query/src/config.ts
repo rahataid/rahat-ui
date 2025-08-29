@@ -41,6 +41,7 @@ export const TAGS = {
     RETRY_FAILED: 'new_comms.retry_failed',
   },
   ALL_NOTIFICATIONS: 'all_notifications',
+  VERFIY_MANUAL_PAYOUT: 'verify_manual_payout',
 };
 export const PROJECT_SETTINGS_KEYS = {
   CONTRACT: 'CONTRACT',

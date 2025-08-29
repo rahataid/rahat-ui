@@ -36,7 +36,7 @@ function StakeholderNode({
       <div className="mt-3 text-center">
         <p className="font-medium text-sm">{name}</p>
         <div className="mt-1 flex justify-center text-xs text-gray-500">
-          <p>Received:</p>
+          {index === 0 ? <p>Budget:</p> : <p>Received:</p>}
           <p className="font-medium">${received.toLocaleString()}</p>
         </div>
         <div className="mt-1 flex justify-center text-xs text-gray-500">

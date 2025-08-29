@@ -36,7 +36,8 @@ function TransferList({
                     : 'bg-red-100 text-red-600'
                 }`}
               >
-                {transfer.status === 'sent' || 'received' ? (
+                {transfer.status === 'sent' ||
+                transfer.status === 'received' ? (
                   <Check size={20} />
                 ) : transfer.status === 'pending' ? (
                   <Clock size={20} />

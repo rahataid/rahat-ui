@@ -84,11 +84,11 @@ export default function useVoiceLogsTableColumns() {
       header: 'Message',
       cell: ({ row }) => {
         return (
-          <div className="w-auto lg:w-[150px] h-[40px] overflow-hidden z-0">
+          <div className="w-auto lg:w-[150px] h-[40px]">
             <audio
               src={row.getValue('media_url')}
               controls
-              className="rounded-[56px] w-full h-full"
+              className="rounded-[56px] w-full h-full z-auto"
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
             />

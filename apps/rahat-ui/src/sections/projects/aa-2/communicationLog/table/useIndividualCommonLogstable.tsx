@@ -26,8 +26,8 @@ import {
 } from 'apps/rahat-ui/src/common';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { ACTIVITY_STATUS } from 'apps/rahat-ui/src/constants/aa.constants';
-const { WORK_IN_PROGRESS, COMPLETED, DELAYED, PENDING, ALL } = ACTIVITY_STATUS;
-const statusList = [WORK_IN_PROGRESS, COMPLETED, DELAYED, PENDING, ALL];
+const { FAILED, COMPLETED, PENDING, ALL } = ACTIVITY_STATUS;
+const statusList = [FAILED, COMPLETED, PENDING, ALL];
 
 interface ReusableLogsTableProps<T> {
   data: T[];
@@ -60,6 +60,7 @@ export default function CommonLogsTable<T>({
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
+      console.log({ name, value }, 'from common table');
 
       const filterValue = value === 'ALL' ? '' : value;
       table.getColumn(name)?.setFilterValue(filterValue);
@@ -78,7 +79,7 @@ export default function CommonLogsTable<T>({
     <>
       <div className="flex justify-between gap-2 mb-2">
         <SearchInput
-          name="title"
+          name="communication_title"
           placeholder="Search Communication Title..."
           className="w-[100%]"
           value={filters.communication_title}
@@ -114,7 +115,11 @@ export default function CommonLogsTable<T>({
         />
       </div>
       <div className=" border-gray-100 rounded-lg border ">
-        <DemoTable table={table} tableHeight="h-[calc(100vh-340px)]" />
+        <DemoTable
+          table={table}
+          tableHeight="h-[calc(100vh-340px)]"
+          loading={isLoading}
+        />
         <CustomPagination
           meta={
             meta || {

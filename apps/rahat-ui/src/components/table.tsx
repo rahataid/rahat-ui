@@ -9,6 +9,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TableLoader from './table.loader';
+import { SpinnerLoader } from '../common';
 
 type IProps = {
   table: Table<any>;
@@ -20,10 +21,10 @@ export default function DemoTable({ table, tableHeight, loading }: IProps) {
   return (
     <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
       {loading ? (
-        <TableLoader />
+        <SpinnerLoader />
       ) : (
         <TableComponent>
-          <TableHeader className="sticky top-0 bg-card">
+          <TableHeader className="sticky top-0 bg-card z-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {

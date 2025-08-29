@@ -13,7 +13,7 @@ export default function DisbursementMainView() {
     React.useState<string>('createDisbursement');
 
   return (
-    <div className="p-4 bg-gray-50">
+    <div className="p-4 bg-gray-50 h-[calc(100vh-58px)]">
       <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
         <TabsContent className="mt-0" value="createDisbursement">
           <Heading

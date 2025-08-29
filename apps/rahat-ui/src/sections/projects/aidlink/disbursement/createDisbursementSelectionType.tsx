@@ -15,7 +15,7 @@ export default function CreateDisbursementSelectionType() {
     },
   ];
   return (
-    <div className="p-4 border rounded-sm mt-4">
+    <div className="p-4 border rounded-sm mt-4 bg-card">
       <h1 className="text-sm/6 font-semibold text-gray-900 mb-4">
         Pick a selection type
       </h1>

@@ -224,7 +224,9 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                   payout?.extras?.paymentProviderName === 'Manual') && (
                   <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
                     <Button
-                      className={`gap-2 text-sm `}
+                      className={`gap-2 text-sm ${
+                        payout?.status === 'COMPLETED' && 'hidden'
+                      } `}
                       onClick={() =>
                         router.push(
                           `/projects/aa/${projectId}/payout/details/${payoutId}/verify`,

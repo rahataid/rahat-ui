@@ -107,12 +107,29 @@ export default function useSmsLogsTableColumns() {
         </div>
       ),
       cell: ({ row }) => (
-        <div className="capitalize min-w-32">
-          {new Date(row.original.timestamp).toLocaleString('en-US', {
-            dateStyle: 'medium',
-            timeStyle: 'short',
-          })}
-        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center space-x-2 gap-2">
+                {new Date(row.original.timestamp).toLocaleString('en-US', {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                })}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              className="w-80 rounded-sm text-justify"
+            >
+              <p>
+                {new Date(row.original.timestamp).toLocaleString('en-US', {
+                  dateStyle: 'full',
+                  timeStyle: 'long',
+                })}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       ),
     },
     {

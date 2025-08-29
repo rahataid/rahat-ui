@@ -74,8 +74,8 @@ export default function PaymentInitiation() {
 
   const { data: beneficiaryGroups } = useBeneficiariesGroups(projectID, {
     perPage: '100',
-    // tokenAssigned: true,
-    // hasPayout: false,
+    tokenAssigned: true,
+    hasPayout: false,
   });
   const [formState, setFormState] = useState<PaymentState>(initialFormState);
   const {

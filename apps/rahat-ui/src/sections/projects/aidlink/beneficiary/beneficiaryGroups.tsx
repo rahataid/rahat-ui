@@ -8,7 +8,7 @@ import React, { useCallback } from 'react';
 import GroupCard from './group.card';
 
 const BeneficiaryGroups = () => {
-  const { id } = useParams();
+  const { id: projectUUID } = useParams() as { id: UUID };
   const searchParams = useSearchParams();
 
   const { pagination, setFilters, filters } = usePagination();
@@ -17,12 +17,12 @@ const BeneficiaryGroups = () => {
     data: groups,
     meta,
     isLoading,
-  } = useFindC2CBeneficiaryGroups(id as UUID, {
+  } = useFindC2CBeneficiaryGroups(projectUUID, {
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
-    projectUUID: id,
+    projectUUID: projectUUID,
     ...filters,
   });
 
@@ -56,7 +56,11 @@ const BeneficiaryGroups = () => {
         ) : groups.length > 0 ? (
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
             {groups?.map((group: any) => (
-              <GroupCard key={group.id} group={group} />
+              <GroupCard
+                key={group.id}
+                group={group}
+                projectUUID={projectUUID}
+              />
             ))}
           </div>
         ) : (

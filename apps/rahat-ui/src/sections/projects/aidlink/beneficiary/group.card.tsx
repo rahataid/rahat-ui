@@ -4,9 +4,16 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Calendar, Edit, Eye, MapPin, Trash2 } from 'lucide-react';
+import { UUID } from 'crypto';
+import { Calendar, Edit, Eye, Trash2 } from 'lucide-react';
+import Link from 'next/link';
 
-export default function GroupCard({ group }: any) {
+type GroupProps = {
+  group: any;
+  projectUUID: UUID;
+};
+
+export default function GroupCard({ group, projectUUID }: GroupProps) {
   return (
     <Card
       key={group.id}
@@ -43,10 +50,15 @@ export default function GroupCard({ group }: any) {
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="flex-1 bg-transparent">
-            <Eye className="h-4 w-4 mr-2" />
-            View Details
-          </Button>
+          <Link
+            className="flex-1 bg-transparent"
+            href={`/projects/aidlink/${projectUUID}/beneficiary/groups/${group.uuid}`}
+          >
+            <Button variant="outline" size="sm" className="w-full">
+              <Eye className="h-4 w-4 mr-2" />
+              View Details
+            </Button>
+          </Link>
           <Button variant="outline" size="sm">
             <Edit className="h-4 w-4" />
           </Button>

@@ -1,8 +1,8 @@
 'use client';
-import CommingSoonView from 'apps/rahat-ui/src/sections/projects/aidlink/commingSoon';
+import { AidLinkDisbursementMainView } from 'apps/rahat-ui/src/sections/projects/aidlink/disbursement';
 
 const Page = () => {
-  return <CommingSoonView />;
+  return <AidLinkDisbursementMainView />;
 };
 
 export default Page;

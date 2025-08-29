@@ -7,23 +7,12 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ArrowUpDown, Eye } from 'lucide-react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-function getStatusBg(status: string) {
-  if (status === 'Not Started') {
-    return 'bg-gray-200 text-black';
-  }
-
-  if (status === 'Work in Progress') {
-    return 'bg-orange-200 text-yellow-600';
-  }
-
-  if (status === 'COMPLETED') {
-    return 'bg-green-200 text-green-500';
-  }
-
-  return 'bg-red-200 text-red-600';
-}
+import { useParams, useRouter } from 'next/navigation';
+import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 
 export default function useSmsLogsTableColumns() {
+  const { id } = useParams();
+  const router = useRouter();
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'communication_title',
@@ -32,7 +21,7 @@ export default function useSmsLogsTableColumns() {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="truncate w-48 hover:cursor-pointer">
+              <div className="truncate w-28 hover:cursor-pointer">
                 {row.getValue('communication_title')}
               </div>
             </TooltipTrigger>
@@ -53,7 +42,7 @@ export default function useSmsLogsTableColumns() {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="truncate w-48 hover:cursor-pointer">
+              <div className="truncate w-28 hover:cursor-pointer">
                 {row.getValue('groupName')}
               </div>
             </TooltipTrigger>
@@ -74,7 +63,7 @@ export default function useSmsLogsTableColumns() {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="truncate w-48 hover:cursor-pointer">
+              <div className="truncate w-28 hover:cursor-pointer">
                 {row.getValue('group_type')}
               </div>
             </TooltipTrigger>
@@ -95,7 +84,7 @@ export default function useSmsLogsTableColumns() {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="truncate w-48 hover:cursor-pointer">
+              <div className="truncate w-28 hover:cursor-pointer">
                 {row.getValue('message')}
               </div>
             </TooltipTrigger>
@@ -147,11 +136,11 @@ export default function useSmsLogsTableColumns() {
               className="hover:text-primary cursor-pointer"
               size={20}
               strokeWidth={1.5}
-              // onClick={() =>
-              //   router.push(
-              //     `/projects/aa/${id}/communication-logs/details/${row.original.id}`,
-              //   )
-              // }
+              onClick={() =>
+                router.push(
+                  `/projects/aa/${id}/communication-logs/commsdetails/${row.original.communicationId}@${row.original.uuid}@${row.original.sessionId}?tab=individualLog&subTab=sms`,
+                )
+              }
             />
           </div>
         );

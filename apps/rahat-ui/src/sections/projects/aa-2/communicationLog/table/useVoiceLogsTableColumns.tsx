@@ -3,22 +3,13 @@ import { ArrowUpDown, Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-
-function getStatusBg(status: string) {
-  if (status === 'Not Started') {
-    return 'bg-gray-200 text-black';
-  }
-
-  if (status === 'Work in Progress') {
-    return 'bg-orange-200 text-yellow-600';
-  }
-
-  if (status === 'COMPLETED') {
-    return 'bg-green-200 text-green-500';
-  }
-
-  return 'bg-red-200 text-red-600';
-}
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 
 export default function useVoiceLogsTableColumns() {
   const [isPlaying, setIsPlaying] = React.useState(false);
@@ -29,27 +20,63 @@ export default function useVoiceLogsTableColumns() {
       accessorKey: 'communication_title',
       header: 'Communication Title',
       cell: ({ row }) => (
-        <div className="truncate w-48 hover:cursor-pointer">
-          {row.getValue('communication_title')}
-        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="truncate w-24 hover:cursor-pointer">
+                {row.getValue('communication_title')}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              className="w-80 rounded-sm text-justify "
+            >
+              <p>{row.getValue('communication_title')}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       ),
     },
     {
       accessorKey: 'groupName',
       header: 'Group Name',
       cell: ({ row }) => (
-        <div className="truncate w-48 hover:cursor-pointer">
-          {row.getValue('groupName')}
-        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="truncate w-24 hover:cursor-pointer">
+                {row.getValue('groupName')}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              className="w-80 rounded-sm text-justify "
+            >
+              <p>{row.getValue('groupName')}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       ),
     },
     {
       accessorKey: 'group_type',
       header: 'Group Type',
       cell: ({ row }) => (
-        <div className="truncate w-48 hover:cursor-pointer">
-          {row.getValue('group_type')}
-        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="truncate w-24 hover:cursor-pointer">
+                {row.getValue('group_type')}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              className="w-80 rounded-sm text-justify "
+            >
+              <p>{row.getValue('group_type')}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       ),
     },
     {
@@ -57,11 +84,11 @@ export default function useVoiceLogsTableColumns() {
       header: 'Message',
       cell: ({ row }) => {
         return (
-          <div className="relative w-[249px] h-[32px]">
+          <div className="w-auto lg:w-[150px] h-[40px] overflow-hidden z-0">
             <audio
               src={row.getValue('media_url')}
               controls
-              className="w-full h-full p-[6px_16px] rounded-[56px]"
+              className="rounded-[56px] w-full h-full"
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
             />
@@ -78,12 +105,29 @@ export default function useVoiceLogsTableColumns() {
         </div>
       ),
       cell: ({ row }) => (
-        <div className="flex items-center space-x-2 gap-2">
-          {new Date(row.original.timestamp).toLocaleString('en-US', {
-            dateStyle: 'medium',
-            timeStyle: 'short',
-          })}
-        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center space-x-2 gap-2">
+                {new Date(row.original.timestamp).toLocaleString('en-US', {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                })}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent
+              side="bottom"
+              className="w-80 rounded-sm text-justify "
+            >
+              <p>
+                {new Date(row.original.timestamp).toLocaleString('en-US', {
+                  dateStyle: 'full',
+                  timeStyle: 'long',
+                })}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       ),
     },
     {
@@ -105,11 +149,11 @@ export default function useVoiceLogsTableColumns() {
           <div className="flex items-center space-x-2">
             <Eye
               className="hover:text-primary cursor-pointer"
-              size={20}
+              size={18}
               strokeWidth={1.5}
               onClick={() =>
                 router.push(
-                  `/projects/aa/${id}/communication-logs/voicedetails/${row.original.communicationId}@${row.original.activityId}@${row.original.sessionId}`,
+                  `/projects/aa/${id}/communication-logs/commsdetails/${row.original.communicationId}@${row.original.uuid}@${row.original.sessionId}?tab=individualLog&subTab=voice`,
                 )
               }
             />

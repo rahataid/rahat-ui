@@ -8,7 +8,7 @@ import {
   useTriggerPayout,
 } from '@rahat-ui/query';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
 
 import {
@@ -45,6 +45,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const payoutId = params.detailID as UUID;
   const searchParams = useSearchParams();
   const navigation = searchParams.get('from');
+  const router = useRouter();
   const {
     pagination,
     setNextPage,
@@ -159,7 +160,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       badge: true,
     },
   ];
-
+  console.log('pay', payout?.extras?.paymentProviderName);
   const handleSearch = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
       const value = event?.target?.value ?? '';
@@ -216,6 +217,24 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                   </Button>
                 </RoleAuth>
               )}
+
+              {payout?.type === 'FSP' &&
+                (payout?.extras?.paymentProviderName ===
+                  'Manual Bank Transfer' ||
+                  payout?.extras?.paymentProviderName === 'Manual') && (
+                  <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+                    <Button
+                      className={`gap-2 text-sm `}
+                      onClick={() =>
+                        router.push(
+                          `/projects/aa/${projectId}/payout/details/${payoutId}/verify`,
+                        )
+                      }
+                    >
+                      Verify Manual Payout
+                    </Button>
+                  </RoleAuth>
+                )}
               <Button
                 className={`gap-2 text-sm ${
                   payoutlogs?.data?.length === 0 && 'hidden'

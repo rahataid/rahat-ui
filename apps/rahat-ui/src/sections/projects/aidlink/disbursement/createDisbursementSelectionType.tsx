@@ -1,20 +1,61 @@
+import React from 'react';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { User, Users } from 'lucide-react';
+import { BeneficiaryDisbursementForm } from './beneficiaryDisbursementForm';
+import { BeneficiaryGroupsDisbursementForm } from './groupsDisbursementForm';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+
+enum DisbursementSelectionType {
+  INDIVIDUAL = 'individual',
+  GROUP = 'group',
+}
+
+const CancelBtn = ({
+  setSelectedType,
+}: {
+  setSelectedType: React.Dispatch<
+    React.SetStateAction<DisbursementSelectionType | null>
+  >;
+}) => {
+  return (
+    <div className="mt-4 flex justify-end">
+      <Button className="w-64" onClick={() => setSelectedType(null)}>
+        Cancel
+      </Button>
+    </div>
+  );
+};
 
 export default function CreateDisbursementSelectionType() {
+  const [selectedType, setSelectedType] =
+    React.useState<DisbursementSelectionType | null>(null);
+
   const cardData = [
     {
+      type: DisbursementSelectionType.INDIVIDUAL,
       title: 'SELECT INDIVIDUAL BENEFICIARY',
       description: 'Select beneficiaries individually to disburse amount',
       icon: <User className="w-5 h-5 text-primary" />,
     },
     {
+      type: DisbursementSelectionType.GROUP,
       title: 'SELECT BENEFICIARY GROUP',
       description: 'Select beneficiary group to disburse amount',
       icon: <Users className="w-5 h-5 text-primary" />,
     },
   ];
-  return (
+
+  return selectedType === DisbursementSelectionType.INDIVIDUAL ? (
+    <>
+      <BeneficiaryDisbursementForm />
+      <CancelBtn setSelectedType={setSelectedType} />
+    </>
+  ) : selectedType === DisbursementSelectionType.GROUP ? (
+    <>
+      <BeneficiaryGroupsDisbursementForm />
+      <CancelBtn setSelectedType={setSelectedType} />
+    </>
+  ) : (
     <div className="p-4 border rounded-sm mt-4 bg-card">
       <h1 className="text-sm/6 font-semibold text-gray-900 mb-4">
         Pick a selection type
@@ -25,6 +66,7 @@ export default function CreateDisbursementSelectionType() {
           <Card
             key={`${index}-${card.title}`}
             className="rounded-sm cursor-pointer hover:shadow-md transition-shadow duration-200 border-gray-200"
+            onClick={() => setSelectedType(card.type)}
           >
             <CardContent className="p-8 text-center">
               <div className="w-12 h-12 bg-blue-50 rounded-sm flex items-center justify-center mx-auto mb-4">

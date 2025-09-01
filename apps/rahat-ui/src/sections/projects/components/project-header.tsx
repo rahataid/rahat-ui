@@ -46,7 +46,8 @@ export function ProjectNav({
     clearUser();
     clearAuth();
     toast.success('Logged out successfully.');
-    setTimeout(() => window.location.reload(), 1000);
+    // setTimeout(() => window.location.reload(), 1000);
+    setTimeout(() => window.location.replace('/auth/login'), 1000);
   };
 
   return (

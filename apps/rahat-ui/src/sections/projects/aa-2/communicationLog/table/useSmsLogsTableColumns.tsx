@@ -8,7 +8,7 @@ import {
 import { ArrowUpDown, Eye } from 'lucide-react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useParams, useRouter } from 'next/navigation';
-import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
+import { getSessionColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 
 export default function useSmsLogsTableColumns() {
   const { id } = useParams();
@@ -137,7 +137,7 @@ export default function useSmsLogsTableColumns() {
       header: 'Status',
       cell: ({ row }) => {
         const status = row.getValue('sessionStatus') as string;
-        const className = getStatusBg(status as string);
+        const className = getSessionColor(status as string);
 
         return <Badge className={className}>{status}</Badge>;
       },

@@ -9,7 +9,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
+
+import { getSessionColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 
 export default function useVoiceLogsTableColumns() {
   const [isPlaying, setIsPlaying] = React.useState(false);
@@ -135,7 +136,7 @@ export default function useVoiceLogsTableColumns() {
       header: 'Status',
       cell: ({ row }) => {
         const status = row.getValue('sessionStatus') as string;
-        const className = getStatusBg(status as string);
+        const className = getSessionColor(status as string);
 
         return <Badge className={className}>{status}</Badge>;
       },

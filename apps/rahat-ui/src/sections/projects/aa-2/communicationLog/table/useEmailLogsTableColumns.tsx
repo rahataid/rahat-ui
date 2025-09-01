@@ -15,21 +15,21 @@ export default function useEmailLogsTableColumns() {
   const router = useRouter();
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'communication_title',
+      accessorKey: 'title',
       header: 'Communication Title',
       cell: ({ row }) => (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="truncate w-28 hover:cursor-pointer">
-                {row.getValue('communication_title')}
+                {row.getValue('title')}
               </div>
             </TooltipTrigger>
             <TooltipContent
               side="bottom"
               className="w-80 rounded-sm text-justify"
             >
-              <p>{row.getValue('communication_title')}</p>
+              <p>{row.getValue('title')}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

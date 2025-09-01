@@ -8,9 +8,10 @@ import { useSearchParams, useRouter, useParams } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 
 import { UUID } from 'crypto';
-import { VoiceLogsTab } from '../table/VoiceLogsTab';
-import { SmsLogsTab } from '../table/SmsLogsTab';
-import { EmailLogsTab } from '../table/EmailLogs.tab';
+
+import { IndividualLogsTab } from '../table/IndividualLogsTab';
+
+type SubTabType = 'voice' | 'sms' | 'email';
 
 export function IndividualLogTab() {
   const searchParams = useSearchParams();
@@ -18,7 +19,7 @@ export function IndividualLogTab() {
   const { id } = useParams() as { id: UUID };
 
   const tab = searchParams.get('tab') || 'individualLog';
-  const subTab = searchParams.get('subTab') || 'voice';
+  const subTab = searchParams.get('subTab') as SubTabType;
 
   useEffect(() => {
     if (tab === 'individualLog' && !searchParams.get('subTab')) {
@@ -70,13 +71,13 @@ export function IndividualLogTab() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="voice">
-          <VoiceLogsTab id={id} />
+          <IndividualLogsTab id={id} subTab={subTab} />
         </TabsContent>
         <TabsContent value="sms">
-          <SmsLogsTab id={id} />
+          <IndividualLogsTab id={id} subTab={subTab} />
         </TabsContent>
         <TabsContent value="email">
-          <EmailLogsTab id={id} />
+          <IndividualLogsTab id={id} subTab={subTab} />
         </TabsContent>
       </Tabs>
     </div>

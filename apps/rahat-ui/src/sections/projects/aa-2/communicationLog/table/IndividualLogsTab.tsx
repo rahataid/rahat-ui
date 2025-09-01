@@ -3,32 +3,32 @@ import { useGetIndividualLogs, usePagination } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import CommonLogsTable from './useIndividualCommonLogstable';
 
-import useEmailLogsTableColumns from './useEmailLogsTableColumns';
 import { useMemo } from 'react';
 import useIndividualCommonLogsTableColumns from './useIndividualCommonLogsTableColumns';
 
-type VoiceLogsTabProps = {
+type CommonLogsTabProps = {
   id: UUID;
+  subTab: 'sms' | 'email' | 'voice';
 };
 
-export function EmailLogsTab({ id }: VoiceLogsTabProps) {
+export function IndividualLogsTab({ id, subTab }: CommonLogsTabProps) {
   const { pagination, filters, setFilters, setPagination } = usePagination();
 
-  const columns = useIndividualCommonLogsTableColumns('email');
+  const columns = useIndividualCommonLogsTableColumns(subTab);
   const {
-    IndividualLogs: emailLogs,
+    IndividualLogs: smslogs,
     isLoading,
     IndividualMeta: meta,
-  } = useGetIndividualLogs(id, 'email', {
+  } = useGetIndividualLogs(id, subTab, {
     ...pagination,
     filters,
     enabled: !!id,
   });
   const data = useMemo(() => {
-    return (emailLogs || []).filter(
+    return (smslogs || []).filter(
       (log: any) => log.sessionStatus !== 'Not Started',
     );
-  }, [emailLogs]);
+  }, [smslogs]);
 
   return (
     <CommonLogsTable

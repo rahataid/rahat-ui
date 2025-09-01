@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React from 'react';
 import { Users, Plus, Info, Banknote, Calendar } from 'lucide-react';
 import {
   useReactTable,
@@ -26,9 +26,13 @@ import {
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useC2CSingleBeneficiaryGroup } from '@rahat-ui/query';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 interface Beneficiary {
-  id: string;
+  uuid: UUID;
   name: string;
   phoneNumber: string;
   walletAddress: string;
@@ -50,13 +54,25 @@ const columns: ColumnDef<Beneficiary>[] = [
 ];
 
 export default function BeneficiaryGroupPage() {
-  const [globalFilter, setGlobalFilter] = useState('');
+  const { id, groupId } = useParams() as { id: UUID; groupId: UUID };
 
-  // Mock data - empty for now to show empty state
-  const [data] = useState<Beneficiary[]>([]);
+  const { data: group } = useC2CSingleBeneficiaryGroup(id, groupId);
+
+  const [globalFilter, setGlobalFilter] = React.useState<string>('');
+
+  const tableData = React.useMemo(
+    () =>
+      group?.groupedBeneficiaries?.map((ben: any) => ({
+        uuid: ben.Beneficiary?.uuid,
+        name: ben.Beneficiary?.pii?.name,
+        phoneNumber: ben.Beneficiary?.pii?.phone,
+        walletAddress: ben.Beneficiary?.walletAddress,
+      })),
+    [group],
+  );
 
   const table = useReactTable({
-    data,
+    data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -72,29 +88,32 @@ export default function BeneficiaryGroupPage() {
     },
   });
 
-  const cardData = [
-    {
-      title: 'Total Beneficiaries',
-      value: 0,
-      label: 'Total Count',
-      icon: <Users size={18} />,
-      color: 'blue',
-    },
-    {
-      title: 'Total Disbursed',
-      value: '$0',
-      label: 'Sum of amounts sent to group members',
-      icon: <Banknote size={18} />,
-      color: 'green',
-    },
-    {
-      title: 'Last Updated',
-      value: 'August 19, 2025, 1:38:14 PM',
-      label: 'Date & Time',
-      icon: <Calendar size={18} />,
-      color: 'purple',
-    },
-  ];
+  const cardData = React.useMemo(
+    () => [
+      {
+        title: 'Total Beneficiaries',
+        value: group?.groupedBeneficiaries?.length || 'N/A',
+        label: 'Total Count',
+        icon: <Users size={18} />,
+        color: 'blue',
+      },
+      {
+        title: 'Total Disbursed',
+        value: 'N/A',
+        label: 'Sum of amounts sent to group members',
+        icon: <Banknote size={18} />,
+        color: 'green',
+      },
+      {
+        title: 'Last Updated',
+        value: dateFormat(group?.updatedAt),
+        label: 'Date & Time',
+        icon: <Calendar size={18} />,
+        color: 'purple',
+      },
+    ],
+    [group],
+  );
 
   return (
     <div className="p-4 space-y-4 bg-gray-50">

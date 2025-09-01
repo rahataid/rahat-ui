@@ -120,7 +120,7 @@ export const useGetIndividualLogs = (
           payload: {
             filters: {
               transportName: communication,
-              title: payload?.filters?.communication_title || '',
+              title: payload?.filters?.title || '',
               groupName: payload?.filters?.group_name || '',
               groupType: payload?.filters?.group_type || '',
               sessionStatus: payload?.filters?.sessionStatus || '',

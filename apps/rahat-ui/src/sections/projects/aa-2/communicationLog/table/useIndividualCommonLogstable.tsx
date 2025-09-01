@@ -60,7 +60,6 @@ export default function CommonLogsTable<T>({
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
-      console.log({ name, value }, 'from common table');
 
       const filterValue = value === 'ALL' ? '' : value;
       table.getColumn(name)?.setFilterValue(filterValue);
@@ -79,10 +78,10 @@ export default function CommonLogsTable<T>({
     <>
       <div className="flex justify-between gap-2 mb-2">
         <SearchInput
-          name="communication_title"
+          name="title"
           placeholder="Search Communication Title..."
           className="w-[100%]"
-          value={filters.communication_title}
+          value={filters.title}
           onSearch={(event) => handleFilterChange(event)}
         />
         <SearchInput

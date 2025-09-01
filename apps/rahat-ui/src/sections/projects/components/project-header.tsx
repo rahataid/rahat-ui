@@ -23,7 +23,6 @@ import { toast } from 'react-toastify';
 import { SidebarTrigger } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 import { NotificationButton } from 'apps/rahat-ui/src/components/notification-button';
 
-
 export function ProjectNav({
   //   data = [],
   //   subData = [],
@@ -58,7 +57,7 @@ export function ProjectNav({
       </div>
       <div className="flex gap-4 items-center">
         {/* <ConnectWallet />  this button is remove for aa project */}
-<NotificationButton unreadCount={0} />
+        <NotificationButton unreadCount={0} />
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Avatar className="h-10 w-10">

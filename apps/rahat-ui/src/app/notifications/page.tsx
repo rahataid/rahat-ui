@@ -1,6 +1,4 @@
-import NotificationsView from "../../sections/notifications/notification.view";
-
-
+import NotificationsView from '../../sections/notifications/notification.view';
 
 export const metadata = {
   title: 'Notifications',

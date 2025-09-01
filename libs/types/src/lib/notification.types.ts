@@ -1,13 +1,13 @@
-import { CreateProjectPayload } from "./project.types";
+import { CreateProjectPayload } from './project.types';
 
 export interface Notification {
-  id:  number;
+  id: number;
   title: string;
   createdAt: string;
-  project:CreateProjectPayload
+  project: CreateProjectPayload;
 
-  description?: string; 
+  description?: string;
   notify: boolean;
-  group:string;
-  projectId:string | null
+  group: string;
+  projectId: string | null;
 }

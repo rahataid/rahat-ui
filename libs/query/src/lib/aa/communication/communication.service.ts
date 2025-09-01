@@ -2,6 +2,8 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
+import { title } from 'process';
+import { group } from 'console';
 
 export const useGetCommunicationLogs = (
   uuid: UUID,
@@ -100,3 +102,42 @@ export const useRetryFailedBroadcast = (
 
 //   return query?.data?.data;
 // };
+
+export const useGetIndividualLogs = (
+  uuid: UUID,
+  communication: string,
+  payload?: any,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['communicationLogs', uuid, communication, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.activities.getComms',
+          payload: {
+            filters: {
+              transportName: communication,
+              title: payload?.filters?.communication_title || '',
+              groupName: payload?.filters?.group_name || '',
+              groupType: payload?.filters?.group_type || '',
+              sessionStatus: payload?.filters?.sessionStatus || '',
+            },
+
+            page: payload.page,
+            perPage: payload.perPage,
+          },
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return {
+    IndividualLogs: query?.data?.data,
+    isLoading: query.isLoading,
+    IndividualMeta: query?.data?.response.meta,
+  };
+};

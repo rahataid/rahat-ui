@@ -1,11 +1,6 @@
 'use client';
 import { useEffect } from 'react';
-import {
- 
-  useInfiniteQuery,
-  useQuery,
-
-} from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 //import { useGeneralAction } from '../../projects';
 
 import { useNotificationStore } from './notification.store';
@@ -14,17 +9,12 @@ import { api } from '../../utils/api';
 
 import { TAGS } from '../../config';
 
-
-const listNotifications = async (payload:any) => {
+const listNotifications = async (payload: any) => {
   const response = await api.get('/notifications', {
     params: payload,
   });
   return response?.data;
 };
-
-
-
-
 
 export const useGetAllNotificatons = () => {
   const { setNotifications } = useNotificationStore((state) => ({
@@ -42,17 +32,15 @@ export const useGetAllNotificatons = () => {
     queryKey: [TAGS.ALL_NOTIFICATIONS],
     queryFn: ({ pageParam = 1 }) =>
       listNotifications({
-     
         page: pageParam,
-        perPage:10
+        perPage: 10,
       }),
     getNextPageParam: (lastPage) => {
-      const { meta , data } = lastPage;
-   
+      const { meta, data } = lastPage;
+
       return meta.currentPage < meta.total ? meta.next : undefined;
     },
     initialPageParam: 1,
-   
   });
 
   useEffect(() => {
@@ -72,12 +60,3 @@ export const useGetAllNotificatons = () => {
     totalNotifications: data?.pages[0]?.meta?.total || 0,
   };
 };
-
-
-
-
-
-
-
-
-

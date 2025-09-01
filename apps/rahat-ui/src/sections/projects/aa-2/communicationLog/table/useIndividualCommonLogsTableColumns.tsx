@@ -1,23 +1,28 @@
 import { ColumnDef } from '@tanstack/react-table';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { ArrowUpDown, Eye } from 'lucide-react';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import React from 'react';
 import { getSessionColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 
-export default function useSmsLogsTableColumns() {
+export default function useIndividualCommonLogsTableColumns(
+  type: 'sms' | 'email' | 'voice',
+) {
   const { id } = useParams();
   const router = useRouter();
+  const [isPlaying, setIsPlaying] = React.useState(false);
+
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'title',
       header: 'Communication Title',
-      cell: ({ row }) => (
+      cell: ({ row }: { row: any }) => (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -27,7 +32,7 @@ export default function useSmsLogsTableColumns() {
             </TooltipTrigger>
             <TooltipContent
               side="bottom"
-              className="w-80 rounded-sm text-justify "
+              className="w-80 rounded-sm text-justify"
             >
               <p>{row.getValue('title')}</p>
             </TooltipContent>
@@ -38,7 +43,7 @@ export default function useSmsLogsTableColumns() {
     {
       accessorKey: 'groupName',
       header: 'Group Name',
-      cell: ({ row }) => (
+      cell: ({ row }: { row: any }) => (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -48,7 +53,7 @@ export default function useSmsLogsTableColumns() {
             </TooltipTrigger>
             <TooltipContent
               side="bottom"
-              className="w-80 rounded-sm text-justify "
+              className="w-80 rounded-sm text-justify"
             >
               <p>{row.getValue('groupName')}</p>
             </TooltipContent>
@@ -69,7 +74,7 @@ export default function useSmsLogsTableColumns() {
             </TooltipTrigger>
             <TooltipContent
               side="bottom"
-              className="w-80 rounded-sm text-justify "
+              className="w-80 rounded-sm text-justify"
             >
               <p>{row.getValue('group_type')}</p>
             </TooltipContent>
@@ -77,35 +82,55 @@ export default function useSmsLogsTableColumns() {
         </TooltipProvider>
       ),
     },
-    {
-      accessorKey: 'message',
-      header: 'Message',
-      cell: ({ row }) => (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="truncate w-28 hover:cursor-pointer">
-                {row.getValue('message')}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent
-              side="bottom"
-              className="w-80 rounded-sm text-justify "
-            >
-              <p>{row.getValue('message')}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ),
-    },
+    ...(type === 'voice'
+      ? [
+          {
+            accessorKey: 'media_url',
+            header: 'Message',
+            cell: ({ row }: { row: any }) => {
+              return (
+                <div className="relative w-auto lg:w-[150px] h-[40px] overflow-hidden">
+                  <div className="w-full h-full overflow-hidden">
+                    <audio
+                      src={row.getValue('media_url')}
+                      controls
+                      className="rounded-[56px] w-full h-full"
+                      onPlay={() => setIsPlaying(true)}
+                      onPause={() => setIsPlaying(false)}
+                    />
+                  </div>
+                </div>
+              );
+            },
+          },
+        ]
+      : [
+          {
+            accessorKey: 'message',
+            header: 'Message',
+            cell: ({ row }: { row: any }) => (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="truncate w-28 hover:cursor-pointer">
+                      {row.getValue('message')}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    className="w-80 rounded-sm text-justify "
+                  >
+                    <p>{row.getValue('message')}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ),
+          },
+        ]),
+
     {
       accessorKey: 'timestamp',
-      header: () => (
-        <div className="flex items-center space-x-2">
-          <span>Timestamp</span>
-          {/* <ArrowUpDown className="cursor-pointer" /> */}
-        </div>
-      ),
+      header: 'Timestamp',
       cell: ({ row }) => (
         <TooltipProvider>
           <Tooltip>
@@ -155,7 +180,7 @@ export default function useSmsLogsTableColumns() {
               strokeWidth={1.5}
               onClick={() =>
                 router.push(
-                  `/projects/aa/${id}/communication-logs/commsdetails/${row.original.communicationId}@${row.original.uuid}@${row.original.sessionId}?tab=individualLog&subTab=sms`,
+                  `/projects/aa/${id}/communication-logs/commsdetails/${row.original.communicationId}@${row.original.uuid}@${row.original.sessionId}?tab=individualLog&subTab=${type}`,
                 )
               }
             />

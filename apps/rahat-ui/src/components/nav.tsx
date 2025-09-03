@@ -39,7 +39,7 @@ export function Nav({ hasDefaultHeader = true }) {
     // localStorage.clear()
 
     toast.success('Logged out successfully.');
-    setTimeout(() => window.location.reload(), 1000);
+    setTimeout(() => window.location.replace('/auth/login'), 1000);
   };
 
   return (

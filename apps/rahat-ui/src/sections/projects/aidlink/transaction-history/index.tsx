@@ -5,7 +5,7 @@ import {
   Heading,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import useTransactionHistoryTableColumns from './useTransactionHistoryTableColumns';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import {
@@ -13,13 +13,14 @@ import {
   useProjectSettingsStore,
   PROJECT_SETTINGS_KEYS,
   TransactionDetails,
+  useGraphQLErrorHandler,
 } from '@rahat-ui/query';
 import { useQuery } from 'urql';
 import { TransactionsObject } from '../../c2c/beneficiary/types';
 import { mergeTransactions } from '@rahat-ui/query/lib/c2c/utils';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { set } from 'lodash';
+import { useDebounce } from '@rahat-ui/query';
 
 const TransactionHistory = () => {
   const [transactionList, setTransactionList] = useState([]);
@@ -29,9 +30,9 @@ const TransactionHistory = () => {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
-
   const contractAddress = contractSettings?.c2cproject?.address;
 
+  const columns = useTransactionHistoryTableColumns();
   const {
     pagination,
     filters,
@@ -42,27 +43,15 @@ const TransactionHistory = () => {
     setPagination,
   } = usePagination();
 
-  // Calculate skip value for GraphQL pagination
-  const skip = (pagination.page - 1) * pagination.perPage;
-
-  const [{ data, fetching, error }] = useQuery({
-    query: TransactionDetails,
-    variables: {
-      contractAddress,
-      to: filters.search || '',
-      first: pagination.perPage,
-      skip: skip,
-    },
-    pause: !contractAddress,
-  });
-
-  const columns = useTransactionHistoryTableColumns();
   const table = useReactTable({
     manualPagination: true,
     data: transactionList || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  // Calculate skip value for GraphQL pagination
+  const skip = (pagination.page - 1) * pagination.perPage;
 
   const handleSearch = useCallback(
     (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
@@ -71,24 +60,61 @@ const TransactionHistory = () => {
       // Reset pagination when searching
       setPagination({ ...pagination, page: 1 });
     },
-    [filters, setFilters, setPagination, pagination],
+    [filters, setFilters, setPagination],
   );
 
-  useEffect(() => {
-    if (data) {
-      (async () => {
-        const transactionsObject: TransactionsObject = data;
-        const transactionLists = await mergeTransactions(transactionsObject);
-        setTransactionList(transactionLists);
+  const debouncedSearch = useDebounce(filters?.search, 500);
 
-        // Calculate total count from both transfers and transferProcesseds
-        const transfersCount = data.transfersCount?.length || 0;
-        const transferProcessedsCount =
-          data.transferProcessedsCount?.length || 0;
-        setTotalCount(transfersCount + transferProcessedsCount);
+  // Adjust search term for GraphQL query
+  const filterDebouncedSearch = useMemo(() => {
+    if (debouncedSearch && debouncedSearch.length % 2 !== 0) {
+      return debouncedSearch.slice(0, -1);
+    }
+    return filters.search;
+  }, [debouncedSearch]);
+
+  const [{ data, fetching, error }] = useQuery({
+    query: TransactionDetails,
+    variables: {
+      contractAddress,
+      to: filterDebouncedSearch || '',
+      first: pagination.perPage,
+      skip: skip,
+    },
+    pause: !contractAddress,
+  });
+
+  useGraphQLErrorHandler({
+    error,
+    customMessage:
+      'Unable to load transaction history. Please verify your wallet address and check your internet connection.',
+    onError: (error) => {
+      console.log('Error occurred, clearing transaction data:', error);
+      setTransactionList([]);
+      setTotalCount(0);
+    },
+  });
+
+  useEffect(() => {
+    if (data && !error) {
+      (async () => {
+        try {
+          const transactionsObject: TransactionsObject = data;
+          const transactionLists = await mergeTransactions(transactionsObject);
+          setTransactionList(transactionLists);
+
+          // Calculate total count from both transfers and transferProcesseds
+          const transfersCount = data.transfersCount?.length || 0;
+          const transferProcessedsCount =
+            data.transferProcessedsCount?.length || 0;
+          setTotalCount(transfersCount + transferProcessedsCount);
+        } catch {
+          setTransactionList([]);
+          setTotalCount(0);
+        }
       })();
     }
-  }, [data]);
+  }, [data, error]);
 
   return (
     <div className="p-4">

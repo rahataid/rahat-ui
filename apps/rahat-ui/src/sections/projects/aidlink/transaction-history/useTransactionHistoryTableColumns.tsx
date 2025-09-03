@@ -10,7 +10,7 @@ import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { Copy, CopyCheck } from 'lucide-react';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { amountFormat } from 'apps/rahat-ui/src/utils/amountFormate';
+import { amountFormat } from '@rahat-ui/query';
 
 const useTransactionHistoryTableColumns = () => {
   const { clickToCopy, copyAction } = useCopy();

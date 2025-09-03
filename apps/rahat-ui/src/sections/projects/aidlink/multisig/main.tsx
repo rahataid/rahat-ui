@@ -9,42 +9,24 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Copy, Users, Banknote, CircleCheckBig } from 'lucide-react';
-import { Heading } from 'apps/rahat-ui/src/common';
+import { Heading, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import { useGetDisbursements, useGetSafeOwners } from '@rahat-ui/query';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 export default function MultiSigWalletView() {
-  const multisigData = {
-    address: '0x742d35Cc6634C0532925a3b8D4C9db96590c6C89',
-    balance: '50,000.00 USDC',
-    threshold: '2 of 3',
-    owners: [
-      { address: '0x1234...5678', name: 'Project Manager', status: 'active' },
-      { address: '0x9876...5432', name: 'Finance Officer', status: 'active' },
-      { address: '0x5555...1111', name: 'Director', status: 'active' },
-    ],
-    recentTransactions: [
-      {
-        id: 1,
-        type: 'Disbursement',
-        amount: '1,500.00 USDC',
-        status: 'Executed',
-        date: '2025-07-03',
-      },
-      {
-        id: 2,
-        type: 'Disbursement',
-        amount: '2,000.00 USDC',
-        status: 'Pending',
-        date: '2025-07-03',
-      },
-      {
-        id: 3,
-        type: 'Deposit',
-        amount: '10,000.00 USDC',
-        status: 'Executed',
-        date: '2025-07-02',
-      },
-    ],
-  };
+  const { id: projectUUID } = useParams() as { id: UUID };
+
+  const { data: disbursements, isLoading: loadingDisbursements } =
+    useGetDisbursements({
+      projectUUID,
+      page: 1,
+      perPage: 10,
+    });
+
+  const { data: safeOwners, isLoading: loadingSafeOwners } =
+    useGetSafeOwners(projectUUID);
 
   return (
     <div className="p-4 space-y-4 bg-gray-50 h-[calc(100vh-58px)]">
@@ -59,7 +41,9 @@ export default function MultiSigWalletView() {
             <Banknote strokeWidth={2.5} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{multisigData.balance}</div>
+            <div className="text-2xl font-bold">
+              {safeOwners?.nativeBalance || 'N/A'}
+            </div>
           </CardContent>
         </Card>
 
@@ -71,7 +55,10 @@ export default function MultiSigWalletView() {
             <CircleCheckBig strokeWidth={2.5} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{multisigData.threshold}</div>
+            <div className="text-2xl font-bold">
+              {safeOwners?.threshold || '-'} of{' '}
+              {safeOwners?.owners?.length || '-'}
+            </div>
           </CardContent>
         </Card>
 
@@ -82,7 +69,7 @@ export default function MultiSigWalletView() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {multisigData.owners.length}
+              {safeOwners?.owners?.length || 'N/A'}
             </div>
           </CardContent>
         </Card>
@@ -96,42 +83,48 @@ export default function MultiSigWalletView() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 p-4 pt-0">
-            <div className="flex items-center justify-between p-4 bg-gray-100 rounded-sm">
-              <div>
-                <p className="text-sm font-medium text-gray-900">
-                  Wallet Address
-                </p>
-                <p className="text-sm text-gray-600 font-mono">
-                  {multisigData.address}
-                </p>
-              </div>
-              <Button variant="ghost" size="sm">
-                <Copy className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <div>
-              <h4 className="text-sm font-medium text-gray-900 mb-3">
-                Authorized Owners
-              </h4>
-              <div className="space-y-2">
-                {multisigData.owners.map((owner, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 border rounded-sm"
-                  >
-                    <div>
-                      <p className="text-sm text-gray-600 font-mono">
-                        {owner.address}
-                      </p>
-                    </div>
-                    <Badge className="bg-green-50 text-green-600 border-green-500 font-medium">
-                      {owner.status}
-                    </Badge>
+            {!loadingSafeOwners ? (
+              <>
+                <div className="flex items-center justify-between p-4 bg-gray-100 rounded-sm">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      Wallet Address
+                    </p>
+                    <p className="text-sm text-gray-600 font-mono">
+                      {safeOwners?.address}
+                    </p>
                   </div>
-                ))}
-              </div>
-            </div>
+                  <Button variant="ghost" size="sm">
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-3">
+                    Authorized Owners
+                  </h4>
+                  <div className="space-y-2">
+                    {safeOwners?.owners.map((owner: any) => (
+                      <div
+                        key={owner}
+                        className="flex items-center justify-between p-3 border rounded-sm"
+                      >
+                        <div>
+                          <p className="text-sm text-gray-600 font-mono">
+                            {owner}
+                          </p>
+                        </div>
+                        <Badge className="bg-green-50 text-green-600 border-green-500 font-medium">
+                          active
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <SpinnerLoader />
+            )}
           </CardContent>
         </Card>
 
@@ -142,31 +135,33 @@ export default function MultiSigWalletView() {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 pt-0">
-            <div className="space-y-3">
-              {multisigData.recentTransactions.map((tx) => (
-                <div
-                  key={tx.id}
-                  className="flex items-center justify-between p-3 border rounded-sm"
-                >
-                  <div>
-                    <p className="text-sm font-medium">{tx.type}</p>
-                    <p className="text-xs text-gray-600">{tx.date}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium">{tx.amount}</p>
-                    <Badge
-                      className={
-                        tx.status === 'Executed'
-                          ? 'bg-green-50 text-green-600 border-green-500 font-medium'
-                          : 'bg-orange-50 text-orange-600 border-orange-500 font-medium'
-                      }
+            {!loadingDisbursements ? (
+              <div className="space-y-3">
+                {disbursements?.length ? (
+                  disbursements?.map((tx: any) => (
+                    <div
+                      key={tx.id}
+                      className="flex items-center justify-between p-3 border rounded-sm"
                     >
-                      {tx.status}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
+                      <div>
+                        <p className="text-sm font-medium">Disbursement</p>
+                        <p className="text-xs text-gray-600">
+                          {dateFormat(tx.updatedAt)}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-medium">{tx.amount}</p>
+                        <Badge className="font-medium">{tx.status}</Badge>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <NoResult />
+                )}
+              </div>
+            ) : (
+              <SpinnerLoader />
+            )}
           </CardContent>
         </Card>
       </div>

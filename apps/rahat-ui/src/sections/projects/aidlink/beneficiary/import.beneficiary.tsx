@@ -1,8 +1,8 @@
 'use client';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { CloudDownload, Repeat, Share } from 'lucide-react';
-import { ClientSidePagination, Heading } from 'apps/rahat-ui/src/common';
+import { CloudDownload, Repeat, Share, Copy, CopyCheck } from 'lucide-react';
+import { Back, ClientSidePagination, Heading } from 'apps/rahat-ui/src/common';
 import React, {
   useCallback,
   useEffect,
@@ -37,17 +37,15 @@ import {
   ScrollArea,
   ScrollBar,
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
+import { useUploadBeneficiary } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
-const DOWNLOAD_FILE_URL = '/files/stakeholder-sample.xlsx';
+const DOWNLOAD_FILE_URL = '/files/beneficiary_demo_aidLink.xlsx';
 
-const requiredHeaders = [
-  'stakeholders name',
-  'phone number',
-  'designation',
-  'organization',
-  'district',
-  'municipality',
-];
+const requiredHeaders = ['name', 'phone number'];
 
 const allowedExtensions: { [key: string]: string } = {
   xlsx: 'excel',
@@ -57,6 +55,8 @@ const allowedExtensions: { [key: string]: string } = {
 };
 
 const ImportBeneficiary = () => {
+  const { id } = useParams() as { id: UUID };
+  const { clickToCopy, copyAction } = useCopy();
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string>('No File Chosen');
@@ -67,15 +67,10 @@ const ImportBeneficiary = () => {
   const [duplicatePhonesFromServer, setDuplicatePhonesFromServer] = useState<
     Set<string>
   >(new Set());
-  const [duplicateEmailFromServer, setDuplicateEmailFromServer] = useState<
-    Set<string>
-  >(new Set());
   const [duplicatePhonesOnUpload, setDuplicatePhonesOnUpload] = useState<
     Set<string>
   >(new Set());
-  const [duplicateEmails, setDuplicateEmails] = useState<Set<string>>(
-    new Set(),
-  );
+  const uploadBeneficiary = useUploadBeneficiary();
 
   const tableData = useMemo(() => data.slice(1), [data]);
   const columns = React.useMemo<ColumnDef<any>[]>(
@@ -92,7 +87,6 @@ const ImportBeneficiary = () => {
 
           const valueStr = value?.toString().trim();
           const isPhone = /phone/.test(headerText);
-          const isEmail = /email/.test(headerText);
 
           const isMissing =
             (requiredHeaders.includes(headerText) && valueStr === '') ||
@@ -109,12 +103,46 @@ const ImportBeneficiary = () => {
             duplicatePhonesFromServer &&
             valueStr &&
             duplicatePhonesFromServer.has(valueStr);
-          const isDuplicateEmailsFromServer =
-            duplicateEmailFromServer &&
-            valueStr &&
-            duplicateEmailFromServer.has(valueStr);
-          const isDuplicateEmail =
-            isEmail && valueStr && duplicateEmails.has(valueStr);
+
+          if (headerText === 'wallet address') {
+            const data = value?.toString()?.trim();
+
+            if (!data) {
+              return (
+                <TableCell className="truncate max-w-[150px]">--</TableCell>
+              );
+            }
+
+            return (
+              <TableCell className="max-w-[150px]">
+                <TooltipProvider delayDuration={100}>
+                  <Tooltip>
+                    <TooltipTrigger
+                      className="flex items-center gap-3 cursor-pointer"
+                      onClick={() => clickToCopy(data, data)}
+                    >
+                      <p>{truncateEthAddress(data)}</p>
+                      {copyAction === data ? (
+                        <CopyCheck size={15} strokeWidth={1.5} />
+                      ) : (
+                        <Copy
+                          className="text-slate-500"
+                          size={15}
+                          strokeWidth={1.5}
+                        />
+                      )}
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-secondary" side="bottom">
+                      <p className="text-xs font-medium">
+                        {copyAction === data ? 'copied' : 'click to copy'}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </TableCell>
+            );
+          }
+
           return (
             <TableCell
               className={`
@@ -128,10 +156,6 @@ const ImportBeneficiary = () => {
         ? 'bg-red-100 text-red-500'
         : isDuplicatePhoneFromServer
         ? 'bg-red-100 text-red-500'
-        : isDuplicateEmail
-        ? 'bg-yellow-100 text-yellow-600'
-        : isDuplicateEmailsFromServer
-        ? 'bg-yellow-100 text-yellow-600'
         : ''
     }
   `}
@@ -152,10 +176,6 @@ const ImportBeneficiary = () => {
                       ? 'Phone is duplicated within the file'
                       : isDuplicatePhoneFromServer
                       ? 'Phone already exists in the database'
-                      : isDuplicateEmail
-                      ? 'Email is duplicated within the file'
-                      : isDuplicateEmailsFromServer
-                      ? 'Email already exists in the database'
                       : ''}
                   </TooltipContent>
                 </Tooltip>
@@ -166,11 +186,10 @@ const ImportBeneficiary = () => {
       })) ?? [],
     [
       data,
-      duplicateEmailFromServer,
-      duplicateEmails,
       duplicatePhonesFromServer,
       duplicatePhonesOnUpload,
       invalidPhoneStrings,
+      copyAction,
     ],
   );
 
@@ -223,7 +242,6 @@ const ImportBeneficiary = () => {
         );
 
         const columnCount = filteredData[0]?.length || 0;
-
         const header = filteredData[0];
 
         // Normalize header names
@@ -234,15 +252,10 @@ const ImportBeneficiary = () => {
         const phoneIndex = header.findIndex((h) =>
           h?.toString().toLowerCase().includes('phone'),
         );
-        const emailIndex = header.findIndex((h) =>
-          h?.toString().toLowerCase().includes('email'),
-        );
 
         const seenPhones = new Set<string>();
         const duplicatePhones = new Set<string>();
         const invalidPhoneStrings = new Set<string>();
-        const seenEmails = new Set<string>();
-        const duplicateEmails = new Set<string>();
 
         const normalizedData = filteredData.map((row, idx) => {
           const newRow = [...row];
@@ -264,13 +277,6 @@ const ImportBeneficiary = () => {
             newRow[phoneIndex] = phone;
           }
 
-          // Email validation
-          if (emailIndex !== -1) {
-            const email = newRow[emailIndex]?.toString().trim() ?? '';
-            if (seenEmails.has(email)) duplicateEmails.add(email);
-            seenEmails.add(email);
-          }
-
           return newRow;
         });
 
@@ -288,15 +294,14 @@ const ImportBeneficiary = () => {
         }
 
         if (normalizedData.length === 1) {
-          return toast.error('No Stakeholder found in excel file');
+          return toast.error('No Beneficiary found in excel file');
         }
         if (normalizedData.length > 100)
           return toast.error(
-            'Maximum 100 stakeholders can be uploaded at a time',
+            'Maximum 100 beneficiaries can be uploaded at a time',
           );
 
         setDuplicatePhonesOnUpload(duplicatePhones);
-        setDuplicateEmails(duplicateEmails);
         setInvalidPhoneStrings(invalidPhoneStrings);
 
         setData(normalizedData);
@@ -345,7 +350,6 @@ const ImportBeneficiary = () => {
     setFileName('No File Choosen');
     setSelectedFile(null);
     setDuplicatePhonesOnUpload(new Set());
-    setDuplicateEmails(new Set());
     setDuplicatePhonesFromServer(new Set());
     setInvalidPhoneStrings(new Set());
     if (inputRef.current) {
@@ -353,8 +357,18 @@ const ImportBeneficiary = () => {
     }
   };
 
-  const handleUpload = () => {
-    console.log('handle upload clicked');
+  const handleUpload = async () => {
+    if (!selectedFile) return toast.error('Please select a file to upload');
+
+    // Determine doctype based on file extension
+    const extension = selectedFile.name.split('.').pop()?.toLowerCase();
+    const doctype = extension ? allowedExtensions[extension] : '';
+
+    await uploadBeneficiary.mutateAsync({
+      selectedFile,
+      doctype,
+      projectId: id,
+    });
   };
 
   // Empty required fields warning
@@ -374,20 +388,14 @@ const ImportBeneficiary = () => {
     }
   }, [duplicatePhonesOnUpload]);
 
-  // Duplicate emails in uploaded file
-  useEffect(() => {
-    if (duplicateEmails.size > 1) {
-      toast.warn(
-        `⚠️ ${duplicateEmails.size} duplicate email address(es) found in uploaded file. They have been highlighted in yellow.`,
-        { autoClose: 5000 },
-      );
-    }
-  }, [duplicateEmails]);
-
   return (
     <>
       <div className="p-4 h-[calc(100vh-120px)] bg-[#F8FAFC]">
         <div className="mb-2">
+          <Back
+            path={`/projects/aidlink/${id}/beneficiary`}
+            isLoading={uploadBeneficiary?.isPending}
+          />
           <Heading
             title="Import Beneficiaries"
             description="Select field to upload beneficiaries"
@@ -442,7 +450,7 @@ const ImportBeneficiary = () => {
           {data.length > 1 && (
             <>
               <div className="border-2 border-dashed border-black mt-6 mx-auto w-full">
-                <ScrollArea className="h-[calc(100vh-430px)] w-full">
+                <ScrollArea className="h-[calc(100vh-460px)] w-full">
                   <Table className="table-auto w-full">
                     <TableHeader>
                       {table.getHeaderGroups().map((headerGroup) => (
@@ -507,13 +515,13 @@ const ImportBeneficiary = () => {
             className="w-48 bg-primary hover:ring-2 ring-primary"
             onClick={handleUpload}
             disabled={
+              uploadBeneficiary?.isPending ||
               data?.length === 0 ||
               hasEmptyRequiredFields() ||
-              duplicatePhonesOnUpload.size > 1 ||
-              duplicateEmails.size > 1
+              duplicatePhonesOnUpload.size > 1
             }
           >
-            Import
+            {uploadBeneficiary?.isPending ? <>Uploading...</> : 'Import'}
           </Button>
         </div>
       </div>

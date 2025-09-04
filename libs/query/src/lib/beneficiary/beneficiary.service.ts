@@ -473,13 +473,15 @@ export const useUploadBeneficiary = () => {
           projectId,
         ),
       onSuccess: (data) => {
-        if (!data?.data?.success) {
-          return toast.fire({
+        if (data?.data?.success === false) {
+          toast.fire({
             icon: 'error',
             title: 'Something went wrong',
             text: data?.data?.message || '',
           });
+          return;
         }
+
         qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
         toast.fire({
           icon: 'success',

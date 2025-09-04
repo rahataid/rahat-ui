@@ -1,4 +1,5 @@
 import {
+  ClockFading,
   FileText,
   LayoutDashboard,
   MessageSquare,
@@ -48,6 +49,11 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
           title: 'Communication Log',
           icon: <MessageSquare size={18} strokeWidth={1.5} />,
           path: `/projects/aidlink/${id}/communication-log`,
+        },
+        {
+          title: 'Transaction History',
+          icon: <ClockFading size={18} strokeWidth={1.5} />,
+          path: `/projects/aidlink/${id}/transaction-history`,
         },
       ],
     },

@@ -459,3 +459,21 @@ export const useFindAllC2cStats = (projectUUID: UUID) => {
     },
   });
 };
+
+export const useGetSafeOwners = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  return useQuery({
+    queryKey: ['safeOwners', projectUUID],
+    queryFn: async () => {
+      const res = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getSafeOwner',
+          payload: {},
+        },
+      });
+      return res.data;
+    },
+  });
+};

@@ -32,7 +32,7 @@ export const formatTimestamp = (createdAt: string): string => {
     const now = new Date();
 
     if (isYesterday(date)) {
-      return format(date, 'MMMM d, yyyy, h:mm:ss');
+      return format(date, 'MMMM d, yyyy, h:mm:ss a');
     }
 
     const hoursDifference = differenceInHours(now, date);

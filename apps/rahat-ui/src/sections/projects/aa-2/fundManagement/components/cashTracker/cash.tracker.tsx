@@ -86,8 +86,12 @@ export function CashTracker() {
         const pendingTransfers = entity.pending.map(
           (p: any, index: number) => ({
             id: `${entity.alias}-pending-${index}`, // unique ID for pending
-            from: entity.alias,
-            to: p.to,
+            from: entities?.find(
+              (e: Entities) =>
+                e.smartaccount.toLocaleLowerCase() ===
+                p.from.toLocaleLowerCase(),
+            )?.alias,
+            to: entity.alias,
             amount: p.amount,
             timestamp: p.timestamp || now,
             status: 'pending' as const,
@@ -95,8 +99,8 @@ export function CashTracker() {
           }),
         );
         // Map successful transactions (flows) and filter duplicates
-        const successfulTransfers = entity.flows
-          .filter((flow: any) => {
+        const successfulTransfers = entity.approved
+          ?.filter((flow: any) => {
             if (uniqueTransactionHashes.has(flow.transactionHash)) {
               return false; // Skip duplicate transactions
             }
@@ -105,8 +109,12 @@ export function CashTracker() {
           })
           .map((flow: any, index: number) => ({
             id: `${entity.alias}-flow-${index}`, // unique ID for flows
-            from: flow.from,
-            to: flow.to,
+            from: entities?.find(
+              (e: Entities) =>
+                e.smartaccount.toLocaleLowerCase() ===
+                flow.from.toLocaleLowerCase(),
+            )?.alias,
+            to: entity.alias,
             amount: flow.amount,
             timestamp: flow?.timestamp,
             status: flow.type === 'sent' ? 'sent' : ('received' as const),
@@ -126,11 +134,22 @@ export function CashTracker() {
 
   //get current entity pending transfer
   const pendingTransfers = useMemo(() => {
-    return transfers?.filter(
-      (transfer: any) =>
-        transfer.status === 'pending' && transfer.to === currentEntity?.alias,
+    if (!transactions?.data?.entityOutcomes || !currentEntity?.alias) {
+      return [];
+    }
+
+    const entity = transactions.data.entityOutcomes.find(
+      (entity: any) => entity.alias === currentEntity.alias,
     );
-  }, [transfers, currentEntity]);
+
+    if (!entity?.pending || entity?.pending.length === 0) {
+      return [];
+    }
+
+    return entity.pending;
+  }, [transactions?.data?.entityOutcomes, currentEntity?.alias]);
+  console.log({ pendingTransfers });
+
   const [balances, setBalance] = useState<
     { alias: string; balance: number; received: number; sent: number }[]
   >([]);
@@ -218,10 +237,7 @@ export function CashTracker() {
                   onClick={() =>
                     confirmReceipt({
                       from: currentEntity?.smartaccount || '',
-                      to:
-                        entities.find(
-                          (e: Entities) => e.alias === pendingTransfers[0].from,
-                        )?.smartaccount || '',
+                      to: pendingTransfers[0].from,
                       alias: pendingTransfers[0].to,
                       amount: pendingTransfers[0].amount.toString(),
                     })

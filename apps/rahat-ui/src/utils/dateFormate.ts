@@ -14,7 +14,12 @@ export const dateFormat = (
 ): string => {
   if (!date) return '';
   try {
-    return formatDate(date, formatStr);
+    const parsedDate = new Date(date);
+    const pasedDateOffset = parsedDate.getTimezoneOffset();
+
+    parsedDate.setMinutes(parsedDate.getMinutes() + pasedDateOffset);
+
+    return format(parsedDate, formatStr);
   } catch (error) {
     console.error('Invalid date in dateFormat:', date);
     return '';
@@ -27,7 +32,7 @@ export const formatTimestamp = (createdAt: string): string => {
     const now = new Date();
 
     if (isYesterday(date)) {
-      return format(date, 'MMMM d, yyyy, h:mm:ss a');
+      return format(date, 'MMMM d, yyyy, h:mm:ss');
     }
 
     const hoursDifference = differenceInHours(now, date);

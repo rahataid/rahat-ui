@@ -14,7 +14,7 @@ export const dateFormat = (
 ): string => {
   if (!date) return '';
   try {
-    return formatDate(new Date(date), formatStr);
+    return formatDate(date, formatStr);
   } catch (error) {
     console.error('Invalid date in dateFormat:', date);
     return '';

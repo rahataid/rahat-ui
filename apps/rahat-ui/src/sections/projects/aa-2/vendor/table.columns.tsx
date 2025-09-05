@@ -83,10 +83,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
       approveVendorTokenRedemption.mutateAsync({
         projectUUID: id,
         payload: {
-          redemptionStatus:
-            row?.original?.redemptionStatus === 'STELLAR_VERIFIED'
-              ? 'STELLAR_VERIFIED'
-              : 'REQUESTED',
+          redemptionStatus: 'APPROVED',
           uuid: row.original?.uuid,
         },
       });

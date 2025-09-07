@@ -4,80 +4,77 @@ import { Copy, Info } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import { SearchInput } from 'apps/rahat-ui/src/common';
+import { SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from '@rahat-ui/shadcn/src/components/ui/radio-group';
 
-interface Beneficiary {
-  id: string;
-  name: string;
-  address: string;
-}
+type IProps = {
+  beneficiaries: Array<any>;
+  isLoading: boolean;
+  handleDisbursement: (
+    beneficiaries: `0x${string}`[],
+    amount: string,
+    details?: string,
+  ) => void;
+};
 
 interface FormData {
-  selectedBeneficiaries: string[];
+  selectedBeneficiary: string;
   amountPerBeneficiary: string;
   purpose: string;
 }
 
-const mockBeneficiaries: Beneficiary[] = [
-  { id: '1', name: 'Aadarsha Lamichhane', address: '0x3ad4...f54' },
-  { id: '2', name: 'Aadarsha Lamichhane', address: '0x3ad4...f54' },
-  { id: '3', name: 'Aadarsha Lamichhane', address: '0x3ad4...f54' },
-  { id: '4', name: 'Aadarsha Lamichhane', address: '0x3ad4...f54' },
-  { id: '5', name: 'Aadarsha Lamichhane', address: '0x3ad4...f54' },
-  { id: '6', name: 'Aadarsha Lamichhane', address: '0x3ad4...f54' },
-];
-
-export function BeneficiaryDisbursementForm() {
+export function BeneficiaryDisbursementForm({
+  beneficiaries,
+  isLoading,
+  handleDisbursement,
+}: IProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedBeneficiaries, setSelectedBeneficiaries] = useState<string[]>(
-    [],
-  );
 
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
-      selectedBeneficiaries: [],
+      selectedBeneficiary: '',
       amountPerBeneficiary: '',
       purpose: '',
     },
   });
 
+  const selectedBeneficiary = watch('selectedBeneficiary');
   const amountPerBeneficiary = watch('amountPerBeneficiary');
 
-  const filteredBeneficiaries = mockBeneficiaries.filter(
+  const filteredBeneficiaries = beneficiaries?.filter(
     (beneficiary) =>
-      beneficiary.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      beneficiary.address.toLowerCase().includes(searchTerm.toLowerCase()),
+      beneficiary.piiData?.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      beneficiary.walletAddress
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()),
   );
-
-  const handleBeneficiaryToggle = (beneficiaryId: string) => {
-    setSelectedBeneficiaries((prev) =>
-      prev.includes(beneficiaryId)
-        ? prev.filter((id) => id !== beneficiaryId)
-        : [...prev, beneficiaryId],
-    );
-  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
   };
 
-  const totalAmount =
-    selectedBeneficiaries.length *
-    (Number.parseFloat(amountPerBeneficiary) || 0);
+  const totalAmount = 1 * (Number.parseFloat(amountPerBeneficiary) || 0); //for single selection
 
   const onSubmit = (data: FormData) => {
-    console.log('Form submitted:', {
-      ...data,
-      selectedBeneficiaries,
-      totalAmount,
-    });
+    console.log('FormData:', data);
+    const { amountPerBeneficiary, purpose } = data;
+    handleDisbursement(
+      [selectedBeneficiary as `0x${string}`],
+      amountPerBeneficiary,
+      purpose,
+    );
   };
 
   return (
@@ -94,52 +91,63 @@ export function BeneficiaryDisbursementForm() {
 
         {/* Beneficiary List */}
         <ScrollArea className="h-[350px]">
-          {filteredBeneficiaries?.length ? (
-            <div className="space-y-3">
-              {filteredBeneficiaries.map((beneficiary) => (
-                <div
-                  key={beneficiary.id}
-                  className="flex items-center space-x-3 p-2 rounded-sm border"
-                >
-                  <Checkbox
-                    id={beneficiary.id}
-                    checked={selectedBeneficiaries.includes(beneficiary.id)}
-                    onCheckedChange={() =>
-                      handleBeneficiaryToggle(beneficiary.id)
-                    }
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-sm/6">
-                      {beneficiary.name}
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span className="font-mono">{beneficiary.address}</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-4 w-4 p-0"
-                        onClick={() => copyToClipboard(beneficiary.address)}
-                      >
-                        <Copy className="h-3 w-3" />
-                      </Button>
+          {!isLoading ? (
+            filteredBeneficiaries?.length ? (
+              <RadioGroup
+                value={selectedBeneficiary}
+                onValueChange={(value) =>
+                  setValue('selectedBeneficiary', value)
+                }
+                className="space-y-3"
+              >
+                {filteredBeneficiaries.map((beneficiary) => (
+                  <div
+                    key={beneficiary.id}
+                    className="flex items-center space-x-3 p-2 rounded-sm border"
+                  >
+                    <RadioGroupItem
+                      value={beneficiary.walletAddress}
+                      className="mt-1"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm/6">
+                        {beneficiary.name}
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <span className="font-mono">
+                          {beneficiary.walletAddress}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-4 w-4 p-0"
+                          onClick={() =>
+                            copyToClipboard(beneficiary.walletAddress)
+                          }
+                        >
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
+                ))}
+              </RadioGroup>
+            ) : (
+              <div className="h-[370px] p-4 flex justify-center items-center text-gray-500">
+                <div className="text-center">
+                  <div className="flex justify-center">
+                    <Info />
+                  </div>
+                  <p className="font-medium text-gray-800">No beneficiaries</p>
+                  <p>
+                    Beneficiaries will appear here once they're assigned to this
+                    project
+                  </p>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="h-[370px] p-4 flex justify-center items-center text-gray-500">
-              <div className="text-center">
-                <div className="flex justify-center">
-                  <Info />
-                </div>
-                <p className="font-medium text-gray-800">No beneficiaries</p>
-                <p>
-                  Beneficiaries will appear here once they're assigned to this
-                  project
-                </p>
               </div>
-            </div>
+            )
+          ) : (
+            <SpinnerLoader />
           )}
         </ScrollArea>
       </div>
@@ -194,9 +202,8 @@ export function BeneficiaryDisbursementForm() {
           <div className="space-y-3 pt-4">
             <div className="flex justify-between text-sm">
               <span>Total Beneficiaries:</span>
-              <span className="font-medium">
-                {selectedBeneficiaries.length}
-              </span>
+              {/* for single selection */}
+              <span className="font-medium">1</span>{' '}
             </div>
             <div className="flex justify-between text-sm">
               <span>Amount per Beneficiaries:</span>
@@ -215,9 +222,7 @@ export function BeneficiaryDisbursementForm() {
           <Button
             type="submit"
             className="w-full bg-slate-400 hover:bg-slate-500 text-white"
-            disabled={
-              selectedBeneficiaries.length === 0 || !amountPerBeneficiary
-            }
+            disabled={selectedBeneficiary.length === 0 || !amountPerBeneficiary}
           >
             Initiate Transaction
           </Button>

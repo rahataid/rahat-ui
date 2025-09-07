@@ -4,6 +4,7 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { UUID } from 'crypto';
 import { Calendar, Edit, Eye, Trash2 } from 'lucide-react';
 import Link from 'next/link';
@@ -39,7 +40,7 @@ export default function GroupCard({ group, projectUUID }: GroupProps) {
         <div className="space-y-2 mb-4">
           <div className="flex items-center gap-2 text-xs text-gray-600">
             <Calendar className="h-3 w-3" />
-            <span>Updated: {group.updatedAt?.toLocaleString()}</span>
+            <span>Updated: {dateFormat(group.updatedAt)}</span>
           </div>
           {/* {group.lastDisbursement && (
             <div className="flex items-center gap-2 text-xs text-gray-600">

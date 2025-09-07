@@ -2,19 +2,36 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
-import { Heading } from 'apps/rahat-ui/src/common';
+import { Heading, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import {
   BadgeCheck,
   CheckCircle,
   Clock,
   Coins,
   Copy,
+  CopyCheck,
   ExternalLink,
   Eye,
 } from 'lucide-react';
 import { TransactionHistory } from './transactionHistory';
+import { useProjectBeneficiaryDetail } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
+import React from 'react';
 
 export default function BeneficiaryDetailsView() {
+  const { id: projectId, beneficiaryId } = useParams() as {
+    id: UUID;
+    beneficiaryId: UUID;
+  };
+  const [copied, setCopied] = React.useState<boolean>(false);
+
+  const { data: ben, isLoading } = useProjectBeneficiaryDetail({
+    projectUUID: projectId,
+    uuid: beneficiaryId,
+  });
+
   const cardData = [
     { label: 'Available Balance', value: '1200' },
     { label: 'Disbursed Amount', value: '1200' },
@@ -33,6 +50,11 @@ export default function BeneficiaryDetailsView() {
 
   const completedSteps = steps.filter((s) => s.status === 'done').length;
   const progress = (completedSteps / steps.length) * 100;
+
+  const clickToCopy = (walletAddress: string) => {
+    navigator.clipboard.writeText(walletAddress);
+    setCopied(true);
+  };
   return (
     <div className="p-4 space-y-4 bg-gray-50">
       <Heading
@@ -45,40 +67,57 @@ export default function BeneficiaryDetailsView() {
           PERSONAL INFORMATION
         </h4>
 
-        <div className="grid grid-cols-4 gap-4 mb-4">
-          <div>
-            <h6 className="text-[10px]/4 font-semibold text-gray-500 tracking-widest">
-              BENEFICIARY NAME
-            </h6>
-            <p className="text-[#3D3D51]">John Doe</p>
-            <Badge className="bg-green-50 text-green-600 border-green-500 text-xs">
-              Active
-            </Badge>
-          </div>
-          <div>
-            <h6 className="text-[10px]/4 font-semibold text-gray-500 tracking-widest">
-              PHONE NUMBER
-            </h6>
-            <p className="text-[#3D3D51]">+1 234 567 890</p>
-          </div>
-          <div>
-            <h6 className="text-[10px]/4 font-semibold text-gray-500 tracking-widest">
-              WALLET ADDRESS
-            </h6>
-            <div className="flex items-center gap-2">
-              <p className="text-[#3D3D51]">0x123...abc</p>
-              <BadgeCheck className="text-primary" size={18} />
-              <Copy className="text-primary" size={18} />
-              <ExternalLink className="text-primary" size={18} />
+        {!isLoading ? (
+          <div className="grid grid-cols-4 gap-4 mb-4">
+            <div>
+              <h6 className="text-[10px]/4 font-semibold text-gray-500 tracking-widest">
+                BENEFICIARY NAME
+              </h6>
+              <p className="text-[#3D3D51]">{ben?.piiData?.name || 'N/A'}</p>
+              <Badge className="bg-green-50 text-green-600 border-green-500 text-xs">
+                Active
+              </Badge>
+            </div>
+            <div>
+              <h6 className="text-[10px]/4 font-semibold text-gray-500 tracking-widest">
+                PHONE NUMBER
+              </h6>
+              <p className="text-[#3D3D51]">{ben?.piiData?.phone || 'N/A'}</p>
+            </div>
+            <div>
+              <h6 className="text-[10px]/4 font-semibold text-gray-500 tracking-widest">
+                WALLET ADDRESS
+              </h6>
+              <div className="flex items-center gap-2">
+                <p className="text-[#3D3D51]">
+                  {ben?.walletAddress
+                    ? truncateEthAddress(ben?.walletAddress)
+                    : 'N/A'}
+                </p>
+
+                <BadgeCheck className="text-primary" size={18} />
+                <button onClick={() => clickToCopy(ben?.walletAddress || '')}>
+                  {copied ? (
+                    <CopyCheck className="text-primary" size={18} />
+                  ) : (
+                    <Copy className="text-primary" size={18} />
+                  )}
+                </button>
+                <ExternalLink className="text-primary" size={18} />
+              </div>
+            </div>
+            <div>
+              <h6 className="text-[10px]/4 font-semibold text-gray-500 tracking-widest">
+                ADDRESS
+              </h6>
+              <p className="text-[#3D3D51]">
+                {ben?.projectData?.location || 'N/A'}
+              </p>
             </div>
           </div>
-          <div>
-            <h6 className="text-[10px]/4 font-semibold text-gray-500 tracking-widest">
-              ADDRESS
-            </h6>
-            <p className="text-[#3D3D51]">123 Main St, Anytown, USA</p>
-          </div>
-        </div>
+        ) : (
+          <SpinnerLoader />
+        )}
 
         <Button
           variant="outline"

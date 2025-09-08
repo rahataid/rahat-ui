@@ -58,12 +58,18 @@ type IHeadCardProps = {
 
 export default function CommsLogsDetailPage() {
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
+
   const [communicationId, activityId, sessionId] = (
     commsIdXactivityIdXsessionId as string
   ).split('%40');
 
   const searchParams = useSearchParams();
   const from = searchParams.get('from');
+
+  const backFrom = searchParams.get('backFrom');
+  const tab = searchParams.get('tab');
+
+  const subTab = searchParams.get('subTab');
 
   const {
     pagination,
@@ -82,6 +88,7 @@ export default function CommsLogsDetailPage() {
     communicationId,
     activityId,
   );
+
   const columns = useCommsLogsTableColumns(
     logs?.sessionDetails?.Transport?.name,
   );
@@ -92,6 +99,8 @@ export default function CommsLogsDetailPage() {
   );
   const { data: activityDetail, isLoading: isLoadingActivity } =
     useSingleActivity(projectID as UUID, activityId);
+
+  const communicationTitle = logs?.communicationDetail?.communicationTitle;
   const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
     useListSessionLogs(sessionId, { ...pagination, ...cleanFilters });
 
@@ -172,12 +181,17 @@ export default function CommsLogsDetailPage() {
     },
     [filters],
   );
-
   const path = useMemo(() => {
+    if (tab && subTab) {
+      return `/projects/aa/${projectID}/communication-logs?tab=${tab}&subTab=${subTab}`;
+    }
+
     return from === 'activities'
-      ? `/projects/aa/${projectID}/activities/${activityId}?from="mainPage"`
+      ? `/projects/aa/${projectID}/activities/${activityId}${
+          backFrom ? `?from=${backFrom}` : ''
+        }`
       : `/projects/aa/${projectID}/communication-logs/details/${activityId}`;
-  }, [from, projectID, activityId]);
+  }, [from, projectID, activityId, tab, subTab, backFrom]);
 
   return (
     <div className="p-4">
@@ -346,7 +360,7 @@ export default function CommsLogsDetailPage() {
 
                 {/* Communication */}
                 <div className="space-y-3">
-                  <p className="text-sm text-gray-500">Communication</p>
+                  <p className="text-sm text-gray-500">{communicationTitle}</p>
                   {renderMessage(logs?.communicationDetail?.message)}
                 </div>
               </CardContent>

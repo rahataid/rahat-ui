@@ -17,6 +17,7 @@ import { NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { CommunicationCard } from '../components/communicationCard';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { useMemo } from 'react';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 type CommunicationData = {
   groupId: string;
@@ -44,6 +45,18 @@ export default function CommunicationList({
     return active ? 'communications' : 'history';
   }, [activityCommunication]);
 
+  const pendingCommunications = useMemo(() => {
+    return activityCommunication?.filter(
+      (d) => d?.sessionStatus === 'NEW' || d?.sessionStatus === 'PENDING',
+    );
+  }, [activityCommunication]);
+
+  const completedCommunications = useMemo(() => {
+    return activityCommunication?.filter(
+      (d) => d?.sessionStatus === 'COMPLETED',
+    );
+  }, [activityCommunication]);
+
   const { activeTab, setActiveTab } = useActiveTab(defaultTab);
   return (
     <div className="border px-4 pt-2 rounded-xl ">
@@ -67,27 +80,45 @@ export default function CommunicationList({
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="communications">Communications</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
+        <TabsList className="bg-gray-100 rounded-sm">
+          <TabsTrigger
+            value="communications"
+            className="data-[state=active]:bg-white flex items-center gap-2"
+          >
+            Communications
+            <Badge
+              className={`h-5 w-5 justify-center text-white px-2 py-0 ${
+                activeTab === 'communications' ? 'bg-blue-500 ' : 'bg-gray-500'
+              }`}
+            >
+              {pendingCommunications?.length}
+            </Badge>
+          </TabsTrigger>
+
+          <TabsTrigger
+            value="history"
+            className="data-[state=active]:bg-white flex items-center gap-2"
+          >
+            History
+            <Badge
+              className={`h-5 w-5 justify-center text-white px-2 py-0 ${
+                activeTab === 'history' ? 'bg-blue-500 ' : 'bg-gray-500'
+              }`}
+            >
+              {completedCommunications?.length}
+            </Badge>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="communications">
           {loading && <SpinnerLoader />}
           <div className="overflow-y-auto  scrollbar-hidden xl:h-[calc(100vh-320px)] h-[calc(100vh-200px)]   ">
-            {activityCommunication?.filter(
-              (d) => d.sessionStatus === 'NEW' || d.sessionStatus === 'PENDING',
-            ).length === 0 && !loading ? (
+            {pendingCommunications?.length === 0 && !loading ? (
               <NoResult message="No Communication Available" />
             ) : (
-              activityCommunication
-                ?.filter(
-                  (d) =>
-                    d.sessionStatus === 'NEW' || d.sessionStatus === 'PENDING',
-                )
-                .map((comm, index) => (
-                  <CommunicationCard key={index} activityCommunication={comm} />
-                ))
+              pendingCommunications?.map((comm, index) => (
+                <CommunicationCard key={index} activityCommunication={comm} />
+              ))
             )}
           </div>
         </TabsContent>
@@ -95,16 +126,12 @@ export default function CommunicationList({
         <TabsContent value="history">
           {loading && <SpinnerLoader />}
           <div className="overflow-y-auto  scrollbar-hidden xl:h-[calc(100vh-320px)]  h-[calc(100vh-200px)]  ">
-            {activityCommunication?.filter(
-              (d) => d.sessionStatus === 'COMPLETED',
-            ).length === 0 && !loading ? (
+            {completedCommunications?.length === 0 && !loading ? (
               <NoResult message="No History Available" />
             ) : (
-              activityCommunication
-                ?.filter((d) => d.sessionStatus === 'COMPLETED')
-                .map((comm, index) => (
-                  <CommunicationCard key={index} activityCommunication={comm} />
-                ))
+              completedCommunications?.map((comm, index) => (
+                <CommunicationCard key={index} activityCommunication={comm} />
+              ))
             )}
           </div>
         </TabsContent>

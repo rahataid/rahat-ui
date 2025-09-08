@@ -103,6 +103,7 @@ export default function AssignBeneficiaryToProjectModal({
             </Button>
           </DialogClose>
           <Button
+            disabled={assignBeneficiaryGroup.isPending}
             onClick={handleAssignProject}
             type="button"
             variant="ghost"

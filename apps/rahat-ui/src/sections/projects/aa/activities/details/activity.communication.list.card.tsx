@@ -38,8 +38,6 @@ export default function ActivityCommunicationListCard({
     }
   };
 
-  console.log(activityDetail?.activityCommunication)
-
   return (
     <div className="bg-card p-4 rounded">
       <h1 className="font-semibold text-lg">Communication List</h1>

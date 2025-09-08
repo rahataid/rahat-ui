@@ -20,7 +20,7 @@ import {
   useTriggerForOnePayoutFailed,
 } from '@rahat-ui/query';
 import { useCallback, useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import {
@@ -55,7 +55,8 @@ export default function useBeneficiaryGroupDetailsLogColumns(
   const router = useRouter();
   const triggerForPayoutFailed = useTriggerForOnePayoutFailed();
   const [pendingUuid, setPendingUuid] = useState<string | null>(null);
-
+  const searchParams = useSearchParams();
+  const navigation = searchParams.get('from');
   const fspName = usePaymentProviders({ projectUUID: id as UUID });
   const { clickToCopy, copyAction } = useCopy();
 
@@ -79,7 +80,9 @@ export default function useBeneficiaryGroupDetailsLogColumns(
 
   const handleEyeClick = (uuid: any) => {
     router.push(
-      `/projects/aa/${id}/payout/transaction-details/${uuid}?groupId=${detailID}`,
+      `/projects/aa/${id}/payout/transaction-details/${uuid}?groupId=${detailID}&${
+        navigation ? `from=${navigation}` : ''
+      }`,
     );
   };
   const columns: ColumnDef<any>[] = [
@@ -163,19 +166,29 @@ export default function useBeneficiaryGroupDetailsLogColumns(
         );
       },
     },
-
     {
-      accessorKey: 'tokensAssigned',
+      accessorKey: 'amount',
       header: 'Amount Disbursed',
-      cell: ({ row }) => (
-        <div>
-          Rs.
-          {row?.original?.status === 'FIAT_TRANSACTION_COMPLETED' ||
-          row.original?.status === 'COMPLETED'
-            ? row.original?.amount * ONE_TOKEN_VALUE
-            : 0}
-        </div>
-      ),
+      cell: ({ row }) => {
+        if (payoutType === 'FSP')
+          return (
+            <div>
+              Rs.{' '}
+              {row?.original?.status === 'FIAT_TRANSACTION_COMPLETED' ||
+              row.original?.status === 'COMPLETED'
+                ? row.original?.amount * ONE_TOKEN_VALUE
+                : 0}
+            </div>
+          );
+        else {
+          const status = row.original?.status;
+          return status === 'COMPLETED'
+            ? row.original?.amount
+              ? `Rs. ${row?.original?.amount * ONE_TOKEN_VALUE}`
+              : 'Rs. 0'
+            : 'Rs. 0';
+        }
+      },
     },
     {
       accessorKey: 'transactionType',
@@ -215,21 +228,33 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       },
     },
     {
-      accessorKey: 'createdAt',
+      accessorKey: 'updatedAt',
       header: 'Timestamp',
-      cell: ({ row }) => (
-        <div className="flex  flex-col text-[10px]">
-          <span>{intlFormatDate(row?.original?.createdAt)}</span>
-          {/* <span>{intlFormatDate(row.original?.updatedAt)}</span> */}
+      cell: ({ row }) => {
+        const { createdAt, updatedAt, payout, status } = row?.original || {};
 
-          {row?.original?.payout?.type === 'FSP' &&
-            row?.original?.status.includes('COMPLETED') && (
-              <span>{intlFormatDate(row.original?.updatedAt)}</span>
-            )}
-        </div>
-      ),
+        if (payout?.type === 'FSP') {
+          return (
+            <div className="flex flex-col text-[10px]">
+              <span>{intlFormatDate(createdAt)}</span>
+              {status?.includes('COMPLETED') && (
+                <span>{intlFormatDate(updatedAt)}</span>
+              )}
+            </div>
+          );
+        } else {
+          return (
+            <div className="flex flex-col text-[10px]">
+              {status === 'COMPLETED' ? (
+                <span>{intlFormatDate(updatedAt)}</span>
+              ) : (
+                <span>{intlFormatDate(createdAt)}</span>
+              )}
+            </div>
+          );
+        }
+      },
     },
-
     {
       id: 'actions',
       header: 'Actions',

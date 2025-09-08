@@ -54,6 +54,10 @@ const CommunicationDataCard = ({
     setTimeout(() => {
       form.setValue(fieldName('groupId'), itemData.groupId);
     }, 50);
+    form.setValue(
+      fieldName('communicationTitle'),
+      itemData?.communicationTitle,
+    );
     form.setValue(fieldName('groupType'), itemData?.groupType);
     form.setValue(fieldName('message'), itemData?.message);
     form.setValue(fieldName('subject'), itemData?.subject);
@@ -93,10 +97,7 @@ const CommunicationDataCard = ({
                 <div className="flex-1">
                   <div className="mb-1">
                     <h3 className="text-sm font-medium">
-                      {stakeholdersGroups?.find((g) => g.uuid === t.groupId)
-                        ?.name ||
-                        beneficiaryGroups?.find((g) => g.uuid === t.groupId)
-                          ?.name}
+                      {t?.communicationTitle}
                     </h3>
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <span>
@@ -112,6 +113,13 @@ const CommunicationDataCard = ({
                           t?.groupType.slice(1).toLowerCase()}
                       </span>
                       <span>•</span>
+                      <span>
+                        {' '}
+                        {stakeholdersGroups?.find((g) => g.uuid === t.groupId)
+                          ?.name ||
+                          beneficiaryGroups?.find((g) => g.uuid === t.groupId)
+                            ?.name}
+                      </span>
                     </div>
                   </div>
                   {t?.subject && (

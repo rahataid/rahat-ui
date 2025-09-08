@@ -44,7 +44,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const projectId = params.id as UUID;
   const payoutId = params.detailID as UUID;
   const searchParams = useSearchParams();
-
+  const navigation = searchParams.get('from');
   const {
     pagination,
     setNextPage,
@@ -172,7 +172,13 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   ) : (
     <div className="p-4 pb-0">
       <div className="flex flex-col space-y-0">
-        <Back path={`/projects/aa/${projectId}/payout/list`} />
+        <Back
+          path={
+            navigation
+              ? `/projects/aa/${projectId}/payout`
+              : `/projects/aa/${projectId}/payout/list`
+          }
+        />
 
         <div className="mt-4 flex justify-between items-center">
           <div>

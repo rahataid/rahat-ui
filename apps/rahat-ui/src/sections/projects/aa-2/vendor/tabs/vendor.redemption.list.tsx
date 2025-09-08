@@ -41,7 +41,7 @@ export const VendorRedemptionList = ({ id }: { id: UUID }) => {
     projectUUID: id,
     ...pagination,
     name: debounceSearch.name,
-    status: debounceSearch.status,
+    redemptionStatus: debounceSearch.status,
   });
 
   const table = useReactTable({

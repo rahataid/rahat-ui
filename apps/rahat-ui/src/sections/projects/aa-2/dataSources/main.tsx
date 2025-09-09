@@ -24,6 +24,29 @@ import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import { format } from 'date-fns';
 import ExternalLinks from './components/externalLink/linkContent';
 import GFHDetails from './components/gfh';
+import { renderComponent } from './components/dynamicTabComponent';
+// Example: tabsConfig.ts
+export const tabsConfig = [
+  { value: 'dhm', label: 'DHM', component: 'DHMSection' },
+  { value: 'glofas', label: 'GLOFAS', component: 'GlofasSection' },
+  {
+    value: 'dailyMonitoring',
+    label: 'Daily Monitoring',
+    component: 'DailyMonitoringListView',
+  },
+  {
+    value: 'gaugeReading',
+    label: 'Gauge Reading',
+    component: 'GaugeReading',
+    hasDatePicker: true,
+  },
+  { value: 'gfh', label: 'Google Flood Hub', component: 'GFHDetails' },
+  {
+    value: 'externalLinks',
+    label: 'External Links',
+    component: 'ExternalLinks',
+  },
+];
 
 export default function DataSources() {
   const { activeTab, setActiveTab } = useActiveTab('dhm');
@@ -41,7 +64,7 @@ export default function DataSources() {
         title="Forecast Data"
         description="Track all the data sources reports here"
       />
-      <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+      {/* <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
         <div className="flex justify-between">
           <TabsList className="border bg-secondary rounded mb-2">
             <TabsTrigger
@@ -141,6 +164,65 @@ export default function DataSources() {
         <TabsContent value="externalLinks">
           <ExternalLinks />
         </TabsContent>
+      </Tabs> */}
+      <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+        <div className="flex justify-between">
+          <TabsList className="border bg-secondary rounded mb-2">
+            {tabsConfig.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {activeTab === 'gaugeReading' &&
+            tabsConfig.find((tab) => tab.value === 'gaugeReading')
+              ?.hasDatePicker && (
+              <div className="flex items-center">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        'text-left font-normal',
+                        !date && 'text-muted-foreground',
+                      )}
+                    >
+                      {date ? format(date, 'PPP') : <span>Pick a date</span>}
+                      <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={date || undefined}
+                      onSelect={(val) => val && setDate(val)}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                {date && (
+                  <Button
+                    variant="outline"
+                    className="text-red-500 border-red-300 hover:bg-red-50 hover:border-red-400"
+                    onClick={() => setDate(null)}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" /> Clear Date
+                  </Button>
+                )}
+              </div>
+            )}
+        </div>
+
+        {tabsConfig.map((tab) => (
+          <TabsContent key={tab.value} value={tab.value}>
+            {renderComponent(tab.component, date)}
+          </TabsContent>
+        ))}
       </Tabs>
     </div>
   );

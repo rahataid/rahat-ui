@@ -406,7 +406,7 @@ export const useActivateTrigger = () => {
       qc.invalidateQueries({ queryKey: ['triggerstatement'] });
       toast.fire({
         title: 'Trigger activated.',
-        text: 'This trigger will be saved in Stellar block. You can view details of this from trigger details page.',
+        text: 'Successfully activated trigger. You can view details of this from trigger details page.',
         timer: 10000,
         icon: 'success',
         width: '500px',

@@ -30,6 +30,18 @@ export const TransactionDetails = `
 }
 `;
 
+export const FilteredTransaction = `
+query FilteredTransaction($contractAddress: String, fromDate: String, toDate: String) {
+  transfers(where: {from: $contractAddress, blockTimestamp_gte: $fromDate, blockTimestamp_lte: $toDate}) {
+    blockTimestamp
+    from
+    id
+    to
+    transactionHash
+    value
+  }
+}`;
+
 export const ReceivedTransactionDetails = `
   query ReceivedTransactionDetails($contractAddress: String) {
     transfers(where: {to: $contractAddress}) {

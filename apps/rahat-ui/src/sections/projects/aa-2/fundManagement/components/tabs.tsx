@@ -8,6 +8,7 @@ import FundManagementList from '../tables/fm.table';
 import TokensOverview from './token.overview';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { CashTracker } from './cashTracker/cash.tracker';
+import { InKindTracker } from './inKindTracker';
 
 export default function FundManagementTabs() {
   const { activeTab, setActiveTab } = useActiveTab('cashTracker');
@@ -20,6 +21,12 @@ export default function FundManagementTabs() {
             value="cashTracker"
           >
             Cash Tracker
+          </TabsTrigger>
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="inKindTracker"
+          >
+            In-kind Tracker
           </TabsTrigger>
           <TabsTrigger
             className="w-full data-[state=active]:bg-white"
@@ -42,6 +49,9 @@ export default function FundManagementTabs() {
         </TabsContent>
         <TabsContent value="fundManagementList">
           <FundManagementList />
+        </TabsContent>
+        <TabsContent value="inKindTracker">
+          <InKindTracker />
         </TabsContent>
       </Tabs>
     </div>

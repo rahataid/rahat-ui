@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -11,16 +9,20 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { Users, Calendar, Info } from 'lucide-react';
-import { SearchInput } from 'apps/rahat-ui/src/common';
+import { SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { UUID } from 'crypto';
 
-interface BeneficiaryGroup {
-  id: string;
-  name: string;
-  description: string;
-  beneficiaries: number;
-  lastUpdated: string;
-}
+type IProps = {
+  groups: Array<any>;
+  isLoading: boolean;
+  handleDisbursement: (
+    beneficiaryGroups: UUID,
+    amount: string,
+    details?: string,
+  ) => void;
+};
 
 interface FormData {
   selectedGroup: string;
@@ -28,38 +30,11 @@ interface FormData {
   disbursementPurpose: string;
 }
 
-const beneficiaryGroups: BeneficiaryGroup[] = [
-  {
-    id: 'flood-relief-1',
-    name: 'Emergency Flood Relief',
-    description: 'Flood affected families in northern region',
-    beneficiaries: 1200,
-    lastUpdated: 'August 19, 2025, 1:38:14 PM',
-  },
-  {
-    id: 'flood-relief-2',
-    name: 'Emergency Flood Relief',
-    description: 'Flood affected families in northern region',
-    beneficiaries: 1200,
-    lastUpdated: 'August 19, 2025, 1:38:14 PM',
-  },
-  {
-    id: 'flood-relief-3',
-    name: 'Emergency Flood Relief',
-    description: 'Flood affected families in northern region',
-    beneficiaries: 1200,
-    lastUpdated: 'August 19, 2025, 1:38:14 PM',
-  },
-  {
-    id: 'flood-relief-4',
-    name: 'Emergency Flood Relief',
-    description: 'Flood affected families in northern region',
-    beneficiaries: 1200,
-    lastUpdated: 'August 19, 2025, 1:38:14 PM',
-  },
-];
-
-export function BeneficiaryGroupsDisbursementForm() {
+export function BeneficiaryGroupsDisbursementForm({
+  groups,
+  isLoading,
+  handleDisbursement,
+}: IProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const { register, watch, handleSubmit, setValue } = useForm<FormData>({
     defaultValues: {
@@ -72,22 +47,23 @@ export function BeneficiaryGroupsDisbursementForm() {
   const selectedGroup = watch('selectedGroup');
   const amountPerBeneficiary = watch('amountPerBeneficiary');
 
-  const filteredGroups = beneficiaryGroups.filter(
-    (group) =>
-      group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      group.description.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filteredGroups = groups.filter((group) =>
+    group.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const selectedGroupData = beneficiaryGroups.find(
-    (group) => group.id === selectedGroup,
-  );
+  const selectedGroupData = groups.find((group) => group.id === selectedGroup);
   const totalBeneficiaries = selectedGroupData?.beneficiaries || 0;
   const amountPerBeneficiaryNum = Number.parseFloat(amountPerBeneficiary) || 0;
   const totalAmount = totalBeneficiaries * amountPerBeneficiaryNum;
 
   const onSubmit = (data: FormData) => {
-    console.log('Form submitted:', data);
-    console.log('Total amount:', totalAmount);
+    const { amountPerBeneficiary, disbursementPurpose } = data;
+    console.log('FormData:', data);
+    handleDisbursement(
+      selectedGroup as UUID,
+      amountPerBeneficiary,
+      disbursementPurpose,
+    );
   };
 
   return (
@@ -104,56 +80,60 @@ export function BeneficiaryGroupsDisbursementForm() {
 
         {/* Radio Group */}
         <ScrollArea className="h-[370px]">
-          {filteredGroups?.length ? (
-            <RadioGroup
-              value={selectedGroup}
-              onValueChange={(value) => setValue('selectedGroup', value)}
-              className="space-y-3"
-            >
-              {filteredGroups.map((group) => (
-                <div
-                  key={group.id}
-                  className="flex items-start space-x-3 p-3 rounded-sm border hover:bg-gray-50"
-                >
-                  <RadioGroupItem value={group.id} className="mt-1" />
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-gray-900">
-                      {group.name}
-                    </div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      {group.description}
-                    </div>
-                    <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <Users className="h-3 w-3" />
-                        <span>
-                          {group.beneficiaries.toLocaleString()} beneficiaries
-                        </span>
+          {!isLoading ? (
+            filteredGroups?.length ? (
+              <RadioGroup
+                value={selectedGroup}
+                onValueChange={(value) => setValue('selectedGroup', value)}
+                className="space-y-3"
+              >
+                {filteredGroups.map((group) => (
+                  <div
+                    key={group.id}
+                    className="flex items-start space-x-3 p-3 rounded-sm border hover:bg-gray-50"
+                  >
+                    <RadioGroupItem value={group.id} className="mt-1" />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-gray-900">
+                        {group.name}
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        <span>Updated: {group.lastUpdated}</span>
+                      {/* <div className="text-sm text-gray-600 mt-1">
+                      {group.description}
+                    </div> */}
+                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <Users className="h-3 w-3" />
+                          <span>
+                            {group._count.groupedBeneficiaries} beneficiaries
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          <span>Updated: {dateFormat(group.updatedAt)}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
+                ))}
+              </RadioGroup>
+            ) : (
+              <div className="h-[370px] p-4 flex justify-center items-center text-gray-500">
+                <div className="text-center">
+                  <div className="flex justify-center">
+                    <Info />
+                  </div>
+                  <p className="font-medium text-gray-800">
+                    No beneficiary groups
+                  </p>
+                  <p>
+                    Beneficiary groups will appear here once they're assigned to
+                    this project
+                  </p>
                 </div>
-              ))}
-            </RadioGroup>
-          ) : (
-            <div className="h-[370px] p-4 flex justify-center items-center text-gray-500">
-              <div className="text-center">
-                <div className="flex justify-center">
-                  <Info />
-                </div>
-                <p className="font-medium text-gray-800">
-                  No beneficiary groups
-                </p>
-                <p>
-                  Beneficiary groups will appear here once they're assigned to
-                  this project
-                </p>
               </div>
-            </div>
+            )
+          ) : (
+            <SpinnerLoader />
           )}
         </ScrollArea>
       </div>

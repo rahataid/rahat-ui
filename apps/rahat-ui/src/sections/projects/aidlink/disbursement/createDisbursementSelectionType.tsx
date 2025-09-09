@@ -1,14 +1,9 @@
 import React from 'react';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { User, Users } from 'lucide-react';
-import { BeneficiaryDisbursementForm } from './beneficiaryDisbursementForm';
-import { BeneficiaryGroupsDisbursementForm } from './groupsDisbursementForm';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-
-enum DisbursementSelectionType {
-  INDIVIDUAL = 'individual',
-  GROUP = 'group',
-}
+import CreateDisbursementMain from './createDisbursementMain';
+import { DisbursementSelectionType } from '@rahat-ui/query';
 
 const CancelBtn = ({
   setSelectedType,
@@ -45,14 +40,9 @@ export default function CreateDisbursementSelectionType() {
     },
   ];
 
-  return selectedType === DisbursementSelectionType.INDIVIDUAL ? (
+  return selectedType ? (
     <>
-      <BeneficiaryDisbursementForm />
-      <CancelBtn setSelectedType={setSelectedType} />
-    </>
-  ) : selectedType === DisbursementSelectionType.GROUP ? (
-    <>
-      <BeneficiaryGroupsDisbursementForm />
+      <CreateDisbursementMain type={selectedType} />
       <CancelBtn setSelectedType={setSelectedType} />
     </>
   ) : (

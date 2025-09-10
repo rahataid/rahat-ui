@@ -219,6 +219,11 @@ export enum DisbursementStatus {
   REJECTED = 'REJECTED',
 }
 
+export enum DisbursementSelectionType {
+  INDIVIDUAL = 'INDIVIDUAL',
+  GROUP = 'GROUP',
+}
+
 export const useAddDisbursement = () => {
   const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
 
@@ -244,26 +249,38 @@ export const useAddDisbursement = () => {
     mutationFn: async (data: {
       projectUUID: UUID;
       type: DisbursementType;
+      disbursementType: DisbursementSelectionType;
       amount: string;
-      beneficiaries: any;
+      beneficiaries?: any;
+      beneficiaryGroup?: UUID;
       transactionHash: string;
       from: string;
       timestamp: string;
       status?: DisbursementStatus;
+      details?: string;
     }) => {
-      const { projectUUID, ...restData } = data;
+      const { projectUUID, beneficiaries, beneficiaryGroup, ...restData } =
+        data;
+      const payload = {
+        ...restData,
+        ...(restData.disbursementType ===
+          DisbursementSelectionType.INDIVIDUAL && {
+          beneficiaries: beneficiaries.map((ben: any) => ({
+            walletAddress: ben,
+            from: restData.from,
+            transactionHash: restData.transactionHash,
+            amount: restData.amount,
+          })),
+        }),
+        ...(restData.disbursementType === DisbursementSelectionType.GROUP && {
+          beneficiaryGroup,
+        }),
+      };
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'c2cProject.disbursement.create',
-          payload: {
-            ...restData,
-            beneficiaries: restData.beneficiaries.map((ben: any) => ({
-              address: ben,
-              amount: restData.amount,
-              walletAddress: ben,
-            })),
-          },
+          payload,
         },
       });
       return response.data;
@@ -305,17 +322,19 @@ export const useDisburseTokenUsingMultisig = () => {
     mutationFn: async ({
       amount,
       projectUUID,
+      disbursementType,
       beneficiaryAddresses,
-      disburseMethod,
-      rahatTokenAddress,
+      beneficiaryGroup,
       c2cProjectAddress,
+      details,
     }: {
       amount: string;
       projectUUID: UUID;
-      beneficiaryAddresses: `0x${string}`[];
-      disburseMethod: string;
-      rahatTokenAddress: string;
+      disbursementType: DisbursementSelectionType;
+      beneficiaryAddresses?: `0x${string}`[];
+      beneficiaryGroup?: UUID;
       c2cProjectAddress: string;
+      details?: string;
     }) => {
       // Step 1: Create Safe Transaction
       const response = await projectActions.mutateAsync({
@@ -332,13 +351,17 @@ export const useDisburseTokenUsingMultisig = () => {
 
       // Step 2: Add Disbursement
       const disbursementResult = await addDisbursement.mutateAsync({
-        amount: String(+amount / beneficiaryAddresses.length),
+        // amount: String(+amount / beneficiaryAddresses.length),
+        amount,
         projectUUID,
         type: DisbursementType.MULTISIG,
+        disbursementType,
         beneficiaries: beneficiaryAddresses,
+        beneficiaryGroup,
         transactionHash: safeTxHash,
         from: c2cProjectAddress,
         timestamp: String(Math.floor(Date.now() / 1000)), // Convert to seconds timestamp
+        details,
       });
 
       return disbursementResult;

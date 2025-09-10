@@ -1,56 +1,112 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { format } from 'date-fns';
+import { CalendarIcon, Trash2 } from 'lucide-react';
+
+import { Heading } from 'apps/rahat-ui/src/common';
+import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
+
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { Heading } from 'apps/rahat-ui/src/common';
-import { DHMSection, GlofasSection } from './components';
-import { DailyMonitoringListView } from './components/dailyMonitoring';
-import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
-import GaugeReading from './components/gaugeReading';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { cn } from '@rahat-ui/shadcn/src';
-import { CalendarIcon, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
-import { format } from 'date-fns';
+import { cn } from '@rahat-ui/shadcn/src';
+
+// Section Components
+import { DailyMonitoringListView } from './components/dailyMonitoring';
+import { DHMSection } from './components/dhm';
 import ExternalLinks from './components/externalLink/linkContent';
+import GaugeReading from './components/gaugeReading';
 import GFHDetails from './components/gfh';
-import { renderComponent } from './components/dynamicTabComponent';
-// Example: tabsConfig.ts
-export const tabsConfig = [
-  { value: 'dhm', label: 'DHM', component: 'DHMSection' },
-  { value: 'glofas', label: 'GLOFAS', component: 'GlofasSection' },
-  {
-    value: 'dailyMonitoring',
-    label: 'Daily Monitoring',
-    component: 'DailyMonitoringListView',
-  },
-  {
-    value: 'gaugeReading',
-    label: 'Gauge Reading',
-    component: 'GaugeReading',
-    hasDatePicker: true,
-  },
-  { value: 'gfh', label: 'Google Flood Hub', component: 'GFHDetails' },
-  {
-    value: 'externalLinks',
-    label: 'External Links',
-    component: 'ExternalLinks',
-  },
-];
+import { GlofasSection } from './components/glofas';
+import { useParams } from 'next/navigation';
+import { useTabSettings } from '@rahat-ui/query';
+import { UUID } from 'crypto';
+
+const componentMap = {
+  dhm: DHMSection,
+  glofas: GlofasSection,
+  dailyMonitoring: DailyMonitoringListView,
+  gaugeReading: GaugeReading,
+  gfh: GFHDetails,
+  externalLinks: ExternalLinks,
+};
+
+type ComponentKey = keyof typeof componentMap;
+
+interface BackendTab {
+  value: ComponentKey;
+  label: string;
+  hasdatepicker?: boolean;
+}
+
+function DatePicker({
+  date,
+  setDate,
+}: {
+  date: Date | null;
+  setDate: (val: Date | null) => void;
+}) {
+  return (
+    <div className="flex items-center">
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            className={cn(
+              'text-left font-normal',
+              !date && 'text-muted-foreground',
+            )}
+          >
+            {date ? format(date, 'PPP') : <span>Pick a date</span>}
+            <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={date || undefined}
+            onSelect={(val) => val && setDate(val)}
+            initialFocus
+          />
+        </PopoverContent>
+      </Popover>
+
+      {date && (
+        <Button
+          variant="outline"
+          className="ml-2 text-red-500 border-red-300 hover:bg-red-50 hover:border-red-400"
+          onClick={() => setDate(null)}
+        >
+          <Trash2 className="w-4 h-4 mr-2" /> Clear Date
+        </Button>
+      )}
+    </div>
+  );
+}
 
 export default function DataSources() {
   const { activeTab, setActiveTab } = useActiveTab('dhm');
   const [date, setDate] = useState<Date | null>(null);
+  const { id: projectID } = useParams();
+  const { data } = useTabSettings(projectID as UUID);
+
+  const backendTabs: BackendTab[] = data?.value || [];
+
+  const availableTabsConfig = backendTabs.map((tab) => ({
+    ...tab,
+    component: componentMap[tab.value],
+  }));
 
   useEffect(() => {
     if (activeTab !== 'gaugeReading') {
@@ -58,117 +114,22 @@ export default function DataSources() {
     }
   }, [activeTab]);
 
+  console.log(
+    availableTabsConfig.find((tab) => tab.value === 'gaugeReading')
+      ?.hasdatepicker,
+  );
   return (
     <div className="p-4">
       <Heading
         title="Forecast Data"
         description="Track all the data sources reports here"
       />
-      {/* <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
-        <div className="flex justify-between">
-          <TabsList className="border bg-secondary rounded mb-2">
-            <TabsTrigger
-              className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
-              value="dhm"
-            >
-              DHM
-            </TabsTrigger>
-            <TabsTrigger
-              className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
-              value="glofas"
-            >
-              GLOFAS
-            </TabsTrigger>
-            <TabsTrigger
-              className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
-              value="dailyMonitoring"
-            >
-              Daily Monitoring
-            </TabsTrigger>
-            <TabsTrigger
-              className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
-              value="gaugeReading"
-            >
-              Gauge Reading
-            </TabsTrigger>
-            <TabsTrigger
-              className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
-              value="gfh"
-            >
-              Google Flood Hub
-            </TabsTrigger>
-            <TabsTrigger
-              className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
-              value="externalLinks"
-            >
-              External Links
-            </TabsTrigger>
-          </TabsList>
-          {activeTab === 'gaugeReading' && (
-            <div className="flex items-center">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={'outline'}
-                    className={cn(
-                      'text-left font-normal',
-                      !date && 'text-muted-foreground',
-                    )}
-                  >
-                    {date ? format(date, 'PPP') : <span>Pick a date</span>}
-                    <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={date || undefined}
-                    onSelect={(val) => {
-                      if (!val) return;
-                      setDate(val);
-                    }}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              {date && (
-                <Button
-                  variant="outline"
-                  className="text-red-500 border-red-300 hover:bg-red-50 hover:border-red-400"
-                  onClick={() => {
-                    setDate(null);
-                  }}
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Clear Date
-                </Button>
-              )}
-            </div>
-          )}
-        </div>
-        <TabsContent value="dhm">
-          <DHMSection />
-        </TabsContent>
-        <TabsContent value="glofas">
-          <GlofasSection />
-        </TabsContent>
-        <TabsContent value="dailyMonitoring">
-          <DailyMonitoringListView />
-        </TabsContent>
-        <TabsContent value="gaugeReading">
-          <GaugeReading date={date} />
-        </TabsContent>
-        <TabsContent value="gfh">
-          <GFHDetails />
-        </TabsContent>
-        <TabsContent value="externalLinks">
-          <ExternalLinks />
-        </TabsContent>
-      </Tabs> */}
+
       <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
         <div className="flex justify-between">
+          {/* 🔹 Tab Triggers */}
           <TabsList className="border bg-secondary rounded mb-2">
-            {tabsConfig.map((tab) => (
+            {availableTabsConfig.map((tab) => (
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
@@ -179,50 +140,21 @@ export default function DataSources() {
             ))}
           </TabsList>
 
+          {/* 🔹 Conditional Date Picker */}
           {activeTab === 'gaugeReading' &&
-            tabsConfig.find((tab) => tab.value === 'gaugeReading')
-              ?.hasDatePicker && (
-              <div className="flex items-center">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        'text-left font-normal',
-                        !date && 'text-muted-foreground',
-                      )}
-                    >
-                      {date ? format(date, 'PPP') : <span>Pick a date</span>}
-                      <CalendarIcon className="ml-2 h-4 w-4 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={date || undefined}
-                      onSelect={(val) => val && setDate(val)}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                {date && (
-                  <Button
-                    variant="outline"
-                    className="text-red-500 border-red-300 hover:bg-red-50 hover:border-red-400"
-                    onClick={() => setDate(null)}
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" /> Clear Date
-                  </Button>
-                )}
-              </div>
-            )}
+            availableTabsConfig.find((tab) => tab.value === 'gaugeReading')
+              ?.hasdatepicker && <DatePicker date={date} setDate={setDate} />}
         </div>
 
-        {tabsConfig.map((tab) => (
-          <TabsContent key={tab.value} value={tab.value}>
-            {renderComponent(tab.component, date)}
-          </TabsContent>
-        ))}
+        {/* 🔹 Tab Contents */}
+        {availableTabsConfig.map((tab) => {
+          const Component = tab.component;
+          return (
+            <TabsContent key={tab.value} value={tab.value}>
+              <Component date={date} />
+            </TabsContent>
+          );
+        })}
       </Tabs>
     </div>
   );

@@ -4,14 +4,10 @@ import { BeneficiaryGroupsDisbursementForm } from './groupsDisbursementForm';
 import { UUID } from 'crypto';
 import {
   DisbursementSelectionType,
-  PROJECT_SETTINGS_KEYS,
   useDisburseTokenUsingMultisig,
   useFindC2CBeneficiaryGroups,
   useProjectBeneficiaries,
-  useProjectSettingsStore,
 } from '@rahat-ui/query';
-import { toast } from 'react-toastify';
-import { useAccount } from 'wagmi';
 
 type IProps = {
   type: DisbursementSelectionType | null;
@@ -19,11 +15,6 @@ type IProps = {
 
 export default function CreateDisbursementMain({ type }: IProps) {
   const { id: projectUUID } = useParams() as { id: UUID };
-
-  const contractSettings = useProjectSettingsStore(
-    (state) => state.settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
-  );
-  const { isConnected } = useAccount();
 
   const disburseMultiSig = useDisburseTokenUsingMultisig();
 
@@ -60,20 +51,12 @@ export default function CreateDisbursementMain({ type }: IProps) {
     amount: string;
     details?: string;
   }) => {
-    if (!isConnected) {
-      toast.error('Please connect to wallet!');
-      return;
-    }
-
-    const { c2cproject } = contractSettings || {};
-
     await disburseMultiSig.mutateAsync({
       projectUUID,
       amount,
       disbursementType: type!,
       beneficiaryAddresses: beneficiaries,
       beneficiaryGroup,
-      c2cProjectAddress: c2cproject?.address,
       details,
     });
   };

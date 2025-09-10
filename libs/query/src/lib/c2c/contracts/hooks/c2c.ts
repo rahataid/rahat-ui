@@ -6,6 +6,7 @@ import {
 } from '../generated-hooks/c2c';
 import { useRSQuery } from '@rumsan/react-query';
 import {
+  DisbursementSelectionType,
   DisbursementStatus,
   DisbursementType,
   useAddDisbursement,
@@ -121,6 +122,7 @@ export const useDisburseTokenToBeneficiaries = () => {
           beneficiaries: beneficiaryAddresses,
           from: c2cProjectAddress,
           transactionHash: d,
+          disbursementType: DisbursementSelectionType.INDIVIDUAL, //this code is added to resolve the build error
           type: disburseMethod as DisbursementType,
           timestamp: new Date().toISOString(),
           status: DisbursementStatus.COMPLETED,

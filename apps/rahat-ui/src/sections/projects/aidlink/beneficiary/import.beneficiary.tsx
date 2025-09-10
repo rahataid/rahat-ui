@@ -40,7 +40,7 @@ import {
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { useUploadBeneficiary } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 
 const DOWNLOAD_FILE_URL = '/files/beneficiary_demo_aidLink.xlsx';
@@ -56,6 +56,7 @@ const allowedExtensions: { [key: string]: string } = {
 
 const ImportBeneficiary = () => {
   const { id } = useParams() as { id: UUID };
+  const router = useRouter();
   const { clickToCopy, copyAction } = useCopy();
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -364,11 +365,14 @@ const ImportBeneficiary = () => {
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
     const doctype = extension ? allowedExtensions[extension] : '';
 
-    await uploadBeneficiary.mutateAsync({
+    const response = await uploadBeneficiary.mutateAsync({
       selectedFile,
       doctype,
       projectId: id,
     });
+    if (response?.data?.success === true) {
+      router.push(`/projects/aidlink/${id}/beneficiary`);
+    }
   };
 
   // Empty required fields warning
@@ -506,6 +510,7 @@ const ImportBeneficiary = () => {
             type="button"
             className="w-48"
             variant="outline"
+            disabled={data.length === 0 || uploadBeneficiary?.isPending}
             onClick={handleClearButtonClick}
           >
             Clear

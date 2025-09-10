@@ -325,7 +325,6 @@ export const useDisburseTokenUsingMultisig = () => {
       disbursementType,
       beneficiaryAddresses,
       beneficiaryGroup,
-      c2cProjectAddress,
       details,
     }: {
       amount: string;
@@ -333,7 +332,6 @@ export const useDisburseTokenUsingMultisig = () => {
       disbursementType: DisbursementSelectionType;
       beneficiaryAddresses?: `0x${string}`[];
       beneficiaryGroup?: UUID;
-      c2cProjectAddress: string;
       details?: string;
     }) => {
       // Step 1: Create Safe Transaction
@@ -348,6 +346,7 @@ export const useDisburseTokenUsingMultisig = () => {
       });
 
       const safeTxHash = response.data.safeTxHash;
+      const safeAddress = response.data.safeAddress;
 
       // Step 2: Add Disbursement
       const disbursementResult = await addDisbursement.mutateAsync({
@@ -359,7 +358,7 @@ export const useDisburseTokenUsingMultisig = () => {
         beneficiaries: beneficiaryAddresses,
         beneficiaryGroup,
         transactionHash: safeTxHash,
-        from: c2cProjectAddress,
+        from: safeAddress,
         timestamp: String(Math.floor(Date.now() / 1000)), // Convert to seconds timestamp
         details,
       });

@@ -8,6 +8,8 @@ import {
   useFindC2CBeneficiaryGroups,
   useProjectBeneficiaries,
 } from '@rahat-ui/query';
+import { TransactionInitiatedModal } from './transactionInitiatedModal';
+import React from 'react';
 
 type IProps = {
   type: DisbursementSelectionType | null;
@@ -15,6 +17,9 @@ type IProps = {
 
 export default function CreateDisbursementMain({ type }: IProps) {
   const { id: projectUUID } = useParams() as { id: UUID };
+
+  const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
+  const [disbursementResult, setDisbursementResult] = React.useState<any>(null);
 
   const disburseMultiSig = useDisburseTokenUsingMultisig();
 
@@ -51,7 +56,7 @@ export default function CreateDisbursementMain({ type }: IProps) {
     amount: string;
     details?: string;
   }) => {
-    await disburseMultiSig.mutateAsync({
+    const result = await disburseMultiSig.mutateAsync({
       projectUUID,
       amount,
       disbursementType: type!,
@@ -59,31 +64,45 @@ export default function CreateDisbursementMain({ type }: IProps) {
       beneficiaryGroup,
       details,
     });
+
+    if (result) {
+      setDisbursementResult(result);
+      setIsModalOpen(true);
+    }
   };
 
-  return type === DisbursementSelectionType.INDIVIDUAL ? (
-    <BeneficiaryDisbursementForm
-      beneficiaries={projectBeneficiaries?.data}
-      isLoading={isLoadingBeneficiaries}
-      handleDisbursement={(beneficiaries, amount, details) =>
-        handleCreateDisbursement({
-          beneficiaries,
-          amount,
-          details,
-        })
-      }
-    />
-  ) : type === DisbursementSelectionType.GROUP ? (
-    <BeneficiaryGroupsDisbursementForm
-      groups={validGroups}
-      isLoading={isLoadingGroups}
-      handleDisbursement={(beneficiaryGroup, amount, details) =>
-        handleCreateDisbursement({
-          beneficiaryGroup,
-          amount,
-          details,
-        })
-      }
-    />
-  ) : null;
+  return (
+    <>
+      <TransactionInitiatedModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        data={disbursementResult}
+      />
+      {type === DisbursementSelectionType.INDIVIDUAL ? (
+        <BeneficiaryDisbursementForm
+          beneficiaries={projectBeneficiaries?.data}
+          isLoading={isLoadingBeneficiaries}
+          handleDisbursement={(beneficiaries, amount, details) =>
+            handleCreateDisbursement({
+              beneficiaries,
+              amount,
+              details,
+            })
+          }
+        />
+      ) : type === DisbursementSelectionType.GROUP ? (
+        <BeneficiaryGroupsDisbursementForm
+          groups={validGroups}
+          isLoading={isLoadingGroups}
+          handleDisbursement={(beneficiaryGroup, amount, details) =>
+            handleCreateDisbursement({
+              beneficiaryGroup,
+              amount,
+              details,
+            })
+          }
+        />
+      ) : null}
+    </>
+  );
 }

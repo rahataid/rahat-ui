@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS } from '../../../config';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
@@ -156,7 +156,8 @@ export const useGetDisbursementApprovals = (
     'c2c',
     'disbursements-actions-approvals',
   ]);
-  const { projectUUID, disbursementUUID, ...restParams } = params;
+  const { projectUUID, disbursementUUID, transactionHash, ...restParams } =
+    params;
 
   const query = useQuery({
     queryKey: ['get-disbursement-approvals', disbursementUUID],
@@ -167,12 +168,14 @@ export const useGetDisbursementApprovals = (
           action: 'c2cProject.getSafeTransaction',
           payload: {
             projectUUID: projectUUID,
+            transactionHash,
             ...restParams,
           },
         },
       });
       return response.data;
     },
+    enabled: !!transactionHash,
   });
 
   return query;

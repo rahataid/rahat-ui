@@ -21,12 +21,11 @@ export function GlofasSection() {
   const { data: glofasData, isLoading } = useGlofasWaterLevels(projectId, {
     riverBasin:
       settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-      'river_basin'
+        'river_basin'
       ],
     page: 1,
     perPage: 9999,
   });
-
 
   const returnPeriodHeaders2yr = React.useMemo(
     () => glofasData?.info?.returnPeriodTable2yr?.returnPeriodHeaders,
@@ -100,14 +99,16 @@ export function GlofasSection() {
           <table className="min-w-full bg-white border border-gray-200">
             <thead>
               <tr>
-                {returnPeriodHeaders2yr?.map((header: string, index: number) => (
-                  <th
-                    className="p-2 border border-gray-300 bg-gray-100 text-center text-xs font-semibold text-gray-600"
-                    key={index}
-                  >
-                    {header}
-                  </th>
-                ))}
+                {returnPeriodHeaders2yr?.map(
+                  (header: string, index: number) => (
+                    <th
+                      className="p-2 border border-gray-300 bg-gray-100 text-center text-xs font-semibold text-gray-600"
+                      key={index}
+                    >
+                      {header}
+                    </th>
+                  ),
+                )}
               </tr>
             </thead>
             <tbody>
@@ -144,14 +145,16 @@ export function GlofasSection() {
             <table className="min-w-full bg-white border border-gray-200">
               <thead>
                 <tr>
-                  {returnPeriodHeaders5yr?.map((header: string, index: number) => (
-                    <th
-                      className="p-2 border border-gray-300 bg-gray-100 text-center text-xs font-semibold text-gray-600"
-                      key={index}
-                    >
-                      {header}
-                    </th>
-                  ))}
+                  {returnPeriodHeaders5yr?.map(
+                    (header: string, index: number) => (
+                      <th
+                        className="p-2 border border-gray-300 bg-gray-100 text-center text-xs font-semibold text-gray-600"
+                        key={index}
+                      >
+                        {header}
+                      </th>
+                    ),
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -189,36 +192,40 @@ export function GlofasSection() {
             <table className="min-w-full bg-white border border-gray-200">
               <thead>
                 <tr>
-                  {returnPeriodHeaders20yr?.map((header: string, index: number) => (
-                    <th
-                      className="p-2 border border-gray-300 bg-gray-100 text-center text-xs font-semibold text-gray-600"
-                      key={index}
-                    >
-                      {header}
-                    </th>
-                  ))}
+                  {returnPeriodHeaders20yr?.map(
+                    (header: string, index: number) => (
+                      <th
+                        className="p-2 border border-gray-300 bg-gray-100 text-center text-xs font-semibold text-gray-600"
+                        key={index}
+                      >
+                        {header}
+                      </th>
+                    ),
+                  )}
                 </tr>
               </thead>
               <tbody>
-                {returnPeriodData20yr?.map((row: string[], rowIndex: number) => (
-                  <tr key={rowIndex}>
-                    {row.map((cell: string, cellIndex: number) => {
-                      let bgColor;
-                      if (cellIndex > 0) {
-                        bgColor = getCellColor(cell);
-                      }
+                {returnPeriodData20yr?.map(
+                  (row: string[], rowIndex: number) => (
+                    <tr key={rowIndex}>
+                      {row.map((cell: string, cellIndex: number) => {
+                        let bgColor;
+                        if (cellIndex > 0) {
+                          bgColor = getCellColor(cell);
+                        }
 
-                      return (
-                        <td
-                          className={`p-2 border border-gray-200 text-center text-sm text-gray-700 ${bgColor}`}
-                          key={cellIndex}
-                        >
-                          {cell}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
+                        return (
+                          <td
+                            className={`p-2 border border-gray-200 text-center text-sm text-gray-700 ${bgColor}`}
+                            key={cellIndex}
+                          >
+                            {cell}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ),
+                )}
               </tbody>
             </table>
           </div>

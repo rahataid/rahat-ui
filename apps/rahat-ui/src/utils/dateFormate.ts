@@ -10,11 +10,16 @@ import {
 
 export const dateFormat = (
   date: Date | string | undefined | null,
-  formatStr = 'MMMM d, yyyy, h:mm:ss a',
+  formatStr = 'MMMM d, yyyy, h:mm:ss',
 ): string => {
   if (!date) return '';
   try {
-    return formatDate(new Date(date), formatStr);
+    const parsedDate = new Date(date);
+    const pasedDateOffset = parsedDate.getTimezoneOffset();
+
+    parsedDate.setMinutes(parsedDate.getMinutes() + pasedDateOffset);
+
+    return format(parsedDate, formatStr);
   } catch (error) {
     console.error('Invalid date in dateFormat:', date);
     return '';

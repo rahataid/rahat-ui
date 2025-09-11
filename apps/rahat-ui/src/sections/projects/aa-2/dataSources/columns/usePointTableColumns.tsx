@@ -13,10 +13,7 @@ export const usePointTableColumns = ({ unit }: UsePointTableColumnsProps) => {
       header: 'Date',
       cell: ({ row }) => {
         const dateTime = row.getValue('datetime') as string;
-        const formatedDate = dateFormat(
-          dateTime,
-          'eee, MMMM d, yyyy, h:mm:ss a',
-        );
+        const formatedDate = dateFormat(dateTime, 'eee, MMMM d, yyyy, h:mm:ss');
         return <div>{formatedDate}</div>;
       },
     },

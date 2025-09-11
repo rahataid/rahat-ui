@@ -43,6 +43,14 @@ import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import LoaderRahat from 'apps/rahat-ui/src/components/LoaderRahat';
 
+type BenProjectType = {
+  Project: {
+    id: number;
+    name: string;
+    type: string;
+  };
+};
+
 export default function GroupDetailView() {
   const { Id } = useParams() as { Id: UUID };
   const validateModal = useBoolean();
@@ -118,10 +126,17 @@ export default function GroupDetailView() {
       : '';
   }, [group?.data?.groupPurpose]);
 
+  const isAssignToAA = React.useMemo(() => {
+    return group?.data?.beneficiaryGroupProject?.some(
+      (benProject: BenProjectType) =>
+        benProject?.Project?.type?.toLowerCase() === 'aa',
+    );
+  }, [group?.data?.beneficiaryGroupProject]);
+
   const assignedGroupId = React.useMemo(() => {
     return (
       group?.data?.beneficiaryGroupProject?.map(
-        (benProject: any) => benProject.Project.id,
+        (benProject: BenProjectType) => benProject.Project.id,
       ) ?? []
     );
   }, [group?.data?.beneficiaryGroupProject]);
@@ -215,7 +230,9 @@ export default function GroupDetailView() {
             <Button
               variant={'outline'}
               className={`gap-2 text-gray-700 rounded-sm ${
-                group?.data?.groupedBeneficiaries?.length === 0 && 'hidden'
+                (group?.data?.groupedBeneficiaries?.length === 0 ||
+                  isAssignToAA) &&
+                'hidden'
               }`}
               onClick={handleGroupPurposeClick}
             >
@@ -256,7 +273,9 @@ export default function GroupDetailView() {
 
             <Button
               variant={'outline'}
-              className="border-red-500 text-red-500 gap-2 rounded-sm"
+              className={`border-red-500 text-red-500 gap-2 rounded-sm ${
+                group?.data?.beneficiaryGroupProject.length > 0 && 'hidden'
+              }`}
               onClick={handleRemoveClick}
             >
               <Trash2Icon className="w-4 h-4" />

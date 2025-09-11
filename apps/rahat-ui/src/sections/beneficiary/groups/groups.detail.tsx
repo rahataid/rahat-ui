@@ -273,7 +273,9 @@ export default function GroupDetailView() {
 
             <Button
               variant={'outline'}
-              className="border-red-500 text-red-500 gap-2 rounded-sm"
+              className={`border-red-500 text-red-500 gap-2 rounded-sm ${
+                group?.data?.beneficiaryGroupProject.length > 0 && 'hidden'
+              }`}
               onClick={handleRemoveClick}
             >
               <Trash2Icon className="w-4 h-4" />

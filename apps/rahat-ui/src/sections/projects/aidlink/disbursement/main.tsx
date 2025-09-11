@@ -7,6 +7,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { Heading } from 'apps/rahat-ui/src/common';
 import CreateDisbursementSelectionType from './createDisbursementSelectionType';
+import { DisbursementHistoryList } from './disbursementHistoryList';
 
 export default function DisbursementMainView() {
   const [activeTab, setActiveTab] =
@@ -50,7 +51,7 @@ export default function DisbursementMainView() {
           <CreateDisbursementSelectionType />
         </TabsContent>
         <TabsContent value="disbursementHistory">
-          Disbursement History
+          <DisbursementHistoryList />
         </TabsContent>
       </Tabs>
     </div>

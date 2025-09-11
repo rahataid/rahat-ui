@@ -51,8 +51,11 @@ export function BeneficiaryGroupsDisbursementForm({
     group.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const selectedGroupData = groups.find((group) => group.id === selectedGroup);
-  const totalBeneficiaries = selectedGroupData?.beneficiaries || 0;
+  const selectedGroupData = groups.find(
+    (group) => group.uuid === selectedGroup,
+  );
+  const totalBeneficiaries =
+    selectedGroupData?._count?.groupedBeneficiaries || 0;
   const amountPerBeneficiaryNum = Number.parseFloat(amountPerBeneficiary) || 0;
   const totalAmount = totalBeneficiaries * amountPerBeneficiaryNum;
 
@@ -92,7 +95,7 @@ export function BeneficiaryGroupsDisbursementForm({
                     key={group.id}
                     className="flex items-start space-x-3 p-3 rounded-sm border hover:bg-gray-50"
                   >
-                    <RadioGroupItem value={group.id} className="mt-1" />
+                    <RadioGroupItem value={group.uuid} className="mt-1" />
                     <div className="flex-1 min-w-0">
                       <div className="font-medium text-gray-900">
                         {group.name}

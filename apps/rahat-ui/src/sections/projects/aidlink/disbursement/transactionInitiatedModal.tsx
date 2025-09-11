@@ -9,6 +9,8 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Check, Clock, ExternalLink } from 'lucide-react';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useParams, useRouter } from 'next/navigation';
+import { UUID } from 'crypto';
 
 interface TransactionStatusModalProps {
   open: boolean;
@@ -22,6 +24,8 @@ export function TransactionInitiatedModal({
   data,
 }: TransactionStatusModalProps) {
   console.log('data:', data);
+  const { id: projectUUID } = useParams() as { id: UUID };
+  const router = useRouter();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -101,7 +105,14 @@ export function TransactionInitiatedModal({
 
           {/* Action Buttons */}
           <div className="flex gap-3 pt-4">
-            <Button disabled className="flex-1 bg-blue-600 hover:bg-blue-700">
+            <Button
+              className="flex-1 bg-blue-600 hover:bg-blue-700"
+              onClick={() =>
+                router.push(
+                  `/projects/aidlink/${projectUUID}/disbursement/${data?.uuid}`,
+                )
+              }
+            >
               View Disbursement Details
             </Button>
             <Button

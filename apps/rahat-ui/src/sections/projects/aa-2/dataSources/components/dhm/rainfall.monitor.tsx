@@ -7,6 +7,7 @@ interface RainFallMonitorProps {
   description: string;
   warningStatus: string;
   stationIndex: string;
+  updatedAt: string
   district: string;
   timeIntervals: {
     hours: number;
@@ -20,6 +21,7 @@ export function RainFallMonitor({
   warningStatus,
   stationIndex,
   district,
+  updatedAt,
   timeIntervals,
 }: RainFallMonitorProps) {
   return (
@@ -30,14 +32,14 @@ export function RainFallMonitor({
             title={name}
             titleStyle="text-xl/6 font-semibold"
             description={description}
+            updatedAt={updatedAt}
           />
           <div>
             <Badge
-              className={`text-xs font-normal  py-1 px-auto rounded-full min-w-[160px] text-center whitespace-nowrap${
-                warningStatus === 'BELOW WARNING LEVEL'
-                  ? 'bg-green-100 text-green-600'
-                  : 'bg-red-100 text-red-500'
-              }`}
+              className={`text-xs font-normal  py-1 px-auto rounded-full min-w-[160px] text-center whitespace-nowrap${warningStatus === 'BELOW WARNING LEVEL'
+                ? 'bg-green-100 text-green-600'
+                : 'bg-red-100 text-red-500'
+                }`}
             >
               {warningStatus?.charAt(0).toUpperCase() +
                 warningStatus?.slice(1).toLowerCase() || 'N/A'}
@@ -79,12 +81,12 @@ export function RainFallMonitor({
                 {interval?.hours === 1
                   ? '60'
                   : interval?.hours === 3
-                  ? '80'
-                  : interval?.hours === 6
-                  ? '100'
-                  : interval?.hours === 12
-                  ? '120'
-                  : '140'}
+                    ? '80'
+                    : interval?.hours === 6
+                      ? '100'
+                      : interval?.hours === 12
+                        ? '120'
+                        : '140'}
                 mm
               </div>
             </div>

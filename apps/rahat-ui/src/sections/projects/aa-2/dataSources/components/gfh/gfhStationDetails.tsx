@@ -6,8 +6,9 @@ import { IRiverInfoData } from './types';
 
 interface IRiverInfoProps {
   riverInfo: IRiverInfoData;
+  updatedAt: string
 }
-const GfhStationDetails = ({ riverInfo }: IRiverInfoProps) => {
+const GfhStationDetails = ({ riverInfo, updatedAt }: IRiverInfoProps) => {
   return (
     <div>
       <GFHCard
@@ -18,6 +19,8 @@ const GfhStationDetails = ({ riverInfo }: IRiverInfoProps) => {
         stationName={riverInfo.stationName}
         forecastDate={riverInfo.forecastDate}
         basinSize={riverInfo.basinSize}
+        updatedAt={updatedAt}
+
       />
 
       <div className="p-4 rounded-sm border shadow">

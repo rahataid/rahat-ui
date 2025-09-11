@@ -3,7 +3,7 @@ import { Heading } from 'apps/rahat-ui/src/common';
 import { Globe, MapPin, RadioTower, TrendingUp } from 'lucide-react';
 import React from 'react';
 
-export function Info({ riverWatch }: any) {
+export function Info({ riverWatch, updatedAt }: any) {
   const cardData = React.useMemo(
     () => [
       {
@@ -35,6 +35,7 @@ export function Info({ riverWatch }: any) {
     [riverWatch],
   );
 
+
   const renderCardColor = (status: string) => {
     const statusColorMap: Record<string, string> = {
       'BELOW WARNING LEVEL': 'bg-green-100 border-green-500',
@@ -53,6 +54,7 @@ export function Info({ riverWatch }: any) {
             title={riverWatch?.name}
             titleStyle="text-xl/6 font-semibold"
             description={riverWatch?.description}
+            updatedAt={updatedAt}
           />
           <div>
             <Badge>{riverWatch?.steady}</Badge>

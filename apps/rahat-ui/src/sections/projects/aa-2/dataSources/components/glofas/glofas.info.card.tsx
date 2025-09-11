@@ -18,6 +18,8 @@ export default function GlofasInfoCard({ glofas }: IProps) {
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
+  console.log(glofas, 'glofas')
+  const updatedAt = glofas?.updatedAt
 
   const [val2yr, val5yr, val20yr] =
     glofas?.info?.pointForecastData?.maxProbability?.data

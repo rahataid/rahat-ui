@@ -21,11 +21,12 @@ export function GlofasSection() {
   const { data: glofasData, isLoading } = useGlofasWaterLevels(projectId, {
     riverBasin:
       settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-        'river_basin'
+      'river_basin'
       ],
     page: 1,
     perPage: 9999,
   });
+
 
   const returnPeriodHeaders2yr = React.useMemo(
     () => glofasData?.info?.returnPeriodTable2yr?.returnPeriodHeaders,

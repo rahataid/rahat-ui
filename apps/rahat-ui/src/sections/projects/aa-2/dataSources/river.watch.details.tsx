@@ -55,7 +55,7 @@ export default function RiverWatchDetails() {
     {
       riverBasin:
         settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-          'river_basin'
+        'river_basin'
         ],
       type: activeTab?.toUpperCase(),
       // from: activeTab === 'Daily' ? startDate : formattedDate,
@@ -65,6 +65,8 @@ export default function RiverWatchDetails() {
     },
     activeTab,
   );
+
+  const updatedAt = riverWatch?.updatedAt
 
   const riverWatchInfoList = riverWatch?.info ?? [];
 
@@ -82,7 +84,7 @@ export default function RiverWatchDetails() {
           <TableLoader />
         ) : (
           <div className="flex flex-col gap-4">
-            <Info riverWatch={primaryRiverWatchInfo} />
+            <Info riverWatch={primaryRiverWatchInfo} updatedAt={updatedAt} />
             <WaterLevelView
               activeTab={activeTab}
               setActiveTab={setActiveTab}

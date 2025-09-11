@@ -20,6 +20,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import React from 'react';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import Link from 'next/link';
 
 interface Transaction {
   id: string;
@@ -160,7 +161,9 @@ export default function DisbursementHistoryDetail() {
           <UsersIcon className="text-teal-600" size={20} strokeWidth={2.5} />
         ),
         label: 'Disbursement Type',
-        value: capitalizeFirstLetter(disbursement?.type) || 'N/A',
+        value: disbursement?.type
+          ? capitalizeFirstLetter(disbursement?.type)
+          : 'N/A',
         color: 'teal',
       },
     ],
@@ -175,12 +178,17 @@ export default function DisbursementHistoryDetail() {
           title="Disbursement History"
           description="List of all your disbursement history"
         />
-        <div className="px-4 py-2 rounded-full flex items-center gap-2 bg-blue-50">
-          <span className="text-[10px]/4 tracking-widest font-semibold text-primary">
-            SAFEWALLET
-          </span>
-          <BadgeCheck className="w-4 h-4 fill-primary text-white" />
-        </div>
+        <Link
+          href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
+          target="_blank"
+        >
+          <div className="px-4 py-2 rounded-full flex items-center gap-2 bg-blue-50">
+            <span className="text-[10px]/4 tracking-widest font-semibold text-primary">
+              SAFEWALLET
+            </span>
+            <BadgeCheck className="w-4 h-4 fill-primary text-white" />
+          </div>
+        </Link>
       </div>
 
       {/* Summary Cards */}
@@ -188,7 +196,9 @@ export default function DisbursementHistoryDetail() {
         <div className="rounded-sm bg-card p-4 border">
           <h1 className="text-sm/6 font-medium text-gray-800 mb-2">Status</h1>
           <Badge variant="secondary">
-            {capitalizeFirstLetter(disbursement?.status) || 'N/A'}
+            {disbursement?.type
+              ? capitalizeFirstLetter(disbursement?.status)
+              : 'N/A'}
           </Badge>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
             <CalendarIcon className="w-4 h-4" />

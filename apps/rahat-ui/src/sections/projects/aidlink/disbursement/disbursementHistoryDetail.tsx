@@ -15,12 +15,13 @@ import {
   useGetDisbursementApprovals,
   useGetDisbursementTransactions,
 } from '@rahat-ui/query';
-import { Heading } from 'apps/rahat-ui/src/common';
+import { Heading, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import React from 'react';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import Link from 'next/link';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
 interface Transaction {
   id: string;
@@ -29,13 +30,6 @@ interface Transaction {
   to: string;
   date: string;
   status: 'Completed' | 'Pending';
-}
-
-interface Approval {
-  id: string;
-  name: string;
-  submission: string;
-  status: 'Pending' | 'Approved';
 }
 
 const transactions: Transaction[] = [
@@ -65,39 +59,6 @@ const transactions: Transaction[] = [
   },
 ];
 
-const approvals: Approval[] = [
-  {
-    id: '1',
-    name: 'Aadarsha Lamichhane',
-    submission: 'August 19, 2025, 1:38:14 PM',
-    status: 'Pending',
-  },
-  {
-    id: '2',
-    name: 'Aadarsha Lamichhane',
-    submission: 'August 19, 2025, 1:38:14 PM',
-    status: 'Pending',
-  },
-  {
-    id: '3',
-    name: 'Aadarsha Lamichhane',
-    submission: 'August 19, 2025, 1:38:14 PM',
-    status: 'Pending',
-  },
-  {
-    id: '4',
-    name: 'Aadarsha Lamichhane',
-    submission: 'August 19, 2025, 1:38:14 PM',
-    status: 'Pending',
-  },
-  {
-    id: '5',
-    name: 'Aadarsha Lamichhane',
-    submission: 'August 19, 2025, 1:38:14 PM',
-    status: 'Pending',
-  },
-];
-
 export default function DisbursementHistoryDetail() {
   const { id: projectUUID, disbursementId } = useParams() as {
     id: UUID;
@@ -116,18 +77,19 @@ export default function DisbursementHistoryDetail() {
     perPage: 10,
   });
 
-  const { data: approvalss } = useGetDisbursementApprovals({
-    projectUUID: projectUUID,
-    disbursementUUID: disbursementId,
-    page: 1,
-    perPage: 10,
-    transactionHash: disbursement?.transactionHash,
-  });
+  const { data: approvals, isLoading: loadingApprovals } =
+    useGetDisbursementApprovals({
+      projectUUID: projectUUID,
+      disbursementUUID: disbursementId,
+      page: 1,
+      perPage: 10,
+      transactionHash: disbursement?.transactionHash,
+    });
 
   console.log({
     disbursement,
     transactionss,
-    approvalss,
+    approvals,
   });
 
   const copyToClipboard = (text: string) => {
@@ -141,7 +103,7 @@ export default function DisbursementHistoryDetail() {
           <UsersIcon className="text-blue-600" size={20} strokeWidth={2.5} />
         ),
         label: 'Total Beneficiaries',
-        value: disbursement?._count?.DisbursementBeneficiary || 'N/A',
+        value: disbursement?.beneficiaries?.length || 'N/A',
         color: 'blue',
       },
       {
@@ -153,7 +115,7 @@ export default function DisbursementHistoryDetail() {
           />
         ),
         label: 'Total Disbursed Amount',
-        value: disbursement?.amount || 'N/A',
+        value: `${disbursement?.amount} USDC` || 'N/A',
         color: 'green',
       },
       {
@@ -290,28 +252,49 @@ export default function DisbursementHistoryDetail() {
           <Heading
             title="APPROVALS"
             titleStyle="tracking-wider"
-            description="Approved: 8 Required: 10"
+            description={`Approved: ${
+              approvals?.approvalsCount || 'N/A'
+            } Required: ${approvals?.confirmationsRequired || 'N/A'}`}
           />
           <ScrollArea className="h-[calc(100vh-500px)]">
             <div className="space-y-4">
-              {approvals?.map((approval) => (
-                <Card key={approval.id} className="p-4 rounded-sm">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2">
-                      <div className="font-medium">{approval.name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        Submission: {approval.submission}
+              {!loadingApprovals ? (
+                approvals?.approvals?.length > 0 ? (
+                  approvals?.approvals?.map((approval: any) => (
+                    <Card key={approval.owner} className="p-4 rounded-sm">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-2">
+                          <div className="font-medium">
+                            {approval.owner
+                              ? truncateEthAddress(approval.owner)
+                              : 'N/A'}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            Submission:{' '}
+                            {approval.submissionDate
+                              ? dateFormat(approval.submissionDate)
+                              : 'N/A'}
+                          </div>
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className={`${
+                            approval.hasApproved
+                              ? 'border-green-200 text-green-700 bg-green-50'
+                              : 'border-orange-200 text-orange-700 bg-orange-50'
+                          }`}
+                        >
+                          {approval.hasApproved ? 'Approved' : 'Pending'}
+                        </Badge>
                       </div>
-                    </div>
-                    <Badge
-                      variant="outline"
-                      className="border-orange-200 text-orange-700 bg-orange-50"
-                    >
-                      {approval.status}
-                    </Badge>
-                  </div>
-                </Card>
-              ))}
+                    </Card>
+                  ))
+                ) : (
+                  <NoResult />
+                )
+              ) : (
+                <SpinnerLoader />
+              )}
             </div>
           </ScrollArea>
         </div>

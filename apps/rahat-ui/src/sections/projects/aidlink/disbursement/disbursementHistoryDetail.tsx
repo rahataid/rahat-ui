@@ -23,42 +23,6 @@ import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import Link from 'next/link';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
-interface Transaction {
-  id: string;
-  amount: string;
-  from: string;
-  to: string;
-  date: string;
-  status: 'Completed' | 'Pending';
-}
-
-const transactions: Transaction[] = [
-  {
-    id: '1',
-    amount: '$1,000',
-    from: '0x3ad4...f54',
-    to: '0x3ad4...f54',
-    date: 'August 19, 2025, 1:38:14 PM',
-    status: 'Completed',
-  },
-  {
-    id: '2',
-    amount: '$1,000',
-    from: '0x3ad4...f54',
-    to: '0x3ad4...f54',
-    date: 'August 19, 2025, 1:38:14 PM',
-    status: 'Completed',
-  },
-  {
-    id: '3',
-    amount: '$1,000',
-    from: '0x3ad4...f54',
-    to: '0x3ad4...f54',
-    date: 'August 19, 2025, 1:38:14 PM',
-    status: 'Completed',
-  },
-];
-
 export default function DisbursementHistoryDetail() {
   const { id: projectUUID, disbursementId } = useParams() as {
     id: UUID;
@@ -70,12 +34,13 @@ export default function DisbursementHistoryDetail() {
     disbursementId,
   );
 
-  const { data: transactionss } = useGetDisbursementTransactions({
-    projectUUID: projectUUID,
-    disbursementUUID: disbursementId,
-    page: 1,
-    perPage: 10,
-  });
+  const { data: transactions, isLoading: loadingTransactions } =
+    useGetDisbursementTransactions({
+      projectUUID: projectUUID,
+      disbursementUUID: disbursementId,
+      page: 1,
+      perPage: 10,
+    });
 
   const { data: approvals, isLoading: loadingApprovals } =
     useGetDisbursementApprovals({
@@ -85,12 +50,6 @@ export default function DisbursementHistoryDetail() {
       perPage: 10,
       transactionHash: disbursement?.transactionHash,
     });
-
-  console.log({
-    disbursement,
-    transactionss,
-    approvals,
-  });
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -197,52 +156,77 @@ export default function DisbursementHistoryDetail() {
           />
           <ScrollArea className="h-[calc(100vh-500px)]">
             <div className="space-y-4">
-              {transactions?.map((transaction) => (
-                <Card key={transaction.id} className="p-4 rounded-sm">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2">
-                      <div className="text-l font-medium">
-                        {transaction.amount}
-                      </div>
-                      <div className="space-y-1 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <span>From:</span>
-                          <span className="font-mono">{transaction.from}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-4 w-4 p-0"
-                            onClick={() => copyToClipboard(transaction.from)}
-                          >
-                            <CopyIcon className="h-3 w-3" />
-                          </Button>
+              {!loadingTransactions ? (
+                transactions?.length > 0 ? (
+                  transactions?.map((transaction: any) => (
+                    <Card key={transaction.id} className="p-4 rounded-sm">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-2">
+                          <div className="text-l font-medium">
+                            {transaction.amount
+                              ? `${transaction.amount} USDC`
+                              : 'N/A'}
+                          </div>
+                          <div className="space-y-1 text-sm text-muted-foreground">
+                            <div className="flex items-center gap-2">
+                              <span>From:</span>
+                              <span className="font-mono">
+                                {transaction.from
+                                  ? truncateEthAddress(transaction.from)
+                                  : 'N/A'}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-4 w-4 p-0"
+                                onClick={() =>
+                                  copyToClipboard(transaction.from)
+                                }
+                              >
+                                <CopyIcon className="h-3 w-3" />
+                              </Button>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span>To:</span>
+                              <span className="font-mono">
+                                {transaction.beneficiaryWalletAddress
+                                  ? truncateEthAddress(
+                                      transaction.beneficiaryWalletAddress,
+                                    )
+                                  : 'N/A'}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-4 w-4 p-0"
+                                onClick={() =>
+                                  copyToClipboard(
+                                    transaction.beneficiaryWalletAddress,
+                                  )
+                                }
+                              >
+                                <CopyIcon className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {transaction.updatedAt
+                              ? dateFormat(transaction.updatedAt)
+                              : 'N/A'}
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span>To:</span>
-                          <span className="font-mono">{transaction.to}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-4 w-4 p-0"
-                            onClick={() => copyToClipboard(transaction.to)}
-                          >
-                            <CopyIcon className="h-3 w-3" />
-                          </Button>
-                        </div>
+                        <Badge variant="secondary">
+                          {transaction.Disbursement?.status}
+                        </Badge>
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        {transaction.date}
-                      </div>
-                    </div>
-                    <Badge
-                      variant="secondary"
-                      className="bg-green-100 text-green-800 hover:bg-green-100"
-                    >
-                      {transaction.status}
-                    </Badge>
-                  </div>
-                </Card>
-              ))}
+                    </Card>
+                  ))
+                ) : (
+                  <NoResult />
+                )
+              ) : (
+                <SpinnerLoader />
+              )}
             </div>
           </ScrollArea>
         </div>

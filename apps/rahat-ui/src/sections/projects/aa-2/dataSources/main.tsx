@@ -22,7 +22,6 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import { cn } from '@rahat-ui/shadcn/src';
 
-// Section Components
 import { DailyMonitoringListView } from './components/dailyMonitoring';
 import { DHMSection } from './components/dhm';
 import ExternalLinks from './components/externalLink/linkContent';
@@ -30,7 +29,7 @@ import GaugeReading from './components/gaugeReading';
 import GFHDetails from './components/gfh';
 import { GlofasSection } from './components/glofas';
 import { useParams } from 'next/navigation';
-import { useTabSettings } from '@rahat-ui/query';
+import { useForecastTabSettings } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 
 const componentMap = {
@@ -99,25 +98,33 @@ export default function DataSources() {
   const { activeTab, setActiveTab } = useActiveTab('dhm');
   const [date, setDate] = useState<Date | null>(null);
   const { id: projectID } = useParams();
-  const { data } = useTabSettings(projectID as UUID);
+  const { data } = useForecastTabSettings(projectID as UUID);
 
-  const backendTabs: BackendTab[] = data?.value || [];
+  // Backend tabs OR default fallback
+  const backendTabs: BackendTab[] =
+    data?.value?.length > 0
+      ? data.value
+      : [
+          { value: 'dhm', label: 'DHM' },
+          { value: 'glofas', label: 'GLOFAS' },
+        ];
 
-  const availableTabsConfig = backendTabs.map((tab) => ({
-    ...tab,
-    component: componentMap[tab.value],
-  }));
+  const availableTabsConfig = backendTabs
+    .filter((tab) => componentMap[tab.value]) // remove invalid backend tabs
+    .map((tab) => ({
+      ...tab,
+      component: componentMap[tab.value],
+    }));
 
   useEffect(() => {
-    if (activeTab !== 'gaugeReading') {
+    if (
+      activeTab &&
+      !availableTabsConfig.find((tab) => tab.value === activeTab)?.hasdatepicker
+    ) {
       setDate(null);
     }
-  }, [activeTab]);
+  }, [activeTab, availableTabsConfig]);
 
-  console.log(
-    availableTabsConfig.find((tab) => tab.value === 'gaugeReading')
-      ?.hasdatepicker,
-  );
   return (
     <div className="p-4">
       <Heading
@@ -140,10 +147,10 @@ export default function DataSources() {
             ))}
           </TabsList>
 
-          {/* 🔹 Conditional Date Picker */}
-          {activeTab === 'gaugeReading' &&
-            availableTabsConfig.find((tab) => tab.value === 'gaugeReading')
-              ?.hasdatepicker && <DatePicker date={date} setDate={setDate} />}
+          {/* 🔹 Dynamic Date Picker (based on hasdatepicker) */}
+          {availableTabsConfig.find(
+            (tab) => tab.value === activeTab && tab.hasdatepicker,
+          ) && <DatePicker date={date} setDate={setDate} />}
         </div>
 
         {/* 🔹 Tab Contents */}

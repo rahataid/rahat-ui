@@ -66,6 +66,8 @@ export default function RiverWatchDetails() {
     activeTab,
   );
 
+  const updatedAt = riverWatch?.updatedAt;
+
   const riverWatchInfoList = riverWatch?.info ?? [];
 
   // This can be modified later to handle multiple rivers if needed
@@ -83,7 +85,7 @@ export default function RiverWatchDetails() {
           <TableLoader />
         ) : (
           <div className="flex flex-col gap-4">
-            <Info riverWatch={primaryRiverWatchInfo} />
+            <Info riverWatch={primaryRiverWatchInfo} updatedAt={updatedAt} />
             <WaterLevelView
               activeTab={activeTab}
               setActiveTab={setActiveTab}

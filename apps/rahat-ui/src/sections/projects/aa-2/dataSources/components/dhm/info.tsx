@@ -2,8 +2,23 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Heading } from 'apps/rahat-ui/src/common';
 import { Globe, MapPin, RadioTower, TrendingUp } from 'lucide-react';
 import React from 'react';
+interface InfoProp {
+  riverWatch: {
+    stationIndex: number;
+    latitude: number;
+    longitude: number;
+    description: string;
+    elevation: number;
+    district: string;
+    name: string;
+    steady: string;
+    status: string;
+    waterLevel: { value: number; datetime: string };
+  };
+  updatedAt: string;
+}
 
-export function Info({ riverWatch, updatedAt }: any) {
+export function Info({ riverWatch, updatedAt }: InfoProp) {
   const cardData = React.useMemo(
     () => [
       {
@@ -35,7 +50,6 @@ export function Info({ riverWatch, updatedAt }: any) {
     [riverWatch],
   );
 
-
   const renderCardColor = (status: string) => {
     const statusColorMap: Record<string, string> = {
       'BELOW WARNING LEVEL': 'bg-green-100 border-green-500',
@@ -64,7 +78,7 @@ export function Info({ riverWatch, updatedAt }: any) {
           {cardData?.map((d) => {
             const Icon = d.icon;
             return (
-              <div className="flex space-x-3 items-center">
+              <div className="flex space-x-3 items-center" key={d.label}>
                 <div>
                   <Icon className="text-gray-500" size={20} />
                 </div>

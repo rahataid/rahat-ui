@@ -34,10 +34,6 @@ const TimeSeriesChart = ({
     (a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime(),
   );
 
-  // const series = keys.map((key) => ({
-  //   name: key === 'value' ? 'average' : key,
-  //   data: sortedData.map((d) => [new Date(d.datetime).getTime(), d[key]]),
-  // }));
   const series = keys.map((key) => ({
     name: key === 'value' ? 'average' : key,
     data: sortedData.map((d) => {

@@ -72,7 +72,6 @@ export default function RiverWatchDetails() {
 
   // This can be modified later to handle multiple rivers if needed
   const primaryRiverWatchInfo = riverWatchInfoList[0] ?? null;
-  console.log(primaryRiverWatchInfo, 'primawatchinfo');
 
   return (
     <div className="p-4">

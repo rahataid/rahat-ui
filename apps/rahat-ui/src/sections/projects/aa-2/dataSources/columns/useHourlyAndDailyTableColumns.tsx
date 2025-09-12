@@ -14,19 +14,6 @@ export const useHourlyAndDailyTableColumns = () => {
           'MMMM d, yyyy, h:mm:ss a',
         ) as { formatted: string; timestamp: number };
 
-        // const dateTime = new Date(row.getValue('datetime'));
-
-        // const formatedDate = new Intl.DateTimeFormat('en-NP', {
-        //   timeZone: 'Asia/Kathmandu',
-        //   weekday: 'short',
-        //   year: 'numeric',
-        //   month: 'long',
-        //   day: 'numeric',
-        //   hour: 'numeric',
-        //   minute: 'numeric',
-        //   hour12: true,
-        // }).format(dateTime);
-
         return <div>{formatted}</div>;
       },
     },

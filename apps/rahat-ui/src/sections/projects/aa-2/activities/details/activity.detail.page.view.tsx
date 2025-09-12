@@ -23,8 +23,14 @@ export default function ActivitiesDetailView() {
     activityId,
   );
   const activitiesListPath = redirectTo
-    ? `/projects/aa/${projectId}/activities`
-    : `/projects/aa/${projectId}/activities/list/${activityDetail?.phase?.name.toLowerCase()}`;
+    ? `/projects/aa/${projectId}/activities/list/${redirectTo}`
+    : `/projects/aa/${projectId}/activities`;
+
+  const redirectUpdatePath = redirectTo
+    ? `/projects/aa/${projectId}/activities/${activityId}/edit?${
+        redirectTo ? `&backFrom=${redirectTo}` : ''
+      }`
+    : `/projects/aa/${projectId}/activities/${activityId}/edit`;
 
   const deleteActivity = useDeleteActivities();
 
@@ -82,11 +88,7 @@ export default function ActivitiesDetailView() {
                 dialogTitle="Edit Activity"
                 dialogDescription="Are you sure you want to edit this activity?"
                 confirmButtonText="Edit"
-                handleClick={() =>
-                  router.push(
-                    `/projects/aa/${projectId}/activities/${activityId}/edit`,
-                  )
-                }
+                handleClick={() => router.push(redirectUpdatePath)}
                 buttonClassName="rounded-sm w-full"
                 confirmButtonClassName="rounded-sm w-full bg-primary"
                 variant="outline"
@@ -98,7 +100,9 @@ export default function ActivitiesDetailView() {
               Icon={RefreshCcw}
               handleClick={() =>
                 router.push(
-                  `/projects/aa/${projectId}/activities/${activityId}/update-status?from=detailPage`,
+                  `/projects/aa/${projectId}/activities/${activityId}/update-status?from=detailPage${
+                    redirectTo ? `&backFrom=${redirectTo}` : ''
+                  }`,
                 )
               }
               name="Update Status"

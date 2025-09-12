@@ -19,6 +19,7 @@ type TransactionProps = {
   mode: string;
   extras?: any;
   vendorName?: string;
+  updatedAt: string;
 };
 
 const TransactionLogs = () => {
@@ -109,10 +110,10 @@ const TransactionLogs = () => {
                   RS. {txn?.tokenAmount}
                 </p>
                 <p className="text-sm text-end text-gray-400">
-                  {dateFormat(txn?.createdAt, 'dd MMMM, yyyy')}
+                  {dateFormat(txn?.updatedAt, 'dd MMMM, yyyy')}
                 </p>
                 <p className="text-sm text-end text-gray-400">
-                  {dateFormat(txn?.createdAt, 'hh:mm:ss a')}
+                  {dateFormat(txn?.updatedAt, 'hh:mm:ss a')}
                 </p>
               </div>
             </div>

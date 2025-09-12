@@ -24,6 +24,7 @@ type IProps = {
   items?: NavItem[];
 };
 export function NavMain(items: IProps) {
+  console.log('items', items);
   const currentPath = usePathname();
   const activePath = currentPath.split('/')[4];
 
@@ -80,7 +81,7 @@ export function NavMain(items: IProps) {
                         {item.icon}
                       </span>
                       <span>{item.title}</span>
-                    </SidebarMenuButton>
+                    </SidebarMenuButton>,
                   )
                 ) : (
                   <SidebarMenuButton
@@ -100,7 +101,7 @@ export function NavMain(items: IProps) {
               </Link>
             </SidebarMenuItem>
           );
-          
+
           return menuItem;
         })}
       </SidebarMenu>

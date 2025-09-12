@@ -40,6 +40,7 @@ export const TAGS = {
     LIST_TRANSPORTS: 'new_comms.list_transports',
     RETRY_FAILED: 'new_comms.retry_failed',
   },
+  ALL_NOTIFICATIONS: 'all_notifications',
 };
 export const PROJECT_SETTINGS_KEYS = {
   CONTRACT: 'CONTRACT',

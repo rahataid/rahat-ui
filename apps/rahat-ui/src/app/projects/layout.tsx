@@ -17,18 +17,27 @@ export default function ProjectLayoutRoot({
   //
   const { id } = useParams();
   const router = useRouter();
+  const [checking, setChecking] = React.useState(true);
 
   // UUID format validation (simple regex for UUID v4)
   const isValidUUID = (uuid: string) =>
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(
       uuid,
     );
+
   React.useEffect(() => {
-    if (!id || !isValidUUID(id)) {
-      // Redirect to the project list page if UUID is missing or invalid
-      router.push('/projects');
+    if (id === undefined) {
+      // still waiting for hydration → do nothing
+      return;
     }
-  }, [id]);
+
+    if (!id || !isValidUUID(id as string)) {
+      router.replace('/projects');
+    } else {
+      setChecking(false);
+    }
+  }, [id, router]);
+
   return (
     <DashboardLayout
       hasDefaultHeader={allowNavPaths.includes(pathName)}

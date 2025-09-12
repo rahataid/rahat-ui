@@ -77,13 +77,11 @@ export const useVendorsBeneficiaryTableColumns = (
     {
       accessorKey: 'benTokens',
       header: 'Token Amount',
-      cell: ({ row }) => (
-        <div>
-          {row.getValue('benTokens')
-            ? formatTokenAmount(row.getValue('benTokens'), settings, id)
-            : 'N/A'}
-        </div>
-      ),
+      cell: ({ row }) => {
+        return row.getValue('benTokens')
+          ? formatTokenAmount(row.getValue('benTokens'), settings, id)
+          : 'N/A';
+      },
     },
     {
       accessorKey: 'txHash',
@@ -124,36 +122,36 @@ export const useVendorsBeneficiaryTableColumns = (
     {
       accessorKey: 'amountDisbursed',
       header: 'Amount Disbursed',
-      cell: ({ row }) => (
-        <div>
-          {row.getValue('benTokens')
+      cell: ({ row }) => {
+        const status = row.original?.status;
+        return status === 'COMPLETED'
+          ? row.getValue('benTokens')
             ? `Rs. ${row.getValue('benTokens')}`
-            : 'N/A'}
-        </div>
-      ),
+            : 'N/A'
+          : 'Rs. 0';
+      },
     },
     ...(mode === PayoutMode.OFFLINE
       ? [
           {
             accessorKey: 'syncStatus',
             header: 'Sync Status',
-            cell: ({ row }) => (
-              <Badge
-                className="text-xs font-normal"
-                style={{
-                  backgroundColor:
-                    row.original?.syncStatus === 'SYNCED'
-                      ? '#ECFDF3'
-                      : '#ECFDF3',
-                  color:
-                    row.original?.syncStatus === 'SYNCED'
-                      ? '#027A48'
-                      : '#027A48',
-                }}
-              >
-                {row.original?.syncStatus === 'SYNCED' ? 'Synced' : 'Pending'}
-              </Badge>
-            ),
+            cell: ({ row }) => {
+              const status = row.original?.status;
+              console.log('status:', status);
+              return (
+                <Badge
+                  className="text-xs font-normal"
+                  style={{
+                    backgroundColor:
+                      status === 'PENDING' ? '#F2F4F7' : '#ECFDF3',
+                    color: status === 'PENDING' ? '#344054' : '#027A48',
+                  }}
+                >
+                  {status === 'PENDING' ? 'Pending' : 'Synced'}
+                </Badge>
+              );
+            },
           },
         ]
       : []),
@@ -165,13 +163,11 @@ export const useVendorsBeneficiaryTableColumns = (
           className="text-xs font-normal"
           style={{
             backgroundColor:
-              row.original?.status === 'COMPLETED' ? '#ECFDF3' : '#ECFDF3', //#F2F4F7',
-            color: row.original?.status === 'COMPLETED' ? '#027A48' : '#027A48', //#344054',
+              row.original?.status === 'COMPLETED' ? '#ECFDF3' : '#F2F4F7',
+            color: row.original?.status === 'COMPLETED' ? '#027A48' : '#344054',
           }}
         >
-          {row.original?.status === 'COMPLETED'
-            ? toTitleCase(row.original?.status)
-            : 'N/A'}
+          {row.original?.status === 'COMPLETED' ? 'Redeemed' : 'Pending'}
         </Badge>
       ),
     },

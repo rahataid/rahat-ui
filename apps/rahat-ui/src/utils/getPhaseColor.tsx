@@ -10,3 +10,20 @@ export function getPhaseColor(phase: string) {
   }
   return '';
 }
+
+export function getSessionColor(status: string) {
+  const normalizedStatus = status.toUpperCase().replace(/ /g, '_');
+  if (normalizedStatus === 'PENDING') {
+    return 'bg-yellow-200';
+  }
+  if (normalizedStatus === 'COMPLETED') {
+    return 'bg-green-200';
+  }
+  if (normalizedStatus === 'WORK_IN_PROGRESS') {
+    return 'bg-orange-200';
+  }
+  if (normalizedStatus === 'FAILED') {
+    return 'bg-red-200';
+  }
+  return 'bg-gray-200';
+}

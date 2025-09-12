@@ -130,6 +130,7 @@ const CommunicationDetailsView = () => {
     projectId,
     activityId,
   );
+ 
 
   // function getPhaseColor(phase: string) {
   //   if (phase === 'PREPAREDNESS') {

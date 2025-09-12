@@ -12,6 +12,7 @@ export type AppSettingsState = {
   navSettings: Record<string, any>;
   roleOnChainSync: any;
   commsSettings: Record<string, any>;
+  projectChainSettings: Record<string, any>;
 };
 
 export type AppSettingsAction = {
@@ -23,6 +24,7 @@ export type AppSettingsAction = {
   setNavSettings: (navSettings: Record<string, any>) => void;
   setRoleSync: (roleOnChainSync: any) => void;
   setCommsSettings: (commsSettings: Record<string, any>) => void;
+  setProjectChainSettings: (projectChainSettings: Record<string, any>) => void;
 };
 
 export type AppSettings = AppSettingsState & AppSettingsAction;
@@ -41,6 +43,7 @@ export const initialAppSettings: AppSettingsState = {
       default: { name: 'Etherscan', url: 'https://etherscan.io' },
     },
   },
+  projectChainSettings: {},
   subGraphUrl:
     process.env['NEXT_PUBLIC_SUBGRAPH_URL'] ||
     'http://localhost:8000/subgraphs/name/rahat/rp',
@@ -78,6 +81,8 @@ export const useSettingsStore: UseBoundStore<StoreApi<AppSettings>> =
       setRoleSync: (roleOnChainSync) => set({ roleOnChainSync }),
       commsSettings: initialAppSettings.commsSettings,
       setCommsSettings: (commsSettings) => set({ commsSettings }),
+      projectChainSettings: initialAppSettings.projectChainSettings,
+      setProjectChainSettings: (projectChainSettings) => set({ projectChainSettings }),
     }),
     {
       devtoolsEnabled: true,

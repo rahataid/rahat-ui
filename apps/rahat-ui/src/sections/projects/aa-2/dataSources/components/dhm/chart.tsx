@@ -49,20 +49,14 @@ const TimeSeriesChart = ({
       return [timestamp, d[key]];
     }),
   }));
-  console.log(series, 'series');
 
-  //const minTime = new Date(sortedData[0].datetime).getTime();
   const { timestamp: minTime } = convertToLocalTimeOrMillisecond(
     sortedData[0].datetime,
   ) as { timestamp: number; formatted: string };
-  console.log(minTime, 'minTime');
-  // const maxTime = new Date(
-  //   sortedData[sortedData.length - 1].datetime,
-  // ).getTime();
+
   const { timestamp: maxTime } = convertToLocalTimeOrMillisecond(
     sortedData[sortedData.length - 1].datetime,
   ) as { timestamp: number; formatted: string };
-  console.log(maxTime, 'maxTime');
 
   const options: ApexCharts.ApexOptions = {
     chart: {

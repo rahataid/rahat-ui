@@ -382,7 +382,7 @@ export const useActivateTrigger = () => {
     showConfirmButton: false,
     timer: 3000,
   });
-  const chainSettings = useSettingsStore((state) => state.chainSettings);
+  const chainSettings = useSettingsStore((state) => state.projectChainSettings);
 
   return useMutation({
     mutationFn: async ({

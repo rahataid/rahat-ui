@@ -14,14 +14,29 @@ export const dateFormat = (
 ): string => {
   if (!date) return '';
   try {
-    const parsedDate = new Date(date);
-    const pasedDateOffset = parsedDate.getTimezoneOffset();
-
-    parsedDate.setMinutes(parsedDate.getMinutes() + pasedDateOffset);
-
-    return format(parsedDate, formatStr);
+    return formatDate(new Date(date), formatStr);
   } catch (error) {
     console.error('Invalid date in dateFormat:', date);
+    return '';
+  }
+};
+
+export const convertToLocalTimeOrMillisecond = (
+  date: Date | string | undefined | null,
+  formatStr = 'MMMM d, yyyy, h:mm:ss',
+): { formatted: string; timestamp: number } | '' => {
+  if (!date) return '';
+  try {
+    const parsedDate = new Date(date);
+    const parsedDateOffset = parsedDate.getTimezoneOffset();
+
+    parsedDate.setMinutes(parsedDate.getMinutes() + parsedDateOffset);
+
+    const formatted = format(parsedDate, formatStr);
+    const timestamp = parsedDate.getTime();
+    return { formatted, timestamp };
+  } catch (error) {
+    console.error('Invalid date in convertToLocalTimeOrMillisecond:', date);
     return '';
   }
 };

@@ -18,6 +18,7 @@ export default function GlofasInfoCard({ glofas }: IProps) {
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
+  const updatedAt = glofas?.updatedAt;
 
   const maxProbability =
     glofas?.info?.pointForecastData?.maxProbability?.data ?? '';
@@ -60,6 +61,7 @@ export default function GlofasInfoCard({ glofas }: IProps) {
               title="Doda (Machheli) River at East West Highway"
               titleStyle="text-xl/6 font-semibold"
               description="Doda (Machheli) river at East West Highway"
+              updatedAt={updatedAt}
             />
             <div>
               <Badge>Steady</Badge>

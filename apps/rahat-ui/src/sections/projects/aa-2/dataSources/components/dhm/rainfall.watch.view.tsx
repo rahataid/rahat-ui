@@ -23,12 +23,14 @@ export default function RainfallWatchView() {
   const { data: rainfallWatch, isLoading } = useDhmRainfallLevels(projectId, {
     riverBasin:
       settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-        'river_basin'
+      'river_basin'
       ],
     type: 'HOURLY',
     from: formattedDate,
     to: formattedDate,
   });
+
+  const updatedAt = rainfallWatch?.updatedAt
 
   const rainfallWatchInfoList = rainfallWatch?.info ?? [];
 
@@ -59,6 +61,7 @@ export default function RainfallWatchView() {
           });
           return (
             <RainFallMonitor
+              updatedAt={updatedAt}
               name={info?.name}
               description={info?.basin}
               warningStatus={info?.status}

@@ -55,7 +55,7 @@ export default function RiverWatchDetails() {
     {
       riverBasin:
         settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-        'river_basin'
+          'river_basin'
         ],
       type: activeTab?.toUpperCase(),
       // from: activeTab === 'Daily' ? startDate : formattedDate,
@@ -66,12 +66,13 @@ export default function RiverWatchDetails() {
     activeTab,
   );
 
-  const updatedAt = riverWatch?.updatedAt
+  const updatedAt = riverWatch?.updatedAt;
 
   const riverWatchInfoList = riverWatch?.info ?? [];
 
   // This can be modified later to handle multiple rivers if needed
   const primaryRiverWatchInfo = riverWatchInfoList[0] ?? null;
+  console.log(primaryRiverWatchInfo, 'primawatchinfo');
 
   return (
     <div className="p-4">

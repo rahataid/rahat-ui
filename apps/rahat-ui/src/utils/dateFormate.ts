@@ -40,24 +40,6 @@ export const convertToLocalTimeOrMillisecond = (
     return '';
   }
 };
-// export const convertToLocalTimeToMillisecond = (
-//   date: Date | string | undefined | null,
-//   formatStr = 'MMMM d, yyyy, h:mm:ss',
-// ): number => {
-//   if (!date) return 0;
-//   try {
-//     const parsedDate = new Date(date);
-//     const pasedDateOffset = parsedDate.getTimezoneOffset();
-
-//     parsedDate.setMinutes(parsedDate.getMinutes() + pasedDateOffset);
-//     return parsedDate.getTime();
-
-//     //return format(parsedDate, formatStr);
-//   } catch (error) {
-//     console.error('Invalid date in dateFormat:', date);
-//     return 0;
-//   }
-// };
 
 export const formatTimestamp = (createdAt: string): string => {
   try {

@@ -74,7 +74,7 @@ export function GlofasSection() {
     return <TableLoader />;
   }
 
-  if (!glofasData) {
+  if (!glofasData || !glofasData?.info?.pointForecastData?.maxProbability) {
     return (
       <div className="p-4">
         <NoResult message="No GLOFAS Data" />

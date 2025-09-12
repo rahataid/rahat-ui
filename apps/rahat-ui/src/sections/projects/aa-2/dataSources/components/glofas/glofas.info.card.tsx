@@ -20,10 +20,12 @@ export default function GlofasInfoCard({ glofas }: IProps) {
   const projectId = params.id as UUID;
   const updatedAt = glofas?.updatedAt;
 
-  const [val2yr, val5yr, val20yr] =
-    glofas?.info?.pointForecastData?.maxProbability?.data
-      .split('/')
-      .map((str: string) => str.trim());
+  const maxProbability =
+    glofas?.info?.pointForecastData?.maxProbability?.data ?? '';
+
+  const [val2yr, val5yr, val20yr] = maxProbability
+    ? maxProbability.split('/').map((str: string) => str.trim())
+    : ['N/A', 'N/A', 'N/A'];
 
   const cardData = React.useMemo(
     () => [

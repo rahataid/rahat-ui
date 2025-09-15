@@ -28,9 +28,10 @@ const GFHDetails = () => {
   const { data: GfhData, isLoading } = useGFHWaterLevels(projectId, {
     riverBasin:
       settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-        'river_basin'
+      'river_basin'
       ],
   });
+ 
 
   const defaultTabValue = useMemo(() => GfhData?.[0]?.id, [GfhData]);
 
@@ -74,7 +75,7 @@ const GFHDetails = () => {
         </TabsList>
         {GfhData?.map((river: IRiverData) => (
           <TabsContent key={river.id} value={river.id}>
-            <GfhStationDetails riverInfo={river.info} />
+            <GfhStationDetails riverInfo={river.info} updatedAt={river.updatedAt} />
           </TabsContent>
         ))}
       </Tabs>

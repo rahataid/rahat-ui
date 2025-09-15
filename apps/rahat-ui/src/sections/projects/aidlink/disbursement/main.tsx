@@ -9,10 +9,10 @@ import { Heading } from 'apps/rahat-ui/src/common';
 import CreateDisbursementSelectionType from './createDisbursementSelectionType';
 import { DisbursementHistoryList } from './disbursementHistory';
 import { DisbursementPendingList } from './disbursementPending';
+import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 
 export default function DisbursementMainView() {
-  const [activeTab, setActiveTab] =
-    React.useState<string>('createDisbursement');
+  const { activeTab, setActiveTab } = useActiveTab('createDisbursement');
 
   return (
     <div className="p-4 bg-gray-50 h-[calc(100vh-58px)]">

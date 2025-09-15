@@ -14,6 +14,8 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useGetDisbursements, useGetSafeOwners } from '@rahat-ui/query';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 
 export default function MultiSigWalletView() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -103,23 +105,25 @@ export default function MultiSigWalletView() {
                   <h4 className="text-sm font-medium text-gray-900 mb-3">
                     Authorized Owners
                   </h4>
-                  <div className="space-y-2">
-                    {safeOwners?.owners.map((owner: any) => (
-                      <div
-                        key={owner}
-                        className="flex items-center justify-between p-3 border rounded-sm"
-                      >
-                        <div>
-                          <p className="text-sm text-gray-600 font-mono">
-                            {owner}
-                          </p>
+                  <ScrollArea className="h-[calc(100vh-520px)]">
+                    <div className="space-y-2">
+                      {safeOwners?.owners.map((owner: any) => (
+                        <div
+                          key={owner}
+                          className="flex items-center justify-between p-3 border rounded-sm"
+                        >
+                          <div>
+                            <p className="text-sm text-gray-600 font-mono">
+                              {owner}
+                            </p>
+                          </div>
+                          <Badge className="bg-green-50 text-green-600 border-green-500 font-medium">
+                            active
+                          </Badge>
                         </div>
-                        <Badge className="bg-green-50 text-green-600 border-green-500 font-medium">
-                          active
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
                 </div>
               </>
             ) : (
@@ -135,33 +139,39 @@ export default function MultiSigWalletView() {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 pt-0">
-            {!loadingDisbursements ? (
-              <div className="space-y-3">
-                {disbursements?.length ? (
-                  disbursements?.map((tx: any) => (
-                    <div
-                      key={tx.id}
-                      className="flex items-center justify-between p-3 border rounded-sm"
-                    >
-                      <div>
-                        <p className="text-sm font-medium">Disbursement</p>
-                        <p className="text-xs text-gray-600">
-                          {dateFormat(tx.updatedAt)}
-                        </p>
+            <ScrollArea className="h-[calc(100vh-400px)]">
+              {!loadingDisbursements ? (
+                <div className="space-y-3">
+                  {disbursements?.length ? (
+                    disbursements?.map((tx: any) => (
+                      <div
+                        key={tx.id}
+                        className="flex items-center justify-between p-3 border rounded-sm"
+                      >
+                        <div>
+                          <p className="text-sm font-medium">Disbursement</p>
+                          <p className="text-xs text-gray-600">
+                            {dateFormat(tx.updatedAt)}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-medium">
+                            {tx.amount} USDC
+                          </p>
+                          <Badge className="font-medium">
+                            {capitalizeFirstLetter(tx.status)}
+                          </Badge>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm font-medium">{tx.amount}</p>
-                        <Badge className="font-medium">{tx.status}</Badge>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <NoResult />
-                )}
-              </div>
-            ) : (
-              <SpinnerLoader />
-            )}
+                    ))
+                  ) : (
+                    <NoResult />
+                  )}
+                </div>
+              ) : (
+                <SpinnerLoader />
+              )}
+            </ScrollArea>
           </CardContent>
         </Card>
       </div>

@@ -19,5 +19,6 @@ export interface IRiverInfoData {
 
 export interface IRiverData {
   id: string;
+  updatedAt: string;
   info: IRiverInfoData;
 }

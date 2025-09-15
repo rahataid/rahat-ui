@@ -11,9 +11,12 @@ import {
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
+  PROJECT_SETTINGS_KEYS,
   useGetDisbursement,
   useGetDisbursementApprovals,
   useGetDisbursementTransactions,
+  useMultiSigDisburseToken,
+  useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { Heading, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -23,6 +26,9 @@ import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import Link from 'next/link';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { TransactionDisbursedModal } from './transactionDisbursedModal';
+import { parseEther } from 'viem';
+import { useAccount } from 'wagmi';
+import { toast } from 'react-toastify';
 
 export default function DisbursementHistoryDetail() {
   const { id: projectUUID, disbursementId } = useParams() as {
@@ -31,6 +37,17 @@ export default function DisbursementHistoryDetail() {
   };
 
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
+  const [executionResult, setExecutionResult] = React.useState<any>(null);
+
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+  const safeWallet = useProjectSettingsStore(
+    (state) => state?.settings?.[projectUUID]?.['SAFE_WALLET']?.address,
+  );
+
+  const { isConnected } = useAccount();
+  console.log('isConnected', isConnected);
 
   const { data: disbursement } = useGetDisbursement(
     projectUUID,
@@ -53,6 +70,14 @@ export default function DisbursementHistoryDetail() {
       perPage: 10,
       transactionHash: disbursement?.transactionHash,
     });
+
+  const isReadyToExecute = React.useMemo(
+    () =>
+      approvals
+        ? approvals?.approvalsCount === approvals?.confirmationsRequired
+        : false,
+    [approvals],
+  );
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -94,12 +119,56 @@ export default function DisbursementHistoryDetail() {
     [disbursement],
   );
 
+  const disburseMultiSig = useMultiSigDisburseToken({
+    disbursementId: disbursement?.id,
+    projectUUID,
+  });
+
+  const handleExecute = async () => {
+    if (!isConnected) {
+      toast.error('Please connect your wallet to execute the transaction.');
+      return;
+    }
+
+    // const amountString = disbursement?.DisbursementBeneficiary[0]?.amount
+    //   ? disbursement?.DisbursementBeneficiary[0]?.amount.toString()
+    //   : '0';
+    const amountString = disbursement?.amount?.toString() || '0';
+    const parsedAmount = parseEther(amountString);
+    // const result = await disburseMultiSig.mutateAsync({
+    //   amount: parsedAmount,
+    //   beneficiaryAddresses: disbursement?.DisbursementBeneficiary?.map(
+    //     (d: any) => d.beneficiaryWalletAddress,
+    //   ) as `0x${string}`[],
+    //   rahatTokenAddress: contractSettings?.rahattoken?.address,
+    //   safeAddress: safeWallet,
+    //   c2cProjectAddress: contractSettings?.c2cproject?.address,
+    // });
+    const result = await disburseMultiSig.mutateAsync({
+      amount: parsedAmount,
+      beneficiaryAddresses: disbursement?.beneficiaries?.map(
+        (d: any) => d.walletAddress,
+      ) as `0x${string}`[],
+      rahatTokenAddress: contractSettings?.rahattoken?.address,
+      safeAddress: safeWallet,
+      c2cProjectAddress: contractSettings?.c2cproject?.address,
+    });
+
+    if (result) {
+      setExecutionResult(result);
+      setIsModalOpen(true);
+    }
+  };
+
+  console.log(contractSettings?.rahattoken?.address);
+  console.log(contractSettings?.c2cproject?.address);
+  console.log('safeAddress', safeWallet);
   return (
     <>
       <TransactionDisbursedModal
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
-        data={[]}
+        data={executionResult}
       />
       <div className="p-4 bg-gray-50">
         {/* Header */}
@@ -109,7 +178,9 @@ export default function DisbursementHistoryDetail() {
             description="List of all your disbursement history"
           />
           <div className="flex items-center gap-4">
-            <Button onClick={() => setIsModalOpen(true)}>Execute</Button>
+            {approvals?.isExecuted && (
+              <Button onClick={handleExecute}>Execute</Button>
+            )}
             <Link
               href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
               target="_blank"

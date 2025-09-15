@@ -8,6 +8,7 @@ import GarphQlProvider from '@rahat-ui/query/lib/aa/graph/graphql-query-client';
 import { UUID } from 'crypto';
 import {
   useProjectContractSettings,
+  useProjectSafeWalletSettings,
   useProjectSubgraphSettings,
 } from '@rahat-ui/query';
 
@@ -27,6 +28,7 @@ export default function ProjectLayoutRoot({
   const uuid = useParams().id as UUID;
   useProjectContractSettings(uuid);
   useProjectSubgraphSettings(uuid);
+  useProjectSafeWalletSettings(uuid);
 
   // UUID format validation (simple regex for UUID v4)
   const isValidUUID = (uuid: string) =>

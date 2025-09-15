@@ -8,6 +8,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { CheckCircle, ExternalLink } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
+import Link from 'next/link';
 
 interface IProps {
   open: boolean;
@@ -117,14 +118,16 @@ export function TransactionDisbursedModal({
             >
               View Disbursement Details
             </Button>
-            <Button
-              disabled
-              variant="outline"
-              className="flex-1 bg-transparent"
+            <Link
+              href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
+              target="_blank"
+              className="flex-1"
             >
-              Open Safe Wallet
-              <ExternalLink className="w-4 h-4 ml-2" />
-            </Button>
+              <Button variant="outline" className="w-full bg-transparent">
+                Open Safe Wallet
+                <ExternalLink className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
           </div>
         </div>
       </DialogContent>

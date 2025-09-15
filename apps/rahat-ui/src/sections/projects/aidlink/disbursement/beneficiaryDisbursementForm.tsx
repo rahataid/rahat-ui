@@ -221,7 +221,7 @@ export function BeneficiaryDisbursementForm({
           {/* Submit Button */}
           <Button
             type="submit"
-            className="w-full bg-slate-400 hover:bg-slate-500 text-white"
+            className="w-full"
             disabled={selectedBeneficiary.length === 0 || !amountPerBeneficiary}
           >
             Initiate Transaction

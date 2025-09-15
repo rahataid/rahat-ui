@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS } from '../../../config';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
@@ -176,7 +176,8 @@ export const useGetDisbursementApprovals = (
     'c2c',
     'disbursements-actions-approvals',
   ]);
-  const { projectUUID, disbursementUUID, ...restParams } = params;
+  const { projectUUID, disbursementUUID, transactionHash, ...restParams } =
+    params;
 
   const query = useQuery({
     queryKey: ['get-disbursement-approvals', disbursementUUID],
@@ -187,12 +188,14 @@ export const useGetDisbursementApprovals = (
           action: 'c2cProject.getSafeTransaction',
           payload: {
             projectUUID: projectUUID,
+            transactionHash,
             ...restParams,
           },
         },
       });
       return response.data;
     },
+    enabled: !!transactionHash,
   });
 
   return query;
@@ -345,7 +348,6 @@ export const useDisburseTokenUsingMultisig = () => {
       disbursementType,
       beneficiaryAddresses,
       beneficiaryGroup,
-      c2cProjectAddress,
       details,
     }: {
       amount: string;
@@ -353,7 +355,6 @@ export const useDisburseTokenUsingMultisig = () => {
       disbursementType: DisbursementSelectionType;
       beneficiaryAddresses?: `0x${string}`[];
       beneficiaryGroup?: UUID;
-      c2cProjectAddress: string;
       details?: string;
     }) => {
       // Step 1: Create Safe Transaction
@@ -368,6 +369,7 @@ export const useDisburseTokenUsingMultisig = () => {
       });
 
       const safeTxHash = response.data.safeTxHash;
+      const safeAddress = response.data.safeAddress;
 
       // Step 2: Add Disbursement
       const disbursementResult = await addDisbursement.mutateAsync({
@@ -379,7 +381,7 @@ export const useDisburseTokenUsingMultisig = () => {
         beneficiaries: beneficiaryAddresses,
         beneficiaryGroup,
         transactionHash: safeTxHash,
-        from: c2cProjectAddress,
+        from: safeAddress,
         timestamp: String(Math.floor(Date.now() / 1000)), // Convert to seconds timestamp
         details,
       });

@@ -409,10 +409,8 @@ export const useActivateTrigger = () => {
       qc.invalidateQueries({ queryKey: ['triggerstatement'] });
       toast.fire({
         title: 'Trigger activated.',
-        text: `This trigger will be saved in ${
-          chainSettings['name'] || ''
-        } block. You can view details of this from trigger details page.`,
-        timer: 5000,
+        text: 'Successfully activated trigger. You can view details of this from trigger details page.',
+        timer: 10000,
         icon: 'success',
         width: '500px',
         showCloseButton: true,

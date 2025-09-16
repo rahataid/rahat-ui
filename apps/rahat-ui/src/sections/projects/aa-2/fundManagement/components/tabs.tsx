@@ -12,12 +12,16 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import InKind from './inKind';
 import Counselling from './counselling';
+import { CashTracker } from './cashTracker/cash.tracker';
+import { InKindTracker } from './inKindTracker';
 
 const componentMap = {
   tokenOverview: TokensOverview,
   fundManagementList: FundManagementList,
   inKind: InKind,
   counselling: Counselling,
+  cashTracker: CashTracker,
+  inKindTracker: InKindTracker,
 };
 
 interface BackendTab {
@@ -25,6 +29,7 @@ interface BackendTab {
   label: string;
 }
 type ComponentKey = keyof typeof componentMap;
+
 export default function FundManagementTabs() {
   const { activeTab, setActiveTab } = useActiveTab('tokenOverview');
   const { id: projectID } = useParams();
@@ -33,10 +38,11 @@ export default function FundManagementTabs() {
     projectID as UUID,
     PROJECT_SETTINGS_KEYS.FUNDMANAGEMENT_TAB_CONFIG,
   );
+  // console.log(tabs?.value?.tabs);
 
   const backendTabs: BackendTab[] =
-    data?.value?.length > 0
-      ? data.value
+    data?.value?.tabs.length > 0
+      ? data.value?.tabs
       : [
           { value: 'tokenOverview', label: 'TokensOverview' },
           { value: 'fundManagementList', label: 'FundManagementList' },

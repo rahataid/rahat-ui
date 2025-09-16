@@ -196,7 +196,7 @@ export function BeneficiaryGroupsDisbursementForm({
           {/* Submit Button */}
           <Button
             type="submit"
-            className="w-full bg-slate-500 hover:bg-slate-600 text-white"
+            className="w-full"
             disabled={!selectedGroup || !amountPerBeneficiary}
           >
             Initiate Transaction

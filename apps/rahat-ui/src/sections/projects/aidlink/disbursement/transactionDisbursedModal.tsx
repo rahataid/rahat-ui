@@ -5,11 +5,9 @@ import {
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { CheckCircle, Clock, ExternalLink } from 'lucide-react';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { CheckCircle, ExternalLink } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
-import React from 'react';
 import Link from 'next/link';
 
 interface IProps {
@@ -19,13 +17,12 @@ interface IProps {
 }
 
 interface StatusStep {
-  icon: React.ReactNode;
   title: string;
   time: string;
   completed: boolean;
 }
 
-export function TransactionInitiatedModal({
+export function TransactionDisbursedModal({
   open,
   onOpenChange,
   data,
@@ -34,35 +31,29 @@ export function TransactionInitiatedModal({
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
 
-  const statusSteps: StatusStep[] = React.useMemo(
-    () => [
-      {
-        icon: <CheckCircle className="w-5 h-5 text-green-600" />,
-        title: 'Transaction Initiated',
-        time: data?.updatedAt ? dateFormat(data?.updatedAt) : 'N/A',
-        completed: true,
-      },
-      {
-        icon: <Clock className="w-5 h-5 text-yellow-600" />,
-        title: 'Safe Wallet Approval',
-        time: 'Pending',
-        completed: false,
-      },
-      {
-        icon: <Clock className="w-5 h-5 text-yellow-600" />,
-        title: 'Disbursement Execution',
-        time: 'Pending',
-        completed: false,
-      },
-    ],
-    [data],
-  );
+  const statusSteps: StatusStep[] = [
+    {
+      title: 'Transaction Initiated',
+      time: '3:35:00 PM',
+      completed: true,
+    },
+    {
+      title: 'Safe Wallet Approval',
+      time: '5:50:00 PM',
+      completed: true,
+    },
+    {
+      title: 'Disbursement Execution',
+      time: '04:15:00 PM',
+      completed: true,
+    },
+  ];
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-semibold">
-            Transaction Initiated
+            Transaction has been disbursed successfully
           </DialogTitle>
         </DialogHeader>
 
@@ -81,17 +72,17 @@ export function TransactionInitiatedModal({
           <div className="p-4 rounded-sm border">
             <div className="mb-4">
               <p className="text-sm text-gray-700 leading-relaxed">
-                We have successfully initiated the transaction from Rahat.
-                Disbursement will be executed once they are approved by Safe
-                Wallet Owners
+                The disbursement of USDC has been successfully completed through
+                Rahat, and the funds are now available in beneficiaries' Shelter
+                wallets.
               </p>
             </div>
 
             <div className="mb-4">
               <div className="flex items-center gap-1">
                 <div className="flex-1 h-2 bg-blue-500 rounded-l-full" />
-                <div className="flex-1 h-2 bg-gray-200" />
-                <div className="flex-1 h-2 bg-gray-200 rounded-r-full" />
+                <div className="flex-1 h-2 bg-blue-500" />
+                <div className="flex-1 h-2 bg-blue-500 rounded-r-full" />
               </div>
             </div>
 
@@ -99,7 +90,9 @@ export function TransactionInitiatedModal({
               {statusSteps.map((step, index) => (
                 <div key={index} className="text-center">
                   {/* Status Icon */}
-                  <div className="flex justify-center mb-2">{step.icon}</div>
+                  <div className="flex justify-center mb-2">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                  </div>
 
                   {/* Step Content */}
                   <div>
@@ -112,6 +105,7 @@ export function TransactionInitiatedModal({
               ))}
             </div>
           </div>
+
           {/* Action Buttons */}
           <div className="flex gap-3 pt-1">
             <Button

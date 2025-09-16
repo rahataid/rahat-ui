@@ -27,7 +27,7 @@ import Link from 'next/link';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { TransactionDisbursedModal } from './transactionDisbursedModal';
 import { parseEther } from 'viem';
-import { useAccount } from 'wagmi';
+import { useAccount, useChainId } from 'wagmi';
 import { toast } from 'react-toastify';
 
 export default function DisbursementHistoryDetail() {
@@ -46,8 +46,12 @@ export default function DisbursementHistoryDetail() {
     (state) => state?.settings?.[projectUUID]?.['SAFE_WALLET']?.address,
   );
 
+  const chainSettings = useProjectSettingsStore(
+    (state) => state?.settings?.[projectUUID]?.['BLOCKCHAIN'],
+  );
+
   const { isConnected } = useAccount();
-  console.log('isConnected', isConnected);
+  const chainId = useChainId();
 
   const { data: disbursement } = useGetDisbursement(
     projectUUID,
@@ -124,16 +128,23 @@ export default function DisbursementHistoryDetail() {
     projectUUID,
   });
 
+
   const handleExecute = async () => {
     if (!isConnected) {
       toast.error('Please connect your wallet to execute the transaction.');
       return;
     }
+    if(chainId !== Number(chainSettings?.chainid)){
+      toast.error(`Please connect to ${chainSettings?.chainname} chain `);
+      return;
+    }
+    
+    const beneficiaryLength = disbursement?.beneficiaries.length;
 
     // const amountString = disbursement?.DisbursementBeneficiary[0]?.amount
     //   ? disbursement?.DisbursementBeneficiary[0]?.amount.toString()
     //   : '0';
-    const amountString = disbursement?.amount?.toString() || '0';
+    const amountString = ((disbursement?.amount)/beneficiaryLength)?.toString() || '0';
     const parsedAmount = parseEther(amountString);
     // const result = await disburseMultiSig.mutateAsync({
     //   amount: parsedAmount,
@@ -159,10 +170,6 @@ export default function DisbursementHistoryDetail() {
       setIsModalOpen(true);
     }
   };
-
-  console.log(contractSettings?.rahattoken?.address);
-  console.log(contractSettings?.c2cproject?.address);
-  console.log('safeAddress', safeWallet);
   return (
     <>
       <TransactionDisbursedModal

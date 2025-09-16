@@ -128,23 +128,23 @@ export default function DisbursementHistoryDetail() {
     projectUUID,
   });
 
-
   const handleExecute = async () => {
     if (!isConnected) {
       toast.error('Please connect your wallet to execute the transaction.');
       return;
     }
-    if(chainId !== Number(chainSettings?.chainid)){
+    if (chainId !== Number(chainSettings?.chainid)) {
       toast.error(`Please connect to ${chainSettings?.chainname} chain `);
       return;
     }
-    
+
     const beneficiaryLength = disbursement?.beneficiaries.length;
 
     // const amountString = disbursement?.DisbursementBeneficiary[0]?.amount
     //   ? disbursement?.DisbursementBeneficiary[0]?.amount.toString()
     //   : '0';
-    const amountString = ((disbursement?.amount)/beneficiaryLength)?.toString() || '0';
+    const amountString =
+      (disbursement?.amount / beneficiaryLength)?.toString() || '0';
     const parsedAmount = parseEther(amountString);
     // const result = await disburseMultiSig.mutateAsync({
     //   amount: parsedAmount,
@@ -186,20 +186,24 @@ export default function DisbursementHistoryDetail() {
             backBtn
           />
           <div className="flex items-center gap-4">
-            {approvals?.isExecuted && (
-              <Button onClick={handleExecute}>Execute</Button>
+            {approvals?.isExecuted && disbursement?.status !== 'COMPLETED' && (
+              <Button className="h-8 w-40" onClick={handleExecute}>
+                Execute
+              </Button>
             )}
-            <Link
-              href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
-              target="_blank"
-            >
-              <div className="px-4 py-2 rounded-full flex items-center gap-2 bg-blue-50">
-                <span className="text-[10px]/4 tracking-widest font-semibold text-primary">
-                  SAFEWALLET
-                </span>
-                <BadgeCheck className="w-4 h-4 fill-primary text-white" />
-              </div>
-            </Link>
+            {!approvals?.isExecuted && disbursement?.status !== 'COMPLETED' && (
+              <Link
+                href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
+                target="_blank"
+              >
+                <div className="px-4 py-1 rounded-full flex items-center gap-2 bg-blue-50 hover:bg-blue-100">
+                  <span className="text-[10px]/4 tracking-widest font-semibold text-primary">
+                    SAFEWALLET
+                  </span>
+                  <BadgeCheck className="w-4 h-4 fill-primary text-white" />
+                </div>
+              </Link>
+            )}
           </div>
         </div>
 

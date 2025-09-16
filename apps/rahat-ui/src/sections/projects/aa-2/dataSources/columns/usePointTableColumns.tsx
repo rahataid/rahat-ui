@@ -1,6 +1,6 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { convertToLocalTimeOrMillisecond } from 'apps/rahat-ui/src/utils/dateFormate';
 
 interface UsePointTableColumnsProps {
   unit?: string;
@@ -13,11 +13,12 @@ export const usePointTableColumns = ({ unit }: UsePointTableColumnsProps) => {
       header: 'Date',
       cell: ({ row }) => {
         const dateTime = row.getValue('datetime') as string;
-        const formatedDate = dateFormat(
+        const { formatted } = convertToLocalTimeOrMillisecond(
           dateTime,
-          'eee, MMMM d, yyyy, h:mm:ss a',
-        );
-        return <div>{formatedDate}</div>;
+          'eee, MMMM d, yyyy, h:mm:ss',
+        ) as { formatted: string; timestamp: number };
+
+        return <div>{formatted}</div>;
       },
     },
     {

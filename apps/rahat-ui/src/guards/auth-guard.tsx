@@ -47,7 +47,7 @@ export default function AuthGuard({ children }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (DEBUG_MODE) return <>{children}</>;
+  // if (DEBUG_MODE) return <>{children}</>;
 
   if (!checked) {
     return null;

@@ -164,16 +164,18 @@ export const useReserveTokenForGroups = () => {
         title: string;
       };
     }) => {
-      return q.mutateAsync({
+      const response = await q.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'aaProject.beneficiary.reserve_token_to_group',
           payload: reserveTokenPayload,
         },
       });
+      return response?.data;
     },
-    onSuccess: () => {
+    onSuccess: (data: any) => {
       q.reset();
+      if (data?.status === 'error') return;
       toast.fire({
         title: 'Token reserve added successfully.',
         icon: 'success',

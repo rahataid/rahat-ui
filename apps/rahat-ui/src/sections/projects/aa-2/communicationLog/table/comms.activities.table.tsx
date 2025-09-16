@@ -19,13 +19,12 @@ import {
   ScrollArea,
   ScrollBar,
 } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+
 import { useActivitiesHavingComms, usePagination } from '@rahat-ui/query';
-// import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+
 import { UUID } from 'crypto';
 import useCommsActivitiesTableColumns from './useCommsActivitesTableColumns';
 import {
-  ClientSidePagination,
   CustomPagination,
   NoResult,
   SearchInput,
@@ -52,6 +51,7 @@ export default function CommsActivitiesTable() {
 
   const { activitiesData, activitiesMeta, isLoading } =
     useActivitiesHavingComms(projectId as UUID, { ...pagination, filters });
+
   const columns = useCommsActivitiesTableColumns();
 
   const table = useReactTable({
@@ -83,6 +83,7 @@ export default function CommsActivitiesTable() {
     },
     [filters],
   );
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between gap-2">

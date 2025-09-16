@@ -9,7 +9,7 @@ import {
 } from '@radix-ui/react-tooltip';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
-interface IGaugeForecastCardProps {
+export interface IGaugeForecastCardProps {
   date?: string | null;
   station?: string | null;
   riverBasin?: string;

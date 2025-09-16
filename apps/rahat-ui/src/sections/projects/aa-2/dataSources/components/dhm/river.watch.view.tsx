@@ -23,14 +23,18 @@ export default function RiverWatchView() {
   const { data: riverWatch, isLoading } = useDhmWaterLevels(projectId, {
     riverBasin:
       settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-        'river_basin'
+      'river_basin'
       ],
     type: 'POINT',
     from: formattedDate,
     to: formattedDate,
   });
 
+  const updatedAt = riverWatch?.updatedAt
+
   const riverWatchInfoList = riverWatch?.info ?? [];
+
+
 
   // modification required to handle multiple rivers
   const primaryRiverWatchInfo = riverWatchInfoList[0] ?? null;
@@ -98,6 +102,7 @@ export default function RiverWatchView() {
               title={primaryRiverWatchInfo?.name}
               titleStyle="text-xl/6 font-semibold"
               description={primaryRiverWatchInfo?.description}
+              updatedAt={updatedAt}
             />
             <div>
               <Badge>{primaryRiverWatchInfo?.steady}</Badge>
@@ -114,6 +119,7 @@ export default function RiverWatchView() {
                   <div>
                     <p className="text-sm/6 font-medium mb-1">{d.label}</p>
                     <p className="text-sm/4 text-gray-600">{d.value}</p>
+
                   </div>
                 </div>
               );

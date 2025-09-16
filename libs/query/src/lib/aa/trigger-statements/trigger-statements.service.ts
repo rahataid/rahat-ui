@@ -7,6 +7,7 @@ import React, { useEffect } from 'react';
 import { useSwal } from '../../../swal';
 import { useProjectSettingsStore } from '../../projects';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
+import { useSettingsStore } from '../../settings';
 
 export const useCreateTriggerStatement = () => {
   const q = useProjectAction();
@@ -381,6 +382,8 @@ export const useActivateTrigger = () => {
     showConfirmButton: false,
     timer: 3000,
   });
+  const chainSettings = useSettingsStore((state) => state.projectChainSettings);
+
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -406,7 +409,7 @@ export const useActivateTrigger = () => {
       qc.invalidateQueries({ queryKey: ['triggerstatement'] });
       toast.fire({
         title: 'Trigger activated.',
-        text: 'This trigger will be saved in Stellar block. You can view details of this from trigger details page.',
+        text: 'Successfully activated trigger. You can view details of this from trigger details page.',
         timer: 10000,
         icon: 'success',
         width: '500px',

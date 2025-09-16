@@ -3,6 +3,8 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { format } from 'date-fns';
+import { convertToLocalTimeOrMillisecond } from 'apps/rahat-ui/src/utils/dateFormate';
+
 const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 type ChartProps = {
@@ -34,13 +36,23 @@ const TimeSeriesChart = ({
 
   const series = keys.map((key) => ({
     name: key === 'value' ? 'average' : key,
-    data: sortedData.map((d) => [new Date(d.datetime).getTime(), d[key]]),
+    data: sortedData.map((d) => {
+      const result = convertToLocalTimeOrMillisecond(d.datetime);
+      if (typeof result === 'string' || !result) {
+        return [0, d[key]]; // Fallback to 0 or handle error as needed
+      }
+      const { timestamp } = result;
+      return [timestamp, d[key]];
+    }),
   }));
 
-  const minTime = new Date(sortedData[0].datetime).getTime();
-  const maxTime = new Date(
+  const { timestamp: minTime } = convertToLocalTimeOrMillisecond(
+    sortedData[0].datetime,
+  ) as { timestamp: number; formatted: string };
+
+  const { timestamp: maxTime } = convertToLocalTimeOrMillisecond(
     sortedData[sortedData.length - 1].datetime,
-  ).getTime();
+  ) as { timestamp: number; formatted: string };
 
   const options: ApexCharts.ApexOptions = {
     chart: {
@@ -58,6 +70,7 @@ const TimeSeriesChart = ({
       },
       labels: {
         formatter: function (value) {
+          console.log(value, 'inside apex function');
           return format(new Date(value), xDateFormat);
         },
         rotate: 0,

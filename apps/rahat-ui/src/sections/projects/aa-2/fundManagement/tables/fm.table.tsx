@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useGroupsReservedFunds, usePagination } from '@rahat-ui/query';
 import {
   ColumnFiltersState,
@@ -50,7 +50,20 @@ export default function FundManagementList() {
 
   const columns = useFundManagementTableColumns();
 
+  const metaData = useMemo(() => {
+    const meta = groupsFundsData?.response?.meta;
+    return {
+      total: meta?.total || 0,
+      currentPage: meta?.currentPage || 1, // Changed from 0 to 1
+      lastPage: meta?.lastPage || 1, // Changed from 0 to 1
+      perPage: meta?.perPage || 10, // Changed from 0 to 10
+      next: meta?.next || null,
+      prev: meta?.prev || null,
+    };
+  }, [groupsFundsData?.response?.meta]);
+
   const table = useReactTable({
+    manualPagination: true,
     data: groupsFundsData?.response?.data || [],
     columns,
     onColumnVisibilityChange: setColumnVisibility,
@@ -59,7 +72,6 @@ export default function FundManagementList() {
     onColumnFiltersChange: setColumnFilters,
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-
     state: {
       columnVisibility,
       columnFilters,
@@ -89,16 +101,7 @@ export default function FundManagementList() {
         message="No Fund Management List Available"
       />
       <CustomPagination
-        meta={
-          groupsFundsData?.response?.meta || {
-            total: 0,
-            currentPage: 0,
-            lastPage: 0,
-            perPage: 0,
-            next: null,
-            prev: null,
-          }
-        }
+        meta={metaData}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}

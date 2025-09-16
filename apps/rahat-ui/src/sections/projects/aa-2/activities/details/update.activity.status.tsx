@@ -52,6 +52,7 @@ export default function UpdateStatus() {
 
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('from');
+  const backFrom = searchParams.get('backFrom');
   const router = useRouter();
 
   const activitiesListPath = useMemo(() => {
@@ -60,7 +61,9 @@ export default function UpdateStatus() {
     }
 
     return redirectTo === 'detailPage'
-      ? `/projects/aa/${projectId}/activities/${activityId}`
+      ? `/projects/aa/${projectId}/activities/${activityId}${
+          backFrom ? `?from=${backFrom}` : ''
+        }`
       : `/projects/aa/${projectId}/activities/list/${redirectTo}`;
   }, [redirectTo, projectId, activityId]);
 

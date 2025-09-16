@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS } from '../../../config';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
@@ -156,7 +156,8 @@ export const useGetDisbursementApprovals = (
     'c2c',
     'disbursements-actions-approvals',
   ]);
-  const { projectUUID, disbursementUUID, ...restParams } = params;
+  const { projectUUID, disbursementUUID, transactionHash, ...restParams } =
+    params;
 
   const query = useQuery({
     queryKey: ['get-disbursement-approvals', disbursementUUID],
@@ -167,12 +168,14 @@ export const useGetDisbursementApprovals = (
           action: 'c2cProject.getSafeTransaction',
           payload: {
             projectUUID: projectUUID,
+            transactionHash,
             ...restParams,
           },
         },
       });
       return response.data;
     },
+    enabled: !!transactionHash,
   });
 
   return query;
@@ -219,6 +222,11 @@ export enum DisbursementStatus {
   REJECTED = 'REJECTED',
 }
 
+export enum DisbursementSelectionType {
+  INDIVIDUAL = 'INDIVIDUAL',
+  GROUP = 'GROUP',
+}
+
 export const useAddDisbursement = () => {
   const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
 
@@ -244,26 +252,38 @@ export const useAddDisbursement = () => {
     mutationFn: async (data: {
       projectUUID: UUID;
       type: DisbursementType;
+      disbursementType: DisbursementSelectionType;
       amount: string;
-      beneficiaries: any;
+      beneficiaries?: any;
+      beneficiaryGroup?: UUID;
       transactionHash: string;
       from: string;
       timestamp: string;
       status?: DisbursementStatus;
+      details?: string;
     }) => {
-      const { projectUUID, ...restData } = data;
+      const { projectUUID, beneficiaries, beneficiaryGroup, ...restData } =
+        data;
+      const payload = {
+        ...restData,
+        ...(restData.disbursementType ===
+          DisbursementSelectionType.INDIVIDUAL && {
+          beneficiaries: beneficiaries.map((ben: any) => ({
+            walletAddress: ben,
+            from: restData.from,
+            transactionHash: restData.transactionHash,
+            amount: restData.amount,
+          })),
+        }),
+        ...(restData.disbursementType === DisbursementSelectionType.GROUP && {
+          beneficiaryGroup,
+        }),
+      };
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'c2cProject.disbursement.create',
-          payload: {
-            ...restData,
-            beneficiaries: restData.beneficiaries.map((ben: any) => ({
-              address: ben,
-              amount: restData.amount,
-              walletAddress: ben,
-            })),
-          },
+          payload,
         },
       });
       return response.data;
@@ -305,17 +325,17 @@ export const useDisburseTokenUsingMultisig = () => {
     mutationFn: async ({
       amount,
       projectUUID,
+      disbursementType,
       beneficiaryAddresses,
-      disburseMethod,
-      rahatTokenAddress,
-      c2cProjectAddress,
+      beneficiaryGroup,
+      details,
     }: {
       amount: string;
       projectUUID: UUID;
-      beneficiaryAddresses: `0x${string}`[];
-      disburseMethod: string;
-      rahatTokenAddress: string;
-      c2cProjectAddress: string;
+      disbursementType: DisbursementSelectionType;
+      beneficiaryAddresses?: `0x${string}`[];
+      beneficiaryGroup?: UUID;
+      details?: string;
     }) => {
       // Step 1: Create Safe Transaction
       const response = await projectActions.mutateAsync({
@@ -329,16 +349,21 @@ export const useDisburseTokenUsingMultisig = () => {
       });
 
       const safeTxHash = response.data.safeTxHash;
+      const safeAddress = response.data.safeAddress;
 
       // Step 2: Add Disbursement
       const disbursementResult = await addDisbursement.mutateAsync({
-        amount: String(+amount / beneficiaryAddresses.length),
+        // amount: String(+amount / beneficiaryAddresses.length),
+        amount,
         projectUUID,
         type: DisbursementType.MULTISIG,
+        disbursementType,
         beneficiaries: beneficiaryAddresses,
+        beneficiaryGroup,
         transactionHash: safeTxHash,
-        from: c2cProjectAddress,
+        from: safeAddress,
         timestamp: String(Math.floor(Date.now() / 1000)), // Convert to seconds timestamp
+        details,
       });
 
       return disbursementResult;
@@ -452,6 +477,24 @@ export const useFindAllC2cStats = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: GET_ALL_C2C_STATS,
+          payload: {},
+        },
+      });
+      return res.data;
+    },
+  });
+};
+
+export const useGetSafeOwners = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  return useQuery({
+    queryKey: ['safeOwners', projectUUID],
+    queryFn: async () => {
+      const res = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getSafeOwner',
           payload: {},
         },
       });

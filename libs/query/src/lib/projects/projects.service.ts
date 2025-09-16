@@ -647,7 +647,7 @@ export const useProjectBeneficiaryDetail = (payload: any) => {
       return mutate?.data;
     },
   });
-  return query?.data;
+  return query;
 };
 
 export const useBeneficiaryRedeemInfo = (payload: any) => {

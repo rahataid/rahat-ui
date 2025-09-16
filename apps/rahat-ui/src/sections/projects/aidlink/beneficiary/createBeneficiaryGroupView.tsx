@@ -140,6 +140,8 @@ export default function CreateBeneficiaryGroup() {
       <Heading
         title="Create Beneficiary Group"
         description="Select beneficiaries from the list below to create a group"
+        backBtn
+        path={`/projects/aidlink/${projectUUID}/beneficiary?tab=beneficiaryGroups`}
       />
 
       <Form {...form}>

@@ -183,6 +183,7 @@ export default function DisbursementHistoryDetail() {
           <Heading
             title="Disbursement History"
             description="List of all your disbursement history"
+            backBtn
           />
           <div className="flex items-center gap-4">
             {approvals?.isExecuted && (

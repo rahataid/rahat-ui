@@ -32,7 +32,8 @@ export default function BeneficiaryTransactionLogDetails() {
   const { id, uuid } = useParams();
   const router = useRouter();
   const groupId = useSearchParams().get('groupId');
-
+  const searchParams = useSearchParams();
+  const navigation = searchParams.get('from');
   const triggerForPayoutFailed = useTriggerForOnePayoutFailed();
 
   const { data, isLoading: payoutLogsLoading } = useGetPayoutLog(id as UUID, {
@@ -88,7 +89,7 @@ export default function BeneficiaryTransactionLogDetails() {
         <HeaderWithBack
           path={`/projects/aa/${id as string}/payout/details/${
             groupId as string
-          }`}
+          }?from=${navigation ? navigation : ''}`}
           subtitle="Detaild view of the selected payout transaction log"
           title="Transaction Log Details"
         />

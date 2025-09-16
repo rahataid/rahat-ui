@@ -78,6 +78,7 @@ export default function AddActivities() {
   usePhases(projectID as UUID);
   const [communicationData, setCommunicationData] = React.useState<
     {
+      communicationTitle?: string;
       groupType: string;
       groupId: string;
       transportId: string;
@@ -153,6 +154,7 @@ export default function AddActivities() {
         .optional(),
       activityCommunication: z.array(
         z.object({
+          communicationTitle: z.string(),
           groupType: z.string().optional(),
           groupId: z.string().optional(),
           transportId: z.string().optional(),
@@ -257,6 +259,7 @@ export default function AddActivities() {
 
     // Create a new communication entry
     const newCommunication = {
+      communicationTitle: activityCommunications?.communicationTitle || '',
       groupType: activityCommunications?.groupType || '',
       groupId: activityCommunications?.groupId || '',
       transportId: activityCommunications?.transportId || '',
@@ -305,6 +308,7 @@ export default function AddActivities() {
         );
         if (selectedTransport?.validationContent === ValidationContent.URL) {
           activityCommunicationPayload.push({
+            communicationTitle: comms.communicationTitle,
             groupType: comms.groupType,
             groupId: comms.groupId,
             transportId: comms.transportId,
@@ -314,6 +318,7 @@ export default function AddActivities() {
           selectedTransport?.validationAddress === ValidationAddress.EMAIL
         ) {
           activityCommunicationPayload.push({
+            communicationTitle: comms.communicationTitle,
             groupType: comms.groupType,
             groupId: comms.groupId,
             transportId: comms.transportId,
@@ -322,6 +327,7 @@ export default function AddActivities() {
           });
         } else {
           activityCommunicationPayload.push({
+            communicationTitle: comms.communicationTitle,
             groupType: comms.groupType,
             groupId: comms.groupId,
             transportId: comms.transportId,

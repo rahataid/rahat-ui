@@ -48,7 +48,7 @@
     "@rahataid/c2c-query": "0.0.9",
     "@rahataid/community-tool-sdk": "0.0.36",
     "@rahataid/el-subgraph": "0.0.14",
-    "@rahataid/sdk": "0.0.34",
+    "@rahataid/sdk": "0.0.35",
     "@rumsan/communication": "^0.0.23",
     "@rumsan/communication-query": "^0.0.11",
     "@rumsan/connect": "1.0.7",

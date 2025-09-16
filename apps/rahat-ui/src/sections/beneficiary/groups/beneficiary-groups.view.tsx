@@ -108,20 +108,21 @@ function BeneficiaryGroupsView() {
                             {i?.name ?? 'N/A'}
                           </p>
                           <div>
-                            {(i?.groupPurpose === GroupPurpose.BANK_TRANSFER ||
-                              i?.groupPurpose ===
-                                GroupPurpose.MOBILE_MONEY) && (
-                              <>
-                                {i?.groupPurpose ===
-                                  GroupPurpose.BANK_TRANSFER && (
-                                  <LandmarkIcon className="h-4 w-4 text-green-600" />
-                                )}
-                                {i?.groupPurpose ===
-                                  GroupPurpose.MOBILE_MONEY && (
-                                  <Phone className="h-4 w-4 text-green-600" />
-                                )}
-                              </>
-                            )}
+                            {i?.isGroupValidForAA &&
+                              (i?.groupPurpose === GroupPurpose.BANK_TRANSFER ||
+                                i?.groupPurpose ===
+                                  GroupPurpose.MOBILE_MONEY) && (
+                                <>
+                                  {i?.groupPurpose ===
+                                    GroupPurpose.BANK_TRANSFER && (
+                                    <LandmarkIcon className="h-4 w-4 text-green-600" />
+                                  )}
+                                  {i?.groupPurpose ===
+                                    GroupPurpose.MOBILE_MONEY && (
+                                    <Phone className="h-4 w-4 text-green-600" />
+                                  )}
+                                </>
+                              )}
                           </div>
                         </div>
 

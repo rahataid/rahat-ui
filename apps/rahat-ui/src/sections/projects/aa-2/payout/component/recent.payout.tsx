@@ -49,7 +49,9 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
                 }
                 dateTime={item?.updatedAt}
                 onView={() =>
-                  route.push(`/projects/aa/${id}/payout/details/${item?.uuid}`)
+                  route.push(
+                    `/projects/aa/${id}/payout/details/${item?.uuid}?from=main-page`,
+                  )
                 }
               />
               {index < payouts.length - 1 && (

@@ -13,6 +13,7 @@ import {
   CloudAlert,
   Coins,
   Store,
+  NotebookPenIcon,
 } from 'lucide-react';
 
 type NavItem = BaseNavItem;
@@ -66,7 +67,13 @@ export const useNavItems = () => {
           icon: <Coins size={18} strokeWidth={2} />,
           wrapper: (children: React.ReactNode) => (
             <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.MANAGER]}
+              roles={[
+                AARoles.ADMIN,
+                AARoles.MANAGER,
+                AARoles.UNICEF_DONOR,
+                AARoles.UNICEF_FIELD_OFFICE,
+                AARoles.UNICEF_HEAD_OFFICE,
+              ]}
               hasContent={false}
             >
               {children}
@@ -111,6 +118,11 @@ export const useNavItems = () => {
               {children}
             </RoleAuth>
           ),
+        },
+        {
+          title: 'Grievances',
+          path: `/projects/aa/${params.id}/grievances`,
+          icon: <NotebookPenIcon size={18} strokeWidth={2} />,
         },
       ],
     },

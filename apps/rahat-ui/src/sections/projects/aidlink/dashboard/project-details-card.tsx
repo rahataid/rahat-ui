@@ -28,7 +28,7 @@ const ProjectDetailsCard = () => {
       },
       {
         label: 'Project Status',
-        value: projectDetails?.status,
+        value: projectDetails?.status?.split('_').join(' '),
         icon: TrendingUp,
         isStatus: true,
       },
@@ -50,7 +50,13 @@ const ProjectDetailsCard = () => {
                   <div>
                     <p className=" text-gray-500">{label}</p>
                     {isStatus ? (
-                      <Badge className="mt-1 bg-green-100 text-green-800 ">
+                      <Badge
+                        className={`mt-1 ${
+                          projectDetails?.status === 'ACTIVE'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}
+                      >
                         {value}
                       </Badge>
                     ) : (

@@ -10,7 +10,7 @@ import {
   useProjectContractSettings,
   useProjectSafeWalletSettings,
   useProjectSubgraphSettings,
-  useProjectBlockChainSettings
+  useProjectBlockChainSettings,
 } from '@rahat-ui/query';
 
 export default function ProjectLayoutRoot({
@@ -50,7 +50,8 @@ export default function ProjectLayoutRoot({
     } else {
       setChecking(false);
     }
-  }, [uuid]);
+  }, [uuid, router]);
+
   return (
     <GarphQlProvider>
       <DashboardLayout

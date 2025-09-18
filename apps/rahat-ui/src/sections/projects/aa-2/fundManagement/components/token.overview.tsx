@@ -31,6 +31,8 @@ export default function TokensOverview() {
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
+  console.log('DATA', data);
+
   const tokenStatus = () => {
     let disbursedValue = 0;
     let failedValue = 0;
@@ -62,7 +64,7 @@ export default function TokensOverview() {
         <div className="space-y-4 mb-4">
           {/* First Row - 4 Columns */}
           <div className="grid xl:grid-cols-4 lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
-            {data?.data.slice(0, 4).map((item, index) => {
+            {data?.tokenStats?.slice(0, 4).map((item, index) => {
               const isToken = item.name === 'Token';
               const isTokenPrice = item.name === 'Token Price';
               const isBudget = item.name === 'Budget Assigned';
@@ -145,7 +147,7 @@ export default function TokensOverview() {
 
           {/* Second Row - 3 Columns */}
           <div className="grid xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
-            {data?.data.slice(4).map((item, index) => {
+            {data?.tokenStats?.slice(4).map((item, index) => {
               const isToken = item.name === 'Token';
               const isTokenPrice = item.name === 'Token Price';
               const isBudget = item.name === 'Budget Assigned';

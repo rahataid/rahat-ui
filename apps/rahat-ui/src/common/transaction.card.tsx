@@ -55,58 +55,90 @@ export function TransactionCard({
           </div>
         ) : cardData?.length ? (
           <div className=" pt-3 flex flex-col space-y-2">
-            {cardData.map((i) => (
-              <a
-                key={i.title}
-                href={`https://stellar.expert/explorer/testnet/tx/${i.hash}`}
-                target="_blank"
-                className="flex items-center justify-between px-4 py-3 border-gray-100 "
-              >
-                <div className="flex space-x-4 items-center">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                      <ArrowLeftRight className="w-5 h-5 text-gray-600" />
+            {cardData.map((i) => {
+              // Generate transaction hash from info object if available
+              const getTransactionHash = (info: any) => {
+                if (!info) return null;
+                // Extract transaction hash from the info object
+                const hashParts = [];
+                for (let j = 0; j < 66; j++) {
+                  if (info[j]) {
+                    hashParts.push(info[j]);
+                  }
+                }
+                return hashParts.join('');
+              };
+
+              const transactionHash = getTransactionHash(i.info);
+              const explorerUrl =
+                i.chainInfo?.explorerUrl ||
+                'https://stellar.expert/explorer/testnet';
+              const txUrl = transactionHash
+                ? `${explorerUrl}/tx/${transactionHash}`
+                : `${explorerUrl}/tx/${i.hash || ''}`;
+
+              // Determine transaction status
+              const isSuccessful =
+                i.status === 'DISBURSED' ||
+                i.isDisbursed === true ||
+                i.info?.txReceipt?.status === 'SUCCESS';
+
+              return (
+                <a
+                  key={i.title}
+                  href={txUrl}
+                  target="_blank"
+                  className="flex items-center justify-between px-4 py-3 border-gray-100 "
+                >
+                  <div className="flex space-x-4 items-center">
+                    <div className="flex-shrink-0">
+                      <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                        <ArrowLeftRight className="w-5 h-5 text-gray-600" />
+                      </div>
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {i.title}
+                          {i.chainInfo?.currency?.symbol && (
+                            <span className="ml-1 text-xs text-gray-500 font-normal">
+                              ({i.chainInfo.currency.symbol})
+                            </span>
+                          )}
+                        </p>
+
+                        <Badge
+                          className={`inline-flex w-auto items-center px-2 py-0.5 rounded-sm text-xs font-medium ${
+                            isSuccessful
+                              ? 'bg-green-100 text-green-600'
+                              : 'bg-red-100 text-red-600'
+                          }`}
+                        >
+                          {isSuccessful ? 'Disbursed' : 'Failed'}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center space-x-1 mt-1">
+                        <p className="text-xs text-gray-500">{i.group?.name}</p>
+                        <span className="text-xs text-gray-400">•</span>
+                        <p className="text-xs text-gray-500">
+                          {intlDateFormat(i.updatedAt)}
+                        </p>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2">
-                      <p className="text-sm font-medium text-gray-900 truncate">
-                        {i.title}
-                      </p>
-
-                      <Badge
-                        className={`inline-flex w-auto items-center px-2 py-0.5 rounded-sm text-xs font-medium ${
-                          i.status === 'DISBURSED'
-                            ? 'bg-green-100 text-green-600'
-                            : 'bg-red-100 text-red-600'
-                        }`}
-                      >
-                        {i.status === 'DISBURSED' ? 'Disbursed' : 'Failed'}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center space-x-1 mt-1">
-                      <p className="text-xs text-gray-500">{i.group?.name}</p>
-                      <span className="text-xs text-gray-400">•</span>
-                      <p className="text-xs text-gray-500">
-                        {intlDateFormat(i.updatedAt)}
-                      </p>
-                    </div>
+                  <div>
+                    <p
+                      className={`font-semibold text-lg ${
+                        isSuccessful ? 'text-green-600' : 'text-red-600'
+                      }`}
+                    >
+                      {i.numberOfTokens}
+                    </p>
                   </div>
-                </div>
-                <div>
-                  <p
-                    className={`font-semibold text-lg ${
-                      i.status === 'DISBURSED'
-                        ? 'text-green-600'
-                        : 'text-red-600'
-                    }`}
-                  >
-                    {i.numberOfTokens}
-                  </p>
-                </div>
-              </a>
-            ))}
+                </a>
+              );
+            })}
           </div>
         ) : (
           <div className="h-32 grid place-items-center">

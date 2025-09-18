@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Heading } from 'apps/rahat-ui/src/common';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
@@ -15,33 +15,36 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
   PROJECT_SETTINGS_KEYS,
+  useGetProjectReporting,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import QuickExportReport from './quick-export-report';
+import { getDataByName } from 'apps/rahat-ui/src/utils/getValueByNameAdLink';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 
-const recentExports = [
-  {
-    id: 1,
-    name: 'Beneficiaries_Report_Aug2025.xlsx',
-    date: 'August 19, 2025 at 1:38 PM',
-    detail: '1,234 records',
-    status: 'success',
-  },
-  {
-    id: 2,
-    name: 'Financial_Summary_Aug2025.pdf',
-    date: 'August 18, 2025 at 3:22 PM',
-    detail: '$123,456 total',
-    status: 'failed',
-  },
-  {
-    id: 3,
-    name: 'Transaction_History_Aug2025.xlsx',
-    date: 'August 17, 2025 at 11:15 AM',
-    detail: '2,564 transactions',
-    status: 'success',
-  },
-];
+// const recentExports = [
+//   {
+//     id: 1,
+//     name: 'Beneficiaries_Report_Aug2025.xlsx',
+//     date: 'August 19, 2025 at 1:38 PM',
+//     detail: '1,234 records',
+//     status: 'success',
+//   },
+//   {
+//     id: 2,
+//     name: 'Financial_Summary_Aug2025.pdf',
+//     date: 'August 18, 2025 at 3:22 PM',
+//     detail: '$123,456 total',
+//     status: 'failed',
+//   },
+//   {
+//     id: 3,
+//     name: 'Transaction_History_Aug2025.xlsx',
+//     date: 'August 17, 2025 at 11:15 AM',
+//     detail: '2,564 transactions',
+//     status: 'success',
+//   },
+// ];
 
 const fileExportData = [
   {
@@ -69,6 +72,28 @@ const ReportingPage = () => {
   );
   const contractAddress = contractSettings?.c2cproject?.address;
 
+  const { data, isPending } = useGetProjectReporting(projectUUID);
+
+  const statsConfig = useMemo(
+    () => [
+      {
+        title: 'Total Beneficiaries',
+        value: getDataByName(data, 'BENEFICIARY_TOTAL'),
+        subtext: 'People helped',
+        icon: Users,
+        iconColor: 'text-blue-500',
+      },
+      {
+        title: 'Total Disbursement Amount',
+        value: `${getDataByName(data, 'DISBURSEMENT_TOTAL')}`,
+        subtext: 'Successfully distributed',
+        icon: DollarSign,
+        iconColor: 'text-green-500',
+      },
+    ],
+    [data],
+  );
+
   return (
     <ScrollArea className="h-[calc(100vh-60px)]">
       <div className="p-4 relative">
@@ -78,31 +103,28 @@ const ReportingPage = () => {
         />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Top Stats */}
-          <Card className="col-span-1 rounded-xl p-4">
-            <p className="text-lg font-semibold text-gray-500">
-              Total Beneficiaries
-            </p>
-            <div className="mt-2 flex justify-between items-center">
-              <div>
-                <p className="text-3xl font-semibold">1,234</p>
-                <p className="text-green-600">People helped</p>
-              </div>
-              <Users size={30} className="text-blue-500" />
-            </div>
-          </Card>
-
-          <Card className="col-span-1 rounded-xl p-4">
-            <p className="text-lg font-semibold text-gray-500">
-              Total Disbursement Amount
-            </p>
-            <div className="mt-2 flex justify-between items-center">
-              <div>
-                <p className="text-3xl font-semibold">$123,456</p>
-                <p className="text-green-600">Successfully distributed</p>
-              </div>
-              <DollarSign size={30} className="text-green-500" />
-            </div>
-          </Card>
+          {isPending
+            ? Array.from({ length: 2 }).map((_, idx) => (
+                <Skeleton key={idx} className="h-32 w-full rounded-xl" />
+              ))
+            : statsConfig.map(
+                ({ title, value, subtext, iconColor, icon: Icon }) => {
+                  return (
+                    <Card key={title} className="col-span-1 rounded-xl p-4">
+                      <p className="text-lg font-semibold text-gray-500">
+                        {title}
+                      </p>
+                      <div className="mt-2 flex justify-between items-center">
+                        <div>
+                          <p className="text-3xl font-semibold">{value}</p>
+                          <p className="text-green-600">{subtext}</p>
+                        </div>
+                        <Icon size={30} className={iconColor} />
+                      </div>
+                    </Card>
+                  );
+                },
+              )}
         </div>
         {/* Generate Report */}
         <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -122,7 +144,7 @@ const ReportingPage = () => {
           </Card>
         </div>
         {/* Recent Exports */}
-        <Card className="p-4 mt-4 rounded-xl">
+        {/* <Card className="p-4 mt-4 rounded-xl">
           <div className="flex gap-1 items-center">
             <Clock size={20} className="text-gray-500" />
             <p className="text-lg font-semibold">Recent Exports</p>
@@ -162,7 +184,7 @@ const ReportingPage = () => {
               </div>
             ))}
           </div>
-        </Card>
+        </Card> */}
       </div>
     </ScrollArea>
   );

@@ -61,7 +61,7 @@ const QuickExportReport = ({
         query: FilteredTransaction,
         variables: {
           contractAddress,
-          fromDate: '1735668900',
+          fromDate,
           toDate,
         },
       });

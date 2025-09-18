@@ -11,6 +11,7 @@ import { useGetProjectReporting } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import { getDataByName } from 'apps/rahat-ui/src/utils/getValueByNameAdLink';
 
 const walletData = [
   { name: 'Genosis Wallet', value: 75, color: '#3B82F6' }, // blue
@@ -27,25 +28,18 @@ export default function ProjectDashboard() {
   const projectId = params.id as UUID;
   const { data, isPending } = useGetProjectReporting(projectId);
 
-  const getDataByName = useCallback(
-    (name: string) => {
-      return data?.find((item: any) => item.name === name)?.data?.count || '0';
-    },
-    [data],
-  );
-
   const stats = useMemo(
     () => [
       {
         label: 'Total Beneficiaries',
-        value: getDataByName('BENEFICIARY_TOTAL'),
+        value: getDataByName(data, 'BENEFICIARY_TOTAL'),
         icon: Users,
         textColor: 'text-blue-600',
         bg: 'from-blue-50 to-blue-100 border-blue-200',
       },
       {
         label: 'Total Disbursed',
-        value: `${getDataByName('DISBURSEMENT_TOTAL')} USDC`,
+        value: `${getDataByName(data, 'DISBURSEMENT_TOTAL')} USDC`,
         icon: Wallet,
         textColor: 'text-green-600',
         bg: 'from-green-50 to-green-100 border-green-200',
@@ -58,7 +52,7 @@ export default function ProjectDashboard() {
         bg: 'from-purple-50 to-purple-100 border-purple-200',
       },
     ],
-    [getDataByName],
+    [data],
   );
 
   return (

@@ -14,7 +14,11 @@ const CancelBtn = ({
 }) => {
   return (
     <div className="mt-4 flex justify-end">
-      <Button className="w-64" onClick={() => setSelectedType(null)}>
+      <Button
+        type="button"
+        className="w-72 bg-slate-500 hover:bg-slate-600"
+        onClick={() => setSelectedType(null)}
+      >
         Cancel
       </Button>
     </div>

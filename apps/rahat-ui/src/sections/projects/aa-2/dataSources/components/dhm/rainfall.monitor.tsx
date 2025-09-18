@@ -7,6 +7,7 @@ interface RainFallMonitorProps {
   description: string;
   warningStatus: string;
   stationIndex: string;
+  updatedAt: string;
   district: string;
   timeIntervals: {
     hours: number;
@@ -20,6 +21,7 @@ export function RainFallMonitor({
   warningStatus,
   stationIndex,
   district,
+  updatedAt,
   timeIntervals,
 }: RainFallMonitorProps) {
   return (
@@ -30,6 +32,7 @@ export function RainFallMonitor({
             title={name}
             titleStyle="text-xl/6 font-semibold"
             description={description}
+            updatedAt={updatedAt}
           />
           <div>
             <Badge

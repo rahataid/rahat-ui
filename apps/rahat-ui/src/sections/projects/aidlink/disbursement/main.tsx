@@ -7,11 +7,12 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { Heading } from 'apps/rahat-ui/src/common';
 import CreateDisbursementSelectionType from './createDisbursementSelectionType';
-import { DisbursementHistoryList } from './disbursementHistoryList';
+import { DisbursementHistoryList } from './disbursementHistory';
+import { DisbursementPendingList } from './disbursementPending';
+import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 
 export default function DisbursementMainView() {
-  const [activeTab, setActiveTab] =
-    React.useState<string>('createDisbursement');
+  const { activeTab, setActiveTab } = useActiveTab('createDisbursement');
 
   return (
     <div className="p-4 bg-gray-50 h-[calc(100vh-58px)]">
@@ -26,6 +27,12 @@ export default function DisbursementMainView() {
           <Heading
             title="Disbursement History"
             description="Track all the disbursement history"
+          />
+        </TabsContent>
+        <TabsContent className="mt-0" value="disbursementPending">
+          <Heading
+            title="Disbursement History"
+            description="Track all the pending disbursement history"
           />
         </TabsContent>
 
@@ -45,6 +52,13 @@ export default function DisbursementMainView() {
             >
               Disbursement History
             </TabsTrigger>
+            <TabsTrigger
+              id="disbursementPending"
+              className="w-full data-[state=active]:bg-white"
+              value="disbursementPending"
+            >
+              Pending
+            </TabsTrigger>
           </TabsList>
         </div>
         <TabsContent value="createDisbursement">
@@ -52,6 +66,9 @@ export default function DisbursementMainView() {
         </TabsContent>
         <TabsContent value="disbursementHistory">
           <DisbursementHistoryList />
+        </TabsContent>
+        <TabsContent value="disbursementPending">
+          <DisbursementPendingList />
         </TabsContent>
       </Tabs>
     </div>

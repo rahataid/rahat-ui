@@ -114,6 +114,26 @@ export const useGetDisbursement = (
   return query;
 };
 
+export const useGetProjectReporting = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-project-reporting', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'c2cProject.reporting.list',
+          payload: {},
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
 type DisbursementTransactionHookParams = {
   projectUUID: UUID;
   disbursementUUID: UUID;

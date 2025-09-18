@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Dialog,
   DialogContent,
@@ -7,33 +5,70 @@ import {
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Check, Clock, ExternalLink } from 'lucide-react';
+import { CheckCircle, Clock, ExternalLink } from 'lucide-react';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { useParams, useRouter } from 'next/navigation';
+import { UUID } from 'crypto';
+import React from 'react';
+import Link from 'next/link';
 
-interface TransactionStatusModalProps {
+interface IProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   data: any;
+}
+
+interface StatusStep {
+  icon: React.ReactNode;
+  title: string;
+  time: string;
+  completed: boolean;
 }
 
 export function TransactionInitiatedModal({
   open,
   onOpenChange,
   data,
-}: TransactionStatusModalProps) {
+}: IProps) {
   console.log('data:', data);
+  const { id: projectUUID } = useParams() as { id: UUID };
+  const router = useRouter();
+
+  const statusSteps: StatusStep[] = React.useMemo(
+    () => [
+      {
+        icon: <CheckCircle className="w-5 h-5 text-green-600" />,
+        title: 'Transaction Initiated',
+        time: data?.updatedAt ? dateFormat(data?.updatedAt) : 'N/A',
+        completed: true,
+      },
+      {
+        icon: <Clock className="w-5 h-5 text-yellow-600" />,
+        title: 'Safe Wallet Approval',
+        time: 'Pending',
+        completed: false,
+      },
+      {
+        icon: <Clock className="w-5 h-5 text-yellow-600" />,
+        title: 'Disbursement Execution',
+        time: 'Pending',
+        completed: false,
+      },
+    ],
+    [data],
+  );
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-semibold">
             Transaction Initiated
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-2">
           {/* Amount Section */}
-          <div className="bg-blue-50 rounded-lg p-6 text-center">
+          <div className="bg-blue-50 rounded-sm p-6 text-center">
             <p className="text-sm text-gray-600 mb-2">Total Amount</p>
             <p className="text-2xl font-bold text-blue-600 mb-1">
               {data?.amount} USDC
@@ -42,76 +77,63 @@ export function TransactionInitiatedModal({
             {/* <p className="text-sm text-gray-600">1,275 beneficiaries</p> */}
           </div>
 
-          {/* Description */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <p className="text-sm text-gray-700">
-              We have successfully initiated the transaction from Rahat.
-              Disbursement will be executed once they are approved by Safe
-              Wallet Owners
-            </p>
-          </div>
+          {/* Transaction cycle */}
+          <div className="p-4 rounded-sm border">
+            <div className="mb-4">
+              <p className="text-sm text-gray-700 leading-relaxed">
+                We have successfully initiated the transaction from Rahat.
+                Disbursement will be executed once they are approved by Safe
+                Wallet Owners
+              </p>
+            </div>
 
-          {/* Progress Steps */}
-          <div className="space-y-4">
-            {/* Progress Bar */}
-            <div className="relative">
-              <div className="absolute top-6 left-6 right-6 h-0.5 bg-gray-200">
-                <div className="h-full w-1/3 bg-blue-500"></div>
+            <div className="mb-4">
+              <div className="flex items-center gap-1">
+                <div className="flex-1 h-2 bg-blue-500 rounded-l-full" />
+                <div className="flex-1 h-2 bg-gray-200" />
+                <div className="flex-1 h-2 bg-gray-200 rounded-r-full" />
               </div>
             </div>
 
-            {/* Steps */}
-            <div className="flex justify-between relative">
-              {/* Step 1 - Completed */}
-              <div className="flex flex-col items-center text-center flex-1">
-                <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center mb-2 relative z-10">
-                  <Check className="w-6 h-6 text-white" />
-                </div>
-                <p className="text-sm font-medium text-gray-900">
-                  Transaction Initiated
-                </p>
-                <p className="text-xs text-gray-500">
-                  {dateFormat(data?.updatedAt)}
-                </p>
-              </div>
+            <div className="grid grid-cols-3 gap-6">
+              {statusSteps.map((step, index) => (
+                <div key={index} className="text-center">
+                  {/* Status Icon */}
+                  <div className="flex justify-center mb-2">{step.icon}</div>
 
-              {/* Step 2 - Pending */}
-              <div className="flex flex-col items-center text-center flex-1">
-                <div className="w-12 h-12 rounded-full bg-yellow-500 flex items-center justify-center mb-2 relative z-10">
-                  <Clock className="w-6 h-6 text-white" />
+                  {/* Step Content */}
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-900">
+                      {step.title}
+                    </h3>
+                    <span className="text-sm text-gray-500">{step.time}</span>
+                  </div>
                 </div>
-                <p className="text-sm font-medium text-gray-900">
-                  Safe Wallet Approval
-                </p>
-                <p className="text-xs text-yellow-600">Pending</p>
-              </div>
-
-              {/* Step 3 - Pending */}
-              <div className="flex flex-col items-center text-center flex-1">
-                <div className="w-12 h-12 rounded-full bg-yellow-500 flex items-center justify-center mb-2 relative z-10">
-                  <Clock className="w-6 h-6 text-white" />
-                </div>
-                <p className="text-sm font-medium text-gray-900">
-                  Disbursement Execution
-                </p>
-                <p className="text-xs text-yellow-600">Pending</p>
-              </div>
+              ))}
             </div>
           </div>
-
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-4">
-            <Button disabled className="flex-1 bg-blue-600 hover:bg-blue-700">
+          <div className="flex gap-3 pt-1">
+            <Button
+              className="flex-1 bg-blue-600 hover:bg-blue-700"
+              onClick={() =>
+                router.push(
+                  `/projects/aidlink/${projectUUID}/disbursement/${data?.uuid}`,
+                )
+              }
+            >
               View Disbursement Details
             </Button>
-            <Button
-              disabled
-              variant="outline"
-              className="flex-1 bg-transparent"
+            <Link
+              href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
+              target="_blank"
+              className="flex-1"
             >
-              Open Safe Wallet
-              <ExternalLink className="w-4 h-4 ml-2" />
-            </Button>
+              <Button variant="outline" className="w-full bg-transparent">
+                Open Safe Wallet
+                <ExternalLink className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
           </div>
         </div>
       </DialogContent>

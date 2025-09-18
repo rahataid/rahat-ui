@@ -26,6 +26,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
   navFooter,
 }) => {
   const { navItems: menuItems } = useProjectNavItems(projectType);
+
   const { headerNav } = useProjectHeaderItems(projectType);
 
   // --- Previous Project Layout---

@@ -64,11 +64,7 @@ export default function PhaseCard({
   return (
     <Card
       className={(cn(' border-gray-300 shadow-sm p-4 rounded-xl '), className)}
-      onClick={() =>
-        router.push(
-          `/projects/aa/${ProjectId}/activities/${id}?from="mainPage"`,
-        )
-      }
+      onClick={() => router.push(`/projects/aa/${ProjectId}/activities/${id}`)}
     >
       <CardContent className="space-y-2 p-2">
         <div className="flex items-center justify-between ">

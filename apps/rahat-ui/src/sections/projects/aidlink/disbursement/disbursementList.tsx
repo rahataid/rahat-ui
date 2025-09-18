@@ -11,26 +11,20 @@ import {
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { NoResult, SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import {
-  DisbursementSelectionType,
-  useGetDisbursements,
-} from '@rahat-ui/query';
+import { DisbursementSelectionType } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
-export function DisbursementHistoryList() {
+type Props = {
+  disbursements: any[];
+  loading: boolean;
+};
+
+export function DisbursementList({ disbursements, loading }: Props) {
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
-
-  const { data: disbursements, isLoading: loadingDisbursements } =
-    useGetDisbursements({
-      projectUUID,
-      page: 1,
-      perPage: 10,
-    });
 
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('');
@@ -75,7 +69,7 @@ export function DisbursementHistoryList() {
       {/* Transaction Cards */}
       <ScrollArea className="h-[calc(100vh-310px)]">
         <div className="space-y-4">
-          {!loadingDisbursements ? (
+          {!loading ? (
             disbursements?.length > 0 ? (
               disbursements?.map((disbursement: any) => (
                 <div className="border p-4 rounded-sm space-y-2">
@@ -97,7 +91,7 @@ export function DisbursementHistoryList() {
                         <h3 className="text-sm/6 font-medium text-gray-900">
                           N/A
                         </h3>
-                        <p className="text-sm/4 text-gray-700 mb-3">
+                        {/* <p className="text-sm/4 text-gray-700 mb-3">
                           {disbursement.disbursementType ===
                           DisbursementSelectionType.GROUP
                             ? disbursement.DisbursementBeneficiary?.length
@@ -105,7 +99,7 @@ export function DisbursementHistoryList() {
                                 disbursement.DisbursementBeneficiary[0]
                                   .beneficiaryWalletAddress || '',
                               )}
-                        </p>
+                        </p> */}
                       </div>
                     </div>
                     <div>

@@ -20,7 +20,7 @@ import { IconLabelBtn, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useTriggerCommunication } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { SessionStatus } from '@rumsan/connect/src/types';
 import MessageWithToggle from './messageWithToggle';
@@ -29,6 +29,7 @@ import Link from 'next/link';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 interface BaseCommunication {
+  communicationTitle?: string;
   groupId: string;
   groupType: string;
   transportId: string;
@@ -74,6 +75,8 @@ export function CommunicationCard({
     }
   };
   const { id: projectId, activityID } = useParams();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('from');
   const [loadingButtons, setLoadingButtons] = React.useState<string[]>([]);
   const trigger = useTriggerCommunication();
   const activityId = activityID as string;
@@ -108,7 +111,13 @@ export function CommunicationCard({
                 </h3>
                 {activityCommunication?.sessionStatus !== SessionStatus.NEW && (
                   <Link
-                    href={`/projects/aa/${projectId}/communication-logs/commsdetails/${activityCommunication?.communicationId}@${activityId}@${activityCommunication?.sessionId}?from=activities`}
+                    href={`/projects/aa/${projectId}/communication-logs/commsdetails/${
+                      activityCommunication?.communicationId
+                    }@${activityId}@${
+                      activityCommunication?.sessionId
+                    }?from=activities${
+                      redirectTo ? `&backFrom=${redirectTo}` : ''
+                    }`}
                     className="items-center justify-center hover:bg-gray-100"
                   >
                     <ArrowUpRight size={20} className="text-blue-800" />
@@ -170,16 +179,19 @@ export function CommunicationCard({
           </div>
         </div>
 
+        <h4 className="font-normal mb-0 space-y-0 text-muted-foreground">
+          {activityCommunication?.communicationTitle}
+        </h4>
         {(activityCommunication?.transportName === 'EMAIL' ||
           activityCommunication?.transportName === 'SMS') && (
-          <div className="mt-3">
+          <div className="mt-1">
             <MessageWithToggle message={activityCommunication?.message ?? ''} />
           </div>
         )}
 
         {activityCommunication?.transportName === 'VOICE' &&
           Object.keys(activityCommunication?.message).length !== 0 && (
-            <div className="mt-3">
+            <div className="mt-1">
               <div className="pt-2">
                 <h3 className="text-sm font-medium mb-2">
                   {activityCommunication?.message?.fileName}

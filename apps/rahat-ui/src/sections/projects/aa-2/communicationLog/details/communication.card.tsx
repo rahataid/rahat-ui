@@ -38,6 +38,7 @@ interface BaseCommunication {
   groupType: string;
   transportId: string;
   communicationId: string;
+  communicationTitle: string;
   groupName: string;
   sessionStatus: string;
   sessionId: string;
@@ -130,7 +131,7 @@ export function CommunicationDetailCard({
 
     XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
   };
-  console.log(activityCommunication);
+  console.log(activityCommunication, 'detail from the single communication');
   return (
     <Card className="rounded-sm pb-0 flex flex-col justify-between">
       <CardHeader className="pb-2">
@@ -174,6 +175,9 @@ export function CommunicationDetailCard({
         </div>
       </CardHeader>
       <CardContent className="pb-4 min-h-[60px] flex-grow">
+        <p className="text-sm text-gray-500">
+          {activityCommunication?.communicationTitle}
+        </p>
         {(activityCommunication?.transportName === 'EMAIL' ||
           activityCommunication?.transportName === 'SMS') && (
           <div className="flex flex-col gap-0">

@@ -1,36 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Heading } from 'apps/rahat-ui/src/common';
 import { CheckCircle, Users, Wallet } from 'lucide-react';
 import RecentTransaction from './recent-transaction';
 import ProjectDetailsCard from './project-details-card';
-
-const stats = [
-  {
-    label: 'Total Beneficiaries',
-    value: '1,234',
-    icon: Users,
-    textColor: 'text-blue-600',
-    bg: 'from-blue-50 to-blue-100 border-blue-200',
-  },
-  {
-    label: 'Total Disbursed',
-    value: '123,456 USDC',
-    icon: Wallet,
-    textColor: 'text-green-600',
-    bg: 'from-green-50 to-green-100 border-green-200',
-  },
-  {
-    label: 'Total Off-ramped',
-    value: '1,246 USDC',
-    icon: CheckCircle,
-    textColor: 'text-purple-600',
-    bg: 'from-purple-50 to-purple-100 border-purple-200',
-  },
-];
+import { useGetProjectReporting } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 
 const walletData = [
   { name: 'Genosis Wallet', value: 75, color: '#3B82F6' }, // blue
@@ -43,6 +23,44 @@ const offRampData = [
 ];
 
 export default function ProjectDashboard() {
+  const params = useParams();
+  const projectId = params.id as UUID;
+  const { data, isPending } = useGetProjectReporting(projectId);
+
+  const getDataByName = useCallback(
+    (name: string) => {
+      return data?.find((item: any) => item.name === name)?.data?.count || '0';
+    },
+    [data],
+  );
+
+  const stats = useMemo(
+    () => [
+      {
+        label: 'Total Beneficiaries',
+        value: getDataByName('BENEFICIARY_TOTAL'),
+        icon: Users,
+        textColor: 'text-blue-600',
+        bg: 'from-blue-50 to-blue-100 border-blue-200',
+      },
+      {
+        label: 'Total Disbursed',
+        value: `${getDataByName('DISBURSEMENT_TOTAL')} USDC`,
+        icon: Wallet,
+        textColor: 'text-green-600',
+        bg: 'from-green-50 to-green-100 border-green-200',
+      },
+      {
+        label: 'Total Off-ramped',
+        value: '0 USDC',
+        icon: CheckCircle,
+        textColor: 'text-purple-600',
+        bg: 'from-purple-50 to-purple-100 border-purple-200',
+      },
+    ],
+    [getDataByName],
+  );
+
   return (
     <div className="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
       <div className="p-6">
@@ -56,22 +74,26 @@ export default function ProjectDashboard() {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3 mt-6">
             <div className="col-span-2">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {stats.map(({ label, value, icon: Icon, textColor, bg }) => (
-                  <Card
-                    key={label}
-                    className={`bg-gradient-to-br ${bg} rounded-xl border`}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-1">
-                        <p className={`text-sm ${textColor}`}>{label}</p>
-                        <Icon className={`h-6 w-6 ${textColor}`} />
-                      </div>
-                      <p className={`text-xl font-medium ${textColor}`}>
-                        {value}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
+                {isPending
+                  ? Array.from({ length: 3 }).map((_, idx) => (
+                      <Skeleton key={idx} className="h-24 w-full rounded-xl" />
+                    ))
+                  : stats.map(({ label, value, icon: Icon, textColor, bg }) => (
+                      <Card
+                        key={label}
+                        className={`bg-gradient-to-br ${bg} rounded-xl border`}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between mb-1">
+                            <p className={`text-sm ${textColor}`}>{label}</p>
+                            <Icon className={`h-6 w-6 ${textColor}`} />
+                          </div>
+                          <p className={`text-xl font-medium ${textColor}`}>
+                            {value}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
               </div>
 
               {/*  */}

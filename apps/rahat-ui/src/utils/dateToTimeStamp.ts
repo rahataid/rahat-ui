@@ -1,9 +1,8 @@
-
-export const dateToTimestamp = (dateString: string): number => {
+export const dateToTimestamp = (dateString: string): string => {
   const date = new Date(dateString);
-  return (date.getTime() / 1000);
-}
+  return String(Math.floor(date.getTime() / 1000));
+};
 
 export const timeStampToDate = (timestamp: number): Date => {
   return new Date(timestamp * 1000);
-}
+};

@@ -1,22 +1,21 @@
 'use client';
 
 import { RoleAuth, AARoles } from '@rahat-ui/auth';
-import { AAFundManagementView } from 'apps/rahat-ui/src/sections/projects/aa-2';
+import InitiateFundTransfer from 'apps/rahat-ui/src/sections/projects/aa-2/fundManagement/components/cashTracker/initiate.fund.transfer';
 
-const Page = () => {
+const AddFundManagement = () => {
   return (
     <RoleAuth
       roles={[
         AARoles.ADMIN,
-        AARoles.MANAGER,
         AARoles.UNICEF_DONOR,
         AARoles.UNICEF_FIELD_OFFICE,
         AARoles.UNICEF_HEAD_OFFICE,
       ]}
     >
-      <AAFundManagementView />
+      <InitiateFundTransfer />
     </RoleAuth>
   );
 };
 
-export default Page;
+export default AddFundManagement;

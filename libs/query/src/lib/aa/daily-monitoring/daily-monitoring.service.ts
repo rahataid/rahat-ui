@@ -262,17 +262,17 @@ export const useRemoveMonitoringWhileUpdating = () => {
   });
 };
 
-export const useForecastTabSettings = (uuid: UUID) => {
-  const q = useProjectAction([PROJECT_SETTINGS_KEYS.FORECAST_TAB_CONFIG]);
+export const useTabConfiguration = (uuid: UUID, name: string) => {
+  const q = useProjectAction([name]);
   const query = useQuery({
-    queryKey: ['settings.get.tab.config', uuid],
+    queryKey: [name, uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
           action: 'settings.get',
           payload: {
-            name: PROJECT_SETTINGS_KEYS.FORECAST_TAB_CONFIG,
+            name: name,
           },
         },
       });

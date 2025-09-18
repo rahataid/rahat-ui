@@ -66,7 +66,9 @@ export default function Confirmation() {
         setErrorData(data);
         return;
       }
-      router.push(`/projects/aa/${projectUUID}/fund-management`);
+      router.push(
+        `/projects/aa/${projectUUID}/fund-management?tab=fundManagementList`,
+      );
     } catch (e) {
       console.error('Creating reserve token::', e);
     }

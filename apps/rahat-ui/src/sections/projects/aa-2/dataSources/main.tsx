@@ -29,7 +29,7 @@ import GaugeReading from './components/gaugeReading';
 import GFHDetails from './components/gfh';
 import { GlofasSection } from './components/glofas';
 import { useParams } from 'next/navigation';
-import { useForecastTabSettings } from '@rahat-ui/query';
+import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 
 const componentMap = {
@@ -98,12 +98,15 @@ export default function DataSources() {
   const { activeTab, setActiveTab } = useActiveTab('dhm');
   const [date, setDate] = useState<Date | null>(null);
   const { id: projectID } = useParams();
-  const { data } = useForecastTabSettings(projectID as UUID);
+  const { data } = useTabConfiguration(
+    projectID as UUID,
+    PROJECT_SETTINGS_KEYS.FORECAST_TAB_CONFIG,
+  );
 
   // Backend tabs OR default fallback
   const backendTabs: BackendTab[] =
-    data?.value?.length > 0
-      ? data.value
+    data?.value?.tabs.length > 0
+      ? data.value?.tabs
       : [
           { value: 'dhm', label: 'DHM' },
           { value: 'glofas', label: 'GLOFAS' },

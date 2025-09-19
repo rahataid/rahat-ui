@@ -1,6 +1,6 @@
 {
   "name": "@rahat-ui/source",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "license": "MIT",
   "scripts": {
     "rahat-ui": "nx serve rahat-ui",

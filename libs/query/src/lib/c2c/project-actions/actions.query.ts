@@ -1,4 +1,4 @@
-import { useMutation, useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS } from '../../../config';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
@@ -6,6 +6,8 @@ import { Pagination } from '@rumsan/sdk/types';
 import { Beneficiary } from '@rahataid/sdk';
 import Swal from 'sweetalert2';
 import { formatEther } from 'viem';
+import { useSwal } from 'libs/query/src/swal';
+import axios from 'axios';
 
 export const useGetTreasurySourcesSettings = (uuid: UUID) => {
   const projectActions = useProjectAction([
@@ -161,6 +163,59 @@ export const useGetDisbursementTransactions = (
   });
 
   return query;
+};
+
+export const useGetBeneficiariesReport = () => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      fromDate,
+      toDate,
+    }: {
+      projectUUID: UUID;
+      fromDate: string;
+      toDate: string;
+    }) => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getBenReportingLogs',
+          payload: {
+            fromDate,
+            toDate,
+          },
+        },
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data.length === 0) {
+        toast.fire({
+          title: 'No transactions found.',
+          text: 'Please try selecting a different date range.',
+          icon: 'error',
+        });
+      }
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message || 'An error occured!';
+      toast.fire({
+        title: 'Error while getting report.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
 };
 
 type DisbursementApprovalsHookParams = {
@@ -519,6 +574,67 @@ export const useGetSafeOwners = (projectUUID: UUID) => {
         },
       });
       return res.data;
+    },
+  });
+};
+
+export const useMutateGraphCall = (projectUUID: UUID) => {
+  const { url } = useProjectSettingsStore(
+    (state) =>
+      state.settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH] || null,
+  );
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  const isEmptyResponse = (apiData: any) => {
+    if (!apiData) return true;
+    return Object.values(apiData).every(
+      (value) => Array.isArray(value) && value.length === 0,
+    );
+  };
+
+  return useMutation({
+    mutationFn: async ({
+      query,
+      variables,
+    }: {
+      query: string;
+      variables?: any;
+    }) => {
+      const res = await axios.post(
+        url,
+        JSON.stringify({
+          query,
+          variables,
+        }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+      return res.data;
+    },
+    onSuccess: (data) => {
+      if (isEmptyResponse(data?.data)) {
+        toast.fire({
+          title: 'No data found.',
+          icon: 'error',
+        });
+      }
+    },
+
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message || 'An error occured!';
+      toast.fire({
+        title: 'Error.',
+        icon: 'error',
+        text: errorMessage,
+      });
     },
   });
 };

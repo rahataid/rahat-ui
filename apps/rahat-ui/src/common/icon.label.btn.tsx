@@ -10,6 +10,7 @@ type IProps = {
   variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost';
   disabled?: boolean;
   type?: 'submit' | 'reset' | 'button' | undefined;
+  size?: 'sm' | 'lg' | 'xs' | 'icon' | null | undefined;
 };
 export function IconLabelBtn({
   Icon,
@@ -19,6 +20,7 @@ export function IconLabelBtn({
   variant = 'default',
   disabled = false,
   type,
+  size = 'xs',
 }: IProps) {
   return (
     <Button
@@ -27,6 +29,7 @@ export function IconLabelBtn({
       onClick={handleClick}
       disabled={disabled}
       type={type}
+      size={size}
     >
       <Icon className="mr-1" size={18} strokeWidth={1.5} />
       {name}

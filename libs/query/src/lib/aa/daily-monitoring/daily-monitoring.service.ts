@@ -4,6 +4,27 @@ import { useSwal } from 'libs/query/src/swal';
 import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
+export interface SourceHealthData {
+  source_id: string;
+  name: string;
+  source_url: string;
+  status: 'UP' | 'DOWN' | 'DEGRADED' | string;
+  last_checked: string;
+  response_time_ms: number | null;
+  validity: 'VALID' | 'STALE' | 'EXPIRED' | string;
+  errors: Array<{
+    code: string;
+    message: string;
+    timestamp: string;
+  }> | null;
+}
+
+export interface HealthCacheData {
+  overall_status: 'HEALTHY' | 'DEGRADED' | 'UNHEALTHY' | string;
+  last_updated: string;
+  sources?: SourceHealthData[];
+}
+
 export const useCreateDailyMonitoring = () => {
   const q = useProjectAction();
   const alert = useSwal();

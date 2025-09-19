@@ -1,7 +1,13 @@
 import { SourceHealthData } from '@rahat-ui/query';
 import { cn } from '@rahat-ui/shadcn/src';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/hover-card';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import {
   Clock,
@@ -9,6 +15,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   TriangleAlert,
+  X,
 } from 'lucide-react';
 
 interface ApiStatusCardProps {
@@ -46,13 +53,13 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
   const getValidityColor = (validity: string) => {
     switch (validity) {
       case 'VALID':
-        return 'text-green-500';
+        return 'text-green-500 bg-green-50 border-green-500';
       case 'STALE':
-        return 'text-yellow-500';
+        return 'text-yellow-500 bg-yellow-50 border-yellow-500';
       case 'EXPIRED':
-        return 'text-red-500';
+        return 'text-red-500 bg-red-50 border-red-500';
       default:
-        return 'text-muted-foreground';
+        return 'text-muted-foreground bg-muted/10 border-border';
     }
   };
 
@@ -78,9 +85,22 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
             <h3 className="font-medium text-card-foreground text-balance leading-tight">
               {data.name}
             </h3>
-            <p className="text-sm text-primary  transition-colors truncate mt-1">
-              {data.source_url}
-            </p>
+
+            <HoverCard>
+              <HoverCardTrigger asChild>
+                <p className="text-sm text-primary  transition-colors truncate mt-1 w-40 hover:cursor-pointer">
+                  {data.source_url}
+                </p>
+              </HoverCardTrigger>
+              <HoverCardContent
+                className="w-auto rounded-sm m-1 p-1.5"
+                align="start"
+              >
+                <div className="flex justify-between gap-4 rounded-sm">
+                  <p className="text-sm">{data.source_url}</p>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <Badge
@@ -93,8 +113,12 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               variant="outline"
               className={cn('text-xs font-medium', getStatusColor(data.status))}
             >
-              <CheckCircle2 className="w-3 h-3 mr-1" />
-              {data.status}
+              {data.status === 'UP' ? (
+                <CheckCircle2 className="w-3 h-3 mr-1" />
+              ) : (
+                <X className="w-3 h-3 mr-1" />
+              )}
+              {data.status === 'UP' ? 'UP' : data.status}
             </Badge>
           </div>
         </div>
@@ -107,7 +131,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               <span>Last Checked</span>
             </div>
             <span className="text-sm text-card-foreground font-mono">
-              {data.last_checked}
+              {dateFormat(data.last_checked) ?? '-'}
             </span>
           </div>
 
@@ -117,7 +141,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               <span>Response Time</span>
             </div>
             <span className="text-sm text-card-foreground font-mono">
-              {data.response_time_ms ? `${data.response_time_ms}ms` : 'N/A'}
+              {data.response_time_ms ? `${data.response_time_ms}ms` : '-'}
             </span>
           </div>
 
@@ -126,14 +150,16 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               <AlertTriangle className="w-4 h-4" />
               <span>Data Validity</span>
             </div>
-            <span
+
+            <Badge
+              variant="outline"
               className={cn(
-                'text-sm font-medium',
+                'text-xs font-medium',
                 getValidityColor(data.validity),
               )}
             >
-              {data.validity}
-            </span>
+              {data.validity ?? '-'}
+            </Badge>
           </div>
         </div>
       </div>
@@ -155,9 +181,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
                   {dateFormat(data?.errors[0]?.timestamp)}
                 </span>
               </div>
-              <span className="text-sm font-medium">
-                {data?.errors[0]?.message}
-              </span>
+              <span className="text-xs">{data?.errors[0]?.message}</span>
             </div>
           </div>
         </div>

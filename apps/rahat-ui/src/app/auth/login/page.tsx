@@ -56,7 +56,7 @@ export default function AuthPage() {
   const onVerifyOtp = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     await verifyOtp({ otp, challenge, service });
-    router.push(paths.dashboard.root);
+    // router.push(paths.dashboard.root);
   };
 
   React.useEffect(() => {

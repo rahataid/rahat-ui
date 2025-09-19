@@ -9,6 +9,8 @@ import { CheckCircle, ExternalLink } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import Link from 'next/link';
+import React from 'react';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 interface IProps {
   open: boolean;
@@ -27,27 +29,29 @@ export function TransactionDisbursedModal({
   onOpenChange,
   data,
 }: IProps) {
-  console.log('data:', data);
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
 
-  const statusSteps: StatusStep[] = [
-    {
-      title: 'Transaction Initiated',
-      time: '3:35:00 PM',
-      completed: true,
-    },
-    {
-      title: 'Safe Wallet Approval',
-      time: '5:50:00 PM',
-      completed: true,
-    },
-    {
-      title: 'Disbursement Execution',
-      time: '04:15:00 PM',
-      completed: true,
-    },
-  ];
+  const statusSteps: StatusStep[] = React.useMemo(
+    () => [
+      {
+        title: 'Transaction Initiated',
+        time: dateFormat(data?.createdAt) || 'N/A',
+        completed: true,
+      },
+      {
+        title: 'Safe Wallet Approval',
+        time: dateFormat(data?.safeWalletApproval) || 'N/A',
+        completed: true,
+      },
+      {
+        title: 'Disbursement Execution',
+        time: dateFormat(data?.updatedAt) || 'N/A',
+        completed: true,
+      },
+    ],
+    [data],
+  );
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">

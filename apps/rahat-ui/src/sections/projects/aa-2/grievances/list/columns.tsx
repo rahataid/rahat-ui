@@ -8,15 +8,27 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { formatDate } from 'apps/community-tool-ui/src/utils';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { useParams, useRouter } from 'next/navigation';
 import { StatusChip, PriorityChip, TypeChip } from '../components';
+import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import GrievanceDetailSplitView from '../details/grievance.detail.split.view';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
 export const useGrievancesTableColumns = () => {
   const router = useRouter();
   const { id } = useParams();
+  const { setSecondPanelComponent } = useSecondPanel();
+
+  const openSplitDetailView = (grievance: any) => {
+    setSecondPanelComponent(
+      <GrievanceDetailSplitView
+        grievance={grievance}
+        closeSecondPanel={() => setSecondPanelComponent(null)}
+      />,
+    );
+  };
 
   const columns: ColumnDef<any>[] = [
     {
@@ -72,11 +84,7 @@ export const useGrievancesTableColumns = () => {
               className="hover:text-primary cursor-pointer"
               size={16}
               strokeWidth={1.5}
-              onClick={() =>
-                router.push(
-                  `/projects/aa/${id}/grievances/${row.original.uuid}`,
-                )
-              }
+              onClick={() => openSplitDetailView(row.original)}
             />
           </div>
         );

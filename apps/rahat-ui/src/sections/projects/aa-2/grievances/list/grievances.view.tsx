@@ -4,6 +4,7 @@ import { memo } from 'react';
 
 import { Heading } from 'apps/rahat-ui/src/common';
 import GrievancesTable from './grievances.table';
+
 function GrievancesView() {
   return (
     <div>

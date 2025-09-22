@@ -38,6 +38,7 @@ import {
 import {
   grievancePriority,
   grievanceStatus,
+  grievanceType,
 } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
 function GrievancesTable() {
   const { id } = useParams();
@@ -205,6 +206,22 @@ function GrievancesTable() {
               {grievanceStatus.map((status) => (
                 <SelectItem key={status.value} value={status.value}>
                   {status.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={filters?.type || 'all'}
+            onValueChange={(value) => handleFilterChange('type', value)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Grievance Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Grievance Type</SelectItem>
+              {grievanceType.map((type) => (
+                <SelectItem key={type.value} value={type.value}>
+                  {type.label}
                 </SelectItem>
               ))}
             </SelectContent>

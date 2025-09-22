@@ -1,7 +1,7 @@
-// apps/rahat-ui/src/sections/projects/aa-2/grievances/grievance.detail.split.view.tsx
-
 'use client';
 
+import { useGrievanceEditStatus } from '@rahat-ui/query';
+import { GrievanceStatus } from '@rahat-ui/query/lib/grievance/types/grievance';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -13,8 +13,12 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
+import { grievanceStatus } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
+import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
+import { UUID } from 'crypto';
 import { Expand, X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { PriorityChip, TypeChip } from '../components';
 
 type IProps = {
@@ -39,30 +43,44 @@ export default function GrievanceDetailSplitView({
   closeSecondPanel,
 }: IProps) {
   const router = useRouter();
+  const { id: projectId } = useParams() as { id: UUID };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+  const [currentStatus, setCurrentStatus] = useState<string>(
+    grievance?.status || 'CLOSED',
+  );
 
-  const handleEdit = () => {
-    router.push(
-      `/projects/aa/${grievance?.projectId}/grievances/${grievance?.uuid}/edit`,
-    );
-    closeSecondPanel();
-  };
+  const editStatusMutation = useGrievanceEditStatus();
+
+  useEffect(() => {
+    setCurrentStatus(grievance?.status || 'CLOSED');
+  }, [grievance?.status]);
 
   const handleViewFull = () => {
-    router.push(
-      `/projects/aa/${grievance?.projectId}/grievances/${grievance?.uuid}`,
-    );
+    router.push(`/projects/aa/${projectId}/grievances/${grievance?.uuid}`);
     closeSecondPanel();
+  };
+
+  const handleStatusChange = (value: string) => {
+    if (grievance?.uuid && projectId) {
+      const previousStatus = currentStatus;
+
+      setCurrentStatus(value);
+
+      editStatusMutation.mutate(
+        {
+          projectUUID: projectId,
+          grievancePayload: {
+            uuid: grievance.uuid,
+            status: value as GrievanceStatus,
+          },
+        },
+        {
+          onError: () => {
+            setCurrentStatus(previousStatus);
+          },
+        },
+      );
+    }
   };
 
   return (
@@ -95,16 +113,20 @@ export default function GrievanceDetailSplitView({
               <label className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-[#667085]">
                 Status
               </label>
-              <Select value={grievance?.status || 'CLOSED'}>
+              <Select
+                value={currentStatus}
+                onValueChange={handleStatusChange}
+                disabled={editStatusMutation.isPending}
+              >
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="NEW">New</SelectItem>
-                  <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                  <SelectItem value="UNDER_REVIEW">Under Review</SelectItem>
-                  <SelectItem value="RESOLVED">Resolved</SelectItem>
-                  <SelectItem value="CLOSED">Closed</SelectItem>
+                  {grievanceStatus.map((status) => (
+                    <SelectItem key={status.value} value={status.value}>
+                      {status.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -166,7 +188,9 @@ export default function GrievanceDetailSplitView({
                 Created at
               </span>
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
-                {formatDate(grievance?.createdAt || '2025-07-21T12:02:27Z')}
+                {grievance?.createdAt
+                  ? formatDateFull(grievance?.createdAt)
+                  : 'N/A'}
               </span>
             </div>
 
@@ -175,7 +199,9 @@ export default function GrievanceDetailSplitView({
                 Closed at
               </span>
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
-                {formatDate(grievance?.updatedAt || '2025-07-25T12:02:27Z')}
+                {grievance?.updatedAt
+                  ? formatDateFull(grievance?.updatedAt)
+                  : 'N/A'}
               </span>
             </div>
 

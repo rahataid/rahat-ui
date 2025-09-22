@@ -47,7 +47,6 @@ export default function PayoutView() {
     ];
   }, [statsPayout]);
 
-  console.log(statsPayout);
   return (
     <div className="p-4 ">
       <div className="flex justify-between items-center space-x-4">

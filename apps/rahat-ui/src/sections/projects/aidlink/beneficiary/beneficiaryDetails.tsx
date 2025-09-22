@@ -21,14 +21,14 @@ import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import React from 'react';
 
 export default function BeneficiaryDetailsView() {
-  const { id: projectId, beneficiaryId } = useParams() as {
+  const { id: projectUUID, beneficiaryId } = useParams() as {
     id: UUID;
     beneficiaryId: UUID;
   };
   const [copied, setCopied] = React.useState<boolean>(false);
 
   const { data: ben, isLoading } = useProjectBeneficiaryDetail({
-    projectUUID: projectId,
+    projectUUID,
     uuid: beneficiaryId,
   });
 
@@ -60,6 +60,8 @@ export default function BeneficiaryDetailsView() {
       <Heading
         title="Beneficiary Details"
         description="Detailed view of the selected beneficiary"
+        backBtn
+        path={`/projects/aidlink/${projectUUID}/beneficiary?tab=beneficiary`}
       />
 
       <div className="p-4 border rounded-sm">

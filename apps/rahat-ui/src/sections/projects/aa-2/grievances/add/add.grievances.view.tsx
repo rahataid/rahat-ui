@@ -52,7 +52,6 @@ export default function AddGrievances() {
     user: state.user,
   }));
   const [formKey, setFormKey] = React.useState(0);
-  const [tagInput, setTagInput] = React.useState('');
   const forceRerender = () => setFormKey((prev) => prev + 1);
   const grievancesListPath = `/projects/aa/${projectID}/grievances`;
   const addGrievance = useGrievanceAdd();
@@ -131,6 +130,7 @@ export default function AddGrievances() {
         ...data,
         reporterUserId: user?.data?.id,
         status: data.status || GrievanceStatus.NEW,
+        tags: data.tags || [],
       };
 
       await addGrievance.mutateAsync({
@@ -149,12 +149,31 @@ export default function AddGrievances() {
         priority: undefined,
         tags: [],
       });
-      setTagInput('');
+      setVariationTags([]);
+      setUnsavedTag('');
+      setActiveTagIndex(null);
 
       router.push(grievancesListPath);
     } catch (error) {
       console.error('Error submitting form:', error);
     }
+  };
+
+  const handleResetForm = () => {
+    form.reset({
+      reportedBy: '',
+      reporterContact: '',
+      title: '',
+      description: '',
+      status: GrievanceStatus.NEW,
+      type: undefined,
+      priority: undefined,
+      tags: [],
+    });
+    setVariationTags([]);
+    setUnsavedTag('');
+    setActiveTagIndex(null);
+    forceRerender();
   };
 
   const [variationTags, setVariationTags] = React.useState<Tag[]>([]);
@@ -244,7 +263,7 @@ export default function AddGrievances() {
                   }}
                 />
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <FormField
                     key={`type-${formKey}`}
                     control={form.control}
@@ -352,7 +371,7 @@ export default function AddGrievances() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="reportedBy"
@@ -446,7 +465,6 @@ export default function AddGrievances() {
                             )}
                           </>
                         </FormControl>
-
                         <FormMessage />
                       </FormItem>
                     );
@@ -459,20 +477,7 @@ export default function AddGrievances() {
                 type="button"
                 variant="outline"
                 className="w-36"
-                onClick={() => {
-                  form.reset({
-                    reportedBy: '',
-                    reporterContact: '',
-                    title: '',
-                    description: '',
-                    status: GrievanceStatus.NEW,
-                    type: undefined,
-                    priority: undefined,
-                    tags: [],
-                  });
-                  setTagInput('');
-                  forceRerender();
-                }}
+                onClick={handleResetForm}
               >
                 Clear
               </Button>

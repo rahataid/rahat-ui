@@ -54,9 +54,12 @@ const columns: ColumnDef<Beneficiary>[] = [
 ];
 
 export default function BeneficiaryGroupPage() {
-  const { id, groupId } = useParams() as { id: UUID; groupId: UUID };
+  const { id: projectUUID, groupId } = useParams() as {
+    id: UUID;
+    groupId: UUID;
+  };
 
-  const { data: group } = useC2CSingleBeneficiaryGroup(id, groupId);
+  const { data: group } = useC2CSingleBeneficiaryGroup(projectUUID, groupId);
 
   const [globalFilter, setGlobalFilter] = React.useState<string>('');
 
@@ -121,6 +124,8 @@ export default function BeneficiaryGroupPage() {
       <Heading
         title="Rumsan Beneficiary Group"
         description="Detailed view of the selected beneficiary group"
+        backBtn
+        path={`/projects/aidlink/${projectUUID}/beneficiary?tab=beneficiaryGroups`}
       />
 
       {/* Summary Cards */}

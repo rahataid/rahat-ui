@@ -30,7 +30,6 @@ export function TransactionInitiatedModal({
   onOpenChange,
   data,
 }: IProps) {
-  console.log('data:', data);
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
 
@@ -39,7 +38,7 @@ export function TransactionInitiatedModal({
       {
         icon: <CheckCircle className="w-5 h-5 text-green-600" />,
         title: 'Transaction Initiated',
-        time: data?.updatedAt ? dateFormat(data?.updatedAt) : 'N/A',
+        time: dateFormat(data?.createdAt) || 'N/A',
         completed: true,
       },
       {

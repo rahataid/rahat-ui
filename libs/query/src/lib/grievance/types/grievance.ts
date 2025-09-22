@@ -31,6 +31,11 @@ export enum GrievancePriority {
   CRITICAL = 'CRITICAL',
 }
 
+export type Tag = {
+  id: string;
+  text: string;
+};
+
 export type GrievanceFormData = {
   reportedBy: string;
   reporterContact: string;
@@ -39,4 +44,5 @@ export type GrievanceFormData = {
   description: string;
   status?: GrievanceStatus;
   priority: GrievancePriority;
+  tags: Tag[];
 };

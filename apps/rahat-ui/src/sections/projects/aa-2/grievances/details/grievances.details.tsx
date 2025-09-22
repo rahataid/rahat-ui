@@ -109,7 +109,7 @@ const GrievancesDetail = () => {
       </div>
 
       <div className="flex">
-        <div className="flex border rounded-xl flex-col gap-4 p-4 w-full">
+        <div className="flex-col gap-4 w-full">
           <GrievanceInfo grievance={details?.data} />
         </div>
       </div>

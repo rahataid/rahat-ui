@@ -19,6 +19,7 @@ type IProps = {
     amount: string,
     details?: string,
   ) => void;
+  isSubmitting: boolean;
 };
 
 interface FormData {
@@ -31,6 +32,7 @@ export function BeneficiaryDisbursementForm({
   beneficiaries,
   isLoading,
   handleDisbursement,
+  isSubmitting,
 }: IProps) {
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -222,7 +224,11 @@ export function BeneficiaryDisbursementForm({
           <Button
             type="submit"
             className="w-full"
-            disabled={selectedBeneficiary.length === 0 || !amountPerBeneficiary}
+            disabled={
+              selectedBeneficiary.length === 0 ||
+              !amountPerBeneficiary ||
+              isSubmitting
+            }
           >
             Initiate Transaction
           </Button>

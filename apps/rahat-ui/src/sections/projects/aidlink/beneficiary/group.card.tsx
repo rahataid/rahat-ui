@@ -21,7 +21,7 @@ export default function GroupCard({ group, projectUUID }: GroupProps) {
       className="border rounded-sm hover:shadow-md transition-shadow"
     >
       <CardHeader className="pb-0">
-        <h4 className="font-semibold text-gray-900">{group.name}</h4>
+        <h4 className="font-semibold text-gray-900 truncate">{group.name}</h4>
       </CardHeader>
       <CardContent className="pt-4">
         <div className="grid grid-cols-2 gap-4 mb-4">

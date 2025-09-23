@@ -24,7 +24,6 @@ type IProps = {
   items?: NavItem[];
 };
 export function NavMain(items: IProps) {
-  console.log('items', items);
   const currentPath = usePathname();
   const activePath = currentPath.split('/')[4];
 

@@ -68,7 +68,7 @@ const GrievancesDetail = () => {
                   variant="outline"
                   className="rounded flex gap-1 items-center text-sm font-medium w-auto"
                 >
-                  Change Status
+                  Update Status
                   <ChevronDown className="h-4 w-4 ml-1" />
                 </Button>
               </DropdownMenuTrigger>

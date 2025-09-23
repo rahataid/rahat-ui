@@ -21,7 +21,7 @@ export enum GrievanceStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   RESOLVED = 'RESOLVED',
   CLOSED = 'CLOSED',
-  REJECTED = 'REJECTED',
+  UNDER_REVIEW = 'UNDER_REVIEW',
 }
 
 export enum GrievancePriority {

@@ -16,7 +16,7 @@ export const grievanceStatus = [
   { value: GrievanceStatus.IN_PROGRESS, label: 'In Progress' },
   { value: GrievanceStatus.RESOLVED, label: 'Resolved' },
   { value: GrievanceStatus.CLOSED, label: 'Closed' },
-  { value: GrievanceStatus.REJECTED, label: 'Rejected' },
+  { value: GrievanceStatus.UNDER_REVIEW, label: 'Under Review' },
 ];
 
 export const grievancePriority = [

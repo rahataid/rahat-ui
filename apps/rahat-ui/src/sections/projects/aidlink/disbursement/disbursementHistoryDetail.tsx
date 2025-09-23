@@ -5,6 +5,8 @@ import {
   BadgeCheck,
   CalendarIcon,
   CheckCircleIcon,
+  Copy,
+  CopyCheck,
   CopyIcon,
   UsersIcon,
 } from 'lucide-react';
@@ -29,12 +31,14 @@ import { TransactionDisbursedModal } from './transactionDisbursedModal';
 import { parseEther } from 'viem';
 import { useAccount, useChainId } from 'wagmi';
 import { toast } from 'react-toastify';
+import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 
 export default function DisbursementHistoryDetail() {
   const { id: projectUUID, disbursementId } = useParams() as {
     id: UUID;
     disbursementId: UUID;
   };
+  const { clickToCopy, copyAction } = useCopy();
 
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
   const [executionResult, setExecutionResult] = React.useState<any>(null);
@@ -187,7 +191,11 @@ export default function DisbursementHistoryDetail() {
           />
           <div className="flex items-center gap-4">
             {approvals?.isExecuted && disbursement?.status !== 'COMPLETED' && (
-              <Button className="h-8 w-40" onClick={handleExecute}>
+              <Button
+                disabled={disburseMultiSig.isPending}
+                className="h-8 w-40"
+                onClick={handleExecute}
+              >
                 Execute
               </Button>
             )}
@@ -273,12 +281,18 @@ export default function DisbursementHistoryDetail() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-4 w-4 p-0"
                                   onClick={() =>
-                                    copyToClipboard(transaction.from)
+                                    clickToCopy(
+                                      transaction.from,
+                                      transaction.from,
+                                    )
                                   }
                                 >
-                                  <CopyIcon className="h-3 w-3" />
+                                  {copyAction === transaction.from ? (
+                                    <CopyCheck size={16} />
+                                  ) : (
+                                    <Copy size={16} />
+                                  )}
                                 </Button>
                               </div>
                               <div className="flex items-center gap-2">
@@ -293,14 +307,19 @@ export default function DisbursementHistoryDetail() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-4 w-4 p-0"
                                   onClick={() =>
-                                    copyToClipboard(
+                                    clickToCopy(
+                                      transaction.beneficiaryWalletAddress,
                                       transaction.beneficiaryWalletAddress,
                                     )
                                   }
                                 >
-                                  <CopyIcon className="h-3 w-3" />
+                                  {copyAction ===
+                                  transaction.beneficiaryWalletAddress ? (
+                                    <CopyCheck size={16} />
+                                  ) : (
+                                    <Copy size={16} />
+                                  )}
                                 </Button>
                               </div>
                             </div>

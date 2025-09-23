@@ -19,13 +19,14 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import React from 'react';
+import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 
 export default function BeneficiaryDetailsView() {
   const { id: projectUUID, beneficiaryId } = useParams() as {
     id: UUID;
     beneficiaryId: UUID;
   };
-  const [copied, setCopied] = React.useState<boolean>(false);
+  const { clickToCopy, copyAction } = useCopy();
 
   const { data: ben, isLoading } = useProjectBeneficiaryDetail({
     projectUUID,
@@ -50,11 +51,6 @@ export default function BeneficiaryDetailsView() {
 
   const completedSteps = steps.filter((s) => s.status === 'done').length;
   const progress = (completedSteps / steps.length) * 100;
-
-  const clickToCopy = (walletAddress: string) => {
-    navigator.clipboard.writeText(walletAddress);
-    setCopied(true);
-  };
   return (
     <div className="p-4 space-y-4 bg-gray-50">
       <Heading
@@ -98,8 +94,10 @@ export default function BeneficiaryDetailsView() {
                 </p>
 
                 <BadgeCheck className="text-primary" size={18} />
-                <button onClick={() => clickToCopy(ben?.walletAddress || '')}>
-                  {copied ? (
+                <button
+                  onClick={() => clickToCopy(ben?.walletAddress || '', 1)}
+                >
+                  {copyAction === 1 ? (
                     <CopyCheck className="text-primary" size={18} />
                   ) : (
                     <Copy className="text-primary" size={18} />

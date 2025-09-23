@@ -89,6 +89,7 @@ export default function CreateDisbursementMain({ type }: IProps) {
               details,
             })
           }
+          isSubmitting={disburseMultiSig.isPending}
         />
       ) : type === DisbursementSelectionType.GROUP ? (
         <BeneficiaryGroupsDisbursementForm
@@ -101,6 +102,7 @@ export default function CreateDisbursementMain({ type }: IProps) {
               details,
             })
           }
+          isSubmitting={disburseMultiSig.isPending}
         />
       ) : null}
     </>

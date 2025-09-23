@@ -8,17 +8,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { formatDate } from 'apps/community-tool-ui/src/utils';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { useParams, useRouter } from 'next/navigation';
 import { StatusChip, PriorityChip, TypeChip } from '../components';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import GrievanceDetailSplitView from '../details/grievance.detail.split.view';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
+import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
 
 export const useGrievancesTableColumns = () => {
-  const router = useRouter();
-  const { id } = useParams();
   const { setSecondPanelComponent } = useSecondPanel();
 
   const openSplitDetailView = (grievance: any) => {
@@ -32,18 +30,23 @@ export const useGrievancesTableColumns = () => {
 
   const columns: ColumnDef<any>[] = [
     {
+      accessorKey: 'id',
+      header: 'ID',
+      cell: ({ row }) => <div> {row.getValue('id')}</div>,
+    },
+    {
       accessorKey: 'title',
       header: 'Title',
       cell: ({ row }) => <div> {row.getValue('title')}</div>,
     },
     {
       accessorKey: 'reportedBy',
-      header: 'Reporter',
+      header: 'Reported By',
       cell: ({ row }) => <div> {row.getValue('reportedBy')}</div>,
     },
     {
       accessorKey: 'type',
-      header: 'Type',
+      header: 'Grievance Type',
       cell: ({ row }) => (
         <div>
           <TypeChip type={row.getValue('type')} showIcon={false} />
@@ -51,12 +54,15 @@ export const useGrievancesTableColumns = () => {
       ),
     },
     {
-      accessorKey: 'status',
-      header: 'Status',
+      accessorKey: 'createdBy',
+      header: 'Created By',
+      cell: ({ row }) => <div> {row.getValue('createdBy')}</div>,
+    },
+    {
+      accessorKey: 'createdAt',
+      header: 'Created On',
       cell: ({ row }) => (
-        <div>
-          <StatusChip status={row.getValue('status')} showIcon={false} />
-        </div>
+        <div> {formatDateFull(row.getValue('createdAt'))}</div>
       ),
     },
     {
@@ -69,9 +75,13 @@ export const useGrievancesTableColumns = () => {
       ),
     },
     {
-      accessorKey: 'createdAt',
-      header: 'Created At',
-      cell: ({ row }) => <div> {formatDate(row.getValue('createdAt'))}</div>,
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => (
+        <div>
+          <StatusChip status={row.getValue('status')} showIcon={false} />
+        </div>
+      ),
     },
     {
       id: 'action',

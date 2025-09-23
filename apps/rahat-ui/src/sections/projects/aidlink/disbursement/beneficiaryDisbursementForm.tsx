@@ -17,6 +17,7 @@ type IProps = {
   handleDisbursement: (
     beneficiaries: `0x${string}`[],
     amount: string,
+    totalAmount:string,
     details?: string,
   ) => void;
 };
@@ -73,6 +74,7 @@ export function BeneficiaryDisbursementForm({
     handleDisbursement(
       [selectedBeneficiary as `0x${string}`],
       amountPerBeneficiary,
+      totalAmount?.toString(),
       purpose,
     );
   };

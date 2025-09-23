@@ -20,6 +20,7 @@ type IProps = {
   handleDisbursement: (
     beneficiaryGroups: UUID,
     amount: string,
+    totalAmount:string,
     details?: string,
   ) => void;
 };
@@ -65,7 +66,8 @@ export function BeneficiaryGroupsDisbursementForm({
     handleDisbursement(
       selectedGroup as UUID,
       amountPerBeneficiary,
-      disbursementPurpose,
+      totalAmount?.toString(),
+      disbursementPurpose
     );
   };
 

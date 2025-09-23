@@ -6,22 +6,19 @@ import {
 
 export const grievanceType = [
   { value: GrievanceType.TECHNICAL, label: 'Technical' },
-  { value: GrievanceType.OPERATIONAL, label: 'Operational' },
-  { value: GrievanceType.FINANCIAL, label: 'Financial' },
+  { value: GrievanceType.NON_TECHNICAL, label: 'Non-Technical' },
   { value: GrievanceType.OTHER, label: 'Other' },
 ];
 
 export const grievanceStatus = [
   { value: GrievanceStatus.NEW, label: 'New' },
-  { value: GrievanceStatus.IN_PROGRESS, label: 'In Progress' },
+  { value: GrievanceStatus.UNDER_REVIEW, label: 'Under Review' },
   { value: GrievanceStatus.RESOLVED, label: 'Resolved' },
   { value: GrievanceStatus.CLOSED, label: 'Closed' },
-  { value: GrievanceStatus.UNDER_REVIEW, label: 'Under Review' },
 ];
 
 export const grievancePriority = [
   { value: GrievancePriority.LOW, label: 'Low' },
   { value: GrievancePriority.MEDIUM, label: 'Medium' },
   { value: GrievancePriority.HIGH, label: 'High' },
-  { value: GrievancePriority.CRITICAL, label: 'Critical' },
 ];

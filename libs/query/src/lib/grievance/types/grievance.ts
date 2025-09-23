@@ -11,24 +11,21 @@ export type GetGrievanceList = Pagination & {
 
 export enum GrievanceType {
   TECHNICAL = 'TECHNICAL',
-  OPERATIONAL = 'OPERATIONAL',
-  FINANCIAL = 'FINANCIAL',
+  NON_TECHNICAL = 'NON_TECHNICAL',
   OTHER = 'OTHER',
 }
 
 export enum GrievanceStatus {
   NEW = 'NEW',
-  IN_PROGRESS = 'IN_PROGRESS',
+  UNDER_REVIEW = 'UNDER_REVIEW',
   RESOLVED = 'RESOLVED',
   CLOSED = 'CLOSED',
-  UNDER_REVIEW = 'UNDER_REVIEW',
 }
 
 export enum GrievancePriority {
   LOW = 'LOW',
   MEDIUM = 'MEDIUM',
   HIGH = 'HIGH',
-  CRITICAL = 'CRITICAL',
 }
 
 export type Tag = {

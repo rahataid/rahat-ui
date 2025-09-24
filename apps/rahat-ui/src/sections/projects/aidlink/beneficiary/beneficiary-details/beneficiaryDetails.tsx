@@ -78,6 +78,7 @@ export default function BeneficiaryDetailsView() {
   const completedSteps = steps.filter((s) => s.status === 'done').length;
   const progress = (completedSteps / steps.length) * 100;
   return (
+    <ScrollArea className="h-[calc(100vh-60px)]">
       <div className="p-4 space-y-4 bg-gray-50">
         {/* Header */}
         <Heading

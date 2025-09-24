@@ -87,10 +87,6 @@ export default function DisbursementHistoryDetail() {
     [approvals],
   );
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
-
   const colorCardData = React.useMemo(
     () => [
       {
@@ -199,19 +195,21 @@ export default function DisbursementHistoryDetail() {
                 Execute
               </Button>
             )}
-            {!approvals?.isExecuted && disbursement?.status !== 'COMPLETED' && (
-              <Link
-                href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
-                target="_blank"
-              >
-                <div className="px-4 py-1 rounded-full flex items-center gap-2 bg-blue-50 hover:bg-blue-100">
-                  <span className="text-[10px]/4 tracking-widest font-semibold text-primary">
-                    SAFEWALLET
-                  </span>
-                  <BadgeCheck className="w-4 h-4 fill-primary text-white" />
-                </div>
-              </Link>
-            )}
+            {!approvals?.isExecuted &&
+              disbursement?.status !== 'COMPLETED' &&
+              approvals?.approvals?.length > 0 && (
+                <Link
+                  href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
+                  target="_blank"
+                >
+                  <div className="px-4 py-1 rounded-full flex items-center gap-2 bg-blue-50 hover:bg-blue-100">
+                    <span className="text-[10px]/4 tracking-widest font-semibold text-primary">
+                      SAFEWALLET
+                    </span>
+                    <BadgeCheck className="w-4 h-4 fill-primary text-white" />
+                  </div>
+                </Link>
+              )}
           </div>
         </div>
 

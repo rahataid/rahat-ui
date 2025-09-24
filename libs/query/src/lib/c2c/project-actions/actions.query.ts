@@ -243,6 +243,32 @@ export const useGetBenefDisbursementDetails = (
   return query;
 };
 
+export const useGetOfframpDetails = (
+  projectUUID: UUID,
+  beneficiaryPhone: string,
+) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-getOfframpDetails', projectUUID, beneficiaryPhone],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getOfframpDetails',
+          payload: {
+            beneficiaryPhone,
+            limit: 100,
+          },
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
 type DisbursementApprovalsHookParams = {
   projectUUID: UUID;
   disbursementUUID: UUID;

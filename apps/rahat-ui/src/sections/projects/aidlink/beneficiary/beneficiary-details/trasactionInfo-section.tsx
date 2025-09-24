@@ -1,11 +1,10 @@
 import { Coins } from 'lucide-react';
-
 import {
   PROJECT_SETTINGS_KEYS,
   TransactionDetails,
+  useGetOfframpDetails,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
-
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -15,58 +14,32 @@ import { mergeTransactions } from '@rahat-ui/query/lib/c2c/utils';
 import TransactionTable from './transactionHistory';
 import { formatEther } from 'viem';
 
-const demoData = [
-  {
-    _id: '68010281bb9b1807bb1a08ff',
-    phoneNumber: '+123457890',
-    txHash:
-      '0x722caa3d734e169b344234a28c4b961616a67286c1e7ad88fcd4e58bae5b9c40',
-    provider: 'KotaniPay',
-    cryptoAmount: 25,
-    fiatConversionAmount: 125.76050000000001,
-    fiatTxAmount: 124.5,
-    fiatCurrency: 'KES',
-    token: 'USDT',
-    fee: 1.257605,
-    txReferenceId: '+1234567890-1744896627624',
-    createdAt: '2025-04-17T13:30:41.273Z',
-    updatedAt: '2025-04-17T13:30:41.273Z',
-    __v: 0,
-  },
-  {
-    _id: '68010281bb9b1807bb1a08fg',
-    phoneNumber: '+123457890',
-    txHash:
-      '0x722caa3d734e169b344234a28c4b961616a67286c1e7ad88fcd4e58bae5b9c40',
-    provider: 'KotaniPay',
-    cryptoAmount: 50,
-    fiatConversionAmount: 125.76050000000001,
-    fiatTxAmount: 124.5,
-    fiatCurrency: 'KES',
-    token: 'USDT',
-    fee: 1.257605,
-    txReferenceId: '+1234567890-1744896627624',
-    createdAt: '2025-04-17T13:30:41.273Z',
-    updatedAt: '2025-04-17T13:30:41.273Z',
-    __v: 0,
-  },
-];
-
 interface ITrasactionInfoSectionProps {
   walletAddress: string;
-  totolDisburbeAmout: number;
+  totalDisbursedAmount: number;
+  phoneNumber: string;
 }
 
-const TrasactionInfoSection = ({
+const TransactionInfoSection = ({
   walletAddress,
-  totolDisburbeAmout,
+  totalDisbursedAmount,
+  phoneNumber,
 }: ITrasactionInfoSectionProps) => {
-  const transformedData = demoData.reduce<any>(
-    (acc, item) => {
-      // Add to total
-      acc.total += item.cryptoAmount;
+  const [transactionList, setTransactionList] = useState<any>([]);
+  const uuid = useParams().id as UUID;
 
-      // Push each transaction
+  const { data: OfframpData, isPending } = useGetOfframpDetails(
+    uuid,
+    phoneNumber,
+  );
+
+  const transformedData = (OfframpData || []).reduce(
+    (
+      acc: { total: number; transactions: { date: string; amount: number }[] },
+      item: any,
+    ) => {
+      acc.total += item?.cryptoAmount || 0;
+
       acc.transactions.push({
         date: item.updatedAt,
         amount: item.cryptoAmount,
@@ -74,28 +47,27 @@ const TrasactionInfoSection = ({
 
       return acc;
     },
-    { total: 0, transactions: [] }, // initial value
+    { total: 0, transactions: [] },
   );
 
   const cardData = useMemo(
     () => [
       {
         label: 'Available Balance',
-        value: totolDisburbeAmout - transformedData.total || 0,
+        value: totalDisbursedAmount - transformedData.total || 0,
       },
-      { label: 'Disbursed Amount', value: totolDisburbeAmout || 0 },
+      { label: 'Disbursed Amount', value: totalDisbursedAmount || 0 },
       { label: 'Off-ramped Amount', value: transformedData.total || 0 },
     ],
-    [transformedData],
+    [transformedData, totalDisbursedAmount],
   );
-
-  const [transactionList, setTransactionList] = useState<any>([]);
-  const uuid = useParams().id as UUID;
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
   const contractAddress = contractSettings?.c2cproject?.address;
+
+  // const {} = useGetOfframpDetails(uuid,);
 
   const [{ data, fetching, error }] = useQuery({
     query: TransactionDetails,
@@ -157,7 +129,7 @@ const TrasactionInfoSection = ({
         <TransactionTable
           title="OFF-RAMPED HISTORY"
           description="List of all the off-ramps"
-          isLoading={fetching}
+          isLoading={isPending}
           error={error}
           data={transformedData.transactions}
         />
@@ -166,4 +138,4 @@ const TrasactionInfoSection = ({
   );
 };
 
-export default TrasactionInfoSection;
+export default TransactionInfoSection;

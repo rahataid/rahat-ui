@@ -6,11 +6,9 @@ import {
   BadgeCheck,
   CheckCircle,
   Clock,
-  Coins,
   Copy,
   CopyCheck,
   ExternalLink,
-  Eye,
 } from 'lucide-react';
 import {
   useGetBenefDisbursementDetails,
@@ -22,7 +20,7 @@ import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import React, { useMemo } from 'react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import TrasactionInfoSection from './trasactionInfo-section';
+import TransactionInfoSection from './trasactionInfo-section';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 
@@ -41,7 +39,7 @@ export default function BeneficiaryDetailsView() {
   const { data: disbursementDetails, isLoading: loading } =
     useGetBenefDisbursementDetails(projectUUID, beneficiaryId);
 
-  const totolDisburbeAmout = useMemo(() => {
+  const totalDisbursedAmount = useMemo(() => {
     return disbursementDetails?.allDisbursements?.reduce(
       (sum: number, curr: any) => sum + Number(curr?.amount),
       0,
@@ -68,11 +66,15 @@ export default function BeneficiaryDetailsView() {
           : 'pending',
       },
       { label: 'Approval Process', date: '', status: 'pending' },
-      { label: 'Disbursement Execution', date: '', status: 'pending' },
+      {
+        label: 'Disbursement Execution',
+        date: disbursementDetails?.disbursementExecution,
+        status: disbursementDetails?.disbursementExecution ? 'done' : 'pending',
+      },
       // { label: 'SMS Notification', date: '', status: 'pending' },
       { label: 'Offramping', date: '', status: 'pending' },
     ],
-    [ben],
+    [ben, disbursementDetails],
   );
 
   const completedSteps = steps.filter((s) => s.status === 'done').length;
@@ -155,9 +157,10 @@ export default function BeneficiaryDetailsView() {
         </div>
 
         {/* Card Data Grid and transaction history */}
-        <TrasactionInfoSection
-          totolDisburbeAmout={totolDisburbeAmout}
+        <TransactionInfoSection
+          totalDisbursedAmount={totalDisbursedAmount}
           walletAddress={ben?.walletAddress || ''}
+          phoneNumber={ben?.piiData?.phone || ''}
         />
 
         {/* Transaction Lifecycle Overview */}

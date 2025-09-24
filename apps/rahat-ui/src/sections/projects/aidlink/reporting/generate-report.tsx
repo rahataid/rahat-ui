@@ -21,10 +21,7 @@ import {
 import { UUID } from 'crypto';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { exportToExcel } from 'apps/rahat-ui/src/utils/exportToExcle';
-import {
-  dateToTimestamp,
-  timeStampToDate,
-} from 'apps/rahat-ui/src/utils/dateToTimeStamp';
+import { dateToTimestamp } from 'apps/rahat-ui/src/utils/dateToTimeStamp';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { transformTransactionData } from 'apps/rahat-ui/src/utils/formatAdlinkTransactionData';
 
@@ -52,10 +49,35 @@ const formSchema = z
       required_error: 'End date is required',
     }),
   })
+  // Ensure startDate <= endDate
   .refine((data) => data.startDate <= data.endDate, {
     message: 'End date must be after start date',
     path: ['endDate'],
-  });
+  })
+  // Ensure startDate is not in the future
+  .refine(
+    (data) => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // strip time for comparison
+      return data.startDate <= today;
+    },
+    {
+      message: 'Start date cannot be in the future',
+      path: ['startDate'],
+    },
+  )
+  // Ensure endDate is not in the future
+  .refine(
+    (data) => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // strip time for comparison
+      return data.endDate <= today;
+    },
+    {
+      message: 'End date cannot be in the future',
+      path: ['endDate'],
+    },
+  );
 
 type FormValues = z.infer<typeof formSchema>;
 

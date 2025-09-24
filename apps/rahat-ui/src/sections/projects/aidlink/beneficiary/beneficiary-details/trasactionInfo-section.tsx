@@ -12,7 +12,8 @@ import { useQuery } from 'urql';
 import { TransactionsObject } from '../../../c2c/beneficiary/types';
 import { mergeTransactions } from '@rahat-ui/query/lib/c2c/utils';
 import TransactionTable from './transactionHistory';
-import { formatEther } from 'viem';
+import { formatEther, formatUnits } from 'viem';
+import { useReadRahatTokenDecimals } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatToken';
 
 interface ITrasactionInfoSectionProps {
   walletAddress: string;
@@ -67,6 +68,8 @@ const TransactionInfoSection = ({
   );
   const contractAddress = contractSettings?.c2cproject?.address;
 
+  const tokenAddress = contractSettings?.rahattoken?.address;
+
   // const {} = useGetOfframpDetails(uuid,);
 
   const [{ data, fetching, error }] = useQuery({
@@ -80,11 +83,14 @@ const TransactionInfoSection = ({
     pause: !contractAddress,
   });
 
+  const {data:tokenNumber} = useReadRahatTokenDecimals({address:contractSettings?.rahattoken?.address})
+  
+
   const newTransactionHistoryData = useMemo(() => {
     return (
       transactionList?.map((item: any) => ({
         date: item?.date,
-        amount: formatEther(item?._amount),
+        amount: formatUnits(item?._amount,Number(tokenNumber)),
       })) || []
     );
   }, [transactionList]);

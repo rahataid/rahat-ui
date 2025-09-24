@@ -18,7 +18,7 @@ import { mergeTransactions } from '@rahat-ui/query/lib/c2c/utils';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { formatEther } from 'viem';
+import { formatEther, formatUnits } from 'viem';
 import {
   Tooltip,
   TooltipContent,
@@ -26,6 +26,7 @@ import {
   TooltipTrigger,
 } from '@radix-ui/react-tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
+import { useReadRahatTokenDecimals } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatToken';
 
 const RecentTransaction = () => {
   const [transactionList, setTransactionList] = useState([]);
@@ -45,6 +46,9 @@ const RecentTransaction = () => {
     },
     pause: !contractAddress,
   });
+
+    const {data:tokenNumber} = useReadRahatTokenDecimals({address:contractSettings?.rahattoken?.address})
+  
 
   useGraphQLErrorHandler({
     error,
@@ -89,7 +93,7 @@ const RecentTransaction = () => {
                     {/* Amount */}
                     <div className="flex items-center justify-between">
                       <p className="text-lg ">
-                        {amountFormat(formatEther(tx.amount.toString()))} USDC
+                        {amountFormat(formatUnits(tx.amount.toString(),Number(tokenNumber)))} USDC
                       </p>
                       <Badge className="bg-green-100 text-green-800">
                         Completed

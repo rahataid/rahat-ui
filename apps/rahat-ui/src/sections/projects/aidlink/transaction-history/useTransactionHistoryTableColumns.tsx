@@ -11,6 +11,7 @@ import { Copy, CopyCheck } from 'lucide-react';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { amountFormat } from '@rahat-ui/query';
+import { formatEther } from 'viem';
 
 const useTransactionHistoryTableColumns = () => {
   const { clickToCopy, copyAction } = useCopy();
@@ -66,7 +67,9 @@ const useTransactionHistoryTableColumns = () => {
       accessorKey: '_amount',
       header: 'Disburse Amount',
       cell: ({ row }) => {
-        return <span>{amountFormat(row.original._amount)}</span>;
+        return (
+          <span>{amountFormat(formatEther(row.original._amount))} USDC</span>
+        );
       },
     },
     {

@@ -16,7 +16,11 @@ export default function DisbursementMainView() {
 
   return (
     <div className="p-4 bg-gray-50 h-[calc(100vh-58px)]">
-      <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+      <Tabs
+        defaultValue={activeTab}
+        value={activeTab}
+        onValueChange={setActiveTab}
+      >
         <TabsContent className="mt-0" value="createDisbursement">
           <Heading
             title="Disbursement Management"
@@ -62,7 +66,7 @@ export default function DisbursementMainView() {
           </TabsList>
         </div>
         <TabsContent value="createDisbursement">
-          <CreateDisbursementSelectionType />
+          <CreateDisbursementSelectionType setActiveTab={setActiveTab} />
         </TabsContent>
         <TabsContent value="disbursementHistory">
           <DisbursementHistoryList />

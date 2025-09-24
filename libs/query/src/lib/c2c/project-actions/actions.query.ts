@@ -269,6 +269,26 @@ export const useGetOfframpDetails = (
   return query;
 };
 
+export const useGetSafePending = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-getSafePending', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'c2cProject.getSafePending',
+          payload: {},
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
 type DisbursementApprovalsHookParams = {
   projectUUID: UUID;
   disbursementUUID: UUID;

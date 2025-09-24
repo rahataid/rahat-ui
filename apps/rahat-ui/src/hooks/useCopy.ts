@@ -9,7 +9,7 @@ const useCopy = () => {
 
     setTimeout(() => {
       setCopyAction(null);
-    }, 300);
+    }, 800);
   };
 
   return { copyAction, clickToCopy };

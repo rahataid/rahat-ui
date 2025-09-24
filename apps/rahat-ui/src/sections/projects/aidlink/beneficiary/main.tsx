@@ -74,14 +74,16 @@ function BeneficiaryView() {
           </TabsTrigger>
         </TabsList>
 
-        <IconLabelBtn
-          name="Import Beneficiaries"
-          Icon={CloudDownload}
-          handleClick={() =>
-            router.push(`/projects/aidlink/${projectId}/beneficiary/import`)
-          }
-          variant="outline"
-        />
+        {activeTab === 'beneficiary' && (
+          <IconLabelBtn
+            name="Import Beneficiaries"
+            Icon={CloudDownload}
+            handleClick={() =>
+              router.push(`/projects/aidlink/${projectId}/beneficiary/import`)
+            }
+            variant="outline"
+          />
+        )}
       </div>
       <TabsContent value="beneficiary">
         <div className="px-4">

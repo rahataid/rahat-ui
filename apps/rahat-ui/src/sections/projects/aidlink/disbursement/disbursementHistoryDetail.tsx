@@ -28,10 +28,11 @@ import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import Link from 'next/link';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { TransactionDisbursedModal } from './transactionDisbursedModal';
-import { parseEther } from 'viem';
+import { parseUnits } from 'viem';
 import { useAccount, useChainId } from 'wagmi';
 import { toast } from 'react-toastify';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { useReadRahatTokenDecimals } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatToken';
 
 export default function DisbursementHistoryDetail() {
   const { id: projectUUID, disbursementId } = useParams() as {
@@ -53,6 +54,8 @@ export default function DisbursementHistoryDetail() {
   const chainSettings = useProjectSettingsStore(
     (state) => state?.settings?.[projectUUID]?.['BLOCKCHAIN'],
   );
+  const {data:tokenNumber} = useReadRahatTokenDecimals({address:contractSettings?.rahattoken?.address})
+
 
   const { isConnected } = useAccount();
   const chainId = useChainId();
@@ -145,7 +148,7 @@ export default function DisbursementHistoryDetail() {
     //   : '0';
     const amountString =
       (disbursement?.amount / beneficiaryLength)?.toString() || '0';
-    const parsedAmount = parseEther(amountString);
+    const parsedAmount = parseUnits(amountString, Number(tokenNumber));
     // const result = await disburseMultiSig.mutateAsync({
     //   amount: parsedAmount,
     //   beneficiaryAddresses: disbursement?.DisbursementBeneficiary?.map(

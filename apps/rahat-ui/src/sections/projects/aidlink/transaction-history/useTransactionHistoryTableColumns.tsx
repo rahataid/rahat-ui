@@ -10,11 +10,25 @@ import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { Copy, CopyCheck } from 'lucide-react';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { amountFormat } from '@rahat-ui/query';
-import { formatEther } from 'viem';
+import { amountFormat, PROJECT_SETTINGS_KEYS, useProjectSettingsStore } from '@rahat-ui/query';
+import { formatEther, formatUnits } from 'viem';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import { useReadRahatTokenDecimals } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatToken';
 
 const useTransactionHistoryTableColumns = () => {
+  const { id: projectUUID } = useParams() as {
+      id: UUID;
+      disbursementId: UUID;
+    };
   const { clickToCopy, copyAction } = useCopy();
+
+   const contractSettings = useProjectSettingsStore(
+      (state) => state.settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+    );
+
+    const {data:tokenNumber} = useReadRahatTokenDecimals({address:contractSettings?.rahattoken?.address})
+  
 
   const columns: ColumnDef<any>[] = [
     {
@@ -68,7 +82,7 @@ const useTransactionHistoryTableColumns = () => {
       header: 'Disburse Amount',
       cell: ({ row }) => {
         return (
-          <span>{amountFormat(formatEther(row.original._amount))} USDC</span>
+          <span>{amountFormat(formatUnits(row.original._amount,Number(tokenNumber)))} USDC</span>
         );
       },
     },

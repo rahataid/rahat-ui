@@ -209,7 +209,10 @@ export function DisbursementList({ status }: Props) {
                       <div className="flex items-center space-x-1">
                         <Check className="h-4 w-4 text-green-600" />
                         <span className="text-sm text-green-600">
-                          0 successful
+                          {disbursement?.status === 'COMPLETED'
+                            ? disbursement?.totalBeneficiaries
+                            : 0}{' '}
+                          successful
                         </span>
                       </div>
                       <div className="flex items-center space-x-1">

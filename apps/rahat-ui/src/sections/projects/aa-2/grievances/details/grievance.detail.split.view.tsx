@@ -23,6 +23,7 @@ import { PriorityChip, TypeChip } from '../components';
 
 type IProps = {
   grievance: {
+    id?: string;
     uuid?: string;
     projectId?: string;
     title?: string;
@@ -150,7 +151,7 @@ export default function GrievanceDetailSplitView({
                 Grievance ID
               </span>
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
-                {grievance?.uuid || 'N/A'}
+                {grievance?.id || 'N/A'}
               </span>
             </div>
 

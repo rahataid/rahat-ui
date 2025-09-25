@@ -242,13 +242,6 @@ function GrievancesTable() {
               ))}
             </SelectContent>
           </Select>
-          <div className="flex items-center gap-2">
-            <AddButton
-              path={`/projects/aa/${id}/grievances/add`}
-              name="Grievance"
-              variant="default"
-            />
-          </div>
         </div>
       </div>
       <DemoTable table={table} loading={projectGrievances.isLoading} />

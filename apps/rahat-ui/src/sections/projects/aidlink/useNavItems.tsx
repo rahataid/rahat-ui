@@ -45,11 +45,11 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
           icon: <FileText size={18} strokeWidth={1.5} />,
           path: `/projects/aidlink/${id}/reporting`,
         },
-        {
-          title: 'Communication Log',
-          icon: <MessageSquare size={18} strokeWidth={1.5} />,
-          path: `/projects/aidlink/${id}/communication-log`,
-        },
+        // {
+        //   title: 'Communication Log',
+        //   icon: <MessageSquare size={18} strokeWidth={1.5} />,
+        //   path: `/projects/aidlink/${id}/communication-log`,
+        // },
         {
           title: 'Transaction History',
           icon: <ClockFading size={18} strokeWidth={1.5} />,

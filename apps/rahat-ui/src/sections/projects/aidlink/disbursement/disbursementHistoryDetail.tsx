@@ -5,6 +5,8 @@ import {
   BadgeCheck,
   CalendarIcon,
   CheckCircleIcon,
+  Copy,
+  CopyCheck,
   CopyIcon,
   UsersIcon,
 } from 'lucide-react';
@@ -26,15 +28,18 @@ import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import Link from 'next/link';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { TransactionDisbursedModal } from './transactionDisbursedModal';
-import { parseEther } from 'viem';
+import { parseUnits } from 'viem';
 import { useAccount, useChainId } from 'wagmi';
 import { toast } from 'react-toastify';
+import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { useReadRahatTokenDecimals } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatToken';
 
 export default function DisbursementHistoryDetail() {
   const { id: projectUUID, disbursementId } = useParams() as {
     id: UUID;
     disbursementId: UUID;
   };
+  const { clickToCopy, copyAction } = useCopy();
 
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
   const [executionResult, setExecutionResult] = React.useState<any>(null);
@@ -49,6 +54,8 @@ export default function DisbursementHistoryDetail() {
   const chainSettings = useProjectSettingsStore(
     (state) => state?.settings?.[projectUUID]?.['BLOCKCHAIN'],
   );
+  const {data:tokenNumber} = useReadRahatTokenDecimals({address:contractSettings?.rahattoken?.address})
+
 
   const { isConnected } = useAccount();
   const chainId = useChainId();
@@ -82,10 +89,6 @@ export default function DisbursementHistoryDetail() {
         : false,
     [approvals],
   );
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
 
   const colorCardData = React.useMemo(
     () => [
@@ -145,7 +148,7 @@ export default function DisbursementHistoryDetail() {
     //   : '0';
     const amountString =
       (disbursement?.amount / beneficiaryLength)?.toString() || '0';
-    const parsedAmount = parseEther(amountString);
+    const parsedAmount = parseUnits(amountString, Number(tokenNumber));
     // const result = await disburseMultiSig.mutateAsync({
     //   amount: parsedAmount,
     //   beneficiaryAddresses: disbursement?.DisbursementBeneficiary?.map(
@@ -187,23 +190,29 @@ export default function DisbursementHistoryDetail() {
           />
           <div className="flex items-center gap-4">
             {approvals?.isExecuted && disbursement?.status !== 'COMPLETED' && (
-              <Button className="h-8 w-40" onClick={handleExecute}>
+              <Button
+                disabled={disburseMultiSig.isPending}
+                className="h-8 w-40"
+                onClick={handleExecute}
+              >
                 Execute
               </Button>
             )}
-            {!approvals?.isExecuted && disbursement?.status !== 'COMPLETED' && (
-              <Link
-                href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
-                target="_blank"
-              >
-                <div className="px-4 py-1 rounded-full flex items-center gap-2 bg-blue-50 hover:bg-blue-100">
-                  <span className="text-[10px]/4 tracking-widest font-semibold text-primary">
-                    SAFEWALLET
-                  </span>
-                  <BadgeCheck className="w-4 h-4 fill-primary text-white" />
-                </div>
-              </Link>
-            )}
+            {!approvals?.isExecuted &&
+              disbursement?.status !== 'COMPLETED' &&
+              approvals?.approvals?.length > 0 && (
+                <Link
+                  href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
+                  target="_blank"
+                >
+                  <div className="px-4 py-1 rounded-full flex items-center gap-2 bg-blue-50 hover:bg-blue-100">
+                    <span className="text-[10px]/4 tracking-widest font-semibold text-primary">
+                      SAFEWALLET
+                    </span>
+                    <BadgeCheck className="w-4 h-4 fill-primary text-white" />
+                  </div>
+                </Link>
+              )}
           </div>
         </div>
 
@@ -273,12 +282,18 @@ export default function DisbursementHistoryDetail() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-4 w-4 p-0"
                                   onClick={() =>
-                                    copyToClipboard(transaction.from)
+                                    clickToCopy(
+                                      transaction.from,
+                                      transaction.from,
+                                    )
                                   }
                                 >
-                                  <CopyIcon className="h-3 w-3" />
+                                  {copyAction === transaction.from ? (
+                                    <CopyCheck size={16} />
+                                  ) : (
+                                    <Copy size={16} />
+                                  )}
                                 </Button>
                               </div>
                               <div className="flex items-center gap-2">
@@ -293,14 +308,19 @@ export default function DisbursementHistoryDetail() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-4 w-4 p-0"
                                   onClick={() =>
-                                    copyToClipboard(
+                                    clickToCopy(
+                                      transaction.beneficiaryWalletAddress,
                                       transaction.beneficiaryWalletAddress,
                                     )
                                   }
                                 >
-                                  <CopyIcon className="h-3 w-3" />
+                                  {copyAction ===
+                                  transaction.beneficiaryWalletAddress ? (
+                                    <CopyCheck size={16} />
+                                  ) : (
+                                    <Copy size={16} />
+                                  )}
                                 </Button>
                               </div>
                             </div>

@@ -24,7 +24,7 @@ interface IGFHCardProps {
   stationName: string;
   forecastDate: string;
   basinSize: string;
-  updatedAt?: string
+  updatedAt?: string;
 }
 
 const GFHCard = ({
@@ -61,17 +61,14 @@ const GFHCard = ({
             className="w-4 h-4 cursor-pointer"
             onClick={handleAssignModalClick}
           />
-
-         
-
         </div>
-          {updatedAt && (
-          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5 whitespace-nowrap">
+        {updatedAt && (
+          <div className="flex items-center gap-1 text-xs text-green-500 mt-0.5 whitespace-nowrap">
             <RefreshCw size={12} />
             <span>Last Synced at: {dateFormat(updatedAt)}</span>
           </div>
         )}
-       
+
         <div className="flex flex-wrap justify-between gap-4 mt-2">
           {/* River Gauge Id */}
           <div className="flex items-center gap-3">

@@ -46,7 +46,7 @@ import { PaymentDialog } from './payment.dialog';
 import useBeneficiariesGroupTableColumn from './useBeneficiariesGroupTablecolumn';
 
 export interface PaymentState {
-  method: PayoutType;
+  method: string; // dynamic payout type key
   mode: PayoutMode;
   group: Record<string, any>;
   vendor: Record<string, any>;

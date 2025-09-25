@@ -31,15 +31,18 @@ import {
 } from '@rahat-ui/query';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import * as XLSX from 'xlsx';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 interface BaseCommunication {
   groupId: string;
   groupType: string;
   transportId: string;
   communicationId: string;
+  communicationTitle: string;
   groupName: string;
   sessionStatus: string;
   sessionId: string;
+  completedAt: string;
 }
 
 interface EmailCommunication extends BaseCommunication {
@@ -128,7 +131,7 @@ export function CommunicationDetailCard({
 
     XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
   };
-  console.log(activityCommunication);
+  console.log(activityCommunication, 'detail from the single communication');
   return (
     <Card className="rounded-sm pb-0 flex flex-col justify-between">
       <CardHeader className="pb-2">
@@ -163,10 +166,18 @@ export function CommunicationDetailCard({
                   activityCommunication?.sessionStatus.slice(1).toLowerCase()}
               </Badge>
             </div>
+            {activityCommunication?.sessionStatus === 'COMPLETED' && (
+              <p className="mt-1 text-sm text-gray-500">
+                Completed at: {dateFormat(activityCommunication.completedAt)}
+              </p>
+            )}
           </div>
         </div>
       </CardHeader>
       <CardContent className="pb-4 min-h-[60px] flex-grow">
+        <p className="text-sm text-gray-500">
+          {activityCommunication?.communicationTitle}
+        </p>
         {(activityCommunication?.transportName === 'EMAIL' ||
           activityCommunication?.transportName === 'SMS') && (
           <div className="flex flex-col gap-0">

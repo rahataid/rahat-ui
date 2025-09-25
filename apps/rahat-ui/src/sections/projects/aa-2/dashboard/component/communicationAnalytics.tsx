@@ -1,4 +1,4 @@
-import { DataCard } from 'apps/rahat-ui/src/common';
+import { DataCard, Heading } from 'apps/rahat-ui/src/common';
 import React from 'react';
 type Props = {
   data: {
@@ -11,6 +11,7 @@ const CommunicationAnalytics = ({
   triggeersStats,
   projectId,
 }: any) => {
+  // console.log(triggeersStats);
   const getTriggerDataByName = (name: string) =>
     triggeersStats.find((item) => item.name.includes(name))?.data;
 
@@ -22,6 +23,12 @@ const CommunicationAnalytics = ({
 
   // ✅ Comms data
   const commsStats = getTriggerDataByName('COMMS_STATS');
+  const benefCountsSession =
+    getTriggerDataByName(`BENEFICIARY_${projectId?.toUpperCase()}`)
+      ?.sessionCount || 0;
+  const stakeholdersCountsSession =
+    getTriggerDataByName(`STAKEHOLDERS_${projectId?.toUpperCase()}`)
+      ?.sessionCount || 0;
 
   const formatCommsStats = () => {
     const stakeholders = commsStats?.stakeholder || {};
@@ -29,10 +36,7 @@ const CommunicationAnalytics = ({
 
     const stakeholderStats = {
       category: 'Stakeholders',
-      totalCommunicationSent:
-        (stakeholders?.SMS?.TOTAL || 0) +
-        (stakeholders?.EMAIL?.TOTAL || 0) +
-        (stakeholders?.VOICE?.TOTAL || 0),
+      totalCommunicationSent: stakeholdersCountsSession,
       numberOfStakeholders: benefStats?.find(
         (stat) => stat.name === 'STAKEHOLDERS_TOTAL',
       )?.data?.count,
@@ -43,12 +47,8 @@ const CommunicationAnalytics = ({
 
     const beneficiaryStats = {
       category: 'Beneficiaries',
-      totalCommunicationSent:
-        (beneficiaries?.SMS?.TOTAL || 0) +
-        (beneficiaries?.VOICE?.TOTAL || 0) +
-        (beneficiaries?.['Prabhu SMS']?.TOTAL || 0),
+      totalCommunicationSent: benefCountsSession,
       avcSuccessfullySent: beneficiaries?.VOICE?.SUCCESS || 0,
-      voiceMessageDelivered: beneficiaries?.VOICE?.SUCCESS || 0,
       smsSuccessfullyDelivered:
         (beneficiaries?.SMS?.SUCCESS || 0) +
         (beneficiaries?.['Prabhu SMS']?.SUCCESS || 0),
@@ -62,62 +62,67 @@ const CommunicationAnalytics = ({
   const communicationData = formatCommsStats();
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ">
-        <DataCard
-          title="Activities with Communication"
-          className="rounded-sm"
-          number={activitiesWithComm.toString()}
+      <div className="flex flex-col mt-4">
+        <Heading
+          title="Communications & Outreach"
+          titleStyle="text-lg"
+          description="Reach and effectiveness of communication channels"
         />
-        <DataCard
-          title="Activities Automated"
-          className="rounded-sm"
-          number={activitiesAutomated.toString()}
-        />
-      </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 ">
+          <DataCard
+            title="Activities with Communication"
+            className="rounded-sm"
+            number={activitiesWithComm.toString()}
+          />
+          <DataCard
+            title="Activities Automated"
+            className="rounded-sm"
+            number={activitiesAutomated.toString()}
+          />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {communicationData.map((item, idx) => (
-          <div
-            className="w-full border bg-white rounded-sm shadow p-6"
-            key={item.category}
-          >
-            <h3 className="text-sm font-semibold text-gray-700">
-              Total Communication Sent
-            </h3>
-            <h4 className="text-md font-medium text-gray-500 mt-1">
-              {item.category}
-            </h4>
-            <div className="text-3xl font-bold text-blue-600 my-3">
-              {item.totalCommunicationSent.toLocaleString()}
+          {communicationData.map((item, idx) => (
+            <div
+              className="w-full border bg-white rounded-sm shadow p-6"
+              key={item.category}
+            >
+              <h3 className="text-sm font-semibold text-gray-700">
+                Total Communication Sent
+              </h3>
+              <h4 className="text-md font-medium text-gray-500 mt-1">
+                {item.category}
+              </h4>
+              <div className="text-3xl font-bold text-primary my-3">
+                {item.totalCommunicationSent}
+              </div>
+
+              <div className="grid grid-cols-2 gap-y-3 gap-x-4 mt-4">
+                {Object.entries(item).map(([key, value]) => {
+                  if (['category', 'totalCommunicationSent'].includes(key))
+                    return null;
+
+                  const label =
+                    key === 'smsAndAvcDeliveryFailures'
+                      ? 'SMS & AVC Delivery Failures'
+                      : key
+                          .replace(/([A-Z])/g, ' $1')
+                          .replace(/^./, (str) => str.toUpperCase())
+                          .replace(/\bSms\b/gi, 'SMS')
+                          .replace(/\bAvc\b/gi, 'AVC');
+
+                  return (
+                    <div key={key} className="flex flex-col">
+                      <span className="text-sm text-gray-500">{label}</span>
+                      <span className="font-semibold text-gray-800">
+                        {/* {value.toLocaleString()} */}
+                        {value}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-
-            <div className="grid grid-cols-2 gap-y-3 gap-x-4 mt-4">
-              {Object.entries(item).map(([key, value]) => {
-                if (['category', 'totalCommunicationSent'].includes(key))
-                  return null;
-
-                const label =
-                  key === 'smsAndAvcDeliveryFailures'
-                    ? 'SMS & AVC Delivery Failures'
-                    : key
-                        .replace(/([A-Z])/g, ' $1')
-                        .replace(/^./, (str) => str.toUpperCase())
-                        .replace(/\bSms\b/gi, 'SMS')
-                        .replace(/\bAvc\b/gi, 'AVC');
-
-                return (
-                  <div key={key} className="flex flex-col">
-                    <span className="text-sm text-gray-500">{label}</span>
-                    <span className="font-semibold text-gray-800">
-                      {/* {value.toLocaleString()} */}
-                      {value}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </>
   );

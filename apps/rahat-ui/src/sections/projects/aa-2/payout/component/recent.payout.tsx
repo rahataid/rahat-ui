@@ -32,6 +32,8 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
           payouts?.map((item, index) => (
             <div key={item.id}>
               <RecentPaymentCard
+                status={item.status}
+                vendorName={item?.extras?.vendorName}
                 beneficiaryGroupName={
                   item?.beneficiaryGroupToken?.beneficiaryGroup?.name
                 }
@@ -47,7 +49,9 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
                 }
                 dateTime={item?.updatedAt}
                 onView={() =>
-                  route.push(`/projects/aa/${id}/payout/details/${item?.uuid}`)
+                  route.push(
+                    `/projects/aa/${id}/payout/details/${item?.uuid}?from=main-page`,
+                  )
                 }
               />
               {index < payouts.length - 1 && (

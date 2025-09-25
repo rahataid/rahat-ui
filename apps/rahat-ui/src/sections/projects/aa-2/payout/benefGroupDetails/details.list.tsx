@@ -8,7 +8,7 @@ import {
   useTriggerPayout,
 } from '@rahat-ui/query';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
 
 import {
@@ -44,7 +44,8 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const projectId = params.id as UUID;
   const payoutId = params.detailID as UUID;
   const searchParams = useSearchParams();
-
+  const navigation = searchParams.get('from');
+  const router = useRouter();
   const {
     pagination,
     setNextPage,
@@ -85,8 +86,6 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     XLSX.writeFile(workbook, 'payout-logs.xlsx');
   };
 
-  console.log('table', payoutlogs);
-  console.log('single', payout);
   const table = useReactTable({
     manualPagination: true,
     data: payoutlogs?.data || [],
@@ -161,7 +160,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       badge: true,
     },
   ];
-
+  console.log('pay', payout?.extras?.paymentProviderName);
   const handleSearch = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
       const value = event?.target?.value ?? '';
@@ -169,13 +168,18 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
     [filters],
   );
-  console.log(payoutlogs?.data?.length, 'payoutlogs data length');
   return isLoading ? (
     <TableLoader />
   ) : (
     <div className="p-4 pb-0">
       <div className="flex flex-col space-y-0">
-        <Back path={`/projects/aa/${projectId}/payout/list`} />
+        <Back
+          path={
+            navigation
+              ? `/projects/aa/${projectId}/payout`
+              : `/projects/aa/${projectId}/payout/list`
+          }
+        />
 
         <div className="mt-4 flex justify-between items-center">
           <div>
@@ -213,6 +217,26 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                   </Button>
                 </RoleAuth>
               )}
+
+              {payout?.type === 'FSP' &&
+                (payout?.extras?.paymentProviderName ===
+                  'Manual Bank Transfer' ||
+                  payout?.extras?.paymentProviderName === 'Manual') && (
+                  <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+                    <Button
+                      className={`gap-2 text-sm ${
+                        payout?.status === 'COMPLETED' && 'hidden'
+                      } `}
+                      onClick={() =>
+                        router.push(
+                          `/projects/aa/${projectId}/payout/details/${payoutId}/verify`,
+                        )
+                      }
+                    >
+                      Verify Manual Payout
+                    </Button>
+                  </RoleAuth>
+                )}
               <Button
                 className={`gap-2 text-sm ${
                   payoutlogs?.data?.length === 0 && 'hidden'
@@ -359,23 +383,21 @@ export default function BeneficiaryGroupTransactionDetailsList() {
           )}
         </div>
         <BeneficiariesGroupTable table={table} loading={payoutLogsLoading} />
+
         <CustomPagination
-          meta={
-            payoutlogs?.response?.meta || {
-              total: 0,
-              currentPage: 0,
-              lastPage: 0,
-              perPage: 0,
-              next: null,
-              prev: null,
-            }
-          }
+          currentPage={pagination.page}
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}
-          currentPage={pagination.page}
-          perPage={pagination.perPage}
-          total={payoutlogs?.response?.meta?.total}
+          setPagination={setPagination}
+          meta={
+            (payoutlogs?.response?.meta as any) || {
+              total: 0,
+              currentPage: 0,
+            }
+          }
+          perPage={pagination?.perPage}
+          total={payoutlogs?.response?.meta?.total || 0}
         />
       </div>
     </div>

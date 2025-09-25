@@ -277,7 +277,7 @@ export default function AddCommunicationForm({
 
   const handleSave = () => {
     onSave(); // Call the save function
-
+    form.setValue(fieldName('communicationTitle'), '');
     form.setValue(fieldName('groupId'), '');
     form.setValue(fieldName('groupType'), '');
     form.setValue(fieldName('message'), '');
@@ -496,6 +496,19 @@ export default function AddCommunicationForm({
         <h1 className="text-lg font-semibold">Add : Communication</h1>
       </div>
       <div className="grid grid-cols-2 gap-4">
+        <FormField
+          control={form.control}
+          name={fieldName('communicationTitle')}
+          render={({ field }) => (
+            <FormItem className="col-span-2">
+              <FormLabel>Communication Title</FormLabel>
+              <FormControl>
+                <Input placeholder="Write Communication title" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name={fieldName('groupType')}

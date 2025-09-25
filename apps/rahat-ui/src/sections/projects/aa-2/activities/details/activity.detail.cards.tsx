@@ -9,6 +9,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 type ActivityDetailCardsProps = {
   activityDetail?: any;
   loading?: boolean;
@@ -18,23 +19,6 @@ export default function ActivityDetailCards({
   activityDetail,
   loading,
 }: ActivityDetailCardsProps) {
-  function formatToNepalTime(utcDateString) {
-    const utcDate = new Date(utcDateString);
-
-    const nepalTimeFormatter = new Intl.DateTimeFormat('en-NP', {
-      timeZone: 'Asia/Kathmandu',
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true,
-    });
-
-    return nepalTimeFormatter.format(utcDate);
-  }
-
   if (loading) {
     <div className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 h-[calc(29vh)]">
       <SpinnerLoader />
@@ -63,10 +47,10 @@ export default function ActivityDetailCards({
               )} text-xs font-normal px-2 py-1 rounded-sm`}
             >
               {activityDetail?.status
-                .toLowerCase()
-                .split('_')
-                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ')}
+                ?.toLowerCase()
+                ?.split('_')
+                ?.map((word) => word?.charAt(0)?.toUpperCase() + word?.slice(1))
+                ?.join(' ')}
             </span>
           </div>
           <TooltipProvider>
@@ -122,12 +106,12 @@ export default function ActivityDetailCards({
               <>
                 <Clock className="w-4 h-4 mr-2 ml-1" />
                 <span>
-                  Completed at: {formatToNepalTime(activityDetail?.completedAt)}
+                  Completed at: {dateFormat(activityDetail?.completedAt)}
                 </span>
               </>
             </div>
           )}
-          {activityDetail?.notes ? (
+          {activityDetail?.notes?.trim() ? (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild className="hover:cursor-pointer py-0">

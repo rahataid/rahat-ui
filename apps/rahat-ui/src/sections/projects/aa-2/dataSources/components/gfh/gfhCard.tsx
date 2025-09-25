@@ -8,6 +8,7 @@ import {
   Globe,
   CircleAlert,
   RadioTower,
+  RefreshCw,
 } from 'lucide-react';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 const InfoModal = dynamic(
@@ -23,6 +24,7 @@ interface IGFHCardProps {
   stationName: string;
   forecastDate: string;
   basinSize: string;
+  updatedAt?: string;
 }
 
 const GFHCard = ({
@@ -32,6 +34,7 @@ const GFHCard = ({
   longitude,
   stationName,
   forecastDate,
+  updatedAt,
   basinSize,
 }: IGFHCardProps) => {
   const googleFloodHubInfoModal = useBoolean();
@@ -51,14 +54,22 @@ const GFHCard = ({
 
       <Card className="px-4 py-3 rounded-xl mb-4">
         {/* title */}
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2 mb-1">
           <h2 className="font-bold text-lg">Doda River Forecast</h2>
+
           <CircleAlert
             className="w-4 h-4 cursor-pointer"
             onClick={handleAssignModalClick}
           />
         </div>
-        <div className="flex flex-wrap justify-between gap-4">
+        {updatedAt && (
+          <div className="flex items-center gap-1 text-xs text-green-500 mt-0.5 whitespace-nowrap">
+            <RefreshCw size={12} />
+            <span>Last Synced at: {dateFormat(updatedAt)}</span>
+          </div>
+        )}
+
+        <div className="flex flex-wrap justify-between gap-4 mt-2">
           {/* River Gauge Id */}
           <div className="flex items-center gap-3">
             <FileText className="w-4 h-4 text-gray-500" />

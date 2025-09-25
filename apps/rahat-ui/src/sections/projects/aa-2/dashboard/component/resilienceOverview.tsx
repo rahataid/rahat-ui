@@ -8,32 +8,13 @@ import {
   CarouselPrevious,
 } from '@rahat-ui/shadcn/src/components/ui/carousel';
 import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
+import { Heading } from 'apps/rahat-ui/src/common';
 import { Home, Users } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 
-type Props = {
-  benefStats: any[];
-  triggeersStats: any[];
-};
-
 const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
   const project = useProjectStore((p) => p.singleProject);
-  const getStat = (name: string) =>
-    benefStats?.find((stat: any) => stat.name === name)?.data?.count ?? 0;
-
-  const stats = [
-    {
-      icon: <Users className="w-5 h-5 text-muted-foreground" />,
-      label: 'Total Respondents',
-      value: getStat('TOTAL_RESPONDENTS'),
-    },
-    {
-      icon: <Home className="w-5 h-5 text-muted-foreground" />,
-      label: 'Total no. of Family Members',
-      value: getStat('TOTAL_NUMBER_FAMILY_MEMBERS'),
-    },
-  ];
 
   const activitiesData = triggeersStats?.find((stat: any) =>
     stat.name.startsWith(`ACTIVITIES_${projectId.toUpperCase()}`),
@@ -77,7 +58,7 @@ const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2  min-h-[400px] gap-4">
       {/* Left Content Section */}
-      <div className="flex flex-col justify-between space-y-6">
+      <div className="flex flex-col justify-between space-y-2">
         {/* Header */}
         <div className="space-y-4">
           <h1 className="text-xl  font-bold text-gray-900">{project?.name}</h1>
@@ -86,55 +67,42 @@ const ResilienceOverview = ({ benefStats, triggeersStats, projectId }: any) => {
           </p>
         </div>
 
-        {/* Statistics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {stats.map((stat) => {
-            return (
-              <div className="flex items-center gap-6 py-4" key={stat.label}>
-                <div className="relative rounded-full p-3 bg-gray-100">
-                  {stat.icon}
-                </div>
-
-                <div className=" flex flex-col">
-                  <h3 className="text-base text-muted-foreground">
-                    {stat.label}
-                  </h3>
-                  <h2 className="text-xl font-bold">{stat.value}</h2>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
         {/* Progress Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {progressMetrics.map((metric, index) => (
-            <Card
-              key={index}
-              className={`${metric.bgColor} ${metric.borderColor} border rounded-sm h-auto`}
-            >
-              <CardContent className="p-4">
-                <div className="space-y-3">
-                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
-                    {metric.title}
-                  </h3>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs sm:text-sm text-gray-600">
-                        {metric.percentage}% completed
-                      </span>
-                    </div>
+        <div className="flex flex-col mt-4">
+          <Heading
+            title="Activities Status"
+            titleStyle="text-lg"
+            description="Progress across preparedness, readiness, and activation phases"
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {progressMetrics.map((metric, index) => (
+              <Card
+                key={index}
+                className={`${metric.bgColor} ${metric.borderColor} border rounded-sm h-auto`}
+              >
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
+                      {metric.title}
+                    </h3>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs sm:text-sm text-gray-600">
+                          {metric.percentage}% completed
+                        </span>
+                      </div>
 
-                    <Progress
-                      value={metric.percentage}
-                      className={`h-2 ${metric.bgColor}`}
-                      indicatorColor={metric.color}
-                    />
+                      <Progress
+                        value={metric.percentage}
+                        className={`h-2 ${metric.bgColor}`}
+                        indicatorColor={metric.color}
+                      />
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
 

@@ -80,7 +80,7 @@ export function NavMain(items: IProps) {
                         {item.icon}
                       </span>
                       <span>{item.title}</span>
-                    </SidebarMenuButton>
+                    </SidebarMenuButton>,
                   )
                 ) : (
                   <SidebarMenuButton
@@ -100,7 +100,7 @@ export function NavMain(items: IProps) {
               </Link>
             </SidebarMenuItem>
           );
-          
+
           return menuItem;
         })}
       </SidebarMenu>

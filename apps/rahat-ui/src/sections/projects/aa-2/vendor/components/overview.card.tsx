@@ -1,13 +1,23 @@
+import { TOKEN_TO_AMOUNT_MULTIPLIER } from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
-import { trimDecimalZeros } from 'apps/rahat-ui/src/utils/string';
+import { formatNumber, trimDecimalZeros } from 'apps/rahat-ui/src/utils/string';
 import { ChartDonut } from 'libs/shadcn/src/components/charts';
 import React from 'react';
 
 type Props = {
   data: any;
   loading: boolean;
+  redemptionStats: any;
+  redemptionStatsLoading: boolean;
 };
-export default function OverviewCard({ data, loading }: Props) {
+export default function OverviewCard({
+  data,
+  loading,
+  redemptionStats,
+  redemptionStatsLoading,
+}: Props) {
+  console.log('data ', data);
+  console.log('redemptionStats', redemptionStats);
   const isBalanceError = data?.balances?.name === 'NotFoundError';
 
   const balance =
@@ -22,12 +32,13 @@ export default function OverviewCard({ data, loading }: Props) {
     : balance?.[0]?.balance
     ? trimDecimalZeros(balance?.[0]?.balance)
     : '0';
+
   return (
     <div className="border rounded-sm p-4">
       <div className="mb-4">
-        <p className="text-lg font-semibold">Token Overview</p>
+        <p className="text-lg font-semibold">Token And Amount Distribution</p>
         <p className="text-sm text-muted-foreground">
-          Overview of token assigned to the vendor
+          Summary of token and amount disbursed by vendor
         </p>
       </div>
       <div className="grid grid-cols-2 gap-4">
@@ -49,16 +60,40 @@ export default function OverviewCard({ data, loading }: Props) {
         <div className="flex flex-col space-y-2">
           <div className="border rounded-md p-4 bg-blue-50">
             <p className="text-xs">Token Disbursed</p>
-            <p className="text-2xl font-semibold">{vendorBalance}</p>
+            <p className="text-2xl font-semibold">
+              {data?.vendorAssignedBalance
+                ? formatNumber(Number(data?.vendorAssignedBalance))
+                : 'N/A'}
+            </p>
+          </div>
+          <div className="border rounded-md p-4 bg-blue-50">
+            <p className="text-xs">Token Redeemed</p>
+            <p className="text-2xl font-semibold">
+              {redemptionStats?.totalTokensApproved
+                ? formatNumber(Number(redemptionStats?.totalTokensApproved))
+                : 'N/A'}
+            </p>
           </div>
           <div className="border rounded-md p-4 bg-green-50">
             <p className="text-xs">Amount Disbursed</p>
-            <p className="text-2xl font-semibold">Rs.{' ' + vendorBalance}</p>
+            <p className="text-2xl font-semibold">
+              {data?.vendorAssignedBalance
+                ? `Rs. ${formatNumber(
+                    Number(data?.vendorAssignedBalance) *
+                      TOKEN_TO_AMOUNT_MULTIPLIER,
+                  )}`
+                : 'N/A'}
+            </p>
           </div>
           <div className="border rounded-md p-4 bg-red-50">
-            <p className="text-xs">Token Redeemed</p>
+            <p className="text-xs">Amount Redeemed</p>
             <p className="text-2xl font-semibold">
-              {data?.disbursedTokens || 0}
+              {redemptionStats?.totalTokensApproved
+                ? `Rs. ${formatNumber(
+                    Number(redemptionStats?.totalTokensApproved) *
+                      TOKEN_TO_AMOUNT_MULTIPLIER,
+                  )}`
+                : 'N/A'}
             </p>
           </div>
         </div>

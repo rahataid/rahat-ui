@@ -4,12 +4,14 @@ import { useRouter } from 'next/navigation';
 
 type IProps = {
   path?: string;
+  isLoading?: boolean;
 };
 
-export function Back({ path }: IProps) {
+export function Back({ path, isLoading }: IProps) {
   const router = useRouter();
 
   const handleClick = () => {
+    if (isLoading) return;
     if (path) {
       router.push(path);
     } else {
@@ -19,7 +21,9 @@ export function Back({ path }: IProps) {
 
   return (
     <div
-      className="inline-flex gap-2 mb-4 cursor-pointer w-16"
+      className={`inline-flex gap-2 mb-4 w-16 ${
+        isLoading ? 'cursor-progress' : 'cursor-pointer '
+      } `}
       onClick={handleClick}
     >
       <ArrowLeft

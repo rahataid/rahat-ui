@@ -25,7 +25,7 @@ export const useListSessionLogs = (sessionId: string, payload: any) => {
     queryFn: () =>
       newCommunicationService.session.listBroadcasts(sessionId, payload),
 
-    queryKey: ['TAGS.NEW_COMMS.LIST_TRANSPORTS', { type: sessionId }],
+    queryKey: ['TAGS.NEW_COMMS.LIST_TRANSPORTS', payload],
   });
   return query;
 };
@@ -49,6 +49,15 @@ export const useSessionRetryFailed = () => {
         queryKey: ['TAGS.NEW_COMMS.LIST_TRANSPORTS', { type: sessionId }],
       });
       Swal.fire('Retry Successfully', '', 'success');
+    },
+    onError: (error: any) => {
+      Swal.fire(
+        'You’ve reached the maximum number of retries',
+        error?.response.data.message === 'Session is completed'
+          ? 'No further retries possible'
+          : error?.response.data.message,
+        'error',
+      );
     },
   });
 

@@ -47,7 +47,6 @@ export default function PayoutView() {
     ];
   }, [statsPayout]);
 
-  console.log(statsPayout);
   return (
     <div className="p-4 ">
       <div className="flex justify-between items-center space-x-4">
@@ -142,7 +141,7 @@ export default function PayoutView() {
         </div>
 
         <div className="flex-[2] border rounded-sm p-4">
-          <RecentPayout payouts={payouts} />
+          <RecentPayout payouts={payouts?.data} />
         </div>
       </div>
     </div>

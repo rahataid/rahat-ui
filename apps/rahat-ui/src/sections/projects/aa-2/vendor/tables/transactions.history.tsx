@@ -1,19 +1,19 @@
-import React from 'react';
+import { useGetTxnRedemptionRequestList, usePagination } from '@rahat-ui/query';
 import {
   getCoreRowModel,
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { useVendorsTransactionTableColumns } from '../columns/useTransactionColumns';
 import {
-  ClientSidePagination,
   CustomPagination,
   DemoTable,
   Heading,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
-import { useGetTxnRedemptionRequestList, usePagination } from '@rahat-ui/query';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { useParams } from 'next/navigation';
+import React from 'react';
+import { useVendorsTransactionTableColumns } from '../columns/useTransactionColumns';
 
 export default function VendorsTransactionsHistory() {
   const { id, vendorId } = useParams();
@@ -28,17 +28,21 @@ export default function VendorsTransactionsHistory() {
     setPerPage,
     setPrevPage,
   } = usePagination();
+  const debounceSearch = useDebounce(filters, 500);
 
-  const { data: txnTable, isLoading } = useGetTxnRedemptionRequestList({
+  const { data, isLoading } = useGetTxnRedemptionRequestList({
     projectUUID: id,
     uuid: vendorId,
     ...pagination,
-    ...filters,
+    name: debounceSearch.name,
+    orderBy: 'updatedAt',
+    order: 'desc',
   });
+
   const columns = useVendorsTransactionTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: txnTable?.data || [],
+    data: data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -53,7 +57,6 @@ export default function VendorsTransactionsHistory() {
     },
     [filters],
   );
-  console.log(txnTable?.response?.meta);
   return (
     <div className=" space-y-1">
       <Heading
@@ -64,9 +67,9 @@ export default function VendorsTransactionsHistory() {
 
       <SearchInput
         className="w-full"
-        name="transaction hash"
-        onSearch={(e) => handleSearch(e, 'txHash')}
-        value={filters?.txHash || ''}
+        name="name"
+        onSearch={(e) => handleSearch(e, 'name')}
+        value={filters?.name || ''}
       />
       <DemoTable
         table={table}
@@ -80,7 +83,7 @@ export default function VendorsTransactionsHistory() {
         handlePageSizeChange={setPerPage}
         setPagination={setPagination}
         meta={
-          (txnTable?.response?.meta as any) || {
+          (data?.response?.meta as any) || {
             total: 0,
             lastPage: 0,
             currentPage: 0,
@@ -90,7 +93,7 @@ export default function VendorsTransactionsHistory() {
           }
         }
         perPage={pagination?.perPage}
-        total={txnTable?.response?.meta?.total || 0}
+        total={data?.response?.meta?.total || 0}
       />
     </div>
   );

@@ -66,7 +66,11 @@ export default function BulkAssignToProjectModal({
               {projectsList.data?.data.length &&
                 projectsList.data?.data.map((project) => {
                   return (
-                    <SelectItem key={project.uuid} value={project.uuid}>
+                    <SelectItem
+                      key={project.uuid}
+                      disabled={project.type === 'aa'}
+                      value={project.uuid}
+                    >
                       {project.name}
                     </SelectItem>
                   );

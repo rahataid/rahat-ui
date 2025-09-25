@@ -19,15 +19,19 @@ import { useUserStore } from '@rumsan/react-query';
 import { useAuthStore } from '@rumsan/react-query/auth';
 import { toast } from 'react-toastify';
 import { paths } from '../routes/paths';
-import ThemeSwitch from './themeToggleSwitch';
+
 import ConnectWallet from './wallet/connect-wallet';
 import SearchInput from '../sections/projects/components/search.input';
+import React from 'react';
+
+import { NotificationButton } from './notification-button';
 
 export function Nav({ hasDefaultHeader = true }) {
   const { user, clearUser } = useUserStore((state) => ({
     user: state.user,
     clearUser: state.clearUser,
   }));
+
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const handleLogout = () => {
     clearUser();
@@ -35,14 +39,15 @@ export function Nav({ hasDefaultHeader = true }) {
     // localStorage.clear()
 
     toast.success('Logged out successfully.');
-    setTimeout(() => window.location.reload(), 1000);
+    setTimeout(() => window.location.replace('/auth/login'), 1000);
   };
 
   return (
     hasDefaultHeader && (
-      <div className="h-14 fixed w-[calc(100vw-56px)] flex justify-between gap-4 items-center p-2 border-b">
+      <div className="h-14 fixed w-[calc(100vw-56px)] flex justify-between gap-4 items-center p-2 border-b z-40">
         <SearchInput className="w-1/4" name="" onSearch={() => {}} isDisabled />
-        <div className="flex space-x-2 items-center">
+        <div className="flex space-x-6 items-center">
+          {/* <NotificationButton unreadCount={3} /> */}
           <ConnectWallet />
           <DropdownMenu>
             <DropdownMenuTrigger>

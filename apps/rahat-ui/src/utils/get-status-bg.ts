@@ -17,19 +17,20 @@ export const PayoutTransactionFailedStatuses = [
 ] as const;
 
 export const getStatusBg = (status: string) => {
-  if (status === 'NOT_STARTED') {
+  const normalizedStatus = status.toUpperCase().replace(/ /g, '_');
+  if (normalizedStatus === 'NOT_STARTED') {
     return 'bg-gray-200';
   }
 
-  if (status === 'WORK_IN_PROGRESS') {
+  if (normalizedStatus === 'WORK_IN_PROGRESS') {
     return 'bg-orange-200';
   }
 
-  if (status === 'COMPLETED') {
+  if (normalizedStatus === 'COMPLETED') {
     return 'bg-green-200';
   }
 
-  if (status === 'DELAYED') {
+  if (normalizedStatus === 'DELAYED') {
     return 'bg-gray-200';
   }
 

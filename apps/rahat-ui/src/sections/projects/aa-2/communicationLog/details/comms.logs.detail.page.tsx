@@ -44,7 +44,7 @@ import {
 } from 'lucide-react';
 
 import { useParams, useSearchParams } from 'next/navigation';
-import React, { useMemo,useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import * as XLSX from 'xlsx';
 import CommsLogsTable from '../table/comms.logs.table';
@@ -58,12 +58,18 @@ type IHeadCardProps = {
 
 export default function CommsLogsDetailPage() {
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
+
   const [communicationId, activityId, sessionId] = (
     commsIdXactivityIdXsessionId as string
   ).split('%40');
 
   const searchParams = useSearchParams();
   const from = searchParams.get('from');
+
+  const backFrom = searchParams.get('backFrom');
+  const tab = searchParams.get('tab');
+
+  const subTab = searchParams.get('subTab');
 
   const {
     pagination,
@@ -82,6 +88,7 @@ export default function CommsLogsDetailPage() {
     communicationId,
     activityId,
   );
+
   const columns = useCommsLogsTableColumns(
     logs?.sessionDetails?.Transport?.name,
   );
@@ -92,6 +99,8 @@ export default function CommsLogsDetailPage() {
   );
   const { data: activityDetail, isLoading: isLoadingActivity } =
     useSingleActivity(projectID as UUID, activityId);
+
+  const communicationTitle = logs?.communicationDetail?.communicationTitle;
   const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
     useListSessionLogs(sessionId, { ...pagination, ...cleanFilters });
 
@@ -172,12 +181,17 @@ export default function CommsLogsDetailPage() {
     },
     [filters],
   );
-
   const path = useMemo(() => {
+    if (tab && subTab) {
+      return `/projects/aa/${projectID}/communication-logs?tab=${tab}&subTab=${subTab}`;
+    }
+
     return from === 'activities'
-      ? `/projects/aa/${projectID}/activities/${activityId}?from="mainPage"`
+      ? `/projects/aa/${projectID}/activities/${activityId}${
+          backFrom ? `?from=${backFrom}` : ''
+        }`
       : `/projects/aa/${projectID}/communication-logs/details/${activityId}`;
-  }, [from, projectID, activityId]);
+  }, [from, projectID, activityId, tab, subTab, backFrom]);
 
   return (
     <div className="p-4">
@@ -282,7 +296,7 @@ export default function CommsLogsDetailPage() {
             <Card className="w-full col-span-1 bg-white rounded-sm">
               <CardContent className="p-6 space-y-6">
                 {/* Beneficiary Group */}
-                <div className="space-y-1">
+                <div>
                   <p className="text-sm text-gray-500">
                     {logs?.communicationDetail?.groupType
                       ? logs?.communicationDetail?.groupType + ' ' + 'GROUP'
@@ -292,7 +306,7 @@ export default function CommsLogsDetailPage() {
                 </div>
 
                 {/* Triggered Date */}
-                <div className="space-y-1">
+                <div>
                   <p className="text-sm text-gray-500">Triggered Date</p>
                   <p className="font-medium">
                     {dateFormat(logs?.sessionDetails?.createdAt)}
@@ -300,10 +314,19 @@ export default function CommsLogsDetailPage() {
                 </div>
 
                 {/* Total Audience */}
-                <div className="space-y-1">
+                <div>
                   <p className="text-sm text-gray-500">Total Audience</p>
                   <p className="font-medium">{logsMeta?.total}</p>
                 </div>
+
+                {logs?.sessionDetails?.status === 'COMPLETED' && (
+                  <div>
+                    <p className="text-sm text-gray-500">Completed At</p>
+                    <p className="font-medium">
+                      {dateFormat(logs?.sessionDetails?.updatedAt)}
+                    </p>
+                  </div>
+                )}
 
                 {/* VOICE Status */}
                 <div className="flex items-center gap-3">
@@ -337,7 +360,7 @@ export default function CommsLogsDetailPage() {
 
                 {/* Communication */}
                 <div className="space-y-3">
-                  <p className="text-sm text-gray-500">Communication</p>
+                  <p className="text-sm text-gray-500">{communicationTitle}</p>
                   {renderMessage(logs?.communicationDetail?.message)}
                 </div>
               </CardContent>

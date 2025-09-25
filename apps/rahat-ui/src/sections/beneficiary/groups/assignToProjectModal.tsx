@@ -80,11 +80,16 @@ export default function AssignBeneficiaryToProjectModal({
             <SelectContent>
               {projectsList.data?.data.length &&
                 projectsList.data?.data.map((project) => {
+                  const projectType = project.type?.toLowerCase();
+                  const projectAACriteria =
+                    projectType === 'aa'
+                      ? !beneficiaryGroupDetail?.isGroupValidForAA
+                      : false;
                   return (
                     <SelectItem
                       disabled={
                         assignedGroupId?.includes(project?.id) ||
-                        !beneficiaryGroupDetail?.isGroupValidForAA
+                        projectAACriteria
                       }
                       key={project.uuid}
                       value={project.uuid as UUID}
@@ -103,6 +108,7 @@ export default function AssignBeneficiaryToProjectModal({
             </Button>
           </DialogClose>
           <Button
+            disabled={assignBeneficiaryGroup.isPending}
             onClick={handleAssignProject}
             type="button"
             variant="ghost"

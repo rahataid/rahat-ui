@@ -7,6 +7,7 @@ import React, { useEffect } from 'react';
 import { useSwal } from '../../../swal';
 import { useProjectSettingsStore } from '../../projects';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
+import { useSettingsStore } from '../../settings';
 
 export const useCreateTriggerStatement = () => {
   const q = useProjectAction();
@@ -324,6 +325,13 @@ export const useSingleTriggerStatement = (
   version: boolean,
 ) => {
   const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
 
   const action = version ? 'ms.revertPhase.getOne' : 'ms.triggers.getOne';
   const payload = version
@@ -336,14 +344,29 @@ export const useSingleTriggerStatement = (
   const query = useQuery({
     queryKey: ['triggerStatement', uuid, payload],
     queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: action,
-          payload,
-        },
-      });
-      return mutate.data;
+      try {
+        const mutate = await q.mutateAsync({
+          uuid,
+          data: {
+            action: action,
+            payload,
+          },
+        });
+        return mutate.data;
+      } catch (error: any) {
+        const errorMessage =
+          error?.response?.data?.message ||
+          `Failed to fetch ${
+            version ? 'version' : 'trigger statement'
+          } details`;
+
+        toast.fire({
+          title: `Error loading ${version ? 'version' : 'trigger statement'}`,
+          text: errorMessage,
+          icon: 'error',
+        });
+        throw error;
+      }
     },
   });
   return query;
@@ -359,6 +382,8 @@ export const useActivateTrigger = () => {
     showConfirmButton: false,
     timer: 3000,
   });
+  const chainSettings = useSettingsStore((state) => state.projectChainSettings);
+
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -384,7 +409,7 @@ export const useActivateTrigger = () => {
       qc.invalidateQueries({ queryKey: ['triggerstatement'] });
       toast.fire({
         title: 'Trigger activated.',
-        text: 'This trigger will be saved in Stellar block. You can view details of this from trigger details page.',
+        text: 'Successfully activated trigger. You can view details of this from trigger details page.',
         timer: 10000,
         icon: 'success',
         width: '500px',

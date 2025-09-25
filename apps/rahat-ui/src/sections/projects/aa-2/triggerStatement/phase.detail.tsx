@@ -45,7 +45,7 @@ export default function PhaseDetail() {
     <TableLoader />
   ) : (
     <div className="p-4">
-      <Back />
+      <Back path={`/projects/aa/${projectId}/trigger-statements`} />
       <div className="flex justify-between items-center">
         <Heading
           title={phase?.name || 'N/A'}

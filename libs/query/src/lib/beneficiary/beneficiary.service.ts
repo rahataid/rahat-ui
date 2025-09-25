@@ -336,10 +336,11 @@ export const useUpdateGroupPropose = () => {
   return useMutation({
     mutationFn: (payload: any) =>
       updateGroupPropose(payload.uuid, payload.selectedPurpose),
-    onSuccess: (_data, variables) => {
+    onSuccess: async (_data, variables) => {
       if (variables?.uuid) {
-        qc.invalidateQueries({
+        await qc.invalidateQueries({
           queryKey: ['GET_BENEFICIARY_GROUP', variables.uuid],
+          exact: false,
         });
       }
       toast.fire({
@@ -472,7 +473,16 @@ export const useUploadBeneficiary = () => {
           rumsanService.client,
           projectId,
         ),
-      onSuccess: () => {
+      onSuccess: (data) => {
+        if (data?.data?.success === false) {
+          toast.fire({
+            icon: 'error',
+            title: 'Something went wrong',
+            text: data?.data?.message || '',
+          });
+          return;
+        }
+
         qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
         toast.fire({
           icon: 'success',

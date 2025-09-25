@@ -1,63 +1,174 @@
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@radix-ui/react-tooltip';
+import { useProjectSettingsStore } from '@rahat-ui/query';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Pagination } from '@rumsan/sdk/types';
 import { ColumnDef } from '@tanstack/react-table';
+import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { truncateAddress } from 'apps/rahat-ui/src/utils/string';
+import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
+import {
+  formatTokenAmount,
+  getStellarTxUrl,
+} from 'apps/rahat-ui/src/utils/stellar';
+import { toTitleCase } from 'apps/rahat-ui/src/utils/string';
+import { PayoutMode } from 'libs/query/src/lib/aa';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
-export const useVendorsBeneficiaryTableColumns = () => {
-  const { id } = useParams();
+export const useVendorsBeneficiaryTableColumns = (
+  mode: PayoutMode,
+  pagination: Pagination,
+) => {
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
+  const { id, vendorId }: { id: string; vendorId: string } = useParams();
   const router = useRouter();
 
+  const params = useSearchParams();
+  const tab = params.get('tab') as string;
+  const subTab = params.get('subTab') as string;
+
   const handleViewClick = (beneficiaryId: string) => {
-    router.push(`/projects/aa/${id}/beneficiary/${beneficiaryId}`);
+    setPaginationToLocalStorage(
+      mode === PayoutMode.ONLINE
+        ? PaginationTableName.VENDOR_ONLINE_BENEFICIARY_LIST
+        : PaginationTableName.VENDOR_OFFLINE_BENEFICIARY_LIST,
+    );
+    router.push(
+      `/projects/aa/${id}/beneficiary/${beneficiaryId}?vendorId=${vendorId}&tab=${tab}&subTab=${subTab}#pagination=${encodeURIComponent(
+        JSON.stringify(pagination),
+      )}`,
+    );
   };
 
   const { clickToCopy, copyAction } = useCopy();
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'name',
-      header: 'Beneficiary Name',
-      cell: ({ row }) => <div>{row.getValue('name') || 'N/A'}</div>,
+      accessorKey: 'walletAddress',
+      header: 'Wallet Address',
+      cell: ({ row }) => {
+        if (!row.original?.walletAddress) {
+          return <div>N/A</div>;
+        }
+        return (
+          <div className="flex flex-row">
+            <div className="w-20 truncate text-400 text-[#475263] text-[14px] leading-[16px] font-normal">
+              {row.original?.walletAddress}
+            </div>
+            <button
+              onClick={() =>
+                clickToCopy(
+                  row.original?.walletAddress,
+                  row.original?.walletAddress,
+                )
+              }
+              className="ml-2 text-sm text-gray-500"
+            >
+              {copyAction === row.original?.walletAddress ? (
+                <CopyCheck className="w-4 h-4" />
+              ) : (
+                <Copy className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+        );
+      },
     },
     {
       accessorKey: 'benTokens',
-      header: 'Tokens',
-      cell: ({ row }) => <div>{row.getValue('benTokens') || 'N/A'}</div>,
+      header: 'Token Amount',
+      cell: ({ row }) => {
+        return row.getValue('benTokens')
+          ? formatTokenAmount(row.getValue('benTokens'), settings, id)
+          : 'N/A';
+      },
     },
     {
-      accessorKey: 'walletAddress',
-      header: 'Wallet Address',
-      cell: ({ row }) => (
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger
-              className="flex items-center gap-3 cursor-pointer"
+      accessorKey: 'txHash',
+      header: 'TxHash',
+      cell: ({ row }) => {
+        const txHash = row?.original?.txHash as string;
+
+        if (!txHash) return <div>N/A</div>;
+
+        return (
+          <div className="flex flex-row">
+            <div className="w-20 truncate">
+              <a
+                href={getStellarTxUrl(settings, id, row?.original?.txHash)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline cursor-pointer  text-[14px] leading-[16px] font-normal !text-[#297AD6]"
+              >
+                {row.getValue('txHash')}
+              </a>
+            </div>
+            <button
               onClick={() =>
-                clickToCopy(row?.getValue('walletAddress'), row?.original?.uuid)
+                clickToCopy(row.getValue('txHash'), row.getValue('txHash'))
               }
+              className="ml-2 text-sm text-gray-500"
             >
-              <p>{truncateAddress(row?.getValue('walletAddress'))}</p>
-              {copyAction === row?.original?.uuid ? (
-                <CopyCheck size={15} strokeWidth={1.5} />
+              {copyAction === row.getValue('txHash') ? (
+                <CopyCheck className="w-4 h-4" />
               ) : (
-                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+                <Copy className="w-4 h-4" />
               )}
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary" side="bottom">
-              <p className="text-xs font-medium">
-                {copyAction === row?.original?.uuid
-                  ? 'copied'
-                  : 'click to copy'}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+            </button>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'amountDisbursed',
+      header: 'Amount Disbursed',
+      cell: ({ row }) => {
+        const status = row.original?.status;
+        return status === 'COMPLETED'
+          ? row.getValue('benTokens')
+            ? `Rs. ${row.getValue('benTokens')}`
+            : 'N/A'
+          : 'Rs. 0';
+      },
+    },
+    ...(mode === PayoutMode.OFFLINE
+      ? [
+          {
+            accessorKey: 'syncStatus',
+            header: 'Sync Status',
+            cell: ({ row }) => {
+              const status = row.original?.status;
+              console.log('status:', status);
+              return (
+                <Badge
+                  className="text-xs font-normal"
+                  style={{
+                    backgroundColor:
+                      status === 'PENDING' ? '#F2F4F7' : '#ECFDF3',
+                    color: status === 'PENDING' ? '#344054' : '#027A48',
+                  }}
+                >
+                  {status === 'PENDING' ? 'Pending' : 'Synced'}
+                </Badge>
+              );
+            },
+          },
+        ]
+      : []),
+    {
+      accessorKey: 'status',
+      header: 'Token Status',
+      cell: ({ row }) => (
+        <Badge
+          className="text-xs font-normal"
+          style={{
+            backgroundColor:
+              row.original?.status === 'COMPLETED' ? '#ECFDF3' : '#F2F4F7',
+            color: row.original?.status === 'COMPLETED' ? '#027A48' : '#344054',
+          }}
+        >
+          {row.original?.status === 'COMPLETED' ? 'Redeemed' : 'Pending'}
+        </Badge>
       ),
     },
     {

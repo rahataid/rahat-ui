@@ -57,6 +57,24 @@ export const useProjectAction = <T = any>(key?: string[]) => {
     queryClient,
   );
 };
+export const useGeneralAction = <T = any>() => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const projectClient = getProjectClient(rumsanService.client);
+  return useMutation<
+    FormattedResponse<T>,
+    Error,
+    {
+      data: ProjectActions;
+    },
+    unknown
+  >(
+    {
+      mutationKey: ['generalAction'],
+      mutationFn: projectClient.generalActions,
+    },
+    queryClient,
+  );
+};
 
 export const useAssignBenToProject = () => {
   const q = useProjectAction();
@@ -114,6 +132,7 @@ export const useAssignBenToProject = () => {
 
 export const useAssignBenGroupToProject = () => {
   const q = useProjectAction();
+  const queryClient = useQueryClient();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -129,7 +148,7 @@ export const useAssignBenGroupToProject = () => {
       projectUUID: UUID;
       beneficiaryGroupUUID: UUID;
     }) => {
-      return q.mutateAsync({
+      const response = await q.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'beneficiary.assign_group_to_project',
@@ -138,9 +157,21 @@ export const useAssignBenGroupToProject = () => {
           },
         },
       });
+      return response?.data;
     },
-    onSuccess: () => {
+    onSuccess: async (_data, variables) => {
       q.reset();
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['GET_BENEFICIARY_GROUP', variables.beneficiaryGroupUUID],
+          exact: false,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [TAGS.GET_BENEFICIARIES_GROUPS],
+          exact: false,
+        }),
+      ]);
+
       toast.fire({
         title: 'Beneficiary group assigned Successfully',
         icon: 'success',
@@ -399,6 +430,54 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
   return query;
 };
 
+export const useProjectBlockChainSettings = (uuid: UUID) => {
+  const q = useProjectAction(['PROJECT_SETTINGS_KEYS.BLOCKCHAIN']);
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+
+  const query = useQuery({
+    queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid, PROJECT_SETTINGS_KEYS.BLOCKCHAIN],
+    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.BLOCKCHAIN]),
+    // enabled: !!settings[uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: PROJECT_SETTINGS_KEYS.BLOCKCHAIN,
+          },
+        },
+      });
+      return mutate.data.value;
+    },
+    // initialData: settings?.[uuid],
+  });
+
+  useEffect(() => {
+    if (!isEmpty(query.data)) {
+      const settingsToUpdate = {
+        ...settings,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.BLOCKCHAIN]: query?.data,
+        },
+      };
+      setSettings(settingsToUpdate);
+      window.location.reload();
+      // setSettings({
+      //   [uuid]: {
+      //     [PROJECT_SETTINGS_KEYS.SUBGRAPH]: query?.data,
+      //   },
+      // });
+    }
+  }, [query.data]);
+
+  return query;
+};
+
 export const useAAProjectSettingsDatasource = (uuid: UUID) => {
   const q = useProjectAction([PROJECT_SETTINGS_KEYS.DATASOURCE]);
   const { setSettings, settings } = useProjectSettingsStore((state) => ({
@@ -616,7 +695,32 @@ export const useProjectBeneficiaryDetail = (payload: any) => {
       return mutate?.data;
     },
   });
-  return query?.data;
+  return query;
+};
+
+export const useBeneficiaryRedeemInfo = (payload: any) => {
+  const q = useProjectAction();
+  const { projectUUID, beneficiaryUUID } = payload;
+
+  const query = useQuery({
+    queryKey: [
+      'aaProject.beneficiary.getRedeemInfo',
+      { projectUUID, beneficiaryUUID },
+    ],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.beneficiary.getRedeemInfo',
+          payload: {
+            beneficiaryUUID,
+          },
+        },
+      });
+      return mutate?.data;
+    },
+  });
+  return query;
 };
 
 export const useListELRedemption = (

@@ -6,26 +6,41 @@ function InKindStakeholderNode({
   balance,
   received,
   index,
+  isFirst,
 }: {
   name: string;
   status: string;
   balance: number;
   received: number;
   index?: number;
+  isFirst?: boolean;
 }) {
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+    });
+  };
+
   return (
-    <div className="flex flex-col items-center ">
+    <div className="flex flex-col items-center">
+      {/* Status Circle */}
       <div
         className={`w-8 h-8 rounded-full flex items-center justify-center z-10 
         ${
-          status === 'confirmed' || index === 0
+          status === 'confirmed' || isFirst
             ? 'bg-green-500 text-white'
             : status === 'pending'
             ? 'bg-amber-500 text-white'
             : 'bg-red-500 text-white'
         }`}
       >
-        {status === 'confirmed' || index === 0 ? (
+        {status === 'confirmed' || isFirst ? (
           <Check size={16} />
         ) : status === 'pending' ? (
           <Info size={16} />
@@ -33,19 +48,45 @@ function InKindStakeholderNode({
           <AlertCircle size={16} />
         )}
       </div>
-      <div className="mt-3 text-center">
-        <p className="font-medium text-sm">{name}</p>
-        <div className="mt-1 flex justify-center text-xs text-gray-500">
-          {index === 0 ? <p>Items:</p> : <p>Received:</p>}
-          <p className="font-medium">{received.toLocaleString()} items</p>
+
+      {/* Content */}
+      <div className="mt-4 text-center max-w-32">
+        <p className="font-medium text-sm text-gray-900 mb-2">{name}</p>
+
+        {/* Stock Display */}
+        <div className="space-y-1">
+          {name === 'Beneficiary' ? (
+            <>
+              <div className="text-xs text-gray-600">
+                <p>
+                  Received Stocks:{' '}
+                  <span className="font-medium text-gray-900">
+                    Rs. {received.toLocaleString()}
+                  </span>
+                </p>
+              </div>
+            </>
+          ) : (
+            <div className="text-xs text-gray-600">
+              <p>
+                Stock:{' '}
+                <span className="font-medium text-gray-900">
+                  {received.toLocaleString()}
+                </span>
+              </p>
+              <p>
+                Remaining Stocks:{' '}
+                <span className="font-medium text-gray-900">
+                  {balance.toLocaleString()}
+                </span>
+              </p>
+            </div>
+          )}
         </div>
-        <div className="mt-1 flex justify-center text-xs text-gray-500">
-          <p>Balance:</p>
-          <p className="font-medium">{balance.toLocaleString()} items</p>
-        </div>
-        <div className="mt-1 flex justify-center text-xs text-gray-500">
-          <Package size={12} className="mr-1" />
-          <p className="text-xs">In-kind</p>
+
+        {/* Timestamp */}
+        <div className="mt-2 text-xs text-blue-400">
+          {formatDate(new Date())}
         </div>
       </div>
     </div>

@@ -70,9 +70,8 @@ export const useNavItems = () => {
               roles={[
                 AARoles.ADMIN,
                 AARoles.MANAGER,
-                AARoles.UNICEF_DONOR,
-                AARoles.UNICEF_FIELD_OFFICE,
-                AARoles.UNICEF_HEAD_OFFICE,
+                AARoles.UNICEFNepalCO,
+                AARoles.Municipality,
               ]}
               hasContent={false}
             >

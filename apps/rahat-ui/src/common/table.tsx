@@ -18,11 +18,20 @@ type IProps = {
   tableHeight?: string;
   loading?: boolean;
   message?: string;
+  height?: string;
 };
 
-export function DemoTable({ table, tableHeight, loading, message }: IProps) {
+export function DemoTable({
+  table,
+  tableHeight,
+  loading,
+  message,
+  height = '340px',
+}: IProps) {
+  const hasRows = table.getRowModel().rows?.length > 0;
+
   return (
-    <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
+    <ScrollArea className={tableHeight ?? `h-[calc(100vh-${height})]`}>
       <TableComponent>
         <TableHeader className="sticky top-0 bg-gray-100">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -43,7 +52,16 @@ export function DemoTable({ table, tableHeight, loading, message }: IProps) {
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
+          {loading ? (
+            <TableRow>
+              <TableCell
+                colSpan={table.getAllColumns().length}
+                className="h-24 text-center"
+              >
+                <SpinnerLoader />
+              </TableCell>
+            </TableRow>
+          ) : hasRows ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
@@ -62,7 +80,7 @@ export function DemoTable({ table, tableHeight, loading, message }: IProps) {
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                {loading ? <SpinnerLoader /> : <NoResult message={message} />}
+                <NoResult message={message} />
               </TableCell>
             </TableRow>
           )}

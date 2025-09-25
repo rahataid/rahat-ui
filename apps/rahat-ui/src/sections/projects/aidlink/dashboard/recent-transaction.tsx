@@ -18,6 +18,7 @@ import { mergeTransactions } from '@rahat-ui/query/lib/c2c/utils';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { formatEther, formatUnits } from 'viem';
 import {
   Tooltip,
   TooltipContent,
@@ -25,6 +26,7 @@ import {
   TooltipTrigger,
 } from '@radix-ui/react-tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
+import { useReadRahatTokenDecimals } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatToken';
 
 const RecentTransaction = () => {
   const [transactionList, setTransactionList] = useState([]);
@@ -44,6 +46,9 @@ const RecentTransaction = () => {
     },
     pause: !contractAddress,
   });
+
+    const {data:tokenNumber} = useReadRahatTokenDecimals({address:contractSettings?.rahattoken?.address})
+  
 
   useGraphQLErrorHandler({
     error,
@@ -82,94 +87,103 @@ const RecentTransaction = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {transactionList?.map((tx: any) => (
-                <Card key={tx.id} className="p-2 rounded-xl">
-                  {/* Amount */}
-                  <div className="flex items-center justify-between">
-                    <p className="text-lg ">{amountFormat(tx.amount)} USDC</p>
-                    <Badge className="bg-green-100 text-green-800">
-                      Completed
-                    </Badge>
-                  </div>
-
-                  {/* From / To */}
-                  <div className="text-sm text-gray-600 flex flex-col gap-1">
-                    <div className="flex items-center gap-1">
-                      <p>From:</p>
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger
-                            className="flex items-center gap-3 cursor-pointer"
-                            onClick={() =>
-                              clickToCopy(tx?._tokenAddress, tx?._tokenAddress)
-                            }
-                          >
-                            <p className="text-sm text-gray-500">
-                              {truncateEthAddress(tx?._tokenAddress)}
-                            </p>
-                            {copyAction === tx?._tokenAddress ? (
-                              <CopyCheck size={15} strokeWidth={1.5} />
-                            ) : (
-                              <Copy
-                                className="text-slate-500"
-                                size={15}
-                                strokeWidth={1.5}
-                              />
-                            )}
-                          </TooltipTrigger>
-                          <TooltipContent
-                            className="bg-secondary"
-                            side="bottom"
-                          >
-                            <p className="text-xs font-medium">
-                              {copyAction === tx?._tokenAddress
-                                ? 'copied'
-                                : 'click to copy'}
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+              {transactionList?.map((tx: any) => {
+                return (
+                  <Card key={tx.id} className="p-2 rounded-xl">
+                    {/* Amount */}
+                    <div className="flex items-center justify-between">
+                      <p className="text-lg ">
+                        {amountFormat(formatUnits(tx.amount.toString(),Number(tokenNumber)))} USDC
+                      </p>
+                      <Badge className="bg-green-100 text-green-800">
+                        Completed
+                      </Badge>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <p>To:</p>
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger
-                            className="flex items-center gap-3 cursor-pointer"
-                            onClick={() => clickToCopy(tx?._to, tx?._to)}
-                          >
-                            <p className="text-sm text-gray-500">
-                              {truncateEthAddress(tx?._to)}
-                            </p>
-                            {copyAction === tx?._to ? (
-                              <CopyCheck size={15} strokeWidth={1.5} />
-                            ) : (
-                              <Copy
-                                className="text-slate-500"
-                                size={15}
-                                strokeWidth={1.5}
-                              />
-                            )}
-                          </TooltipTrigger>
-                          <TooltipContent
-                            className="bg-secondary"
-                            side="bottom"
-                          >
-                            <p className="text-xs font-medium">
-                              {copyAction === tx?._to
-                                ? 'copied'
-                                : 'click to copy'}
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </div>
 
-                  {/* Date */}
-                  <p className="text-sm text-gray-500">{dateFormat(tx.date)}</p>
-                </Card>
-              ))}
+                    {/* From / To */}
+                    <div className="text-sm text-gray-600 flex flex-col gap-1">
+                      <div className="flex items-center gap-1">
+                        <p>From:</p>
+                        <TooltipProvider delayDuration={100}>
+                          <Tooltip>
+                            <TooltipTrigger
+                              className="flex items-center gap-3 cursor-pointer"
+                              onClick={() =>
+                                clickToCopy(
+                                  tx?._tokenAddress,
+                                  tx?._tokenAddress,
+                                )
+                              }
+                            >
+                              <p className="text-sm text-gray-500">
+                                {truncateEthAddress(tx?._tokenAddress)}
+                              </p>
+                              {copyAction === tx?._tokenAddress ? (
+                                <CopyCheck size={15} strokeWidth={1.5} />
+                              ) : (
+                                <Copy
+                                  className="text-slate-500"
+                                  size={15}
+                                  strokeWidth={1.5}
+                                />
+                              )}
+                            </TooltipTrigger>
+                            <TooltipContent
+                              className="bg-secondary"
+                              side="bottom"
+                            >
+                              <p className="text-xs font-medium">
+                                {copyAction === tx?._tokenAddress
+                                  ? 'copied'
+                                  : 'click to copy'}
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <p>To:</p>
+                        <TooltipProvider delayDuration={100}>
+                          <Tooltip>
+                            <TooltipTrigger
+                              className="flex items-center gap-3 cursor-pointer"
+                              onClick={() => clickToCopy(tx?._to, tx?._to)}
+                            >
+                              <p className="text-sm text-gray-500">
+                                {truncateEthAddress(tx?._to)}
+                              </p>
+                              {copyAction === tx?._to ? (
+                                <CopyCheck size={15} strokeWidth={1.5} />
+                              ) : (
+                                <Copy
+                                  className="text-slate-500"
+                                  size={15}
+                                  strokeWidth={1.5}
+                                />
+                              )}
+                            </TooltipTrigger>
+                            <TooltipContent
+                              className="bg-secondary"
+                              side="bottom"
+                            >
+                              <p className="text-xs font-medium">
+                                {copyAction === tx?._to
+                                  ? 'copied'
+                                  : 'click to copy'}
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </div>
+
+                    {/* Date */}
+                    <p className="text-sm text-gray-500">
+                      {dateFormat(tx.date)}
+                    </p>
+                  </Card>
+                );
+              })}
             </div>
           )}
         </ScrollArea>

@@ -200,7 +200,7 @@ export const useGetBeneficiariesReport = () => {
     onSuccess: (data) => {
       if (data.length === 0) {
         toast.fire({
-          title: 'No transactions found.',
+          title: 'No Beneficiary record found.',
           text: 'Please try selecting a different date range.',
           icon: 'error',
         });
@@ -216,6 +216,57 @@ export const useGetBeneficiariesReport = () => {
       });
     },
   });
+};
+
+export const useGetBenefDisbursementDetails = (
+  projectUUID: UUID,
+  userUuid: string,
+) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-benf-disbursement-details', projectUUID, userUuid],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getBenDisbursementDetails',
+          payload: {
+            beneficiaryId: userUuid,
+          },
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
+export const useGetOfframpDetails = (
+  projectUUID: UUID,
+  beneficiaryPhone: string,
+) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-getOfframpDetails', projectUUID, beneficiaryPhone],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getOfframpDetails',
+          payload: {
+            beneficiaryPhone,
+            limit: 100,
+          },
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
 };
 
 type DisbursementApprovalsHookParams = {
@@ -403,6 +454,7 @@ export const useDisburseTokenUsingMultisig = () => {
       disbursementType,
       beneficiaryAddresses,
       beneficiaryGroup,
+      totalAmount,
       details,
     }: {
       amount: string;
@@ -410,6 +462,7 @@ export const useDisburseTokenUsingMultisig = () => {
       disbursementType: DisbursementSelectionType;
       beneficiaryAddresses?: `0x${string}`[];
       beneficiaryGroup?: UUID;
+      totalAmount?:string;
       details?: string;
     }) => {
       // Step 1: Create Safe Transaction
@@ -418,7 +471,7 @@ export const useDisburseTokenUsingMultisig = () => {
         data: {
           action: 'c2cProject.createSafeTransaction',
           payload: {
-            amount,
+            amount: totalAmount,
           },
         },
       });

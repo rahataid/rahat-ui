@@ -49,11 +49,13 @@ export default function CreateDisbursementMain({ type }: IProps) {
     beneficiaries,
     beneficiaryGroup,
     amount,
+    totalAmount,
     details,
   }: {
     beneficiaries?: `0x${string}`[];
     beneficiaryGroup?: UUID;
     amount: string;
+    totalAmount?:string;
     details?: string;
   }) => {
     const result = await disburseMultiSig.mutateAsync({
@@ -62,6 +64,7 @@ export default function CreateDisbursementMain({ type }: IProps) {
       disbursementType: type!,
       beneficiaryAddresses: beneficiaries,
       beneficiaryGroup,
+      totalAmount,
       details,
     });
 
@@ -82,25 +85,29 @@ export default function CreateDisbursementMain({ type }: IProps) {
         <BeneficiaryDisbursementForm
           beneficiaries={projectBeneficiaries?.data}
           isLoading={isLoadingBeneficiaries}
-          handleDisbursement={(beneficiaries, amount, details) =>
+          handleDisbursement={(beneficiaries, amount,totalAmount,details) =>
             handleCreateDisbursement({
               beneficiaries,
               amount,
+              totalAmount,
               details,
             })
           }
+          isSubmitting={disburseMultiSig.isPending}
         />
       ) : type === DisbursementSelectionType.GROUP ? (
         <BeneficiaryGroupsDisbursementForm
           groups={validGroups}
           isLoading={isLoadingGroups}
-          handleDisbursement={(beneficiaryGroup, amount, details) =>
+          handleDisbursement={(beneficiaryGroup, amount,totalAmount,details) =>
             handleCreateDisbursement({
               beneficiaryGroup,
               amount,
+              totalAmount,
               details,
             })
           }
+          isSubmitting={disburseMultiSig.isPending}
         />
       ) : null}
     </>

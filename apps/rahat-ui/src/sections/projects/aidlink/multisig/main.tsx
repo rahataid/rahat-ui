@@ -8,7 +8,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Copy, Users, Banknote, CircleCheckBig } from 'lucide-react';
+import { Copy, Users, Banknote, CircleCheckBig, CopyCheck } from 'lucide-react';
 import { Heading, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -16,9 +16,11 @@ import { useGetDisbursements, useGetSafeOwners } from '@rahat-ui/query';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
+import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 
 export default function MultiSigWalletView() {
   const { id: projectUUID } = useParams() as { id: UUID };
+  const { clickToCopy, copyAction } = useCopy();
 
   const { data: disbursements, isLoading: loadingDisbursements } =
     useGetDisbursements({
@@ -30,7 +32,9 @@ export default function MultiSigWalletView() {
   const { data: safeOwners, isLoading: loadingSafeOwners } =
     useGetSafeOwners(projectUUID);
 
-  return (
+  return loadingSafeOwners ? (
+    <SpinnerLoader />
+  ) : (
     <div className="p-4 space-y-4 bg-gray-50 h-[calc(100vh-58px)]">
       <Heading
         title="Gnosis Wallet Overview"
@@ -96,8 +100,16 @@ export default function MultiSigWalletView() {
                       {safeOwners?.address}
                     </p>
                   </div>
-                  <Button variant="ghost" size="sm">
-                    <Copy className="h-4 w-4" />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => clickToCopy(safeOwners?.address || '', 1)}
+                  >
+                    {copyAction === 1 ? (
+                      <CopyCheck size={16} />
+                    ) : (
+                      <Copy size={16} />
+                    )}
                   </Button>
                 </div>
 

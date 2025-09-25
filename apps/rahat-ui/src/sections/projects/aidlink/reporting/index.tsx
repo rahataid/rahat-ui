@@ -19,7 +19,6 @@ import {
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import QuickExportReport from './quick-export-report';
-import { getDataByName } from 'apps/rahat-ui/src/utils/getValueByNameAdLink';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 
 // const recentExports = [
@@ -78,14 +77,21 @@ const ReportingPage = () => {
     () => [
       {
         title: 'Total Beneficiaries',
-        value: getDataByName(data, 'BENEFICIARY_TOTAL'),
+        value:
+          data?.find((item: any) => item.name === 'BENEFICIARY_TOTAL')?.data
+            ?.count || '0',
         subtext: 'People helped',
         icon: Users,
         iconColor: 'text-blue-500',
       },
       {
         title: 'Total Disbursement Amount',
-        value: `${getDataByName(data, 'DISBURSEMENT_TOTAL')}`,
+        value: `${
+          data
+            ?.find((item: any) => item.name === 'DISBURSEMENT_TOTAL')
+            ?.data?.reduce((sum: number, curr: any) => sum + curr.amount, 0) ||
+          0
+        } USDC`,
         subtext: 'Successfully distributed',
         icon: DollarSign,
         iconColor: 'text-green-500',
@@ -116,10 +122,10 @@ const ReportingPage = () => {
                       </p>
                       <div className="mt-2 flex justify-between items-center">
                         <div>
-                          <p className="text-3xl font-semibold">{value}</p>
+                          <p className="text-2xl font-semibold">{value}</p>
                           <p className="text-green-600">{subtext}</p>
                         </div>
-                        <Icon size={30} className={iconColor} />
+                        <Icon size={25} className={iconColor} />
                       </div>
                     </Card>
                   );

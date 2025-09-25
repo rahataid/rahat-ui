@@ -65,6 +65,10 @@ export const useGetTreasurySourcesSettings = (uuid: UUID) => {
 
 type DisbursementListHookParams = {
   projectUUID: UUID;
+  status: string;
+  disbursementType: string;
+  fromDate: string;
+  toDate: string;
 } & Pagination;
 
 export const useGetDisbursements = (params: DisbursementListHookParams) => {
@@ -72,7 +76,7 @@ export const useGetDisbursements = (params: DisbursementListHookParams) => {
   const { projectUUID, ...restParams } = params;
 
   const query = useQuery({
-    queryKey: ['get-disbursements'],
+    queryKey: ['get-disbursements', params],
     queryFn: async () => {
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,

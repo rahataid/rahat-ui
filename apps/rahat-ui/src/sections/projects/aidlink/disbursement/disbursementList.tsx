@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Calendar, Eye, Check, X, Users, User } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -11,29 +11,85 @@ import {
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { NoResult, SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { DisbursementSelectionType } from '@rahat-ui/query';
+import {
+  DisbursementSelectionType,
+  useGetDisbursements,
+} from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import {
+  endOfMonth,
+  endOfToday,
+  endOfWeek,
+  startOfMonth,
+  startOfToday,
+  startOfWeek,
+} from 'date-fns';
 
 type Props = {
-  disbursements: any[];
-  loading: boolean;
+  disbursements?: any[];
+  loading?: boolean;
+  status: string;
 };
 
-export function DisbursementList({ disbursements, loading }: Props) {
-  const { id: projectUUID } = useParams() as { id: UUID };
-  const router = useRouter();
-
+export function DisbursementList({ status }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('');
   const [dateRange, setDateRange] = useState<string>('');
 
+  const { id: projectUUID } = useParams() as { id: UUID };
+  const router = useRouter();
+
+  const dateRangeData = useMemo(() => {
+    const today = new Date();
+
+    let fromDate = '';
+    let toDate = '';
+
+    if (dateRange === 'today') {
+      fromDate = dateFormat(startOfToday(), 'yyyy-MM-dd');
+      toDate = dateFormat(endOfToday(), 'yyyy-MM-dd');
+    }
+
+    if (dateRange === 'week') {
+      fromDate = dateFormat(
+        startOfWeek(today, { weekStartsOn: 0 }),
+        'yyyy-MM-dd',
+      );
+      toDate = dateFormat(endOfWeek(today, { weekStartsOn: 0 }), 'yyyy-MM-dd');
+    }
+
+    if (dateRange === 'month') {
+      fromDate = dateFormat(startOfMonth(today), 'yyyy-MM-dd');
+      toDate = dateFormat(endOfMonth(today), 'yyyy-MM-dd');
+    }
+
+    return {
+      fromDate,
+      toDate,
+    };
+  }, [dateRange]);
+
+  const { data: disbursements, isLoading } = useGetDisbursements({
+    projectUUID,
+    page: 1,
+    perPage: 20,
+    status: status,
+    disbursementType: typeFilter,
+    ...dateRangeData,
+  });
+
+  const handleClearButtonClick = () => {
+    setTypeFilter('');
+    setDateRange('');
+  };
+
   return (
     <div className="p-4 border bg-card rounded-sm mt-4">
       {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-4">
+      <div className="flex flex-col sm:flex-row gap-2 mb-4">
         <SearchInput
           className="w-full"
           name="disbursements"
@@ -64,15 +120,19 @@ export function DisbursementList({ disbursements, loading }: Props) {
             <SelectItem value="month">This Month</SelectItem>
           </SelectContent>
         </Select>
+        <Button onClick={handleClearButtonClick}>Clear</Button>
       </div>
 
       {/* Transaction Cards */}
       <ScrollArea className="h-[calc(100vh-310px)]">
         <div className="space-y-4">
-          {!loading ? (
+          {!isLoading ? (
             disbursements?.length > 0 ? (
               disbursements?.map((disbursement: any) => (
-                <div className="border p-4 rounded-sm space-y-2">
+                <div
+                  key={disbursement?.id}
+                  className="border p-4 rounded-sm space-y-2"
+                >
                   <div className="flex justify-between space-x-4">
                     <div className="flex space-x-4">
                       <div className="flex-shrink-0">

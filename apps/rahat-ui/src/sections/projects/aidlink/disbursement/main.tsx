@@ -7,9 +7,8 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { Heading } from 'apps/rahat-ui/src/common';
 import CreateDisbursementSelectionType from './createDisbursementSelectionType';
-import { DisbursementHistoryList } from './disbursementHistory';
-import { DisbursementPendingList } from './disbursementPending';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
+import { DisbursementList } from './disbursementList';
 
 export default function DisbursementMainView() {
   const { activeTab, setActiveTab } = useActiveTab('createDisbursement');
@@ -69,10 +68,10 @@ export default function DisbursementMainView() {
           <CreateDisbursementSelectionType setActiveTab={setActiveTab} />
         </TabsContent>
         <TabsContent value="disbursementHistory">
-          <DisbursementHistoryList />
+          <DisbursementList status="" />
         </TabsContent>
         <TabsContent value="disbursementPending">
-          <DisbursementPendingList />
+          <DisbursementList status="DRAFT" />
         </TabsContent>
       </Tabs>
     </div>

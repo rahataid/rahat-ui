@@ -31,7 +31,6 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { useUserStore } from '@rumsan/react-query';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import {
   grievancePriority,
@@ -39,11 +38,11 @@ import {
   grievanceType,
 } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
 import { UUID } from 'crypto';
+import { Tag, TagInput } from 'emblor';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Tag, TagInput } from 'emblor';
 
 const emailOrPhone = z.string().refine(
   (value) => {
@@ -135,6 +134,12 @@ export default function EditGrievance() {
         priority,
         tags,
       } = grievanceData.data;
+
+      const sanitizedTags = (tags || []).map((a) => ({
+        id: a,
+        text: a,
+      }));
+
       form.reset({
         reportedBy: reportedBy || '',
         reporterContact: reporterContact || '',
@@ -143,11 +148,11 @@ export default function EditGrievance() {
         type: type || GrievanceType.OTHER,
         status: status || GrievanceStatus.NEW,
         priority: priority || GrievancePriority.MEDIUM,
-        tags: tags || [],
+        tags: sanitizedTags || [],
       });
 
       // Initialize tag states with fetched data
-      setVariationTags(tags || []);
+      setVariationTags(sanitizedTags || []);
       setUnsavedTag('');
       setActiveTagIndex(null);
     }
@@ -167,6 +172,11 @@ export default function EditGrievance() {
         tags,
       } = grievanceData.data;
 
+      const sanitizedTags = (tags || []).map((a) => ({
+        id: a,
+        text: a,
+      }));
+
       // First, reset the form with the original values
       form.reset({
         reportedBy: reportedBy || '',
@@ -176,11 +186,11 @@ export default function EditGrievance() {
         type: type || GrievanceType.OTHER,
         status: status || GrievanceStatus.NEW,
         priority: priority || GrievancePriority.MEDIUM,
-        tags: tags || [],
+        tags: sanitizedTags || [],
       });
 
       // Reset tag states
-      setVariationTags(tags || []);
+      setVariationTags(sanitizedTags || []);
       setUnsavedTag('');
       setActiveTagIndex(null);
 
@@ -207,7 +217,7 @@ export default function EditGrievance() {
         grievancePayload: {
           ...data,
           uuid: grievanceID,
-          tags: data.tags || [],
+          tags: data.tags?.map((tag) => tag.text) || [],
         },
       });
       router.push(grievanceListPath);

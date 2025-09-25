@@ -130,7 +130,7 @@ export default function AddGrievances() {
         ...data,
         reporterUserId: user?.data?.id,
         status: data.status || GrievanceStatus.NEW,
-        tags: data.tags || [],
+        tags: data?.tags?.map((tag) => tag.text) || [],
       };
 
       await addGrievance.mutateAsync({

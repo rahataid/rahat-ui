@@ -33,6 +33,8 @@ export type Tag = {
   text: string;
 };
 
+export type SanitizedTags = string[];
+
 export type GrievanceFormData = {
   reportedBy: string;
   reporterContact: string;
@@ -41,5 +43,5 @@ export type GrievanceFormData = {
   description: string;
   status?: GrievanceStatus;
   priority: GrievancePriority;
-  tags: Tag[];
+  tags: SanitizedTags;
 };

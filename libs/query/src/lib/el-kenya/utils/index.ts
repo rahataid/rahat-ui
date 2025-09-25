@@ -30,6 +30,8 @@ export function mapStatus(status: string) {
     yes: 'Yes',
     no: 'No',
     skip: 'Skip',
+    LENSES: 'Lenses',
+    FRAMES: 'Frames',
   };
   return statusMapping[status] || '-';
 }

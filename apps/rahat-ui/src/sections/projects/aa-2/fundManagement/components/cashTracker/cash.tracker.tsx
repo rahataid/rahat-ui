@@ -279,7 +279,6 @@ export function CashTracker() {
                   pendingTransfers={pendingTransfers}
                   currentEntity={currentEntity}
                   onConfirmReceipt={confirmReceipt}
-                  isConfirming={getCash.isPending}
                 />
               ) : (
                 <div className="flex justify-center p-6">

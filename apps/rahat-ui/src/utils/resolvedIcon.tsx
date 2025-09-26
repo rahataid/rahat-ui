@@ -72,13 +72,7 @@ export const defaultNavConfig: NavConfigDB = {
       title: 'Fund Management',
       path: 'fund-management',
       icon: 'Coins',
-      roles: [
-        'ADMIN',
-        'MANAGER',
-        'UNICEF_DONOR',
-        'UNICEF_FIELD_OFFICE',
-        'UNICEF_HEAD_OFFICE',
-      ],
+      roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
     },
     {
       title: 'Payout',

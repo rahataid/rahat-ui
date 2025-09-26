@@ -26,7 +26,7 @@ import { Entities } from './cash.tracker';
 export default function Budget({}: {}) {
   const [formData, setFormData] = useState({
     amount: '',
-    currency: 'USD',
+    currency: 'NPR',
   });
 
   const id = useParams().id as UUID;
@@ -66,7 +66,7 @@ export default function Budget({}: {}) {
 
     setFormData({
       amount: '',
-      currency: 'USD',
+      currency: 'NPR',
     });
   };
 
@@ -90,7 +90,7 @@ export default function Budget({}: {}) {
         {/* Amount */}
         <div>
           <Label>Amount</Label>
-          <div className="w-full">
+          <div className="flex gap-2 w-full">
             <Select
               value={formData.currency}
               onValueChange={(value) =>

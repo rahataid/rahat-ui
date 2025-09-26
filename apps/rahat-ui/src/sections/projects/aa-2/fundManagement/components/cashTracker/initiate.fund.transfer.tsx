@@ -28,7 +28,7 @@ export default function InitiateFundTransfer({}: {}) {
     from: '',
     to: '',
     amount: '',
-    currency: 'USD',
+    currency: 'NPR',
     comments: '',
   });
 
@@ -77,7 +77,7 @@ export default function InitiateFundTransfer({}: {}) {
       from: '',
       to: '',
       amount: '',
-      currency: 'USD',
+      currency: 'NPR',
       comments: '',
     });
   };

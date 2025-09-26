@@ -25,6 +25,7 @@ import {
   useGetInkindTransactions,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
+import { AARoles } from '@rahat-ui/auth';
 
 export function InKindTracker() {
   const uuid = useParams().id as UUID;
@@ -38,9 +39,7 @@ export function InKindTracker() {
   const currentEntity = useMemo(() => {
     return (
       entities?.find((e: Entities) =>
-        currentUser?.data?.roles?.includes(
-          e.alias.toLowerCase().replace(/\s+/g, ''),
-        ),
+        currentUser?.data?.roles?.includes(e.alias.replace(/\s+/g, '')),
       ) || entities[0]
     ); // Default to first entity for demo
   }, [currentUser, entities]);
@@ -164,16 +163,18 @@ export function InKindTracker() {
           >
             Initiate In-kind Transfer
           </Button>
-          <Button
-            onClick={() =>
-              router.push(
-                `/projects/aa/${uuid}/fund-management/inkind-tracker/stock`,
-              )
-            }
-            className="bg-blue-500 hover:bg-blue-600"
-          >
-            <Plus /> Add Stock
-          </Button>
+          {currentUser?.data?.roles?.includes(AARoles.UNICEFNepalCO) && (
+            <Button
+              onClick={() =>
+                router.push(
+                  `/projects/aa/${uuid}/fund-management/inkind-tracker/stock`,
+                )
+              }
+              className="bg-blue-500 hover:bg-blue-600"
+            >
+              <Plus /> Add Stock
+            </Button>
+          )}
         </div>
       </div>
 

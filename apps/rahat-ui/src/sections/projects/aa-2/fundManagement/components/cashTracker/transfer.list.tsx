@@ -4,6 +4,7 @@ import { Entities, FundTransfer } from './cash.tracker';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { AlertCircle, ArrowRight, Check, Clock } from 'lucide-react';
+import { useState } from 'react';
 
 function TransferList({
   transfers,
@@ -11,16 +12,17 @@ function TransferList({
   pendingTransfers = [],
   currentEntity,
   onConfirmReceipt,
-  isConfirming = false,
 }: {
   transfers: FundTransfer[];
   entities: Entities[];
   pendingTransfers?: any[];
   currentEntity?: any;
   onConfirmReceipt?: (payload: any) => void;
-  isConfirming?: boolean;
 }) {
   const id = useParams().id as UUID;
+  const [confirmingTransferId, setConfirmingTransferId] = useState<
+    string | null
+  >(null);
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-GB', {
@@ -115,19 +117,24 @@ function TransferList({
                         onConfirmReceipt && (
                           <Button
                             variant="outline"
-                            onClick={() =>
-                              onConfirmReceipt({
-                                from: currentEntity?.smartaccount || '',
-                                to: pendingTransfers[0].from,
-                                alias: pendingTransfers[0].to,
-                                amount: transfer.amount.toString(),
-                              })
-                            }
-                            disabled={isConfirming}
+                            onClick={async () => {
+                              setConfirmingTransferId(transfer.id);
+                              try {
+                                await onConfirmReceipt({
+                                  from: currentEntity?.smartaccount || '',
+                                  to: pendingTransfers[0].from,
+                                  alias: pendingTransfers[0].to,
+                                  amount: transfer.amount.toString(),
+                                });
+                              } finally {
+                                setConfirmingTransferId(null);
+                              }
+                            }}
+                            disabled={confirmingTransferId === transfer.id}
                             className="text-blue-500 border-blue-500 hover:bg-blue-50"
                           >
                             <Check size={16} className="mr-2" />
-                            {isConfirming
+                            {confirmingTransferId === transfer.id
                               ? 'Confirming...'
                               : 'Confirm Received'}
                           </Button>

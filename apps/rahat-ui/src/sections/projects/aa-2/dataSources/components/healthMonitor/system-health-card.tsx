@@ -16,8 +16,8 @@ export function SystemHealthCard({
   sources,
 }: HealthCacheData) {
   const statusColors: any = {
-    UP: 'bg-green-50 text-green-700',
-    DOWN: 'bg-red-50 text-red-700',
+    HEALTHY: 'bg-green-50 text-green-700',
+    UNHEALTHY: 'bg-red-50 text-red-700',
     DEGRADED: 'bg-yellow-50 text-yellow-700',
   };
 
@@ -34,10 +34,11 @@ export function SystemHealthCard({
     }
   };
 
-  const calcUP = sources?.filter((s) => s.status === 'UP').length;
-  const calcDOWN = sources?.filter((s) => s.status === 'DOWN').length;
+  const calcUP = sources?.filter((s) => s.status === 'HEALTHY').length;
+  const calcDOWN = sources?.filter(
+    (s) => s.status === 'UNHEALTHY' || s.status === 'DEGRADED',
+  ).length;
 
-  console.log(calcUP, calcDOWN);
   return (
     <Card
       className={`border ${getBgColor(

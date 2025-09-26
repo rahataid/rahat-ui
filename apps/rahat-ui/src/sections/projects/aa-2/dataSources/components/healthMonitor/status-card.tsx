@@ -26,9 +26,9 @@ interface ApiStatusCardProps {
 export function StatusCard({ data, className }: ApiStatusCardProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'UP':
+      case 'HEALTHY':
         return 'text-green-500 bg-green-50 border-green-500';
-      case 'DOWN':
+      case 'UNHEALTHY':
         return 'text-red-500 bg-red-50 border-red-500';
       case 'DEGRADED':
         return 'text-red-500 bg-red-50 border-red-500';

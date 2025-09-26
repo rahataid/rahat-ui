@@ -76,7 +76,7 @@ export function SystemHealthCard({
                         available
                       </li>
                       <li>
-                        <span className=" text-red-600">UNHEALTHY:</span>{' '}
+                        <span className=" text-red-600">UNHEALTHY:</span>
                         Critical sources are DOWN
                       </li>
                     </ul>

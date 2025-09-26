@@ -1,3 +1,4 @@
+'use client';
 import { SourceHealthData } from '@rahat-ui/query';
 import { cn } from '@rahat-ui/shadcn/src';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -8,6 +9,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/hover-card';
+import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import {
   Clock,
@@ -16,6 +18,8 @@ import {
   AlertTriangle,
   TriangleAlert,
   X,
+  CopyCheck,
+  Copy,
 } from 'lucide-react';
 
 interface ApiStatusCardProps {
@@ -31,7 +35,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
       case 'UNHEALTHY':
         return 'text-red-500 bg-red-50 border-red-500';
       case 'DEGRADED':
-        return 'text-red-500 bg-red-50 border-red-500';
+        return 'text-yellow-500 bg-yellow-50 border-yellow-500';
       default:
         return 'text-muted-foreground bg-muted/10 border-border';
     }
@@ -70,6 +74,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
   };
 
   const severity = getSeverityFromData(data.status, data.errors);
+  const { clickToCopy, copyAction } = useCopy();
 
   return (
     <Card
@@ -85,22 +90,33 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
             <h3 className="font-medium text-card-foreground text-balance leading-tight">
               {data.name}
             </h3>
-
-            <HoverCard>
-              <HoverCardTrigger asChild>
-                <p className="text-sm text-primary  transition-colors truncate mt-1 w-40 hover:cursor-pointer">
-                  {data.source_url}
-                </p>
-              </HoverCardTrigger>
-              <HoverCardContent
-                className="w-auto rounded-sm m-1 p-1.5"
-                align="start"
+            <div className="flex">
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <p className="text-sm text-primary  transition-colors truncate mt-1 w-40 hover:cursor-pointer">
+                    {data.source_url}
+                  </p>
+                </HoverCardTrigger>
+                <HoverCardContent
+                  className="w-auto rounded-sm m-1 p-1.5"
+                  align="start"
+                >
+                  <div className="flex justify-between gap-4 rounded-sm">
+                    <p className="text-sm">{data.source_url}</p>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+              <button
+                onClick={() => clickToCopy(data.source_url, data.source_url)}
+                className="ml-2 text-sm text-gray-500"
               >
-                <div className="flex justify-between gap-4 rounded-sm">
-                  <p className="text-sm">{data.source_url}</p>
-                </div>
-              </HoverCardContent>
-            </HoverCard>
+                {copyAction === data.source_url ? (
+                  <CopyCheck className="w-4 h-4" />
+                ) : (
+                  <Copy className="w-4 h-4" />
+                )}
+              </button>
+            </div>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <Badge
@@ -113,16 +129,16 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               variant="outline"
               className={cn('text-xs font-medium', getStatusColor(data.status))}
             >
-              {data.status === 'UP' ? (
+              {data.status === 'HEALTHY' ? (
                 <CheckCircle2 className="w-3 h-3 mr-1" />
               ) : (
                 <X className="w-3 h-3 mr-1" />
               )}
-              {data.status === 'UP' ? 'UP' : data.status}
+              {data.status === 'HEALTHY' ? 'HEALTHY' : data.status}
             </Badge>
           </div>
         </div>
-
+        {/* fetch_frequency_minutes */}
         {/* Metrics */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">

@@ -6,12 +6,7 @@ import InitiateFundTransfer from 'apps/rahat-ui/src/sections/projects/aa-2/fundM
 const AddFundManagement = () => {
   return (
     <RoleAuth
-      roles={[
-        AARoles.ADMIN,
-        AARoles.UNICEF_DONOR,
-        AARoles.UNICEF_FIELD_OFFICE,
-        AARoles.UNICEF_HEAD_OFFICE,
-      ]}
+      roles={[AARoles.ADMIN, AARoles.UNICEFNepalCO, AARoles.Municipality]}
     >
       <InitiateFundTransfer />
     </RoleAuth>

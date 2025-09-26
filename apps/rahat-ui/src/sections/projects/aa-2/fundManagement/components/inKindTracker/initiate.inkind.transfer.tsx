@@ -1,7 +1,7 @@
 import {
   PROJECT_SETTINGS_KEYS,
-  useGetBalance,
-  useInitateFundTransfer,
+  useGetInkindBalance,
+  useInitateInkindTransfer,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import {
@@ -14,27 +14,26 @@ import {
 
 import { UUID } from 'crypto';
 import { useEffect, useMemo, useState } from 'react';
-import { Upload } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useUserCurrentUser } from '@rumsan/react-query';
-import { Entities } from './cash.tracker';
+import { Entities } from './types';
 
-export default function InitiateFundTransfer({}: {}) {
+export default function InitiateInKindTransfer({}: {}) {
   const [formData, setFormData] = useState({
     from: '',
     to: '',
     amount: '',
-    currency: 'NPR',
+    currency: 'USD',
     comments: '',
   });
 
   const id = useParams().id as UUID;
   const router = useRouter();
-  const initiateFundTransfer = useInitateFundTransfer(id);
+  const initiateInKindTransfer = useInitateInkindTransfer(id);
   const stakeholders = useProjectSettingsStore(
     (s) => s.settings?.[id]?.[PROJECT_SETTINGS_KEYS.ENTITIES],
   );
@@ -56,28 +55,24 @@ export default function InitiateFundTransfer({}: {}) {
     return stakeholders?.find((e: Entities) => e.alias === 'UNICEF Nepal CO');
   }, [currentUser, stakeholders]);
 
-  const { data: balance } = useGetBalance(id, donar?.smartaccount || '');
+  const { data: balance } = useGetInkindBalance(id, donar?.smartaccount || '');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    await initiateFundTransfer.mutateAsync({
+    await initiateInKindTransfer.mutateAsync({
       payload: {
         from: formData.from,
         to: formData.to,
+        alias: formData.currency,
         amount: formData.amount,
         description: formData.comments,
-        alias:
-          stakeholders.find((s) => s.smartaccount === formData.from)?.alias ||
-          'UNKNOWN',
       },
     });
-
     setFormData({
       from: '',
       to: '',
       amount: '',
-      currency: 'NPR',
+      currency: 'USD',
       comments: '',
     });
   };
@@ -92,23 +87,23 @@ export default function InitiateFundTransfer({}: {}) {
         >
           &larr; Back
         </button>
-        <h1 className="text-2xl font-bold">Initiate Fund Transfer</h1>
+        <h1 className="text-2xl font-bold">Initiate In-kind Transfer</h1>
         <p className="text-sm text-gray-500">
-          Fill the form below to initiate fund transfer
+          Fill the form below to initiate in-kind transfer
         </p>
       </div>
 
       {/* Budget & Balance */}
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-gray-50 p-4 rounded-md">
-          <p className="text-sm text-gray-500">Project Budget</p>
+          <p className="text-sm text-gray-500">Total Stock</p>
           <p className="text-xl text-blue-500 font-bold">
             {Number(balance?.data?.formatted) + Number(balance?.data?.sent) ||
               0}
           </p>
         </div>
         <div className="bg-gray-50 p-4 rounded-md">
-          <p className="text-sm text-gray-500">Remaining Balance</p>
+          <p className="text-sm text-gray-500">Remaining Stock</p>
           <p className="text-xl text-blue-500 font-bold">
             {balance?.data?.formatted || 0}
           </p>
@@ -163,22 +158,27 @@ export default function InitiateFundTransfer({}: {}) {
           <Label>Amount</Label>
           <div className="flex gap-2">
             <Select
-              value={formData.currency}
+              defaultValue="Hygiene Kits"
+              // value={formData.currency}
               onValueChange={(value) =>
                 setFormData({ ...formData, currency: value })
               }
             >
-              <SelectTrigger className="w-24">
+              <SelectTrigger className="w-34">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="NPR">NPR</SelectItem>
-                <SelectItem value="USD">USD</SelectItem>
+                <SelectItem defaultChecked={true} value="Hygiene Kits">
+                  Hygiene Kits
+                </SelectItem>
+                <SelectItem value="Food Packages">Food Packages</SelectItem>
+                <SelectItem value="Water Packages">Water Packages</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
               </SelectContent>
             </Select>
             <Input
               type="number"
-              placeholder="Enter amount"
+              placeholder="Enter number"
               value={formData.amount}
               onChange={(e) =>
                 setFormData({ ...formData, amount: e.target.value })
@@ -203,22 +203,18 @@ export default function InitiateFundTransfer({}: {}) {
         {/* Buttons */}
         <div className="flex justify-end gap-2">
           <Button type="button" variant="outline">
-            Cancel
+            Clear
           </Button>
           <Button
             type="submit"
             disabled={
-              initiateFundTransfer.isPending ||
+              initiateInKindTransfer.isPending ||
               !formData.from ||
               !formData.to ||
               !formData.amount
             }
           >
-            {initiateFundTransfer.isPending ? (
-              <span>Submitting...</span>
-            ) : (
-              'Submit'
-            )}
+            {initiateInKindTransfer.isPending ? 'Submitting…' : 'Confirm'}
           </Button>
         </div>
       </form>

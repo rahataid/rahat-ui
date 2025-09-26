@@ -5,6 +5,7 @@ import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
 export interface SourceHealthData {
+  fetch_frequency_minutes: number;
   source_id: string;
   name: string;
   source_url: string;

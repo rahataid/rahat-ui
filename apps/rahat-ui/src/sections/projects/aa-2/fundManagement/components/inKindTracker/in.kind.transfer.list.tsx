@@ -2,16 +2,27 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { Entities, InKindTransfer } from './types';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { AlertCircle, ArrowRight, Check, Clock, Package } from 'lucide-react';
+import { useState } from 'react';
 
 function InKindTransferList({
   transfers,
   entities,
+  pendingTransfers = [],
+  currentEntity,
+  onConfirmReceipt,
 }: {
   transfers: InKindTransfer[];
   entities: Entities[];
+  pendingTransfers?: any[];
+  currentEntity?: any;
+  onConfirmReceipt?: (payload: any) => void;
 }) {
   const id = useParams().id as UUID;
+  const [confirmingTransferId, setConfirmingTransferId] = useState<
+    string | null
+  >(null);
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-GB', {
@@ -36,9 +47,14 @@ function InKindTransferList({
           const isConfirmed =
             transfer.status === 'sent' || transfer.status === 'received';
           const isPending = transfer.status === 'pending';
+          const isForCurrentUser = transfer.to === currentEntity?.alias;
+          const canConfirm = isPending && isForCurrentUser;
 
           return (
-            <div key={transfer.id} className="p-4">
+            <div
+              key={transfer.id}
+              className={`p-4 ${isPending ? 'bg-amber-50' : ''}`}
+            >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 flex-1">
                   <div
@@ -89,9 +105,39 @@ function InKindTransferList({
                         {formatDate(new Date(transfer.timestamp))}
                       </p>
                     </div>
-                    <p className="text-sm font-medium text-gray-900 mt-1">
-                      {transfer.amount.toLocaleString()}
-                    </p>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 mt-1">
+                        {transfer.amount.toLocaleString()}
+                      </p>
+
+                      {canConfirm &&
+                        pendingTransfers?.length > 0 &&
+                        onConfirmReceipt && (
+                          <Button
+                            variant="outline"
+                            onClick={async () => {
+                              setConfirmingTransferId(transfer.id);
+                              try {
+                                await onConfirmReceipt({
+                                  from: currentEntity?.smartaccount || '',
+                                  to: pendingTransfers[0].from,
+                                  alias: pendingTransfers[0].to,
+                                  amount: transfer.amount.toString(),
+                                });
+                              } finally {
+                                setConfirmingTransferId(null);
+                              }
+                            }}
+                            disabled={confirmingTransferId === transfer.id}
+                            className="text-blue-500 border-blue-500 hover:bg-blue-50"
+                          >
+                            <Check size={16} className="mr-2" />
+                            {confirmingTransferId === transfer.id
+                              ? 'Confirming...'
+                              : 'Confirm Received'}
+                          </Button>
+                        )}
+                    </div>
                   </div>
                 </div>
               </div>

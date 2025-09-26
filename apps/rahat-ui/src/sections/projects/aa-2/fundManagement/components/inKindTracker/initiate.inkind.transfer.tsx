@@ -75,6 +75,7 @@ export default function InitiateInKindTransfer({}: {}) {
       currency: 'USD',
       comments: '',
     });
+    router.push(`/projects/aa/${id}/fund-management?tab=inKindTracker`);
   };
 
   return (

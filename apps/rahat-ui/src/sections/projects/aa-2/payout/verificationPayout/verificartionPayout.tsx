@@ -40,6 +40,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useVerifyManualPayout } from '@rahat-ui/query';
+import { normalizeCell } from 'apps/rahat-ui/src/utils';
 
 const DOWNLOAD_FILE_URL = '/files/verify-payout-sample.xlsx';
 
@@ -116,13 +117,13 @@ export default function VerificationPayout() {
     json: 'json',
     csv: 'csv',
   };
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     setData([]);
     setFileName(file?.name || 'No File Choosen');
     setSelectedFile(file || null);
 
-    setFileName(file?.name as string);
     const extension = file?.name.split('.').pop()?.toLowerCase();
     if (
       !extension ||
@@ -132,6 +133,7 @@ export default function VerificationPayout() {
         'Unsupported file format. Please upload an Excel, JSON, or CSV file.',
       );
     }
+
     if (file) {
       const reader = new FileReader();
 
@@ -141,7 +143,10 @@ export default function VerificationPayout() {
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
 
-        const rawData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as any[][];
+        const rawData = XLSX.utils.sheet_to_json(ws, {
+          header: 1,
+          raw: true,
+        }) as any[][];
 
         // Filter out completely empty rows
         const filteredData = rawData.filter((row) =>
@@ -153,19 +158,17 @@ export default function VerificationPayout() {
         const columnCount = filteredData[0]?.length || 0;
 
         const normalizedData = filteredData.map((row, idx) => {
-          const newRow = [...row];
+          const newRow = row.map((cell) => normalizeCell(cell));
           while (newRow.length < columnCount) newRow.push('');
-
-          if (idx === 0) return newRow;
-
           return newRow;
         });
 
         if (normalizedData.length === 1) {
           return toast.error('No list found in excel file');
         }
-        if (normalizedData.length > 100)
+        if (normalizedData.length > 100) {
           return toast.error('Maximum 100 list can be uploaded at a time');
+        }
 
         setData(normalizedData);
       };
@@ -174,7 +177,6 @@ export default function VerificationPayout() {
       setSelectedFile(file);
     }
   };
-
   const handleUpload = async () => {
     if (!selectedFile) return toast.error('Please select a file to upload');
 
@@ -233,7 +235,7 @@ export default function VerificationPayout() {
           <HeaderWithBack
             title="Verify Manual Payout"
             subtitle="Upload excel sheet to manually verify payout"
-            path={`/projects/aa/${id}/payout/details/${payoutId}/verify`}
+            path={`/projects/aa/${id}/payout/details/${payoutId}`}
           />
           <div className="flex mt-4">
             <Button

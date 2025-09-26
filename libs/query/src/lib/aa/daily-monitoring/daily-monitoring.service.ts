@@ -4,6 +4,27 @@ import { useSwal } from 'libs/query/src/swal';
 import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
+export interface SourceHealthData {
+  source_id: string;
+  name: string;
+  source_url: string;
+  status: 'UP' | 'DOWN' | 'DEGRADED' | string;
+  last_checked: string;
+  response_time_ms: number | null;
+  validity: 'VALID' | 'STALE' | 'EXPIRED' | string;
+  errors: Array<{
+    code: string;
+    message: string;
+    timestamp: string;
+  }> | null;
+}
+
+export interface HealthCacheData {
+  overall_status: 'HEALTHY' | 'DEGRADED' | 'UNHEALTHY' | string;
+  last_updated: string;
+  sources?: SourceHealthData[];
+}
+
 export const useCreateDailyMonitoring = () => {
   const q = useProjectAction();
   const alert = useSwal();
@@ -262,17 +283,17 @@ export const useRemoveMonitoringWhileUpdating = () => {
   });
 };
 
-export const useForecastTabSettings = (uuid: UUID) => {
-  const q = useProjectAction([PROJECT_SETTINGS_KEYS.FORECAST_TAB_CONFIG]);
+export const useTabConfiguration = (uuid: UUID, name: string) => {
+  const q = useProjectAction([name]);
   const query = useQuery({
-    queryKey: ['settings.get.tab.config', uuid],
+    queryKey: [name, uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
           action: 'settings.get',
           payload: {
-            name: PROJECT_SETTINGS_KEYS.FORECAST_TAB_CONFIG,
+            name: name,
           },
         },
       });

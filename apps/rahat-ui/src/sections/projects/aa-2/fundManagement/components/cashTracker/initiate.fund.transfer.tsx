@@ -80,6 +80,7 @@ export default function InitiateFundTransfer({}: {}) {
       currency: 'NPR',
       comments: '',
     });
+    router.push(`/projects/aa/${id}/fund-management?tab=cashTracker`);
   };
 
   return (

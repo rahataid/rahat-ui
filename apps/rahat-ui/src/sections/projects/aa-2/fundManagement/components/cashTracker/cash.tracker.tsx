@@ -205,28 +205,30 @@ export function CashTracker() {
           <p className="text-gray-500 mt-1">Track your cash flow here.</p>
         </div>
         <div className="flex gap-3">
-          <Button
-            onClick={() =>
-              router.push(
-                `/projects/aa/${uuid}/fund-management/cash-tracker/initiate`,
-              )
-            }
-            className="text-blue-500 border-blue-500 hover:bg-blue-50"
-            variant="outline"
-          >
-            Initiate Fund Transfer
-          </Button>
           {currentUser?.data?.roles?.includes(AARoles.UNICEFNepalCO) && (
-            <Button
-              onClick={() =>
-                router.push(
-                  `/projects/aa/${uuid}/fund-management/cash-tracker/budget`,
-                )
-              }
-              className="bg-blue-500 hover:bg-blue-600"
-            >
-              Create Budget
-            </Button>
+            <>
+              <Button
+                onClick={() =>
+                  router.push(
+                    `/projects/aa/${uuid}/fund-management/cash-tracker/initiate`,
+                  )
+                }
+                className="text-blue-500 border-blue-500 hover:bg-blue-50"
+                variant="outline"
+              >
+                Initiate Fund Transfer
+              </Button>
+              <Button
+                onClick={() =>
+                  router.push(
+                    `/projects/aa/${uuid}/fund-management/cash-tracker/budget`,
+                  )
+                }
+                className="bg-blue-500 hover:bg-blue-600"
+              >
+                Create Budget
+              </Button>
+            </>
           )}
         </div>
       </div>

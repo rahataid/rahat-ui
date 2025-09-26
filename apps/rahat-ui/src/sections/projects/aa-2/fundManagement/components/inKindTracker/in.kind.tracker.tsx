@@ -24,6 +24,7 @@ import {
   useGetInkind,
   useGetInkindTransactions,
   useProjectSettingsStore,
+  ConfirmReceipt,
 } from '@rahat-ui/query';
 import { AARoles } from '@rahat-ui/auth';
 
@@ -45,6 +46,7 @@ export function InKindTracker() {
   }, [currentUser, entities]);
 
   const { data: transactions, isFetched } = useGetInkindTransactions(uuid);
+  const getInkind = useGetInkind(uuid);
 
   const [balances, setBalances] = useState<
     { alias: string; balance: number; received: number }[]
@@ -121,6 +123,29 @@ export function InKindTracker() {
     );
   }, [transactions, entities]);
 
+  //get current entity pending transfer
+  const pendingTransfers = useMemo(() => {
+    if (!transactions?.data?.entityOutcomes || !currentEntity?.alias) {
+      return [];
+    }
+
+    const entity = transactions.data.entityOutcomes.find(
+      (entity: any) => entity.alias === currentEntity.alias,
+    );
+
+    if (!entity?.pending || entity?.pending.length === 0) {
+      return [];
+    }
+
+    return entity.pending;
+  }, [transactions?.data?.entityOutcomes, currentEntity?.alias]);
+
+  const confirmReceipt = async (payload: ConfirmReceipt) => {
+    await getInkind.mutateAsync({
+      payload: payload,
+    });
+  };
+
   useEffect(() => {
     const list = transactions?.data?.entityOutcomes || [];
     if (list.length > 0) {
@@ -135,12 +160,6 @@ export function InKindTracker() {
     }
   }, [transactions]);
 
-  const confirmReceipt = async (transferId: string) => {
-    // Mock confirmation for training
-    console.log('Confirming receipt for transfer:', transferId);
-    // In real implementation, this would call an API
-  };
-
   return (
     <div>
       {/* Header Section */}
@@ -152,28 +171,30 @@ export function InKindTracker() {
           <p className="text-gray-500 mt-1">Track your in-kind flow here.</p>
         </div>
         <div className="flex gap-3">
-          <Button
-            onClick={() =>
-              router.push(
-                `/projects/aa/${uuid}/fund-management/inkind-tracker/initiate`,
-              )
-            }
-            className="text-blue-500 border-blue-500 hover:bg-blue-50"
-            variant="outline"
-          >
-            Initiate In-kind Transfer
-          </Button>
           {currentUser?.data?.roles?.includes(AARoles.UNICEFNepalCO) && (
-            <Button
-              onClick={() =>
-                router.push(
-                  `/projects/aa/${uuid}/fund-management/inkind-tracker/stock`,
-                )
-              }
-              className="bg-blue-500 hover:bg-blue-600"
-            >
-              <Plus /> Add Stock
-            </Button>
+            <>
+              <Button
+                onClick={() =>
+                  router.push(
+                    `/projects/aa/${uuid}/fund-management/inkind-tracker/initiate`,
+                  )
+                }
+                className="text-blue-500 border-blue-500 hover:bg-blue-50"
+                variant="outline"
+              >
+                Initiate In-kind Transfer
+              </Button>
+              <Button
+                onClick={() =>
+                  router.push(
+                    `/projects/aa/${uuid}/fund-management/inkind-tracker/stock`,
+                  )
+                }
+                className="bg-blue-500 hover:bg-blue-600"
+              >
+                <Plus /> Add Stock
+              </Button>
+            </>
           )}
         </div>
       </div>
@@ -229,6 +250,9 @@ export function InKindTracker() {
                 <InKindTransferList
                   transfers={transfers as any}
                   entities={entities}
+                  pendingTransfers={pendingTransfers}
+                  currentEntity={currentEntity}
+                  onConfirmReceipt={confirmReceipt}
                 />
               ) : (
                 <div className="flex justify-center p-6">

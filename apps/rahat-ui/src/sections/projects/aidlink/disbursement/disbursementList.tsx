@@ -1,5 +1,14 @@
 import { useMemo, useState } from 'react';
-import { Calendar, Eye, Check, X, Users, User } from 'lucide-react';
+import {
+  Calendar,
+  Eye,
+  Check,
+  X,
+  Users,
+  User,
+  CopyCheck,
+  Copy,
+} from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Select,
@@ -27,6 +36,7 @@ import {
   startOfToday,
   startOfWeek,
 } from 'date-fns';
+import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 
 type Props = {
   disbursements?: any[];
@@ -41,6 +51,7 @@ export function DisbursementList({ status }: Props) {
 
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
+  const { clickToCopy, copyAction } = useCopy();
 
   const dateRangeData = useMemo(() => {
     const today = new Date();
@@ -134,33 +145,42 @@ export function DisbursementList({ status }: Props) {
                   className="border p-4 rounded-sm space-y-2"
                 >
                   <div className="flex justify-between space-x-4">
-                    <div className="flex space-x-4">
-                      <div className="flex-shrink-0">
-                        {disbursement.disbursementType ===
-                        DisbursementSelectionType.GROUP ? (
+                    <div>
+                      {disbursement.disbursementType ===
+                      DisbursementSelectionType.GROUP ? (
+                        <div className="flex items-center gap-2">
                           <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
                             <Users className="h-5 w-5 text-gray-600" />
                           </div>
-                        ) : (
+                          <h3 className="text-sm/6 font-medium text-gray-900 capitalize">
+                            {disbursement?.groupName}
+                          </h3>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
                           <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
                             <User className="h-5 w-5 text-gray-600" />
                           </div>
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="text-sm/6 font-medium text-gray-900">
-                          N/A
-                        </h3>
-                        {/* <p className="text-sm/4 text-gray-700 mb-3">
-                          {disbursement.disbursementType ===
-                          DisbursementSelectionType.GROUP
-                            ? disbursement.DisbursementBeneficiary?.length
-                            : truncateEthAddress(
-                                disbursement.DisbursementBeneficiary[0]
-                                  .beneficiaryWalletAddress || '',
-                              )}
-                        </p> */}
-                      </div>
+                          <h3 className="text-sm/6 font-medium text-gray-900">
+                            {disbursement?.beneficiaryAddresses[0] || 'N/A'}
+                          </h3>
+                          <button
+                            onClick={() =>
+                              clickToCopy(
+                                disbursement?.beneficiaryAddresses[0],
+                                disbursement?.id,
+                              )
+                            }
+                            className="ml-2 text-sm text-gray-500"
+                          >
+                            {copyAction === disbursement?.id ? (
+                              <CopyCheck className="w-4 h-4" />
+                            ) : (
+                              <Copy className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
+                      )}
                     </div>
                     <div>
                       <Badge

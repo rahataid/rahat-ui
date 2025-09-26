@@ -34,11 +34,9 @@ export function SystemHealthCard({
     }
   };
 
-  const calcUP = sources?.filter((s) => s.status === 'HEALTHY').length;
-  const calcDOWN = sources?.filter(
-    (s) => s.status === 'UNHEALTHY' || s.status === 'DEGRADED',
-  ).length;
-
+  const calcHEALTHY = sources?.filter((s) => s.status === 'HEALTHY').length;
+  const calcUNHEALTHY = sources?.filter((s) => s.status === 'UNHEALTHY').length;
+  const calcDEGRADED = sources?.filter((s) => s.status === 'DEGRADED').length;
   return (
     <Card
       className={`border ${getBgColor(
@@ -111,11 +109,16 @@ export function SystemHealthCard({
               <span className="flex items-center  text-xs text-green-500">
                 {' '}
                 <CheckCircle size={13} className="pr-1 w-4 h-4" />
-                {calcUP}/{sources?.length} sources UP
+                {calcHEALTHY}/{sources?.length} sources HEALTHY
               </span>
               <span className="flex items-center  text-xs text-red-500">
                 <X size={13} className="pr-1 w-4 h-4" />
-                {calcDOWN} sources DOWN
+                {calcUNHEALTHY} sources UNHEALTHY
+              </span>
+
+              <span className="flex items-center  text-xs text-red-500">
+                <X size={13} className="pr-1 w-4 h-4" />
+                {calcDEGRADED} sources DEGRADED
               </span>
             </div>
 

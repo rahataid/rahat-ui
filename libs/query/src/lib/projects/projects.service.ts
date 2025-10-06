@@ -430,6 +430,54 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
   return query;
 };
 
+export const useProjectBlockChainSettings = (uuid: UUID) => {
+  const q = useProjectAction(['PROJECT_SETTINGS_KEYS.BLOCKCHAIN']);
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+
+  const query = useQuery({
+    queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid, PROJECT_SETTINGS_KEYS.BLOCKCHAIN],
+    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.BLOCKCHAIN]),
+    // enabled: !!settings[uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: PROJECT_SETTINGS_KEYS.BLOCKCHAIN,
+          },
+        },
+      });
+      return mutate.data.value;
+    },
+    // initialData: settings?.[uuid],
+  });
+
+  useEffect(() => {
+    if (!isEmpty(query.data)) {
+      const settingsToUpdate = {
+        ...settings,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.BLOCKCHAIN]: query?.data,
+        },
+      };
+      setSettings(settingsToUpdate);
+      window.location.reload();
+      // setSettings({
+      //   [uuid]: {
+      //     [PROJECT_SETTINGS_KEYS.SUBGRAPH]: query?.data,
+      //   },
+      // });
+    }
+  }, [query.data]);
+
+  return query;
+};
+
 export const useAAProjectSettingsDatasource = (uuid: UUID) => {
   const q = useProjectAction([PROJECT_SETTINGS_KEYS.DATASOURCE]);
   const { setSettings, settings } = useProjectSettingsStore((state) => ({
@@ -647,7 +695,7 @@ export const useProjectBeneficiaryDetail = (payload: any) => {
       return mutate?.data;
     },
   });
-  return query?.data;
+  return query;
 };
 
 export const useBeneficiaryRedeemInfo = (payload: any) => {
@@ -1487,6 +1535,43 @@ export const useOfframp = (uuid: UUID) => {
         [uuid]: {
           ...settings?.[uuid],
           [PROJECT_SETTINGS_KEYS.OFFRAMP]: query?.data.value,
+        },
+      };
+      setSettings(settingsToUpdate);
+    }
+  }, [query.data]);
+  return query;
+};
+export const useEntities = (uuid: UUID) => {
+  const q = useProjectAction([PROJECT_SETTINGS_KEYS.ENTITIES]);
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+
+  const query = useQuery({
+    queryKey: ['settings.get.entities', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: PROJECT_SETTINGS_KEYS.ENTITIES,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  useEffect(() => {
+    if (!isEmpty(query.data)) {
+      const settingsToUpdate = {
+        ...settings,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.ENTITIES]: query?.data.value,
         },
       };
       setSettings(settingsToUpdate);

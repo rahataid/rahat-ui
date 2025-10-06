@@ -10,6 +10,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useAAProjectSettingsDatasource,
   useAAProjectSettingsHazardType,
+  useEntities,
   useProjectContractSettings,
   useProjectSettingsStore,
   useProjectSubgraphSettings,
@@ -28,6 +29,7 @@ export default function ProjectLayoutRoot({
   useProjectContractSettings(uuid);
   useAAProjectSettingsHazardType(uuid);
   useProjectSubgraphSettings(uuid);
+  useEntities(uuid);
 
   // const dataSources = useProjectSettingsStore(
   //   (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]);
@@ -40,10 +42,10 @@ export default function ProjectLayoutRoot({
     return children;
   };
   return (
-    <GarphQlProvider>
-      <ProjectLayout projectType={ProjectTypes.ANTICIPATORY_ACTION}>
-        {renderChildren()}
-      </ProjectLayout>
-    </GarphQlProvider>
+    // <GarphQlProvider>
+    <ProjectLayout projectType={ProjectTypes.ANTICIPATORY_ACTION}>
+      {renderChildren()}
+    </ProjectLayout>
+    // </GarphQlProvider>
   );
 }

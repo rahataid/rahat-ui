@@ -138,6 +138,26 @@ export const useGetProjectReporting = (projectUUID: UUID) => {
   return query;
 };
 
+export const useGetDisbursementSafeChart = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-disbursement-safe-chart', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getDisbursementSafeChart',
+          payload: {},
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
 type DisbursementTransactionHookParams = {
   projectUUID: UUID;
   disbursementUUID: UUID;
@@ -486,7 +506,7 @@ export const useDisburseTokenUsingMultisig = () => {
       disbursementType: DisbursementSelectionType;
       beneficiaryAddresses?: `0x${string}`[];
       beneficiaryGroup?: UUID;
-      totalAmount?:string;
+      totalAmount?: string;
       details?: string;
     }) => {
       // Step 1: Create Safe Transaction

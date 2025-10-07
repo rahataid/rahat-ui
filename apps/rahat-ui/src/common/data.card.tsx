@@ -47,7 +47,6 @@ export function DataCard({
   infoTooltip,
   truncate = true,
 }: CardProps) {
-  console.log(subtitle);
   return (
     <Card className={cn('flex flex-col rounded justify-center', className)}>
       <CardHeader className="pb-2 p-4">

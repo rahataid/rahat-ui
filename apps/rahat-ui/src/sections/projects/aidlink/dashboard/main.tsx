@@ -7,16 +7,14 @@ import { Heading } from 'apps/rahat-ui/src/common';
 import { CheckCircle, Users, Wallet } from 'lucide-react';
 import RecentTransaction from './recent-transaction';
 import ProjectDetailsCard from './project-details-card';
-import { useGetProjectReporting } from '@rahat-ui/query';
+import {
+  useGetDisbursementSafeChart,
+  useGetProjectReporting,
+} from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-
-const walletData = [
-  { name: 'Genosis Wallet', value: 75, color: '#3B82F6' }, // blue
-  { name: 'Total Disbursement', value: 25, color: '#FACC15' }, // yellow
-];
 
 const offRampData = [
   { name: 'Yes', value: 60, color: '#22C55E' }, // green
@@ -27,6 +25,24 @@ export default function ProjectDashboard() {
   const params = useParams();
   const projectId = params.id as UUID;
   const { data, isPending } = useGetProjectReporting(projectId);
+  const { data: disbursementData, isLoading } =
+    useGetDisbursementSafeChart(projectId);
+
+  const walletData = useMemo(
+    () => [
+      {
+        name: 'Genosis Wallet',
+        value: Number(disbursementData?.safeBalance) || 0,
+        color: '#3B82F6',
+      },
+      {
+        name: 'Total Disbursement',
+        value: Number(disbursementData?.disbursementAmount) || 0,
+        color: '#FACC15',
+      },
+    ],
+    [disbursementData],
+  );
 
   const stats = useMemo(
     () => [
@@ -108,64 +124,68 @@ export default function ProjectDashboard() {
                 {/*  */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
                   {/* Wallet vs Disbursement */}
-                  <Card className="rounded-xl p-4">
-                    <p className="text-lg font-medium">
-                      Genosis Wallet vs Total Disbursement
-                    </p>
+                  {isLoading ? (
+                    <Skeleton className="h-96 rounded-xl" />
+                  ) : (
+                    <Card className="rounded-xl p-4">
+                      <p className="text-lg font-medium">
+                        Genosis Wallet vs Total Disbursement
+                      </p>
 
-                    <div>
-                      <div className="h-64 relative">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <PieChart>
-                            <Pie
-                              data={walletData}
-                              cx="50%"
-                              cy="50%"
-                              innerRadius={70}
-                              outerRadius={100}
-                              paddingAngle={2}
-                              dataKey="value"
-                            >
-                              {walletData.map((entry, index) => (
-                                <Cell
-                                  key={`cell-${index}`}
-                                  fill={entry.color}
-                                />
-                              ))}
-                            </Pie>
-                          </PieChart>
-                        </ResponsiveContainer>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-center">
-                            <span className="text-3xl font-bold text-gray-900">
-                              100
-                            </span>
-                            <p className="text-sm text-gray-600">Total</p>
+                      <div>
+                        <div className="h-64 relative">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                              <Pie
+                                data={walletData}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={70}
+                                outerRadius={100}
+                                paddingAngle={2}
+                                dataKey="value"
+                              >
+                                {walletData.map((entry, index) => (
+                                  <Cell
+                                    key={`cell-${index}`}
+                                    fill={entry.color}
+                                  />
+                                ))}
+                              </Pie>
+                            </PieChart>
+                          </ResponsiveContainer>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-center">
+                              <span className="text-3xl font-bold text-gray-900">
+                                100
+                              </span>
+                              <p className="text-sm text-gray-600">Total</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="flex flex-col items-center justify-center gap-4 mt-4">
-                        {walletData.map((item) => (
-                          <div
-                            key={item.name}
-                            className="flex items-center gap-2"
-                          >
+                        <div className="flex flex-col items-center justify-center gap-4 mt-4">
+                          {walletData.map((item) => (
                             <div
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: item.color }}
-                            />
-                            <span className="text-sm text-gray-600">
-                              {item.name}
-                            </span>
-                            <span className="text-sm font-medium text-gray-900">
-                              {item.value}%
-                            </span>
-                          </div>
-                        ))}
+                              key={item.name}
+                              className="flex items-center gap-2"
+                            >
+                              <div
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: item.color }}
+                              />
+                              <span className="text-sm text-gray-600">
+                                {item.name}
+                              </span>
+                              <span className="text-sm font-medium text-gray-900">
+                                {item.value}%
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  </Card>
+                    </Card>
+                  )}
 
                   {/* Off-ramp Status */}
                   <Card className="rounded-xl p-4">

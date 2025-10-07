@@ -6,7 +6,6 @@ import React from 'react';
 import { RefreshCw } from 'lucide-react';
 import { dateFormat } from '../utils/dateFormate';
 
-
 interface IProps {
   title: string;
   description: string;
@@ -60,7 +59,7 @@ export function Heading({
       <p className="text-sm/4 text-muted-foreground">{description}</p>
 
       {updatedAt && (
-        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1 whitespace-nowrap">
+        <div className="flex items-center gap-1 text-xs text-green-500 mt-1 whitespace-nowrap">
           <RefreshCw size={12} />
           <span>Last Synced at: {dateFormat(updatedAt)}</span>
         </div>

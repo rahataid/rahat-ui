@@ -65,6 +65,10 @@ export const useGetTreasurySourcesSettings = (uuid: UUID) => {
 
 type DisbursementListHookParams = {
   projectUUID: UUID;
+  status: string;
+  disbursementType: string;
+  fromDate: string;
+  toDate: string;
 } & Pagination;
 
 export const useGetDisbursements = (params: DisbursementListHookParams) => {
@@ -72,7 +76,7 @@ export const useGetDisbursements = (params: DisbursementListHookParams) => {
   const { projectUUID, ...restParams } = params;
 
   const query = useQuery({
-    queryKey: ['get-disbursements'],
+    queryKey: ['get-disbursements', params],
     queryFn: async () => {
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
@@ -124,6 +128,26 @@ export const useGetProjectReporting = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: 'c2cProject.reporting.list',
+          payload: {},
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
+export const useGetDisbursementSafeChart = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-disbursement-safe-chart', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getDisbursementSafeChart',
           payload: {},
         },
       });
@@ -260,6 +284,26 @@ export const useGetOfframpDetails = (
             beneficiaryPhone,
             limit: 100,
           },
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
+export const useGetSafePending = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-getSafePending', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'c2cProject.getSafePending',
+          payload: {},
         },
       });
       return response.data;
@@ -462,7 +506,7 @@ export const useDisburseTokenUsingMultisig = () => {
       disbursementType: DisbursementSelectionType;
       beneficiaryAddresses?: `0x${string}`[];
       beneficiaryGroup?: UUID;
-      totalAmount?:string;
+      totalAmount?: string;
       details?: string;
     }) => {
       // Step 1: Create Safe Transaction

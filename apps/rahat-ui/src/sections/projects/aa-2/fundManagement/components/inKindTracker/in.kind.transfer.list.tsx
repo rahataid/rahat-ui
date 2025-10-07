@@ -2,110 +2,148 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { Entities, InKindTransfer } from './types';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { AlertCircle, ArrowRight, Check, Clock, Package } from 'lucide-react';
+import { useState } from 'react';
 
 function InKindTransferList({
   transfers,
   entities,
+  pendingTransfers = [],
+  currentEntity,
+  onConfirmReceipt,
 }: {
   transfers: InKindTransfer[];
   entities: Entities[];
+  pendingTransfers?: any[];
+  currentEntity?: any;
+  onConfirmReceipt?: (payload: any) => void;
 }) {
   const id = useParams().id as UUID;
+  const [confirmingTransferId, setConfirmingTransferId] = useState<
+    string | null
+  >(null);
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+    });
+  };
 
   return (
-    <div className="divide-y">
+    <div className="divide-y max-h-96 overflow-y-auto">
       {transfers?.length === 0 ? (
         <div className="p-6 text-center">
           <p className="text-gray-500">No distributions initiated yet</p>
         </div>
       ) : (
-        transfers?.map((transfer) => (
-          <div
-            key={transfer.id}
-            className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-          >
-            <div className="flex items-start gap-3">
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0
-                ${
-                  transfer.status === 'sent' || transfer.status === 'received'
-                    ? 'bg-green-100 text-green-600'
-                    : transfer.status === 'pending'
-                    ? 'bg-amber-100 text-amber-600'
-                    : 'bg-red-100 text-red-600'
-                }`}
-              >
-                {transfer.status === 'sent' ||
-                transfer.status === 'received' ? (
-                  <Check size={20} />
-                ) : transfer.status === 'pending' ? (
-                  <Clock size={20} />
-                ) : (
-                  <AlertCircle size={20} />
-                )}
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="font-medium">{transfer.from}</p>
-                  <ArrowRight size={16} className="text-gray-400" />
-                  <p className="font-medium">{transfer.to}</p>
-                </div>
-                <p className="text-sm text-gray-500 mt-1">
-                  {transfer.amount.toLocaleString()} items •{' '}
-                  {new Date(transfer.timestamp).toLocaleString()}
-                </p>
+        transfers?.map((transfer) => {
+          const isConfirmed =
+            transfer.status === 'sent' || transfer.status === 'received';
+          const isPending = transfer.status === 'pending';
+          const isForCurrentUser = transfer.to === currentEntity?.alias;
+          const canConfirm = isPending && isForCurrentUser;
 
-                {/* Items breakdown */}
-                {transfer.items && transfer.items.length > 0 && (
-                  <div className="mt-2 flex items-center gap-2 text-xs text-gray-600">
-                    <Package size={12} />
-                    <div className="flex flex-wrap gap-2">
-                      {transfer.items.map((item, index) => (
-                        <span
-                          key={index}
-                          className="bg-gray-100 px-2 py-1 rounded"
+          return (
+            <div
+              key={transfer.id}
+              className={`p-4 ${isPending ? 'bg-amber-50' : ''}`}
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3 flex-1">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0
+                    ${
+                      isConfirmed
+                        ? 'bg-green-100 text-green-600'
+                        : isPending
+                        ? 'bg-amber-100 text-amber-600'
+                        : 'bg-red-100 text-red-600'
+                    }`}
+                  >
+                    {isConfirmed ? (
+                      <Check size={20} />
+                    ) : isPending ? (
+                      <Clock size={20} />
+                    ) : (
+                      <AlertCircle size={20} />
+                    )}
+                  </div>
+                  <div className="flex w-full">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="font-medium text-gray-900">
+                          {transfer.to}
+                        </p>
+                        <Badge
+                          variant="outline"
+                          className={`text-xs font-medium ${
+                            isConfirmed
+                              ? 'bg-green-100 text-green-600 border-green-200'
+                              : isPending
+                              ? 'bg-amber-100 text-amber-600 border-amber-200'
+                              : 'bg-red-100 text-red-600 border-red-200'
+                          }`}
                         >
-                          {item.quantity} {item.unit} {item.name}
-                        </span>
-                      ))}
+                          {isConfirmed
+                            ? 'CONFIRMED'
+                            : isPending
+                            ? 'PENDING'
+                            : 'BLOCKED'}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-1">
+                        {transfer.comments}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {formatDate(new Date(transfer.timestamp))}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 mt-1">
+                        {transfer.amount.toLocaleString()}
+                      </p>
+
+                      {canConfirm &&
+                        pendingTransfers?.length > 0 &&
+                        onConfirmReceipt && (
+                          <Button
+                            variant="outline"
+                            onClick={async () => {
+                              setConfirmingTransferId(transfer.id);
+                              try {
+                                await onConfirmReceipt({
+                                  from: currentEntity?.smartaccount || '',
+                                  to: pendingTransfers[0].from,
+                                  alias: pendingTransfers[0].to,
+                                  amount: transfer.amount.toString(),
+                                });
+                              } finally {
+                                setConfirmingTransferId(null);
+                              }
+                            }}
+                            disabled={confirmingTransferId === transfer.id}
+                            className="text-blue-500 border-blue-500 hover:bg-blue-50"
+                          >
+                            <Check size={16} className="mr-2" />
+                            {confirmingTransferId === transfer.id
+                              ? 'Confirming...'
+                              : 'Confirm Received'}
+                          </Button>
+                        )}
                     </div>
                   </div>
-                )}
-
-                {transfer.comments && (
-                  <p className="text-sm text-gray-600 mt-2">
-                    {transfer.comments}
-                  </p>
-                )}
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-2 ml-auto">
-              <Badge
-                variant={
-                  transfer.status === 'sent' || transfer.status === 'received'
-                    ? 'default'
-                    : transfer.status === 'pending'
-                    ? 'outline'
-                    : 'destructive'
-                }
-                className={`text-xs font-medium ${
-                  transfer.status === 'sent' || transfer.status === 'received'
-                    ? 'bg-green-100 text-green-600'
-                    : transfer.status === 'pending'
-                    ? 'bg-amber-100 text-amber-600'
-                    : 'bg-red-100 text-red-600'
-                }`}
-              >
-                {transfer.status === 'sent' || transfer.status === 'received'
-                  ? 'Confirmed'
-                  : transfer.status === 'pending'
-                  ? 'Pending'
-                  : 'Blocked'}
-              </Badge>
-            </div>
-          </div>
-        ))
+          );
+        })
       )}
     </div>
   );

@@ -2,6 +2,8 @@
 // If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { format, isValid, parse } from 'date-fns';
+
 export function truncateEthereumAddress(address: string) {
   if (address.length <= 42) {
     return address;
@@ -168,3 +170,32 @@ export const intlDateFormat = (dateStr?: string) => {
 
   return `${day} ${month}, ${year}, ${time}`;
 };
+
+export function excelDateToJSDate(serial: number): Date {
+  const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+  return new Date(excelEpoch.getTime() + serial * 86400000);
+}
+
+export function normalizeCell(cell: any) {
+  if (typeof cell === 'number' && cell > 20000 && cell < 60000) {
+    return format(excelDateToJSDate(cell), 'dd/MM/yyyy');
+  }
+
+  // If it's a string that looks like a date
+  if (typeof cell === 'string') {
+    const parsed =
+      parse(cell, 'dd/MM/yyyy', new Date()) ||
+      parse(cell, 'dd/MM/yy', new Date());
+
+    if (isValid(parsed)) {
+      return format(parsed, 'dd/MM/yyyy');
+    }
+  }
+
+  // If it's already a JS Date object
+  if (cell instanceof Date) {
+    return format(cell, 'dd/MM/yyyy');
+  }
+
+  return cell;
+}

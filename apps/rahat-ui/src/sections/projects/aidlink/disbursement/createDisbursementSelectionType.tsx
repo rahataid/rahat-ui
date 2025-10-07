@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import { User, Users } from 'lucide-react';
+import { AlertCircle, User, Users } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import CreateDisbursementMain from './createDisbursementMain';
-import { DisbursementSelectionType } from '@rahat-ui/query';
+import { DisbursementSelectionType, useGetSafePending } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
 
 const CancelBtn = ({
   setSelectedType,
@@ -25,24 +28,68 @@ const CancelBtn = ({
   );
 };
 
-export default function CreateDisbursementSelectionType() {
+interface ICreateDisbursementSelectionTypeProps {
+  setActiveTab: (tab: string) => void;
+}
+
+export default function CreateDisbursementSelectionType({
+  setActiveTab,
+}: ICreateDisbursementSelectionTypeProps) {
+  const { id: projectUUID } = useParams() as { id: UUID };
   const [selectedType, setSelectedType] =
     React.useState<DisbursementSelectionType | null>(null);
 
-  const cardData = [
-    {
-      type: DisbursementSelectionType.INDIVIDUAL,
-      title: 'SELECT INDIVIDUAL BENEFICIARY',
-      description: 'Select beneficiaries individually to disburse amount',
-      icon: <User className="w-5 h-5 text-primary" />,
-    },
-    {
-      type: DisbursementSelectionType.GROUP,
-      title: 'SELECT BENEFICIARY GROUP',
-      description: 'Select beneficiary group to disburse amount',
-      icon: <Users className="w-5 h-5 text-primary" />,
-    },
-  ];
+  const { data, isLoading } = useGetSafePending(projectUUID);
+
+  const cardData = useMemo(
+    () => [
+      {
+        type: DisbursementSelectionType.INDIVIDUAL,
+        title: 'SELECT INDIVIDUAL BENEFICIARY',
+        description: 'Select beneficiaries individually to disburse amount',
+        icon: <User className="w-5 h-5 text-primary" />,
+      },
+      {
+        type: DisbursementSelectionType.GROUP,
+        title: 'SELECT BENEFICIARY GROUP',
+        description: 'Select beneficiary group to disburse amount',
+        icon: <Users className="w-5 h-5 text-primary" />,
+      },
+    ],
+
+    [],
+  );
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[50vh]">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (data?.count > 0) {
+    return (
+      <div className="flex flex-col justify-center items-center mt-10 bg-gray-50 px-4">
+        <div className="flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-3">
+          <AlertCircle className="text-red-500 w-8 h-8" />
+        </div>
+        <h2 className="text-2xl font-bold text-red-600 mb-3">Attention</h2>
+        <p className="text-center text-gray-600 max-w-2xl mb-8 leading-relaxed">
+          A pending multisig transaction already exists for this project. <br />
+          Please update the current transaction before creating a new one to
+          ensure proper processing and avoid conflicts.
+        </p>
+
+        <Button
+          size="lg"
+          className="bg-gray-500 hover:bg-gray-500 text-white px-8 rounded-full shadow-md transition"
+          onClick={() => setActiveTab('disbursementHistory')}
+        >
+          Disbursement History
+        </Button>
+      </div>
+    );
+  }
 
   return selectedType ? (
     <>

@@ -93,6 +93,26 @@ export const useGetDisbursements = (params: DisbursementListHookParams) => {
   return query;
 };
 
+export const usePendingDisbursements = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-pending-disbursements', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'c2cProject.disbursements.pending.get',
+          payload: {},
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
 export const useGetDisbursement = (
   projectUUID: UUID,
   disbursementUUID: UUID,

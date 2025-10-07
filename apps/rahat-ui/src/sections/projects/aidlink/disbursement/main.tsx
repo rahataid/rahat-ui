@@ -9,9 +9,14 @@ import { Heading } from 'apps/rahat-ui/src/common';
 import CreateDisbursementSelectionType from './createDisbursementSelectionType';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { DisbursementList } from './disbursementList';
+import { usePendingDisbursements } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 export default function DisbursementMainView() {
+  const projectUUID = useParams().id as UUID;
   const { activeTab, setActiveTab } = useActiveTab('createDisbursement');
+  const { data } = usePendingDisbursements(projectUUID);
 
   return (
     <div className="p-4 bg-gray-50 h-[calc(100vh-58px)]">
@@ -57,10 +62,13 @@ export default function DisbursementMainView() {
             </TabsTrigger>
             <TabsTrigger
               id="disbursementPending"
-              className="w-full data-[state=active]:bg-white"
+              className="w-full data-[state=active]:bg-white flex gap-1 items-center"
               value="disbursementPending"
             >
-              Pending
+              <p>Pending</p>
+              <p className="bg-red-600 text-white w-5 rounded-full ">
+                {data || 5}
+              </p>
             </TabsTrigger>
           </TabsList>
         </div>

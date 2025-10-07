@@ -1,6 +1,6 @@
 'use client';
-import { useQuery, useRSQuery } from '@rumsan/react-query';
-import { useMutation } from '@tanstack/react-query';
+import { useRSQuery } from '@rumsan/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useProjectAction } from '../projects';
 import { GetGrievanceList, GrievanceFormData } from './types/grievance';
@@ -14,6 +14,7 @@ const MS_ACTIONS = {
     GET: 'aa.grievances.get',
     UPDATE: 'aa.grievances.update',
     UPDATE_STATUS: 'aa.grievances.updateStatus',
+    GET_OVERVIEW_STATS: 'aa.grievances.getOverviewStats',
   },
 };
 
@@ -126,6 +127,9 @@ export const useGrievanceAdd = () => {
         queryClient.invalidateQueries({
           queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT],
         });
+        queryClient.invalidateQueries({
+          queryKey: [MS_ACTIONS.GRIEVANCES.GET_OVERVIEW_STATS],
+        });
         toast.fire({
           title: 'Grievance added successfully.',
           icon: 'success',
@@ -208,6 +212,9 @@ export const useGrievanceEdit = () => {
         queryClient.invalidateQueries({
           queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT],
         });
+        queryClient.invalidateQueries({
+          queryKey: [MS_ACTIONS.GRIEVANCES.GET_OVERVIEW_STATS],
+        });
         toast.fire({
           title: 'Grievance updated successfully.',
           icon: 'success',
@@ -261,6 +268,9 @@ export const useGrievanceEditStatus = () => {
         queryClient.invalidateQueries({
           queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT],
         });
+        queryClient.invalidateQueries({
+          queryKey: [MS_ACTIONS.GRIEVANCES.GET_OVERVIEW_STATS],
+        });
         toast.fire({
           title: 'Grievance status updated successfully.',
           icon: 'success',
@@ -278,6 +288,59 @@ export const useGrievanceEditStatus = () => {
     },
     queryClient,
   );
+
+  return query;
+};
+
+export const useGetOverviewStats = (projectUUID: UUID) => {
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  const q = useProjectAction<{
+    totalGrievances: number;
+    grievanceType: {
+      TECHNICAL: number;
+      NON_TECHNICAL: number;
+      OTHER: number;
+    };
+    grievanceStatus: {
+      NEW: number;
+      UNDER_REVIEW: number;
+      RESOLVED: number;
+      CLOSED: number;
+    };
+    averageResolveTime: number;
+  }>();
+
+  const query = useQuery({
+    queryKey: [MS_ACTIONS.GRIEVANCES.GET_OVERVIEW_STATS, projectUUID],
+    queryFn: async () => {
+      try {
+        return await q.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: MS_ACTIONS.GRIEVANCES.GET_OVERVIEW_STATS,
+            payload: {},
+          },
+        });
+      } catch (error: any) {
+        console.log('error', error);
+        const errorMessage = error?.response?.data?.message || 'Error';
+        toast.fire({
+          title: 'Error while fetching overview stats.',
+          icon: 'error',
+          text: errorMessage,
+        });
+        throw error;
+      }
+    },
+    enabled: !!projectUUID, // Only run query if projectUUID exists
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+  });
 
   return query;
 };

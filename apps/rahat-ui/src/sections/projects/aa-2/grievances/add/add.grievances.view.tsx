@@ -128,9 +128,13 @@ export default function AddGrievances() {
       // Ensure all required fields are present with proper types
       const payload = {
         ...data,
-        reporterUserId: user?.data?.id,
         status: data.status || GrievanceStatus.NEW,
         tags: data?.tags?.map((tag) => tag.text) || [],
+        createdByUser: {
+          id: user?.data?.id,
+          name: user?.data?.name,
+          email: user?.data?.email,
+        },
       };
 
       await addGrievance.mutateAsync({

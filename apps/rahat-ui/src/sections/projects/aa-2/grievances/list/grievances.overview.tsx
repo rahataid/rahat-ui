@@ -1,6 +1,6 @@
 'use client';
 
-import { useGrievanceList } from '@rahat-ui/query';
+import { useGetOverviewStats } from '@rahat-ui/query';
 import {
   GrievanceStatus,
   GrievanceType,
@@ -11,6 +11,7 @@ import {
   grievanceStatus,
   grievanceType,
 } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
+import { formatDuration } from 'apps/rahat-ui/src/utils/dateFormate';
 import { UUID } from 'crypto';
 import { AlertTriangle, Clock } from 'lucide-react';
 import { useParams } from 'next/navigation';
@@ -39,59 +40,42 @@ export default function GrievanceOverview({
   const { id } = useParams();
   const projectUUID = id as UUID;
 
-  // Fetch grievances data
-  const { data: grievancesData, isLoading } = useGrievanceList({
-    page: 1,
-    perPage: 1000, // Get all grievances for overview
-    order: 'desc',
-    sort: 'createdAt',
-    projectUUID,
-  });
+  const { data: overviewData, isLoading } = useGetOverviewStats(projectUUID);
+  console.log('overview data', overviewData);
 
-  // Mock data for demonstration - replace with actual API data when ready
-  const mockGrievances = [
-    { type: GrievanceType.NON_TECHNICAL, status: GrievanceStatus.NEW },
-    { type: GrievanceType.TECHNICAL, status: GrievanceStatus.CLOSED },
-    { type: GrievanceType.NON_TECHNICAL, status: GrievanceStatus.UNDER_REVIEW },
-    { type: GrievanceType.OTHER, status: GrievanceStatus.RESOLVED },
-    { type: GrievanceType.TECHNICAL, status: GrievanceStatus.NEW },
-    { type: GrievanceType.NON_TECHNICAL, status: GrievanceStatus.CLOSED },
-    { type: GrievanceType.OTHER, status: GrievanceStatus.NEW },
-    { type: GrievanceType.TECHNICAL, status: GrievanceStatus.UNDER_REVIEW },
-    { type: GrievanceType.NON_TECHNICAL, status: GrievanceStatus.RESOLVED },
-    { type: GrievanceType.TECHNICAL, status: GrievanceStatus.CLOSED },
-    { type: GrievanceType.OTHER, status: GrievanceStatus.UNDER_REVIEW },
-    { type: GrievanceType.NON_TECHNICAL, status: GrievanceStatus.NEW },
-    { type: GrievanceType.TECHNICAL, status: GrievanceStatus.RESOLVED },
-    { type: GrievanceType.OTHER, status: GrievanceStatus.CLOSED },
-    { type: GrievanceType.NON_TECHNICAL, status: GrievanceStatus.UNDER_REVIEW },
-  ];
+  // Extract data from API response
+  const totalGrievances = overviewData?.data?.totalGrievances || 0;
+  const grievancesByType = overviewData?.data?.grievanceType || {};
+  const grievancesByStatus = overviewData?.data?.grievanceStatus || {};
+  const averageResolveTime = (overviewData?.data as any)?.averageResolveTime
+    ? formatDuration(overviewData?.data?.averageResolveTime || 0)
+    : 0;
 
-  // Use mock data for now
-  const grievances = mockGrievances;
-  const totalGrievances = grievances.length;
+  // Mapping functions to convert API keys to enum values
+  const mapTypeKeyToEnum = (key: string): string => {
+    const typeMap: Record<string, string> = {
+      TECHNICAL: GrievanceType.TECHNICAL,
+      NON_TECHNICAL: GrievanceType.NON_TECHNICAL,
+      OTHER: GrievanceType.OTHER,
+    };
+    return typeMap[key] || key;
+  };
 
-  // Calculate average resolve time (mock calculation)
-  const averageResolveTime = '12 hours 10 min 60 sec';
-
-  // Group grievances by type
-  const grievancesByType = grievances.reduce((acc: any, grievance: any) => {
-    const type = grievance.type || GrievanceType.OTHER;
-    acc[type] = (acc[type] || 0) + 1;
-    return acc;
-  }, {});
-
-  // Group grievances by status
-  const grievancesByStatus = grievances.reduce((acc: any, grievance: any) => {
-    const status = grievance.status || GrievanceStatus.NEW;
-    acc[status] = (acc[status] || 0) + 1;
-    return acc;
-  }, {});
+  const mapStatusKeyToEnum = (key: string): string => {
+    const statusMap: Record<string, string> = {
+      NEW: GrievanceStatus.NEW,
+      UNDER_REVIEW: GrievanceStatus.UNDER_REVIEW,
+      RESOLVED: GrievanceStatus.RESOLVED,
+      CLOSED: GrievanceStatus.CLOSED,
+    };
+    return statusMap[key] || key;
+  };
 
   // Convert to chart data format for PieChart component using constants
   const typeChartData = Object.entries(grievancesByType).map(
     ([name, value]) => {
-      const typeConstant = grievanceType.find((t) => t.value === name);
+      const enumValue = mapTypeKeyToEnum(name);
+      const typeConstant = grievanceType.find((t) => t.value === enumValue);
       return {
         label: typeConstant?.label || name,
         value: value as number,
@@ -101,7 +85,8 @@ export default function GrievanceOverview({
 
   const statusChartData = Object.entries(grievancesByStatus).map(
     ([name, value]) => {
-      const statusConstant = grievanceStatus.find((s) => s.value === name);
+      const enumValue = mapStatusKeyToEnum(name);
+      const statusConstant = grievanceStatus.find((s) => s.value === enumValue);
       return {
         label: statusConstant?.label || name,
         value: value as number,
@@ -109,14 +94,16 @@ export default function GrievanceOverview({
     },
   );
 
-  // Get colors for charts using original enum values
-  const typeColors = Object.entries(grievancesByType).map(
-    ([name, _]) => typeColorsMap[name] || '#CCCCCC',
-  );
+  // Get colors for charts using mapped enum values
+  const typeColors = Object.entries(grievancesByType).map(([name, _]) => {
+    const enumValue = mapTypeKeyToEnum(name);
+    return typeColorsMap[enumValue] || '#CCCCCC';
+  });
 
-  const statusColors = Object.entries(grievancesByStatus).map(
-    ([name, _]) => statusColorsMap[name] || '#CCCCCC',
-  );
+  const statusColors = Object.entries(grievancesByStatus).map(([name, _]) => {
+    const enumValue = mapStatusKeyToEnum(name);
+    return statusColorsMap[enumValue] || '#CCCCCC';
+  });
 
   // Stats for DataCard components
   const stats = [
@@ -169,9 +156,10 @@ export default function GrievanceOverview({
           return (
             <DataCard
               title={stat.label}
-              number={stat.value}
+              number={stat.value as string}
               className="rounded-sm w-full"
               key={stat.label}
+              truncate={stat.label === 'Average Resolve Time' ? false : true}
             />
           );
         })}

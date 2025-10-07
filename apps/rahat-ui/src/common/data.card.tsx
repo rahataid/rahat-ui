@@ -29,6 +29,7 @@ type CardProps = {
   badge?: boolean;
   infoIcon?: boolean;
   infoTooltip?: string;
+  truncate?: boolean;
 };
 
 export function DataCard({
@@ -44,6 +45,7 @@ export function DataCard({
   badge,
   infoIcon,
   infoTooltip,
+  truncate = true,
 }: CardProps) {
   console.log(subtitle);
   return (
@@ -108,12 +110,11 @@ export function DataCard({
             <TableLoader />
           ) : (
             <>
-              {number && number?.length > 6 ? (
+              {number && number?.length > 6 && truncate ? (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div
-                        // className="text-4xl font-semibold text-primary truncate w-52"
                         className={`${
                           title === 'Created By' ? 'text-xl ' : 'text-3xl'
                         } font-semibold text-primary truncate w-52`}
@@ -128,7 +129,9 @@ export function DataCard({
                 <div
                   className={`${
                     title === 'Created By' ? 'text-xl' : 'text-3xl'
-                  }  font-semibold text-primary truncate w-52`}
+                  } font-semibold text-primary ${
+                    truncate ? 'truncate w-52' : ''
+                  }`}
                 >
                   {number}
                 </div>

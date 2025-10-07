@@ -161,36 +161,19 @@ const GrievanceInfo = ({ grievance }: IProps) => {
             </label>
             <div className="mt-2 flex flex-wrap gap-2">
               {grievance?.tags && grievance.tags.length > 0 ? (
-                grievance.tags.map((tag: any, index: number) => (
+                grievance.tags.map((tag: string, index: number) => (
                   <Badge
                     key={index}
                     variant="secondary"
                     className="bg-gray-100 text-gray-700 border-gray-200"
                   >
-                    {typeof tag === 'string' ? tag : tag.text || tag.id}
+                    {tag}
                   </Badge>
                 ))
               ) : (
-                <>
-                  <Badge
-                    variant="secondary"
-                    className="bg-gray-100 text-gray-700 border-gray-200"
-                  >
-                    Tag1
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className="bg-gray-100 text-gray-700 border-gray-200"
-                  >
-                    Tag2
-                  </Badge>
-                  <Badge
-                    variant="secondary"
-                    className="bg-gray-100 text-gray-700 border-gray-200"
-                  >
-                    Tag3
-                  </Badge>
-                </>
+                <span className="text-sm text-gray-500 italic">
+                  No tags assigned
+                </span>
               )}
             </div>
           </div>

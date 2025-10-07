@@ -135,8 +135,8 @@ export default function EditGrievance() {
         tags,
       } = grievanceData.data;
 
-      const sanitizedTags = (tags || []).map((a) => ({
-        id: a,
+      const sanitizedTags = (tags || []).map((a, index) => ({
+        id: `${a}-${index}`, // Use unique ID with index to handle duplicates
         text: a,
       }));
 
@@ -172,8 +172,8 @@ export default function EditGrievance() {
         tags,
       } = grievanceData.data;
 
-      const sanitizedTags = (tags || []).map((a) => ({
-        id: a,
+      const sanitizedTags = (tags || []).map((a, index) => ({
+        id: `${a}-${index}`, // Use unique ID with index to handle duplicates
         text: a,
       }));
 
@@ -246,9 +246,11 @@ export default function EditGrievance() {
     if (e.key === 'Enter') {
       // Prevent form submission on Enter
       e.preventDefault();
+      console.log('unsavedTag', unsavedTag);
+      console.log('variationTags', variationTags);
       if (unsavedTag.trim() !== '') {
         const newTag: Tag = {
-          id: new Date().getTime().toString(),
+          id: `new-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           text: unsavedTag.trim(),
         };
         const updatedTags = [...variationTags, newTag];

@@ -35,6 +35,7 @@ type IProps = {
     reporterContact?: string;
     createdAt?: string;
     updatedAt?: string;
+    tags?: string[];
   };
   closeSecondPanel: VoidFunction;
 };
@@ -220,15 +221,17 @@ export default function GrievanceDetailSplitView({
               Tags
             </div>
             <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary" className="text-xs">
-                Tag1
-              </Badge>
-              <Badge variant="secondary" className="text-xs">
-                Tag2
-              </Badge>
-              <Badge variant="secondary" className="text-xs">
-                Tag3
-              </Badge>
+              {grievance?.tags && grievance.tags.length > 0 ? (
+                grievance.tags.map((tag: string, index: number) => (
+                  <Badge key={index} variant="secondary" className="text-xs">
+                    {tag}
+                  </Badge>
+                ))
+              ) : (
+                <span className="text-sm text-muted-foreground">
+                  No tags assigned
+                </span>
+              )}
             </div>
           </div>
         </div>

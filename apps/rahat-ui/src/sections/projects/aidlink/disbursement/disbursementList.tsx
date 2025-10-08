@@ -100,13 +100,13 @@ export function DisbursementList({ status }: Props) {
   return (
     <div className="p-4 border bg-card rounded-sm mt-4">
       {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-2 mb-4">
-        <SearchInput
+      <div className="flex justify-end flex-col sm:flex-row gap-2 mb-4">
+        {/* <SearchInput
           className="w-full"
           name="disbursements"
           value={searchQuery}
           onSearch={(e) => setSearchQuery(e.target.value)}
-        />
+        /> */}
         <Select value={typeFilter} onValueChange={setTypeFilter}>
           <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Select Type" />
@@ -211,7 +211,11 @@ export function DisbursementList({ status }: Props) {
                         <p className="text-gray-500 mb-1 text-xs tracking-widest font-semibold">
                           PER BENEFICIARY
                         </p>
-                        <p className="text-sm">{disbursement.amount} USDC</p>
+                        <p className="text-sm">
+                          {disbursement?.amount /
+                            disbursement?.totalBeneficiaries}{' '}
+                          USDC
+                        </p>
                       </div>
                     )}
                     <div>

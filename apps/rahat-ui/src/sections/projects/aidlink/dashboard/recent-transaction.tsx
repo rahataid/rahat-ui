@@ -45,6 +45,7 @@ const RecentTransaction = () => {
       contractAddress,
     },
     pause: !contractAddress,
+    requestPolicy: 'cache-first',
   });
 
     const {data:tokenNumber} = useReadRahatTokenDecimals({address:contractSettings?.rahattoken?.address})

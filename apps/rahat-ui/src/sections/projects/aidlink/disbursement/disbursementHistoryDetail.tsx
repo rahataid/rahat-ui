@@ -33,6 +33,7 @@ import { useAccount, useChainId } from 'wagmi';
 import { toast } from 'react-toastify';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { useReadRahatTokenDecimals } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatToken';
+import { SAFE_WALLET } from 'apps/rahat-ui/src/constants/safeWallet';
 
 export default function DisbursementHistoryDetail() {
   const { id: projectUUID, disbursementId } = useParams() as {
@@ -54,13 +55,15 @@ export default function DisbursementHistoryDetail() {
   const chainSettings = useProjectSettingsStore(
     (state) => state?.settings?.[projectUUID]?.['BLOCKCHAIN'],
   );
-  const {data:tokenNumber} = useReadRahatTokenDecimals({address:contractSettings?.rahattoken?.address})
-
+  const { data: tokenNumber } = useReadRahatTokenDecimals({
+    address: contractSettings?.rahattoken?.address,
+  });
 
   const { isConnected } = useAccount();
   const chainId = useChainId();
+  const safeNetwork = SAFE_WALLET[Number(chainSettings.chainid)];
 
-  const { data: disbursement } = useGetDisbursement(
+  const { data: disbursement, refetch } = useGetDisbursement(
     projectUUID,
     disbursementId,
   );
@@ -169,7 +172,8 @@ export default function DisbursementHistoryDetail() {
     });
 
     if (result) {
-      setExecutionResult(result);
+      refetch();
+      setExecutionResult(disbursement);
       setIsModalOpen(true);
     }
   };
@@ -179,6 +183,8 @@ export default function DisbursementHistoryDetail() {
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         data={executionResult}
+        safeNetwork={safeNetwork}
+        safeAddress={safeWallet}
       />
       <div className="p-4 bg-gray-50">
         {/* Header */}
@@ -201,18 +207,18 @@ export default function DisbursementHistoryDetail() {
             {!approvals?.isExecuted &&
               disbursement?.status !== 'COMPLETED' &&
               approvals?.approvals?.length > 0 && (
-                <Link
-                  href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
-                  target="_blank"
-                >
-                  <div className="px-4 py-1 rounded-full flex items-center gap-2 bg-blue-50 hover:bg-blue-100">
-                    <span className="text-[10px]/4 tracking-widest font-semibold text-primary">
-                      SAFEWALLET
-                    </span>
-                    <BadgeCheck className="w-4 h-4 fill-primary text-white" />
-                  </div>
-                </Link>
-              )}
+            <Link
+              href={`https://app.safe.global/transactions/queue?safe=${safeNetwork}:${safeWallet}`}
+              target="_blank"
+            >
+              <div className="px-4 py-1 rounded-full flex items-center gap-2 bg-blue-50 hover:bg-blue-100">
+                <span className="text-[10px]/4 tracking-widest font-semibold text-primary">
+                  SAFEWALLET
+                </span>
+                <BadgeCheck className="w-4 h-4 fill-primary text-white" />
+              </div>
+            </Link>
+            )}
           </div>
         </div>
 

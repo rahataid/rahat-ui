@@ -124,7 +124,7 @@ export default function BeneficiaryGroupPage() {
     <div className="p-4 space-y-4 bg-gray-50">
       {/* Header */}
       <Heading
-        title="Rumsan Beneficiary Group"
+        title={group?.name || 'N/A'}
         description="Detailed view of the selected beneficiary group"
         backBtn
         path={`/projects/aidlink/${projectUUID}/beneficiary?tab=beneficiaryGroups`}

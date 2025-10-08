@@ -14,7 +14,12 @@ import {
 } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import {
+  ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import { useSelectBeneficiaryColumns } from './useSelectBeneficiaryColumns';
 import { toast } from 'react-toastify';
 import {
@@ -48,15 +53,17 @@ export default function CreateBeneficiaryGroup() {
 
   const {
     pagination,
-    filters,
     setNextPage,
     setPrevPage,
     setPerPage,
     selectedListItems,
     setSelectedListItems,
-    setFilters,
     setPagination,
   } = usePagination();
+
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
 
   console.log({ selectedListItems });
 
@@ -66,7 +73,6 @@ export default function CreateBeneficiaryGroup() {
     order: 'desc',
     sort: 'createdAt',
     projectUUID,
-    ...filters,
   });
 
   const beneficiaries = projectBeneficiaries.data?.response?.data || [];
@@ -93,8 +99,11 @@ export default function CreateBeneficiaryGroup() {
     getCoreRowModel: getCoreRowModel(),
     onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => row.uuid,
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnFiltersChange: setColumnFilters,
     state: {
       rowSelection: selectedListItems,
+      columnFilters,
     },
   });
 
@@ -179,7 +188,12 @@ export default function CreateBeneficiaryGroup() {
               {/* Search Input */}
               <SearchInput
                 name="beneficiary name"
-                onSearch={(e) => console.log(e.target.value)}
+                value={
+                  (table.getColumn('name')?.getFilterValue() as string) ?? ''
+                }
+                onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+                  table.getColumn('name')?.setFilterValue(event.target.value)
+                }
               />
 
               {/* Beneficiary Table */}
@@ -190,6 +204,7 @@ export default function CreateBeneficiaryGroup() {
                 handlePageSizeChange={setPerPage}
                 handlePrevPage={setPrevPage}
                 perPage={pagination.perPage}
+                setPagination={setPagination}
                 meta={meta || { total: 0, currentPage: 0 }}
               />
             </div>

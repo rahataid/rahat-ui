@@ -65,12 +65,12 @@ export default function BeneficiaryDetailsView() {
           ? 'done'
           : 'pending',
       },
-      { label: 'Approval Process', date: '', status: 'pending' },
       {
-        label: 'Disbursement Execution',
+        label: 'Approval Process',
         date: disbursementDetails?.disbursementExecution,
         status: disbursementDetails?.disbursementExecution ? 'done' : 'pending',
       },
+      { label: 'Disbursement Execution', date: disbursementDetails?.latestDisbursementStatus==='COMPLETED' ? disbursementDetails?.latestUpdatedDate:'N/A', status: disbursementDetails?.latestDisbursementStatus==='COMPLETED'?'done': 'pending' },
       // { label: 'SMS Notification', date: '', status: 'pending' },
       { label: 'Offramping', date: '', status: 'pending' },
     ],

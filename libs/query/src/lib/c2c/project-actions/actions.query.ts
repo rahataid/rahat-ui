@@ -102,7 +102,7 @@ export const usePendingDisbursements = (projectUUID: UUID) => {
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'c2cProject.disbursements.pending.get',
+          action: 'aidlink.disbursements.pending.get',
           payload: {},
         },
       });

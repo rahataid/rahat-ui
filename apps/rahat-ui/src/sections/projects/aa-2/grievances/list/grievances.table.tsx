@@ -139,11 +139,14 @@ function GrievancesTable() {
     if (key === 'priority') {
       return grievancePriority.find((p) => p.value === value)?.label || value;
     }
+    if (key === 'type') {
+      return grievanceType.find((t) => t.value === value)?.label || value;
+    }
     return value;
   };
 
   // Define filter display order
-  const filterOrder = ['title', 'status', 'priority'];
+  const filterOrder = ['title', 'status', 'priority', 'type'];
 
   // Sort filters according to the defined order
   const getOrderedFilters = () => {

@@ -454,6 +454,7 @@ export const useDisburseTokenUsingMultisig = () => {
       disbursementType,
       beneficiaryAddresses,
       beneficiaryGroup,
+      totalAmount,
       details,
     }: {
       amount: string;
@@ -461,6 +462,7 @@ export const useDisburseTokenUsingMultisig = () => {
       disbursementType: DisbursementSelectionType;
       beneficiaryAddresses?: `0x${string}`[];
       beneficiaryGroup?: UUID;
+      totalAmount?:string;
       details?: string;
     }) => {
       // Step 1: Create Safe Transaction
@@ -469,7 +471,7 @@ export const useDisburseTokenUsingMultisig = () => {
         data: {
           action: 'c2cProject.createSafeTransaction',
           payload: {
-            amount,
+            amount: totalAmount,
           },
         },
       });

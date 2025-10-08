@@ -4,9 +4,10 @@ import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useSwal } from 'libs/query/src/swal';
-import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
+import { PROJECT_SETTINGS_KEYS, TAGS } from 'libs/query/src/config';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { Pagination } from '@rumsan/sdk/types';
+import { useRSQuery } from '@rumsan/react-query';
 
 export enum PayoutType {
   FSP = 'FSP',
@@ -416,5 +417,65 @@ export const usePayoutExportLogs = ({
     enabled: !!projectUUID,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
+  });
+};
+
+export const useVerifyManualPayout = () => {
+  const queryClient = useQueryClient();
+  const { rumsanService } = useRSQuery();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-right',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async ({
+      selectedFile,
+      doctype,
+      projectId,
+      payload,
+    }: {
+      selectedFile: File;
+      doctype: string;
+      projectId?: UUID;
+      payload?: {
+        payoutUUID: string;
+      };
+    }) => {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('doctype', doctype);
+      formData.append('action', 'aa.payout.verifyManualPayout');
+      if (payload) {
+        formData.append('payload', JSON.stringify(payload));
+      }
+
+      const response = await rumsanService.client.post(
+        `/projects/${projectId}/upload`,
+        formData,
+      );
+      return response?.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [TAGS.VERFIY_MANUAL_PAYOUT] });
+      toast.fire({
+        icon: 'success',
+        title: 'Manual payout verified',
+      });
+    },
+    onError: (error: any) => {
+      console.error('Upload error', error);
+      const message: string =
+        error?.response?.data?.message || error?.message || '';
+
+      toast.fire({
+        icon: 'error',
+        title: 'Verification Failed',
+        text: message,
+      });
+    },
   });
 };

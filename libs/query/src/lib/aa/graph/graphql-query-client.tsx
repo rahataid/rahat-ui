@@ -1,6 +1,6 @@
 'use client';
 import { cacheExchange, Client, fetchExchange, Provider } from 'urql';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useProjectSettingsStore } from '../../projects';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 import { useParams } from 'next/navigation';
@@ -17,14 +17,11 @@ const GarphQlProvider = ({ children }: any) => {
       (s) => s.settings?.[uuid as UUID]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH]?.url,
     ) || '';
 
-  const client = useMemo(
-    () =>
-      new Client({
-        url: subgraphURL || backupSubgraphURL,
-        exchanges: [cacheExchange, fetchExchange],
-      }),
-    [subgraphURL],
-  );
+  const client = new Client({
+    url: subgraphURL || backupSubgraphURL,
+    exchanges: [cacheExchange, fetchExchange],
+    requestPolicy: 'cache-first',
+  });
 
   return <Provider value={client}>{children}</Provider>;
 };

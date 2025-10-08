@@ -16,6 +16,8 @@ interface IProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   data: any;
+  safeNetwork:string;
+  safeAddress:`0x$${string}`;
 }
 
 interface StatusStep {
@@ -29,6 +31,8 @@ export function TransactionInitiatedModal({
   open,
   onOpenChange,
   data,
+  safeNetwork,
+  safeAddress
 }: IProps) {
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
@@ -124,7 +128,7 @@ export function TransactionInitiatedModal({
               View Disbursement Details
             </Button>
             <Link
-              href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
+              href={`https://app.safe.global/transactions/queue?safe=${safeNetwork}:${safeAddress}`}
               target="_blank"
               className="flex-1"
             >

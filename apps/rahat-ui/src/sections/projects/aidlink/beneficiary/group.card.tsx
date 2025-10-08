@@ -60,7 +60,7 @@ export default function GroupCard({ group, projectUUID }: GroupProps) {
               View Details
             </Button>
           </Link>
-          <Button variant="outline" size="sm">
+          {/* <Button variant="outline" size="sm">
             <Edit className="h-4 w-4" />
           </Button>
           <Button
@@ -69,7 +69,7 @@ export default function GroupCard({ group, projectUUID }: GroupProps) {
             className="text-red-600 hover:text-red-700 bg-transparent"
           >
             <Trash2 className="h-4 w-4" />
-          </Button>
+          </Button> */}
         </div>
       </CardContent>
     </Card>

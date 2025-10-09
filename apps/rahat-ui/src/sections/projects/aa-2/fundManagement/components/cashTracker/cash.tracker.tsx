@@ -185,7 +185,7 @@ export function CashTracker() {
               balance: Number(Number(entity.balance).toFixed(2)) || 0, // Default to 0 if balance is not available
               received:
                 entity.alias === 'Beneficiary'
-                  ? beneficiaryBalance?.data
+                  ? beneficiaryBalance?.data || 0
                   : Number(Number(entity.received).toFixed(2)) || 0,
               sent: Number(Number(entity.sent).toFixed(2)) || 0,
               date: entity.date || null,
@@ -198,7 +198,7 @@ export function CashTracker() {
     };
     setBalance([]);
     fetchBalances();
-  }, [transactions]);
+  }, [transactions, beneficiaryBalance]);
   balances.find((b) => b.alias === currentEntity?.alias)?.balance;
 
   return (

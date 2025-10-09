@@ -81,6 +81,7 @@ const TransactionInfoSection = ({
       skip: 0,
     },
     pause: !contractAddress,
+    requestPolicy: 'cache-and-network',
   });
 
   const {data:tokenNumber} = useReadRahatTokenDecimals({address:contractSettings?.rahattoken?.address})

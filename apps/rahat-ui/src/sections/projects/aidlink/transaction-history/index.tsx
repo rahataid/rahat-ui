@@ -82,6 +82,7 @@ const TransactionHistory = () => {
       skip: skip,
     },
     pause: !contractAddress,
+    requestPolicy: 'cache-first',
   });
 
   useGraphQLErrorHandler({

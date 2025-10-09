@@ -16,8 +16,8 @@ export function SystemHealthCard({
   sources,
 }: HealthCacheData) {
   const statusColors: any = {
-    UP: 'bg-green-50 text-green-700',
-    DOWN: 'bg-red-50 text-red-700',
+    HEALTHY: 'bg-green-50 text-green-700',
+    UNHEALTHY: 'bg-red-50 text-red-700',
     DEGRADED: 'bg-yellow-50 text-yellow-700',
   };
 
@@ -34,10 +34,9 @@ export function SystemHealthCard({
     }
   };
 
-  const calcUP = sources?.filter((s) => s.status === 'UP').length;
-  const calcDOWN = sources?.filter((s) => s.status === 'DOWN').length;
-
-  console.log(calcUP, calcDOWN);
+  const calcHEALTHY = sources?.filter((s) => s.status === 'HEALTHY').length;
+  const calcUNHEALTHY = sources?.filter((s) => s.status === 'UNHEALTHY').length;
+  const calcDEGRADED = sources?.filter((s) => s.status === 'DEGRADED').length;
   return (
     <Card
       className={`border ${getBgColor(
@@ -77,7 +76,7 @@ export function SystemHealthCard({
                         available
                       </li>
                       <li>
-                        <span className=" text-red-600">UNHEALTHY:</span>{' '}
+                        <span className=" text-red-600">UNHEALTHY:</span>
                         Critical sources are DOWN
                       </li>
                     </ul>
@@ -110,11 +109,16 @@ export function SystemHealthCard({
               <span className="flex items-center  text-xs text-green-500">
                 {' '}
                 <CheckCircle size={13} className="pr-1 w-4 h-4" />
-                {calcUP}/{sources?.length} sources UP
+                {calcHEALTHY}/{sources?.length} sources HEALTHY
               </span>
               <span className="flex items-center  text-xs text-red-500">
                 <X size={13} className="pr-1 w-4 h-4" />
-                {calcDOWN} sources DOWN
+                {calcUNHEALTHY} sources UNHEALTHY
+              </span>
+
+              <span className="flex items-center  text-xs text-red-500">
+                <X size={13} className="pr-1 w-4 h-4" />
+                {calcDEGRADED} sources DEGRADED
               </span>
             </div>
 

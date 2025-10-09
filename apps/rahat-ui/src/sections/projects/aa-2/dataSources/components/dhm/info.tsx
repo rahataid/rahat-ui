@@ -1,5 +1,10 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Heading } from 'apps/rahat-ui/src/common';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import {
+  renderCardColor,
+  renderStatusColor,
+} from 'apps/rahat-ui/src/utils/getColorCard';
 import { Globe, MapPin, RadioTower, TrendingUp } from 'lucide-react';
 import React from 'react';
 interface InfoProp {
@@ -50,16 +55,6 @@ export function Info({ riverWatch, updatedAt }: InfoProp) {
     [riverWatch],
   );
 
-  const renderCardColor = (status: string) => {
-    const statusColorMap: Record<string, string> = {
-      'BELOW WARNING LEVEL': 'bg-green-100 border-green-500',
-      DANGER_LEVEL: 'bg-red-100 border-red-500',
-      WARNING_LEVEL: 'bg-yellow-100 border-yellow-500',
-    };
-
-    return statusColorMap[status] || '';
-  };
-
   return (
     <div className="flex justify-between space-x-4">
       <div className="p-4 rounded-sm border shadow w-full">
@@ -101,9 +96,14 @@ export function Info({ riverWatch, updatedAt }: InfoProp) {
         </p>
         <p className="text-sm/6 font-medium">Water Level</p>
         <p className="text-gray-500 text-sm/6">
-          {new Date(riverWatch?.waterLevel?.datetime).toLocaleString()}
+          {dateFormat(
+            riverWatch?.waterLevel?.datetime,
+            'eee, MMM d yyyy, hh:mm:ss a',
+          )}
         </p>
-        <Badge>{riverWatch?.status}</Badge>
+        <Badge className={`${renderStatusColor(riverWatch?.status)}`}>
+          {riverWatch?.status}
+        </Badge>
       </div>
     </div>
   );

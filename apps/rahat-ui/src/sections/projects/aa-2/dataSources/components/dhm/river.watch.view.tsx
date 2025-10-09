@@ -5,6 +5,11 @@ import {
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Heading, NoResult, TableLoader } from 'apps/rahat-ui/src/common';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import {
+  renderCardColor,
+  renderStatusColor,
+} from 'apps/rahat-ui/src/utils/getColorCard';
 import { UUID } from 'crypto';
 import { format } from 'date-fns';
 import { MapPin, RadioTower, Skull, TriangleAlert } from 'lucide-react';
@@ -23,18 +28,16 @@ export default function RiverWatchView() {
   const { data: riverWatch, isLoading } = useDhmWaterLevels(projectId, {
     riverBasin:
       settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-      'river_basin'
+        'river_basin'
       ],
     type: 'POINT',
     from: formattedDate,
     to: formattedDate,
   });
 
-  const updatedAt = riverWatch?.updatedAt
+  const updatedAt = riverWatch?.updatedAt;
 
   const riverWatchInfoList = riverWatch?.info ?? [];
-
-
 
   // modification required to handle multiple rivers
   const primaryRiverWatchInfo = riverWatchInfoList[0] ?? null;
@@ -64,16 +67,6 @@ export default function RiverWatchView() {
     ],
     [riverWatch],
   );
-
-  const renderCardColor = (status: string) => {
-    const statusColorMap: Record<string, string> = {
-      'BELOW WARNING LEVEL': 'bg-green-100 border-green-500',
-      DANGER_LEVEL: 'bg-red-100 border-red-500',
-      WARNING_LEVEL: 'bg-yellow-100 border-yellow-500',
-    };
-
-    return statusColorMap[status] || '';
-  };
 
   if (isLoading) {
     return <TableLoader />;
@@ -119,7 +112,6 @@ export default function RiverWatchView() {
                   <div>
                     <p className="text-sm/6 font-medium mb-1">{d.label}</p>
                     <p className="text-sm/4 text-gray-600">{d.value}</p>
-
                   </div>
                 </div>
               );
@@ -136,11 +128,16 @@ export default function RiverWatchView() {
           </p>
           <p className="text-sm/6 font-medium">Water Level</p>
           <p className="text-gray-500 text-sm/6">
-            {new Date(
+            {dateFormat(
               primaryRiverWatchInfo?.waterLevel?.datetime,
-            ).toLocaleString()}
+              'eee, MMM d yyyy, hh:mm:ss a',
+            )}
           </p>
-          <Badge>{primaryRiverWatchInfo?.status}</Badge>
+          <Badge
+            className={`${renderStatusColor(primaryRiverWatchInfo?.status)}`}
+          >
+            {primaryRiverWatchInfo?.status}
+          </Badge>
         </div>
       </div>
     </div>

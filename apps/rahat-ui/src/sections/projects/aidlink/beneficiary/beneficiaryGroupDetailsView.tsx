@@ -9,6 +9,7 @@ import {
   getPaginationRowModel,
   type ColumnDef,
   flexRender,
+  ColumnFiltersState,
 } from '@tanstack/react-table';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -61,8 +62,9 @@ export default function BeneficiaryGroupPage() {
 
   const { data: group } = useC2CSingleBeneficiaryGroup(projectUUID, groupId);
 
-  const [globalFilter, setGlobalFilter] = React.useState<string>('');
-
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
   const tableData = React.useMemo(
     () =>
       group?.groupedBeneficiaries?.map((ben: any) => ({
@@ -81,9 +83,9 @@ export default function BeneficiaryGroupPage() {
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     state: {
-      globalFilter,
+      columnFilters,
     },
-    onGlobalFilterChange: setGlobalFilter,
+    onColumnFiltersChange: setColumnFilters,
     initialState: {
       pagination: {
         pageSize: 10,
@@ -122,7 +124,7 @@ export default function BeneficiaryGroupPage() {
     <div className="p-4 space-y-4 bg-gray-50">
       {/* Header */}
       <Heading
-        title="Rumsan Beneficiary Group"
+        title={group?.name || 'N/A'}
         description="Detailed view of the selected beneficiary group"
         backBtn
         path={`/projects/aidlink/${projectUUID}/beneficiary?tab=beneficiaryGroups`}
@@ -151,7 +153,10 @@ export default function BeneficiaryGroupPage() {
         {/* Search */}
         <SearchInput
           name="name"
-          onSearch={(event) => setGlobalFilter(String(event.target.value))}
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+            table.getColumn('name')?.setFilterValue(event.target.value)
+          }
         />
 
         {/* Table */}

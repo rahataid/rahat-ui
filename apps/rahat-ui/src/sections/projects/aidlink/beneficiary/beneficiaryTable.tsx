@@ -1,20 +1,16 @@
 'use client';
 
 import * as React from 'react';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 
 import {
   ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 
@@ -30,20 +26,8 @@ function BeneficiaryTable() {
   const { id } = useParams();
   const uuid = id as UUID;
 
-  const {
-    pagination,
-    filters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    setFilters,
-    setPagination,
-  } = usePagination();
-  const searchParams = useSearchParams();
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
+    usePagination();
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
@@ -54,7 +38,6 @@ function BeneficiaryTable() {
     order: 'desc',
     sort: 'createdAt',
     projectUUID: uuid,
-    ...filters,
   });
 
   const table = useReactTable({
@@ -62,41 +45,23 @@ function BeneficiaryTable() {
     data: projectBeneficiaries?.data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setSelectedListItems,
-    onSortingChange: setSorting,
-    getRowId: (row) => row.uuid,
+    onColumnFiltersChange: setColumnFilters,
     state: {
-      sorting,
       columnFilters,
-      columnVisibility,
-      rowSelection: selectedListItems,
     },
   });
 
-  const handleSearch = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
-      const value = event?.target?.value ?? '';
-      setFilters({ ...filters, [key]: value });
-    },
-    [filters],
-  );
-  React.useEffect(() => {
-    if (searchParams.get('tab') === 'beneficiary') {
-      setFilters({});
-    }
-  }, [searchParams]);
   return (
     <div className="p-4 rounded-sm border">
       <div className="flex mb-2 gap-2">
         <SearchInput
           className="w-full"
           name="name"
-          onSearch={(e) => handleSearch(e, 'search')}
-          value={filters?.search || ''}
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+            table.getColumn('name')?.setFilterValue(event.target.value)
+          }
         />
       </div>
       <DemoTable

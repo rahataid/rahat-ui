@@ -29,7 +29,8 @@ export default function ProjectLayoutRoot({
   useProjectContractSettings(uuid);
   useAAProjectSettingsHazardType(uuid);
   useProjectSubgraphSettings(uuid);
-  useEntities(uuid);
+  useEntities(uuid, PROJECT_SETTINGS_KEYS.ENTITIES);
+  useEntities(uuid, PROJECT_SETTINGS_KEYS.INKIND_ENTITIES);
 
   // const dataSources = useProjectSettingsStore(
   //   (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]);

@@ -120,6 +120,27 @@ export const useGetTransactions = (projectUUID: UUID) => {
   return query;
 };
 
+export const useGetBeneficiaryBalance = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['aaProject.beneficiary.getBalance', projectUUID],
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
+        data: {
+          action: 'aaProject.beneficiary.getBalance',
+          payload: {},
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
 export const useGetBalance = (projectUUID: UUID, smartAddress: string) => {
   const q = useProjectAction();
 

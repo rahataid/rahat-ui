@@ -35,7 +35,7 @@ export default function InitiateInKindTransfer({}: {}) {
   const router = useRouter();
   const initiateInKindTransfer = useInitateInkindTransfer(id);
   const stakeholders = useProjectSettingsStore(
-    (s) => s.settings?.[id]?.[PROJECT_SETTINGS_KEYS.ENTITIES],
+    (s) => s.settings?.[id]?.[PROJECT_SETTINGS_KEYS.INKIND_ENTITIES],
   );
 
   const { data: currentUser } = useUserCurrentUser();

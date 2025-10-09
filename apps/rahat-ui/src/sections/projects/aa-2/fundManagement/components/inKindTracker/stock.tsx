@@ -33,7 +33,7 @@ export default function Stock({}: {}) {
   const router = useRouter();
   const initiateInkindTransfer = useInitateInkindTransfer(id);
   const stakeholders = useProjectSettingsStore(
-    (s) => s.settings?.[id]?.[PROJECT_SETTINGS_KEYS.ENTITIES],
+    (s) => s.settings?.[id]?.[PROJECT_SETTINGS_KEYS.INKIND_ENTITIES],
   );
 
   const { data: currentUser } = useUserCurrentUser();

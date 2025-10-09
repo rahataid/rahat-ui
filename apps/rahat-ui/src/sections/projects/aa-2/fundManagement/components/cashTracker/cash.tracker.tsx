@@ -11,6 +11,7 @@ import {
 import {
   ConfirmReceipt,
   PROJECT_SETTINGS_KEYS,
+  useGetBeneficiaryBalance,
   useGetCash,
   useGetTransactions,
   useProjectSettingsStore,
@@ -62,6 +63,7 @@ export function CashTracker() {
     (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.ENTITIES],
   );
   const { data: transactions, isFetched } = useGetTransactions(uuid);
+  const { data: beneficiaryBalance } = useGetBeneficiaryBalance(uuid);
   const { data: currentUser } = useUserCurrentUser();
   const currentEntity = useMemo(() => {
     return entities?.find((e: Entities) =>
@@ -181,7 +183,10 @@ export function CashTracker() {
             {
               alias: entity.alias,
               balance: Number(Number(entity.balance).toFixed(2)) || 0, // Default to 0 if balance is not available
-              received: Number(Number(entity.received).toFixed(2)) || 0,
+              received:
+                entity.alias === 'Beneficiary'
+                  ? beneficiaryBalance?.data
+                  : Number(Number(entity.received).toFixed(2)) || 0,
               sent: Number(Number(entity.sent).toFixed(2)) || 0,
               date: entity.date || null,
             },

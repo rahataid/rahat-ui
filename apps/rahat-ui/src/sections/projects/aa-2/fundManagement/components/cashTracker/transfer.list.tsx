@@ -44,8 +44,6 @@ function TransferList({
         </div>
       ) : (
         transfers?.map((transfer) => {
-          console.log(transfer, currentEntity?.alias);
-
           const isPending = transfer.status === 'pending';
           const isConfirmed =
             transfer.status === 'sent' || transfer.status === 'received';
@@ -109,7 +107,7 @@ function TransferList({
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900 mt-1">
-                        {transfer.amount.toLocaleString()}
+                        Rs. {transfer.amount.toLocaleString()}
                       </p>
 
                       {canConfirm &&

@@ -39,7 +39,7 @@ import {
 } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
 import { UUID } from 'crypto';
 import { Tag, TagInput } from 'emblor';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -96,9 +96,11 @@ type GrievanceFormValues = z.infer<typeof grievanceFormSchema>;
 export default function EditGrievance() {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const projectID = params?.id as UUID;
   const grievanceID = params?.uuid as UUID;
-  const grievanceListPath = `/projects/aa/${projectID}/grievances`;
+  const redirectToHomeTab = searchParams.get('tab') || 'list'; // Default to 'list' if no tab specified
+  const grievanceListPath = `/projects/aa/${projectID}/grievances?tab=${redirectToHomeTab}`;
   const [formKey, setFormKey] = React.useState(0);
 
   // Fetch grievance details

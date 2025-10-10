@@ -17,7 +17,7 @@ import { grievanceStatus } from 'apps/rahat-ui/src/constants/aa.grievances.const
 import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
 import { UUID } from 'crypto';
 import { Expand, X } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { PriorityChip, TypeChip } from '../components';
 
@@ -46,6 +46,9 @@ export default function GrievanceDetailSplitView({
 }: IProps) {
   const router = useRouter();
   const { id: projectId } = useParams() as { id: UUID };
+  const searchParams = useSearchParams();
+  const redirectToHomeTab = searchParams.get('tab') || 'list';
+  console.log('split view redirectToHomeTab', redirectToHomeTab);
 
   const [currentStatus, setCurrentStatus] = useState<string>(
     grievance?.status || 'CLOSED',
@@ -58,7 +61,9 @@ export default function GrievanceDetailSplitView({
   }, [grievance?.status]);
 
   const handleViewFull = () => {
-    router.push(`/projects/aa/${projectId}/grievances/${grievance?.uuid}`);
+    router.push(
+      `/projects/aa/${projectId}/grievances/${grievance?.uuid}?tab=${redirectToHomeTab}`,
+    );
     closeSecondPanel();
   };
 

@@ -86,5 +86,11 @@ export const defaultNavConfig: NavConfigDB = {
       icon: 'SmartphoneNfc',
       roles: ['ADMIN', 'MANAGER'],
     },
+    {
+      title: 'Grievances',
+      path: 'grievances',
+      icon: 'Coins',
+      roles: ['ADMIN', 'MANAGER'],
+    },
   ],
 };

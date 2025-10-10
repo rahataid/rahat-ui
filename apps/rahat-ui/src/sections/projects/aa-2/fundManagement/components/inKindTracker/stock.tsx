@@ -1,6 +1,5 @@
 import {
   PROJECT_SETTINGS_KEYS,
-  useGetInkindBalance,
   useInitateInkindTransfer,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
@@ -14,12 +13,10 @@ import {
 
 import { UUID } from 'crypto';
 import { useEffect, useMemo, useState } from 'react';
-import { Upload } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useUserCurrentUser } from '@rumsan/react-query';
 import { Entities } from './types';
 
@@ -54,12 +51,6 @@ export default function Stock({}: {}) {
   const donar = useMemo(() => {
     return stakeholders?.find((e: Entities) => e.alias === 'UNICEF Donor');
   }, [currentUser, stakeholders]);
-  const { data: balance } = useGetInkindBalance(
-    id,
-    currentEntity?.smartaccount || '',
-  );
-
-  const { data: budget } = useGetInkindBalance(id, donar?.smartaccount || '');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

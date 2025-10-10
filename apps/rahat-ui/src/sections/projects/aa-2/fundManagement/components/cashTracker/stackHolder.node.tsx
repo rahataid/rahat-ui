@@ -78,7 +78,7 @@ function StakeholderNode({
                 <p>
                   Claimed:{' '}
                   <span className="font-medium text-gray-900">
-                    Rs. {received.toLocaleString()}
+                    Rs. {received?.toLocaleString()}
                   </span>
                 </p>
               </div>
@@ -89,13 +89,13 @@ function StakeholderNode({
                 <p>
                   Received Balance:{' '}
                   <span className="font-medium text-gray-900">
-                    Rs. {received.toLocaleString()}
+                    Rs. {received?.toLocaleString()}
                   </span>
                 </p>
                 <p>
                   Remaining Balance:{' '}
                   <span className="font-medium text-gray-900">
-                    Rs. {balance.toLocaleString()}
+                    Rs. {balance?.toLocaleString()}
                   </span>
                 </p>
               </div>

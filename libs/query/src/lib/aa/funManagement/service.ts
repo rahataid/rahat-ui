@@ -99,6 +99,49 @@ export const useInitateFundTransfer = (projectUUID: UUID) => {
   });
 };
 
+export const useCreateBudget = (projectUUID: UUID) => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({ amount }: { amount: string }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.cash-tracker.createBudget',
+          payload: { amount },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Budget Created successfully.',
+        icon: 'success',
+      });
+      // Invalidate the transactions query to refresh the data
+      queryClient.invalidateQueries({
+        queryKey: ['aa.cash-tracker.getTransactions', projectUUID],
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while creating budget.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 export const useGetTransactions = (projectUUID: UUID) => {
   const q = useProjectAction();
 

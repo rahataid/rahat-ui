@@ -85,6 +85,7 @@ function GrievancesView() {
                           : 'Download Report'
                       }
                       variant="outline"
+                      className="px-3 py-2"
                     />
                   </div>
                 </TooltipTrigger>
@@ -105,6 +106,7 @@ function GrievancesView() {
                 router.push(`/projects/aa/${id}/grievances/add`)
               }
               name="Create Grievance"
+              className="px-3 py-2"
             />
           </RoleAuth>
         </div>

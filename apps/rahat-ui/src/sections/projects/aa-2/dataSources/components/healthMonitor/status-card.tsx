@@ -2,7 +2,6 @@
 import { SourceHealthData } from '@rahat-ui/query';
 import { cn } from '@rahat-ui/shadcn/src';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   HoverCard,
@@ -10,7 +9,10 @@ import {
   HoverCardTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/hover-card';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import {
+  dateFormat,
+  formatTimestamp,
+} from 'apps/rahat-ui/src/utils/dateFormate';
 import {
   Clock,
   Zap,
@@ -147,7 +149,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               <span>Last Checked</span>
             </div>
             <span className="text-sm text-card-foreground font-mono">
-              {dateFormat(data.last_checked) ?? '-'}
+              {formatTimestamp(data.last_checked) ?? '-'}
             </span>
           </div>
 

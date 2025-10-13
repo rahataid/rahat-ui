@@ -19,6 +19,7 @@ import {
   useGetDisbursementTransactions,
   useMultiSigDisburseToken,
   useProjectSettingsStore,
+  useSettingsStore,
 } from '@rahat-ui/query';
 import { Heading, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -34,6 +35,7 @@ import { toast } from 'react-toastify';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { useReadRahatTokenDecimals } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatToken';
 import { SAFE_WALLET } from 'apps/rahat-ui/src/constants/safeWallet';
+import { useReadRahatAccessManagerHasRole } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatAccessManager';
 
 export default function DisbursementHistoryDetail() {
   const { id: projectUUID, disbursementId } = useParams() as {
@@ -59,9 +61,19 @@ export default function DisbursementHistoryDetail() {
     address: contractSettings?.rahattoken?.address,
   });
 
-  const { isConnected } = useAccount();
+  const rahatAccessManagerAddress = useSettingsStore(
+    (state) => state.contracts?.RAHATACCESSMANAGER?.address,
+  );
+  const { isConnected, address } = useAccount();
   const chainId = useChainId();
   const safeNetwork = SAFE_WALLET[Number(chainSettings.chainid)];
+  const { data: rahatAccessManagerRole } = useReadRahatAccessManagerHasRole({
+    address: rahatAccessManagerAddress,
+    args: [BigInt(0), address as `0x${string}`],
+    query: {
+      enabled: !!address,
+    },
+  });
 
   const { data: disbursement, refetch } = useGetDisbursement(
     projectUUID,
@@ -144,6 +156,13 @@ export default function DisbursementHistoryDetail() {
       return;
     }
 
+    if (!rahatAccessManagerRole || !rahatAccessManagerRole[0]) {
+      toast.error(
+        `Only Admin wallets can execute disbursements. Please contact an Admin.`,
+      );
+      return;
+    }
+
     const beneficiaryLength = disbursement?.beneficiaries.length;
 
     // const amountString = disbursement?.DisbursementBeneficiary[0]?.amount
@@ -207,18 +226,18 @@ export default function DisbursementHistoryDetail() {
             {!approvals?.isExecuted &&
               disbursement?.status !== 'COMPLETED' &&
               approvals?.approvals?.length > 0 && (
-            <Link
-              href={`https://app.safe.global/transactions/queue?safe=${safeNetwork}:${safeWallet}`}
-              target="_blank"
-            >
-              <div className="px-4 py-1 rounded-full flex items-center gap-2 bg-blue-50 hover:bg-blue-100">
-                <span className="text-[10px]/4 tracking-widest font-semibold text-primary">
-                  SAFEWALLET
-                </span>
-                <BadgeCheck className="w-4 h-4 fill-primary text-white" />
-              </div>
-            </Link>
-            )}
+                <Link
+                  href={`https://app.safe.global/transactions/queue?safe=${safeNetwork}:${safeWallet}`}
+                  target="_blank"
+                >
+                  <div className="px-4 py-1 rounded-full flex items-center gap-2 bg-blue-50 hover:bg-blue-100">
+                    <span className="text-[10px]/4 tracking-widest font-semibold text-primary">
+                      SAFEWALLET
+                    </span>
+                    <BadgeCheck className="w-4 h-4 fill-primary text-white" />
+                  </div>
+                </Link>
+              )}
           </div>
         </div>
 

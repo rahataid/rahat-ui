@@ -9,10 +9,8 @@ import {
   HoverCardTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/hover-card';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import {
-  dateFormat,
-  formatTimestamp,
-} from 'apps/rahat-ui/src/utils/dateFormate';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { formatDurationFromMinutes } from 'apps/rahat-ui/src/utils/formatDurationFromMinutes';
 import {
   Clock,
   Zap,
@@ -22,6 +20,7 @@ import {
   X,
   CopyCheck,
   Copy,
+  Hourglass,
 } from 'lucide-react';
 
 interface ApiStatusCardProps {
@@ -149,7 +148,17 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               <span>Last Checked</span>
             </div>
             <span className="text-sm text-card-foreground font-mono">
-              {formatTimestamp(data.last_checked) ?? '-'}
+              {dateFormat(data.last_checked) ?? '-'}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-metric-text">
+              <Hourglass className="w-4 h-4" />
+              <span>Fetch Interval</span>
+            </div>
+            <span className="text-sm text-card-foreground font-mono">
+              {formatDurationFromMinutes(data?.fetch_frequency_minutes)}
             </span>
           </div>
 

@@ -28,6 +28,7 @@ export default function Budget({}: {}) {
     e.preventDefault();
     await createBudget.mutateAsync({
       amount: formData.amount.toString(),
+      type: 'cash-tracker',
     });
 
     setFormData({

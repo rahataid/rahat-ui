@@ -1,5 +1,6 @@
 import {
   PROJECT_SETTINGS_KEYS,
+  useCreateBudget,
   useInitateInkindTransfer,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
@@ -28,6 +29,7 @@ export default function Stock({}: {}) {
 
   const id = useParams().id as UUID;
   const router = useRouter();
+  const createBudget = useCreateBudget(id);
   const initiateInkindTransfer = useInitateInkindTransfer(id);
   const stakeholders = useProjectSettingsStore(
     (s) => s.settings?.[id]?.[PROJECT_SETTINGS_KEYS.INKIND_ENTITIES],
@@ -54,19 +56,14 @@ export default function Stock({}: {}) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await initiateInkindTransfer.mutateAsync({
-      payload: {
-        from: currentEntity?.smartaccount || '',
-        to: currentEntity?.smartaccount || '',
-        alias: formData.currency,
-        amount: formData.amount,
-        description: 'Stock Created',
-      },
+    await createBudget.mutateAsync({
+      amount: formData.amount.toString(),
+      type: 'inkind-tracker',
     });
 
     setFormData({
       amount: '',
-      currency: 'USD',
+      currency: 'NPR',
     });
   };
 

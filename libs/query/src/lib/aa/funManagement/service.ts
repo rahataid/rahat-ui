@@ -110,12 +110,18 @@ export const useCreateBudget = (projectUUID: UUID) => {
     timer: 3000,
   });
   return useMutation({
-    mutationFn: async ({ amount }: { amount: string }) => {
+    mutationFn: async ({
+      amount,
+      type = 'cash-tracker',
+    }: {
+      amount: string;
+      type: string;
+    }) => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'aa.cash-tracker.createBudget',
-          payload: { amount },
+          payload: { amount, type },
         },
       });
     },

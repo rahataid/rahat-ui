@@ -13,46 +13,21 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 
 import { UUID } from 'crypto';
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useUserCurrentUser } from '@rumsan/react-query';
-import { Entities } from './types';
 
 export default function Stock({}: {}) {
   const [formData, setFormData] = useState({
     amount: '',
-    currency: 'USD',
+    currency: 'Hygiene Kits',
   });
 
   const id = useParams().id as UUID;
   const router = useRouter();
   const createBudget = useCreateBudget(id);
-  const initiateInkindTransfer = useInitateInkindTransfer(id);
-  const stakeholders = useProjectSettingsStore(
-    (s) => s.settings?.[id]?.[PROJECT_SETTINGS_KEYS.INKIND_ENTITIES],
-  );
-
-  const { data: currentUser } = useUserCurrentUser();
-  const currentEntity = useMemo(() => {
-    return stakeholders?.find((e: Entities) =>
-      currentUser?.data?.roles?.includes(
-        e.alias.toLowerCase().replace(/\s+/g, ''),
-      ),
-    );
-  }, [currentUser, stakeholders]);
-
-  useEffect(() => {
-    if (currentEntity) {
-      setFormData((prev) => ({ ...prev, from: currentEntity.smartaccount }));
-    }
-  }, [currentEntity]);
-
-  const donar = useMemo(() => {
-    return stakeholders?.find((e: Entities) => e.alias === 'UNICEF Donor');
-  }, [currentUser, stakeholders]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +38,7 @@ export default function Stock({}: {}) {
 
     setFormData({
       amount: '',
-      currency: 'NPR',
+      currency: 'Hygiene Kits',
     });
   };
 
@@ -125,13 +100,9 @@ export default function Stock({}: {}) {
           </Button>
           <Button
             type="submit"
-            disabled={initiateInkindTransfer.isPending || !formData.amount}
+            disabled={createBudget.isPending || !formData.amount}
           >
-            {initiateInkindTransfer.isPending ? (
-              <span>Submitting...</span>
-            ) : (
-              'Confirm'
-            )}
+            {createBudget.isPending ? <span>Submitting...</span> : 'Confirm'}
           </Button>
         </div>
       </form>

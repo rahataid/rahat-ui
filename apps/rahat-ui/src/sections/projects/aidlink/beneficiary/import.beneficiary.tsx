@@ -51,7 +51,6 @@ const allowedExtensions: { [key: string]: string } = {
   xlsx: 'excel',
   xls: 'excel',
   json: 'json',
-  csv: 'csv',
 };
 
 const isValidInternationalPhoneNumber = (phone: string): boolean => {
@@ -229,7 +228,7 @@ const ImportBeneficiary = () => {
       !Object.prototype.hasOwnProperty.call(allowedExtensions, extension)
     ) {
       return toast.error(
-        'Unsupported file format. Please upload an Excel, JSON, or CSV file.',
+        'Unsupported file format. Please upload an Excel or JSON file.',
       );
     }
     if (file) {

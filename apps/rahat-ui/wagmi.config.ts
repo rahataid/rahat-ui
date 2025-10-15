@@ -10,6 +10,7 @@ import {
   mainnet,
   polygonMumbai,
   sepolia,
+  polygon,
 } from 'wagmi/chains';
 import { safe } from 'wagmi/connectors';
 import { rahatChain } from './src/chain-custom';
@@ -27,11 +28,11 @@ export const config: Config = createConfig(
       // mainnet,
       // sepolia,
       // arbitrumGoerli,
-      // polygon,
+      polygon,
       rahatChain,
-      baseSepolia,
+      // baseSepolia,
       // polygonMumbai,
-      arbitrumSepolia,
+      // arbitrumSepolia,
     ],
     batch: {
       multicall: true,
@@ -43,12 +44,13 @@ export const config: Config = createConfig(
       safe(),
     ],
     transports: {
+      [polygon.id]:http(),
       [rahatChain.id]: http(),
-      [mainnet.id]: http(),
-      [sepolia.id]: http(),
-      [arbitrumSepolia.id]: http(),
-      [polygonMumbai.id]: http(),
-      [baseSepolia.id]: http(),
+      // [mainnet.id]: http(),
+      // [sepolia.id]: http(),
+      // [arbitrumSepolia.id]: http(),
+      // [polygonMumbai.id]: http(),
+      // [baseSepolia.id]: http(),
     },
     walletConnectProjectId: '',
     // Required App Info

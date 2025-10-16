@@ -1,9 +1,4 @@
-import {
-  PROJECT_SETTINGS_KEYS,
-  useGetBalance,
-  useInitateFundTransfer,
-  useProjectSettingsStore,
-} from '@rahat-ui/query';
+import { useCreateBudget } from '@rahat-ui/query';
 import {
   Select,
   SelectContent,
@@ -13,15 +8,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 
 import { UUID } from 'crypto';
-import { useEffect, useMemo, useState } from 'react';
-import { Upload } from 'lucide-react';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { useUserCurrentUser } from '@rumsan/react-query';
-import { Entities } from './cash.tracker';
 
 export default function Budget({}: {}) {
   const [formData, setFormData] = useState({
@@ -31,38 +22,14 @@ export default function Budget({}: {}) {
 
   const id = useParams().id as UUID;
   const router = useRouter();
-  const initiateFundTransfer = useInitateFundTransfer(id);
-  const stakeholders = useProjectSettingsStore(
-    (s) => s.settings?.[id]?.[PROJECT_SETTINGS_KEYS.ENTITIES],
-  );
-
-  const { data: currentUser } = useUserCurrentUser();
-  const currentEntity = useMemo(() => {
-    return stakeholders?.find((e: Entities) =>
-      currentUser?.data?.roles?.includes(
-        e.alias.toLowerCase().replace(/\s+/g, ''),
-      ),
-    );
-  }, [currentUser, stakeholders]);
-
-  useEffect(() => {
-    if (currentEntity) {
-      setFormData((prev) => ({ ...prev, from: currentEntity.smartaccount }));
-    }
-  }, [currentEntity]);
-
-  const donar = useMemo(() => {
-    return stakeholders?.find((e: Entities) => e.alias === 'UNICEF Donor');
-  }, [currentUser, stakeholders]);
-  const { data: balance } = useGetBalance(
-    id,
-    currentEntity?.smartaccount || '',
-  );
-
-  const { data: budget } = useGetBalance(id, donar?.smartaccount || '');
+  const createBudget = useCreateBudget(id);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    await createBudget.mutateAsync({
+      amount: formData.amount.toString(),
+      type: 'cash-tracker',
+    });
 
     setFormData({
       amount: '',
@@ -124,13 +91,9 @@ export default function Budget({}: {}) {
           </Button>
           <Button
             type="submit"
-            disabled={initiateFundTransfer.isPending || !formData.amount}
+            disabled={createBudget.isPending || !formData.amount}
           >
-            {initiateFundTransfer.isPending ? (
-              <span>Submitting...</span>
-            ) : (
-              'Confirm'
-            )}
+            {createBudget.isPending ? <span>Submitting...</span> : 'Confirm'}
           </Button>
         </div>
       </form>

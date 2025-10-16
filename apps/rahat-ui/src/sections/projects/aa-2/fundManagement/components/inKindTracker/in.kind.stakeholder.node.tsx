@@ -33,14 +33,14 @@ function InKindStakeholderNode({
       <div
         className={`w-8 h-8 rounded-full flex items-center justify-center z-10 
         ${
-          status === 'confirmed' || isFirst
+          status === 'confirmed'
             ? 'bg-green-500 text-white'
             : status === 'pending'
             ? 'bg-amber-500 text-white'
             : 'bg-red-500 text-white'
         }`}
       >
-        {status === 'confirmed' || isFirst ? (
+        {status === 'confirmed' ? (
           <Check size={16} />
         ) : status === 'pending' ? (
           <Info size={16} />

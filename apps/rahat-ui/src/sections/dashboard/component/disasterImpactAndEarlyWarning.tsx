@@ -5,7 +5,7 @@ import React from 'react';
 const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
   // Helper to find stat data by name
   const getStat = (name: string) =>
-    statsData.find((s) => s.name === name)?.data ?? [];
+    statsData?.find((s) => s.name === name)?.data ?? [];
 
   const floodImpact = getStat('FLOOD_IMPACT_IN_LAST_5YEARS');
   const earlyWarningAccess = getStat('ACCES_TO_EARLY_WARNING_INFORMATION');

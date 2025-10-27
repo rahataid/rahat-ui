@@ -41,7 +41,10 @@ export default function CreateBeneficiaryGroup() {
   const FormSchema = z.object({
     name: z
       .string()
-      .min(4, { message: 'Group name must be at least 4 character' }),
+      .min(4, { message: 'Group name must be at least 4 character' })
+      .regex(/^[A-Za-z\s]+$/, {
+        message: 'Group name can only contain letters and spaces',
+      }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({

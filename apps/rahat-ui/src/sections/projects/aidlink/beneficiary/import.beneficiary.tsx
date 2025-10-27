@@ -61,14 +61,6 @@ const isValidInternationalPhoneNumber = (phone: string): boolean => {
   return e164Pattern.test(cleanedPhone) || localPattern.test(cleanedPhone);
 };
 
-const isValidInternationalPhoneNumber = (phone: string): boolean => {
-  if (!phone || typeof phone !== 'string') return false;
-  const cleanedPhone = phone.replace(/[^\d+]/g, '');
-  const e164Pattern = /^\+[1-9]\d{1,14}$/;
-  const localPattern = /^[1-9]\d{6,14}$/;
-  return e164Pattern.test(cleanedPhone) || localPattern.test(cleanedPhone);
-};
-
 const ImportBeneficiary = () => {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();

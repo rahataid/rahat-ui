@@ -422,14 +422,14 @@ export const useAddDisbursement = () => {
 
   return useMutation({
     mutationKey: ['add-disbursement'],
-    onSuccess(data, variables, context) {
-      Swal.fire({
-        title: 'Disbursement Created',
-        icon: 'success',
-        showConfirmButton: false,
-        timer: 1500,
-      });
-    },
+    // onSuccess(data, variables, context) {
+    //   Swal.fire({
+    //     title: 'Disbursement Created',
+    //     icon: 'success',
+    //     showConfirmButton: false,
+    //     timer: 1500,
+    //   });
+    // },
     onError(error, variables, context) {
       Swal.fire({
         title: 'Error',

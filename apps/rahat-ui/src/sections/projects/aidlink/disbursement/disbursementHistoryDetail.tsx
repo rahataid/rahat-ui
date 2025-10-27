@@ -206,6 +206,7 @@ export default function DisbursementHistoryDetail() {
         data={executionResult}
         safeNetwork={safeNetwork}
         safeAddress={safeWallet}
+        setIsModalOpen={setIsModalOpen}
       />
       <div className="p-4 bg-gray-50">
         {/* Header */}

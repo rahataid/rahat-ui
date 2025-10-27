@@ -107,11 +107,11 @@ export default function CreateBeneficiaryGroup() {
     },
   });
 
-  const selectedBeneficiaryCount = Object.keys(selectedListItems).length || 0;
+  const selectedBeneficiaries = Object.keys(selectedListItems)
+    .filter((uuid) => selectedListItems[uuid])
+    .map((uuid) => ({ uuid }));
 
-  const selectedBeneficiaries = table
-    .getSelectedRowModel()
-    .rows?.map((row) => ({ uuid: row.original?.uuid }));
+  const selectedBeneficiaryCount = selectedBeneficiaries.length;
 
   const handleClear = () => {
     setSelectedListItems({});

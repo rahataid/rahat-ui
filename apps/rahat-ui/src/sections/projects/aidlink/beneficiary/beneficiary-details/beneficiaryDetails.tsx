@@ -23,6 +23,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TransactionInfoSection from './trasactionInfo-section';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
+import Link from 'next/link';
 
 export default function BeneficiaryDetailsView() {
   const { copyAction, clickToCopy } = useCopy();
@@ -144,10 +145,15 @@ export default function BeneficiaryDetailsView() {
                   </button>
 
                   {/* External Link */}
-                  <ExternalLink
-                    className="text-primary cursor-pointer"
-                    size={18}
-                  />
+                  <Link
+                    href={`${process.env.NEXT_PUBLIC_BASESCAN_URL}/address/${ben?.walletAddress}`}
+                    target="_blank"
+                  >
+                    <ExternalLink
+                      className="text-primary cursor-pointer"
+                      size={18}
+                    />
+                  </Link>
                 </div>
               </div>
             </div>

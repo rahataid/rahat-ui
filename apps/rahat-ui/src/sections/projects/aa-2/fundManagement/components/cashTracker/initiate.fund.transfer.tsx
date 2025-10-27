@@ -28,9 +28,8 @@ export default function InitiateFundTransfer({}: {}) {
     from: '',
     to: '',
     amount: '',
-    currency: 'USD',
+    currency: 'NPR',
     comments: '',
-    proof: '',
   });
 
   const id = useParams().id as UUID;
@@ -43,9 +42,7 @@ export default function InitiateFundTransfer({}: {}) {
   const { data: currentUser } = useUserCurrentUser();
   const currentEntity = useMemo(() => {
     return stakeholders?.find((e: Entities) =>
-      currentUser?.data?.roles?.includes(
-        e.alias.toLowerCase().replace(/\s+/g, ''),
-      ),
+      currentUser?.data?.roles?.includes(e.alias.replace(/\s+/g, '')),
     );
   }, [currentUser, stakeholders]);
 
@@ -56,14 +53,10 @@ export default function InitiateFundTransfer({}: {}) {
   }, [currentEntity]);
 
   const donar = useMemo(() => {
-    return stakeholders?.find((e: Entities) => e.alias === 'UNICEF Donor');
+    return stakeholders?.find((e: Entities) => e.alias === 'UNICEF Nepal CO');
   }, [currentUser, stakeholders]);
-  const { data: balance } = useGetBalance(
-    id,
-    currentEntity?.smartaccount || '',
-  );
 
-  const { data: budget } = useGetBalance(id, donar?.smartaccount || '');
+  const { data: balance } = useGetBalance(id, donar?.smartaccount || '');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +67,6 @@ export default function InitiateFundTransfer({}: {}) {
         to: formData.to,
         amount: formData.amount,
         description: formData.comments,
-        proof: formData.proof,
         alias:
           stakeholders.find((s) => s.smartaccount === formData.from)?.alias ||
           'UNKNOWN',
@@ -85,25 +77,10 @@ export default function InitiateFundTransfer({}: {}) {
       from: '',
       to: '',
       amount: '',
-      currency: 'USD',
+      currency: 'NPR',
       comments: '',
-      proof: '',
     });
-  };
-
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = (reader.result as string).split(',')[1];
-      setFormData((prev) => ({
-        ...prev,
-        proof: base64String,
-      }));
-    };
-    reader.readAsDataURL(file);
+    router.push(`/projects/aa/${id}/fund-management?tab=cashTracker`);
   };
 
   return (
@@ -126,11 +103,16 @@ export default function InitiateFundTransfer({}: {}) {
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-gray-50 p-4 rounded-md">
           <p className="text-sm text-gray-500">Project Budget</p>
-          <p className="text-xl font-bold">{budget?.data?.formatted || 0}</p>
+          <p className="text-xl text-blue-500 font-bold">
+            {Number(balance?.data?.formatted) + Number(balance?.data?.sent) ||
+              0}
+          </p>
         </div>
         <div className="bg-gray-50 p-4 rounded-md">
-          <p className="text-sm text-gray-500">Balance</p>
-          <p className="text-xl font-bold">{balance?.data?.formatted || 0}</p>
+          <p className="text-sm text-gray-500">Remaining Balance</p>
+          <p className="text-xl text-blue-500 font-bold">
+            {balance?.data?.formatted || 0}
+          </p>
         </div>
       </div>
 
@@ -163,15 +145,18 @@ export default function InitiateFundTransfer({}: {}) {
                 <SelectValue placeholder="Select recipient" />
               </SelectTrigger>
               <SelectContent>
-                {stakeholders?.map((s) => (
-                  <SelectItem
-                    key={s.address}
-                    value={s.smartaccount}
-                    disabled={s.smartaccount === formData.from}
-                  >
-                    {s.alias}
-                  </SelectItem>
-                ))}
+                {stakeholders?.map((s: any, index: number) => {
+                  if (stakeholders.length - 1 == index) return null;
+                  return (
+                    <SelectItem
+                      key={s.address}
+                      value={s.smartaccount}
+                      disabled={s.smartaccount === formData.from}
+                    >
+                      {s.alias}
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
@@ -216,30 +201,6 @@ export default function InitiateFundTransfer({}: {}) {
             onChange={(e) =>
               setFormData({ ...formData, comments: e.target.value })
             }
-          />
-        </div>
-
-        {/* File Upload */}
-        <div className="border-2 border-dashed border-gray-300 rounded-md p-6 text-center">
-          <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-          <p className="text-sm text-gray-600">
-            Drag files to upload, or{' '}
-            <span
-              className="text-blue-600 cursor-pointer"
-              onClick={() => document.getElementById('fileInput')?.click()}
-            >
-              browse
-            </span>
-          </p>
-          <p className="text-xs text-red-500 mt-1">
-            *Files must be under 5 MB (JPEG, PNG, BMP, PDF, XLSX, CSV, DOCS)
-          </p>
-          <input
-            id="fileInput"
-            type="file"
-            className="hidden"
-            accept=".jpeg,.jpg,.png,.bmp,.pdf,.xlsx,.csv,.doc,.docx"
-            onChange={handleFileSelect}
           />
         </div>
 

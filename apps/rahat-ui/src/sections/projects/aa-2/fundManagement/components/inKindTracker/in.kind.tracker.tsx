@@ -18,162 +18,247 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useUserCurrentUser } from '@rumsan/react-query';
 import SpinnerLoader from '../../../../components/spinner.loader';
 import { Entities, InKindTransfer } from './types';
+import { CircleUserRound, Plus, User } from 'lucide-react';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useGetInkind,
+  useGetInkindTransactions,
+  useProjectSettingsStore,
+  ConfirmReceipt,
+} from '@rahat-ui/query';
+import { AARoles } from '@rahat-ui/auth';
 
 export function InKindTracker() {
   const uuid = useParams().id as UUID;
   const router = useRouter();
 
-  // Mock data for training purposes
-  const entities: Entities[] = [
-    { alias: 'UNICEF', name: 'UNICEF', type: 'UNICEF' },
-    { alias: 'NGO', name: 'NGO Partner', type: 'NGO' },
-    {
-      alias: 'Distributor (Wards)',
-      name: 'Distributor (Wards)',
-      type: 'Distributor (Wards)',
-    },
-    { alias: 'Beneficiaries', name: 'Beneficiaries', type: 'Beneficiaries' },
-  ];
+  const entities = useProjectSettingsStore(
+    (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.INKIND_ENTITIES],
+  );
 
   const { data: currentUser } = useUserCurrentUser();
   const currentEntity = useMemo(() => {
-    return entities?.find((e: Entities) =>
-      currentUser?.data?.roles?.includes(
-        e.alias.toLowerCase().replace(/\s+/g, ''),
-      ),
-    );
+    return (
+      entities?.find((e: Entities) =>
+        currentUser?.data?.roles?.includes(e.alias.replace(/\s+/g, '')),
+      ) || entities[0]
+    ); // Default to first entity for demo
   }, [currentUser, entities]);
 
-  // Mock balances for training
-  const [balances, setBalances] = useState([
-    { alias: 'UNICEF', balance: 10000, received: 10000 },
-    { alias: 'NGO', balance: 8000, received: 8000 },
-    { alias: 'Distributor (Wards)', balance: 5000, received: 5000 },
-    { alias: 'Beneficiaries', balance: 0, received: 0 },
-  ]);
+  const { data: transactions, isFetched } = useGetInkindTransactions(uuid);
+  const getInkind = useGetInkind(uuid);
 
-  // Mock transfers for training
-  const transfers: InKindTransfer[] = [
-    {
-      id: '1',
-      from: 'UNICEF',
-      to: 'NGO',
-      amount: 10000,
-      status: 'received',
-      timestamp: '2024-01-15T10:00:00Z',
-      type: 'in-kind',
-      items: [
-        { name: 'Food Packages', quantity: 100, unit: 'packages' },
-        { name: 'Medical Supplies', quantity: 50, unit: 'boxes' },
-      ],
-      comments: 'Initial distribution to NGO partner',
-    },
-    {
-      id: '2',
-      from: 'NGO',
-      to: 'Distributor (Wards)',
-      amount: 8000,
-      status: 'received',
-      timestamp: '2024-01-16T14:30:00Z',
-      type: 'in-kind',
-      items: [
-        { name: 'Food Packages', quantity: 80, unit: 'packages' },
-        { name: 'Medical Supplies', quantity: 40, unit: 'boxes' },
-      ],
-      comments: 'Distribution to ward level distributors',
-    },
-    {
-      id: '3',
-      from: 'Distributor (Wards)',
-      to: 'Beneficiaries',
-      amount: 5000,
-      status: 'pending',
-      timestamp: '2024-01-17T09:15:00Z',
-      type: 'in-kind',
-      items: [
-        { name: 'Food Packages', quantity: 50, unit: 'packages' },
-        { name: 'Medical Supplies', quantity: 25, unit: 'boxes' },
-      ],
-      comments: 'Pending distribution to beneficiaries',
-    },
-  ];
+  const [balances, setBalances] = useState<
+    { alias: string; balance: number; received: number }[]
+  >([]);
 
-  const confirmReceipt = async (transferId: string) => {
-    // Mock confirmation for training
-    console.log('Confirming receipt for transfer:', transferId);
-    // In real implementation, this would call an API
+  const transfers = useMemo(() => {
+    const now = new Date().toISOString();
+    const uniqueTransactionHashes = new Set();
+
+    const allTransfers = transactions?.data?.entityOutcomes?.flatMap(
+      (entity: any) => {
+        const resolveAlias = (address: string) =>
+          entities?.find(
+            (e: Entities) =>
+              e.smartaccount.toLocaleLowerCase() ===
+              address?.toLocaleLowerCase(),
+          )?.alias;
+        const pendingTransfers = entity.pending?.map(
+          (p: any, index: number) => ({
+            id: `${entity.alias}-pending-${index}`,
+            from: entities?.find(
+              (e: Entities) =>
+                e.smartaccount.toLocaleLowerCase() ===
+                p.from.toLocaleLowerCase(),
+            )?.alias,
+            to: entity.alias,
+            amount: p.amount,
+            timestamp: p.timestamp || now,
+            status: 'pending' as const,
+            type: 'in-kind' as const,
+            items: [],
+            comments: `Awaiting confirmation by ${entity.alias}`,
+          }),
+        );
+
+        const successfulTransfers = entity.approved
+          ?.filter((flow: any) => {
+            if (!flow.transactionHash) return true;
+            if (uniqueTransactionHashes.has(flow.transactionHash)) {
+              return false;
+            }
+            uniqueTransactionHashes.add(flow.transactionHash);
+            return true;
+          })
+          .map((flow: any, index: number) => ({
+            id: `${entity.alias}-flow-${index}`,
+            from: entities?.find(
+              (e: Entities) =>
+                e.smartaccount.toLocaleLowerCase() ===
+                flow.from.toLocaleLowerCase(),
+            )?.alias,
+            to: entity.alias,
+            amount: flow.amount,
+            timestamp: flow?.timestamp || now,
+            status: flow.type === 'sent' ? 'sent' : ('received' as const),
+            type: 'in-kind' as const,
+            items: [],
+            comments:
+              resolveAlias(flow.from) === entity.alias && flow.type !== 'sent'
+                ? 'Stock Created'
+                : flow.type === 'received'
+                ? `Claimed by ${entity.alias}`
+                : `In-kind transfer from ${
+                    resolveAlias(flow.from) || 'Unknown'
+                  }`,
+          }));
+
+        return [...(pendingTransfers || []), ...(successfulTransfers || [])];
+      },
+    );
+    return allTransfers?.sort(
+      (a: any, b: any) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    );
+  }, [transactions, entities]);
+
+  //get current entity pending transfer
+  const pendingTransfers = useMemo(() => {
+    if (!transactions?.data?.entityOutcomes || !currentEntity?.alias) {
+      return [];
+    }
+
+    const entity = transactions.data.entityOutcomes.find(
+      (entity: any) => entity.alias === currentEntity.alias,
+    );
+
+    if (!entity?.pending || entity?.pending.length === 0) {
+      return [];
+    }
+
+    return entity.pending;
+  }, [transactions?.data?.entityOutcomes, currentEntity?.alias]);
+
+  const confirmReceipt = async (payload: ConfirmReceipt) => {
+    await getInkind.mutateAsync({
+      payload: payload,
+    });
   };
+
+  useEffect(() => {
+    const list = transactions?.data?.entityOutcomes || [];
+    if (list.length > 0) {
+      const mapped = list.map((entity: any) => ({
+        alias: entity.alias,
+        balance: Number(Number(entity.balance).toFixed(2)) || 0,
+        received: Number(Number(entity.received).toFixed(2)) || 0,
+      }));
+      setBalances(mapped);
+    } else {
+      setBalances([]);
+    }
+  }, [transactions]);
 
   return (
     <div>
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold">In-kind Tracker</h2>
-        <p className="text-gray-500">
-          Track your in-kind distribution flow here
-        </p>
+      {/* Header Section */}
+      <div className="flex justify-between items-start mb-6">
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-900">
+            In-kind Tracker
+          </h2>
+          <p className="text-gray-500 mt-1">Track your in-kind flow here.</p>
+        </div>
+        <div className="flex gap-3">
+          {currentUser?.data?.roles?.includes(AARoles.UNICEFNepalCO) && (
+            <>
+              <Button
+                onClick={() =>
+                  router.push(
+                    `/projects/aa/${uuid}/fund-management/inkind-tracker/initiate`,
+                  )
+                }
+                className="text-blue-500 border-blue-500 hover:bg-blue-50"
+                variant="outline"
+              >
+                Initiate In-kind Transfer
+              </Button>
+              <Button
+                onClick={() =>
+                  router.push(
+                    `/projects/aa/${uuid}/fund-management/inkind-tracker/stock`,
+                  )
+                }
+                className="bg-blue-500 hover:bg-blue-600"
+              >
+                <Plus /> Add Stock
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column - Active In-kind Tracker */}
         <div className="lg:col-span-2">
-          <Card className="mb-6">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">
-                Active In-kind Distribution Tracker
-              </CardTitle>
+          <Card>
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold">
+                  In-kind Transfer Tracker
+                </CardTitle>
+                {currentEntity && (
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <div className="w-6 h-6 bg-blue-700 rounded-full flex items-center justify-center">
+                      <User size={18} color="white" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-gray-400">User:</span>
+                      <span>{currentEntity.alias}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
-              <InKindProgressTracker
-                balances={balances}
-                transfers={transfers}
-              />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3 border-b">
-              <CardTitle className="text-lg">Distribution History</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <InKindTransferList transfers={transfers} entities={entities} />
+              {isFetched ? (
+                <InKindProgressTracker
+                  balances={balances}
+                  transfers={transactions?.data?.entityOutcomes}
+                />
+              ) : (
+                <div className="flex justify-center p-6">
+                  <SpinnerLoader />
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
 
+        {/* Right Column - Transfer History */}
         <div>
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Quick Actions</CardTitle>
+            <CardHeader className="pb-4 border-b">
+              <CardTitle className="text-lg font-semibold">
+                Transfer History
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <Button className="w-full" variant="outline">
-                Initiate Distribution
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="mt-6">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Current Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Total Items</span>
-                  <span className="font-medium">150 packages</span>
+            <CardContent className="p-0">
+              {isFetched ? (
+                <InKindTransferList
+                  transfers={transfers as any}
+                  entities={entities}
+                  pendingTransfers={pendingTransfers}
+                  currentEntity={currentEntity}
+                  onConfirmReceipt={confirmReceipt}
+                />
+              ) : (
+                <div className="flex justify-center p-6">
+                  <SpinnerLoader />
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Distributed</span>
-                  <span className="font-medium text-green-600">
-                    100 packages
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Pending</span>
-                  <span className="font-medium text-amber-600">
-                    50 packages
-                  </span>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </div>

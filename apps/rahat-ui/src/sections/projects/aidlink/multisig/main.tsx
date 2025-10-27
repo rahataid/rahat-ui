@@ -48,7 +48,7 @@ export default function MultiSigWalletView() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {safeOwners?.tokenBalance || 'N/A'}
+              {`${safeOwners?.tokenBalance} USDC` || 'N/A'}
             </div>
           </CardContent>
         </Card>

@@ -476,3 +476,23 @@ export const useUpdateTriggerStatement = () => {
     },
   });
 };
+
+export const useExternalApiHealthMonitor = (uuid: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['ms.sources.getHealth', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.sources.getHealth',
+          payload: {},
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};

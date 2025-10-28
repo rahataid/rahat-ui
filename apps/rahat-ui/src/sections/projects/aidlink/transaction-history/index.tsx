@@ -24,7 +24,7 @@ import { useDebounce } from '@rahat-ui/query';
 
 const TransactionHistory = () => {
   const [transactionList, setTransactionList] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
+  // const [totalCount, setTotalCount] = useState(0);
   const uuid = useParams().id as UUID;
 
   const contractSettings = useProjectSettingsStore(
@@ -34,13 +34,13 @@ const TransactionHistory = () => {
 
   const columns = useTransactionHistoryTableColumns();
   const {
-    pagination,
+    //   pagination,
     filters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
+    //   setNextPage,
+    //   setPrevPage,
+    //   setPerPage,
     setFilters,
-    setPagination,
+    // setPagination,
   } = usePagination();
 
   const table = useReactTable({
@@ -51,16 +51,16 @@ const TransactionHistory = () => {
   });
 
   // Calculate skip value for GraphQL pagination
-  const skip = (pagination.page - 1) * pagination.perPage;
+  // const skip = (pagination.page - 1) * pagination.perPage;
 
   const handleSearch = useCallback(
     (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
       const value = event?.target?.value ?? '';
       setFilters({ ...filters, [key]: value });
       // Reset pagination when searching
-      setPagination({ ...pagination, page: 1 });
+      // setPagination({ ...pagination, page: 1 });
     },
-    [filters, setFilters, setPagination],
+    [filters, setFilters],
   );
 
   const debouncedSearch = useDebounce(filters?.search, 500);
@@ -78,11 +78,10 @@ const TransactionHistory = () => {
     variables: {
       contractAddress,
       to: filterDebouncedSearch || '',
-      first: pagination.perPage,
-      skip: skip,
+      first: 1000,
+      orderBy: 'blockTimestamp',
     },
     pause: !contractAddress,
-    requestPolicy: 'cache-first',
   });
 
   useGraphQLErrorHandler({
@@ -92,7 +91,7 @@ const TransactionHistory = () => {
     onError: (error) => {
       console.log('Error occurred, clearing transaction data:', error);
       setTransactionList([]);
-      setTotalCount(0);
+      // setTotalCount(0);
     },
   });
 
@@ -103,15 +102,9 @@ const TransactionHistory = () => {
           const transactionsObject: TransactionsObject = data;
           const transactionLists = await mergeTransactions(transactionsObject);
           setTransactionList(transactionLists);
-
-          // Calculate total count from both transfers and transferProcesseds
-          const transfersCount = data.transfersCount?.length || 0;
-          const transferProcessedsCount =
-            data.transferProcessedsCount?.length || 0;
-          setTotalCount(transfersCount + transferProcessedsCount);
         } catch {
           setTransactionList([]);
-          setTotalCount(0);
+          // setTotalCount(0);
         }
       })();
     }
@@ -140,7 +133,7 @@ const TransactionHistory = () => {
           message={'No transactions found available'}
           height="280px"
         />
-        <CustomPagination
+        {/* <CustomPagination
           currentPage={pagination.page}
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
@@ -159,7 +152,7 @@ const TransactionHistory = () => {
                 ? pagination.page + 1
                 : null,
           }}
-        />
+        /> */}
       </div>
     </div>
   );

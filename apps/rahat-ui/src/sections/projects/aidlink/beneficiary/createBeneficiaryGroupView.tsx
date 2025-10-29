@@ -68,8 +68,6 @@ export default function CreateBeneficiaryGroup() {
     [],
   );
 
-  console.log({ selectedListItems });
-
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
@@ -125,6 +123,7 @@ export default function CreateBeneficiaryGroup() {
   const handleBeneficiaryGroupCreation = async (
     data: z.infer<typeof FormSchema>,
   ) => {
+    if (selectedBeneficiaries.length === 0) return;
     try {
       const payload = {
         name: data?.name,
@@ -157,7 +156,14 @@ export default function CreateBeneficiaryGroup() {
       />
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleBeneficiaryGroupCreation)}>
+        <form
+          onSubmit={form.handleSubmit(handleBeneficiaryGroupCreation)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+            }
+          }}
+        >
           {/* Group Name Input */}
           <FormField
             control={form.control}
@@ -217,7 +223,7 @@ export default function CreateBeneficiaryGroup() {
               <Button type="button" variant="outline" onClick={handleClear}>
                 Clear
               </Button>
-              <Button disabled={selectedBeneficiaryCount === 0}>
+              <Button type="submit" disabled={selectedBeneficiaryCount === 0}>
                 Add ({selectedBeneficiaryCount} beneficiaries)
               </Button>
             </div>

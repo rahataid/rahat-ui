@@ -19,7 +19,8 @@ export function IndividualLogTab() {
   const { id } = useParams() as { id: UUID };
 
   const tab = searchParams.get('tab') || 'individualLog';
-  const subTab = searchParams.get('subTab') as SubTabType;
+
+  const subTab = (searchParams.get('subTab') as SubTabType) || 'voice';
 
   useEffect(() => {
     if (tab === 'individualLog' && !searchParams.get('subTab')) {
@@ -30,12 +31,14 @@ export function IndividualLogTab() {
   const handleSubTabChange = (value: string) => {
     router.push(`?tab=individualLog&subTab=${value}`);
   };
+  console.log(subTab, 'subtabvalue outside');
 
   return (
     <div className="bg-white rounded-lg">
       <Tabs
         className="p-1"
-        defaultValue={subTab}
+        defaultValue="voice"
+        value={subTab}
         onValueChange={handleSubTabChange}
       >
         <TabsList className="grid w-fit grid-cols-3 mb-4">

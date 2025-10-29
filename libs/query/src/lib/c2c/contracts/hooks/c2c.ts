@@ -13,6 +13,7 @@ import {
 } from '../../project-actions';
 import { UUID } from 'crypto';
 import { useProjectAction } from '../../../projects';
+import { toast } from 'react-toastify';
 
 //Temporary solution, should be changed when crypto is implemented
 export const useDepositTokenToProject = () => {
@@ -34,7 +35,7 @@ export const useMultiSigDisburseToken = ({
 
   return useMutation({
     onError: (error) => {
-      console.error(error);
+      toast.error(error?.message);
     },
     async onSuccess(data, variables, context) {
       await projectAction.mutateAsync({

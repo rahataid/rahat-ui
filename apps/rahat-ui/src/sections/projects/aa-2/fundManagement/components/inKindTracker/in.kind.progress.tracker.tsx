@@ -37,7 +37,7 @@ function InKindProgressTracker({
                 {!isLast && (
                   <div
                     className={`absolute top-4 left-1/2 h-0.5 w-full ${
-                      isConfirmed || isFirst ? 'bg-green-500' : 'bg-gray-200'
+                      isConfirmed ? 'bg-green-500' : 'bg-gray-200'
                     }`}
                     style={{
                       zIndex: 1,

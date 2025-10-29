@@ -145,15 +145,18 @@ export default function InitiateFundTransfer({}: {}) {
                 <SelectValue placeholder="Select recipient" />
               </SelectTrigger>
               <SelectContent>
-                {stakeholders?.map((s) => (
-                  <SelectItem
-                    key={s.address}
-                    value={s.smartaccount}
-                    disabled={s.smartaccount === formData.from}
-                  >
-                    {s.alias}
-                  </SelectItem>
-                ))}
+                {stakeholders?.map((s: any, index: number) => {
+                  if (stakeholders.length - 1 == index) return null;
+                  return (
+                    <SelectItem
+                      key={s.address}
+                      value={s.smartaccount}
+                      disabled={s.smartaccount === formData.from}
+                    >
+                      {s.alias}
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>

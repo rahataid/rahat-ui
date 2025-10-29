@@ -483,7 +483,7 @@ export const useUploadBeneficiary = () => {
           return;
         }
         if (data?.data?.discardedBeneficiaries?.length > 0) {
-          const phoneNumber = data?.data?.discardedBeneficiaries?.map((d) => {
+          const phoneNumber = data?.data?.discardedBeneficiaries?.map((d:any) => {
             return d?.phoneNumber;
           });
           toast.fire({

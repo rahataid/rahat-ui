@@ -9,7 +9,7 @@ export const ProjectDetails = `
 `;
 
 export const TransactionDetails = `
-  query MyQuery($contractAddress: String!, $to: String, $first: Int, $skip: Int, $orderBy: String, $orderDirection:String="desc") {
+  query MyQuery($contractAddress: String!, $to: String="", $first: Int, $skip: Int, $orderBy: String, $orderDirection:String="desc") {
     transfers(where: {to: $contractAddress}) {
       blockNumber
       blockTimestamp

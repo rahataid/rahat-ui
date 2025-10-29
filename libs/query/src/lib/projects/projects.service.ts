@@ -438,7 +438,11 @@ export const useProjectBlockChainSettings = (uuid: UUID) => {
   }));
 
   const query = useQuery({
-    queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid, PROJECT_SETTINGS_KEYS.BLOCKCHAIN],
+    queryKey: [
+      TAGS.GET_PROJECT_SETTINGS,
+      uuid,
+      PROJECT_SETTINGS_KEYS.BLOCKCHAIN,
+    ],
     enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.BLOCKCHAIN]),
     // enabled: !!settings[uuid],
     queryFn: async () => {
@@ -566,6 +570,48 @@ export const useAAProjectSettingsHazardType = (uuid: UUID) => {
         [uuid]: {
           ...settings?.[uuid],
           [PROJECT_SETTINGS_KEYS.HAZARD_TYPE]: query?.data,
+        },
+      };
+      setSettings(settingsToUpdate);
+      window.location.reload();
+    }
+  }, [query.data]);
+
+  return query;
+};
+
+export const useAAProjectSettingsContract = (uuid: UUID) => {
+  const q = useProjectAction([PROJECT_SETTINGS_KEYS.CONTRACT]);
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+
+  const query = useQuery({
+    queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid, PROJECT_SETTINGS_KEYS.CONTRACT],
+    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT]),
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: PROJECT_SETTINGS_KEYS.CONTRACT,
+          },
+        },
+      });
+      return mutate.data.value;
+    },
+  });
+
+  useEffect(() => {
+    if (!isEmpty(query.data)) {
+      console.log('query data', query.data);
+      const settingsToUpdate = {
+        ...settings,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.CONTRACT]: query?.data,
         },
       };
       setSettings(settingsToUpdate);

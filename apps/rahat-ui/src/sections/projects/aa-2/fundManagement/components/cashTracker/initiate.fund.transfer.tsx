@@ -14,7 +14,6 @@ import {
 
 import { UUID } from 'crypto';
 import { useEffect, useMemo, useState } from 'react';
-import { Upload } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
@@ -38,6 +37,9 @@ export default function InitiateFundTransfer({}: {}) {
   const stakeholders = useProjectSettingsStore(
     (s) => s.settings?.[id]?.[PROJECT_SETTINGS_KEYS.ENTITIES],
   );
+  const contractSettings = useProjectSettingsStore(
+    (s) => s.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
 
   const { data: currentUser } = useUserCurrentUser();
   const currentEntity = useMemo(() => {
@@ -56,7 +58,10 @@ export default function InitiateFundTransfer({}: {}) {
     return stakeholders?.find((e: Entities) => e.alias === 'UNICEF Nepal CO');
   }, [currentUser, stakeholders]);
 
-  const { data: balance } = useGetBalance(id, donar?.smartaccount || '');
+  const { data: balance } = useGetBalance(
+    id,
+    currentEntity?.smartaccount || '',
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,8 +143,18 @@ export default function InitiateFundTransfer({}: {}) {
           <div>
             <Label>To</Label>
             <Select
+              onValueChange={(value) => {
+                const selectedStakeholder = stakeholders?.find(
+                  (s) => s.smartaccount === value,
+                );
+                const toValue =
+                  selectedStakeholder?.alias === 'Beneficiary'
+                    ? contractSettings?.aaproject?.address
+                    : value;
+                setFormData({ ...formData, to: toValue });
+              }}
               value={formData.to}
-              onValueChange={(value) => setFormData({ ...formData, to: value })}
+              // onValueChange={(value) => setFormData({ ...formData, to: value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select recipient" />
@@ -148,7 +163,11 @@ export default function InitiateFundTransfer({}: {}) {
                 {stakeholders?.map((s) => (
                   <SelectItem
                     key={s.address}
-                    value={s.smartaccount}
+                    value={
+                      s?.alias === 'Beneficiary'
+                        ? contractSettings?.aaproject?.address
+                        : s.smartaccount
+                    }
                     disabled={s.smartaccount === formData.from}
                   >
                     {s.alias}

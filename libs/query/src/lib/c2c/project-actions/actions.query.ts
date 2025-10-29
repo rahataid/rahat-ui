@@ -93,6 +93,26 @@ export const useGetDisbursements = (params: DisbursementListHookParams) => {
   return query;
 };
 
+export const usePendingDisbursements = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-pending-disbursements', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.disbursements.pending.get',
+          payload: {},
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
 export const useGetDisbursement = (
   projectUUID: UUID,
   disbursementUUID: UUID,
@@ -402,14 +422,14 @@ export const useAddDisbursement = () => {
 
   return useMutation({
     mutationKey: ['add-disbursement'],
-    onSuccess(data, variables, context) {
-      Swal.fire({
-        title: 'Disbursement Created',
-        icon: 'success',
-        showConfirmButton: false,
-        timer: 1500,
-      });
-    },
+    // onSuccess(data, variables, context) {
+    //   Swal.fire({
+    //     title: 'Disbursement Created',
+    //     icon: 'success',
+    //     showConfirmButton: false,
+    //     timer: 1500,
+    //   });
+    // },
     onError(error, variables, context) {
       Swal.fire({
         title: 'Error',

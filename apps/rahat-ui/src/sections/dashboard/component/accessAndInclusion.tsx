@@ -3,7 +3,7 @@ import { Heading } from 'apps/rahat-ui/src/common';
 import React from 'react';
 
 const findStat = (data: any[], name: string) => {
-  return data.find((s) => s.name === name)?.data ?? [];
+  return data?.find((s) => s.name === name)?.data ?? [];
 };
 
 // Optional: assign colors per label to keep consistent palette for yes/no, phone types etc.

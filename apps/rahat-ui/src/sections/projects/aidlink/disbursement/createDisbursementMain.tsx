@@ -7,9 +7,11 @@ import {
   useDisburseTokenUsingMultisig,
   useFindC2CBeneficiaryGroups,
   useProjectBeneficiaries,
+  useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { TransactionInitiatedModal } from './transactionInitiatedModal';
 import React from 'react';
+import { SAFE_WALLET } from 'apps/rahat-ui/src/constants/safeWallet';
 
 type IProps = {
   type: DisbursementSelectionType | null;
@@ -22,6 +24,19 @@ export default function CreateDisbursementMain({ type }: IProps) {
   const [disbursementResult, setDisbursementResult] = React.useState<any>(null);
 
   const disburseMultiSig = useDisburseTokenUsingMultisig();
+
+  const safeWallet = useProjectSettingsStore(
+      (state) => state?.settings?.[projectUUID]?.['SAFE_WALLET']?.address,
+    );
+
+   const chainSettings = useProjectSettingsStore(
+      (state) => state?.settings?.[projectUUID]?.['BLOCKCHAIN'],
+    );
+
+
+    const safeNetwork = SAFE_WALLET[Number(chainSettings.chainid)]
+  
+  
 
   const { data: projectBeneficiaries, isLoading: isLoadingBeneficiaries } =
     useProjectBeneficiaries({
@@ -80,6 +95,8 @@ export default function CreateDisbursementMain({ type }: IProps) {
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         data={disbursementResult}
+        safeNetwork={safeNetwork}
+        safeAddress={safeWallet}
       />
       {type === DisbursementSelectionType.INDIVIDUAL ? (
         <BeneficiaryDisbursementForm

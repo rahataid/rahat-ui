@@ -33,7 +33,7 @@ export function InKindTracker() {
   const router = useRouter();
 
   const entities = useProjectSettingsStore(
-    (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.ENTITIES],
+    (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.INKIND_ENTITIES],
   );
 
   const { data: currentUser } = useUserCurrentUser();

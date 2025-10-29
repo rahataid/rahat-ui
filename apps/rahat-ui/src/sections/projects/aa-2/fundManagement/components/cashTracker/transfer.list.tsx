@@ -44,14 +44,16 @@ function TransferList({
         </div>
       ) : (
         transfers?.map((transfer) => {
-          console.log(transfer, currentEntity?.alias);
-
           const isPending = transfer.status === 'pending';
           const isConfirmed =
             transfer.status === 'sent' || transfer.status === 'received';
           const isForCurrentUser = transfer.to === currentEntity?.alias;
           const canConfirm = isPending && isForCurrentUser;
-
+          const pendingTransfer = pendingTransfers.find(
+            (pt) =>
+              pt.timestamp === transfer.timestamp &&
+              pt.amount === transfer.amount,
+          );
           return (
             <div
               key={transfer.id}
@@ -109,7 +111,7 @@ function TransferList({
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900 mt-1">
-                        {transfer.amount.toLocaleString()}
+                        Rs. {transfer.amount.toLocaleString()}
                       </p>
 
                       {canConfirm &&
@@ -122,8 +124,8 @@ function TransferList({
                               try {
                                 await onConfirmReceipt({
                                   from: currentEntity?.smartaccount || '',
-                                  to: pendingTransfers[0].from,
-                                  alias: pendingTransfers[0].to,
+                                  to: pendingTransfer.from,
+                                  alias: pendingTransfer.to,
                                   amount: transfer.amount.toString(),
                                 });
                               } finally {

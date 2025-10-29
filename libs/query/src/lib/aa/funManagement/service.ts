@@ -99,6 +99,55 @@ export const useInitateFundTransfer = (projectUUID: UUID) => {
   });
 };
 
+export const useCreateBudget = (projectUUID: UUID) => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      amount,
+      type = 'cash-tracker',
+    }: {
+      amount: string;
+      type: string;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.cash-tracker.createBudget',
+          payload: { amount, type },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Budget Created successfully.',
+        icon: 'success',
+      });
+      // Invalidate the transactions query to refresh the data
+      queryClient.invalidateQueries({
+        queryKey: ['aa.cash-tracker.getTransactions', projectUUID],
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while creating budget.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 export const useGetTransactions = (projectUUID: UUID) => {
   const q = useProjectAction();
 
@@ -111,6 +160,27 @@ export const useGetTransactions = (projectUUID: UUID) => {
         uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
         data: {
           action: 'aa.cash-tracker.getTransactions',
+          payload: {},
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
+export const useGetBeneficiaryBalance = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['aaProject.beneficiary.getBalance', projectUUID],
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
+        data: {
+          action: 'aaProject.beneficiary.getBalance',
           payload: {},
         },
       });

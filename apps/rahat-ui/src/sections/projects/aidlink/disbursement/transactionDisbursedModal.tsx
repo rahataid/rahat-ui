@@ -16,6 +16,9 @@ interface IProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   data: any;
+  safeNetwork:string;
+  safeAddress:`0x$${string}`;
+  setIsModalOpen:(value:boolean)=> void
 }
 
 interface StatusStep {
@@ -28,6 +31,9 @@ export function TransactionDisbursedModal({
   open,
   onOpenChange,
   data,
+  safeNetwork,
+  safeAddress,
+  setIsModalOpen
 }: IProps) {
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
@@ -41,7 +47,7 @@ export function TransactionDisbursedModal({
       },
       {
         title: 'Safe Wallet Approval',
-        time: dateFormat(data?.safeWalletApproval) || 'N/A',
+        time: dateFormat(data?.disbursementExecution) || 'N/A',
         completed: true,
       },
       {
@@ -114,16 +120,17 @@ export function TransactionDisbursedModal({
           <div className="flex gap-3 pt-1">
             <Button
               className="flex-1 bg-blue-600 hover:bg-blue-700"
-              onClick={() =>
+              onClick={() =>{
+                setIsModalOpen(false)
                 router.push(
                   `/projects/aidlink/${projectUUID}/disbursement/${data?.uuid}`,
-                )
+                )}
               }
             >
               View Disbursement Details
             </Button>
             <Link
-              href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
+              href={`https://app.safe.global/transactions/queue?safe=${safeNetwork}:${safeAddress}`}
               target="_blank"
               className="flex-1"
             >

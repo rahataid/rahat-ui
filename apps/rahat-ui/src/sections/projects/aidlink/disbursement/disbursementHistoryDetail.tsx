@@ -19,6 +19,7 @@ import {
   useGetDisbursementTransactions,
   useMultiSigDisburseToken,
   useProjectSettingsStore,
+  useSettingsStore,
 } from '@rahat-ui/query';
 import { Heading, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -33,6 +34,9 @@ import { useAccount, useChainId } from 'wagmi';
 import { toast } from 'react-toastify';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { useReadRahatTokenDecimals } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatToken';
+import { SAFE_WALLET } from 'apps/rahat-ui/src/constants/safeWallet';
+import { useReadRahatAccessManagerHasRole } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatAccessManager';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 
 export default function DisbursementHistoryDetail() {
   const { id: projectUUID, disbursementId } = useParams() as {
@@ -54,16 +58,29 @@ export default function DisbursementHistoryDetail() {
   const chainSettings = useProjectSettingsStore(
     (state) => state?.settings?.[projectUUID]?.['BLOCKCHAIN'],
   );
-  const {data:tokenNumber} = useReadRahatTokenDecimals({address:contractSettings?.rahattoken?.address})
+  const { data: tokenNumber } = useReadRahatTokenDecimals({
+    address: contractSettings?.rahattoken?.address,
+  });
 
-
-  const { isConnected } = useAccount();
-  const chainId = useChainId();
-
-  const { data: disbursement } = useGetDisbursement(
-    projectUUID,
-    disbursementId,
+  const rahatAccessManagerAddress = useSettingsStore(
+    (state) => state.contracts?.RAHATACCESSMANAGER?.address,
   );
+  const { isConnected, address } = useAccount();
+  const chainId = useChainId();
+  const safeNetwork = SAFE_WALLET[Number(chainSettings.chainid)];
+  const { data: rahatAccessManagerRole } = useReadRahatAccessManagerHasRole({
+    address: rahatAccessManagerAddress,
+    args: [BigInt(0), address as `0x${string}`],
+    query: {
+      enabled: !!address,
+    },
+  });
+
+  const {
+    data: disbursement,
+    isLoading,
+    refetch,
+  } = useGetDisbursement(projectUUID, disbursementId);
 
   const { data: transactions, isLoading: loadingTransactions } =
     useGetDisbursementTransactions({
@@ -141,6 +158,13 @@ export default function DisbursementHistoryDetail() {
       return;
     }
 
+    if (!rahatAccessManagerRole || !rahatAccessManagerRole[0]) {
+      toast.error(
+        `Only Admin wallets can execute disbursements. Please contact an Admin.`,
+      );
+      return;
+    }
+
     const beneficiaryLength = disbursement?.beneficiaries.length;
 
     // const amountString = disbursement?.DisbursementBeneficiary[0]?.amount
@@ -169,7 +193,8 @@ export default function DisbursementHistoryDetail() {
     });
 
     if (result) {
-      setExecutionResult(result);
+      refetch();
+      setExecutionResult(disbursement);
       setIsModalOpen(true);
     }
   };
@@ -179,6 +204,9 @@ export default function DisbursementHistoryDetail() {
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         data={executionResult}
+        safeNetwork={safeNetwork}
+        safeAddress={safeWallet}
+        setIsModalOpen={setIsModalOpen}
       />
       <div className="p-4 bg-gray-50">
         {/* Header */}
@@ -202,7 +230,7 @@ export default function DisbursementHistoryDetail() {
               disbursement?.status !== 'COMPLETED' &&
               approvals?.approvals?.length > 0 && (
                 <Link
-                  href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
+                  href={`https://app.safe.global/transactions/queue?safe=${safeNetwork}:${safeWallet}`}
                   target="_blank"
                 >
                   <div className="px-4 py-1 rounded-full flex items-center gap-2 bg-blue-50 hover:bg-blue-100">
@@ -218,50 +246,62 @@ export default function DisbursementHistoryDetail() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="rounded-sm bg-card p-4 border">
-            <h1 className="text-sm/6 font-medium text-gray-800 mb-2">Status</h1>
-            <Badge variant="secondary">
-              {disbursement?.type
-                ? capitalizeFirstLetter(disbursement?.status)
-                : 'N/A'}
-            </Badge>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-              <CalendarIcon className="w-4 h-4" />
-              <span>{dateFormat(disbursement?.updatedAt)}</span>
-            </div>
-          </div>
+          {isLoading ? (
+            [...Array(4)].map((_, i) => (
+              <Skeleton key={i} className="h-28 rounded-xl" />
+            ))
+          ) : (
+            <>
+              <div className="rounded-sm bg-card p-4 border">
+                <h1 className="text-sm/6 font-medium text-gray-800 mb-2">
+                  Status
+                </h1>
+                <Badge variant="secondary">
+                  {disbursement?.type
+                    ? capitalizeFirstLetter(disbursement?.status)
+                    : 'N/A'}
+                </Badge>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                  <CalendarIcon className="w-4 h-4" />
+                  <span>{dateFormat(disbursement?.updatedAt)}</span>
+                </div>
+              </div>
 
-          {colorCardData?.map((d) => (
-            <div
-              key={d.label}
-              className={`p-4 rounded-sm border border-${d.color}-200 bg-${d.color}-50/50`}
-            >
-              <div className="flex items-center justify-between mb-6">
-                <p className={`text-sm text-${d.color}-600 font-medium`}>
-                  {d.label}
-                </p>
-                {d.icon}
-              </div>
-              <div className={`text-xl font-semibold text-${d.color}-600`}>
-                {d.value}
-              </div>
-            </div>
-          ))}
+              {colorCardData?.map((d) => (
+                <div
+                  key={d.label}
+                  className={`p-4 rounded-sm border border-${d.color}-200 bg-${d.color}-50/50`}
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <p className={`text-sm text-${d.color}-600 font-medium`}>
+                      {d.label}
+                    </p>
+                    {d.icon}
+                  </div>
+                  <div className={`text-xl font-semibold text-${d.color}-600`}>
+                    {d.value}
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
         </div>
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Transactions Section */}
-          <div className="p-4 border rounded-sm bg-card ">
-            <Heading
-              title="TRANSACTIONS"
-              titleStyle="tracking-wider"
-              description="List of all transactions made"
-            />
-            <ScrollArea className="h-[calc(100vh-500px)]">
-              <div className="space-y-4">
-                {!loadingTransactions ? (
-                  transactions?.length > 0 ? (
+          {loadingTransactions ? (
+            <Skeleton className="h-96 rounded-xl" />
+          ) : (
+            <div className="p-4 border rounded-sm bg-card ">
+              <Heading
+                title="TRANSACTIONS"
+                titleStyle="tracking-wider"
+                description="List of all transactions made"
+              />
+              <ScrollArea className="h-[calc(100vh-500px)]">
+                <div className="space-y-4">
+                  {transactions?.length > 0 ? (
                     transactions?.map((transaction: any) => (
                       <Card key={transaction.id} className="p-4 rounded-sm">
                         <div className="flex items-start justify-between">
@@ -338,27 +378,27 @@ export default function DisbursementHistoryDetail() {
                     ))
                   ) : (
                     <NoResult />
-                  )
-                ) : (
-                  <SpinnerLoader />
-                )}
-              </div>
-            </ScrollArea>
-          </div>
+                  )}
+                </div>
+              </ScrollArea>
+            </div>
+          )}
 
           {/* Approvals Section */}
-          <div className="p-4 border rounded-sm bg-card ">
-            <Heading
-              title="APPROVALS"
-              titleStyle="tracking-wider"
-              description={`Approved: ${
-                approvals?.approvalsCount || 'N/A'
-              } Required: ${approvals?.confirmationsRequired || 'N/A'}`}
-            />
-            <ScrollArea className="h-[calc(100vh-500px)]">
-              <div className="space-y-4">
-                {!loadingApprovals ? (
-                  approvals?.approvals?.length > 0 ? (
+          {loadingApprovals || !approvals ? (
+            <Skeleton className="h-96 rounded-xl" />
+          ) : (
+            <div className="p-4 border rounded-sm bg-card ">
+              <Heading
+                title="APPROVALS"
+                titleStyle="tracking-wider"
+                description={`Approved: ${
+                  approvals?.approvalsCount || 'N/A'
+                } Required: ${approvals?.confirmationsRequired || 'N/A'}`}
+              />
+              <ScrollArea className="h-[calc(100vh-500px)]">
+                <div className="space-y-4">
+                  {approvals?.approvals?.length > 0 ? (
                     approvals?.approvals?.map((approval: any) => (
                       <Card key={approval.owner} className="p-4 rounded-sm">
                         <div className="flex items-start justify-between">
@@ -390,13 +430,11 @@ export default function DisbursementHistoryDetail() {
                     ))
                   ) : (
                     <NoResult />
-                  )
-                ) : (
-                  <SpinnerLoader />
-                )}
-              </div>
-            </ScrollArea>
-          </div>
+                  )}
+                </div>
+              </ScrollArea>
+            </div>
+          )}
         </div>
       </div>
     </>

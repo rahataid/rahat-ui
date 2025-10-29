@@ -1588,22 +1588,22 @@ export const useOfframp = (uuid: UUID) => {
   }, [query.data]);
   return query;
 };
-export const useEntities = (uuid: UUID) => {
-  const q = useProjectAction([PROJECT_SETTINGS_KEYS.ENTITIES]);
+export const useEntities = (uuid: UUID, name: string) => {
+  const q = useProjectAction([name]);
   const { setSettings, settings } = useProjectSettingsStore((state) => ({
     settings: state.settings,
     setSettings: state.setSettings,
   }));
 
   const query = useQuery({
-    queryKey: ['settings.get.entities', uuid],
+    queryKey: [name, uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
           action: 'settings.get',
           payload: {
-            name: PROJECT_SETTINGS_KEYS.ENTITIES,
+            name,
           },
         },
       });
@@ -1617,7 +1617,7 @@ export const useEntities = (uuid: UUID) => {
         ...settings,
         [uuid]: {
           ...settings?.[uuid],
-          [PROJECT_SETTINGS_KEYS.ENTITIES]: query?.data.value,
+          [name]: query?.data.value,
         },
       };
       setSettings(settingsToUpdate);

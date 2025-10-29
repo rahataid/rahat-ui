@@ -54,10 +54,6 @@ export default function InitiateFundTransfer({}: {}) {
     }
   }, [currentEntity]);
 
-  const donar = useMemo(() => {
-    return stakeholders?.find((e: Entities) => e.alias === 'UNICEF Nepal CO');
-  }, [currentUser, stakeholders]);
-
   const { data: balance } = useGetBalance(
     id,
     currentEntity?.smartaccount || '',

@@ -19,8 +19,10 @@ function FundProgressTracker({
         {balances.length > 0 &&
           balances.map((balance, index) => {
             const isConfirmed =
-              transfers?.find((t: any) => t.alias === balance.alias)?.received >
-              0;
+              balance.alias !== 'Beneficiary'
+                ? transfers?.find((t: any) => t.alias === balance.alias)
+                    ?.received > 0
+                : balance.received > 0;
             const isFirst = index === 0;
             const isLast = index === balances.length - 1;
 
@@ -47,7 +49,7 @@ function FundProgressTracker({
                 {!isLast && (
                   <div
                     className={`absolute top-4 left-1/2 h-0.5 w-full ${
-                      isConfirmed || isFirst ? 'bg-green-500' : 'bg-gray-200'
+                      isConfirmed ? 'bg-green-500' : 'bg-gray-200'
                     }`}
                     style={{
                       zIndex: 1,

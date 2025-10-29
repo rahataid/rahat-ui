@@ -16,8 +16,8 @@ interface IProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   data: any;
-  safeNetwork:string;
-  safeAddress:`0x$${string}`;
+  safeNetwork: string;
+  safeAddress: `0x$${string}`;
 }
 
 interface StatusStep {
@@ -32,7 +32,7 @@ export function TransactionInitiatedModal({
   onOpenChange,
   data,
   safeNetwork,
-  safeAddress
+  safeAddress,
 }: IProps) {
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
@@ -62,7 +62,10 @@ export function TransactionInitiatedModal({
   );
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent
+        className="sm:max-w-2xl [&>button]:hidden"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-semibold">
             Transaction Initiated

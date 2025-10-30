@@ -14,6 +14,7 @@ import React, { useState } from 'react';
 import { paths } from '../../../routes/paths';
 import { toast } from 'react-toastify';
 import Image from 'next/image';
+import posthog from 'posthog-js';
 
 export default function AuthPage() {
   const router = useRouter();
@@ -55,6 +56,9 @@ export default function AuthPage() {
 
   const onVerifyOtp = async (e: React.SyntheticEvent) => {
     e.preventDefault();
+    posthog?.setPersonProperties({
+      email: address,
+    });
     await verifyOtp({ otp, challenge, service });
     // router.push(paths.dashboard.root);
   };

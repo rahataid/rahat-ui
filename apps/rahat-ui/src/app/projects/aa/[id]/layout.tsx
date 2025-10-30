@@ -9,6 +9,7 @@ import { UUID } from 'crypto';
 import {
   PROJECT_SETTINGS_KEYS,
   useAAProjectSettingsDatasource,
+  useAAProjectSettingsContract,
   useAAProjectSettingsHazardType,
   useEntities,
   useProjectContractSettings,
@@ -30,6 +31,7 @@ export default function ProjectLayoutRoot({
   useProjectContractSettings(uuid);
   useAAProjectSettingsHazardType(uuid);
   useProjectSubgraphSettings(uuid);
+  useAAProjectSettingsContract(uuid);
   useEntities(uuid, PROJECT_SETTINGS_KEYS.ENTITIES);
   useEntities(uuid, PROJECT_SETTINGS_KEYS.INKIND_ENTITIES);
 

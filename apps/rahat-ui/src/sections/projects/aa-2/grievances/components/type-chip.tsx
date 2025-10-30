@@ -12,16 +12,14 @@ type TypeChipProps = {
 // Using neutral styling for all types
 const typeColors = {
   [GrievanceType.TECHNICAL]: 'bg-[#F2F4F7] text-[#344054]',
-  [GrievanceType.OPERATIONAL]: 'bg-[#F2F4F7] text-[#344054]',
-  [GrievanceType.FINANCIAL]: 'bg-[#F2F4F7] text-[#344054]',
+  [GrievanceType.NON_TECHNICAL]: 'bg-[#F2F4F7] text-[#344054]',
   [GrievanceType.OTHER]: 'bg-[#F2F4F7] text-[#344054]',
   default: 'bg-gray-100 text-gray-800',
 } as const;
 
 const typeLabels = {
   [GrievanceType.TECHNICAL]: 'Technical',
-  [GrievanceType.OPERATIONAL]: 'Operational',
-  [GrievanceType.FINANCIAL]: 'Financial',
+  [GrievanceType.NON_TECHNICAL]: 'Non-Technical',
   [GrievanceType.OTHER]: 'Other',
   default: 'N/A',
 } as const;

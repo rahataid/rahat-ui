@@ -36,6 +36,13 @@ type IProps = {
     createdAt?: string;
     updatedAt?: string;
     tags?: string[];
+    createdByUser?: {
+      name?: string;
+      email?: string;
+      id?: number;
+    };
+    closedAt?: string;
+    resolvedAt?: string;
   };
   closeSecondPanel: VoidFunction;
 };
@@ -186,7 +193,7 @@ export default function GrievanceDetailSplitView({
                 Created by
               </span>
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
-                Aadarsha Lamichhane
+                {grievance?.createdByUser?.name || 'N/A'}
               </span>
             </div>
 
@@ -206,8 +213,8 @@ export default function GrievanceDetailSplitView({
                 Closed at
               </span>
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
-                {grievance?.updatedAt
-                  ? formatDateFull(grievance?.updatedAt)
+                {grievance?.closedAt
+                  ? formatDateFull(grievance?.closedAt)
                   : 'N/A'}
               </span>
             </div>

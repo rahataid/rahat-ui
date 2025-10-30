@@ -1,26 +1,22 @@
-import { StatusChip, PriorityChip, TypeChip } from '../components';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
+import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
 import {
   Calendar,
-  User,
-  Tag,
-  AlertCircle,
-  FileText,
   Clock,
   Flag,
   Hash,
-  Link,
   Info,
   Settings2,
   TriangleAlert,
+  User,
 } from 'lucide-react';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { PriorityChip, StatusChip, TypeChip } from '../components';
 
 // Mock format date function since we don't have the actual utility
 const formatDate = (dateString: string) => {
@@ -197,7 +193,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                 Reported By
               </div>
               <div className="font-inter font-medium text-[14px] leading-[16px] tracking-[0em] text-[#505868]">
-                Aadarsha Lamichhane
+                {grievance?.createdByUser?.name || 'N/A'}
               </div>
             </div>
             <div className="flex flex-col w-[50%] px-3 py-2 gap-1 rounded-[12px] opacity-100 bg-[#FAFAFA]">
@@ -205,7 +201,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                 Reporter&apos;s Contact
               </div>
               <div className="font-inter font-medium text-[14px] leading-[16px] tracking-[0em] text-[#505868]">
-                +977-9845877664
+                {grievance?.reporterContact || 'N/A'}
               </div>
             </div>
           </div>
@@ -232,7 +228,9 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                   Created at
                 </div>
                 <div className="font-inter font-medium text-[14px] leading-[16px] tracking-[0em] text-[#505868]">
-                  2025-01-01
+                  {grievance?.createdAt
+                    ? formatDateFull(grievance?.createdAt)
+                    : 'N/A'}
                 </div>
               </div>
             </div>
@@ -245,7 +243,9 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                   Updated at
                 </div>
                 <div className="font-inter font-medium text-[14px] leading-[16px] tracking-[0em] text-[#505868]">
-                  2025-01-01
+                  {grievance?.updatedAt
+                    ? formatDateFull(grievance?.updatedAt)
+                    : 'N/A'}
                 </div>
               </div>
             </div>

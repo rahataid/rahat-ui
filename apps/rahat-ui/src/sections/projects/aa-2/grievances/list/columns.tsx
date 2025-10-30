@@ -56,7 +56,7 @@ export const useGrievancesTableColumns = () => {
     {
       accessorKey: 'createdBy',
       header: 'Created By',
-      cell: ({ row }) => <div> {row.getValue('createdBy')}</div>,
+      cell: ({ row }) => <div> {row.original?.createdByUser?.name}</div>,
     },
     {
       accessorKey: 'createdAt',

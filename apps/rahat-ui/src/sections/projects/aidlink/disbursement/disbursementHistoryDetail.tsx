@@ -371,7 +371,7 @@ export default function DisbursementHistoryDetail() {
                             </div>
                           </div>
                           <Badge variant="secondary">
-                            {transaction.Disbursement?.status}
+                            {transaction?.status}
                           </Badge>
                         </div>
                       </Card>

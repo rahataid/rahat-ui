@@ -18,7 +18,6 @@ const priorityColors = {
   // High priority - Orange (needs immediate attention)
   [GrievancePriority.HIGH]: 'bg-[#FEF3F2] text-[#B42318]',
   // Critical priority - Red (urgent action required)
-  [GrievancePriority.CRITICAL]: 'bg-[#FEEDEC] text-[#A21F16]',
   // Default - Gray for unknown states
   default: 'bg-gray-100 text-gray-800',
 } as const;
@@ -27,7 +26,6 @@ const priorityIcons = {
   [GrievancePriority.LOW]: ArrowDown,
   [GrievancePriority.MEDIUM]: Flag,
   [GrievancePriority.HIGH]: AlertTriangle,
-  [GrievancePriority.CRITICAL]: AlertTriangle,
   default: Flag,
 } as const;
 
@@ -35,7 +33,6 @@ const priorityLabels = {
   [GrievancePriority.LOW]: 'Low',
   [GrievancePriority.MEDIUM]: 'Medium',
   [GrievancePriority.HIGH]: 'High',
-  [GrievancePriority.CRITICAL]: 'Critical',
   default: 'N/A',
 } as const;
 

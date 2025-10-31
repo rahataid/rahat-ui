@@ -9,7 +9,12 @@ import { useParams, useRouter } from 'next/navigation';
 import GrievancesTabs from './grievances.tabs';
 import { toast } from 'react-toastify';
 import { generateExcel } from 'apps/rahat-ui/src/utils';
-import { useGrievanceListForDownload } from '@rahat-ui/query';
+import {
+  mapGrievancePriorityToLabel,
+  mapGrievanceStatusToLabel,
+  useGrievanceListForDownload,
+  mapGrievanceTypeToLabel,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import {
   Tooltip,
@@ -17,6 +22,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
 
 function GrievancesView() {
   const router = useRouter();
@@ -42,20 +48,22 @@ function GrievancesView() {
     }
 
     const mappedData = grievanceList.map((item) => {
-      const createdDate = new Date(item.createdAt);
-      const updatedDate = new Date(item.updatedAt);
       return {
         Title: item.title || 'N/A',
         Description: item.description || 'N/A',
-        Type: item.type || 'N/A',
-        Status: item.status || 'N/A',
-        Priority: item.priority || 'N/A',
+        Type: mapGrievanceTypeToLabel(item.type) || 'N/A',
+        Status: mapGrievanceStatusToLabel(item.status) || 'N/A',
+        Priority: mapGrievancePriorityToLabel(item.priority) || 'N/A',
         'Reported By': item.reportedBy || 'N/A',
         'Reporter Contact': item.reporterContact || 'N/A',
         Tags: item.tags?.join(', ') || 'N/A',
         'Created By': item.createdByUser?.name || 'N/A',
-        'Created At': createdDate.toLocaleString(),
-        'Updated At': updatedDate.toLocaleString(),
+        'Created At': item?.createdAt ? formatDateFull(item.createdAt) : 'N/A',
+        'Updated At': item?.updatedAt ? formatDateFull(item.updatedAt) : 'N/A',
+        'Closed At': item?.closedAt ? formatDateFull(item.closedAt) : 'N/A',
+        'Resolved At': item?.resolvedAt
+          ? formatDateFull(item.resolvedAt)
+          : 'N/A',
       };
     });
 

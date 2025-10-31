@@ -38,6 +38,8 @@ export function ProjectNav({
   component?: React.ReactNode;
 }) {
   const currentPath = usePathname();
+  const showNotification = currentPath.split('/').includes('aa');
+
   const { user, clearUser } = useUserStore((state) => ({
     user: state.user,
     clearUser: state.clearUser,
@@ -59,7 +61,7 @@ export function ProjectNav({
       </div>
       <div className="flex gap-4 items-center">
         <ConnectWallet />
-        {/* <NotificationButton unreadCount={0} /> */}
+        {showNotification && <NotificationButton unreadCount={0} />}
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Avatar className="h-10 w-10">

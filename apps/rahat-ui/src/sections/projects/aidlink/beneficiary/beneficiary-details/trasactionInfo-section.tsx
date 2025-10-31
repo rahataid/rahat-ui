@@ -68,8 +68,6 @@ const TransactionInfoSection = ({
   );
   const contractAddress = contractSettings?.c2cproject?.address;
 
-  const tokenAddress = contractSettings?.rahattoken?.address;
-
   // const {} = useGetOfframpDetails(uuid,);
 
   const [{ data, fetching, error }] = useQuery({
@@ -80,18 +78,19 @@ const TransactionInfoSection = ({
       first: 50,
       skip: 0,
     },
-    pause: !contractAddress,
+    pause: !contractAddress || !walletAddress,
     requestPolicy: 'cache-and-network',
   });
 
-  const {data:tokenNumber} = useReadRahatTokenDecimals({address:contractSettings?.rahattoken?.address})
-  
+  const { data: tokenNumber } = useReadRahatTokenDecimals({
+    address: contractSettings?.rahattoken?.address,
+  });
 
   const newTransactionHistoryData = useMemo(() => {
     return (
       transactionList?.map((item: any) => ({
         date: item?.date,
-        amount: formatUnits(item?._amount,Number(tokenNumber)),
+        amount: formatUnits(item?._amount, Number(tokenNumber)),
       })) || []
     );
   }, [transactionList]);

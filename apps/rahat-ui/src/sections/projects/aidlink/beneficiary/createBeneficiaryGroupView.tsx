@@ -41,7 +41,10 @@ export default function CreateBeneficiaryGroup() {
   const FormSchema = z.object({
     name: z
       .string()
-      .min(4, { message: 'Group name must be at least 4 character' }),
+      .min(4, { message: 'Group name must be at least 4 character' })
+      .regex(/^[A-Za-z\s]+$/, {
+        message: 'Group name can only contain letters and spaces',
+      }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -64,8 +67,6 @@ export default function CreateBeneficiaryGroup() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-
-  console.log({ selectedListItems });
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -107,11 +108,11 @@ export default function CreateBeneficiaryGroup() {
     },
   });
 
-  const selectedBeneficiaryCount = Object.keys(selectedListItems).length || 0;
+  const selectedBeneficiaries = Object.keys(selectedListItems)
+    .filter((uuid) => selectedListItems[uuid])
+    .map((uuid) => ({ uuid }));
 
-  const selectedBeneficiaries = table
-    .getSelectedRowModel()
-    .rows?.map((row) => ({ uuid: row.original?.uuid }));
+  const selectedBeneficiaryCount = selectedBeneficiaries.length;
 
   const handleClear = () => {
     setSelectedListItems({});
@@ -122,6 +123,7 @@ export default function CreateBeneficiaryGroup() {
   const handleBeneficiaryGroupCreation = async (
     data: z.infer<typeof FormSchema>,
   ) => {
+    if (selectedBeneficiaries.length === 0) return;
     try {
       const payload = {
         name: data?.name,
@@ -154,7 +156,14 @@ export default function CreateBeneficiaryGroup() {
       />
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleBeneficiaryGroupCreation)}>
+        <form
+          onSubmit={form.handleSubmit(handleBeneficiaryGroupCreation)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+            }
+          }}
+        >
           {/* Group Name Input */}
           <FormField
             control={form.control}
@@ -214,7 +223,7 @@ export default function CreateBeneficiaryGroup() {
               <Button type="button" variant="outline" onClick={handleClear}>
                 Clear
               </Button>
-              <Button disabled={selectedBeneficiaryCount === 0}>
+              <Button type="submit" disabled={selectedBeneficiaryCount === 0}>
                 Add ({selectedBeneficiaryCount} beneficiaries)
               </Button>
             </div>

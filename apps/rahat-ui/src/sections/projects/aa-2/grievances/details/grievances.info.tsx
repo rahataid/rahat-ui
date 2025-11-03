@@ -17,6 +17,7 @@ import {
   User,
 } from 'lucide-react';
 import { PriorityChip, StatusChip, TypeChip } from '../components';
+import { TooltipText } from 'apps/rahat-ui/src/components/tootltip.text';
 
 type IProps = {
   grievance: any;
@@ -39,7 +40,11 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                   Grievance ID
                 </p>
                 <p className="mt-1 text-sm font-semibold text-gray-900">
-                  {grievance?.id || grievance?.uuid?.slice(0, 8) || '1234'}
+                  <TooltipText
+                    title={grievance?.id || 'N/A'}
+                    content={grievance?.id || 'N/A'}
+                    contentClassName="w-68"
+                  />
                 </p>
               </div>
             </div>
@@ -126,7 +131,12 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                 Grievance Title
               </label>
               <div className="font-inter font-medium text-[14px] leading-[24px] tracking-normal text-[#3D3D51]">
-                {grievance?.title || 'Grievance Title Goes Here'}
+                <TooltipText
+                  title={grievance?.title || 'N/A'}
+                  content={grievance?.title || 'N/A'}
+                  contentClassName="w-68"
+                  titleClassName="line-clamp-1 !w-auto whitespace-normal break-words"
+                />
               </div>
             </div>
             <div>
@@ -134,7 +144,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                 Description
               </label>
               <p className="font-inter font-medium text-[14px] leading-[24px] tracking-normal text-[#3D3D51]">
-                {grievance?.description || 'Grievance description goes here'}
+                {grievance?.description || 'N/A'}
               </p>
             </div>
           </div>
@@ -181,7 +191,11 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                 Reported By
               </div>
               <div className="font-inter font-medium text-[14px] leading-[16px] tracking-[0em] text-[#505868]">
-                {grievance?.reportedBy || 'N/A'}
+                <TooltipText
+                  title={grievance?.reportedBy || 'N/A'}
+                  content={grievance?.reportedBy || 'N/A'}
+                  contentClassName="w-68"
+                />
               </div>
             </div>
             <div className="flex flex-col w-[50%] px-3 py-2 gap-1 rounded-[12px] opacity-100 bg-[#FAFAFA]">
@@ -189,7 +203,11 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                 Reporter&apos;s Contact
               </div>
               <div className="font-inter font-medium text-[14px] leading-[16px] tracking-[0em] text-[#505868]">
-                {grievance?.reporterContact || 'N/A'}
+                <TooltipText
+                  title={grievance?.reporterContact || 'N/A'}
+                  content={grievance?.reporterContact || 'N/A'}
+                  contentClassName="w-68"
+                />
               </div>
             </div>
           </div>

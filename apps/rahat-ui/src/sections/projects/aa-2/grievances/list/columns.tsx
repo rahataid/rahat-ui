@@ -15,6 +15,7 @@ import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provide
 import GrievanceDetailSplitView from '../details/grievance.detail.split.view';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
+import { TooltipText } from 'apps/rahat-ui/src/components/tootltip.text';
 
 export const useGrievancesTableColumns = () => {
   const { setSecondPanelComponent } = useSecondPanel();
@@ -37,12 +38,22 @@ export const useGrievancesTableColumns = () => {
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: ({ row }) => <div> {row.getValue('title')}</div>,
+      cell: ({ row }) => (
+        <TooltipText
+          title={row.getValue('title')}
+          content={row.getValue('title')}
+        />
+      ),
     },
     {
       accessorKey: 'reportedBy',
       header: 'Reported By',
-      cell: ({ row }) => <div> {row.getValue('reportedBy')}</div>,
+      cell: ({ row }) => (
+        <TooltipText
+          title={row.getValue('reportedBy')}
+          content={row.getValue('reportedBy')}
+        />
+      ),
     },
     {
       accessorKey: 'type',

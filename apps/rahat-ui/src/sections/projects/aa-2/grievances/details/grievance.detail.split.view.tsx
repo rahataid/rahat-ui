@@ -20,6 +20,7 @@ import { Expand, X } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { PriorityChip, TypeChip } from '../components';
+import { TooltipText } from 'apps/rahat-ui/src/components/tootltip.text';
 
 type IProps = {
   grievance: {
@@ -136,13 +137,23 @@ export default function GrievanceDetailSplitView({
           <div className="flex flex-col gap-[16px] py-[24px] px-[24px]">
             <div className="flex flex-col gap-[4px]">
               <div className="font-inter font-semibold text-[18px] leading-[100%] tracking-[-0.02em] text-[#3D3D5A]">
-                {grievance?.title || 'Title demo goes here'}
+                <TooltipText
+                  title={grievance?.title || 'N/A'}
+                  content={grievance?.title || 'N/A'}
+                />
               </div>
               <div className="font-inter font-normal text-[14px] leading-[24px] tracking-[0]  text-[#667085]">
-                Reported By: {grievance?.reportedBy || 'Tiana Lubin'}
+                <div className="flex items-center gap-1">
+                  <span>Reported By:</span>
+                  <TooltipText
+                    title={grievance?.reportedBy || 'N/A'}
+                    content={grievance?.reportedBy || 'N/A'}
+                    titleClassName="inline-block max-w-[200px]"
+                  />
+                </div>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 w-full">
               <label className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-[#667085]">
                 Status
               </label>
@@ -151,7 +162,7 @@ export default function GrievanceDetailSplitView({
                 onValueChange={handleStatusChange}
                 disabled={editStatusMutation.isPending}
               >
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-40">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -174,7 +185,12 @@ export default function GrievanceDetailSplitView({
                 Reporter Contact
               </span>
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
-                {grievance?.reporterContact || 'N/A'}
+                <TooltipText
+                  side="bottom"
+                  title={grievance?.reporterContact || 'N/A'}
+                  content={grievance?.reporterContact || 'N/A'}
+                  contentClassName="w-68"
+                />
               </span>
             </div>
 
@@ -183,7 +199,12 @@ export default function GrievanceDetailSplitView({
                 Grievance ID
               </span>
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
-                {grievance?.id || 'N/A'}
+                <TooltipText
+                  side="bottom"
+                  contentClassName="w-68"
+                  title={grievance?.id || 'N/A'}
+                  content={grievance?.id || 'N/A'}
+                />
               </span>
             </div>
 
@@ -212,7 +233,12 @@ export default function GrievanceDetailSplitView({
                 Created by
               </span>
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
-                {grievance?.createdByUser?.name || 'N/A'}
+                <TooltipText
+                  side="bottom"
+                  contentClassName="w-68"
+                  title={grievance?.createdByUser?.name || 'N/A'}
+                  content={grievance?.createdByUser?.name || 'N/A'}
+                />
               </span>
             </div>
 
@@ -242,9 +268,13 @@ export default function GrievanceDetailSplitView({
             <div className="font-inter font-medium text-[14px] leading-[24px] tracking-[0] text-[#3D3D51]">
               Description
             </div>
-            <div className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-[#334155]">
-              {grievance?.description ||
-                'This grievance requires attention and proper resolution. Please review the details and take appropriate action based on the type of and severity of the issue reported.'}
+            <div className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-[#334155] break-words">
+              <TooltipText
+                contentClassName="w-68"
+                title={grievance?.description || 'N/A'}
+                content={grievance?.description || 'N/A'}
+                titleClassName="line-clamp-2 !w-auto whitespace-normal hover:cursor-pointer"
+              />
             </div>
 
             {/* Tags */}

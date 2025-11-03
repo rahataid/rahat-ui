@@ -13,7 +13,7 @@ type GrievancesLayoutProps = {
 
 const GrievancesLayout: FC<GrievancesLayoutProps> = ({ children }) => {
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
-    const defaultSize = index === 1 ? 40 : 60;
+    const defaultSize = index === 1 ? 30 : 70;
 
     return (
       <ResizablePanel minSize={30} defaultSize={defaultSize} key={index}>

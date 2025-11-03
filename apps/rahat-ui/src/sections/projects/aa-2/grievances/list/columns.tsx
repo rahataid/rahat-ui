@@ -40,6 +40,7 @@ export const useGrievancesTableColumns = () => {
       header: 'Title',
       cell: ({ row }) => (
         <TooltipText
+          titleClassName="w-24"
           title={row.getValue('title')}
           content={row.getValue('title')}
         />
@@ -50,6 +51,7 @@ export const useGrievancesTableColumns = () => {
       header: 'Reported By',
       cell: ({ row }) => (
         <TooltipText
+          titleClassName="w-24"
           title={row.getValue('reportedBy')}
           content={row.getValue('reportedBy')}
         />

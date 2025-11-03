@@ -98,7 +98,7 @@ const GrievancesDetail = () => {
               className="rounded flex gap-1 items-center text-sm font-medium w-auto"
               onClick={() =>
                 router.push(
-                  `/projects/aa/${projectId}/grievances/${grievanceId}/edit?tab=${redirectToHomeTab}`,
+                  `/projects/aa/${projectId}/grievances/${grievanceId}/edit?from=details&tab=${redirectToHomeTab}`,
                 )
               }
             >

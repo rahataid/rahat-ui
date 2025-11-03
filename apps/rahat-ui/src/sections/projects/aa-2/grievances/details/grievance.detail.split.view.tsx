@@ -2,7 +2,6 @@
 
 import { useGrievanceEditStatus, useGrievanceDetails } from '@rahat-ui/query';
 import { GrievanceStatus } from '@rahat-ui/query/lib/grievance/types/grievance';
-import { Button } from '@rahat-ui/shadcn/components/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -16,11 +15,12 @@ import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { grievanceStatus } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
 import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
 import { UUID } from 'crypto';
-import { Expand, X } from 'lucide-react';
+import { Expand, Pencil, X } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { PriorityChip, TypeChip } from '../components';
 import { TooltipText } from 'apps/rahat-ui/src/components/tootltip.text';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
 type IProps = {
   grievance: {
@@ -81,6 +81,13 @@ export default function GrievanceDetailSplitView({
     setCurrentStatus(grievance?.status || 'CLOSED');
   }, [grievance?.status]);
 
+  const handleEdit = () => {
+    router.push(
+      `/projects/aa/${projectId}/grievances/${grievance?.uuid}/edit?from=split&tab=${redirectToHomeTab}`,
+    );
+    closeSecondPanel();
+  };
+
   const handleViewFull = () => {
     router.push(
       `/projects/aa/${projectId}/grievances/${grievance?.uuid}?tab=${redirectToHomeTab}`,
@@ -121,12 +128,23 @@ export default function GrievanceDetailSplitView({
     <div className="h-full border-l bg-white">
       {/* Header */}
       <div className="flex justify-between items-center py-[12px] px-[12px]">
-        <Button variant="ghost" size="sm" onClick={handleViewFull}>
-          <Expand className="h-6 w-6" />
-        </Button>
-        <Button variant="ghost" size="sm" onClick={closeSecondPanel}>
-          <X className="h-6 w-6" />
-        </Button>
+        <div className="flex space-x-2">
+          <TooltipComponent
+            handleOnClick={handleEdit}
+            Icon={Pencil}
+            tip="Edit"
+          />
+          <TooltipComponent
+            handleOnClick={handleViewFull}
+            Icon={Expand}
+            tip="Expand"
+          />
+        </div>
+        <TooltipComponent
+          handleOnClick={closeSecondPanel}
+          Icon={X}
+          tip="Close"
+        />
       </div>
 
       <Separator />
@@ -140,6 +158,7 @@ export default function GrievanceDetailSplitView({
                 <TooltipText
                   title={grievance?.title || 'N/A'}
                   content={grievance?.title || 'N/A'}
+                  titleClassName="line-clamp-1 !w-auto whitespace-normal hover:cursor-pointer"
                 />
               </div>
               <div className="font-inter font-normal text-[14px] leading-[24px] tracking-[0]  text-[#667085]">
@@ -148,7 +167,7 @@ export default function GrievanceDetailSplitView({
                   <TooltipText
                     title={grievance?.reportedBy || 'N/A'}
                     content={grievance?.reportedBy || 'N/A'}
-                    titleClassName="inline-block max-w-[200px]"
+                    titleClassName="inline-block max-w-[200px] line-clamp-1 !w-auto whitespace-normal hover:cursor-pointer"
                   />
                 </div>
               </div>

@@ -99,9 +99,13 @@ export default function EditGrievance() {
   const searchParams = useSearchParams();
   const projectID = params?.id as UUID;
   const grievanceID = params?.uuid as UUID;
-  const redirectToHomeTab = searchParams.get('tab') || 'list'; // Default to 'list' if no tab specified
+  const redirectToHomeTab = searchParams.get('tab') || 'list';
+  const fromSource = searchParams.get('from') || 'split';
   const grievanceListPath = `/projects/aa/${projectID}/grievances?tab=${redirectToHomeTab}`;
   const grievanceDetailsPath = `/projects/aa/${projectID}/grievances/${grievanceID}?tab=${redirectToHomeTab}`;
+
+  const redirectPath =
+    fromSource === 'details' ? grievanceDetailsPath : grievanceListPath;
 
   const [formKey, setFormKey] = React.useState(0);
 
@@ -224,7 +228,7 @@ export default function EditGrievance() {
           tags: data.tags?.map((tag) => tag.text) || [],
         },
       });
-      router.push(grievanceDetailsPath);
+      router.push(redirectPath);
     } catch (error) {
       console.error('Error updating grievance:', error);
     }
@@ -271,7 +275,7 @@ export default function EditGrievance() {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="p-4">
             <div className=" mb-2 flex flex-col space-y-0">
-              <Back path={grievanceDetailsPath} />
+              <Back path={redirectPath} />
 
               <div className="mt-4 flex justify-between items-center">
                 <div>

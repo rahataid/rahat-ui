@@ -31,7 +31,6 @@ export function IndividualLogTab() {
   const handleSubTabChange = (value: string) => {
     router.push(`?tab=individualLog&subTab=${value}`);
   };
-  console.log(subTab, 'subtabvalue outside');
 
   return (
     <div className="bg-white rounded-lg">

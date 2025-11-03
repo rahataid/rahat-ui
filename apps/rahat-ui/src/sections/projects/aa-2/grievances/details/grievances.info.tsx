@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { PriorityChip, StatusChip, TypeChip } from '../components';
 import { TooltipText } from 'apps/rahat-ui/src/components/tootltip.text';
+import { GrievanceStatus } from '@rahat-ui/query/lib/grievance/types/grievance';
 
 type IProps = {
   grievance: any;
@@ -246,10 +247,16 @@ const GrievanceInfo = ({ grievance }: IProps) => {
               </div>
               <div className="flex flex-col gap-[4px]">
                 <div className="font-inter font-normal text-[14px] leading-[24px] tracking-[0em] text-[#3D3D51">
-                  Updated at
+                  {grievance?.status === GrievanceStatus.CLOSED
+                    ? 'Closed at'
+                    : 'Updated at'}
                 </div>
                 <div className="font-inter font-medium text-[14px] leading-[16px] tracking-[0em] text-[#505868]">
-                  {grievance?.updatedAt
+                  {grievance?.status === GrievanceStatus.CLOSED
+                    ? grievance?.closedAt
+                      ? formatDateFull(grievance?.closedAt)
+                      : 'N/A'
+                    : grievance?.updatedAt
                     ? formatDateFull(grievance?.updatedAt)
                     : 'N/A'}
                 </div>

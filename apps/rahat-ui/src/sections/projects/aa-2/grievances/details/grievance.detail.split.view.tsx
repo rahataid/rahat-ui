@@ -255,11 +255,17 @@ export default function GrievanceDetailSplitView({
 
             <div className="flex justify-between">
               <span className="font-inter font-medium text-[14px] leading-[24px] tracking-[0] text-[#3D3D51]">
-                Closed at
+                {grievance?.status === GrievanceStatus.CLOSED
+                  ? 'Closed at'
+                  : 'Updated at'}
               </span>
               <span className="font-inter font-normal text-[14px] leading-[24px] tracking-[0] text-right text-[#334155]">
-                {grievance?.closedAt
-                  ? formatDateFull(grievance?.closedAt)
+                {grievance?.status === GrievanceStatus.CLOSED
+                  ? grievance?.closedAt
+                    ? formatDateFull(grievance?.closedAt)
+                    : 'N/A'
+                  : grievance?.updatedAt
+                  ? formatDateFull(grievance?.updatedAt)
                   : 'N/A'}
               </span>
             </div>

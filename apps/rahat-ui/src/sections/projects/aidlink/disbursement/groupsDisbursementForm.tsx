@@ -20,7 +20,7 @@ type IProps = {
   handleDisbursement: (
     beneficiaryGroups: UUID,
     amount: string,
-    totalAmount:string,
+    totalAmount: string,
     details?: string,
   ) => void;
   isSubmitting: boolean;
@@ -69,7 +69,7 @@ export function BeneficiaryGroupsDisbursementForm({
       selectedGroup as UUID,
       amountPerBeneficiary,
       totalAmount?.toString(),
-      disbursementPurpose
+      disbursementPurpose,
     );
   };
 
@@ -101,7 +101,7 @@ export function BeneficiaryGroupsDisbursementForm({
                   >
                     <RadioGroupItem value={group.uuid} className="mt-1" />
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-gray-900 break-all">
                         {group.name}
                       </div>
                       {/* <div className="text-sm text-gray-600 mt-1">

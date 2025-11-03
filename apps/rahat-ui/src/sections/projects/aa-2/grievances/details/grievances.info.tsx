@@ -18,18 +18,6 @@ import {
 } from 'lucide-react';
 import { PriorityChip, StatusChip, TypeChip } from '../components';
 
-// Mock format date function since we don't have the actual utility
-const formatDate = (dateString: string) => {
-  if (!dateString) return 'N/A';
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
-
 type IProps = {
   grievance: any;
 };
@@ -193,7 +181,7 @@ const GrievanceInfo = ({ grievance }: IProps) => {
                 Reported By
               </div>
               <div className="font-inter font-medium text-[14px] leading-[16px] tracking-[0em] text-[#505868]">
-                {grievance?.createdByUser?.name || 'N/A'}
+                {grievance?.reportedBy || 'N/A'}
               </div>
             </div>
             <div className="flex flex-col w-[50%] px-3 py-2 gap-1 rounded-[12px] opacity-100 bg-[#FAFAFA]">

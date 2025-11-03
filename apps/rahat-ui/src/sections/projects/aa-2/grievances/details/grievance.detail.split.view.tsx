@@ -1,6 +1,6 @@
 'use client';
 
-import { useGrievanceEditStatus } from '@rahat-ui/query';
+import { useGrievanceEditStatus, useGrievanceDetails } from '@rahat-ui/query';
 import { GrievanceStatus } from '@rahat-ui/query/lib/grievance/types/grievance';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -48,14 +48,27 @@ type IProps = {
 };
 
 export default function GrievanceDetailSplitView({
-  grievance,
+  grievance: initialGrievance,
   closeSecondPanel,
 }: IProps) {
   const router = useRouter();
   const { id: projectId } = useParams() as { id: UUID };
   const searchParams = useSearchParams();
   const redirectToHomeTab = searchParams.get('tab') || 'list';
-  console.log('split view redirectToHomeTab', redirectToHomeTab);
+
+  // Fetch latest grievance details to ensure data is up-to-date
+  const { data: grievanceDetails, refetch: refetchGrievanceDetails } =
+    useGrievanceDetails({
+      projectUUID: projectId,
+      grievanceUUID: (initialGrievance?.uuid || '') as UUID,
+    });
+
+  // Merge fetched data with initial prop (fetched data takes precedence)
+  // Use type assertion since API response has more fields than GrievanceFormData
+  const grievance: IProps['grievance'] = {
+    ...initialGrievance,
+    ...(grievanceDetails?.data as IProps['grievance']),
+  };
 
   const [currentStatus, setCurrentStatus] = useState<string>(
     grievance?.status || 'CLOSED',
@@ -89,6 +102,12 @@ export default function GrievanceDetailSplitView({
           },
         },
         {
+          onSuccess: () => {
+            // Refetch grievance details to get updated data after status change
+            if (initialGrievance?.uuid) {
+              refetchGrievanceDetails();
+            }
+          },
           onError: () => {
             setCurrentStatus(previousStatus);
           },

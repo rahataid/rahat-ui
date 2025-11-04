@@ -1,8 +1,6 @@
 import React from 'react';
 import { Table, flexRender } from '@tanstack/react-table';
-import { TableLoader } from './table.loader';
 import { NoResult } from './noResults';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Table as TableComponent,
   TableBody,
@@ -31,61 +29,66 @@ export function DemoTable({
   const hasRows = table.getRowModel().rows?.length > 0;
 
   return (
-    <ScrollArea className={tableHeight ?? `h-[calc(100vh-${height})]`}>
-      <TableComponent>
-        <TableHeader className="sticky top-0 bg-gray-100">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {loading ? (
-            <TableRow>
-              <TableCell
-                colSpan={table.getAllColumns().length}
-                className="h-24 text-center"
-              >
-                <SpinnerLoader />
-              </TableCell>
-            </TableRow>
-          ) : hasRows ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+    <div className={tableHeight ?? `h-[calc(100vh-${height})]`}>
+      <div className="overflow-x-auto overflow-y-auto h-full">
+        <TableComponent className="min-w-full">
+          <TableHeader className="sticky top-0 bg-gray-100 z-10">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell
-                colSpan={table.getAllColumns().length}
-                className="h-24 text-center"
-              >
-                <NoResult message={message} />
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </TableComponent>
-    </ScrollArea>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={table.getAllColumns().length}
+                  className="h-24 text-center"
+                >
+                  <SpinnerLoader />
+                </TableCell>
+              </TableRow>
+            ) : hasRows ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={table.getAllColumns().length}
+                  className="h-24 text-center"
+                >
+                  <NoResult message={message} />
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </TableComponent>
+      </div>
+    </div>
   );
 }

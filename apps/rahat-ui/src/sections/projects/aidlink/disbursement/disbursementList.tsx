@@ -152,7 +152,7 @@ export function DisbursementList({ status }: Props) {
                           <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
                             <Users className="h-5 w-5 text-gray-600" />
                           </div>
-                          <h3 className="text-sm/6 font-medium text-gray-900 capitalize">
+                          <h3 className="text-sm/6 font-medium text-gray-900 capitalize break-all">
                             {disbursement?.groupName}
                           </h3>
                         </div>

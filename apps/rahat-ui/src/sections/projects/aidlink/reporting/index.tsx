@@ -73,8 +73,16 @@ const ReportingPage = () => {
 
   const { data, isPending } = useGetProjectReporting(projectUUID);
 
-  const statsConfig = useMemo(
-    () => [
+  const statsConfig = useMemo(() => {
+    const disbursementData = data?.find(
+      (item: any) => item.name === 'DISBURSEMENT_TOTAL',
+    )?.data;
+
+    const completedData = disbursementData?.find(
+      (item: any) => item.id === 'COMPLETED',
+    );
+
+    return [
       {
         title: 'Total Beneficiaries',
         value:
@@ -86,19 +94,13 @@ const ReportingPage = () => {
       },
       {
         title: 'Total Disbursement Amount',
-        value: `${
-          data
-            ?.find((item: any) => item.name === 'DISBURSEMENT_TOTAL')
-            ?.data?.reduce((sum: number, curr: any) => sum + curr.amount, 0) ||
-          0
-        } USDC`,
+        value: `${completedData?.amount || 0} USDC`,
         subtext: 'Successfully distributed',
         icon: DollarSign,
         iconColor: 'text-green-500',
       },
-    ],
-    [data],
-  );
+    ];
+  }, [data]);
 
   return (
     <ScrollArea className="h-[calc(100vh-60px)]">

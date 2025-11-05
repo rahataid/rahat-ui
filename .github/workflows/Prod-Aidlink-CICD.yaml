@@ -1,4 +1,4 @@
-name: Demo Aidlink CICD
+name: Prod Aidlink CICD
 on:
   push:
     branches:

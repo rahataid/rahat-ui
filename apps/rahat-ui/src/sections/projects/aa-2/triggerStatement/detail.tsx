@@ -4,6 +4,7 @@ import { UUID } from 'crypto';
 
 import {
   useDeleteTriggerStatement,
+  useProjectStore,
   useSingleTriggerStatement,
 } from '@rahat-ui/query';
 
@@ -43,6 +44,7 @@ export default function TriggerStatementDetail() {
     triggerRepeatKey,
     version,
   );
+  const project = useProjectStore((p) => p.singleProject);
 
   const phase = trigger?.phase?.name;
   const source = trigger?.source;
@@ -167,7 +169,11 @@ export default function TriggerStatementDetail() {
               <p className="mb-1">TxHash</p>
               {trigger?.transactionHash ? (
                 <Link
-                  href={`https://stellar.expert/explorer/testnet/tx/${trigger.transactionHash}`}
+                  href={
+                    project?.name == 'AA Unicef EVM'
+                      ? `https://sepolia.basescan.org/tx/${trigger.transactionHash}`
+                      : `https://stellar.expert/explorer/testnet/tx/${trigger.transactionHash}`
+                  }
                   target="_blank"
                   className="block overflow-hidden text-ellipsis whitespace-nowrap text-blue-500 hover:underline"
                 >

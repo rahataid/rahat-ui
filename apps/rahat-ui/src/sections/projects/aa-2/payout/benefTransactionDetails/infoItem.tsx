@@ -1,4 +1,4 @@
-import { useProjectSettingsStore } from '@rahat-ui/query';
+import { useProjectSettingsStore, useProjectStore } from '@rahat-ui/query';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
 import { Copy, CopyCheckIcon } from 'lucide-react';
@@ -27,6 +27,7 @@ export default function InfoItem({
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
+  const project = useProjectStore((p) => p.singleProject);
 
   return (
     <div className="space-y-1 break-words">
@@ -36,7 +37,11 @@ export default function InfoItem({
           <>
             {link ? (
               <a
-                href={getStellarTxUrl(settings, projectId, value)}
+                href={
+                  project?.name == 'AA Unicef EVM'
+                    ? `https://sepolia.basescan.org/tx/${value}`
+                    : getStellarTxUrl(settings, projectId, value)
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer truncate w-24"

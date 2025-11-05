@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import {
   usePaymentProviders,
+  useProjectStore,
   useTriggerForOnePayoutFailed,
 } from '@rahat-ui/query';
 import { useCallback, useEffect, useState } from 'react';
@@ -59,6 +60,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
   const navigation = searchParams.get('from');
   const fspName = usePaymentProviders({ projectUUID: id as UUID });
   const { clickToCopy, copyAction } = useCopy();
+  const project = useProjectStore((p) => p.singleProject);
 
   const handleTriggerSinglePayoutFailed = useCallback(
     async (uuid: string) => {
@@ -152,7 +154,11 @@ export default function useBeneficiaryGroupDetailsLogColumns(
           <div>
             {row?.original?.txHash ? (
               <a
-                href={`https://stellar.expert/explorer/testnet/tx/${row?.original?.txHash}`}
+                href={
+                  project?.name == 'AA Unicef EVM'
+                    ? `https://sepolia.basescan.org/tx/${row?.original?.txHash}`
+                    : `https://stellar.expert/explorer/testnet/tx/${row?.original?.txHash}`
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer"

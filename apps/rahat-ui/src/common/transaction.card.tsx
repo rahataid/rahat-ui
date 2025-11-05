@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import { dateFormat } from '../utils/dateFormate';
 import { intlDateFormat, intlFormatDate } from '../utils';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useProjectStore } from '@rahat-ui/query';
 
 interface IProps {
   cardTitle: string;
@@ -24,6 +25,8 @@ export function TransactionCard({
   loading = false,
   cardHeight = 'h-[calc(80vh-200px)]',
 }: IProps) {
+  const project = useProjectStore((p) => p.singleProject);
+
   return (
     <div className=" rounded-md p-4">
       <Heading
@@ -62,17 +65,22 @@ export function TransactionCard({
                 // Extract transaction hash from the info object
                 const hashParts = [];
                 for (let j = 0; j < 66; j++) {
-                  if (info[j]) {
+                  if (info?.transactionHashes[j]) {
+                    hashParts.push(info?.transactionHashes[j]);
+                  } else {
                     hashParts.push(info[j]);
                   }
                 }
+
                 return hashParts.join('');
               };
 
               const transactionHash = getTransactionHash(i.info);
+
               const explorerUrl =
-                i.chainInfo?.explorerUrl ||
-                'https://stellar.expert/explorer/testnet';
+                i.chainInfo?.explorerUrl || project?.name == 'AA Unicef EVM'
+                  ? `https://sepolia.basescan.org`
+                  : 'https://stellar.expert/explorer/testnet';
               const txUrl = transactionHash
                 ? `${explorerUrl}/tx/${transactionHash}`
                 : `${explorerUrl}/tx/${i.hash || ''}`;

@@ -5,6 +5,7 @@ import {
   useGroupsReservedFunds,
   usePagination,
   useProjectSettingsStore,
+  useProjectStore,
 } from '@rahat-ui/query';
 import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import { DataCard, Heading, TransactionCard } from 'apps/rahat-ui/src/common';
@@ -31,6 +32,7 @@ export default function TokensOverview() {
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
+  const project = useProjectStore((p) => p.singleProject);
 
   const tokenStatus = () => {
     let disbursedValue = 0;

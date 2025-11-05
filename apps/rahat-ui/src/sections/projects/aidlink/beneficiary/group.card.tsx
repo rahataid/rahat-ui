@@ -22,7 +22,7 @@ export default function GroupCard({ group, projectUUID }: GroupProps) {
     >
       <CardHeader className="pb-0">
         <h4 className="font-semibold text-gray-900 break-words">
-          {group.name}
+          {group?.name}
         </h4>
       </CardHeader>
       <CardContent className="pt-4">
@@ -30,12 +30,14 @@ export default function GroupCard({ group, projectUUID }: GroupProps) {
           <div>
             <p className="text-xs text-gray-500">Beneficiaries</p>
             <p className="font-semibold text-lg">
-              {group._count.groupedBeneficiaries}
+              {group?.totalBeneficiaries || group._count.groupedBeneficiaries}
             </p>
           </div>
           <div>
             <p className="text-xs text-gray-500">Total Disbursed</p>
-            <p className="font-semibold text-lg">N/A</p>
+            <p className="font-semibold text-lg">
+              {group?.totalCompletedAmount || 'N/A'}
+            </p>
           </div>
         </div>
 

@@ -68,7 +68,7 @@ export default function CHWView() {
 
   const { data: allData } = useCHWList({
     page: pagination.page,
-    perPage: 0,
+    perPage: pagination.perPage,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,

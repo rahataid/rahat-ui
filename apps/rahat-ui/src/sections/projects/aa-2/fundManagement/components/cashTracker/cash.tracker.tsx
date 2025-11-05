@@ -129,7 +129,7 @@ export function CashTracker() {
             transactionHash: flow.transactionHash, // Include transaction hash if needed
             comments:
               // Budget created when funds originate and end at the same entity
-              resolveAlias(flow.from) === entity.alias && flow.type !== 'sent'
+              !resolveAlias(flow.from)
                 ? 'Budget Created'
                 : flow.type === 'received'
                 ? `Claimed by ${entity.alias}`

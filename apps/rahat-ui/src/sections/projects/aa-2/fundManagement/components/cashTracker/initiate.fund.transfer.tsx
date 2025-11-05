@@ -59,6 +59,59 @@ export default function InitiateFundTransfer({}: {}) {
     currentEntity?.smartaccount || '',
   );
 
+  // Check if a recipient should be disabled based on sender restrictions
+  const isRecipientDisabled = (recipient: Entities): boolean => {
+    // Don't allow sending to self
+    if (recipient.smartaccount === formData.from) {
+      return true;
+    }
+
+    if (!formData.from || !stakeholders) return false;
+
+    // Find indices of sender and recipient
+    const senderIndex = stakeholders.findIndex(
+      (s: Entities) => s.smartaccount === formData.from,
+    );
+    const recipientIndex = stakeholders.findIndex(
+      (s: Entities) => s.smartaccount === recipient.smartaccount,
+    );
+
+    if (senderIndex === -1 || recipientIndex === -1) return false;
+
+    // Find Municipality and Beneficiary indices (if they exist)
+    const municipalityIndex = stakeholders.findIndex((s: Entities) =>
+      s.alias?.toLowerCase().includes('municipality'),
+    );
+    const beneficiaryIndex = stakeholders.findIndex((s: Entities) =>
+      s.alias?.toLowerCase().includes('beneficiary'),
+    );
+
+    // First entity (index 0) can only send to second entity (index 1) or Municipality
+    if (senderIndex === 0) {
+      // Disable if recipient is first entity (itself) or Beneficiary
+      if (recipientIndex === 0 || recipientIndex === beneficiaryIndex) {
+        return true;
+      }
+      // Allow if recipient is second entity (index 1) or Municipality
+      // Disable everything else
+      return recipientIndex !== 1 && recipientIndex !== municipalityIndex;
+    }
+
+    // Municipality can only send to Beneficiary or third entity (index 2)
+    if (municipalityIndex !== -1 && senderIndex === municipalityIndex) {
+      // Disable if recipient is Municipality (itself) or first entity (index 0)
+      if (recipientIndex === municipalityIndex || recipientIndex === 0) {
+        return true;
+      }
+      // Allow if recipient is Beneficiary or third entity (index 2)
+      // Disable everything else
+      return recipientIndex !== 2 && recipientIndex !== beneficiaryIndex;
+    }
+
+    // For other entities, use default behavior (only disable self)
+    return false;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -69,8 +122,8 @@ export default function InitiateFundTransfer({}: {}) {
         amount: formData.amount,
         description: formData.comments,
         alias:
-          stakeholders.find((s) => s.smartaccount === formData.from)?.alias ||
-          'UNKNOWN',
+          stakeholders.find((s: Entities) => s.smartaccount === formData.from)
+            ?.alias || 'UNKNOWN',
       },
     });
 
@@ -127,7 +180,7 @@ export default function InitiateFundTransfer({}: {}) {
                 <SelectValue placeholder="Select sender" />
               </SelectTrigger>
               <SelectContent>
-                {stakeholders?.map((s) => (
+                {stakeholders?.map((s: Entities) => (
                   <SelectItem key={s.address} value={s.smartaccount}>
                     {s.alias}
                   </SelectItem>
@@ -141,7 +194,7 @@ export default function InitiateFundTransfer({}: {}) {
             <Select
               onValueChange={(value) => {
                 const selectedStakeholder = stakeholders?.find(
-                  (s) => s.smartaccount === value,
+                  (s: Entities) => s.smartaccount === value,
                 );
                 const toValue =
                   selectedStakeholder?.alias === 'Beneficiary'
@@ -156,7 +209,7 @@ export default function InitiateFundTransfer({}: {}) {
                 <SelectValue placeholder="Select recipient" />
               </SelectTrigger>
               <SelectContent>
-                {stakeholders?.map((s) => (
+                {stakeholders?.map((s: Entities) => (
                   <SelectItem
                     key={s.address}
                     value={
@@ -164,7 +217,7 @@ export default function InitiateFundTransfer({}: {}) {
                         ? contractSettings?.aaproject?.address
                         : s.smartaccount
                     }
-                    disabled={s.smartaccount === formData.from}
+                    disabled={isRecipientDisabled(s)}
                   >
                     {s.alias}
                   </SelectItem>

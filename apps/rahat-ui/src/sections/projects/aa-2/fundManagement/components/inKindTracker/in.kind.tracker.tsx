@@ -17,8 +17,8 @@ import InKindProgressTracker from './in.kind.progress.tracker';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useUserCurrentUser } from '@rumsan/react-query';
 import SpinnerLoader from '../../../../components/spinner.loader';
-import { Entities, InKindTransfer } from './types';
-import { CircleUserRound, Plus, User } from 'lucide-react';
+import { Entities } from './types';
+import { Plus, User } from 'lucide-react';
 import {
   PROJECT_SETTINGS_KEYS,
   useGetInkind,
@@ -104,14 +104,11 @@ export function InKindTracker() {
             status: flow.type === 'sent' ? 'sent' : ('received' as const),
             type: 'in-kind' as const,
             items: [],
-            comments:
-              resolveAlias(flow.from) === entity.alias && flow.type !== 'sent'
-                ? 'Stock Created'
-                : flow.type === 'received'
-                ? `Claimed by ${entity.alias}`
-                : `In-kind transfer from ${
-                    resolveAlias(flow.from) || 'Unknown'
-                  }`,
+            comments: !resolveAlias(flow.from)
+              ? 'Stock Created'
+              : flow.type === 'received'
+              ? `Claimed by ${entity.alias}`
+              : `In-kind transfer from ${resolveAlias(flow.from) || 'Unknown'}`,
           }));
 
         return [...(pendingTransfers || []), ...(successfulTransfers || [])];

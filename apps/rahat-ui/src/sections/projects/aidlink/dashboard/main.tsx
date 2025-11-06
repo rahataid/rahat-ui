@@ -129,7 +129,7 @@ export default function ProjectDashboard() {
                   ) : (
                     <Card className="rounded-xl p-4">
                       <p className="text-lg font-medium">
-                        Genosis Wallet vs Total Disbursement
+                        Gnosis Wallet vs Total Disbursement
                       </p>
 
                       <div>

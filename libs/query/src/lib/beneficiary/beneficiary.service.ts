@@ -488,7 +488,7 @@ export const useUploadBeneficiary = () => {
           });
           toast.fire({
             icon: 'success',
-            title: `Some beneficiaries were discareded due to error in Xcapit Wallet Creation.${phoneNumber}`,
+            title: `Some beneficiaries were discarded due to error in Xcapit Wallet Creation.${phoneNumber}`,
             timer: 5000,
           });
           return;

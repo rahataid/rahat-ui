@@ -13,12 +13,21 @@ import { useParams, useRouter } from 'next/navigation';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
 
 export default function Budget({}: {}) {
   const [formData, setFormData] = useState({
     amount: '',
     currency: 'NPR',
   });
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const id = useParams().id as UUID;
   const router = useRouter();
@@ -26,6 +35,10 @@ export default function Budget({}: {}) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirm = async () => {
     await createBudget.mutateAsync({
       amount: formData.amount.toString(),
       type: 'cash-tracker',
@@ -35,6 +48,18 @@ export default function Budget({}: {}) {
       amount: '',
       currency: 'NPR',
     });
+    setShowConfirmDialog(false);
+  };
+
+  const formatAmount = (amount: string, currency: string) => {
+    const numAmount = parseFloat(amount);
+    if (isNaN(numAmount)) return '';
+
+    const formatted = numAmount.toLocaleString('en-IN', {
+      maximumFractionDigits: 0,
+    });
+
+    return currency === 'NPR' ? `Rs.${formatted}` : `$${formatted}`;
   };
 
   return (
@@ -97,6 +122,47 @@ export default function Budget({}: {}) {
           </Button>
         </div>
       </form>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle className="text-center">Create Budget</DialogTitle>
+            <DialogDescription className="text-center text-base text-gray-700 mt-2">
+              Are you sure you want to create this budget?
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Budget Amount Display */}
+          <div className="flex flex-col items-center justify-center py-4">
+            <div className="bg-gray-100 rounded-lg px-6 py-4 w-full text-center">
+              <div className="text-2xl font-bold text-gray-900">
+                {formatAmount(formData.amount, formData.currency)}
+              </div>
+              <div className="text-sm text-gray-700 mt-1">Budget Created</div>
+            </div>
+          </div>
+
+          <DialogFooter className="flex-row gap-2 sm:gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 border-blue-500 text-blue-600 hover:bg-blue-50"
+              onClick={() => setShowConfirmDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              className="flex-1 bg-blue-600 hover:bg-blue-700"
+              onClick={handleConfirm}
+              disabled={createBudget.isPending}
+            >
+              {createBudget.isPending ? 'Creating...' : 'Confirm'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

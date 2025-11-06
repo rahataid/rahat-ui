@@ -67,7 +67,7 @@ export default function DisbursementMainView() {
             >
               <p>Pending</p>
               <p className="bg-red-600 text-white w-5 rounded-full ">
-                {data || 5}
+                {data || 0}
               </p>
             </TabsTrigger>
           </TabsList>

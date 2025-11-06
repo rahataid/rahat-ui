@@ -5,7 +5,7 @@ import { ArrowRightLeft, Copy, CopyCheck } from 'lucide-react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
-import { useBeneficiaryRedeemInfo } from '@rahat-ui/query';
+import { useBeneficiaryRedeemInfo, useProjectStore } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
@@ -26,6 +26,7 @@ const TransactionLogs = () => {
   const params = useParams();
   const projectId = params.id as UUID;
   const beneficiaryId = params.uuid as UUID;
+  const project = useProjectStore((p) => p.singleProject);
 
   const { data: transactions, isLoading } = useBeneficiaryRedeemInfo({
     projectUUID: projectId,
@@ -80,7 +81,11 @@ const TransactionLogs = () => {
 
                   <div className="flex items-center">
                     <a
-                      href={`https://stellar.expert/explorer/testnet/tx/${txn?.txHash}`}
+                      href={
+                        project?.name == 'AA Unicef EVM'
+                          ? `https://sepolia.basescan.org/tx/${txn?.txHash}`
+                          : `https://stellar.expert/explorer/testnet/tx/${txn?.txHash}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-base text-blue-500 hover:underline cursor-pointer"

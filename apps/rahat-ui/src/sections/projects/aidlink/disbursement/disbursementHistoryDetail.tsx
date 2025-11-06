@@ -10,7 +10,7 @@ import {
   CopyIcon,
   UsersIcon,
 } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
   PROJECT_SETTINGS_KEYS,
@@ -23,7 +23,7 @@ import {
 } from '@rahat-ui/query';
 import { Heading, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import Link from 'next/link';
@@ -43,6 +43,10 @@ export default function DisbursementHistoryDetail() {
     id: UUID;
     disbursementId: UUID;
   };
+
+  const searchParams = useSearchParams();
+  const queryParam = searchParams.get('from');
+
   const { clickToCopy, copyAction } = useCopy();
 
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
@@ -148,6 +152,13 @@ export default function DisbursementHistoryDetail() {
     projectUUID,
   });
 
+  const backUrl = useMemo(() => {
+    if (queryParam) {
+      return `/projects/aidlink/${projectUUID}/disbursement?tab=${queryParam}`;
+    }
+    return `/projects/aidlink/${projectUUID}/disbursement?tab=disbursementHistory`;
+  }, [queryParam, projectUUID]);
+
   const handleExecute = async () => {
     if (!isConnected) {
       toast.error('Please connect your wallet to execute the transaction.');
@@ -215,6 +226,7 @@ export default function DisbursementHistoryDetail() {
             title="Disbursement History"
             description="List of all your disbursement history"
             backBtn
+            path={backUrl}
           />
           <div className="flex items-center gap-4">
             {approvals?.isExecuted && disbursement?.status !== 'COMPLETED' && (
@@ -371,7 +383,7 @@ export default function DisbursementHistoryDetail() {
                             </div>
                           </div>
                           <Badge variant="secondary">
-                            {transaction.Disbursement?.status}
+                            {transaction?.status}
                           </Badge>
                         </div>
                       </Card>

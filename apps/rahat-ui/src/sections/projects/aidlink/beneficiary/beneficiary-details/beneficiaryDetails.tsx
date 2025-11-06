@@ -41,9 +41,14 @@ export default function BeneficiaryDetailsView() {
     useGetBenefDisbursementDetails(projectUUID, beneficiaryId);
 
   const totalDisbursedAmount = useMemo(() => {
-    return disbursementDetails?.allDisbursements?.reduce(
-      (sum: number, curr: any) => sum + Number(curr?.amount),
-      0,
+    return (
+      disbursementDetails?.allDisbursements
+        ?.filter((item: any) => item.status === 'COMPLETED')
+        ?.reduce(
+          (sum: number, curr: any) =>
+            sum + Number(curr?.amount || curr?.disbursementAmount),
+          0,
+        ) || 0
     );
   }, [disbursementDetails]);
 
@@ -71,7 +76,17 @@ export default function BeneficiaryDetailsView() {
         date: disbursementDetails?.disbursementExecution,
         status: disbursementDetails?.disbursementExecution ? 'done' : 'pending',
       },
-      { label: 'Disbursement Execution', date: disbursementDetails?.latestDisbursementStatus==='COMPLETED' ? disbursementDetails?.latestUpdatedDate:'N/A', status: disbursementDetails?.latestDisbursementStatus==='COMPLETED'?'done': 'pending' },
+      {
+        label: 'Disbursement Execution',
+        date:
+          disbursementDetails?.latestDisbursementStatus === 'COMPLETED'
+            ? disbursementDetails?.latestUpdatedDate
+            : 'N/A',
+        status:
+          disbursementDetails?.latestDisbursementStatus === 'COMPLETED'
+            ? 'done'
+            : 'pending',
+      },
       // { label: 'SMS Notification', date: '', status: 'pending' },
       { label: 'Offramping', date: '', status: 'pending' },
     ],

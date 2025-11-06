@@ -104,7 +104,7 @@ export default function BeneficiaryGroupPage() {
       },
       {
         title: 'Total Disbursed',
-        value: 'N/A',
+        value: group?.disbursement || 'N/A',
         label: 'Sum of amounts sent to group members',
         icon: <Banknote size={18} />,
         color: 'green',
@@ -126,6 +126,7 @@ export default function BeneficiaryGroupPage() {
       <Heading
         title={group?.name || 'N/A'}
         description="Detailed view of the selected beneficiary group"
+        titleStyle="break-all text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl"
         backBtn
         path={`/projects/aidlink/${projectUUID}/beneficiary?tab=beneficiaryGroups`}
       />

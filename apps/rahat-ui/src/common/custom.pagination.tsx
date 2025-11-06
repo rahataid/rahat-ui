@@ -87,7 +87,11 @@ export function CustomPagination({
         </div>
       )}
       <div className="text-sm">
-        Page {currentPage} of {lastPage}
+        {meta?.total && meta.total > 0 ? (
+          <>Page {currentPage} of {lastPage}</>
+        ) : (
+          <>Page {currentPage}</>
+        )}
       </div>
       <div className="space-x-2 items-center justify-center">
         <Button

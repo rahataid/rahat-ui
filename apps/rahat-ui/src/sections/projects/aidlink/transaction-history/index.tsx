@@ -34,13 +34,12 @@ const TransactionHistory = () => {
 
   const columns = useTransactionHistoryTableColumns();
   const {
-    //   pagination,
+    pagination,
     filters,
-    //   setNextPage,
-    //   setPrevPage,
-    //   setPerPage,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
     setFilters,
-    // setPagination,
   } = usePagination();
 
   const table = useReactTable({
@@ -51,7 +50,7 @@ const TransactionHistory = () => {
   });
 
   // Calculate skip value for GraphQL pagination
-  // const skip = (pagination.page - 1) * pagination.perPage;
+  const skip = (pagination.page - 1) * (pagination.perPage || 10);
 
   const handleSearch = useCallback(
     (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
@@ -78,7 +77,8 @@ const TransactionHistory = () => {
     variables: {
       contractAddress,
       to: filterDebouncedSearch || '',
-      first: 1000,
+      first: pagination.perPage || 10,
+      skip,
       orderBy: 'blockTimestamp',
     },
     pause: !contractAddress,
@@ -95,20 +95,33 @@ const TransactionHistory = () => {
     },
   });
 
+  // local state to track whether more pages exist
+  const [hasNext, setHasNext] = useState(false);
+
   useEffect(() => {
     if (data && !error) {
       (async () => {
         try {
-          const transactionsObject: TransactionsObject = data;
+          const transactionsObject: TransactionsObject =
+            data as TransactionsObject;
           const transactionLists = await mergeTransactions(transactionsObject);
           setTransactionList(transactionLists);
+          // Determine whether there is a next page by checking the length of
+          // the paginated field `transferProcesseds` returned by the query.
+          const received = transactionsObject?.transferProcesseds;
+          const receivedLength = Array.isArray(received)
+            ? received.length
+            : transactionLists.length;
+          const next = receivedLength === (pagination.perPage || 10);
+          // store hasNext in component state (not persisted in global pagination store)
+          setHasNext(next);
         } catch {
           setTransactionList([]);
           // setTotalCount(0);
         }
       })();
     }
-  }, [data, error]);
+  }, [data, error, pagination.perPage, setHasNext]);
 
   return (
     <div className="p-4">
@@ -133,26 +146,22 @@ const TransactionHistory = () => {
           message={'No transactions found available'}
           height="280px"
         />
-        {/* <CustomPagination
+        <CustomPagination
           currentPage={pagination.page}
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}
-          setPagination={setPagination}
           perPage={pagination.perPage}
-          total={totalCount}
           meta={{
-            total: totalCount,
-            lastPage: Math.ceil(totalCount / pagination.perPage),
+            // approximate lastPage: if we have a next page, show page+1
+            total: 0,
+            lastPage: hasNext ? pagination.page + 1 : pagination.page,
             currentPage: pagination.page,
             perPage: pagination.perPage,
             prev: pagination.page > 1 ? pagination.page - 1 : null,
-            next:
-              pagination.page < Math.ceil(totalCount / pagination.perPage)
-                ? pagination.page + 1
-                : null,
+            next: hasNext ? pagination.page + 1 : null,
           }}
-        /> */}
+        />
       </div>
     </div>
   );

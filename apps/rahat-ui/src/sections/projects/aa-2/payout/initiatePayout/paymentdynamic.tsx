@@ -44,6 +44,7 @@ import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import useBeneficiariesGroupTableColumn from './useBeneficiariesGroupTablecolumn';
 import { PaymentDialog } from './payment.dialog';
 import { PayoutSkeleton } from './pauoutSkeleton';
+import { AlertCircle } from 'lucide-react';
 
 export interface PaymentState {
   method: string; // dynamic payout type key
@@ -78,43 +79,15 @@ const payoutTypes = {
   },
 };
 
-// {
-//   "name": "PAYOUT_TYPE_CONFIG",
-// "value": {
-//     "types": [
-//         {
-//             "key": "FSP",
-//             "label": "FSP",
-//             "payoutmethod": true
-//         },
-//         {
-//             "key": "CVA",
-//             "label": "CVA",
-//             "toggle": true
-//         }
-//     ]
-// },
-//   "datatype": "OBJECT",
-//   "requiredfields": [],
-//   "isreadonly": false,
-//   "isprivate": false
-// }
 export default function PaymentInitiation() {
   const params = useParams();
   const projectID = params.id as UUID;
   const router = useRouter();
-  const { data: payoutTypes } = useTabConfiguration(
+  const { data: payoutTypes, isLoading } = useTabConfiguration(
     projectID as UUID,
     PROJECT_SETTINGS_KEYS.PAYOUT_TYPE_CONFIG,
   );
 
-  // console.log(data);
-  const initial = {
-    ...initialFormState,
-    method: payoutTypes?.value.types[0].key,
-  };
-
-  console.log(payoutTypes?.value.types[0].key);
   const [formState, setFormState] = useState<PaymentState>(initialFormState);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
@@ -133,16 +106,6 @@ export default function PaymentInitiation() {
     order: 'desc',
     sort: 'createdAt',
   });
-
-  const {
-    pagination,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    setPagination,
-    setFilters,
-    filters,
-  } = usePagination();
 
   const initiatePayout = useCreatePayout();
   const columns = useBeneficiariesGroupTableColumn();
@@ -192,7 +155,6 @@ export default function PaymentInitiation() {
     }
   };
 
-  console.log(formState);
   const handleSubmit = async () => {
     if (!formState.method || !formState.group) return;
 
@@ -230,9 +192,11 @@ export default function PaymentInitiation() {
       }));
     }
   }, [payoutTypes]);
-  if (!formState || !payoutTypes) {
+
+  if (!formState || isLoading) {
     return <PayoutSkeleton />;
   }
+
   return (
     <div className="p-4">
       <div className="flex flex-col space-y-0">
@@ -245,163 +209,180 @@ export default function PaymentInitiation() {
         </div>
       </div>
 
-      <div className="border rounded-sm p-4 space-y-4 bg-white w-full">
-        {/* Dynamic Payout Type Tabs */}
-        <div className="flex justify-between">
-          <RadioGroup
-            value={formState.method}
-            onValueChange={(value) => handleChange('method', value)}
-            className="flex items-center space-x-6 mb-2 w-auto"
-          >
-            {payoutTypes?.value.types.map((type) => (
-              <Label
-                key={type.key}
-                htmlFor={`method-${type.key.toLowerCase()}`}
-                className={`flex cursor-pointer items-center border p-3 w-auto justify-center rounded-sm space-x-2 ${
-                  formState.method === type.key ? 'border-blue-400' : ''
-                }`}
-              >
-                <RadioGroupItem
-                  value={type.key}
-                  id={`method-${type.key.toLowerCase()}`}
-                />
-                <span>{type.label}</span>
-              </Label>
-            ))}
-          </RadioGroup>
-
-          {/* Online/Offline Toggle if mode configurable */}
-          {formState.method &&
-            payoutTypes?.value?.types.find((t) => t.key === formState.method)
-              ?.toggle && (
-              <div className="flex items-center space-x-3">
-                <Switch
-                  checked={formState.mode === PayoutMode.ONLINE}
-                  onCheckedChange={(checked) =>
-                    handleChange(
-                      'mode',
-                      checked ? PayoutMode.ONLINE : PayoutMode.OFFLINE,
-                    )
-                  }
-                  id="mode-switch"
-                />
-                <Label htmlFor="mode-switch">
-                  {formState.mode === PayoutMode.ONLINE ? 'Online' : 'Offline'}
+      {payoutTypes ? (
+        <div className="border rounded-sm p-4 space-y-4 bg-white w-full">
+          {/* Dynamic Payout Type Tabs */}
+          <div className="flex justify-between">
+            <RadioGroup
+              value={formState.method}
+              onValueChange={(value) => handleChange('method', value)}
+              className="flex items-center space-x-6 mb-2 w-auto"
+            >
+              {payoutTypes?.value.types.map((type) => (
+                <Label
+                  key={type.key}
+                  htmlFor={`method-${type.key.toLowerCase()}`}
+                  className={`flex cursor-pointer items-center border p-3 w-auto justify-center rounded-sm space-x-2 ${
+                    formState.method === type.key ? 'border-blue-400' : ''
+                  }`}
+                >
+                  <RadioGroupItem
+                    value={type.key}
+                    id={`method-${type.key.toLowerCase()}`}
+                  />
+                  <span>{type.label}</span>
                 </Label>
-              </div>
-            )}
-        </div>
-        {/* Select Inputs */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* Beneficiary Group */}
-          <div className="flex flex-col space-y-1">
-            <Label className="font-medium text-sm/6">Beneficiary Group</Label>
-            <SelectComponent
-              name="Beneficiary Group"
-              options={beneficiaryGroups?.data?.map((group: any) => group.name)}
-              value={formState.group?.name || ''}
-              onChange={(value) => {
-                const selectedGroup = beneficiaryGroups?.data?.find(
-                  (group: any) => group.name === value,
-                );
-                handleChange('group', selectedGroup);
-              }}
-            />
-          </div>
+              ))}
+            </RadioGroup>
 
-          {/* Vendor or Payment Provider */}
-          {formState.method && formState.mode === PayoutMode.OFFLINE && (
+            {/* Online/Offline Toggle if mode configurable */}
+            {formState.method &&
+              payoutTypes?.value?.types.find((t) => t.key === formState.method)
+                ?.toggle && (
+                <div className="flex items-center space-x-3">
+                  <Switch
+                    checked={formState.mode === PayoutMode.ONLINE}
+                    onCheckedChange={(checked) =>
+                      handleChange(
+                        'mode',
+                        checked ? PayoutMode.ONLINE : PayoutMode.OFFLINE,
+                      )
+                    }
+                    id="mode-switch"
+                  />
+                  <Label htmlFor="mode-switch">
+                    {formState.mode === PayoutMode.ONLINE
+                      ? 'Online'
+                      : 'Offline'}
+                  </Label>
+                </div>
+              )}
+          </div>
+          {/* Select Inputs */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Beneficiary Group */}
             <div className="flex flex-col space-y-1">
-              <Label className="font-medium text-sm/6">Vendor</Label>
+              <Label className="font-medium text-sm/6">Beneficiary Group</Label>
               <SelectComponent
-                name="Vendor"
-                options={vendors?.data?.map((v: any) => v.name)}
-                value={formState.vendor?.name || ''}
+                name="Beneficiary Group"
+                options={beneficiaryGroups?.data?.map(
+                  (group: any) => group.name,
+                )}
+                value={formState.group?.name || ''}
                 onChange={(value) => {
-                  const selectedVendor = vendors?.data?.find(
-                    (v: any) => v.name === value,
+                  const selectedGroup = beneficiaryGroups?.data?.find(
+                    (group: any) => group.name === value,
                   );
-                  handleChange('vendor', selectedVendor);
+                  handleChange('group', selectedGroup);
                 }}
               />
             </div>
-          )}
 
-          {formState.method &&
-            payoutTypes?.value?.types.find((t) => t.key === formState.method)
-              ?.payoutmethod && (
+            {/* Vendor or Payment Provider */}
+            {formState.method && formState.mode === PayoutMode.OFFLINE && (
               <div className="flex flex-col space-y-1">
-                <Label className="font-medium text-sm/6">Payout Method</Label>
+                <Label className="font-medium text-sm/6">Vendor</Label>
                 <SelectComponent
-                  name="Payment Provider"
-                  options={paymentProviders?.map((p: any) => p.name)}
-                  value={formState.paymentProvider?.name || ''}
+                  name="Vendor"
+                  options={vendors?.data?.map((v: any) => v.name)}
+                  value={formState.vendor?.name || ''}
                   onChange={(value) => {
-                    const selected = paymentProviders?.find(
-                      (p: any) => p.name === value,
+                    const selectedVendor = vendors?.data?.find(
+                      (v: any) => v.name === value,
                     );
-                    handleChange('paymentProvider', selected);
+                    handleChange('vendor', selectedVendor);
                   }}
                 />
               </div>
             )}
-        </div>
 
-        {/* Selected Group Info & Actions */}
-        {Object.keys(formState?.group || {}).length > 0 && (
-          <>
-            <div className="flex justify-between mt-4">
-              <div className="flex flex-col">
-                <h1 className="text-lg font-semibold">
-                  Selected: {formState.group.name}
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  {formState.group.groupedBeneficiaries?.length} Total
-                  Beneficiaries
-                </p>
+            {formState.method &&
+              payoutTypes?.value?.types.find((t) => t.key === formState.method)
+                ?.payoutmethod && (
+                <div className="flex flex-col space-y-1">
+                  <Label className="font-medium text-sm/6">Payout Method</Label>
+                  <SelectComponent
+                    name="Payment Provider"
+                    options={paymentProviders?.map((p: any) => p.name)}
+                    value={formState.paymentProvider?.name || ''}
+                    onChange={(value) => {
+                      const selected = paymentProviders?.find(
+                        (p: any) => p.name === value,
+                      );
+                      handleChange('paymentProvider', selected);
+                    }}
+                  />
+                </div>
+              )}
+          </div>
+
+          {/* Selected Group Info & Actions */}
+          {Object.keys(formState?.group || {}).length > 0 && (
+            <>
+              <div className="flex justify-between mt-4">
+                <div className="flex flex-col">
+                  <h1 className="text-lg font-semibold">
+                    Selected: {formState.group.name}
+                  </h1>
+                  <p className="text-sm text-muted-foreground">
+                    {formState.group.groupedBeneficiaries?.length} Total
+                    Beneficiaries
+                  </p>
+                </div>
+
+                <div className="flex justify-end space-x-2">
+                  <Button
+                    variant="outline"
+                    className="rounded-sm w-48"
+                    onClick={() =>
+                      setFormState({
+                        ...initialFormState,
+                        method: payoutTypes?.value.types[0].key || '',
+                      })
+                    }
+                  >
+                    Clear
+                  </Button>
+                  <PaymentDialog
+                    formState={formState}
+                    handleSubmit={handleSubmit}
+                  />
+                </div>
               </div>
 
-              <div className="flex justify-end space-x-2">
-                <Button
-                  variant="outline"
-                  className="rounded-sm w-48"
-                  onClick={() =>
-                    setFormState({
-                      ...initialFormState,
-                      method: payoutTypes?.value.types[0].key || '',
-                    })
+              <div className="my-0 py-0">
+                <SearchInput
+                  name=""
+                  className="mb-2 w-full"
+                  value={
+                    (table
+                      .getColumn('walletAddress')
+                      ?.getFilterValue() as string) ?? ''
                   }
-                >
-                  Clear
-                </Button>
-                <PaymentDialog
-                  formState={formState}
-                  handleSubmit={handleSubmit}
+                  onSearch={(e) =>
+                    table
+                      .getColumn('walletAddress')
+                      ?.setFilterValue(e.target.value)
+                  }
                 />
+                <BeneficiariesGroupTable table={table} />
+                <ClientSidePagination table={table} />
               </div>
-            </div>
-
-            <div className="my-0 py-0">
-              <SearchInput
-                name=""
-                className="mb-2 w-full"
-                value={
-                  (table
-                    .getColumn('walletAddress')
-                    ?.getFilterValue() as string) ?? ''
-                }
-                onSearch={(e) =>
-                  table
-                    .getColumn('walletAddress')
-                    ?.setFilterValue(e.target.value)
-                }
-              />
-              <BeneficiariesGroupTable table={table} />
-              <ClientSidePagination table={table} />
-            </div>
-          </>
-        )}
-      </div>
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="flex flex-col justify-center items-center mt-3 bg-gray-50 p-4">
+          <div className="flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-3">
+            <AlertCircle className="text-red-500 w-8 h-8" />
+          </div>
+          <h2 className="text-2xl font-bold text-red-600 mb-3">Attention</h2>
+          <p className="text-center text-gray-600 max-w-2xl mb-8 leading-relaxed">
+            No payout type configured. Please configure payout types in Settings
+            before creating a payout.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

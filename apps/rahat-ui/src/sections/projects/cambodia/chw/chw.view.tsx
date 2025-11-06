@@ -66,7 +66,7 @@ export default function CHWView() {
     ...(debouncedSearch as any),
   });
 
-  const { data: allData } = useCHWList({
+  const { fetchAllData } = useCHWList({
     page: pagination.page,
     perPage: 0,
     order: 'desc',
@@ -102,7 +102,7 @@ export default function CHWView() {
     },
   });
   const handleDownload = async () => {
-    const rowsToDownload = allData?.data || [];
+    const rowsToDownload = (await fetchAllData()) || [];
     const workbook = XLSX.utils.book_new();
     const worksheetData = rowsToDownload?.map((item: any) => ({
       healthWorkerName: item.name,

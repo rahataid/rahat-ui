@@ -58,7 +58,10 @@ export function BeneficiaryGroupsDisbursementForm({
     (group) => group.uuid === selectedGroup,
   );
   const totalBeneficiaries =
-    selectedGroupData?._count?.groupedBeneficiaries || 0;
+    selectedGroupData?._count?.groupedBeneficiaries ||
+    selectedGroupData?.totalBeneficiaries ||
+    0;
+
   const amountPerBeneficiaryNum = Number.parseFloat(amountPerBeneficiary) || 0;
   const totalAmount = totalBeneficiaries * amountPerBeneficiaryNum;
 
@@ -111,7 +114,9 @@ export function BeneficiaryGroupsDisbursementForm({
                         <div className="flex items-center gap-1">
                           <Users className="h-3 w-3" />
                           <span>
-                            {group._count.groupedBeneficiaries} beneficiaries
+                            {group?._count?.groupedBeneficiaries ||
+                              group?.totalBeneficiaries}{' '}
+                            beneficiaries
                           </span>
                         </div>
                         <div className="flex items-center gap-1">

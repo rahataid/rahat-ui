@@ -106,7 +106,7 @@ export default function DataSources() {
 
   // Backend tabs OR default fallback
   const backendTabs: BackendTab[] =
-    data?.value?.tabs.length > 0
+    data?.value?.tabs?.length > 0
       ? data.value?.tabs
       : [
           { value: 'dhm', label: 'DHM' },

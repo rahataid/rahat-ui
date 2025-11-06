@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { CalendarIcon, Trash2 } from 'lucide-react';
+import { Activity, CalendarIcon, Trash2 } from 'lucide-react';
 
-import { Heading } from 'apps/rahat-ui/src/common';
+import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 
 import {
@@ -28,8 +28,8 @@ import ExternalLinks from './components/externalLink/linkContent';
 import GaugeReading from './components/gaugeReading';
 import GFHDetails from './components/gfh';
 import { GlofasSection } from './components/glofas';
-import { useParams } from 'next/navigation';
-import { useForecastTabSettings } from '@rahat-ui/query';
+import { useParams, useRouter } from 'next/navigation';
+import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 
 const componentMap = {
@@ -98,12 +98,16 @@ export default function DataSources() {
   const { activeTab, setActiveTab } = useActiveTab('dhm');
   const [date, setDate] = useState<Date | null>(null);
   const { id: projectID } = useParams();
-  const { data } = useForecastTabSettings(projectID as UUID);
+  const route = useRouter();
+  const { data } = useTabConfiguration(
+    projectID as UUID,
+    PROJECT_SETTINGS_KEYS.FORECAST_TAB_CONFIG,
+  );
 
   // Backend tabs OR default fallback
   const backendTabs: BackendTab[] =
-    data?.value?.length > 0
-      ? data.value
+    data?.value?.tabs?.length > 0
+      ? data.value?.tabs
       : [
           { value: 'dhm', label: 'DHM' },
           { value: 'glofas', label: 'GLOFAS' },
@@ -127,10 +131,22 @@ export default function DataSources() {
 
   return (
     <div className="p-4">
-      <Heading
-        title="Forecast Data"
-        description="Track all the data sources reports here"
-      />
+      <div className="flex">
+        <Heading
+          title="Forecast Data"
+          description="Track all the data sources reports here"
+        />
+        <IconLabelBtn
+          Icon={Activity}
+          className="ml-auto px-4  text-xs mt-5"
+          variant="outline"
+          name="Data Health Monitor"
+          size={'xs'}
+          handleClick={() => {
+            route.push(`/projects/aa/${projectID}/data-sources/health-monitor`);
+          }}
+        />
+      </div>
 
       <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
         <div className="flex justify-between">

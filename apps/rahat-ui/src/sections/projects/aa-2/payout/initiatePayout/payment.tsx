@@ -46,7 +46,7 @@ import { PaymentDialog } from './payment.dialog';
 import useBeneficiariesGroupTableColumn from './useBeneficiariesGroupTablecolumn';
 
 export interface PaymentState {
-  method: PayoutType;
+  method: string; // dynamic payout type key
   mode: PayoutMode;
   group: Record<string, any>;
   vendor: Record<string, any>;
@@ -132,7 +132,7 @@ export default function PaymentInitiation() {
     },
   });
 
-  console.log(formState);
+  console.log('da', paymentProviders);
   const handleChange = <K extends keyof PaymentState>(
     key: K,
     value: PaymentState[K],

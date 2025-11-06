@@ -26,17 +26,14 @@ export default function CreateDisbursementMain({ type }: IProps) {
   const disburseMultiSig = useDisburseTokenUsingMultisig();
 
   const safeWallet = useProjectSettingsStore(
-      (state) => state?.settings?.[projectUUID]?.['SAFE_WALLET']?.address,
-    );
+    (state) => state?.settings?.[projectUUID]?.['SAFE_WALLET']?.address,
+  );
 
-   const chainSettings = useProjectSettingsStore(
-      (state) => state?.settings?.[projectUUID]?.['BLOCKCHAIN'],
-    );
+  const chainSettings = useProjectSettingsStore(
+    (state) => state?.settings?.[projectUUID]?.['BLOCKCHAIN'],
+  );
 
-
-    const safeNetwork = SAFE_WALLET[Number(chainSettings.chainid)]
-  
-  
+  const safeNetwork = SAFE_WALLET[Number(chainSettings.chainid)];
 
   const { data: projectBeneficiaries, isLoading: isLoadingBeneficiaries } =
     useProjectBeneficiaries({
@@ -57,7 +54,8 @@ export default function CreateDisbursementMain({ type }: IProps) {
     });
 
   const validGroups = groups?.filter(
-    (group: any) => group._count.groupedBeneficiaries > 0,
+    (group: any) =>
+      group?._count?.groupedBeneficiaries || group?.totalBeneficiaries > 0,
   );
 
   const handleCreateDisbursement = async ({
@@ -70,7 +68,7 @@ export default function CreateDisbursementMain({ type }: IProps) {
     beneficiaries?: `0x${string}`[];
     beneficiaryGroup?: UUID;
     amount: string;
-    totalAmount?:string;
+    totalAmount?: string;
     details?: string;
   }) => {
     const result = await disburseMultiSig.mutateAsync({
@@ -102,7 +100,7 @@ export default function CreateDisbursementMain({ type }: IProps) {
         <BeneficiaryDisbursementForm
           beneficiaries={projectBeneficiaries?.data}
           isLoading={isLoadingBeneficiaries}
-          handleDisbursement={(beneficiaries, amount,totalAmount,details) =>
+          handleDisbursement={(beneficiaries, amount, totalAmount, details) =>
             handleCreateDisbursement({
               beneficiaries,
               amount,
@@ -116,7 +114,12 @@ export default function CreateDisbursementMain({ type }: IProps) {
         <BeneficiaryGroupsDisbursementForm
           groups={validGroups}
           isLoading={isLoadingGroups}
-          handleDisbursement={(beneficiaryGroup, amount,totalAmount,details) =>
+          handleDisbursement={(
+            beneficiaryGroup,
+            amount,
+            totalAmount,
+            details,
+          ) =>
             handleCreateDisbursement({
               beneficiaryGroup,
               amount,

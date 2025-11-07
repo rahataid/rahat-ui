@@ -16,7 +16,7 @@ type NavItem = BaseNavItem;
 export const useNavItems = () => {
   const params = useParams();
   const projectId = params.id as string;
-  const { data } = useTabConfiguration(
+  const { data, isLoading } = useTabConfiguration(
     projectId as UUID,
     PROJECT_SETTINGS_KEYS.PROJECT_NAV_CONFIG,
   );
@@ -54,6 +54,7 @@ export const useNavItems = () => {
   const navItems: NavItem[] = [
     {
       title: 'Project Details',
+      isLoading: isLoading,
       children: [...mappedNavItems],
     },
   ];

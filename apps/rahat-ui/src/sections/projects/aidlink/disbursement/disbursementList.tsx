@@ -24,7 +24,7 @@ import {
   DisbursementSelectionType,
   useGetDisbursements,
 } from '@rahat-ui/query';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
@@ -50,6 +50,9 @@ export function DisbursementList({ status }: Props) {
   const [dateRange, setDateRange] = useState<string>('');
 
   const { id: projectUUID } = useParams() as { id: UUID };
+  const searchParams = useSearchParams();
+  const queryParam = searchParams.get('tab');
+
   const router = useRouter();
   const { clickToCopy, copyAction } = useCopy();
 
@@ -252,7 +255,7 @@ export function DisbursementList({ status }: Props) {
                     className="flex items-center space-x-2 bg-transparent"
                     onClick={() =>
                       router.push(
-                        `/projects/aidlink/${projectUUID}/disbursement/${disbursement.uuid}`,
+                        `/projects/aidlink/${projectUUID}/disbursement/${disbursement.uuid}?from=${queryParam}`,
                       )
                     }
                   >

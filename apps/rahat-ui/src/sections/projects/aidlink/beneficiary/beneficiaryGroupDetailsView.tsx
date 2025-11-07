@@ -104,7 +104,7 @@ export default function BeneficiaryGroupPage() {
       },
       {
         title: 'Total Disbursed',
-        value: 'N/A',
+        value: group?.disbursement || 'N/A',
         label: 'Sum of amounts sent to group members',
         icon: <Banknote size={18} />,
         color: 'green',

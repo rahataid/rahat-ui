@@ -161,6 +161,7 @@ const TransactionHistory = () => {
             prev: pagination.page > 1 ? pagination.page - 1 : null,
             next: hasNext ? pagination.page + 1 : null,
           }}
+          showChevrons={false}
         />
       </div>
     </div>

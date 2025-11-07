@@ -28,6 +28,7 @@ type IProps = {
   perPage: number;
   currentPage: number;
   setPagination?: (pagination: any) => void;
+  showChevrons?: boolean;
 };
 
 const pageSizes = ['5', '10', '20', '30', '40', '50', '100'];
@@ -43,8 +44,12 @@ export function CustomPagination({
   perPage,
   total,
   setPagination,
+  showChevrons,
 }: IProps) {
   const lastPage = meta?.lastPage || 1;
+  if (showChevrons === undefined) {
+    showChevrons = true;
+  }
   const setForwardPage = useCallback(() => {
     setPagination?.((prev: Pagination) => ({
       ...prev,
@@ -88,20 +93,24 @@ export function CustomPagination({
       )}
       <div className="text-sm">
         {meta?.total && meta.total > 0 ? (
-          <>Page {currentPage} of {lastPage}</>
+          <>
+            Page {currentPage} of {lastPage}
+          </>
         ) : (
           <>Page {currentPage}</>
         )}
       </div>
       <div className="space-x-2 items-center justify-center">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={setBackwardPage}
-          disabled={currentPage === 1}
-        >
-          <ChevronsLeft />
-        </Button>
+        {showChevrons && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={setBackwardPage}
+            disabled={currentPage === 1}
+          >
+            <ChevronsLeft />
+          </Button>
+        )}
 
         <Button
           variant="outline"
@@ -127,14 +136,16 @@ export function CustomPagination({
         >
           <ChevronRight />
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={setForwardPage}
-          disabled={currentPage === meta?.lastPage}
-        >
-          <ChevronsRight />
-        </Button>
+        {showChevrons && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={setForwardPage}
+            disabled={currentPage === meta?.lastPage}
+          >
+            <ChevronsRight />
+          </Button>
+        )}
       </div>
     </div>
   );

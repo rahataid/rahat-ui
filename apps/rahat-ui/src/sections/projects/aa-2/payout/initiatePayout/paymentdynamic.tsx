@@ -209,7 +209,7 @@ export default function PaymentInitiation() {
         </div>
       </div>
 
-      {payoutTypes ? (
+      {payoutTypes && payoutTypes?.value?.types?.length > 0 ? (
         <div className="border rounded-sm p-4 space-y-4 bg-white w-full">
           {/* Dynamic Payout Type Tabs */}
           <div className="flex justify-between">

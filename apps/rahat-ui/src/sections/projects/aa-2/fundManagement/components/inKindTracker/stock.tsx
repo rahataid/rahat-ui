@@ -54,6 +54,7 @@ export default function Stock({}: {}) {
       currency: 'Hygiene Kits',
     });
     setShowConfirmDialog(false);
+    router.push(`/projects/aa/${id}/fund-management?tab=cashTracker`);
   };
 
   return (

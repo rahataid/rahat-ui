@@ -49,6 +49,7 @@ export default function Budget({}: {}) {
       currency: 'NPR',
     });
     setShowConfirmDialog(false);
+    router.push(`/projects/aa/${id}/fund-management?tab=cashTracker`);
   };
 
   const formatAmount = (amount: string, currency: string) => {

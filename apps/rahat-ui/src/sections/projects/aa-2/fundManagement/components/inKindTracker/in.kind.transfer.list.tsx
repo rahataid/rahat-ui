@@ -228,14 +228,6 @@ function InKindTransferList({
                   {formatDate(new Date(selectedTransfer.transfer.timestamp))}
                 </span>
               </div>
-              {selectedTransfer.transfer.comments && (
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Remarks:</span>
-                  <span className="text-sm font-medium text-gray-900 text-right max-w-[60%]">
-                    {selectedTransfer.transfer.comments}
-                  </span>
-                </div>
-              )}
             </div>
           )}
 

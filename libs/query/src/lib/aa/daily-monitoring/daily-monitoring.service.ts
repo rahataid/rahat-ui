@@ -288,6 +288,7 @@ export const useTabConfiguration = (uuid: UUID, name: string) => {
   const q = useProjectAction([name]);
   const query = useQuery({
     queryKey: [name, uuid],
+    staleTime: Infinity,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,

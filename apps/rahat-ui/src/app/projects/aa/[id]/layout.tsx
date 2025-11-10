@@ -16,6 +16,7 @@ import {
   useProjectSubgraphSettings,
 } from '@rahat-ui/query';
 import GarphQlProvider from 'libs/query/src/lib/aa/graph/graphql-query-client';
+import { useProjectChainSettings } from '../../../../../../../libs/query/src/lib/projects/projects.service';
 
 export default function ProjectLayoutRoot({
   children,
@@ -30,6 +31,7 @@ export default function ProjectLayoutRoot({
   // useAAProjectSettingsHazardType(uuid);
   // useProjectSubgraphSettings(uuid);
   useEntities(uuid);
+  useProjectChainSettings(uuid);
 
   // const dataSources = useProjectSettingsStore(
   //   (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]);

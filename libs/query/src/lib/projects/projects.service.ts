@@ -1533,3 +1533,47 @@ export const useEntities = (uuid: UUID) => {
   }, [query.data]);
   return query;
 };
+
+export const useProjectChainSettings = (uuid: UUID) => {
+  const q = useProjectAction(['PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS']);
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+
+  const query = useQuery({
+    queryKey: [
+      TAGS.GET_PROJECT_SETTINGS,
+      uuid,
+      PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS,
+    ],
+    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]),
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS,
+          },
+        },
+      });
+      return mutate.data.value;
+    },
+  });
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      const settingsToUpdate = {
+        ...settings,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]: query?.data,
+        },
+      };
+      setSettings(settingsToUpdate);
+    }
+  }, [query.data]);
+
+  return query;
+};

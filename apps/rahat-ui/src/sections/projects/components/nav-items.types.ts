@@ -5,6 +5,7 @@ import { ProjectTypes } from '@rahataid/sdk/enums';
 
 export type NavItem = {
   title: string;
+  isLoading?: boolean;
   path?: string;
   icon?: React.ReactNode;
   subtitle?: string | number;

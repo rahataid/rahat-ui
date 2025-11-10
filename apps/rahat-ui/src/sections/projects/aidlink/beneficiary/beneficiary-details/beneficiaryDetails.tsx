@@ -67,11 +67,11 @@ export default function BeneficiaryDetailsView() {
 
   const calculateOfframpData = offrampArray.reduce(
     (acc: OfframpAccumulatorType, item) => {
-      if (item.status === 'SUCCESS') {
+      if (item.status === 'SUCCESSFUL') {
         acc.total += item?.cryptoAmount || 0;
       }
 
-      if (item.status === 'SUCCESS' && !acc.offrampSuccessDate) {
+      if (item.status === 'SUCCESSFUL' && !acc.offrampSuccessDate) {
         acc.offrampSuccessDate = item.updatedAt || null;
       }
 

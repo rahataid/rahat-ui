@@ -24,7 +24,7 @@ import { useDebounce } from '@rahat-ui/query';
 
 const TransactionHistory = () => {
   const [transactionList, setTransactionList] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
+  // const [totalCount, setTotalCount] = useState(0);
   const uuid = useParams().id as UUID;
 
   const contractSettings = useProjectSettingsStore(
@@ -40,7 +40,6 @@ const TransactionHistory = () => {
     setPrevPage,
     setPerPage,
     setFilters,
-    setPagination,
   } = usePagination();
 
   const table = useReactTable({
@@ -51,16 +50,16 @@ const TransactionHistory = () => {
   });
 
   // Calculate skip value for GraphQL pagination
-  const skip = (pagination.page - 1) * pagination.perPage;
+  const skip = (pagination.page - 1) * (pagination.perPage || 10);
 
   const handleSearch = useCallback(
     (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
       const value = event?.target?.value ?? '';
       setFilters({ ...filters, [key]: value });
       // Reset pagination when searching
-      setPagination({ ...pagination, page: 1 });
+      // setPagination({ ...pagination, page: 1 });
     },
-    [filters, setFilters, setPagination],
+    [filters, setFilters],
   );
 
   const debouncedSearch = useDebounce(filters?.search, 500);
@@ -78,11 +77,11 @@ const TransactionHistory = () => {
     variables: {
       contractAddress,
       to: filterDebouncedSearch || '',
-      first: pagination.perPage,
-      skip: skip,
+      first: pagination.perPage || 10,
+      skip,
+      orderBy: 'blockTimestamp',
     },
     pause: !contractAddress,
-    requestPolicy: 'cache-first',
   });
 
   useGraphQLErrorHandler({
@@ -92,30 +91,37 @@ const TransactionHistory = () => {
     onError: (error) => {
       console.log('Error occurred, clearing transaction data:', error);
       setTransactionList([]);
-      setTotalCount(0);
+      // setTotalCount(0);
     },
   });
+
+  // local state to track whether more pages exist
+  const [hasNext, setHasNext] = useState(false);
 
   useEffect(() => {
     if (data && !error) {
       (async () => {
         try {
-          const transactionsObject: TransactionsObject = data;
+          const transactionsObject: TransactionsObject =
+            data as TransactionsObject;
           const transactionLists = await mergeTransactions(transactionsObject);
           setTransactionList(transactionLists);
-
-          // Calculate total count from both transfers and transferProcesseds
-          const transfersCount = data.transfersCount?.length || 0;
-          const transferProcessedsCount =
-            data.transferProcessedsCount?.length || 0;
-          setTotalCount(transfersCount + transferProcessedsCount);
+          // Determine whether there is a next page by checking the length of
+          // the paginated field `transferProcesseds` returned by the query.
+          const received = transactionsObject?.transferProcesseds;
+          const receivedLength = Array.isArray(received)
+            ? received.length
+            : transactionLists.length;
+          const next = receivedLength === (pagination.perPage || 10);
+          // store hasNext in component state (not persisted in global pagination store)
+          setHasNext(next);
         } catch {
           setTransactionList([]);
-          setTotalCount(0);
+          // setTotalCount(0);
         }
       })();
     }
-  }, [data, error]);
+  }, [data, error, pagination.perPage, setHasNext]);
 
   return (
     <div className="p-4">
@@ -145,20 +151,17 @@ const TransactionHistory = () => {
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}
-          setPagination={setPagination}
           perPage={pagination.perPage}
-          total={totalCount}
           meta={{
-            total: totalCount,
-            lastPage: Math.ceil(totalCount / pagination.perPage),
+            // approximate lastPage: if we have a next page, show page+1
+            total: 0,
+            lastPage: hasNext ? pagination.page + 1 : pagination.page,
             currentPage: pagination.page,
             perPage: pagination.perPage,
             prev: pagination.page > 1 ? pagination.page - 1 : null,
-            next:
-              pagination.page < Math.ceil(totalCount / pagination.perPage)
-                ? pagination.page + 1
-                : null,
+            next: hasNext ? pagination.page + 1 : null,
           }}
+          showChevrons={false}
         />
       </div>
     </div>

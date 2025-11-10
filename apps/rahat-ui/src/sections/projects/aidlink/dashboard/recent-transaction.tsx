@@ -43,13 +43,15 @@ const RecentTransaction = () => {
     query: TransactionDetails,
     variables: {
       contractAddress,
+      first: 5,
+      orderBy: 'blockTimestamp',
     },
     pause: !contractAddress,
-    requestPolicy: 'cache-first',
   });
 
-    const {data:tokenNumber} = useReadRahatTokenDecimals({address:contractSettings?.rahattoken?.address})
-  
+  const { data: tokenNumber } = useReadRahatTokenDecimals({
+    address: contractSettings?.rahattoken?.address,
+  });
 
   useGraphQLErrorHandler({
     error,
@@ -94,7 +96,13 @@ const RecentTransaction = () => {
                     {/* Amount */}
                     <div className="flex items-center justify-between">
                       <p className="text-lg ">
-                        {amountFormat(formatUnits(tx.amount.toString(),Number(tokenNumber)))} USDC
+                        {amountFormat(
+                          formatUnits(
+                            tx.amount.toString(),
+                            Number(tokenNumber),
+                          ),
+                        )}{' '}
+                        USDC
                       </p>
                       <Badge className="bg-green-100 text-green-800">
                         Completed

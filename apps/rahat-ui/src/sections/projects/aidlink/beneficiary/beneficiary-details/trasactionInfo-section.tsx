@@ -57,7 +57,7 @@ const TransactionInfoSection = ({
       first: 50,
       skip: 0,
     },
-    pause: !contractAddress,
+    pause: !contractAddress || !walletAddress,
     requestPolicy: 'cache-and-network',
   });
 

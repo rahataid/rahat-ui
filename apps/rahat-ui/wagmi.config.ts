@@ -28,7 +28,7 @@ export const config: Config = createConfig(
       // mainnet,
       // sepolia,
       // arbitrumGoerli,
-      polygon,
+      // polygon,
       rahatChain,
       // baseSepolia,
       // polygonMumbai,
@@ -44,7 +44,7 @@ export const config: Config = createConfig(
       safe(),
     ],
     transports: {
-      [polygon.id]:http(),
+      // [polygon.id]:http(),
       [rahatChain.id]: http(),
       // [mainnet.id]: http(),
       // [sepolia.id]: http(),

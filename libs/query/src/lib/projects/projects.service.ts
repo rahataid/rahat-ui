@@ -1503,12 +1503,12 @@ export const useEntities = (uuid: UUID) => {
     setSettings: state.setSettings,
   }));
 
-  const enableOn =
+  const isChainEVM =
     settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]?.type === 'evm';
 
   const query = useQuery({
     queryKey: ['settings.get.entities', uuid],
-    enabled: enableOn,
+    enabled: isChainEVM,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,

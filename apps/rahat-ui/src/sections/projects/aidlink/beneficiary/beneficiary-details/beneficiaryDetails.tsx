@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import {
   useGetBenefDisbursementDetails,
+  useGetOfframpDetails,
   useProjectBeneficiaryDetail,
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
@@ -25,6 +26,12 @@ import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import Link from 'next/link';
 
+export type OfframpAccumulatorType = {
+  total: number;
+  offrampSuccessDate: string | null;
+  transactions: { date: string; amount: number; status: string }[];
+};
+
 export default function BeneficiaryDetailsView() {
   const { copyAction, clickToCopy } = useCopy();
   const { id: projectUUID, beneficiaryId } = useParams() as {
@@ -36,6 +43,11 @@ export default function BeneficiaryDetailsView() {
     projectUUID,
     uuid: beneficiaryId,
   });
+
+  const { data: OfframpData, isPending } = useGetOfframpDetails(
+    projectUUID,
+    ben?.piiData?.phone || '',
+  );
 
   const { data: disbursementDetails, isLoading: loading } =
     useGetBenefDisbursementDetails(projectUUID, beneficiaryId);
@@ -51,6 +63,33 @@ export default function BeneficiaryDetailsView() {
         ) || 0
     );
   }, [disbursementDetails]);
+
+  const offrampArray = (OfframpData || []) as {
+    status?: string;
+    cryptoAmount?: number;
+    updatedAt?: string | null;
+  }[];
+
+  const calculateOfframpData = offrampArray.reduce(
+    (acc: OfframpAccumulatorType, item) => {
+      if (item.status === 'SUCCESS') {
+        acc.total += item?.cryptoAmount || 0;
+      }
+
+      if (item.status === 'SUCCESS' && !acc.offrampSuccessDate) {
+        acc.offrampSuccessDate = item.updatedAt || null;
+      }
+
+      acc.transactions.push({
+        date: item.updatedAt || '',
+        amount: item.cryptoAmount || 0,
+        status: item.status || '',
+      });
+
+      return acc;
+    },
+    { total: 0, offrampSuccessDate: null, transactions: [] },
+  );
 
   const steps = useMemo(
     () => [
@@ -88,9 +127,13 @@ export default function BeneficiaryDetailsView() {
             : 'pending',
       },
       // { label: 'SMS Notification', date: '', status: 'pending' },
-      { label: 'Offramping', date: '', status: 'pending' },
+      {
+        label: 'Offramping',
+        date: calculateOfframpData.offrampSuccessDate || 'N/A',
+        status: calculateOfframpData.offrampSuccessDate ? 'done' : 'pending',
+      },
     ],
-    [ben, disbursementDetails],
+    [ben, disbursementDetails, calculateOfframpData],
   );
 
   const completedSteps = steps.filter((s) => s.status === 'done').length;
@@ -181,7 +224,8 @@ export default function BeneficiaryDetailsView() {
         <TransactionInfoSection
           totalDisbursedAmount={totalDisbursedAmount}
           walletAddress={ben?.walletAddress || ''}
-          phoneNumber={ben?.piiData?.phone || ''}
+          calculateOfframpData={calculateOfframpData}
+          isPending={isPending}
         />
 
         {/* Transaction Lifecycle Overview */}

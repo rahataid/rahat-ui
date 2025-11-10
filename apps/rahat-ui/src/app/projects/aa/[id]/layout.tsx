@@ -14,9 +14,9 @@ import {
   useProjectContractSettings,
   useProjectSettingsStore,
   useProjectSubgraphSettings,
+  useProjectChainSettings,
 } from '@rahat-ui/query';
 import GarphQlProvider from 'libs/query/src/lib/aa/graph/graphql-query-client';
-import { useProjectChainSettings } from '../../../../../../../libs/query/src/lib/projects/projects.service';
 
 export default function ProjectLayoutRoot({
   children,

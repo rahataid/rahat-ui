@@ -1551,7 +1551,8 @@ export const useProjectChainSettings = (uuid: UUID) => {
       uuid,
       PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS,
     ],
-    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]),
+    staleTime: Infinity,
+    // enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]),
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,

@@ -1390,6 +1390,7 @@ export const useProjectInfo = (uuid: UUID) => {
 
   const query = useQuery({
     queryKey: ['settings.get.project.info', uuid],
+    staleTime: Infinity,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -1428,6 +1429,7 @@ export const useStellarSettings = (uuid: UUID) => {
 
   const query = useQuery({
     queryKey: ['settings.get.stellar.settings', uuid],
+    staleTime: Infinity,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,

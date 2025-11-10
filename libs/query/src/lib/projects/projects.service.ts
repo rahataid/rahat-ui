@@ -1504,7 +1504,7 @@ export const useEntities = (uuid: UUID) => {
   }));
 
   const enableOn =
-    settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS].type === 'evm';
+    settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]?.type === 'evm';
 
   const query = useQuery({
     queryKey: ['settings.get.entities', uuid],

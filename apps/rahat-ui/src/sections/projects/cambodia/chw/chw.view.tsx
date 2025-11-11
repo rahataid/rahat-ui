@@ -75,6 +75,7 @@ export default function CHWView() {
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
+    ...(debouncedSearch as any),
   });
   const handleFilterChange = (event: any) => {
     if (event && event.target) {

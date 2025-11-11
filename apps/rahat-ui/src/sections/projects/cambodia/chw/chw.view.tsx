@@ -25,17 +25,11 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Coins, Download, Home, Search, Settings2, Users } from 'lucide-react';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import ViewColumns from '../../components/view.columns';
 import * as XLSX from 'xlsx';
+import DropdownComponent from '../../components/dropdownComponent';
+import MONTHS from '../../../../utils/months.json';
 export default function CHWView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
@@ -66,12 +60,13 @@ export default function CHWView() {
     ...(debouncedSearch as any),
   });
 
-  const { data: allData } = useCHWList({
+  const { fetchAllData } = useCHWList({
     page: pagination.page,
     perPage: 0,
     order: 'desc',
     sort: 'createdAt',
     projectUUID: id,
+    ...(debouncedSearch as any),
   });
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
@@ -102,7 +97,7 @@ export default function CHWView() {
     },
   });
   const handleDownload = async () => {
-    const rowsToDownload = allData?.data || [];
+    const rowsToDownload = (await fetchAllData()) || [];
     const workbook = XLSX.utils.book_new();
     const worksheetData = rowsToDownload?.map((item: any) => ({
       healthWorkerName: item.name,
@@ -117,6 +112,45 @@ export default function CHWView() {
 
     XLSX.writeFile(workbook, 'HealthWorkers.xlsx');
   };
+  const currentYear = new Date().getFullYear();
+
+  const currentMonth = new Date().getMonth() + 1;
+  const currentMonthName = MONTHS.find(
+    (month) => month.value === currentMonth.toString(),
+  );
+
+  const transformedYearData = Array.from({ length: 5 }, (_, index) => {
+    const year = currentYear + index;
+    return {
+      label: year.toString(),
+      value: year.toString(),
+    };
+  });
+  const transformedMonthData =
+    MONTHS.map((item) => ({
+      label: item.label.toString(),
+      value: item.value.toString(),
+    })) || [];
+
+  const handleSelect = (key: string, value: string) => {
+    if (key === 'Months') {
+      if (filters.year === undefined) {
+        setFilters({ ...filters, month: parseInt(value), year: currentYear });
+        return;
+      }
+      setFilters({ ...filters, month: parseInt(value) });
+    }
+    if (key === 'Years') {
+      setFilters({ ...filters, year: parseInt(value) });
+    }
+  };
+  React.useEffect(() => {
+    setFilters({
+      ...filters,
+      month: undefined,
+      year: undefined,
+    });
+  }, []);
   return (
     <>
       <div className="p-4 bg-white ">
@@ -157,6 +191,20 @@ export default function CHWView() {
               }
               onSearch={(event) => handleFilterChange(event)}
             />
+            <div className="flex">
+              <DropdownComponent
+                transformedData={transformedMonthData}
+                title={'Months'}
+                handleSelect={handleSelect}
+                current={currentMonthName?.label}
+              />
+              <DropdownComponent
+                transformedData={transformedYearData}
+                title={'Years'}
+                handleSelect={handleSelect}
+                current={currentYear}
+              />
+            </div>
 
             <ViewColumns table={table} />
             <Button

@@ -1390,6 +1390,7 @@ export const useProjectInfo = (uuid: UUID) => {
 
   const query = useQuery({
     queryKey: ['settings.get.project.info', uuid],
+    staleTime: Infinity,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -1428,6 +1429,7 @@ export const useStellarSettings = (uuid: UUID) => {
 
   const query = useQuery({
     queryKey: ['settings.get.stellar.settings', uuid],
+    staleTime: Infinity,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -1501,8 +1503,12 @@ export const useEntities = (uuid: UUID) => {
     setSettings: state.setSettings,
   }));
 
+  const isChainEVM =
+    settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]?.type === 'evm';
+
   const query = useQuery({
     queryKey: ['settings.get.entities', uuid],
+    enabled: isChainEVM,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -1529,5 +1535,50 @@ export const useEntities = (uuid: UUID) => {
       setSettings(settingsToUpdate);
     }
   }, [query.data]);
+  return query;
+};
+
+export const useProjectChainSettings = (uuid: UUID) => {
+  const q = useProjectAction(['PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS']);
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+
+  const query = useQuery({
+    queryKey: [
+      TAGS.GET_PROJECT_SETTINGS,
+      uuid,
+      PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS,
+    ],
+    staleTime: Infinity,
+    // enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]),
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS,
+          },
+        },
+      });
+      return mutate.data.value;
+    },
+  });
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      const settingsToUpdate = {
+        ...settings,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS]: query?.data,
+        },
+      };
+      setSettings(settingsToUpdate);
+    }
+  }, [query.data]);
+
   return query;
 };

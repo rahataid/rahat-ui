@@ -14,6 +14,8 @@ import InKind from './inKind';
 import Counselling from './counselling';
 import { CashTracker } from './cashTracker/cash.tracker';
 import { InKindTracker } from './inKindTracker';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
 
 const componentMap = {
   tokenOverview: TokensOverview,
@@ -34,11 +36,10 @@ export default function FundManagementTabs() {
   const { activeTab, setActiveTab } = useActiveTab('tokenOverview');
   const { id: projectID } = useParams();
 
-  const { data } = useTabConfiguration(
+  const { data, isLoading } = useTabConfiguration(
     projectID as UUID,
     PROJECT_SETTINGS_KEYS.FUNDMANAGEMENT_TAB_CONFIG,
   );
-  // console.log(tabs?.value?.tabs);
 
   const backendTabs: BackendTab[] =
     data?.value?.tabs.length > 0
@@ -54,7 +55,18 @@ export default function FundManagementTabs() {
       ...tab,
       component: componentMap[tab.value],
     }));
-  console.log(availableTabsConfig);
+
+  if (isLoading) {
+    return (
+      <>
+        <Skeleton className="h-10 w-96 rounded-sm" />
+        <div className="h-[70vh] flex items-center justify-center">
+          <Loader />
+        </div>
+      </>
+    );
+  }
+
   return (
     <div className="rounded-md p-4 border">
       <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>

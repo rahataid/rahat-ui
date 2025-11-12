@@ -31,6 +31,8 @@ import { GlofasSection } from './components/glofas';
 import { useParams, useRouter } from 'next/navigation';
 import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
 
 const componentMap = {
   dhm: DHMSection,
@@ -99,7 +101,7 @@ export default function DataSources() {
   const [date, setDate] = useState<Date | null>(null);
   const { id: projectID } = useParams();
   const route = useRouter();
-  const { data } = useTabConfiguration(
+  const { data, isLoading } = useTabConfiguration(
     projectID as UUID,
     PROJECT_SETTINGS_KEYS.FORECAST_TAB_CONFIG,
   );
@@ -148,37 +150,46 @@ export default function DataSources() {
         />
       </div>
 
-      <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
-        <div className="flex justify-between">
-          {/* 🔹 Tab Triggers */}
-          <TabsList className="border bg-secondary rounded mb-2">
-            {availableTabsConfig.map((tab) => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
-              >
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+      {isLoading ? (
+        <>
+          <Skeleton className="h-12 w-96 rounded-sm" />
+          <div className="h-[70vh] flex items-center justify-center">
+            <Loader />
+          </div>
+        </>
+      ) : (
+        <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+          <div className="flex justify-between">
+            {/* 🔹 Tab Triggers */}
+            <TabsList className="border bg-secondary rounded mb-2">
+              {availableTabsConfig.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
+                >
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
 
-          {/* 🔹 Dynamic Date Picker (based on hasdatepicker) */}
-          {availableTabsConfig.find(
-            (tab) => tab.value === activeTab && tab.hasdatepicker,
-          ) && <DatePicker date={date} setDate={setDate} />}
-        </div>
+            {/* 🔹 Dynamic Date Picker (based on hasdatepicker) */}
+            {availableTabsConfig.find(
+              (tab) => tab.value === activeTab && tab.hasdatepicker,
+            ) && <DatePicker date={date} setDate={setDate} />}
+          </div>
 
-        {/* 🔹 Tab Contents */}
-        {availableTabsConfig.map((tab) => {
-          const Component = tab.component;
-          return (
-            <TabsContent key={tab.value} value={tab.value}>
-              <Component date={date} />
-            </TabsContent>
-          );
-        })}
-      </Tabs>
+          {/* 🔹 Tab Contents */}
+          {availableTabsConfig.map((tab) => {
+            const Component = tab.component;
+            return (
+              <TabsContent key={tab.value} value={tab.value}>
+                <Component date={date} />
+              </TabsContent>
+            );
+          })}
+        </Tabs>
+      )}
     </div>
   );
 }

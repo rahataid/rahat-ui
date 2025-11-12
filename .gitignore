@@ -9,6 +9,7 @@ tmp
 !.env.example
 .npmrc*
 .npmrc
+fileds.json
 
 # dependencies
 node_modules

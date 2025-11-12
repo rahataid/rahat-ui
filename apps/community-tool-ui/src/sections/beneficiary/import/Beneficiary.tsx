@@ -44,6 +44,7 @@ interface IProps {
 }
 
 export default function BenImp({ fieldDefinitions }: IProps) {
+  console.log('fieldDefinitions', fieldDefinitions);
   const form = useForm({});
   const { rumsanService } = useRSQuery();
   const { data: kbSettings } = useFetchKoboSettings();
@@ -231,7 +232,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     let finalPayload = rawData as any[];
     const selectedTargets = []; // Only submit selected target fields
 
-    for (let m of mappings) {
+    for (const m of mappings) {
       if (m.targetField === TARGET_FIELD.FIRSTNAME) {
         selectedTargets.push(TARGET_FIELD.FIRSTNAME);
         const replaced = finalPayload.map((item: any) => {

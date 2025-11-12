@@ -1,7 +1,6 @@
 import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { NoResult } from 'apps/rahat-ui/src/common';
-import { Search } from 'lucide-react';
 import React from 'react';
 
 interface IDynamicPieChartProps {

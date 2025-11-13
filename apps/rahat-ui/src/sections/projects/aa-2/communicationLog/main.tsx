@@ -23,12 +23,6 @@ export default function CommunicationMainLogsView() {
     useCommsStats(ProjectId as UUID);
   const { data, isLoading: isLoadingBenefStakeholdersStats } =
     useCommuicationStatsforBeneficiaryandStakeHolders(ProjectId as UUID);
-  console.log(
-    'statsBenefStakeholders',
-    commsStatsData,
-    isLoadingCommsStats,
-    isLoadingBenefStakeholdersStats,
-  );
   const { activeTab, setActiveTab } = useActiveTab('overview');
   return (
     <div className="flex flex-col p-4">
@@ -46,7 +40,9 @@ export default function CommunicationMainLogsView() {
           <TabsTrigger
             value="overview"
             className={`${
-              activeTab === 'overview' ? 'bg-white no-underline text-black' : 'text-black'
+              activeTab === 'overview'
+                ? 'bg-white no-underline text-black'
+                : 'text-black'
             } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
           >
             Overview
@@ -54,7 +50,9 @@ export default function CommunicationMainLogsView() {
           <TabsTrigger
             value="communicationLog"
             className={`${
-              activeTab === 'communicationLog' ? 'bg-white no-underline text-black' : 'text-black'
+              activeTab === 'communicationLog'
+                ? 'bg-white no-underline text-black'
+                : 'text-black'
             } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
           >
             Activity Based Log
@@ -62,14 +60,16 @@ export default function CommunicationMainLogsView() {
           <TabsTrigger
             value="individualLog"
             className={`${
-              activeTab === 'individualLog' ? 'bg-white no-underline text-black' : 'text-black'
+              activeTab === 'individualLog'
+                ? 'bg-white no-underline text-black'
+                : 'text-black'
             } h-full w-full p-1 font-inter text-[14px] leading-[24px] tracking-[0%]`}
           >
             Individual Logs
           </TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
-          {isLoadingCommsStats && isLoadingBenefStakeholdersStats ? (
+          {isLoadingCommsStats || isLoadingBenefStakeholdersStats ? (
             <CommunicationsStatsSkeleton />
           ) : (
             <CommunicationsChartsStats

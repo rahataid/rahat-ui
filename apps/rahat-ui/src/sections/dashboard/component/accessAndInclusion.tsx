@@ -1,6 +1,7 @@
 import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
-import { Heading } from 'apps/rahat-ui/src/common';
+import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import React from 'react';
+import DynamicPieChart from '../../projects/components/dynamicPieChart';
 
 const findStat = (data: any[], name: string) => {
   return data.find((s) => s.name === name)?.data ?? [];
@@ -72,7 +73,8 @@ const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
             >
               <h1 className="text-sm font-medium">{title}</h1>
               <div className="w-full flex-1 p-4 pt-0">
-                <PieChart
+                <DynamicPieChart pieData={chart.series} colors={chart.colors} />
+                {/* <PieChart
                   chart={chart}
                   custom
                   projectAA
@@ -80,7 +82,7 @@ const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
                   width="100%"
                   height="100%"
                   type="donut"
-                />
+                /> */}
               </div>
             </div>
           );
@@ -88,18 +90,24 @@ const AccessAndInclusion = ({ statsData }: { statsData: any[] }) => {
         <div className="border rounded-sm p-2 flex flex-col h-full  min-h-[300px] lg:col-span-2 ">
           <h1 className="text-sm font-medium">Bank Accounts</h1>
           <div className="flex-1 overflow-y-auto max-h-[200px] p-2 scrollbar-hidden">
-            <BarChart
-              series={bankCountStats.map((item: any) => item.count)}
-              categories={bankCountStats.map((item: any) => item.id)}
-              colors={['#4A90E2']}
-              xaxisLabels={true}
-              yaxisLabels={true}
-              barHeight={20}
-              horizontal={true}
-              height={Math.max(bankCountStats.length * 30, 200)}
-              width="100%"
-              xaxisTitle="No. of Beneficiaries"
-            />
+            {bankCountStats.length === 0 ? (
+              <div className="flex justify-center h-[300px] items-center">
+                <NoResult size="small" />
+              </div>
+            ) : (
+              <BarChart
+                series={bankCountStats.map((item: any) => item.count)}
+                categories={bankCountStats.map((item: any) => item.id)}
+                colors={['#4A90E2']}
+                xaxisLabels={true}
+                yaxisLabels={true}
+                barHeight={20}
+                horizontal={true}
+                height={Math.max(bankCountStats.length * 30, 200)}
+                width="100%"
+                xaxisTitle="No. of Beneficiaries"
+              />
+            )}
           </div>
         </div>
       </div>

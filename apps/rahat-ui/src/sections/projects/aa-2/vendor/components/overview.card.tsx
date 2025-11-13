@@ -16,8 +16,6 @@ export default function OverviewCard({
   redemptionStats,
   redemptionStatsLoading,
 }: Props) {
-  console.log('data ', data);
-  console.log('redemptionStats', redemptionStats);
   const isBalanceError = data?.balances?.name === 'NotFoundError';
 
   const balance =
@@ -25,7 +23,7 @@ export default function OverviewCard({
       ? data?.balances?.filter((a: any) => a?.asset_code)
       : [];
 
-  const series = [10, 20];
+  // const series = [10, 20];
 
   const vendorBalance = isBalanceError
     ? '-'
@@ -41,8 +39,8 @@ export default function OverviewCard({
           Summary of token and amount disbursed by vendor
         </p>
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col items-center justify-center">
+      <div className="grid grid-cols-1 gap-4">
+        {/* <div className="flex flex-col items-center justify-center">
           {loading ? (
             <Skeleton className="h-[200px] w-[200px] rounded-full" />
           ) : (
@@ -56,9 +54,9 @@ export default function OverviewCard({
               colors={['#2A9D90', '#CFD4DB']}
             />
           )}
-        </div>
+        </div> */}
         <div className="flex flex-col space-y-2">
-          <div className="border rounded-md p-4 bg-blue-50">
+          <div className="border rounded-sm p-4 bg-blue-50">
             <p className="text-xs">Token Disbursed</p>
             <p className="text-2xl font-semibold">
               {data?.vendorAssignedBalance
@@ -66,7 +64,7 @@ export default function OverviewCard({
                 : 'N/A'}
             </p>
           </div>
-          <div className="border rounded-md p-4 bg-blue-50">
+          <div className="border rounded-sm p-4 bg-blue-50">
             <p className="text-xs">Token Redeemed</p>
             <p className="text-2xl font-semibold">
               {redemptionStats?.totalTokensApproved
@@ -74,7 +72,7 @@ export default function OverviewCard({
                 : 'N/A'}
             </p>
           </div>
-          <div className="border rounded-md p-4 bg-green-50">
+          <div className="border rounded-sm p-4 bg-green-50">
             <p className="text-xs">Amount Disbursed</p>
             <p className="text-2xl font-semibold">
               {data?.vendorAssignedBalance
@@ -85,7 +83,7 @@ export default function OverviewCard({
                 : 'N/A'}
             </p>
           </div>
-          <div className="border rounded-md p-4 bg-red-50">
+          <div className="border rounded-sm p-4 bg-red-50">
             <p className="text-xs">Amount Redeemed</p>
             <p className="text-2xl font-semibold">
               {redemptionStats?.totalTokensApproved

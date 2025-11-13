@@ -3,7 +3,6 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { humanizeString } from '../../utils';
 import ExtraInfoCard from './ExtraInfo';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk';
@@ -15,6 +14,7 @@ import {
   TooltipContent,
   TooltipProvider,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
 type IProps = {
   data: any;

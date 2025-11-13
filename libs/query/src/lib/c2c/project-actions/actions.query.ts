@@ -349,21 +349,37 @@ export const useGetDisbursementApprovals = (
   const { projectUUID, disbursementUUID, transactionHash, ...restParams } =
     params;
 
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
   const query = useQuery({
     queryKey: ['get-disbursement-approvals', disbursementUUID],
     queryFn: async () => {
-      const response = await projectActions.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: 'c2cProject.getSafeTransaction',
-          payload: {
-            projectUUID: projectUUID,
-            transactionHash,
-            ...restParams,
+      try {
+        const response = await projectActions.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: 'c2cProject.getSafeTransaction',
+            payload: {
+              projectUUID: projectUUID,
+              transactionHash,
+              ...restParams,
+            },
           },
-        },
-      });
-      return response.data;
+        });
+        return response.data;
+      } catch (error) {
+        toast.fire({
+          title: 'Error',
+          icon: 'error',
+          text: 'Error to get safe transaction data',
+        });
+      }
     },
     enabled: !!transactionHash,
   });

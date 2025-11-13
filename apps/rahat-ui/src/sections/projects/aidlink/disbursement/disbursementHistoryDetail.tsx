@@ -1,13 +1,14 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
+import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   BadgeCheck,
   CalendarIcon,
+  CheckCircle,
   CheckCircleIcon,
+  Clock,
   Copy,
   CopyCheck,
-  CopyIcon,
   UsersIcon,
 } from 'lucide-react';
 import { useParams, useSearchParams } from 'next/navigation';
@@ -37,6 +38,8 @@ import { useReadRahatTokenDecimals } from 'apps/rahat-ui/src/hooks/c2c/contracts
 import { SAFE_WALLET } from 'apps/rahat-ui/src/constants/safeWallet';
 import { useReadRahatAccessManagerHasRole } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatAccessManager';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
 
 export default function DisbursementHistoryDetail() {
   const { id: projectUUID, disbursementId } = useParams() as {
@@ -159,6 +162,47 @@ export default function DisbursementHistoryDetail() {
     return `/projects/aidlink/${projectUUID}/disbursement?tab=disbursementHistory`;
   }, [queryParam, projectUUID]);
 
+  const steps = useMemo(() => {
+    const { createdAt, updatedAt, status } = disbursement || {};
+    const { approvalsCount, confirmationsRequired, executionDate } =
+      approvals || {};
+
+    const allApproved =
+      approvalsCount && confirmationsRequired
+        ? approvalsCount === confirmationsRequired
+        : false;
+
+    return [
+      {
+        label: 'Disbursement Initiation',
+        date: createdAt || '',
+        status: createdAt ? 'done' : 'pending',
+      },
+      {
+        label: 'Safewallet Approval',
+        date: '',
+        approvalsRatio:
+          approvalsCount && confirmationsRequired
+            ? `${approvalsCount} / ${confirmationsRequired}`
+            : '',
+        status: allApproved ? 'done' : 'pending',
+      },
+      {
+        label: 'Safewallet Executed',
+        date: executionDate || '',
+        status: executionDate ? 'done' : 'pending',
+      },
+      {
+        label: 'Disbursement Executed',
+        date: status === 'COMPLETED' ? updatedAt : '',
+        status: status === 'COMPLETED' ? 'done' : 'pending',
+      },
+    ];
+  }, [approvals, disbursement]);
+
+  const completedSteps = steps.filter((s) => s.status === 'done').length;
+  const progress = (completedSteps / steps.length) * 100;
+
   const handleExecute = async () => {
     if (!isConnected) {
       toast.error('Please connect your wallet to execute the transaction.');
@@ -210,7 +254,7 @@ export default function DisbursementHistoryDetail() {
     }
   };
   return (
-    <>
+    <ScrollArea className=" h-[calc(100vh-60px)]">
       <TransactionDisbursedModal
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
@@ -263,7 +307,7 @@ export default function DisbursementHistoryDetail() {
         ) : disbursement ? (
           <>
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
               <div className="rounded-sm bg-card p-4 border">
                 <h1 className="text-sm/6 font-medium text-gray-800 mb-2">
                   Status
@@ -398,7 +442,7 @@ export default function DisbursementHistoryDetail() {
               {loadingApprovals || !approvals ? (
                 <Skeleton className="h-96 rounded-xl" />
               ) : (
-                <div className="p-4 border rounded-sm bg-card ">
+                <div className="p-4 border rounded-sm bg-card">
                   <Heading
                     title="APPROVALS"
                     titleStyle="tracking-wider"
@@ -446,6 +490,82 @@ export default function DisbursementHistoryDetail() {
                 </div>
               )}
             </div>
+
+            {/* Transaction Lifecycle Overview */}
+            <Card className="rounded-2xl shadow-sm mt-4">
+              <CardContent className="p-6">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium">
+                      TRANSACTION LIFECYCLE OVERVIEW
+                    </p>
+                    <Badge
+                      variant="outline"
+                      className="text-blue-600 border-blue-200"
+                    >
+                      In Progress
+                    </Badge>
+                  </div>
+                  {!isLoading && !loadingApprovals && (
+                    <p className="text-sm font-medium">
+                      {Math.round(progress)}% Complete
+                    </p>
+                  )}
+                </div>
+
+                {/* Steps */}
+                {isLoading || loadingApprovals ? (
+                  <Loader />
+                ) : (
+                  <>
+                    {/* Progress Bar */}
+                    <Progress
+                      value={progress}
+                      indicatorColor="bg-blue-500"
+                      className="h-2 mb-6"
+                    />
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                      {steps.map((step, index) => (
+                        <div key={index}>
+                          {step.status === 'done' ? (
+                            <>
+                              <CheckCircle className="mx-auto h-6 w-6 text-green-600" />
+                              <p className="mt-1 text-sm font-medium">
+                                {step.label}
+                              </p>
+                              {step.approvalsRatio && (
+                                <p className="text-sm text-gray-500">
+                                  {step.approvalsRatio}{' '}
+                                </p>
+                              )}
+                              <p className="text-xs text-gray-500">
+                                {dateFormat(step.date)}
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <Clock className="mx-auto h-6 w-6 text-yellow-500" />
+                              <p className="mt-1 text-sm font-medium">
+                                {step.label}
+                              </p>
+                              {step.approvalsRatio && (
+                                <p className="text-sm text-gray-500">
+                                  {step.approvalsRatio}{' '}
+                                </p>
+                              )}
+                              <p className="text-xs capitalize text-gray-500">
+                                {step.status}
+                              </p>
+                            </>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
           </>
         ) : (
           <div className="h-[calc(100vh-165px)] flex items-center justify-center">
@@ -453,6 +573,6 @@ export default function DisbursementHistoryDetail() {
           </div>
         )}
       </div>
-    </>
+    </ScrollArea>
   );
 }

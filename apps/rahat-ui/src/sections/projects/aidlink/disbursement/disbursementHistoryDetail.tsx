@@ -256,14 +256,14 @@ export default function DisbursementHistoryDetail() {
           </div>
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          {isLoading ? (
-            [...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-28 rounded-xl" />
-            ))
-          ) : (
-            <>
+        {isLoading ? (
+          <div className="flex items-center justify-center h-[calc(100vh-165px)]">
+            <SpinnerLoader />
+          </div>
+        ) : disbursement ? (
+          <>
+            {/* Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
               <div className="rounded-sm bg-card p-4 border">
                 <h1 className="text-sm/6 font-medium text-gray-800 mb-2">
                   Status
@@ -295,159 +295,163 @@ export default function DisbursementHistoryDetail() {
                   </div>
                 </div>
               ))}
-            </>
-          )}
-        </div>
-
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Transactions Section */}
-          {loadingTransactions ? (
-            <Skeleton className="h-96 rounded-xl" />
-          ) : (
-            <div className="p-4 border rounded-sm bg-card ">
-              <Heading
-                title="TRANSACTIONS"
-                titleStyle="tracking-wider"
-                description="List of all transactions made"
-              />
-              <ScrollArea className="h-[calc(100vh-500px)]">
-                <div className="space-y-4">
-                  {transactions?.length > 0 ? (
-                    transactions?.map((transaction: any) => (
-                      <Card key={transaction.id} className="p-4 rounded-sm">
-                        <div className="flex items-start justify-between">
-                          <div className="space-y-2">
-                            <div className="text-l font-medium">
-                              {transaction.amount
-                                ? `${transaction.amount} USDC`
-                                : 'N/A'}
-                            </div>
-                            <div className="space-y-1 text-sm text-muted-foreground">
-                              <div className="flex items-center gap-2">
-                                <span>From:</span>
-                                <span className="font-mono">
-                                  {transaction.from
-                                    ? truncateEthAddress(transaction.from)
-                                    : 'N/A'}
-                                </span>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() =>
-                                    clickToCopy(
-                                      transaction.from,
-                                      transaction.from,
-                                    )
-                                  }
-                                >
-                                  {copyAction === transaction.from ? (
-                                    <CopyCheck size={16} />
-                                  ) : (
-                                    <Copy size={16} />
-                                  )}
-                                </Button>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span>To:</span>
-                                <span className="font-mono">
-                                  {transaction.beneficiaryWalletAddress
-                                    ? truncateEthAddress(
-                                        transaction.beneficiaryWalletAddress,
-                                      )
-                                    : 'N/A'}
-                                </span>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() =>
-                                    clickToCopy(
-                                      transaction.beneficiaryWalletAddress,
-                                      transaction.beneficiaryWalletAddress,
-                                    )
-                                  }
-                                >
-                                  {copyAction ===
-                                  transaction.beneficiaryWalletAddress ? (
-                                    <CopyCheck size={16} />
-                                  ) : (
-                                    <Copy size={16} />
-                                  )}
-                                </Button>
-                              </div>
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              {transaction.updatedAt
-                                ? dateFormat(transaction.updatedAt)
-                                : 'N/A'}
-                            </div>
-                          </div>
-                          <Badge variant="secondary">
-                            {transaction?.status}
-                          </Badge>
-                        </div>
-                      </Card>
-                    ))
-                  ) : (
-                    <NoResult />
-                  )}
-                </div>
-              </ScrollArea>
             </div>
-          )}
 
-          {/* Approvals Section */}
-          {loadingApprovals || !approvals ? (
-            <Skeleton className="h-96 rounded-xl" />
-          ) : (
-            <div className="p-4 border rounded-sm bg-card ">
-              <Heading
-                title="APPROVALS"
-                titleStyle="tracking-wider"
-                description={`Approved: ${
-                  approvals?.approvalsCount || 'N/A'
-                } Required: ${approvals?.confirmationsRequired || 'N/A'}`}
-              />
-              <ScrollArea className="h-[calc(100vh-500px)]">
-                <div className="space-y-4">
-                  {approvals?.approvals?.length > 0 ? (
-                    approvals?.approvals?.map((approval: any) => (
-                      <Card key={approval.owner} className="p-4 rounded-sm">
-                        <div className="flex items-start justify-between">
-                          <div className="space-y-2">
-                            <div className="font-medium">
-                              {approval.owner
-                                ? truncateEthAddress(approval.owner)
-                                : 'N/A'}
+            {/* Main Content */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Transactions Section */}
+              {loadingTransactions ? (
+                <Skeleton className="h-96 rounded-xl" />
+              ) : (
+                <div className="p-4 border rounded-sm bg-card ">
+                  <Heading
+                    title="TRANSACTIONS"
+                    titleStyle="tracking-wider"
+                    description="List of all transactions made"
+                  />
+                  <ScrollArea className="h-[calc(100vh-500px)]">
+                    <div className="space-y-4">
+                      {transactions?.length > 0 ? (
+                        transactions?.map((transaction: any) => (
+                          <Card key={transaction.id} className="p-4 rounded-sm">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="text-l font-medium">
+                                  {transaction.amount
+                                    ? `${transaction.amount} USDC`
+                                    : 'N/A'}
+                                </div>
+                                <div className="space-y-1 text-sm text-muted-foreground">
+                                  <div className="flex items-center gap-2">
+                                    <span>From:</span>
+                                    <span className="font-mono">
+                                      {transaction.from
+                                        ? truncateEthAddress(transaction.from)
+                                        : 'N/A'}
+                                    </span>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() =>
+                                        clickToCopy(
+                                          transaction.from,
+                                          transaction.from,
+                                        )
+                                      }
+                                    >
+                                      {copyAction === transaction.from ? (
+                                        <CopyCheck size={16} />
+                                      ) : (
+                                        <Copy size={16} />
+                                      )}
+                                    </Button>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span>To:</span>
+                                    <span className="font-mono">
+                                      {transaction.beneficiaryWalletAddress
+                                        ? truncateEthAddress(
+                                            transaction.beneficiaryWalletAddress,
+                                          )
+                                        : 'N/A'}
+                                    </span>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() =>
+                                        clickToCopy(
+                                          transaction.beneficiaryWalletAddress,
+                                          transaction.beneficiaryWalletAddress,
+                                        )
+                                      }
+                                    >
+                                      {copyAction ===
+                                      transaction.beneficiaryWalletAddress ? (
+                                        <CopyCheck size={16} />
+                                      ) : (
+                                        <Copy size={16} />
+                                      )}
+                                    </Button>
+                                  </div>
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                  {transaction.updatedAt
+                                    ? dateFormat(transaction.updatedAt)
+                                    : 'N/A'}
+                                </div>
+                              </div>
+                              <Badge variant="secondary">
+                                {transaction?.status}
+                              </Badge>
                             </div>
-                            <div className="text-sm text-muted-foreground">
-                              Submission:{' '}
-                              {approval.submissionDate
-                                ? dateFormat(approval.submissionDate)
-                                : 'N/A'}
-                            </div>
-                          </div>
-                          <Badge
-                            variant="outline"
-                            className={`${
-                              approval.hasApproved
-                                ? 'border-green-200 text-green-700 bg-green-50'
-                                : 'border-orange-200 text-orange-700 bg-orange-50'
-                            }`}
-                          >
-                            {approval.hasApproved ? 'Approved' : 'Pending'}
-                          </Badge>
-                        </div>
-                      </Card>
-                    ))
-                  ) : (
-                    <NoResult />
-                  )}
+                          </Card>
+                        ))
+                      ) : (
+                        <NoResult />
+                      )}
+                    </div>
+                  </ScrollArea>
                 </div>
-              </ScrollArea>
+              )}
+
+              {/* Approvals Section */}
+              {loadingApprovals || !approvals ? (
+                <Skeleton className="h-96 rounded-xl" />
+              ) : (
+                <div className="p-4 border rounded-sm bg-card ">
+                  <Heading
+                    title="APPROVALS"
+                    titleStyle="tracking-wider"
+                    description={`Approved: ${
+                      approvals?.approvalsCount || 'N/A'
+                    } Required: ${approvals?.confirmationsRequired || 'N/A'}`}
+                  />
+                  <ScrollArea className="h-[calc(100vh-500px)]">
+                    <div className="space-y-4">
+                      {approvals?.approvals?.length > 0 ? (
+                        approvals?.approvals?.map((approval: any) => (
+                          <Card key={approval.owner} className="p-4 rounded-sm">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="font-medium">
+                                  {approval.owner
+                                    ? truncateEthAddress(approval.owner)
+                                    : 'N/A'}
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                  Submission:{' '}
+                                  {approval.submissionDate
+                                    ? dateFormat(approval.submissionDate)
+                                    : 'N/A'}
+                                </div>
+                              </div>
+                              <Badge
+                                variant="outline"
+                                className={`${
+                                  approval.hasApproved
+                                    ? 'border-green-200 text-green-700 bg-green-50'
+                                    : 'border-orange-200 text-orange-700 bg-orange-50'
+                                }`}
+                              >
+                                {approval.hasApproved ? 'Approved' : 'Pending'}
+                              </Badge>
+                            </div>
+                          </Card>
+                        ))
+                      ) : (
+                        <NoResult />
+                      )}
+                    </div>
+                  </ScrollArea>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </>
+        ) : (
+          <div className="h-[calc(100vh-165px)] flex items-center justify-center">
+            <NoResult />
+          </div>
+        )}
       </div>
     </>
   );

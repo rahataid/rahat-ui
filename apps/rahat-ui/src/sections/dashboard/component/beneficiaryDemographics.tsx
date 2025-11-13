@@ -75,7 +75,7 @@ const BeneficiaryDemographics = ({ benefStats }: any) => {
           {/* Gender Distribution */}
           <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
             <h1 className="text-sm font-medium">Gender Distribution</h1>
-            <div className="w-full flex-1 p-4 pt-0">
+            <div className="w-full flex-1 p-4 pt-0 flex justify-center items-center">
               <DynamicPieChart pieData={genderData} colors={genderColors} />
             </div>
           </div>

@@ -31,8 +31,8 @@ const IvrCampaignDetails = () => {
   const ivrTransportCuids = transportData?.data
     ?.filter((transport: any) => transport.name.toLowerCase() === 'ivr')
     .map((transport: any) => transport.cuid);
-  const filteredComs = campaignData?.data?.rows?.filter((com: any) =>
-    ivrTransportCuids?.includes(com.transportId),
+  const filteredComs = campaignData?.data?.rows?.filter(
+    (com: any) => com?.isIvr,
   );
   console.log(filteredComs, ivrTransportCuids);
   return (

@@ -178,6 +178,26 @@ export const useGetDisbursementSafeChart = (projectUUID: UUID) => {
   return query;
 };
 
+export const useGetOfframpStatusChart = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-offramp-status-chart', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getOffRampStatus',
+          payload: {},
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
 type DisbursementTransactionHookParams = {
   projectUUID: UUID;
   disbursementUUID: UUID;

@@ -6,16 +6,17 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 
+import { usePagination } from '@rahat-ui/query';
+
+import { useRouter } from 'next/navigation';
+import IvrCampaignAddDrawer from './campaign.ivr.add';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   useListBeneficiariesComms,
   useListTransports,
 } from '@rahat-ui/community-query';
-import { usePagination } from '@rahat-ui/query';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useRouter } from 'next/navigation';
-import VoiceCampaignAddDrawer from './campaign.voice.add';
 
-const VoiceCampaignDetails = () => {
+const IvrCampaignDetails = () => {
   const { pagination, filters } = usePagination();
   const router = useRouter();
 
@@ -23,31 +24,30 @@ const VoiceCampaignDetails = () => {
     ...pagination,
     ...(filters as any),
   });
-  const { data: listTransports } = useListTransports();
+  const { data: transportData } = useListTransports();
 
-  const ivrTransportCuids = listTransports?.data
+  console.log(campaignData, transportData);
+
+  const ivrTransportCuids = transportData?.data
     ?.filter((transport: any) => transport.name.toLowerCase() === 'ivr')
     .map((transport: any) => transport.cuid);
-  const filteredComs = campaignData?.data?.rows.filter(
-    (com: any) => ivrTransportCuids?.includes(com.transportId) && !com.isIvr,
+  const filteredComs = campaignData?.data?.rows?.filter(
+    (com: any) => com?.isIvr,
   );
-
-  console.log(filteredComs);
+  console.log(filteredComs, ivrTransportCuids);
   return (
     <div className="h-[calc(100vh-80px)] p-2">
       <ScrollArea className="h-full">
         <div className="grid grid-cols-4 gap-2">
           {/* /Add Campaign Card */}
-          <VoiceCampaignAddDrawer />
+          <IvrCampaignAddDrawer />
           {/* Campaign Card */}
           {filteredComs?.map((ivrCampaign: any) => {
             return (
               <Card
-                key={ivrCampaign.id}
+                key={ivrCampaign.uuid}
                 onClick={() =>
-                  router.push(
-                    `/communications/voice/manage/${ivrCampaign.uuid}`,
-                  )
+                  router.push(`/communications/text/manage/${ivrCampaign.uuid}`)
                 }
                 className="flex flex-col rounded justify-center shadow bg-card cursor-pointer hover:shadow-md hover:border-1 hover:border-blue-500 ease-in duration-200"
               >
@@ -83,4 +83,4 @@ const VoiceCampaignDetails = () => {
   );
 };
 
-export default VoiceCampaignDetails;
+export default IvrCampaignDetails;

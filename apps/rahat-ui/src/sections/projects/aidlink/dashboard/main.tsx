@@ -31,12 +31,12 @@ export default function ProjectDashboard() {
     return [
       {
         name: 'Yes',
-        value: offrampStatusData?.remaningOffRampPercentage || 0,
+        value: offrampStatusData?.offRampPercentage || 0,
         color: '#22C55E',
       }, // green
       {
         name: 'No',
-        value: offrampStatusData?.offRampPercentage || 0,
+        value: offrampStatusData?.remaningOffRampPercentage || 0,
         color: '#F97316',
       }, // orange
     ];

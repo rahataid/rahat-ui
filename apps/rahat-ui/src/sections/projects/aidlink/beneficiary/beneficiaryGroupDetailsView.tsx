@@ -129,7 +129,7 @@ export default function BeneficiaryGroupPage() {
     <div className="p-4 space-y-4 bg-gray-50">
       {/* Header */}
       <Heading
-        title={group?.name || 'N/A'}
+        title={group?.name || 'Beneficiary Group'}
         description="Detailed view of the selected beneficiary group"
         titleStyle="break-all text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl"
         backBtn

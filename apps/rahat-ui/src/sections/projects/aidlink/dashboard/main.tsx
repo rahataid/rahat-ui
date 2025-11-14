@@ -16,6 +16,7 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { formatNumber } from 'apps/rahat-ui/src/utils/string';
 
 export default function ProjectDashboard() {
   const params = useParams();
@@ -59,36 +60,44 @@ export default function ProjectDashboard() {
   );
 
   const stats = useMemo(
-    () => [
-      {
-        label: 'Total Beneficiaries',
-        value:
-          data?.find((item: any) => item.name === 'BENEFICIARY_TOTAL')?.data
-            ?.count || '0',
-        icon: Users,
-        textColor: 'text-blue-600',
-        bg: 'from-blue-50 to-blue-100 border-blue-200',
-      },
-      {
-        label: 'Total Disbursed',
-        value: `${
-          data
-            ?.find((item: any) => item.name === 'DISBURSEMENT_TOTAL')
-            ?.data?.reduce((sum: number, curr: any) => sum + curr.amount, 0) ||
-          0
-        } USDC`,
-        icon: Wallet,
-        textColor: 'text-green-600',
-        bg: 'from-green-50 to-green-100 border-green-200',
-      },
-      {
-        label: 'Total Off-ramped',
-        value: '0 USDC',
-        icon: CheckCircle,
-        textColor: 'text-purple-600',
-        bg: 'from-purple-50 to-purple-100 border-purple-200',
-      },
-    ],
+    () => {
+      const totalBeneficiaries = Number(
+        data?.find((item: any) => item.name === 'BENEFICIARY_TOTAL')?.data
+          ?.count || 0
+      );
+      
+      const totalDisbursed = Number(
+        data
+          ?.find((item: any) => item.name === 'DISBURSEMENT_TOTAL')
+          ?.data?.reduce((sum: number, curr: any) => sum + curr.amount, 0) || 0
+      );
+      
+      const totalOffRamped = Number(offrampStatusData?.offRampedAmount) || 0; // Currently hardcoded, update when data is available
+      
+      return [
+        {
+          label: 'Total Beneficiaries',
+          value: formatNumber(totalBeneficiaries, 'international'),
+          icon: Users,
+          textColor: 'text-blue-600',
+          bg: 'from-blue-50 to-blue-100 border-blue-200',
+        },
+        {
+          label: 'Total Disbursed',
+          value: `${formatNumber(totalDisbursed, 'international')} USDC`,
+          icon: Wallet,
+          textColor: 'text-green-600',
+          bg: 'from-green-50 to-green-100 border-green-200',
+        },
+        {
+          label: 'Total Off-ramped',
+          value: `${formatNumber(totalOffRamped, 'international')} USDC`,
+          icon: CheckCircle,
+          textColor: 'text-purple-600',
+          bg: 'from-purple-50 to-purple-100 border-purple-200',
+        },
+      ];
+    },
     [data],
   );
 

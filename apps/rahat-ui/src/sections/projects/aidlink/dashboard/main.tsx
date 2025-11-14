@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { Heading } from 'apps/rahat-ui/src/common';
+import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import { CheckCircle, Users, Wallet } from 'lucide-react';
 import RecentTransaction from './recent-transaction';
 import ProjectDetailsCard from './project-details-card';
 import {
   useGetDisbursementSafeChart,
+  useGetOfframpStatusChart,
   useGetProjectReporting,
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
@@ -16,17 +17,30 @@ import { UUID } from 'crypto';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
-const offRampData = [
-  { name: 'Yes', value: 60, color: '#22C55E' }, // green
-  { name: 'No', value: 40, color: '#F97316' }, // orange
-];
-
 export default function ProjectDashboard() {
   const params = useParams();
   const projectId = params.id as UUID;
   const { data, isPending } = useGetProjectReporting(projectId);
   const { data: disbursementData, isLoading } =
     useGetDisbursementSafeChart(projectId);
+
+  const { data: offrampStatusData, isLoading: offrampLoading } =
+    useGetOfframpStatusChart(projectId);
+
+  const offRampData = useMemo(() => {
+    return [
+      {
+        name: 'Yes',
+        value: offrampStatusData?.offRampPercentage || 0,
+        color: '#22C55E',
+      }, // green
+      {
+        name: 'No',
+        value: offrampStatusData?.remaningOffRampPercentage || 0,
+        color: '#F97316',
+      }, // orange
+    ];
+  }, [offrampStatusData]);
 
   const walletData = useMemo(
     () => [
@@ -126,7 +140,7 @@ export default function ProjectDashboard() {
                   {/* Wallet vs Disbursement */}
                   {isLoading ? (
                     <Skeleton className="h-96 rounded-xl" />
-                  ) : (
+                  ) : disbursementData ? (
                     <Card className="rounded-xl p-4">
                       <p className="text-lg font-medium">
                         Gnosis Wallet vs Total Disbursement
@@ -185,65 +199,77 @@ export default function ProjectDashboard() {
                         </div>
                       </div>
                     </Card>
+                  ) : (
+                    <Card className="rounded-xl p-4 flex items-center justify-center">
+                      <NoResult />
+                    </Card>
                   )}
 
                   {/* Off-ramp Status */}
-                  <Card className="rounded-xl p-4">
-                    <p className="text-lg font-medium">Off-ramp status</p>
+                  {offrampLoading ? (
+                    <Skeleton className="h-96 rounded-xl" />
+                  ) : offrampStatusData ? (
+                    <Card className="rounded-xl p-4">
+                      <p className="text-lg font-medium">Off-ramp status</p>
 
-                    <div>
-                      <div className="h-64 relative">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <PieChart>
-                            <Pie
-                              data={offRampData}
-                              cx="50%"
-                              cy="50%"
-                              innerRadius={70}
-                              outerRadius={100}
-                              paddingAngle={2}
-                              dataKey="value"
-                            >
-                              {offRampData.map((entry, index) => (
-                                <Cell
-                                  key={`cell-${index}`}
-                                  fill={entry.color}
-                                />
-                              ))}
-                            </Pie>
-                          </PieChart>
-                        </ResponsiveContainer>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-center">
-                            <span className="text-3xl font-bold text-gray-900">
-                              100
-                            </span>
-                            <p className="text-sm text-gray-600">Total</p>
+                      <div>
+                        <div className="h-64 relative">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                              <Pie
+                                data={offRampData}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={70}
+                                outerRadius={100}
+                                paddingAngle={2}
+                                dataKey="value"
+                              >
+                                {offRampData.map((entry, index) => (
+                                  <Cell
+                                    key={`cell-${index}`}
+                                    fill={entry.color}
+                                  />
+                                ))}
+                              </Pie>
+                            </PieChart>
+                          </ResponsiveContainer>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-center">
+                              <span className="text-3xl font-bold text-gray-900">
+                                100
+                              </span>
+                              <p className="text-sm text-gray-600">Total</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="flex flex-wrap justify-center gap-4 mt-4">
-                        {offRampData.map((item) => (
-                          <div
-                            key={item.name}
-                            className="flex items-center gap-2"
-                          >
+                        <div className="flex flex-wrap justify-center gap-4 mt-4">
+                          {offRampData.map((item) => (
                             <div
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: item.color }}
-                            />
-                            <span className="text-sm text-gray-600">
-                              {item.name}
-                            </span>
-                            <span className="text-sm font-medium text-gray-900">
-                              {item.value}%
-                            </span>
-                          </div>
-                        ))}
+                              key={item.name}
+                              className="flex items-center gap-2"
+                            >
+                              <div
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: item.color }}
+                              />
+                              <span className="text-sm text-gray-600">
+                                {item.name}
+                              </span>
+                              <span className="text-sm font-medium text-gray-900">
+                                {item.value}%
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  </Card>
+                    </Card>
+                  ) : (
+                    <Card className="rounded-xl p-4 flex items-center justify-center">
+                      <NoResult />
+                    </Card>
+                  )}
                 </div>
               </div>
 

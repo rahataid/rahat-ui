@@ -248,8 +248,9 @@ export default function DisbursementHistoryDetail() {
     });
 
     if (result) {
-      refetch();
-      setExecutionResult(disbursement);
+      const refetchResult = await refetch();
+      const updatedDisbursement = refetchResult?.data;
+      setExecutionResult(updatedDisbursement);
       setIsModalOpen(true);
     }
   };
@@ -281,7 +282,7 @@ export default function DisbursementHistoryDetail() {
               >
                 Execute
               </Button>
-            )}
+             )} 
             {!approvals?.isExecuted &&
               disbursement?.status !== 'COMPLETED' &&
               approvals?.approvals?.length > 0 && (

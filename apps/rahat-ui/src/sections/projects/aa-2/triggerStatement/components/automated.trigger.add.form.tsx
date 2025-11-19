@@ -35,9 +35,14 @@ type IProps = {
     description?: string;
   }>;
   phase: any;
+  isEditing?: boolean;
 };
 
-export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
+export default function AddAutomatedTriggerForm({
+  form,
+  phase,
+  isEditing,
+}: IProps) {
   const source = form.watch('source') || ' ';
 
   return (
@@ -98,10 +103,13 @@ export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
                       onValueChange={field.onChange}
                       value={field.value}
                       key={field.value}
+                      disabled={isEditing}
                     >
                       <FormLabel>Source</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger
+                          className={isEditing ? 'bg-gray-300' : ''}
+                        >
                           <SelectValue placeholder="Select Source" />
                         </SelectTrigger>
                       </FormControl>

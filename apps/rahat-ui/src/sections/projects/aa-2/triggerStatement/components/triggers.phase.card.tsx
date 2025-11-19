@@ -1,6 +1,5 @@
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { ArrowRight, Plus } from 'lucide-react';
@@ -36,6 +35,8 @@ export default function TriggersPhaseCard({
   isActive,
   handleViewDetails = () => {},
 }: IProps) {
+  const totalCharSeries = chartSeries.reduce((a, b) => a + b, 0);
+
   return (
     <div className="p-4 rounded border shadow-md flex flex-col justify-between">
       <div>
@@ -66,16 +67,39 @@ export default function TriggersPhaseCard({
           </RoleAuth>
         </div>
         <div className="flex justify-center mb-2 ">
-          <ChartDonut
-            series={chartSeries}
-            labels={chartLabels}
-            donutSize="80%"
-            width={250}
-            height={200}
-            showLegend={false}
-            colors={['#E8C468', '#297AD6']}
-            showDonutLabel={true}
-          />
+          {totalCharSeries === 0 ? (
+            <div className="relative w-full h-full flex items-center justify-center">
+              <svg
+                className="max-w-[200px] max-h-[200px] w-[250px] h-[250px]"
+                viewBox="0 0 120 120"
+                role="img"
+                aria-label="No data"
+              >
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="50"
+                  fill="transparent"
+                  stroke="#E0E0E0"
+                  strokeWidth="12"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <p className="text-gray-600">No Data</p>
+              </div>
+            </div>
+          ) : (
+            <ChartDonut
+              series={chartSeries}
+              labels={chartLabels}
+              donutSize="80%"
+              width={250}
+              height={200}
+              showLegend={false}
+              colors={['#E8C468', '#297AD6']}
+              showDonutLabel={true}
+            />
+          )}
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div className="bg-[#EAF2FB] rounded p-4">

@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { PieChart, BarChart } from '@rahat-ui/shadcn/src/components/charts';
-import { Heading } from 'apps/rahat-ui/src/common';
+import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
+import { Heading, NoResult } from 'apps/rahat-ui/src/common';
+import DynamicPieChart from '../../../components/dynamicPieChart';
 
 const chartTitles: Record<string, string> = {
   // HAVE_ACTIVE_BANK_AC: 'Bank Account Access',
@@ -52,28 +53,21 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
             >
               <h1 className="text-sm font-medium">{chartTitles[key]}</h1>
               <div className="w-full flex-1 p-4 pt-0">
-                <PieChart
-                  chart={{
-                    series: pieData,
-                    colors: chartColors,
-                  }}
-                  custom
-                  projectAA
-                  donutSize="80%"
-                  width="100%"
-                  height="100%"
-                  type="donut"
-                />
+                <DynamicPieChart pieData={pieData} colors={chartColors} />
               </div>
             </div>
           );
         })}
         <div className="flex flex-col h-full min-h-[340px] lg:col-span-2">
           {/* Bar chart: Information Channel */}
-          {channelUsageStats.length > 0 && (
-            <div className="border rounded-sm p-2 flex flex-col h-full min-h-[350px] lg:col-span-2 col-span-1">
-              <h1 className="text-sm font-medium">Information Channels Used</h1>
-              <div className="flex-1 p-2">
+          <div className="border rounded-sm p-2 flex flex-col h-full min-h-[350px] lg:col-span-2 col-span-1">
+            <h1 className="text-sm font-medium">Information Channels Used</h1>
+            <div className="flex-1 p-2">
+              {channelUsageStats.length === 0 ? (
+                <div className="flex justify-center h-[300px] items-center">
+                  <NoResult size="small" />
+                </div>
+              ) : (
                 <BarChart
                   series={channelUsageStats.map((item) => item.count)}
                   categories={channelUsageStats.map((item) => item.id)}
@@ -87,9 +81,9 @@ const AccessAndResilienceOverview = ({ data }: { data: any }) => {
                   yaxisTitle="No. of Beneficiaries"
                   columnWidth="23%"
                 />
-              </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

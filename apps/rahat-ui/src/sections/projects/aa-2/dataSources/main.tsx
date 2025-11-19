@@ -33,6 +33,7 @@ import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { defaultForecastTab } from 'apps/rahat-ui/src/constants/aa.tabValues.constants';
 
 const componentMap = {
   dhm: DHMSection,
@@ -108,12 +109,7 @@ export default function DataSources() {
 
   // Backend tabs OR default fallback
   const backendTabs: BackendTab[] =
-    data?.value?.tabs?.length > 0
-      ? data.value?.tabs
-      : [
-          { value: 'dhm', label: 'DHM' },
-          { value: 'glofas', label: 'GLOFAS' },
-        ];
+    data?.value?.tabs?.length > 0 ? data.value?.tabs : defaultForecastTab;
 
   const availableTabsConfig = backendTabs
     .filter((tab) => componentMap[tab.value]) // remove invalid backend tabs

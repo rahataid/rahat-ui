@@ -102,15 +102,15 @@ export default function GlofasInfoCard({ glofas }: IProps) {
           </div>
           <div className="grid grid-cols-3 gap-2">
             <div className="p-4 text-center">
-              <div className="text-primary font-semibold">{val2yr} mm</div>
+              <div className="text-primary font-semibold">{val2yr} %</div>
               <div className="text-sm mt-1">2 years</div>
             </div>
             <div className="p-4 text-center">
-              <div className="text-primary font-semibold">{val5yr} mm</div>
+              <div className="text-primary font-semibold">{val5yr} %</div>
               <div className="text-sm mt-1">5 years</div>
             </div>
             <div className="p-4 text-center">
-              <div className="text-primary font-semibold">{val20yr} mm</div>
+              <div className="text-primary font-semibold">{val20yr} %</div>
               <div className="text-sm mt-1">20 years</div>
             </div>
           </div>

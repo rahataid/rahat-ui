@@ -98,7 +98,7 @@ function DatePicker({
 }
 
 export default function DataSources() {
-  const { activeTab, setActiveTab } = useActiveTab('dhm');
+  const { activeTab, setActiveTab } = useActiveTab('');
   const [date, setDate] = useState<Date | null>(null);
   const { id: projectID } = useParams();
   const route = useRouter();
@@ -119,9 +119,11 @@ export default function DataSources() {
     }));
 
   useEffect(() => {
-    const activeTab = backendTabs[0].value;
-    setActiveTab(activeTab);
-  }, [backendTabs, setActiveTab]);
+    if (!activeTab) {
+      const defaultTab = backendTabs[0].value;
+      setActiveTab(defaultTab);
+    }
+  }, [backendTabs]);
 
   useEffect(() => {
     if (
@@ -159,7 +161,7 @@ export default function DataSources() {
           </div>
         </>
       ) : (
-        <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="flex justify-between">
             {/* 🔹 Tab Triggers */}
             <TabsList className="border bg-secondary rounded mb-2">

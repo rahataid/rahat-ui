@@ -119,6 +119,11 @@ export default function DataSources() {
     }));
 
   useEffect(() => {
+    const activeTab = backendTabs[0].value;
+    setActiveTab(activeTab);
+  }, [backendTabs, setActiveTab]);
+
+  useEffect(() => {
     if (
       activeTab &&
       !availableTabsConfig.find((tab) => tab.value === activeTab)?.hasdatepicker

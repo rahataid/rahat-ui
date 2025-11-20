@@ -22,10 +22,16 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useCreateTriggerStatement } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useCreateTriggerStatement,
+  useGetDataSourceTypes,
+  useTabConfiguration,
+} from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useRouter } from 'next/navigation';
+import { camelCase } from 'lodash';
 
 export default function AddTriggerView() {
   const [activeTab, setActiveTab] = React.useState<string>('automated');
@@ -45,6 +51,32 @@ export default function AddTriggerView() {
   const selectedPhase = JSON.parse(
     localStorage.getItem('selectedPhase') as string,
   );
+
+  // Generating source options starts //
+  const { data: dataSourceTypes } = useGetDataSourceTypes(projectId);
+
+  const { data: forecastTabs } = useTabConfiguration(
+    projectId,
+    PROJECT_SETTINGS_KEYS.FORECAST_TAB_CONFIG,
+  );
+
+  const sourceOptions = React.useMemo(() => {
+    const sourcesFromTypes = Object.keys(dataSourceTypes?.value || {});
+    const sourcesFromForecastTabs = forecastTabs?.value?.tabs?.map(
+      (tab: any) => tab.value,
+    );
+
+    const matchedSources = sourcesFromTypes?.filter((source) =>
+      sourcesFromForecastTabs?.includes(camelCase(source)),
+    );
+
+    return matchedSources?.map((source) => {
+      const label = source.toUpperCase();
+      const value = source.trim().toUpperCase().replace(' ', '_');
+      return { value, label };
+    });
+  }, [dataSourceTypes, forecastTabs]);
+  // Generating source options ends //
 
   const addTriggers = useCreateTriggerStatement();
 
@@ -406,6 +438,7 @@ export default function AddTriggerView() {
               <AutomatedTriggerAddForm
                 form={automatedForm}
                 phase={selectedPhase}
+                sourceOptions={sourceOptions}
               />
             </TabsContent>
             <TabsContent value="manual">

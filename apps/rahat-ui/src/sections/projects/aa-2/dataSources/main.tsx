@@ -119,11 +119,11 @@ export default function DataSources() {
     }));
 
   useEffect(() => {
-    if (!activeTab) {
+    if (!activeTab && !isLoading) {
       const defaultTab = backendTabs[0].value;
       setActiveTab(defaultTab);
     }
-  }, [backendTabs]);
+  }, [backendTabs, activeTab, isLoading, setActiveTab]);
 
   useEffect(() => {
     if (
@@ -161,7 +161,11 @@ export default function DataSources() {
           </div>
         </>
       ) : (
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <Tabs
+          value={activeTab}
+          defaultValue={activeTab}
+          onValueChange={setActiveTab}
+        >
           <div className="flex justify-between">
             {/* 🔹 Tab Triggers */}
             <TabsList className="border bg-secondary rounded mb-2">

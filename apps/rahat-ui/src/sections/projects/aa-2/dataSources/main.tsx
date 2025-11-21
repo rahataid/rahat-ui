@@ -33,6 +33,7 @@ import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { defaultForecastTab } from 'apps/rahat-ui/src/constants/aa.tabValues.constants';
 
 const componentMap = {
   dhm: DHMSection,
@@ -97,7 +98,7 @@ function DatePicker({
 }
 
 export default function DataSources() {
-  const { activeTab, setActiveTab } = useActiveTab('dhm');
+  const { activeTab, setActiveTab } = useActiveTab('');
   const [date, setDate] = useState<Date | null>(null);
   const { id: projectID } = useParams();
   const route = useRouter();
@@ -108,12 +109,7 @@ export default function DataSources() {
 
   // Backend tabs OR default fallback
   const backendTabs: BackendTab[] =
-    data?.value?.tabs?.length > 0
-      ? data.value?.tabs
-      : [
-          { value: 'dhm', label: 'DHM' },
-          { value: 'glofas', label: 'GLOFAS' },
-        ];
+    data?.value?.tabs?.length > 0 ? data.value?.tabs : defaultForecastTab;
 
   const availableTabsConfig = backendTabs
     .filter((tab) => componentMap[tab.value]) // remove invalid backend tabs
@@ -121,6 +117,13 @@ export default function DataSources() {
       ...tab,
       component: componentMap[tab.value],
     }));
+
+  useEffect(() => {
+    if (!activeTab && !isLoading) {
+      const defaultTab = backendTabs[0].value;
+      setActiveTab(defaultTab);
+    }
+  }, [backendTabs, activeTab, isLoading, setActiveTab]);
 
   useEffect(() => {
     if (
@@ -158,7 +161,11 @@ export default function DataSources() {
           </div>
         </>
       ) : (
-        <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+        <Tabs
+          value={activeTab}
+          defaultValue={activeTab}
+          onValueChange={setActiveTab}
+        >
           <div className="flex justify-between">
             {/* 🔹 Tab Triggers */}
             <TabsList className="border bg-secondary rounded mb-2">

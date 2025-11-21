@@ -18,13 +18,11 @@ import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { useGetAASafeOwners } from '@rahat-ui/query';
 import MultisigProposeBtn from './propose.btn';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
 export default function MultiSigWalletView() {
   const { id: projectUUID } = useParams() as { id: UUID };
   const { clickToCopy, copyAction } = useCopy();
-
-  const disbursements: any[] = [];
-  const loadingDisbursements = false;
 
   const { data: safeOwners, isLoading: loadingSafeOwners } =
     useGetAASafeOwners(projectUUID);
@@ -153,42 +151,40 @@ export default function MultiSigWalletView() {
         <Card className="rounded-sm">
           <CardHeader className="p-4">
             <CardTitle className="text-sm lg:text-base">
-              Recent Transactions
+              Recent Transfers
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 pt-0">
             <ScrollArea className="h-[calc(100vh-555px)]">
-              {!loadingDisbursements ? (
-                <div className="space-y-3">
-                  {disbursements?.length ? (
-                    disbursements?.map((tx: any) => (
-                      <div
-                        key={tx.id}
-                        className="flex items-center justify-between p-3 border rounded-sm"
-                      >
-                        <div>
-                          <p className="text-sm font-medium">Disbursement</p>
-                          <p className="text-xs text-gray-600">
-                            {dateFormat(tx.updatedAt)}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-medium">
-                            {tx.amount} USDC
-                          </p>
-                          <Badge className="font-medium">
-                            {capitalizeFirstLetter(tx.status)}
-                          </Badge>
-                        </div>
+              <div className="space-y-3">
+                {safeOwners?.transfers?.length ? (
+                  safeOwners?.transfers?.map((tx: any) => (
+                    <div
+                      key={`${tx?.type}-${tx?.blockNumber}`}
+                      className="flex items-center justify-between p-3 border rounded-sm"
+                    >
+                      <div>
+                        <p className="text-sm font-medium">Transfer</p>
+                        <p className="text-xs">
+                          To: {truncateEthAddress(tx?.to)}
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          {dateFormat(tx?.executionDate)}
+                        </p>
                       </div>
-                    ))
-                  ) : (
-                    <NoResult />
-                  )}
-                </div>
-              ) : (
-                <SpinnerLoader />
-              )}
+                      <div className="text-right">
+                        <p className="text-sm font-medium">
+                          {tx?.value / 10} RHT
+                          {/* divisor is 10 because decimals is 1 */}
+                        </p>
+                        <Badge className="font-medium">Success</Badge>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <NoResult />
+                )}
+              </div>
             </ScrollArea>
           </CardContent>
         </Card>

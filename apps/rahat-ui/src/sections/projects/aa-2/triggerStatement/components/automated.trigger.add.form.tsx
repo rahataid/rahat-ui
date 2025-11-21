@@ -36,12 +36,14 @@ type IProps = {
   }>;
   phase: any;
   isEditing?: boolean;
+  sourceOptions?: { label: string; value: string }[];
 };
 
 export default function AddAutomatedTriggerForm({
   form,
   phase,
   isEditing,
+  sourceOptions,
 }: IProps) {
   const source = form.watch('source') || ' ';
 
@@ -114,11 +116,17 @@ export default function AddAutomatedTriggerForm({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="DHM">DHM</SelectItem>
-                        <SelectItem value="GLOFAS">GLOFAS</SelectItem>
-                        <SelectItem value="DAILY_MONITORING">
-                          Daily Monitoring
-                        </SelectItem>
+                        {sourceOptions?.length ? (
+                          sourceOptions?.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <p className="text-gray-500 text-sm">
+                            No source found
+                          </p>
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />

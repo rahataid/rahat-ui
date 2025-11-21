@@ -9,6 +9,7 @@ import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { FileWarning } from 'lucide-react';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { getBadgeColor } from 'apps/rahat-ui/src/utils/get-status-bg';
 
 type IDataType = {
   date: string;
@@ -82,11 +83,9 @@ export default function TransactionTable({
                   {isDisplayStatus && (
                     <div className="text-center">
                       <Badge
-                        className={`bg-green-50 ${
-                          transaction.status === 'SUCCESS'
-                            ? 'text-green-600 border-green-500'
-                            : 'text-yellow-600 border-yellow-500'
-                        } text-xs`}
+                        className={`bg-green-50 ${getBadgeColor(
+                          transaction.status,
+                        )} text-xs`}
                       >
                         {transaction?.status}
                       </Badge>

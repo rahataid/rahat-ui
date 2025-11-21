@@ -34,16 +34,19 @@ export default function MultiSigWalletView() {
       <SpinnerLoader />
     </div>
   ) : (
-    <div className="space-y-4 h-[calc(100vh-260px)]">
+    <div className="h-[calc(100vh-260px)]">
       <div className="flex justify-between space-x-4">
         <Heading
           title="Gnosis Wallet Overview"
           description="Overview of your gnosis wallet"
           titleStyle="text-2xl"
         />
-        <MultisigProposeBtn projectUUID={projectUUID} />
+        <MultisigProposeBtn
+          projectUUID={projectUUID}
+          tokenBalance={safeOwners?.tokenBalance || ''}
+        />
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
         <Card className="rounded-sm text-green-500 bg-green-50 border-green-100">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
@@ -51,7 +54,7 @@ export default function MultiSigWalletView() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {`${safeOwners?.tokenBalance} USDC` || 'N/A'}
+              {`${safeOwners?.tokenBalance} RHT` || 'N/A'}
             </div>
           </CardContent>
         </Card>

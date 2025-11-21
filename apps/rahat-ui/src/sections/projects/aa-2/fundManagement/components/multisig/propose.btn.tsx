@@ -12,17 +12,31 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { UUID } from 'crypto';
 import { Loader2 } from 'lucide-react';
 import React from 'react';
+import { toast } from 'react-toastify';
 
 type Props = {
   projectUUID: UUID;
+  tokenBalance: string;
 };
 
-export default function MultisigProposeBtn({ projectUUID }: Props) {
+export default function MultisigProposeBtn({
+  projectUUID,
+  tokenBalance,
+}: Props) {
   const [open, setOpen] = React.useState(false);
   const [amount, setAmount] = React.useState<number | ''>('');
   const createSafeTransaction = useCreateAASafeTransaction();
 
+  const handleOpenChange = () => {
+    setOpen(!open);
+    setAmount('');
+  };
+
   const handlePropose = async () => {
+    if (Number(amount) > Number(tokenBalance)) {
+      toast.warn('Proposed amount exceeds available token balance.');
+      return;
+    }
     const result = await createSafeTransaction.mutateAsync({
       projectUUID,
       amount: String(amount),
@@ -32,8 +46,15 @@ export default function MultisigProposeBtn({ projectUUID }: Props) {
     return result;
   };
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger
+        asChild
+        disabled={
+          !tokenBalance ||
+          tokenBalance === '0' ||
+          createSafeTransaction?.isPending
+        }
+      >
         <Button className="rounded-xl">Propose Amount</Button>
       </DialogTrigger>
 
@@ -57,7 +78,7 @@ export default function MultisigProposeBtn({ projectUUID }: Props) {
         <DialogFooter>
           <Button
             onClick={handlePropose}
-            disabled={createSafeTransaction?.isPending}
+            disabled={!amount || createSafeTransaction?.isPending}
             className="w-full"
           >
             {createSafeTransaction?.isPending ? (

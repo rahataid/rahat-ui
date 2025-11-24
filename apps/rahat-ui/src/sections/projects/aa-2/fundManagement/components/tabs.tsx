@@ -14,6 +14,7 @@ import InKind from './inKind';
 import Counselling from './counselling';
 import { CashTracker } from './cashTracker/cash.tracker';
 import { InKindTracker } from './inKindTracker';
+import { MultiSigWalletView } from './multisig';
 
 const componentMap = {
   tokenOverview: TokensOverview,
@@ -22,6 +23,7 @@ const componentMap = {
   counselling: Counselling,
   cashTracker: CashTracker,
   inKindTracker: InKindTracker,
+  multisigWallet: MultiSigWalletView,
 };
 
 interface BackendTab {

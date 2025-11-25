@@ -12,7 +12,11 @@ import { Copy, Users, Banknote, CircleCheckBig, CopyCheck } from 'lucide-react';
 import { Heading, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useGetDisbursements, useGetSafeOwners } from '@rahat-ui/query';
+import {
+  amountFormat,
+  useGetDisbursements,
+  useGetSafeOwners,
+} from '@rahat-ui/query';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
@@ -168,7 +172,7 @@ export default function MultiSigWalletView() {
                         </div>
                         <div className="text-right">
                           <p className="text-sm font-medium">
-                            {tx.amount} USDC
+                            {amountFormat(tx.amount)} USDC
                           </p>
                           <Badge className="font-medium">
                             {capitalizeFirstLetter(tx.status)}

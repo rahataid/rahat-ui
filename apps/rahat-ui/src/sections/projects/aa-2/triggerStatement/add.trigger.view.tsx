@@ -170,12 +170,27 @@ export default function AddTriggerView() {
   };
 
   const handleEdit = (trigger: any) => {
+    const triggerSource = trigger?.triggerStatement?.source;
+    const automatedData = {
+      ...trigger,
+      isMandatory: !trigger?.isMandatory,
+      source:
+        triggerSource === 'water_level_m'
+          ? 'dhm:waterlevel'
+          : triggerSource === 'rainfall_mm'
+          ? 'dhm:rainfall'
+          : trigger?.source?.toLowerCase(),
+    };
+    const manualData = {
+      ...trigger,
+      isMandatory: !trigger?.isMandatory,
+    };
     if (trigger.type === 'manual') {
       setActiveTab('manual');
-      manualForm.reset(trigger);
+      manualForm.reset(manualData);
     } else if (trigger.type === 'automated') {
       setActiveTab('automated');
-      automatedForm.reset(trigger);
+      automatedForm.reset(automatedData);
     }
 
     handleDelete(trigger);

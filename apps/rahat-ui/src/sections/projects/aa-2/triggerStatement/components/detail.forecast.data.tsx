@@ -3,11 +3,20 @@ import { Heading } from 'apps/rahat-ui/src/common';
 import { TriangleAlert } from 'lucide-react';
 import { SOURCE_CONFIG } from '../trigger.statement.schema';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
+import { toLabel } from '../utils';
+
+interface TriggerStatement {
+  value: number;
+  source: string;
+  operator: string;
+  expression: string;
+  sourceSubType: string;
+}
 
 type IProps = {
   source: string;
   phase: string;
-  triggerStatement: any;
+  triggerStatement: TriggerStatement;
 };
 
 export function ForecastDataSection({
@@ -25,7 +34,29 @@ export function ForecastDataSection({
   const sourceSubTypeLabel =
     SOURCE_CONFIG[triggerSource as keyof typeof SOURCE_CONFIG]?.sourceSubType;
   const unit = sourceSubTypeLabel?.match(/\((.*?)\)/)?.[1] || '';
-  const formattedSourceSubType = sourceSubType?.replace('_', ' ');
+  const formattedSourceSubType = toLabel(sourceSubType);
+
+  const setIconLabel = (source: string, triggerSourceSubType: string) => {
+    switch (source) {
+      case 'DHM':
+        return triggerSourceSubType === 'warning_level'
+          ? 'Warning Level'
+          : triggerSourceSubType === 'danger_level'
+          ? 'Danger Level'
+          : 'Rainfall Level';
+
+      case 'GFH':
+        return triggerSourceSubType === 'warning_discharge'
+          ? 'Warning Discharge'
+          : 'Danger Discharge';
+
+      case 'GLOFAS':
+        return 'Flood Probability';
+
+      default:
+        return '';
+    }
+  };
 
   return (
     <div className="p-4 border rounded-sm shadow">
@@ -34,18 +65,20 @@ export function ForecastDataSection({
         titleStyle="text-lg/7"
         description={`Source: ${source} - ${sourceSubTypeLabel}`}
       />
-      <div className="p-3 text-center border rounded">
-        <p className="font-semibold text-3xl/10 text-primary">
-          {value} {unit}
-        </p>
-        <p className="font-medium text-sm/6 flex justify-center items-center gap-2">
-          <TriangleAlert size={16} strokeWidth={2.5} color="red" />
-          {capitalizeFirstLetter(formattedSourceSubType || '')}
-        </p>
-        <Badge className="font-normal">
-          {formattedSourceSubType} {operator} {value} {unit}
-        </Badge>
-      </div>
+      {Object.keys(triggerStatement).length ? (
+        <div className="p-3 text-center border rounded">
+          <p className="font-semibold text-3xl/10 text-primary">
+            {value} {unit || '%'}
+          </p>
+          <p className="font-medium text-sm/6 flex justify-center items-center gap-2">
+            <TriangleAlert size={16} strokeWidth={2.5} color="red" />
+            {setIconLabel(source, sourceSubType)}
+          </p>
+          <Badge className="font-normal">
+            {formattedSourceSubType} {operator} {value} {unit || '%'}
+          </Badge>
+        </div>
+      ) : null}
       {/* {source === 'GLOFAS' && (
         <div className="grid grid-cols-3 gap-4">
           <div className="p-3 text-center border rounded">

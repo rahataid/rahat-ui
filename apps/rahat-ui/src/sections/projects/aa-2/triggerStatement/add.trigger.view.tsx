@@ -111,18 +111,19 @@ export default function AddTriggerView() {
   const handleSubmitManualTrigger = async (
     data: z.infer<typeof ManualFormSchema>,
   ) => {
-    setAllTriggers([
-      ...allTriggers,
-      {
-        ...data,
-        isMandatory: !data?.isMandatory,
-        type: activeTab,
-        source: 'MANUAL',
-        time: new Date(),
-        phaseId: selectedPhase?.id,
-        riverBasin: selectedPhase?.riverBasin,
-      },
-    ]);
+    isManualDataValid &&
+      setAllTriggers([
+        ...allTriggers,
+        {
+          ...data,
+          isMandatory: !data?.isMandatory,
+          type: activeTab,
+          source: 'MANUAL',
+          time: new Date(),
+          phaseId: selectedPhase?.id,
+          riverBasin: selectedPhase?.riverBasin,
+        },
+      ]);
   };
 
   const handleSubmitAutomatedTrigger = async (

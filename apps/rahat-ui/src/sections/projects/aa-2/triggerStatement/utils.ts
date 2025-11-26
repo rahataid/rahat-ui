@@ -16,7 +16,7 @@ export type Option = {
 //*** Helpers ***//
 // Convert snake_case → "Snake Case"
 export const toLabel = (str: string): string =>
-  str.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  str?.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
 // Format the main label
 export const formatMainLabel = (key: string, type: string) => {
@@ -34,7 +34,7 @@ export const formatMainLabel = (key: string, type: string) => {
 //*** Builders ***//
 // Generate source options
 export const buildSourceOptions = (SOURCES: SourcesRecord): Option[] => {
-  return Object.entries(SOURCES).map(([key, value]) => ({
+  return Object.entries(SOURCES)?.map(([key, value]) => ({
     label: formatMainLabel(key, value.type),
     value: key,
   }));
@@ -45,9 +45,9 @@ export const buildSubtypeOptions = (
   SOURCES: SourcesRecord,
 ): Record<string, Option[]> => {
   return Object.fromEntries(
-    Object.entries(SOURCES).map(([key, value]) => [
+    Object.entries(SOURCES)?.map(([key, value]) => [
       key,
-      value.subtypes.map((sub) => ({
+      value?.subtypes?.map((sub) => ({
         label: toLabel(sub),
         value: sub,
       })),

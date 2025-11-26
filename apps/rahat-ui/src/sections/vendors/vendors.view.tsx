@@ -81,7 +81,7 @@ function VendorsView() {
     <>
       <div className="p-4">
         <div className="mb-4">
-          <h1 className="font-semibold text-2xl text-label">Vendors</h1>
+          <h1 className="font-semibold text-2xl text-label">Vendors ss</h1>
           <p className="text-sub-label">Here is the list of all the vendors</p>
         </div>
         <VendorsTable

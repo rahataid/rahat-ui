@@ -17,6 +17,7 @@ import {
   useProjectSubgraphSettings,
 } from '@rahat-ui/query';
 import GarphQlProvider from 'libs/query/src/lib/aa/graph/graphql-query-client';
+import GrievancesLayout from '../../../../sections/projects/aa-2/grievances/grievances.layout';
 
 export default function ProjectLayoutRoot({
   children,
@@ -37,17 +38,12 @@ export default function ProjectLayoutRoot({
   // const dataSources = useProjectSettingsStore(
   //   (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]);
 
-  const renderChildren = () => {
-    if (secondPanel) {
-      return [children, secondPanel];
-    }
-
-    return children;
-  };
   return (
     // <GarphQlProvider>
     <ProjectLayout projectType={ProjectTypes.ANTICIPATORY_ACTION}>
-      {renderChildren()}
+      <GrievancesLayout>
+        {secondPanel ? [children, secondPanel] : children}
+      </GrievancesLayout>
     </ProjectLayout>
     // </GarphQlProvider>
   );

@@ -46,6 +46,7 @@ export default function AddAutomatedTriggerForm({
   sourceOptions,
   subTypeOptions,
 }: IProps) {
+  console.log({ sourceOptions, subTypeOptions });
   const source = form.watch('source');
   const triggerSource = form.watch('triggerStatement.source');
   const triggerSourceSubType = form.watch('triggerStatement.sourceSubType');
@@ -215,7 +216,7 @@ export default function AddAutomatedTriggerForm({
                 );
               }}
             />
-            {source && (
+            {!isEditing && source && (
               <div className="bg-[#fcfcfd] border rounded-sm p-4 col-span-2 gap-4">
                 <FormField
                   control={form.control}

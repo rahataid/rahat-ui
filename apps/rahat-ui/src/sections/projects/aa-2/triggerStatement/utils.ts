@@ -1,4 +1,11 @@
 //*** Types ***//
+export interface TriggerStatement {
+  value: number;
+  source: string;
+  operator: string;
+  expression: string;
+  sourceSubType: string;
+}
 export interface SourceConfig {
   type: string;
   subtypes: string[];

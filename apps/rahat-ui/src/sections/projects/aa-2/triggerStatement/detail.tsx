@@ -197,13 +197,14 @@ export default function TriggerStatementDetail() {
             )}
           </div>
         </div>
-        {source !== 'MANUAL' && (
-          <ForecastDataSection
-            phase={phase}
-            source={source}
-            triggerStatement={trigger?.triggerStatement}
-          />
-        )}
+        {source !== 'MANUAL' &&
+          Object.keys(trigger?.triggerStatement || {})?.length && (
+            <ForecastDataSection
+              phase={phase}
+              source={source}
+              triggerStatement={trigger?.triggerStatement}
+            />
+          )}
       </div>
 
       <div className="grid grid-cols-2 gap-4 mt-4">

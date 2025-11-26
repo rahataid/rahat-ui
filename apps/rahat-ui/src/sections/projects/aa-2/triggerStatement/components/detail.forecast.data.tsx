@@ -2,16 +2,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Heading } from 'apps/rahat-ui/src/common';
 import { TriangleAlert } from 'lucide-react';
 import { SOURCE_CONFIG } from '../trigger.statement.schema';
-import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
-import { toLabel } from '../utils';
-
-interface TriggerStatement {
-  value: number;
-  source: string;
-  operator: string;
-  expression: string;
-  sourceSubType: string;
-}
+import { toLabel, TriggerStatement } from '../utils';
 
 type IProps = {
   source: string;

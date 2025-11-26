@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const SOURCE_CONFIG = {
+export const SOURCE_CONFIG = {
   water_level_m: {
     label: 'DHM Water Level',
     sourceSubType: 'Water Level (m)',

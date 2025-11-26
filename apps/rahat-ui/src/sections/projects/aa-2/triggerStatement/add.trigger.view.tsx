@@ -4,6 +4,7 @@ import {
   DeleteButton,
   EditButton,
   Heading,
+  SpinnerLoader,
 } from 'apps/rahat-ui/src/common';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -31,6 +32,12 @@ import { UUID } from 'crypto';
 import { useRouter } from 'next/navigation';
 import { triggerStatementSchema } from './trigger.statement.schema';
 import { buildSourceOptions, buildSubtypeOptions, SourceConfig } from './utils';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@rahat-ui/shadcn/src/components/ui/alert';
+import { AlertCircleIcon } from 'lucide-react';
 
 export const AutomatedFormSchema = z.object({
   title: z.string().min(2, { message: 'Please enter trigger title' }),
@@ -58,7 +65,8 @@ export default function AddTriggerView() {
   );
 
   // Generating source options starts //
-  const { data: dataSourceTypes } = useGetDataSourceTypes(projectId);
+  const { data: dataSourceTypes, isLoading: isLoadingDataSourceTypes } =
+    useGetDataSourceTypes(projectId);
 
   const SOURCES =
     dataSourceTypes?.value || ({} as Record<string, SourceConfig>);
@@ -212,104 +220,119 @@ export default function AddTriggerView() {
         title="Add Trigger"
         description="Fill the form below to create new trigger statement"
       />
-      <ScrollArea className="h-[calc(100vh-210px)] pr-3">
-        <div className="border p-4 mb-4 rounded shadow">
-          <Heading
-            title="Select Trigger Type"
-            titleStyle="text-xl/6 font-semibold"
-            description="Select trigger type and fill the details below"
-          />
-
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="border bg-secondary rounded mb-2">
-              <TabsTrigger
-                className="w-full data-[state=active]:bg-white"
-                value="automated"
-              >
-                Automated trigger
-              </TabsTrigger>
-              <TabsTrigger
-                className="w-full data-[state=active]:bg-white"
-                value="manual"
-              >
-                Manual trigger
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="automated">
-              <AutomatedTriggerAddForm
-                form={automatedForm}
-                phase={selectedPhase}
-                sourceOptions={sourceOptions}
-                subTypeOptions={subtypeOptionsBySource}
-              />
-            </TabsContent>
-            <TabsContent value="manual">
-              <ManualTriggerAddForm form={manualForm} phase={selectedPhase} />
-            </TabsContent>
-          </Tabs>
-
-          <div className="flex justify-end mt-4">
-            <Button
-              type="button"
-              variant="outline"
-              className="w-40 mr-2"
-              onClick={() => {
-                if (activeTab === 'automated') {
-                  automatedForm.reset();
-                } else {
-                  manualForm.reset();
-                }
-              }}
-            >
-              Clear
-            </Button>
-            <ConfirmAddTrigger
-              open={open}
-              setOpen={setOpen}
-              handleStore={handleStoreTriggers}
-              handleAddAnother={handleAddAnotherTrigger}
-              handleSave={handleCreateTriggers}
-              isSubmitting={addTriggers?.isPending}
+      {isLoadingDataSourceTypes ? (
+        <SpinnerLoader />
+      ) : dataSourceTypes ? (
+        <ScrollArea className="h-[calc(100vh-210px)] pr-3">
+          <div className="border p-4 mb-4 rounded shadow">
+            <Heading
+              title="Select Trigger Type"
+              titleStyle="text-xl/6 font-semibold"
+              description="Select trigger type and fill the details below"
             />
+
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="border bg-secondary rounded mb-2">
+                <TabsTrigger
+                  className="w-full data-[state=active]:bg-white"
+                  value="automated"
+                >
+                  Automated trigger
+                </TabsTrigger>
+                <TabsTrigger
+                  className="w-full data-[state=active]:bg-white"
+                  value="manual"
+                >
+                  Manual trigger
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="automated">
+                <AutomatedTriggerAddForm
+                  form={automatedForm}
+                  phase={selectedPhase}
+                  sourceOptions={sourceOptions}
+                  subTypeOptions={subtypeOptionsBySource}
+                />
+              </TabsContent>
+              <TabsContent value="manual">
+                <ManualTriggerAddForm form={manualForm} phase={selectedPhase} />
+              </TabsContent>
+            </Tabs>
+
+            <div className="flex justify-end mt-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-40 mr-2"
+                onClick={() => {
+                  if (activeTab === 'automated') {
+                    automatedForm.reset();
+                  } else {
+                    manualForm.reset();
+                  }
+                }}
+              >
+                Clear
+              </Button>
+              <ConfirmAddTrigger
+                open={open}
+                setOpen={setOpen}
+                handleStore={handleStoreTriggers}
+                handleAddAnother={handleAddAnotherTrigger}
+                handleSave={handleCreateTriggers}
+                isSubmitting={addTriggers?.isPending}
+              />
+            </div>
           </div>
-        </div>
-        <div className="grid grid-cols-1 gap-2">
-          {allTriggers.map((t, i) => {
-            return (
-              <div key={i} className="p-4 rounded border shadow">
-                <div className="flex justify-between items-center space-x-4 mb-2">
-                  <div className="flex items-center space-x-4">
-                    <Badge className="font-medium">
-                      {t.isMandatory ? 'Mandatory' : 'Optional'}
-                    </Badge>
-                    <Badge className="font-medium">
-                      {t.type.charAt(0).toUpperCase() + t.type.slice(1)}
-                    </Badge>
+          <div className="grid grid-cols-1 gap-2">
+            {allTriggers.map((t, i) => {
+              return (
+                <div key={i} className="p-4 rounded border shadow">
+                  <div className="flex justify-between items-center space-x-4 mb-2">
+                    <div className="flex items-center space-x-4">
+                      <Badge className="font-medium">
+                        {t.isMandatory ? 'Mandatory' : 'Optional'}
+                      </Badge>
+                      <Badge className="font-medium">
+                        {t.type.charAt(0).toUpperCase() + t.type.slice(1)}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <EditButton
+                        className="border-none bg-blue-50"
+                        description="This action will refill the form with the selected trigger's data for editing."
+                        onFallback={() => handleEdit(t)}
+                      />
+                      <DeleteButton
+                        className="border-none bg-red-50"
+                        name="trigger"
+                        handleContinueClick={() => handleDelete(t)}
+                      />
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <EditButton
-                      className="border-none bg-blue-50"
-                      description="This action will refill the form with the selected trigger's data for editing."
-                      onFallback={() => handleEdit(t)}
-                    />
-                    <DeleteButton
-                      className="border-none bg-red-50"
-                      name="trigger"
-                      handleContinueClick={() => handleDelete(t)}
-                    />
-                  </div>
+                  <p className="text-sm/6 font-medium mb-2">{t.title}</p>
+                  <p className="text-muted-foreground text-sm/4">
+                    {`${t.source} . ${
+                      t.riverBasin
+                    } . ${t.time?.toLocaleString()}`}
+                  </p>
                 </div>
-                <p className="text-sm/6 font-medium mb-2">{t.title}</p>
-                <p className="text-muted-foreground text-sm/4">
-                  {`${t.source} . ${
-                    t.riverBasin
-                  } . ${t.time?.toLocaleString()}`}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      </ScrollArea>
+              );
+            })}
+          </div>
+        </ScrollArea>
+      ) : (
+        <Alert variant="destructive">
+          <AlertCircleIcon />
+          <AlertTitle>Unable to load form.</AlertTitle>
+          <AlertDescription>
+            <p>Please verify if data source types are available.</p>
+            <ul className="list-inside list-disc text-sm">
+              <li>Check triggers settings 'DATASOURCETYPES'</li>
+            </ul>
+          </AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 }

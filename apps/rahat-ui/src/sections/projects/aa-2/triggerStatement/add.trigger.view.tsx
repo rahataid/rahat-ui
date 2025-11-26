@@ -23,16 +23,14 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
-  PROJECT_SETTINGS_KEYS,
   useCreateTriggerStatement,
   useGetDataSourceTypes,
-  useTabConfiguration,
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useRouter } from 'next/navigation';
-import { camelCase } from 'lodash';
 import { triggerStatementSchema } from './trigger.statement.schema';
+import { buildSourceOptions, buildSubtypeOptions, SourceConfig } from './utils';
 
 export const AutomatedFormSchema = z.object({
   title: z.string().min(2, { message: 'Please enter trigger title' }),
@@ -62,27 +60,10 @@ export default function AddTriggerView() {
   // Generating source options starts //
   const { data: dataSourceTypes } = useGetDataSourceTypes(projectId);
 
-  const { data: forecastTabs } = useTabConfiguration(
-    projectId,
-    PROJECT_SETTINGS_KEYS.FORECAST_TAB_CONFIG,
-  );
-
-  const sourceOptions = React.useMemo(() => {
-    const sourcesFromTypes = Object.keys(dataSourceTypes?.value || {});
-    const sourcesFromForecastTabs = forecastTabs?.value?.tabs?.map(
-      (tab: any) => tab.value,
-    );
-
-    const matchedSources = sourcesFromTypes?.filter((source) =>
-      sourcesFromForecastTabs?.includes(camelCase(source)),
-    );
-
-    return matchedSources?.map((source) => {
-      const label = source.toUpperCase();
-      const value = source.trim().toUpperCase().replace(' ', '_');
-      return { value, label };
-    });
-  }, [dataSourceTypes, forecastTabs]);
+  const SOURCES =
+    dataSourceTypes?.value || ({} as Record<string, SourceConfig>);
+  const sourceOptions = buildSourceOptions(SOURCES);
+  const subtypeOptionsBySource = buildSubtypeOptions(SOURCES);
   // Generating source options ends //
 
   const addTriggers = useCreateTriggerStatement();
@@ -144,7 +125,7 @@ export default function AddTriggerView() {
         ...allTriggers,
         {
           ...data,
-          source: data.source.split('_')[0],
+          source: data?.source.split(':')[0].toUpperCase(),
           isMandatory: !data?.isMandatory,
           type: activeTab,
           time: new Date(),
@@ -259,6 +240,7 @@ export default function AddTriggerView() {
                 form={automatedForm}
                 phase={selectedPhase}
                 sourceOptions={sourceOptions}
+                subTypeOptions={subtypeOptionsBySource}
               />
             </TabsContent>
             <TabsContent value="manual">

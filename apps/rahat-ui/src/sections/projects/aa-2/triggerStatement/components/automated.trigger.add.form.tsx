@@ -21,34 +21,7 @@ import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { z } from 'zod';
 import { Info } from 'lucide-react';
 import { AutomatedFormSchema } from '../add.trigger.view';
-
-const sourceOptionss = [
-  { label: 'DHM Water Level - Water Level (m)', value: 'DHM_Water_Level' },
-  { label: 'GFH - Discharge (m³/s)', value: 'GFH' },
-  { label: 'DHM Rainfall - Rainfall (mm)', value: 'DHM_Rainfall' },
-  { label: 'GLOFAS - Flood Probability (%)', value: 'GLOFAS' },
-];
-
-const dhmLevelTypeOptions = [
-  { label: 'Warning Level', value: 'warning_level' },
-  { label: 'Danger Level', value: 'danger_level' },
-];
-
-const gfhLevelTypeOptions = [
-  { label: 'Warning Discharge', value: 'warning_discharge' },
-  { label: 'Danger Discharge', value: 'danger_discharge' },
-];
-
-const dhmMeasurementPeriodOptions = [
-  { label: 'Hourly', value: 'hourly' },
-  { label: 'Daily', value: 'daily' },
-];
-
-const glofasProbabilityPeriodOptions = [
-  { label: '2 Years Max Prob', value: '2_years_max_prob' },
-  { label: '5 Years Max Prob', value: '5_years_max_prob' },
-  { label: '20 Years Max Prob', value: '20_years_max_prob' },
-];
+import { Option } from '../utils';
 
 const operatorOptions = [
   { label: 'Greater than (>)', value: '>' },
@@ -62,7 +35,8 @@ type IProps = {
   form: UseFormReturn<z.infer<typeof AutomatedFormSchema>>;
   phase: any;
   isEditing?: boolean;
-  sourceOptions?: { label: string; value: string }[];
+  sourceOptions?: Option[];
+  subTypeOptions?: Record<string, Option[]>;
 };
 
 export default function AddAutomatedTriggerForm({
@@ -70,6 +44,7 @@ export default function AddAutomatedTriggerForm({
   phase,
   isEditing,
   sourceOptions,
+  subTypeOptions,
 }: IProps) {
   const source = form.watch('source');
   const triggerSource = form.watch('triggerStatement.source');
@@ -80,16 +55,16 @@ export default function AddAutomatedTriggerForm({
   React.useEffect(() => {
     if (source) {
       switch (source) {
-        case 'DHM_Water_Level':
+        case 'dhm:waterlevel':
           form.setValue('triggerStatement.source', 'water_level_m');
           break;
-        case 'DHM_Rainfall':
+        case 'dhm:rainfall':
           form.setValue('triggerStatement.source', 'rainfall_mm');
           break;
-        case 'GLOFAS':
+        case 'glofas':
           form.setValue('triggerStatement.source', 'prob_flood');
           break;
-        case 'GFH':
+        case 'gfh':
           form.setValue('triggerStatement.source', 'discharge_m3s');
           break;
         default:
@@ -107,13 +82,7 @@ export default function AddAutomatedTriggerForm({
     }
   }, [triggerSourceSubType, triggerOperator, triggerValue]);
 
-  const SourceSubTypeField = ({
-    label,
-    options,
-  }: {
-    label: string;
-    options: { label: string; value: string }[];
-  }) => {
+  const SourceSubTypeField = ({ label }: { label: string }) => {
     return (
       <>
         <FormLabel>{label}</FormLabel>
@@ -123,8 +92,8 @@ export default function AddAutomatedTriggerForm({
           </SelectTrigger>
         </FormControl>
         <SelectContent>
-          {options?.length ? (
-            options?.map((option) => (
+          {subTypeOptions?.[source]?.length ? (
+            subTypeOptions?.[source]?.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
@@ -228,8 +197,8 @@ export default function AddAutomatedTriggerForm({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {sourceOptionss?.length ? (
-                          sourceOptionss?.map((option) => (
+                        {sourceOptions?.length ? (
+                          sourceOptions?.map((option) => (
                             <SelectItem key={option.value} value={option.value}>
                               {option.label}
                             </SelectItem>
@@ -260,28 +229,16 @@ export default function AddAutomatedTriggerForm({
                           key={field.value}
                         >
                           {triggerSource === 'water_level_m' && (
-                            <SourceSubTypeField
-                              label="Level Type"
-                              options={dhmLevelTypeOptions}
-                            />
+                            <SourceSubTypeField label="Level Type" />
                           )}
                           {triggerSource === 'discharge_m3s' && (
-                            <SourceSubTypeField
-                              label="Discharge Type"
-                              options={gfhLevelTypeOptions}
-                            />
+                            <SourceSubTypeField label="Discharge Type" />
                           )}
                           {triggerSource === 'rainfall_mm' && (
-                            <SourceSubTypeField
-                              label="Measurement Period"
-                              options={dhmMeasurementPeriodOptions}
-                            />
+                            <SourceSubTypeField label="Measurement Period" />
                           )}
                           {triggerSource === 'prob_flood' && (
-                            <SourceSubTypeField
-                              label="Probability Period"
-                              options={glofasProbabilityPeriodOptions}
-                            />
+                            <SourceSubTypeField label="Probability Period" />
                           )}
                         </Select>
                         <FormMessage />

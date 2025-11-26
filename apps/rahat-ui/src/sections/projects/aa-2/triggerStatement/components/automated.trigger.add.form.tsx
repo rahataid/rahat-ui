@@ -79,6 +79,10 @@ export default function AddAutomatedTriggerForm({
       form.setValue(
         'triggerStatement.expression',
         `${triggerSourceSubType} ${triggerOperator} ${triggerValue}`,
+        {
+          shouldValidate: true,
+          shouldDirty: true,
+        },
       );
     }
   }, [triggerSourceSubType, triggerOperator, triggerValue]);

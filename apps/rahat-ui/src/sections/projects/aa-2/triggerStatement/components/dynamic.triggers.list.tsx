@@ -43,6 +43,7 @@ export default function DynamicTriggersList({
               triggeredAt={t?.triggeredAt}
               triggerType={t?.isMandatory ? 'Mandatory' : 'Optional'}
               version={t?.version}
+              triggerStatement={t?.triggerStatement}
             />
           ))
         ) : (

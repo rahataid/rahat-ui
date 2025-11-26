@@ -32,6 +32,15 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useRouter } from 'next/navigation';
 import { camelCase } from 'lodash';
+import { triggerStatementSchema } from './trigger.statement.schema';
+
+export const AutomatedFormSchema = z.object({
+  title: z.string().min(2, { message: 'Please enter trigger title' }),
+  description: z.string().optional(),
+  source: z.string().min(1, { message: 'Please select data source' }),
+  isMandatory: z.boolean().optional(),
+  triggerStatement: triggerStatementSchema,
+});
 
 export default function AddTriggerView() {
   const [activeTab, setActiveTab] = React.useState<string>('automated');
@@ -45,8 +54,6 @@ export default function AddTriggerView() {
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
-
-  const triggerViewPath = `/projects/aa/${projectId}/trigger-statements`;
 
   const selectedPhase = JSON.parse(
     localStorage.getItem('selectedPhase') as string,
@@ -95,182 +102,20 @@ export default function AddTriggerView() {
     },
   });
 
-  const AutomatedFormSchema = z
-    .object({
-      title: z.string().min(2, { message: 'Please enter trigger title' }),
-      description: z.string().optional(),
-      source: z.string().min(1, { message: 'Please select data source' }),
-      isMandatory: z.boolean().optional(),
-      minLeadTimeDays: z.string().optional(),
-      maxLeadTimeDays: z.string().optional(),
-      probability: z.string().optional(),
-      warningLevel: z.string().optional(),
-      dangerLevel: z.string().optional(),
-      forecast: z.string().optional(),
-      daysToConsiderPrior: z.string().optional(),
-      forecastStatus: z.string().optional(),
-    })
-    .superRefine((data, ctx) => {
-      if (data.source === 'DHM' && selectedPhase?.name === 'ACTIVATION') {
-        if (!data.dangerLevel || data.dangerLevel.toString().trim() === '') {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['dangerLevel'],
-            message: 'Danger Level is required',
-          });
-        } else if (
-          isNaN(Number(data.dangerLevel)) ||
-          Number(data.dangerLevel) <= 0
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['dangerLevel'],
-            message: 'Danger Level must be a positive number',
-          });
-        }
-      }
-      if (data.source === 'DHM' && selectedPhase?.name === 'READINESS') {
-        if (!data.warningLevel || data.warningLevel.toString().trim() === '') {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['warningLevel'],
-            message: 'Warning Level is required',
-          });
-        } else if (
-          isNaN(Number(data.warningLevel)) ||
-          Number(data.warningLevel) <= 0
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['warningLevel'],
-            message: 'Warning Level must be a positive number',
-          });
-        }
-      }
-      if (
-        data.source === 'DAILY_MONITORING' &&
-        (selectedPhase?.name === 'ACTIVATION' ||
-          selectedPhase?.name === 'READINESS')
-      ) {
-        if (!data.forecast || data.forecast.toString().trim() === '') {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['forecast'],
-            message: 'Forecast is required',
-          });
-        }
-
-        if (
-          !data.daysToConsiderPrior ||
-          data.daysToConsiderPrior.toString().trim() === ''
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['daysToConsiderPrior'],
-            message: 'Days To Consider Prior is required',
-          });
-        } else if (
-          isNaN(Number(data.daysToConsiderPrior)) ||
-          Number(data.daysToConsiderPrior) <= 0
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['daysToConsiderPrior'],
-            message: 'Days To Consider Prior must be a positive number',
-          });
-        }
-
-        if (
-          !data.forecastStatus ||
-          data.forecastStatus.toString().trim() === ''
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['forecastStatus'],
-            message: 'forecast Status is required',
-          });
-        }
-      }
-
-      if (
-        data.source === 'GLOFAS' &&
-        (selectedPhase?.name === 'ACTIVATION' ||
-          selectedPhase?.name === 'READINESS')
-      ) {
-        if (
-          !data.maxLeadTimeDays ||
-          data.maxLeadTimeDays.toString().trim() === ''
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['maxLeadTimeDays'],
-            message: 'Max Lead TimeDays is required',
-          });
-        } else if (
-          isNaN(Number(data.maxLeadTimeDays)) ||
-          Number(data.maxLeadTimeDays) <= 0
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['maxLeadTimeDays'],
-            message: 'Max Lead Time Days must be a positive number',
-          });
-        }
-
-        if (
-          !data.minLeadTimeDays ||
-          data.minLeadTimeDays.toString().trim() === ''
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['minLeadTimeDays'],
-            message: 'Min Lead Time Days is required',
-          });
-        } else if (
-          isNaN(Number(data.minLeadTimeDays)) ||
-          Number(data.minLeadTimeDays) <= 0
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['minLeadTimeDays'],
-            message: 'Min Lead Time Days must be a positive number',
-          });
-        }
-
-        if (!data.probability || data.probability.toString().trim() === '') {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['probability'],
-            message: 'Forecast probability is required',
-          });
-        } else if (
-          isNaN(Number(data.probability)) ||
-          Number(data.probability) <= 0
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['probability'],
-            message: 'Forecast probability must be a positive number',
-          });
-        }
-      }
-    });
-
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({
     resolver: zodResolver(AutomatedFormSchema),
     defaultValues: {
       title: '',
       description: '',
       source: '',
-      maxLeadTimeDays: '',
-      minLeadTimeDays: '',
-      probability: '',
       isMandatory: false,
-      warningLevel: '',
-      dangerLevel: '',
-      forecast: '',
-      daysToConsiderPrior: '',
-      forecastStatus: '',
+      triggerStatement: {
+        source: undefined,
+        sourceSubType: '',
+        operator: undefined,
+        value: undefined,
+        expression: '',
+      },
     },
   });
 
@@ -294,17 +139,19 @@ export default function AddTriggerView() {
   const handleSubmitAutomatedTrigger = async (
     data: z.infer<typeof AutomatedFormSchema>,
   ) => {
-    setAllTriggers([
-      ...allTriggers,
-      {
-        ...data,
-        isMandatory: !data?.isMandatory,
-        type: activeTab,
-        time: new Date(),
-        phaseId: selectedPhase?.id,
-        riverBasin: selectedPhase?.riverBasin,
-      },
-    ]);
+    isAutomatedDataValid &&
+      setAllTriggers([
+        ...allTriggers,
+        {
+          ...data,
+          source: data.source.split('_')[0],
+          isMandatory: !data?.isMandatory,
+          type: activeTab,
+          time: new Date(),
+          phaseId: selectedPhase?.id,
+          riverBasin: selectedPhase?.riverBasin,
+        },
+      ]);
   };
 
   const handleStoreTriggers = () => {
@@ -346,35 +193,9 @@ export default function AddTriggerView() {
   };
 
   const handleCreateTriggers = async () => {
-    const payload = allTriggers?.map(
-      ({
-        riverBasin,
-        type,
-        time,
-        phaseId,
-        isMandatory,
-        title,
-        description,
-        source,
-        ...rest
-      }) => {
-        // Only include non-empty fields in triggerStatement
-        const triggerStatement = Object.fromEntries(
-          Object.entries(rest).filter(
-            ([, value]) =>
-              value !== undefined && value !== null && value !== '',
-          ),
-        );
-        return {
-          phaseId,
-          isMandatory,
-          title,
-          source,
-          description,
-          triggerStatement,
-        };
-      },
-    );
+    const payload = allTriggers?.map(({ riverBasin, type, time, ...rest }) => {
+      return rest;
+    });
     try {
       await addTriggers.mutateAsync({
         projectUUID: projectId,
@@ -388,7 +209,6 @@ export default function AddTriggerView() {
       setAllTriggers([]);
     }
   };
-
   React.useEffect(() => {
     const isValid =
       activeTab === 'automated'
@@ -457,7 +277,6 @@ export default function AddTriggerView() {
                 } else {
                   manualForm.reset();
                 }
-                // router.push(triggerViewPath)
               }}
             >
               Clear

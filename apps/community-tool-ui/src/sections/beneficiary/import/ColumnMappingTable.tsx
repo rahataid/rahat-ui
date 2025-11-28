@@ -19,6 +19,7 @@ interface ColumnMappingTableProps {
   handleTargetFieldChange: (key: string, value: string) => void;
   fieldDefs: [];
   mappings: any[];
+  aiMappings?: any[];
 }
 
 interface IMapping {
@@ -37,7 +38,10 @@ export default function ColumnMappingTable({
   handleTargetFieldChange,
   fieldDefs,
   mappings,
+  aiMappings,
 }: ColumnMappingTableProps) {
+  console.log('ColumnMappingTable rendered with rawData:', rawData);
+  console.log('aiMappings------:', aiMappings);
   const [columns, setColumns] = useState([]) as any[];
   const { setMappings } = useBeneficiaryImportStore();
 
@@ -73,10 +77,19 @@ export default function ColumnMappingTable({
   const sortedData = uniqueDBFields.sort() || [];
 
   function getSelectedField(sourceField: string) {
+    // If AI mappings are present, use predicted_label as default
+    console.log(sourceField, 'sourceFielofselected---');
+    if (aiMappings && aiMappings.length) {
+      console.log('AI mappings found:', aiMappings);
+      const aiMatch = aiMappings.find((m) => m.header === sourceField);
+      console.log(aiMatch, 'aiMatch---');
+      if (aiMatch && aiMatch.predicted_label) {
+        return aiMatch.predicted_label;
+      }
+    }
+    // Fallback to user mappings
     if (mappings.length) {
-      const found = mappings.find((m) => {
-        return m.sourceField === sourceField;
-      });
+      const found = mappings.find((m) => m.sourceField === sourceField);
       if (!found) return '';
       return found.targetField;
     } else {
@@ -89,7 +102,6 @@ export default function ColumnMappingTable({
           targetField: found.targetField,
         });
       }
-
       const filtered = filterUniqueTargetsOnly(myMappings, 'targetField');
       setMappings(filtered);
       return found.targetField;

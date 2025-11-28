@@ -33,6 +33,7 @@ import {
   useCreateImportSource,
   useExistingFieldMappings,
   useFetchKoboSettings,
+  useUploadCsvForMapping,
 } from '@rahat-ui/community-query';
 import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable, { resetMyMappings } from './ColumnMappingTable';
@@ -44,12 +45,15 @@ interface IProps {
 }
 
 export default function BenImp({ fieldDefinitions }: IProps) {
-  console.log('fieldDefinitions', fieldDefinitions);
   const form = useForm({});
   const { rumsanService } = useRSQuery();
   const { data: kbSettings } = useFetchKoboSettings();
   const existingMapQuery = useExistingFieldMappings();
   const importSourceQuery = useCreateImportSource();
+  const [aiMapping, setAiMapping] = React.useState<any>([]);
+
+  // AI Mapping Hooks
+  const uploadCsvForMapping = useUploadCsvForMapping();
 
   const {
     currentScreen,
@@ -78,6 +82,66 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     setHasUUID,
   } = useBeneficiaryImportStore();
   // ==========States=============
+
+  const fetchAiMappingSuggestions = async (file: File) => {
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const uploadResult = await uploadCsvForMapping.mutateAsync(formData);
+
+      //store Ai classified_header in state
+
+      if (uploadResult && uploadResult.classified_headers) {
+        setAiMapping(uploadResult.classified_headers);
+      }
+      // Transform AI suggestions to mappings format
+
+      // Step 2: Get AI mapping suggestions using dataset_id
+      // const datasetId = uploadResult?.dataset_id || uploadResult?.datasetId;
+      // if (!datasetId) {
+      //   console.warn('No dataset_id returned from AI API');
+      //   setLoading(false);
+      //   return;
+      // }
+
+      // const aiSuggestions = await getAiMappingSuggestions.mutateAsync(
+      //   datasetId,
+      // );
+      //console.log('AI Mapping Suggestions:', aiSuggestions);
+
+      // Step 3: Transform AI suggestions to mappings format
+      // TODO: Map AI suggestions to your mappings format based on actual API response
+      // Example structure (adjust based on actual response):
+      // if (aiSuggestions && aiSuggestions.mappings) {
+      //   const aiMappings = aiSuggestions.mappings.map((m: any) => ({
+      //     sourceField: m.source_field,
+      //     targetField: m.target_field,
+      //   }));
+      //   setMappings(aiMappings);
+      //   setHasExistingMapping(true);
+      // }
+
+      // For now, just show success message
+      // if (aiSuggestions) {
+      //   Swal.fire({
+      //     icon: 'success',
+      //     title: 'AI suggestions received!',
+      //     text: 'Check console for mapping suggestions',
+      //     timer: 2000,
+      //   });
+      // }
+
+      setLoading(false);
+    } catch (error) {
+      console.error('AI Mapping Error:', error);
+      setLoading(false);
+      // Silently fail - user can still map manually
+    }
+  };
+  console.log('AI Mappings State:', aiMapping);
 
   const fetchExistingMapping = async (importId: string) => {
     setMappings([]);
@@ -134,7 +198,14 @@ export default function BenImp({ fieldDefinitions }: IProps) {
         });
       const sanitized = removeFieldsWithUnderscore(koboData.data.results);
       setRawData(sanitized);
+
+      // Keep existing mapping functionality
       await fetchExistingMapping(found.imported);
+
+      // Note: AI mapping not available for KoboToolbox data
+      // AI API requires Excel/CSV file, not JSON data
+      // Users will need to map fields manually for Kobo data
+
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -174,8 +245,11 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     const files = e.target.files || [];
     const fileName = formatNameString(files[0].name);
     if (!files.length) return;
+
+    const selectedFile = files[0];
+
     const reader = new FileReader();
-    reader.onload = (e: any) => {
+    reader.onload = async (e: any) => {
       const data = e.target.result;
       const workbook = xlsx.read(data, { type: 'array' });
       const sheetName = workbook.SheetNames[0];
@@ -185,9 +259,16 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       }) as any;
       const sanitized = removeFieldsWithUnderscore(json || []);
       setRawData(sanitized);
+
+      // Try to fetch AI mapping suggestions
+      // This runs in parallel with existing mapping check
+      // Comment out the line below to disable AI suggestions
+      await fetchAiMappingSuggestions(selectedFile);
     };
-    reader.readAsArrayBuffer(files[0]);
+    reader.readAsArrayBuffer(selectedFile);
     setImportId(fileName);
+
+    // Keep existing mapping functionality
     await fetchExistingMapping(fileName);
     setLoading(false);
   };
@@ -430,6 +511,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
                 fieldDefs={fieldDefinitions}
                 handleTargetFieldChange={handleTargetFieldChange}
                 mappings={mappings}
+                aiMappings={aiMapping}
               />
             </div>
           </div>

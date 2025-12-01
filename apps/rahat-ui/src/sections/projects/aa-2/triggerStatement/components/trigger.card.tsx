@@ -112,7 +112,7 @@ export default function TriggerCard({
         {dataSource &&
           `. ${dataSource} ${
             dataSource !== 'GLOFAS'
-              ? sourceSubTypeLabel?.split(' ').slice(0, -1)
+              ? sourceSubTypeLabel?.split(' ').slice(0, -1).join(' ')
               : sourceSubTypeLabel
           } (${formattedSourceSubType} ${tgSt?.operator} ${tgSt?.value} ${
             unit || '%'

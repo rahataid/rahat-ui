@@ -42,6 +42,7 @@ export default function ColumnMappingTable({
 }: ColumnMappingTableProps) {
   const [columns, setColumns] = useState([]) as any[];
   const { setMappings } = useBeneficiaryImportStore();
+  console.log(mappings, 'mappings in ColumnMappingTable');
 
   const extractColumns = () => {
     if (rawData.length > 0) {
@@ -76,8 +77,8 @@ export default function ColumnMappingTable({
 
   function getSelectedField(sourceField: string) {
     // If AI mappings are present, always use predicted_label as default (even if not a schema match)
-    if (aiMappings && aiMappings.length) {
-      const aiMatch = aiMappings.find((m) => m.header === sourceField);
+    if (mappings && mappings.length) {
+      const aiMatch = mappings.find((m) => m.header === sourceField);
       if (aiMatch && aiMatch.predicted_label) {
         return aiMatch.predicted_label;
       }
@@ -140,12 +141,12 @@ export default function ColumnMappingTable({
           {columns.map((column: any, index: number) => {
             // Always show AI suggestions for every column, even if the column name is not in the database field list
             const aiSuggestions: string[] = [];
-            if (aiMappings && aiMappings.length) {
+            if (mappings && mappings.length) {
               // Find the AI mapping for this column, even if it's a wrong field name
-              let aiMatch = aiMappings.find((m) => m.header === column);
+              let aiMatch = mappings.find((m) => m.header === column);
               // If not found, try to find by predicted_label or other_similar
               if (!aiMatch) {
-                aiMatch = aiMappings.find(
+                aiMatch = mappings.find(
                   (m) =>
                     m.predicted_label === column ||
                     (Array.isArray(m.other_similar) &&

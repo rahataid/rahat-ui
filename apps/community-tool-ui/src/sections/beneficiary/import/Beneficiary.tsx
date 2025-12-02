@@ -95,7 +95,8 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       //store Ai classified_header in state
 
       if (uploadResult && uploadResult.classified_headers) {
-        setAiMapping(uploadResult.classified_headers);
+        // setAiMapping(uploadResult.classified_headers);
+        setMappings(uploadResult.classified_headers);
       }
       // Transform AI suggestions to mappings format
 
@@ -309,7 +310,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   };
 
   const validateOrImport = (action: string) => {
-    console.log(action, 'action called');
     setValidBenef([]);
     let finalPayload = rawData as any[];
     console.log(finalPayload, 'finalPayload before mapping');
@@ -387,6 +387,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   const createImportSource = async (sourcePayload: any) => {
     try {
       setLoading(true);
+      console.log(sourcePayload, 'sourcePayload sent to backend');
       const res = (await importSourceQuery.mutateAsync(sourcePayload)) as any;
       // If action is IMPORT, source will be created on backend!
       // Otherwise, just validate in the backend

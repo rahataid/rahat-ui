@@ -28,7 +28,9 @@ export function ComboBox({
   handleTargetFieldChange,
   column,
   selectedField,
+  aiSuggestions,
 }: any) {
+  console.log(aiSuggestions, 'aiSuggestions in combobox');
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
 
@@ -43,6 +45,12 @@ export function ComboBox({
     }
   }, [selectedField]);
 
+  // Merge AI suggestions and data, remove duplicates
+  const aiSet = new Set(aiSuggestions || []);
+  const comboBoxData = [
+    ...(aiSuggestions || []).filter((s: any) => !data.includes(s)),
+    ...data,
+  ];
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -52,9 +60,7 @@ export function ComboBox({
           aria-expanded={open}
           className="w-[400px] justify-between"
         >
-          {value
-            ? data.find((d: string) => d.toLowerCase() === value.toLowerCase())
-            : '--Select Field--'}
+          {value ? humanizeString(value) : '--Select Field--'}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -64,14 +70,13 @@ export function ComboBox({
             <span className="p-2 text-slate-400 text-xs">Clear Selection</span>
           </button>
         )}
-
         <Command>
           <CommandInput placeholder="--Select Field--" />
           <ScrollArea className="h-[200px]">
             <CommandEmpty>No field found.</CommandEmpty>
             <CommandList>
               <CommandGroup>
-                {data.map((d: string) => (
+                {comboBoxData.map((d: string, idx: number) => (
                   <CommandItem
                     key={d}
                     value={humanizeString(d)}
@@ -91,6 +96,11 @@ export function ComboBox({
                       )}
                     />
                     {humanizeString(d)}
+                    {aiSet.has(d) && (
+                      <span className="ml-2 text-yellow-600 text-xs">
+                        AI suggested
+                      </span>
+                    )}
                   </CommandItem>
                 ))}
               </CommandGroup>

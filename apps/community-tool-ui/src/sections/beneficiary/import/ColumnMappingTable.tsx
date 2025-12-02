@@ -40,8 +40,6 @@ export default function ColumnMappingTable({
   mappings,
   aiMappings,
 }: ColumnMappingTableProps) {
-  console.log('ColumnMappingTable rendered with rawData:', rawData);
-  console.log('aiMappings------:', aiMappings);
   const [columns, setColumns] = useState([]) as any[];
   const { setMappings } = useBeneficiaryImportStore();
 
@@ -77,12 +75,9 @@ export default function ColumnMappingTable({
   const sortedData = uniqueDBFields.sort() || [];
 
   function getSelectedField(sourceField: string) {
-    // If AI mappings are present, use predicted_label as default
-    console.log(sourceField, 'sourceFielofselected---');
+    // If AI mappings are present, always use predicted_label as default (even if not a schema match)
     if (aiMappings && aiMappings.length) {
-      console.log('AI mappings found:', aiMappings);
       const aiMatch = aiMappings.find((m) => m.header === sourceField);
-      console.log(aiMatch, 'aiMatch---');
       if (aiMatch && aiMatch.predicted_label) {
         return aiMatch.predicted_label;
       }
@@ -90,22 +85,25 @@ export default function ColumnMappingTable({
     // Fallback to user mappings
     if (mappings.length) {
       const found = mappings.find((m) => m.sourceField === sourceField);
-      if (!found) return '';
-      return found.targetField;
-    } else {
-      // Search for variation match
-      const found = findFieldName(sourceField);
-      if (!found) return '';
-      if (found) {
-        myMappings.push({
-          sourceField: found.sourceField,
-          targetField: found.targetField,
-        });
-      }
-      const filtered = filterUniqueTargetsOnly(myMappings, 'targetField');
-      setMappings(filtered);
-      return found.targetField;
+      if (found) return found.targetField;
     }
+    // If nothing matches, show the sourceField so something is always shown
+    return sourceField;
+
+    /*
+    // Previous variation match logic (commented out)
+    // const found = findFieldName(sourceField);
+    // if (!found) return '';
+    // if (found) {
+    //   myMappings.push({
+    //     sourceField: found.sourceField,
+    //     targetField: found.targetField,
+    //   });
+    // }
+    // const filtered = filterUniqueTargetsOnly(myMappings, 'targetField');
+    // setMappings(filtered);
+    // return found.targetField;
+    */
   }
 
   function filterUniqueTargetsOnly(arr: IMapping[], key: string) {
@@ -139,27 +137,60 @@ export default function ColumnMappingTable({
     <table className="ml-8 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
       <thead>
         <tr>
-          {columns.map((column: any, index: number) => (
-            <th className="py-1.5" key={index}>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span>{truncatedText(column, 40)}</span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{column}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+          {columns.map((column: any, index: number) => {
+            // Always show AI suggestions for every column, even if the column name is not in the database field list
+            const aiSuggestions: string[] = [];
+            if (aiMappings && aiMappings.length) {
+              // Find the AI mapping for this column, even if it's a wrong field name
+              let aiMatch = aiMappings.find((m) => m.header === column);
+              // If not found, try to find by predicted_label or other_similar
+              if (!aiMatch) {
+                aiMatch = aiMappings.find(
+                  (m) =>
+                    m.predicted_label === column ||
+                    (Array.isArray(m.other_similar) &&
+                      m.other_similar.some(
+                        (s: { label: string }) => s.label === column,
+                      )),
+                );
+              }
 
-              <ComboBox
-                data={sortedData}
-                handleTargetFieldChange={handleTargetFieldChange}
-                column={column}
-                selectedField={getSelectedField(column)}
-              />
-            </th>
-          ))}
+              //fall back for ai mapping  optional
+              if (aiMatch) {
+                if (aiMatch.predicted_label)
+                  aiSuggestions.push(aiMatch.predicted_label);
+                if (Array.isArray(aiMatch.other_similar)) {
+                  aiSuggestions.push(
+                    ...aiMatch.other_similar.map(
+                      (s: { label: string }) => s.label,
+                    ),
+                  );
+                }
+              }
+            }
+
+            return (
+              <th className="py-1.5" key={index}>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span>{truncatedText(column, 40)}</span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{column}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <ComboBox
+                  data={sortedData}
+                  handleTargetFieldChange={handleTargetFieldChange}
+                  column={column}
+                  selectedField={getSelectedField(column)}
+                  aiSuggestions={aiSuggestions}
+                />
+              </th>
+            );
+          })}
         </tr>
       </thead>
       <tbody>

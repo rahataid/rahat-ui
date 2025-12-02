@@ -309,8 +309,10 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   };
 
   const validateOrImport = (action: string) => {
+    console.log(action, 'action called');
     setValidBenef([]);
     let finalPayload = rawData as any[];
+    console.log(finalPayload, 'finalPayload before mapping');
     const selectedTargets = []; // Only submit selected target fields
 
     for (const m of mappings) {

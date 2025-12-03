@@ -1,5 +1,6 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Heading } from 'apps/rahat-ui/src/common';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { UUID } from 'crypto';
 import {
   Calendar,
@@ -32,7 +33,7 @@ export default function GlofasInfoCard({ glofas }: IProps) {
       {
         icon: Calendar,
         label: 'Forecast Date',
-        value: glofas?.info?.forecastDate,
+        value: dateFormat(glofas?.info?.forecastDate),
       },
       {
         icon: TriangleAlert,

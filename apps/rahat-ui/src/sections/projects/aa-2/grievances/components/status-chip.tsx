@@ -1,6 +1,13 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { cn } from './utils';
-import { AlertCircle, Clock, CheckCircle, XCircle, Circle } from 'lucide-react';
+import {
+  AlertCircle,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Circle,
+  AlertTriangle,
+} from 'lucide-react';
 import { GrievanceStatus } from '@rahat-ui/query/lib/grievance/types/grievance';
 
 type StatusChipProps = {
@@ -12,17 +19,17 @@ type StatusChipProps = {
 // GitHub-inspired color scheme for status chips with better contrast
 const statusColors = {
   // New/Open - Light blue (GitHub's default for new/opened issues)
-  [GrievanceStatus.NEW]: 'bg-blue-50 text-blue-800 border-blue-200',
+  [GrievanceStatus.NEW]: 'bg-[#F2F4F7] text-[#344054]',
   // In Progress - Dark blue (GitHub's in-progress color)
-  [GrievanceStatus.IN_PROGRESS]: 'bg-blue-100 text-blue-800 border-blue-300',
+  [GrievanceStatus.IN_PROGRESS]: 'bg-[#EFF8FF] text-[#175CD3]',
   // Resolved - Purple (GitHub's merged/closed PR color)
-  [GrievanceStatus.RESOLVED]: 'bg-purple-50 text-purple-800 border-purple-200',
+  [GrievanceStatus.RESOLVED]: 'bg-[#FDF2FA] text-[#C11574]',
   // Closed - Green (GitHub's closed/merged color)
-  [GrievanceStatus.CLOSED]: 'bg-green-50 text-green-800 border-green-200',
+  [GrievanceStatus.CLOSED]: 'bg-[#ECFDF3] text-[#027A48]',
   // Rejected - Red (GitHub's closed/not-planned color)
-  [GrievanceStatus.REJECTED]: 'bg-red-50 text-red-800 border-red-200',
+  [GrievanceStatus.UNDER_REVIEW]: 'bg-[#FFFAEB] text-[#B54708]',
   // Default - Gray for unknown states
-  default: 'bg-gray-100 text-gray-800 border-gray-300',
+  default: 'bg-gray-100 text-gray-800',
 } as const;
 
 const statusIcons = {
@@ -30,7 +37,7 @@ const statusIcons = {
   [GrievanceStatus.IN_PROGRESS]: Clock,
   [GrievanceStatus.RESOLVED]: CheckCircle,
   [GrievanceStatus.CLOSED]: CheckCircle,
-  [GrievanceStatus.REJECTED]: XCircle,
+  [GrievanceStatus.UNDER_REVIEW]: AlertTriangle,
   default: AlertCircle,
 } as const;
 
@@ -39,7 +46,7 @@ const statusLabels = {
   [GrievanceStatus.IN_PROGRESS]: 'In Progress',
   [GrievanceStatus.RESOLVED]: 'Resolved',
   [GrievanceStatus.CLOSED]: 'Closed',
-  [GrievanceStatus.REJECTED]: 'Rejected',
+  [GrievanceStatus.UNDER_REVIEW]: 'Under Review',
   default: 'N/A',
 } as const;
 
@@ -65,7 +72,7 @@ export function StatusChip({
 
   return (
     <Badge
-      variant="outline"
+      variant="default"
       className={cn('inline-flex items-center gap-1', colorClass, className)}
     >
       {showIcon && <IconComponent className="w-3 h-3" />}

@@ -391,3 +391,47 @@ export const useGetInkind = (projectUUID: UUID) => {
     },
   });
 };
+
+export const useGetAASafeOwners = (projectUUID: UUID) => {
+  const q = useProjectAction(['aa', 'multisig-actions']);
+
+  return useQuery({
+    queryKey: ['safeOwners', projectUUID],
+    queryFn: async () => {
+      const res = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.getSafeOwner',
+          payload: {},
+        },
+      });
+      return res.data;
+    },
+  });
+};
+
+export const useCreateAASafeTransaction = () => {
+  const projectActions = useProjectAction(['aa', 'multisig-actions']);
+
+  return useMutation({
+    mutationKey: ['create-safe-transaction'],
+    mutationFn: async ({
+      amount,
+      projectUUID,
+    }: {
+      amount: string;
+      projectUUID: UUID;
+    }) => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.createSafeTransaction',
+          payload: {
+            amount,
+          },
+        },
+      });
+      return response;
+    },
+  });
+};

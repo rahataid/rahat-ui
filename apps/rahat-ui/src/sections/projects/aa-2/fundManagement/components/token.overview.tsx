@@ -7,13 +7,13 @@ import {
   useProjectSettingsStore,
   useProjectStore,
 } from '@rahat-ui/query';
-import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import { DataCard, Heading, TransactionCard } from 'apps/rahat-ui/src/common';
 import { INFO_TOOL_TIPS } from 'apps/rahat-ui/src/constants/aa.constants';
 import { useChains } from 'connectkit';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import TokenOverviewSkeleton from './token.overview.skeleton';
+import DynamicPieChart from '../../../components/dynamicPieChart';
 
 export default function TokensOverview() {
   const uuid = useParams().id;
@@ -227,18 +227,9 @@ export default function TokensOverview() {
         <div className="flex-1 border rounded-sm p-4">
           <h1 className="text-lg font-medium mb-4">Token Status</h1>
           <div className="w-full aspect-video">
-            <PieChart
-              title="Token Status"
-              chart={{
-                colors: ['#2A9D90', '#E53935', '#BDBDBD'],
-                series: tokenStatus(),
-              }}
-              custom={true}
-              projectAA={true}
-              donutSize="80%"
-              width="100%"
-              height="100%"
-              type="donut"
+            <DynamicPieChart
+              pieData={tokenStatus()}
+              colors={['#2A9D90', '#E53935', '#BDBDBD']}
             />
           </div>
         </div>

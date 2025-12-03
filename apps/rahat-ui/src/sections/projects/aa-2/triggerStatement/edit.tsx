@@ -325,6 +325,7 @@ export default function EditTrigger() {
                 name: trigger?.phase?.name,
                 riverBasin: trigger?.phase?.source?.riverBasin,
               }}
+              isEditing={true}
             />
           ) : (
             <ManualTriggerAddForm

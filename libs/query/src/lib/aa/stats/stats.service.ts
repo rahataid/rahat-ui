@@ -120,6 +120,7 @@ export const useProjectDashboardReporting = (uuid: UUID) => {
 
   const query = useQuery({
     queryKey: ['projectDashboard', uuid],
+    staleTime: 1000 * 60 * 60 * 4,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -145,6 +146,7 @@ export const useProjectDashboardBeneficiaryMapLocation = (
 
   const query = useQuery({
     queryKey: ['projectDashboardBenefMap', payload, uuid],
+    staleTime: 1000 * 60 * 60 * 4,
     queryFn: async () => {
       console.log('payload', payload);
       const mutate = await q.mutateAsync({

@@ -54,6 +54,20 @@ const TimeSeriesChart = ({
     sortedData[sortedData.length - 1].datetime,
   ) as { timestamp: number; formatted: string };
 
+  const allValues = data.flatMap((d) => keys.map((key) => d[key]));
+  const minY = Math.min(
+    ...allValues,
+    Number(warningLevel ?? Infinity),
+    Number(dangerLevel ?? Infinity),
+    Number(extremeLevel ?? Infinity),
+  );
+  const maxY = Math.max(
+    ...allValues,
+    Number(warningLevel ?? -Infinity),
+    Number(dangerLevel ?? -Infinity),
+    Number(extremeLevel ?? -Infinity),
+  );
+
   const options: ApexCharts.ApexOptions = {
     chart: {
       type: 'area',
@@ -70,7 +84,6 @@ const TimeSeriesChart = ({
       },
       labels: {
         formatter: function (value) {
-          console.log(value, 'inside apex function');
           return format(new Date(value), xDateFormat);
         },
         rotate: 0,
@@ -81,24 +94,8 @@ const TimeSeriesChart = ({
       title: {
         text: yaxisTitle,
       },
-      ...(warningLevel && {
-        min:
-          Math.min(
-            ...data.flatMap((d) => keys.map((key) => d[key])),
-            Number(warningLevel),
-            Number(dangerLevel),
-            Number(extremeLevel),
-          ) - 0.5,
-      }),
-      ...(dangerLevel && {
-        max:
-          Math.max(
-            ...data.flatMap((d) => keys.map((key) => d[key])),
-            Number(warningLevel),
-            Number(dangerLevel),
-            Number(extremeLevel),
-          ) + 0.5,
-      }),
+      min: minY - 0.5,
+      max: maxY + 0.5,
     },
     tooltip: {
       shared: false,

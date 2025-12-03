@@ -5,7 +5,7 @@ import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { getAssetCode, getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
-import { ArrowLeftRight, Copy, CopyCheck } from 'lucide-react';
+import { ArrowLeftRight, Copy, CopyCheck, Info } from 'lucide-react';
 import { useParams } from 'next/navigation';
 
 type Txn = {
@@ -108,13 +108,12 @@ export default function TransactionCard({ transaction, loading }: Props) {
             </div>
           ))}
         </div>
-      ) : (
+      ) : transaction?.length ? (
         <ScrollArea className=" h-[calc(350px)]">
           {transaction?.map((txn) => {
             return (
-              <div className="mb-4">
+              <div className="mb-4" key={txn.hash}>
                 <Transaction
-                  key={txn.hash}
                   amount={txn.amount}
                   date={txn.date}
                   hash={txn.hash}
@@ -124,6 +123,13 @@ export default function TransactionCard({ transaction, loading }: Props) {
             );
           })}
         </ScrollArea>
+      ) : (
+        <div className="h-full grid place-items-center">
+          <div className="flex flex-col items-center text-muted-foreground">
+            <Info />
+            <p className="text-sm">No transactions made</p>
+          </div>
+        </div>
       )}
     </div>
   );

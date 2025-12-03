@@ -1,7 +1,8 @@
 import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
-import { DataCard, Heading } from 'apps/rahat-ui/src/common';
+import { DataCard, Heading, NoResult } from 'apps/rahat-ui/src/common';
 import { BroadcastStats } from 'apps/rahat-ui/src/types/dashboard';
 import React from 'react';
+import DynamicPieChart from '../../projects/components/dynamicPieChart';
 
 const CommunicationsAndOutreach = ({
   commsStats,
@@ -27,29 +28,35 @@ const CommunicationsAndOutreach = ({
         <div className="border rounded-sm p-2 flex flex-col h-full min-h-[320px]">
           <h1 className="text-sm font-medium">Communication Channels Used</h1>
           <div className="flex-1 p-2">
-            <BarChart
-              series={
-                commsStats?.transportStats?.map(
-                  (item) => item.totalRecipients,
-                ) || []
-              }
-              categories={
-                commsStats?.transportStats?.map(
-                  (item) =>
-                    item.name.charAt(0).toUpperCase() +
-                    item.name.slice(1).toLowerCase(),
-                ) || []
-              }
-              colors={['#4A90E2']}
-              xaxisLabels={true}
-              yaxisLabels={true}
-              barHeight={20}
-              height="100%"
-              width="100%"
-              xaxisTitle="Communication Channels Used"
-              yaxisTitle="No. of messages/broadcasts"
-              columnWidth={'20%'}
-            />
+            {commsStats?.transportStats?.length === 0 ? (
+              <div className="flex justify-center h-[300px] items-center">
+                <NoResult size="small" />
+              </div>
+            ) : (
+              <BarChart
+                series={
+                  commsStats?.transportStats?.map(
+                    (item) => item.totalRecipients,
+                  ) || []
+                }
+                categories={
+                  commsStats?.transportStats?.map(
+                    (item) =>
+                      item.name.charAt(0).toUpperCase() +
+                      item.name.slice(1).toLowerCase(),
+                  ) || []
+                }
+                colors={['#4A90E2']}
+                xaxisLabels={true}
+                yaxisLabels={true}
+                barHeight={20}
+                height="100%"
+                width="100%"
+                xaxisTitle="Communication Channels Used"
+                yaxisTitle="No. of messages/broadcasts"
+                columnWidth={'20%'}
+              />
+            )}
           </div>
         </div>
         <div className="border rounded-sm p-2 flex flex-col h-full min-h-[320px]">
@@ -57,27 +64,18 @@ const CommunicationsAndOutreach = ({
             Communication Success and Failure Rate
           </h1>
           <div className="w-full flex-1 p-4 pt-0">
-            <PieChart
-              chart={{
-                series: [
-                  {
-                    label: 'Success',
-                    value: commsStats?.messageStats?.successRate,
-                  },
-                  {
-                    label: 'Failure',
-                    value: 100 - commsStats?.messageStats?.successRate,
-                  },
-                ],
-                colors: ['#388E3C', '#D32F2F'],
-              }}
-              custom={true}
-              projectAA={true}
-              donutSize="80%"
-              width="100%"
-              height="100%"
-              type="donut"
-              showPercentage={true}
+            <DynamicPieChart
+              pieData={[
+                {
+                  label: 'Success',
+                  value: commsStats?.messageStats?.successRate,
+                },
+                {
+                  label: 'Failure',
+                  value: 100 - commsStats?.messageStats?.successRate,
+                },
+              ]}
+              colors={['#388E3C', '#D32F2F']}
             />
           </div>
         </div>

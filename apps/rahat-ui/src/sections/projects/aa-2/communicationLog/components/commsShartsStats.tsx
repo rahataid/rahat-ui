@@ -1,6 +1,5 @@
 'use client';
 import { useCommuicationStatsforBeneficiaryandStakeHolders } from '@rahat-ui/query';
-import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import {
   Card,
   CardContent,
@@ -8,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
+import DynamicPieChart from '../../../components/dynamicPieChart';
 
 type ChannelType = 'EMAIL' | 'SMS' | 'VOICE';
 
@@ -50,33 +50,24 @@ export default function CommunicationsChartsStats({
           <CardContent className="flex justify-between flex-col xl:flex-row  ">
             <div className="flex justify-center xl:justify-start w-full">
               <div className="w-full max-w-[350px] aspect-square">
-                <PieChart
-                  chart={{
-                    series: [
-                      {
-                        label: 'Successfully Delivered SMS',
-                        value:
-                          (statsBenefStakeholders?.beneficiary?.SMS?.SUCCESS ||
-                            0) +
-                          (statsBenefStakeholders?.stakeholder?.SMS?.SUCCESS ||
-                            0),
-                      },
-                      {
-                        label: 'SMS Delivery Failures',
-                        value:
-                          (statsBenefStakeholders?.beneficiary?.SMS?.FAIL ||
-                            0) +
-                          (statsBenefStakeholders?.stakeholder?.SMS?.FAIL || 0),
-                      },
-                    ],
-                    colors: ['#43A047', '#E53935'],
-                  }}
-                  custom={true}
-                  projectAA={true}
-                  width={'100%'}
-                  height={'100%'}
-                  donutSize="80%"
-                  type="donut"
+                <DynamicPieChart
+                  pieData={[
+                    {
+                      label: 'Successfully Delivered SMS',
+                      value:
+                        (statsBenefStakeholders?.beneficiary?.SMS?.SUCCESS ||
+                          0) +
+                        (statsBenefStakeholders?.stakeholder?.SMS?.SUCCESS ||
+                          0),
+                    },
+                    {
+                      label: 'SMS Delivery Failures',
+                      value:
+                        (statsBenefStakeholders?.beneficiary?.SMS?.FAIL || 0) +
+                        (statsBenefStakeholders?.stakeholder?.SMS?.FAIL || 0),
+                    },
+                  ]}
+                  colors={['#43A047', '#E53935']}
                 />
               </div>
             </div>
@@ -130,34 +121,26 @@ export default function CommunicationsChartsStats({
           <CardContent className="flex justify-between flex-col xl:flex-row">
             <div className="flex justify-center xl:justify-start w-full">
               <div className="w-full max-w-[350px] aspect-square">
-                <PieChart
-                  chart={{
-                    series: [
-                      {
-                        label: 'Successfully Delivered AVC',
-                        value:
-                          (statsBenefStakeholders?.beneficiary?.VOICE
-                            ?.SUCCESS || 0) +
-                            (statsBenefStakeholders?.stakeholder?.VOICE
-                              ?.SUCCESS || 0) || 0,
-                      },
-                      {
-                        label: 'AVC Delivery Failures',
-                        value:
-                          (statsBenefStakeholders?.beneficiary?.VOICE?.FAIL ||
-                            0) +
-                            (statsBenefStakeholders?.stakeholder?.VOICE?.FAIL ||
-                              0) || 0,
-                      },
-                    ],
-                    colors: ['#43A047', '#E53935'],
-                  }}
-                  custom={true}
-                  projectAA={true}
-                  width={'100%'}
-                  height={'100%'}
-                  donutSize="80%"
-                  type="donut"
+                <DynamicPieChart
+                  pieData={[
+                    {
+                      label: 'Successfully Delivered AVC',
+                      value:
+                        (statsBenefStakeholders?.beneficiary?.VOICE?.SUCCESS ||
+                          0) +
+                          (statsBenefStakeholders?.stakeholder?.VOICE
+                            ?.SUCCESS || 0) || 0,
+                    },
+                    {
+                      label: 'AVC Delivery Failures',
+                      value:
+                        (statsBenefStakeholders?.beneficiary?.VOICE?.FAIL ||
+                          0) +
+                          (statsBenefStakeholders?.stakeholder?.VOICE?.FAIL ||
+                            0) || 0,
+                    },
+                  ]}
+                  colors={['#43A047', '#E53935']}
                 />
               </div>
             </div>

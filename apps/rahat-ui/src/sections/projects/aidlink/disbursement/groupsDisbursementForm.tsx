@@ -63,7 +63,7 @@ export function BeneficiaryGroupsDisbursementForm({
     0;
 
   const amountPerBeneficiaryNum = Number.parseFloat(amountPerBeneficiary) || 0;
-  const totalAmount = totalBeneficiaries * amountPerBeneficiaryNum;
+  const totalAmount = Math.round(totalBeneficiaries * amountPerBeneficiaryNum*100)/100
 
   const onSubmit = (data: FormData) => {
     const { amountPerBeneficiary, disbursementPurpose } = data;

@@ -35,7 +35,7 @@ export default function GroupCard({ group, projectUUID }: GroupProps) {
           </div>
           <div>
             <p className="text-xs text-gray-500">Total Disbursed</p>
-            <p className="font-semibold text-lg">
+            <p className="font-semibold text-lg break-words">
               {group?.totalCompletedAmount || 'N/A'}
             </p>
           </div>

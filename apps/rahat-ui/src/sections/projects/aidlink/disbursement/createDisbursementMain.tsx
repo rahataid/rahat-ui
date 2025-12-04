@@ -12,6 +12,7 @@ import {
 import { TransactionInitiatedModal } from './transactionInitiatedModal';
 import React from 'react';
 import { SAFE_WALLET } from 'apps/rahat-ui/src/constants/safeWallet';
+import { SpinnerLoader } from 'apps/rahat-ui/src/common';
 
 type IProps = {
   type: DisbursementSelectionType | null;
@@ -89,6 +90,11 @@ export default function CreateDisbursementMain({ type }: IProps) {
 
   return (
     <>
+      {disburseMultiSig.isPending && (
+        <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-black/50">
+          <SpinnerLoader className="w-10 h-10" />
+        </div>
+      )}
       <TransactionInitiatedModal
         open={isModalOpen}
         onOpenChange={setIsModalOpen}

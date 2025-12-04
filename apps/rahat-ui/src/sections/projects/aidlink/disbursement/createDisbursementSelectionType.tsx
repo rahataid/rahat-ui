@@ -67,7 +67,7 @@ export default function CreateDisbursementSelectionType({
     );
   }
 
-  if (data?.count > 0) {
+  if (data?.count > 0 && !selectedType) {
     return (
       <div className="flex flex-col justify-center items-center mt-10 bg-gray-50 px-4">
         <div className="flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-3">

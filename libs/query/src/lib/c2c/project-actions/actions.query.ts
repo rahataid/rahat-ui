@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS } from '../../../config';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
@@ -545,6 +545,7 @@ export const useUpdateDisbursement = (projectUUID: UUID) => {
 export const useDisburseTokenUsingMultisig = () => {
   const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
   const addDisbursement = useAddDisbursement();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['disburse-token-using-multisig'],
@@ -595,6 +596,12 @@ export const useDisburseTokenUsingMultisig = () => {
       });
 
       return disbursementResult;
+    },
+    onSuccess: (data, variables) => {
+      // Invalidate the get-getSafePending query after successful disbursement
+      queryClient.invalidateQueries({
+        queryKey: ['get-getSafePending', variables.projectUUID],
+      });
     },
   });
 };

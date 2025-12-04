@@ -335,7 +335,9 @@ export default function DisbursementHistoryDetail() {
                     </p>
                     {d.icon}
                   </div>
-                  <div className={`text-xl font-semibold text-${d.color}-600`}>
+                  <div
+                    className={`text-xl font-semibold text-${d.color}-600 break-words`}
+                  >
                     {d.value}
                   </div>
                 </div>

@@ -16,9 +16,9 @@ interface IProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   data: any;
-  safeNetwork:string;
-  safeAddress:`0x$${string}`;
-  setIsModalOpen:(value:boolean)=> void
+  safeNetwork: string;
+  safeAddress: `0x$${string}`;
+  setIsModalOpen: (value: boolean) => void;
 }
 
 interface StatusStep {
@@ -33,7 +33,7 @@ export function TransactionDisbursedModal({
   data,
   safeNetwork,
   safeAddress,
-  setIsModalOpen
+  setIsModalOpen,
 }: IProps) {
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
@@ -60,7 +60,7 @@ export function TransactionDisbursedModal({
   );
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-2xl [&>button]:hidden">
         <DialogHeader>
           <DialogTitle className="text-center text-xl font-semibold">
             Transaction has been disbursed successfully
@@ -120,12 +120,12 @@ export function TransactionDisbursedModal({
           <div className="flex gap-3 pt-1">
             <Button
               className="flex-1 bg-blue-600 hover:bg-blue-700"
-              onClick={() =>{
-                setIsModalOpen(false)
+              onClick={() => {
+                setIsModalOpen(false);
                 router.push(
                   `/projects/aidlink/${projectUUID}/disbursement/${data?.uuid}`,
-                )}
-              }
+                );
+              }}
             >
               View Disbursement Details
             </Button>

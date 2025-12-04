@@ -38,7 +38,6 @@ export default function ColumnMappingTable({
   handleTargetFieldChange,
   fieldDefs,
   mappings,
-  aiMappings,
 }: ColumnMappingTableProps) {
   const [columns, setColumns] = useState([]) as any[];
   const { setMappings } = useBeneficiaryImportStore();
@@ -157,17 +156,17 @@ export default function ColumnMappingTable({
               }
 
               //fall back for ai mapping  optional
-              if (aiMatch) {
-                if (aiMatch.predicted_label)
-                  aiSuggestions.push(aiMatch.predicted_label);
-                if (Array.isArray(aiMatch.other_similar)) {
-                  aiSuggestions.push(
-                    ...aiMatch.other_similar.map(
-                      (s: { label: string }) => s.label,
-                    ),
-                  );
-                }
-              }
+              // if (aiMatch) {
+              //   if (aiMatch.predicted_label)
+              //     aiSuggestions.push(aiMatch.predicted_label);
+              //   if (Array.isArray(aiMatch.other_similar)) {
+              //     aiSuggestions.push(
+              //       ...aiMatch.other_similar.map(
+              //         (s: { label: string }) => s.label,
+              //       ),
+              //     );
+              //   }
+              // }
             }
 
             return (
@@ -187,7 +186,7 @@ export default function ColumnMappingTable({
                   handleTargetFieldChange={handleTargetFieldChange}
                   column={column}
                   selectedField={getSelectedField(column)}
-                  aiSuggestions={aiSuggestions}
+                  aiSuggestions={mappings}
                 />
               </th>
             );

@@ -50,7 +50,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   const { data: kbSettings } = useFetchKoboSettings();
   const existingMapQuery = useExistingFieldMappings();
   const importSourceQuery = useCreateImportSource();
-  const [aiMapping, setAiMapping] = React.useState<any>([]);
 
   // AI Mapping Hooks
   const uploadCsvForMapping = useUploadCsvForMapping();
@@ -100,6 +99,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
           (header: any) => ({
             sourceField: header.header,
             targetField: header.predicted_label,
+            other_similar: header.other_similar,
           }),
         );
         // Filter to keep only unique target fields (first occurrence wins)
@@ -107,7 +107,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
         const seenTargets = new Set<string>();
 
         for (const mapping of autoMappings) {
-          console.log(mapping, 'mapping from AI suggestion');
           if (!seenTargets.has(mapping.targetField)) {
             seenTargets.add(mapping.targetField);
             uniqueTargetMappings.push(mapping);
@@ -203,6 +202,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   ) => {
     // Source field as it is
     // Target field sanitized
+    console.log(sourceField, targetField, 'in handleTargetFieldChange');
     if (sourceField === EMPTY_SELECTION) {
       const filtered = mappings.filter((f) => f.targetField !== targetField);
       return setMappings(filtered);
@@ -211,7 +211,9 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     const index = mappings.findIndex(
       (item: any) => item.sourceField === sourceField,
     );
+    console.log(index, 'index in handleTargetFieldChange');
     if (index !== -1) {
+      console.log('updating existing mapping');
       // Update mapping
       mappings[index] = { ...mappings[index], targetField };
     } else {
@@ -494,7 +496,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
                 fieldDefs={fieldDefinitions}
                 handleTargetFieldChange={handleTargetFieldChange}
                 mappings={mappings}
-                aiMappings={aiMapping}
               />
             </div>
           </div>

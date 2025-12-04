@@ -44,12 +44,44 @@ export function ComboBox({
     }
   }, [selectedField]);
 
-  // Merge AI suggestions and data, remove duplicates
-  const aiSet = new Set(aiSuggestions || []);
-  const comboBoxData = [
-    ...(aiSuggestions || []).filter((s: any) => !data.includes(s)),
-    ...data,
-  ];
+  //  format of data with ai suggestion : [{ sourceField, targetField, other_similar: [{label, overall_score}] }]
+  const aiSuggestedFields: string[] = [];
+
+  if (aiSuggestions && Array.isArray(aiSuggestions)) {
+    // Find the mapping for current column
+    const currentMapping = aiSuggestions.find(
+      (m: any) => m.sourceField === column,
+    );
+
+    if (currentMapping) {
+      // Add the main predicted field (targetField) - this is the AI's primary suggestion
+      if (currentMapping.targetField) {
+        aiSuggestedFields.push(currentMapping.targetField);
+      }
+
+      // Add other_similar fields - these are alternative AI suggestions
+      if (Array.isArray(currentMapping.other_similar)) {
+        currentMapping.other_similar.forEach((similar: any) => {
+          if (similar.label) {
+            aiSuggestedFields.push(similar.label);
+          }
+        });
+      }
+    }
+  }
+
+  // Remove duplicates between AI suggestions and database fields
+
+  const uniqueAiSuggestions = aiSuggestedFields.filter(
+    (suggestion) => !data.includes(suggestion),
+  );
+
+  // Create a Set for quick lookup to mark fields as "AI suggested"
+  const aiSet = new Set(aiSuggestedFields);
+
+  // Merge: AI suggestions first (at top), then database fields
+  const comboBoxData = [...uniqueAiSuggestions, ...data];
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>

@@ -32,6 +32,7 @@ export function ComboBox({
 }: any) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
+  console.log(aiSuggestions, 'aiSuggestions in Combobox');
 
   const handleClearSelection = () => {
     handleTargetFieldChange(EMPTY_SELECTION, value);

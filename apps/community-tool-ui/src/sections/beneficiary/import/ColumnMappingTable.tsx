@@ -75,35 +75,15 @@ export default function ColumnMappingTable({
   const sortedData = uniqueDBFields.sort() || [];
 
   function getSelectedField(sourceField: string) {
-    // If AI mappings are present, always use predicted_label as default (even if not a schema match)
+    // show predicted_label as default (even if not a schema match)
     if (mappings && mappings.length) {
-      const aiMatch = mappings.find((m) => m.header === sourceField);
-      if (aiMatch && aiMatch.predicted_label) {
-        return aiMatch.predicted_label;
+      const aiMatch = mappings.find((m) => m.sourceField === sourceField);
+      if (aiMatch && aiMatch.targetField) {
+        return aiMatch.targetField;
       }
     }
-    // Fallback to user mappings
-    if (mappings.length) {
-      const found = mappings.find((m) => m.sourceField === sourceField);
-      if (found) return found.targetField;
-    }
-    // If nothing matches, show the sourceField so something is always shown
-    return sourceField;
-
-    /*
-    // Previous variation match logic (commented out)
-    // const found = findFieldName(sourceField);
-    // if (!found) return '';
-    // if (found) {
-    //   myMappings.push({
-    //     sourceField: found.sourceField,
-    //     targetField: found.targetField,
-    //   });
-    // }
-    // const filtered = filterUniqueTargetsOnly(myMappings, 'targetField');
-    // setMappings(filtered);
-    // return found.targetField;
-    */
+    // If no AI mapping found, return empty string so user must select manually
+    return '';
   }
 
   function filterUniqueTargetsOnly(arr: IMapping[], key: string) {
@@ -139,10 +119,10 @@ export default function ColumnMappingTable({
         <tr>
           {columns.map((column: any, index: number) => {
             // Always show AI suggestions for every column, even if the column name is not in the database field list
-            const aiSuggestions: string[] = [];
+
             if (mappings && mappings.length) {
               // Find the AI mapping for this column, even if it's a wrong field name
-              let aiMatch = mappings.find((m) => m.header === column);
+              let aiMatch = mappings.find((m) => m.sourceField === column);
               // If not found, try to find by predicted_label or other_similar
               if (!aiMatch) {
                 aiMatch = mappings.find(
@@ -154,19 +134,6 @@ export default function ColumnMappingTable({
                       )),
                 );
               }
-
-              //fall back for ai mapping  optional
-              // if (aiMatch) {
-              //   if (aiMatch.predicted_label)
-              //     aiSuggestions.push(aiMatch.predicted_label);
-              //   if (Array.isArray(aiMatch.other_similar)) {
-              //     aiSuggestions.push(
-              //       ...aiMatch.other_similar.map(
-              //         (s: { label: string }) => s.label,
-              //       ),
-              //     );
-              //   }
-              // }
             }
 
             return (

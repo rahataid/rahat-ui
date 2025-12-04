@@ -93,7 +93,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
 
       //store Ai classified_header in state
 
-      if (uploadResult && uploadResult.classified_headers) {
+      if (uploadResult && uploadResult.classified_headers.length) {
         // Auto-populate mappings with AI suggestions so they work as defaults
         const autoMappings = uploadResult.classified_headers.map(
           (header: any) => ({
@@ -211,9 +211,8 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     const index = mappings.findIndex(
       (item: any) => item.sourceField === sourceField,
     );
-    console.log(index, 'index in handleTargetFieldChange');
+
     if (index !== -1) {
-      console.log('updating existing mapping');
       // Update mapping
       mappings[index] = { ...mappings[index], targetField };
     } else {

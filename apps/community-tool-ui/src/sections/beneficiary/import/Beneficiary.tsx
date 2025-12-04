@@ -95,45 +95,26 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       //store Ai classified_header in state
 
       if (uploadResult && uploadResult.classified_headers) {
-        // setAiMapping(uploadResult.classified_headers);
-        setMappings(uploadResult.classified_headers);
+        // Auto-populate mappings with AI suggestions so they work as defaults
+        const autoMappings = uploadResult.classified_headers.map(
+          (header: any) => ({
+            sourceField: header.header,
+            targetField: header.predicted_label,
+          }),
+        );
+        // Filter to keep only unique target fields (first occurrence wins)
+        const uniqueTargetMappings: any[] = [];
+        const seenTargets = new Set<string>();
+
+        for (const mapping of autoMappings) {
+          console.log(mapping, 'mapping from AI suggestion');
+          if (!seenTargets.has(mapping.targetField)) {
+            seenTargets.add(mapping.targetField);
+            uniqueTargetMappings.push(mapping);
+          }
+        }
+        setMappings(uniqueTargetMappings);
       }
-      // Transform AI suggestions to mappings format
-
-      // Step 2: Get AI mapping suggestions using dataset_id
-      // const datasetId = uploadResult?.dataset_id || uploadResult?.datasetId;
-      // if (!datasetId) {
-      //   console.warn('No dataset_id returned from AI API');
-      //   setLoading(false);
-      //   return;
-      // }
-
-      // const aiSuggestions = await getAiMappingSuggestions.mutateAsync(
-      //   datasetId,
-      // );
-      //console.log('AI Mapping Suggestions:', aiSuggestions);
-
-      // Step 3: Transform AI suggestions to mappings format
-      // TODO: Map AI suggestions to your mappings format based on actual API response
-      // Example structure (adjust based on actual response):
-      // if (aiSuggestions && aiSuggestions.mappings) {
-      //   const aiMappings = aiSuggestions.mappings.map((m: any) => ({
-      //     sourceField: m.source_field,
-      //     targetField: m.target_field,
-      //   }));
-      //   setMappings(aiMappings);
-      //   setHasExistingMapping(true);
-      // }
-
-      // For now, just show success message
-      // if (aiSuggestions) {
-      //   Swal.fire({
-      //     icon: 'success',
-      //     title: 'AI suggestions received!',
-      //     text: 'Check console for mapping suggestions',
-      //     timer: 2000,
-      //   });
-      // }
 
       setLoading(false);
     } catch (error) {
@@ -142,7 +123,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       // Silently fail - user can still map manually
     }
   };
-  console.log('AI Mappings State:', aiMapping);
 
   const fetchExistingMapping = async (importId: string) => {
     setMappings([]);
@@ -312,7 +292,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   const validateOrImport = (action: string) => {
     setValidBenef([]);
     let finalPayload = rawData as any[];
-    console.log(finalPayload, 'finalPayload before mapping');
+
     const selectedTargets = []; // Only submit selected target fields
 
     for (const m of mappings) {
@@ -387,7 +367,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   const createImportSource = async (sourcePayload: any) => {
     try {
       setLoading(true);
-      console.log(sourcePayload, 'sourcePayload sent to backend');
+
       const res = (await importSourceQuery.mutateAsync(sourcePayload)) as any;
       // If action is IMPORT, source will be created on backend!
       // Otherwise, just validate in the backend

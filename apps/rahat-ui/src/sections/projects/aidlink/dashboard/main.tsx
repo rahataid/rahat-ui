@@ -69,9 +69,8 @@ export default function ProjectDashboard() {
       const totalDisbursed = Number(
         data
           ?.find((item: any) => item.name === 'DISBURSEMENT_TOTAL')
-          ?.data?.reduce((sum: number, curr: any) => sum + curr.amount, 0) || 0
+          ?.data?.find((entry:any)=>entry.id === 'COMPLETED')?.amount ||0
       );
-      
       const totalOffRamped = Number(offrampStatusData?.offRampedAmount) || 0; // Currently hardcoded, update when data is available
       
       return [
@@ -98,7 +97,7 @@ export default function ProjectDashboard() {
         },
       ];
     },
-    [data],
+    [data,offrampStatusData],
   );
 
   return (

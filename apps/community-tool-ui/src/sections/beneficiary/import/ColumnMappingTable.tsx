@@ -18,7 +18,7 @@ interface ColumnMappingTableProps {
   rawData: any[];
   handleTargetFieldChange: (key: string, value: string) => void;
   fieldDefs: [];
-  mappings: any[];
+  mappings?: any[];
   aiMappings?: any[];
 }
 
@@ -37,11 +37,9 @@ export default function ColumnMappingTable({
   rawData,
   handleTargetFieldChange,
   fieldDefs,
-  mappings,
 }: ColumnMappingTableProps) {
   const [columns, setColumns] = useState([]) as any[];
-  const { setMappings } = useBeneficiaryImportStore();
-  console.log(mappings, 'mappings in ColumnMappingTable');
+  const { setMappings, aiSuggestions } = useBeneficiaryImportStore();
 
   const extractColumns = () => {
     if (rawData.length > 0) {
@@ -76,8 +74,8 @@ export default function ColumnMappingTable({
 
   function getSelectedField(sourceField: string) {
     // show predicted_label as default (even if not a schema match)
-    if (mappings && mappings.length) {
-      const aiMatch = mappings.find((m) => m.sourceField === sourceField);
+    if (aiSuggestions && aiSuggestions.length) {
+      const aiMatch = aiSuggestions.find((m) => m.sourceField === sourceField);
       if (aiMatch && aiMatch.targetField) {
         return aiMatch.targetField;
       }
@@ -120,12 +118,12 @@ export default function ColumnMappingTable({
           {columns.map((column: any, index: number) => {
             // Always show AI suggestions for every column, even if the column name is not in the database field list
 
-            if (mappings && mappings.length) {
+            if (aiSuggestions && aiSuggestions.length) {
               // Find the AI mapping for this column, even if it's a wrong field name
-              let aiMatch = mappings.find((m) => m.sourceField === column);
+              let aiMatch = aiSuggestions.find((m) => m.sourceField === column);
               // If not found, try to find by predicted_label or other_similar
               if (!aiMatch) {
-                aiMatch = mappings.find(
+                aiMatch = aiSuggestions.find(
                   (m) =>
                     m.predicted_label === column ||
                     (Array.isArray(m.other_similar) &&
@@ -153,7 +151,7 @@ export default function ColumnMappingTable({
                   handleTargetFieldChange={handleTargetFieldChange}
                   column={column}
                   selectedField={getSelectedField(column)}
-                  aiSuggestions={mappings}
+                  aiSuggestions={aiSuggestions}
                 />
               </th>
             );

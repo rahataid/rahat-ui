@@ -39,6 +39,7 @@ import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable, { resetMyMappings } from './ColumnMappingTable';
 import { EMPTY_SELECTION } from './Combobox';
 import MyAlert from './MyAlert';
+import { map } from 'lodash';
 
 interface IProps {
   fieldDefinitions: [];
@@ -71,6 +72,8 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     setLoading,
     mappings,
     setMappings,
+    aiSuggestions, // AI suggestions from store
+    setAiSuggestions, // Setter for AI suggestions
     processedData,
     setProcessedData,
     rawData,
@@ -91,28 +94,27 @@ export default function BenImp({ fieldDefinitions }: IProps) {
 
       const uploadResult = await uploadCsvForMapping.mutateAsync(formData);
 
-      //store Ai classified_header in state
-
       if (uploadResult && uploadResult.classified_headers.length) {
-        // Auto-populate mappings with AI suggestions so they work as defaults
-        const autoMappings = uploadResult.classified_headers.map(
-          (header: any) => ({
-            sourceField: header.header,
-            targetField: header.predicted_label,
-            other_similar: header.other_similar,
-          }),
-        );
+        // Store AI suggestions in Zustand store (separate from mappings)
+        const aiData = uploadResult.classified_headers.map((header: any) => ({
+          sourceField: header.header, // Excel column from AI
+          targetField: header.predicted_label, // AI prediction
+          other_similar: header.other_similar,
+          match: header.match,
+          similarity: header.similarity,
+        }));
         // Filter to keep only unique target fields (first occurrence wins)
         const uniqueTargetMappings: any[] = [];
         const seenTargets = new Set<string>();
 
-        for (const mapping of autoMappings) {
+        for (const mapping of aiData) {
           if (!seenTargets.has(mapping.targetField)) {
             seenTargets.add(mapping.targetField);
             uniqueTargetMappings.push(mapping);
           }
         }
-        setMappings(uniqueTargetMappings);
+
+        setAiSuggestions(uniqueTargetMappings); // Store AI suggestions separately
       }
 
       setLoading(false);
@@ -204,6 +206,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     // Target field sanitized
     console.log(sourceField, targetField, 'in handleTargetFieldChange');
     if (sourceField === EMPTY_SELECTION) {
+      console.log('Removing mapping for targetField:', targetField);
       const filtered = mappings.filter((f) => f.targetField !== targetField);
       return setMappings(filtered);
     }
@@ -211,11 +214,16 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     const index = mappings.findIndex(
       (item: any) => item.sourceField === sourceField,
     );
+    console.log(index, 'found index');
 
     if (index !== -1) {
+      console.log('Updating existing mapping');
+      console.log(mappings[index], 'existing mapping before update');
+      console.log({ ...mappings[index], targetField }, 'after update');
       // Update mapping
       mappings[index] = { ...mappings[index], targetField };
     } else {
+      console.log('Creating new mapping');
       // Create mapping
       setMappings([...mappings, { sourceField, targetField }]);
     }
@@ -292,11 +300,43 @@ export default function BenImp({ fieldDefinitions }: IProps) {
 
   const validateOrImport = (action: string) => {
     setValidBenef([]);
-    let finalPayload = rawData as any[];
 
+    const finalMappings = [...mappings];
+    console.log(finalMappings, 'Current Mappings before AI defaults');
+
+    if (aiSuggestions && aiSuggestions.length > 0) {
+      console.log('AI Suggestions available:', aiSuggestions);
+      console.log('Current Mappings (user selections):', mappings);
+
+      // For each AI suggestion, check similarity score
+      aiSuggestions.forEach((aiSuggestion: any) => {
+        const existingMapping = finalMappings.find(
+          (m: any) => m.sourceField === aiSuggestion.sourceField,
+        );
+
+        // If user hasn't manually selected this field
+        if (!existingMapping && aiSuggestion.targetField) {
+          if (aiSuggestion.similarity === 100) {
+            finalMappings.push({
+              sourceField: aiSuggestion.sourceField,
+              targetField: aiSuggestion.targetField,
+            });
+          } else {
+            console.log('ai mapping skipped');
+          }
+        } else if (existingMapping) {
+          console.log(' user already selected: skipping ai suggestion ');
+        }
+      });
+
+      console.log('Final Mappings (with AI defaults):', finalMappings);
+      setMappings(finalMappings);
+    }
+
+    let finalPayload = rawData as any[];
     const selectedTargets = []; // Only submit selected target fields
 
-    for (const m of mappings) {
+    for (const m of finalMappings) {
       if (m.targetField === TARGET_FIELD.FIRSTNAME) {
         selectedTargets.push(TARGET_FIELD.FIRSTNAME);
         const replaced = finalPayload.map((item: any) => {
@@ -494,7 +534,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
                 rawData={rawData}
                 fieldDefs={fieldDefinitions}
                 handleTargetFieldChange={handleTargetFieldChange}
-                mappings={mappings}
               />
             </div>
           </div>

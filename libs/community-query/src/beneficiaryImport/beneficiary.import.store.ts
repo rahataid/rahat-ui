@@ -11,6 +11,7 @@ type Store = {
   koboForms: any[];
   loading: boolean;
   mappings: any[];
+  aiSuggestions: any[]; // AI suggestions separate from user mappings
   processedData: any[];
   rawData: any[];
   validBenef: any[];
@@ -24,6 +25,7 @@ type Store = {
   setKoboForms: (koboForms: []) => void;
   setLoading: (loading: boolean) => void;
   setMappings: (mappings: any[]) => void;
+  setAiSuggestions: (aiSuggestions: any[]) => void; // Setter for AI suggestions
   setProcessedData: (processedData: any[]) => void;
   setRawData: (rawData: any[]) => void;
   setValidBenef: (validBenef: any[]) => void;
@@ -40,6 +42,7 @@ const initialState = {
   koboForms: [],
   loading: false,
   mappings: [],
+  aiSuggestions: [], // Initialize AI suggestions as empty
   processedData: [],
   rawData: [],
   validBenef: [],
@@ -58,6 +61,7 @@ export const useBeneficiaryImportStore = create<Store>((set) => ({
   setKoboForms: (koboForms: []) => set({ koboForms }),
   setLoading: (loading: boolean) => set({ loading }),
   setMappings: (mappings: any[]) => set({ mappings }),
+  setAiSuggestions: (aiSuggestions: any[]) => set({ aiSuggestions }), // Add setter for AI suggestions
   setProcessedData: (processedData: any[]) => set({ processedData }),
   setRawData: (rawData: any[]) => set({ rawData }),
   setValidBenef: (validBenef: any[]) => set({ validBenef }),

@@ -26,7 +26,10 @@ import { z } from 'zod';
 
 import React, { useEffect, useState } from 'react';
 
-import { useFieldDefinitionsCreate } from '@rahat-ui/community-query';
+import {
+  useFieldDefinitionsCreate,
+  useUploadStandardLevel,
+} from '@rahat-ui/community-query';
 import { FieldType } from 'apps/community-tool-ui/src/constants/fieldDefinition.const';
 import { DownloadCloud, Minus, Plus } from 'lucide-react';
 import Samples from '../samples.json';
@@ -47,6 +50,7 @@ const DEFAULT_VALUES = {
 
 export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   const addFieldDefinitions = useFieldDefinitionsCreate();
+  const uploadStandardLevel = useUploadStandardLevel();
   const [showLabelValue, setShowLabelValue] = useState(false);
 
   const [variationTags, setVariationTags] = useState<Tag[]>([]);
@@ -90,29 +94,47 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   const handleCreateFieldDefinitions = async (
     data: z.infer<typeof FormSchema>,
   ) => {
-    let fieldPopulatePayload;
-    if (data.field && data.field.length > 0) {
-      fieldPopulatePayload = data.field.map((item: any) => ({
-        label: item.value.label,
-        value: item.value.value,
-      }));
+    try {
+      let fieldPopulatePayload;
+      if (data.field && data.field.length > 0) {
+        fieldPopulatePayload = data.field.map((item: any) => ({
+          label: item.value.label,
+          value: item.value.value,
+        }));
+      }
+
+      const variationNames = data.variations.length
+        ? data.variations.map((d) => d.text)
+        : [];
+
+      const payload = {
+        name: data.name,
+        fieldType: data.fieldType as FieldType,
+        isActive: true,
+        isTargeting: data.isTargeting,
+        variations: variationNames,
+        fieldPopulate: { data: fieldPopulatePayload } || [],
+      };
+
+      await addFieldDefinitions.mutateAsync(payload);
+
+      const aiPayload = {
+        standard_name: 'community_data_standard',
+        field_name: data.name,
+        field_type: data.fieldType.toLowerCase(), // Convert to lowercase for AI API
+        field_description: `${data.name} field for beneficiary data`,
+        is_active: true,
+        validation_rules: {},
+      };
+
+      console.log('Uploading to AI Standard Level:', aiPayload);
+      await uploadStandardLevel.mutateAsync(aiPayload);
+
+      form.reset();
+    } catch (error) {
+      console.error('Error creating field definition:', error);
+      // You might want to show an error message to the user here
     }
-
-    const variationNames = data.variations.length
-      ? data.variations.map((d) => d.text)
-      : [];
-
-    const payload = {
-      name: data.name,
-      fieldType: data.fieldType as FieldType,
-      isActive: true,
-      isTargeting: data.isTargeting,
-      variations: variationNames,
-      fieldPopulate: { data: fieldPopulatePayload } || [],
-    };
-
-    await addFieldDefinitions.mutateAsync(payload);
-    form.reset();
   };
 
   const addLabelAndValue = () => {

@@ -115,22 +115,6 @@ export default function ColumnMappingTable({
       <thead>
         <tr>
           {columns.map((column: any, index: number) => {
-            if (aiSuggestions && aiSuggestions.length) {
-              // Find the AI mapping for this column, even if it's a wrong field name
-              let aiMatch = aiSuggestions.find((m) => m.sourceField === column);
-              // If not found, try to find by predicted_label or other_similar
-              if (!aiMatch) {
-                aiMatch = aiSuggestions.find(
-                  (m) =>
-                    m.predicted_label === column ||
-                    (Array.isArray(m.other_similar) &&
-                      m.other_similar.some(
-                        (s: { label: string }) => s.label === column,
-                      )),
-                );
-              }
-            }
-
             return (
               <th className="py-1.5" key={index}>
                 <TooltipProvider>

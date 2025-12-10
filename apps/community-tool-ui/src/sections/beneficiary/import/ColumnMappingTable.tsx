@@ -73,14 +73,13 @@ export default function ColumnMappingTable({
   const sortedData = uniqueDBFields.sort() || [];
 
   function getSelectedField(sourceField: string) {
-    // show predicted_label as default (even if not a schema match)
     if (aiSuggestions && aiSuggestions.length) {
       const aiMatch = aiSuggestions.find((m) => m.sourceField === sourceField);
       if (aiMatch && aiMatch.targetField) {
         return aiMatch.targetField;
       }
     }
-    // If no AI mapping found, return empty string so user must select manually
+
     return '';
   }
 
@@ -116,8 +115,6 @@ export default function ColumnMappingTable({
       <thead>
         <tr>
           {columns.map((column: any, index: number) => {
-            // Always show AI suggestions for every column, even if the column name is not in the database field list
-
             if (aiSuggestions && aiSuggestions.length) {
               // Find the AI mapping for this column, even if it's a wrong field name
               let aiMatch = aiSuggestions.find((m) => m.sourceField === column);

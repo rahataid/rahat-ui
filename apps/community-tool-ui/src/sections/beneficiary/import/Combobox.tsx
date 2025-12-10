@@ -33,7 +33,6 @@ export function ComboBox({
 }: any) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
-  console.log(column, 'ComboBox Column');
 
   const handleClearSelection = () => {
     handleTargetFieldChange(EMPTY_SELECTION, value);
@@ -46,24 +45,18 @@ export function ComboBox({
     }
   }, [selectedField]);
 
-  //  format of data with ai suggestion : [{ sourceField, targetField, other_similar: [{label, overall_score}] }]
   const aiSuggestedFields: string[] = [];
-  console.log('AI Suggestions in ComboBox:', aiSuggestions);
-  console.log('Current Column:', column);
 
   if (aiSuggestions && Array.isArray(aiSuggestions)) {
-    // Find the mapping for current column
     const currentMapping = aiSuggestions.find(
       (m: any) => m.sourceField === column,
     );
 
     if (currentMapping) {
-      // Add the main predicted field (targetField) - this is the AI's primary suggestion
       if (currentMapping.targetField) {
         aiSuggestedFields.push(currentMapping.targetField);
       }
 
-      // Add other_similar fields - these are alternative AI suggestions
       if (Array.isArray(currentMapping.other_similar)) {
         currentMapping.other_similar.forEach((similar: any) => {
           if (similar.label) {
@@ -79,6 +72,11 @@ export function ComboBox({
       if (getExtraField) {
         if (getExtraField.targetField) {
           aiSuggestedFields.push(getExtraField.targetField);
+          getExtraField.other_similar.forEach((similar: any) => {
+            if (similar.label) {
+              aiSuggestedFields.push(similar.label);
+            }
+          });
         }
       }
     }

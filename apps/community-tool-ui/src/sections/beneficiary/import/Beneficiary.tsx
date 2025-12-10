@@ -103,17 +103,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
           similarity: header.similarity,
         }));
 
-        // Filter to keep only unique target fields (first occurrence wins)
-        // const uniqueTargetMappings: any[] = [];
-        // const seenTargets = new Set<string>();
-
-        // for (const mapping of aiData) {
-        //   if (!seenTargets.has(mapping.targetField)) {
-        //     seenTargets.add(mapping.targetField);
-        //     uniqueTargetMappings.push(mapping);
-        //   }
-        // }
-
         setAiSuggestions(aiData); // Store AI suggestions separately
       }
 
@@ -184,10 +173,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       // Keep existing mapping functionality
       await fetchExistingMapping(found.imported);
 
-      // Note: AI mapping not available for KoboToolbox data
-      // AI API requires Excel/CSV file, not JSON data
-      // Users will need to map fields manually for Kobo data
-
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -214,16 +199,11 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     const index = mappings.findIndex(
       (item: any) => item.sourceField === sourceField,
     );
-    console.log(index, 'found index');
 
     if (index !== -1) {
-      console.log('Updating existing mapping');
-      console.log(mappings[index], 'existing mapping before update');
-      console.log({ ...mappings[index], targetField }, 'after update');
       // Update mapping
       mappings[index] = { ...mappings[index], targetField };
     } else {
-      console.log('Creating new mapping');
       // Create mapping
       setMappings([...mappings, { sourceField, targetField }]);
     }
@@ -250,9 +230,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       const sanitized = removeFieldsWithUnderscore(json || []);
       setRawData(sanitized);
 
-      // Try to fetch AI mapping suggestions
-      // This runs in parallel with existing mapping check
-      // Comment out the line below to disable AI suggestions
       await fetchAiMappingSuggestions(selectedFile);
     };
     reader.readAsArrayBuffer(selectedFile);
@@ -304,7 +281,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     const finalMappings = [...mappings];
 
     if (aiSuggestions && aiSuggestions.length > 0) {
-      // For each AI suggestion, check similarity score
       aiSuggestions.forEach((aiSuggestion: any) => {
         const existingMapping = finalMappings.find(
           (m: any) => m.sourceField === aiSuggestion.sourceField,

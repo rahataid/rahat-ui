@@ -95,26 +95,26 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       const uploadResult = await uploadCsvForMapping.mutateAsync(formData);
 
       if (uploadResult && uploadResult.classified_headers.length) {
-        // Store AI suggestions in Zustand store (separate from mappings)
         const aiData = uploadResult.classified_headers.map((header: any) => ({
-          sourceField: header.header, // Excel column from AI
-          targetField: header.predicted_label, // AI prediction
+          sourceField: header.header,
+          targetField: header.predicted_label,
           other_similar: header.other_similar,
           match: header.match,
           similarity: header.similarity,
         }));
+
         // Filter to keep only unique target fields (first occurrence wins)
-        const uniqueTargetMappings: any[] = [];
-        const seenTargets = new Set<string>();
+        // const uniqueTargetMappings: any[] = [];
+        // const seenTargets = new Set<string>();
 
-        for (const mapping of aiData) {
-          if (!seenTargets.has(mapping.targetField)) {
-            seenTargets.add(mapping.targetField);
-            uniqueTargetMappings.push(mapping);
-          }
-        }
+        // for (const mapping of aiData) {
+        //   if (!seenTargets.has(mapping.targetField)) {
+        //     seenTargets.add(mapping.targetField);
+        //     uniqueTargetMappings.push(mapping);
+        //   }
+        // }
 
-        setAiSuggestions(uniqueTargetMappings); // Store AI suggestions separately
+        setAiSuggestions(aiData); // Store AI suggestions separately
       }
 
       setLoading(false);
@@ -302,12 +302,8 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     setValidBenef([]);
 
     const finalMappings = [...mappings];
-    console.log(finalMappings, 'Current Mappings before AI defaults');
 
     if (aiSuggestions && aiSuggestions.length > 0) {
-      console.log('AI Suggestions available:', aiSuggestions);
-      console.log('Current Mappings (user selections):', mappings);
-
       // For each AI suggestion, check similarity score
       aiSuggestions.forEach((aiSuggestion: any) => {
         const existingMapping = finalMappings.find(
@@ -329,7 +325,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
         }
       });
 
-      console.log('Final Mappings (with AI defaults):', finalMappings);
       setMappings(finalMappings);
     }
 

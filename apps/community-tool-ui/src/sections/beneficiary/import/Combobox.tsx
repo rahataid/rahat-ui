@@ -20,6 +20,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CommandList } from 'cmdk';
 import { humanizeString } from 'apps/community-tool-ui/src/utils';
+import { get } from 'lodash';
 
 export const EMPTY_SELECTION = 'No Selection';
 
@@ -32,6 +33,7 @@ export function ComboBox({
 }: any) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
+  console.log(column, 'ComboBox Column');
 
   const handleClearSelection = () => {
     handleTargetFieldChange(EMPTY_SELECTION, value);
@@ -46,6 +48,8 @@ export function ComboBox({
 
   //  format of data with ai suggestion : [{ sourceField, targetField, other_similar: [{label, overall_score}] }]
   const aiSuggestedFields: string[] = [];
+  console.log('AI Suggestions in ComboBox:', aiSuggestions);
+  console.log('Current Column:', column);
 
   if (aiSuggestions && Array.isArray(aiSuggestions)) {
     // Find the mapping for current column
@@ -67,19 +71,25 @@ export function ComboBox({
           }
         });
       }
+    } else {
+      const getExtraField = aiSuggestions.find(
+        (m: any) => m.sourceField === 'extras',
+      );
+
+      if (getExtraField) {
+        if (getExtraField.targetField) {
+          aiSuggestedFields.push(getExtraField.targetField);
+        }
+      }
     }
   }
-
-  // Remove duplicates between AI suggestions and database fields
 
   const uniqueAiSuggestions = aiSuggestedFields.filter(
     (suggestion) => !data.includes(suggestion),
   );
 
-  // Create a Set for quick lookup to mark fields as "AI suggested"
   const aiSet = new Set(aiSuggestedFields);
 
-  // Merge: AI suggestions first (at top), then database fields
   const comboBoxData = [...uniqueAiSuggestions, ...data];
 
   return (

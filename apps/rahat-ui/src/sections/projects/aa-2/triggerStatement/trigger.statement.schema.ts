@@ -35,6 +35,7 @@ const numericValueSchema = z.coerce.number().finite();
 export const triggerStatementSchemaBase = z.object({
   source: z.enum(sourceValues),
   sourceSubType: z.string().min(1, 'sourceSubType is required'),
+  seriesId: z.string().optional(),
   operator: z.enum(operatorValues),
   value: numericValueSchema,
   expression: z

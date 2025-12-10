@@ -22,6 +22,9 @@ import { z } from 'zod';
 import { Info } from 'lucide-react';
 import { AutomatedFormSchema } from '../add.trigger.view';
 import { Option } from '../utils';
+import { useGetSeriesByDataSource } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 const operatorOptions = [
   { label: 'Greater than (>)', value: '>' },
@@ -52,6 +55,19 @@ export default function AddAutomatedTriggerForm({
   const triggerSourceSubType = form.watch('triggerStatement.sourceSubType');
   const triggerOperator = form.watch('triggerStatement.operator');
   const triggerValue = form.watch('triggerStatement.value');
+  const [selectedSource, setSelectedSource] = React.useState<{
+    dataSource: string | null;
+    type: string | null;
+  }>({ dataSource: null, type: null });
+  const params = useParams();
+  const projectId = params.id as UUID;
+
+  const { data: seriesList, isLoading } = useGetSeriesByDataSource(
+    projectId,
+    selectedSource.dataSource?.toUpperCase() || '',
+    selectedSource.type?.toUpperCase() || '',
+    phase?.riverBasin,
+  );
 
   React.useEffect(() => {
     if (source) {
@@ -133,6 +149,11 @@ export default function AddAutomatedTriggerForm({
       </>
     );
   };
+  console.log(
+    { formValues: form.getValues().triggerStatement.source },
+    triggerSourceSubType,
+  );
+
   return (
     <>
       <Form {...form}>
@@ -188,7 +209,15 @@ export default function AddAutomatedTriggerForm({
                 return (
                   <FormItem>
                     <Select
-                      onValueChange={field.onChange}
+                      onValueChange={(v) => {
+                        field.onChange(v);
+                        const [dataSource, type] = v.includes(':')
+                          ? v.split(':')
+                          : [v, null];
+                        let mappedType =
+                          type === 'waterlevel' ? 'water_level' : type;
+                        setSelectedSource({ dataSource, type: mappedType });
+                      }}
                       value={field.value}
                       key={field.value}
                       disabled={isEditing}
@@ -220,6 +249,52 @@ export default function AddAutomatedTriggerForm({
                 );
               }}
             />
+            {seriesList?.length > 0 && (
+              <div>
+                <FormField
+                  control={form.control}
+                  name="triggerStatement.seriesId"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          key={field.value}
+                          disabled={isEditing}
+                        >
+                          <FormLabel>Series</FormLabel>
+                          <FormControl>
+                            <SelectTrigger
+                              className={isEditing ? 'bg-gray-300' : ''}
+                            >
+                              <SelectValue placeholder="Select Source" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {seriesList?.length ? (
+                              seriesList?.map((option: any) => (
+                                <SelectItem
+                                  key={option.seriesId}
+                                  value={option.seriesId}
+                                >
+                                  {option.stationName}
+                                </SelectItem>
+                              ))
+                            ) : (
+                              <p className="text-gray-500 text-sm">
+                                No series found
+                              </p>
+                            )}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              </div>
+            )}
             {!isEditing && source && (
               <div className="bg-[#fcfcfd] border rounded-sm p-4 col-span-2 gap-4">
                 <FormField

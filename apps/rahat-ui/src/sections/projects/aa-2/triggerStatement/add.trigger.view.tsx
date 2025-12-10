@@ -104,6 +104,7 @@ export default function AddTriggerView() {
         operator: undefined,
         value: undefined,
         expression: '',
+        seriesId: '',
       },
     },
   });

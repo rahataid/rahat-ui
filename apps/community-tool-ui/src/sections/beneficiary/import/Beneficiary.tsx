@@ -30,6 +30,7 @@ import InfoBox from './InfoBox';
 
 import {
   useBeneficiaryImportStore,
+  useCommunitySettingList,
   useCreateImportSource,
   useExistingFieldMappings,
   useFetchKoboSettings,
@@ -39,7 +40,9 @@ import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable, { resetMyMappings } from './ColumnMappingTable';
 import { EMPTY_SELECTION } from './Combobox';
 import MyAlert from './MyAlert';
-import { map } from 'lodash';
+import { find, map } from 'lodash';
+import { usePagination } from '@rahat-ui/query';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 interface IProps {
   fieldDefinitions: [];
@@ -51,6 +54,21 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   const { data: kbSettings } = useFetchKoboSettings();
   const existingMapQuery = useExistingFieldMappings();
   const importSourceQuery = useCreateImportSource();
+  const {
+    pagination,
+
+    filters,
+  } = usePagination();
+  const debouncedFilters = useDebounce(filters, 500) as any;
+  const { isLoading, data } = useCommunitySettingList({
+    ...pagination,
+    ...(debouncedFilters as any),
+  });
+
+  const findAiApiUrl = data?.data.find(
+    (setting: any) => setting.name === 'AI_API_URL',
+  );
+  const aiBaseurl = findAiApiUrl?.value?.URL;
 
   // AI Mapping Hooks
   const uploadCsvForMapping = useUploadCsvForMapping();
@@ -92,7 +110,10 @@ export default function BenImp({ fieldDefinitions }: IProps) {
       const formData = new FormData();
       formData.append('file', file);
 
-      const uploadResult = await uploadCsvForMapping.mutateAsync(formData);
+      const uploadResult = await uploadCsvForMapping.mutateAsync({
+        payload: formData,
+        baseURL: aiBaseurl,
+      });
 
       if (uploadResult && uploadResult.classified_headers.length) {
         const aiData = uploadResult.classified_headers.map((header: any) => ({

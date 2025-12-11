@@ -27,6 +27,7 @@ import { z } from 'zod';
 import React, { useEffect, useState } from 'react';
 
 import {
+  useCommunitySettingList,
   useFieldDefinitionsCreate,
   useUploadStandardLevel,
 } from '@rahat-ui/community-query';
@@ -34,6 +35,8 @@ import { FieldType } from 'apps/community-tool-ui/src/constants/fieldDefinition.
 import { DownloadCloud, Minus, Plus } from 'lucide-react';
 import Samples from '../samples.json';
 import * as XLSX from 'xlsx';
+import { usePagination } from '@rahat-ui/query';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 type Iprops = {
   handleTabChange: (tab: 'add' | 'import') => void;
@@ -55,6 +58,21 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
 
   const [variationTags, setVariationTags] = useState<Tag[]>([]);
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
+  const {
+    pagination,
+
+    filters,
+  } = usePagination();
+  const debouncedFilters = useDebounce(filters, 500) as any;
+  const { isLoading, data } = useCommunitySettingList({
+    ...pagination,
+    ...(debouncedFilters as any),
+  });
+
+  const findAiApiUrl = data?.data.find(
+    (setting: any) => setting.name === 'AI_API_URL',
+  );
+  const aiBaseurl = findAiApiUrl?.value?.URL;
 
   const { control } = useForm();
 
@@ -121,14 +139,16 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
       const aiPayload = {
         standard_name: 'community_data_standard',
         field_name: data.name,
-        field_type: data.fieldType.toLowerCase(), // Convert to lowercase for AI API
+        field_type: data.fieldType.toLowerCase(),
         field_description: `${data.name} field for beneficiary data`,
         is_active: true,
         validation_rules: {},
       };
 
-      console.log('Uploading to AI Standard Level:', aiPayload);
-      await uploadStandardLevel.mutateAsync(aiPayload);
+      await uploadStandardLevel.mutateAsync({
+        payload: aiPayload,
+        baseURL: aiBaseurl,
+      });
 
       form.reset();
     } catch (error) {

@@ -35,9 +35,16 @@ type IProps = {
     description?: string;
   }>;
   phase: any;
+  isEditing?: boolean;
+  sourceOptions?: { label: string; value: string }[];
 };
 
-export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
+export default function AddAutomatedTriggerForm({
+  form,
+  phase,
+  isEditing,
+  sourceOptions,
+}: IProps) {
   const source = form.watch('source') || ' ';
 
   return (
@@ -98,19 +105,28 @@ export default function AddAutomatedTriggerForm({ form, phase }: IProps) {
                       onValueChange={field.onChange}
                       value={field.value}
                       key={field.value}
+                      disabled={isEditing}
                     >
                       <FormLabel>Source</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger
+                          className={isEditing ? 'bg-gray-300' : ''}
+                        >
                           <SelectValue placeholder="Select Source" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="DHM">DHM</SelectItem>
-                        <SelectItem value="GLOFAS">GLOFAS</SelectItem>
-                        <SelectItem value="DAILY_MONITORING">
-                          Daily Monitoring
-                        </SelectItem>
+                        {sourceOptions?.length ? (
+                          sourceOptions?.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <p className="text-gray-500 text-sm">
+                            No source found
+                          </p>
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />

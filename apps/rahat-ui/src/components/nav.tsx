@@ -47,7 +47,7 @@ export function Nav({ hasDefaultHeader = true }) {
       <div className="h-14 fixed w-[calc(100vw-56px)] flex justify-between gap-4 items-center p-2 border-b z-40">
         <SearchInput className="w-1/4" name="" onSearch={() => {}} isDisabled />
         <div className="flex space-x-6 items-center">
-          <NotificationButton unreadCount={3} />
+          {/* <NotificationButton unreadCount={3} /> */}
           <ConnectWallet />
           <DropdownMenu>
             <DropdownMenuTrigger>

@@ -23,9 +23,9 @@ const Main = () => {
   const { id } = useParams();
   const projectId = id as UUID;
 
-  useAAStations(projectId);
-  useProjectInfo(projectId);
+  // useAAStations(projectId);
   useStellarSettings(projectId);
+  useProjectInfo(projectId);
 
   const { data, isLoading } = useProjectDashboardReporting(projectId);
 

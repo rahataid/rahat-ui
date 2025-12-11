@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { CalendarIcon, Trash2 } from 'lucide-react';
+import { Activity, CalendarIcon, Trash2 } from 'lucide-react';
 
-import { Heading } from 'apps/rahat-ui/src/common';
+import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 
 import {
@@ -28,9 +28,12 @@ import ExternalLinks from './components/externalLink/linkContent';
 import GaugeReading from './components/gaugeReading';
 import GFHDetails from './components/gfh';
 import { GlofasSection } from './components/glofas';
-import { useParams } from 'next/navigation';
-import { useForecastTabSettings } from '@rahat-ui/query';
+import { useParams, useRouter } from 'next/navigation';
+import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { defaultForecastTab } from 'apps/rahat-ui/src/constants/aa.tabValues.constants';
 
 const componentMap = {
   dhm: DHMSection,
@@ -95,19 +98,18 @@ function DatePicker({
 }
 
 export default function DataSources() {
-  const { activeTab, setActiveTab } = useActiveTab('dhm');
+  const { activeTab, setActiveTab } = useActiveTab('');
   const [date, setDate] = useState<Date | null>(null);
   const { id: projectID } = useParams();
-  const { data } = useForecastTabSettings(projectID as UUID);
+  const route = useRouter();
+  const { data, isLoading } = useTabConfiguration(
+    projectID as UUID,
+    PROJECT_SETTINGS_KEYS.FORECAST_TAB_CONFIG,
+  );
 
   // Backend tabs OR default fallback
   const backendTabs: BackendTab[] =
-    data?.value?.length > 0
-      ? data.value
-      : [
-          { value: 'dhm', label: 'DHM' },
-          { value: 'glofas', label: 'GLOFAS' },
-        ];
+    data?.value?.tabs?.length > 0 ? data.value?.tabs : defaultForecastTab;
 
   const availableTabsConfig = backendTabs
     .filter((tab) => componentMap[tab.value]) // remove invalid backend tabs
@@ -115,6 +117,13 @@ export default function DataSources() {
       ...tab,
       component: componentMap[tab.value],
     }));
+
+  useEffect(() => {
+    if (!activeTab && !isLoading) {
+      const defaultTab = backendTabs[0].value;
+      setActiveTab(defaultTab);
+    }
+  }, [backendTabs, activeTab, isLoading, setActiveTab]);
 
   useEffect(() => {
     if (
@@ -127,42 +136,67 @@ export default function DataSources() {
 
   return (
     <div className="p-4">
-      <Heading
-        title="Forecast Data"
-        description="Track all the data sources reports here"
-      />
+      <div className="flex">
+        <Heading
+          title="Forecast Data"
+          description="Track all the data sources reports here"
+        />
+        <IconLabelBtn
+          Icon={Activity}
+          className="ml-auto px-4  text-xs mt-5"
+          variant="outline"
+          name="Data Health Monitor"
+          size={'xs'}
+          handleClick={() => {
+            route.push(`/projects/aa/${projectID}/data-sources/health-monitor`);
+          }}
+        />
+      </div>
 
-      <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
-        <div className="flex justify-between">
-          {/* 🔹 Tab Triggers */}
-          <TabsList className="border bg-secondary rounded mb-2">
-            {availableTabsConfig.map((tab) => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
-              >
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+      {isLoading ? (
+        <>
+          <Skeleton className="h-12 w-96 rounded-sm" />
+          <div className="h-[70vh] flex items-center justify-center">
+            <Loader />
+          </div>
+        </>
+      ) : (
+        <Tabs
+          value={activeTab}
+          defaultValue={activeTab}
+          onValueChange={setActiveTab}
+        >
+          <div className="flex justify-between">
+            {/* 🔹 Tab Triggers */}
+            <TabsList className="border bg-secondary rounded mb-2">
+              {availableTabsConfig.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
+                >
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
 
-          {/* 🔹 Dynamic Date Picker (based on hasdatepicker) */}
-          {availableTabsConfig.find(
-            (tab) => tab.value === activeTab && tab.hasdatepicker,
-          ) && <DatePicker date={date} setDate={setDate} />}
-        </div>
+            {/* 🔹 Dynamic Date Picker (based on hasdatepicker) */}
+            {availableTabsConfig.find(
+              (tab) => tab.value === activeTab && tab.hasdatepicker,
+            ) && <DatePicker date={date} setDate={setDate} />}
+          </div>
 
-        {/* 🔹 Tab Contents */}
-        {availableTabsConfig.map((tab) => {
-          const Component = tab.component;
-          return (
-            <TabsContent key={tab.value} value={tab.value}>
-              <Component date={date} />
-            </TabsContent>
-          );
-        })}
-      </Tabs>
+          {/* 🔹 Tab Contents */}
+          {availableTabsConfig.map((tab) => {
+            const Component = tab.component;
+            return (
+              <TabsContent key={tab.value} value={tab.value}>
+                <Component date={date} />
+              </TabsContent>
+            );
+          })}
+        </Tabs>
+      )}
     </div>
   );
 }

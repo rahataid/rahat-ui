@@ -36,7 +36,7 @@ export const useChainSettings = () => {
   const { queryClient } = useRSQuery();
   // TODO:NEW is a temp name, will be changed to CHAIN_SETTINGS
   const appSettings = useAppSettingsMutate('CHAIN_SETTINGS');
-  const { setChainSettings } = useSettingsStore();
+  const { setProjectChainSettings } = useSettingsStore();
 
   const query = useQuery(
     {
@@ -53,9 +53,9 @@ export const useChainSettings = () => {
 
   useEffect(() => {
     if (query.isSuccess) {
-      setChainSettings(query.data);
+      setProjectChainSettings(query.data);
     }
-  }, [query.isSuccess, query.data, setChainSettings]);
+  }, [query.isSuccess, query.data, setProjectChainSettings]);
 
   return query;
 };

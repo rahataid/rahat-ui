@@ -1,6 +1,7 @@
 import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
-import { Heading } from 'apps/rahat-ui/src/common';
+import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import React from 'react';
+import DynamicPieChart from '../../projects/components/dynamicPieChart';
 
 const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
   // Helper to find stat data by name
@@ -33,20 +34,12 @@ const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
           >
             <h1 className="text-sm font-medium">{title}</h1>
             <div className="w-full flex-1 p-4 pt-0">
-              <PieChart
-                chart={{
-                  series: data.map((item: any) => ({
-                    label: item.id,
-                    value: item.count,
-                  })),
-                  colors: ['#00796B', '#CFD8DC'],
-                }}
-                custom={true}
-                projectAA={true}
-                donutSize="80%"
-                width="100%"
-                height="100%"
-                type="donut"
+              <DynamicPieChart
+                pieData={data.map((item: any) => ({
+                  label: item.id,
+                  value: item.count,
+                }))}
+                colors={['#00796B', '#CFD8DC']}
               />
             </div>
           </div>
@@ -55,22 +48,28 @@ const DisasterImpactAndEarlyWarning = ({ statsData }: { statsData: any[] }) => {
         <div className="border rounded-sm p-2 flex flex-col h-full min-h-[340px] lg:col-span-2">
           <h1 className="text-sm font-medium">Information Channel Used</h1>
           <div className="flex-1 p-2">
-            <BarChart
-              series={channelUsageStats.map((item: any) => item.count)}
-              // categories={channelUsageStats.map((item: any) => item.id)}
-              categories={channelUsageStats.map((item: any) =>
-                item.id.replace(/([A-Z])/g, ' $1').trim(),
-              )}
-              colors={['#4A90E2']}
-              xaxisLabels={true}
-              yaxisLabels={true}
-              barHeight={20}
-              height="100%"
-              width="100%"
-              xaxisTitle="Information Channel"
-              yaxisTitle="No. of Beneficiaries"
-              columnWidth={'20%'}
-            />
+            {channelUsageStats?.length === 0 ? (
+              <div className="flex justify-center h-[300px] items-center">
+                <NoResult size="small" />
+              </div>
+            ) : (
+              <BarChart
+                series={channelUsageStats.map((item: any) => item.count)}
+                // categories={channelUsageStats.map((item: any) => item.id)}
+                categories={channelUsageStats.map((item: any) =>
+                  item.id.replace(/([A-Z])/g, ' $1').trim(),
+                )}
+                colors={['#4A90E2']}
+                xaxisLabels={true}
+                yaxisLabels={true}
+                barHeight={20}
+                height="100%"
+                width="100%"
+                xaxisTitle="Information Channel"
+                yaxisTitle="No. of Beneficiaries"
+                columnWidth={'20%'}
+              />
+            )}
           </div>
         </div>
       </div>

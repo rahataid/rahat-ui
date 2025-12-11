@@ -18,7 +18,7 @@ const BeneficiaryDetail = () => {
   const tab = searchParams.get('tab') as string;
   const subTab = searchParams.get('subTab') as string;
   const pagination = searchParams.get('pagination') as string;
-  const details = useProjectBeneficiaryDetail({
+  const { data: details } = useProjectBeneficiaryDetail({
     projectUUID: projectId,
     uuid: beneficiaryId,
   });

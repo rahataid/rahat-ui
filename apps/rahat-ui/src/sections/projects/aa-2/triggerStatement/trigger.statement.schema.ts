@@ -19,7 +19,11 @@ export const SOURCE_CONFIG = {
   prob_flood: {
     label: 'Glofas',
     sourceSubType: 'Flood Probability',
-    subTypes: ['2_years_max_prob', '5_years_max_prob', '20_years_max_prob'],
+    subTypes: [
+      'two_years_max_prob',
+      'five_years_max_prob',
+      'twenty_years_max_prob',
+    ],
   },
 } as const;
 
@@ -35,7 +39,8 @@ const numericValueSchema = z.coerce.number().finite();
 export const triggerStatementSchemaBase = z.object({
   source: z.enum(sourceValues),
   sourceSubType: z.string().min(1, 'sourceSubType is required'),
-  seriesId: z.string().optional(),
+  stationId: z.string().optional(),
+  stationName: z.string().optional(),
   operator: z.enum(operatorValues),
   value: numericValueSchema,
   expression: z

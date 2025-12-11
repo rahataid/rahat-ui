@@ -530,6 +530,7 @@ export const useGetSeriesByDataSource = (
   return useQuery({
     queryKey: [MS_TRIGGERS_KEYS.SERIES, uuid, dataSource, type],
     staleTime: 0,
+    enabled: !!dataSource,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,

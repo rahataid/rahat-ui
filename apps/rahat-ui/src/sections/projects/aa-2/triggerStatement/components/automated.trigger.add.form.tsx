@@ -249,54 +249,9 @@ export default function AddAutomatedTriggerForm({
                 );
               }}
             />
-            {seriesList?.length > 0 && (
-              <div>
-                <FormField
-                  control={form.control}
-                  name="triggerStatement.seriesId"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          key={field.value}
-                          disabled={isEditing}
-                        >
-                          <FormLabel>Series</FormLabel>
-                          <FormControl>
-                            <SelectTrigger
-                              className={isEditing ? 'bg-gray-300' : ''}
-                            >
-                              <SelectValue placeholder="Select Source" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {seriesList?.length ? (
-                              seriesList?.map((option: any) => (
-                                <SelectItem
-                                  key={option.seriesId}
-                                  value={option.seriesId}
-                                >
-                                  {option.stationName}
-                                </SelectItem>
-                              ))
-                            ) : (
-                              <p className="text-gray-500 text-sm">
-                                No series found
-                              </p>
-                            )}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-              </div>
-            )}
+
             {!isEditing && source && (
-              <div className="bg-[#fcfcfd] border rounded-sm p-4 col-span-2 gap-4">
+              <div className="bg-[#fcfcfd] border rounded-sm p-4 gap-4">
                 <FormField
                   control={form.control}
                   name="triggerStatement.sourceSubType"
@@ -436,7 +391,59 @@ export default function AddAutomatedTriggerForm({
                 )}
               </div>
             )}
-
+            {source !== 'glofas' && (
+              <FormField
+                control={form.control}
+                name="triggerStatement.stationId"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          const selected = seriesList.find(
+                            (s: any) => s.seriesId?.toString() === value,
+                          );
+                          form.setValue(
+                            'triggerStatement.stationName',
+                            selected?.stationName || '',
+                          );
+                        }}
+                        value={field.value}
+                        key={field.value}
+                        disabled={isEditing}
+                      >
+                        <FormLabel>Station</FormLabel>
+                        <FormControl>
+                          <SelectTrigger
+                            className={isEditing ? 'bg-gray-300' : ''}
+                          >
+                            <SelectValue placeholder="Select Source" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {seriesList?.length ? (
+                            seriesList?.map((option: any) => (
+                              <SelectItem
+                                key={option.seriesId}
+                                value={option.seriesId?.toString()}
+                              >
+                                {option.stationName}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <p className="text-gray-500 text-sm">
+                              No station found
+                            </p>
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            )}
             <FormField
               control={form.control}
               name="description"

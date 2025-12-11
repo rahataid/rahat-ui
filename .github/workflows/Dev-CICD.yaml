@@ -16,7 +16,7 @@ env:
 jobs:
   rahat-ui:
     name: rahat-ui
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: contains(github.event.head_commit.message, 'action') || contains(github.event.pull_request.title, 'action') || github.event_name == 'workflow_dispatch'
 
     steps:
@@ -62,7 +62,7 @@ jobs:
   
   community-tool-ui:
     name: community-tool-ui
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: contains(github.event.head_commit.message, 'action') || contains(github.event.pull_request.title, 'action') || github.event_name == 'workflow_dispatch'
 
     steps:

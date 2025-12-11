@@ -60,7 +60,7 @@
 // export default SocialProtectionOverview;
 
 import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
-import { DataCard, Heading } from 'apps/rahat-ui/src/common';
+import { DataCard, Heading, NoResult } from 'apps/rahat-ui/src/common';
 import React from 'react';
 
 const labelMap: Record<string, string> = {
@@ -133,19 +133,25 @@ const VulnerableAndSocialProtectionOverview = ({
             Household Receiving Social Protection Benefits
           </h2>
           <div className="flex-1  h-full min-h-[300px]">
-            <BarChart
-              series={socialProtectionBenefits.map((item) => item.households)}
-              categories={socialProtectionBenefits.map((item) => item.type)}
-              colors={['#4A90E2']}
-              xaxisLabels={true}
-              yaxisLabels={true}
-              barHeight={40}
-              height="100%"
-              width="100%"
-              xaxisTitle="Type of SSA"
-              yaxisTitle="No. of Households"
-              columnWidth="20%"
-            />
+            {socialProtectionBenefits.length === 0 ? (
+              <div className="flex justify-center h-[300px] items-center">
+                <NoResult size="small" />
+              </div>
+            ) : (
+              <BarChart
+                series={socialProtectionBenefits.map((item) => item.households)}
+                categories={socialProtectionBenefits.map((item) => item.type)}
+                colors={['#4A90E2']}
+                xaxisLabels={true}
+                yaxisLabels={true}
+                barHeight={40}
+                height="100%"
+                width="100%"
+                xaxisTitle="Type of SSA"
+                yaxisTitle="No. of Households"
+                columnWidth="20%"
+              />
+            )}
           </div>
         </div>
       </div>

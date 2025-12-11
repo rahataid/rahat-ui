@@ -81,6 +81,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
           <ProjectSidebar
             key={item.title}
             title={item.title}
+            isLoading={item.isLoading}
             items={item.children}
           />
         ))}

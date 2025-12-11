@@ -14,6 +14,7 @@ import {
   useProjectContractSettings,
   useProjectSettingsStore,
   useProjectSubgraphSettings,
+  useProjectChainSettings,
 } from '@rahat-ui/query';
 import GarphQlProvider from 'libs/query/src/lib/aa/graph/graphql-query-client';
 
@@ -25,11 +26,12 @@ export default function ProjectLayoutRoot({
   const { secondPanel } = useSecondPanel();
 
   const uuid = useParams().id as UUID;
-  useAAProjectSettingsDatasource(uuid);
-  useProjectContractSettings(uuid);
-  useAAProjectSettingsHazardType(uuid);
-  useProjectSubgraphSettings(uuid);
+  // useAAProjectSettingsDatasource(uuid);
+  // useProjectContractSettings(uuid);
+  // useAAProjectSettingsHazardType(uuid);
+  // useProjectSubgraphSettings(uuid);
   useEntities(uuid);
+  useProjectChainSettings(uuid);
 
   // const dataSources = useProjectSettingsStore(
   //   (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]);

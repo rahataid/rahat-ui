@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { useSwal } from '../../../swal';
 import { useProjectSettingsStore } from '../../projects';
-import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
+import { MS_TRIGGERS_KEYS, PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 import { useSettingsStore } from '../../settings';
 
 export const useCreateTriggerStatement = () => {
@@ -488,6 +488,28 @@ export const useExternalApiHealthMonitor = (uuid: UUID) => {
         data: {
           action: 'ms.sources.getHealth',
           payload: {},
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};
+
+export const useGetDataSourceTypes = (uuid: UUID) => {
+  const q = useProjectAction([MS_TRIGGERS_KEYS.DATASOURCETYPES]);
+  const query = useQuery({
+    queryKey: [MS_TRIGGERS_KEYS.DATASOURCETYPES, uuid],
+    staleTime: Infinity,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.settings.get',
+          payload: {
+            name: MS_TRIGGERS_KEYS.DATASOURCETYPES,
+          },
         },
       });
       return mutate.data;

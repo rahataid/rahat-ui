@@ -523,9 +523,11 @@ export const useGetSeriesByDataSource = (
   uuid: UUID,
   dataSource: string | null,
   type: string | null,
-  riverBasin: string,
 ) => {
   const q = useProjectAction([MS_TRIGGERS_KEYS.SERIES]);
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
 
   return useQuery({
     queryKey: [MS_TRIGGERS_KEYS.SERIES, uuid, dataSource, type],
@@ -536,7 +538,14 @@ export const useGetSeriesByDataSource = (
         uuid,
         data: {
           action: 'ms.sourcesData.getSeriesByDataSource',
-          payload: { dataSource, type, riverBasin },
+          payload: {
+            dataSource,
+            type,
+            riverBasin:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'river_basin'
+              ],
+          },
         },
       });
       return mutate.data;

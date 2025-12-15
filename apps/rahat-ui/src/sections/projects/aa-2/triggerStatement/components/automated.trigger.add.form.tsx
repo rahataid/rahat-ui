@@ -66,7 +66,6 @@ export default function AddAutomatedTriggerForm({
     projectId,
     selectedSource.dataSource?.toUpperCase() || '',
     selectedSource.type?.toUpperCase() || '',
-    phase?.riverBasin,
   );
 
   React.useEffect(() => {
@@ -214,7 +213,7 @@ export default function AddAutomatedTriggerForm({
                         const [dataSource, type] = v.includes(':')
                           ? v.split(':')
                           : [v, null];
-                        let mappedType =
+                        const mappedType =
                           type === 'waterlevel' ? 'water_level' : type;
                         setSelectedSource({ dataSource, type: mappedType });
                       }}

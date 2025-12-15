@@ -114,7 +114,7 @@ export const useDeleteTriggerStatement = () => {
     }: {
       projectUUID: UUID;
       triggerStatementPayload: {
-        repeatKey: string;
+        uuid: string;
       };
     }) => {
       return q.mutateAsync({
@@ -321,8 +321,8 @@ export const useAATriggerStatements = (uuid: UUID, payload: any) => {
 
 export const useSingleTriggerStatement = (
   uuid: UUID,
-  repeatKey: string | string[] | number,
-  version: boolean,
+  triggerId: string | string[] | number,
+  version?: boolean,
 ) => {
   const q = useProjectAction();
   const alert = useSwal();
@@ -336,10 +336,10 @@ export const useSingleTriggerStatement = (
   const action = version ? 'ms.revertPhase.getOne' : 'ms.triggers.getOne';
   const payload = version
     ? {
-        id: repeatKey,
+        id: triggerId,
       }
     : {
-        repeatKey: repeatKey,
+        uuid: triggerId,
       };
   const query = useQuery({
     queryKey: ['triggerStatement', uuid, payload],
@@ -391,7 +391,7 @@ export const useActivateTrigger = () => {
     }: {
       projectUUID: UUID;
       activatePayload: {
-        repeatKey: string | string[];
+        uuid: string;
         notes?: string;
         triggerDocuments?: Array<{ mediaURL: string; fileName: string }>;
       };
@@ -404,9 +404,11 @@ export const useActivateTrigger = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['triggerstatement'] });
+      qc.invalidateQueries({
+        queryKey: ['triggerStatement', variables.projectUUID],
+      });
       toast.fire({
         title: 'Trigger activated.',
         text: 'Successfully activated trigger. You can view details of this from trigger details page.',

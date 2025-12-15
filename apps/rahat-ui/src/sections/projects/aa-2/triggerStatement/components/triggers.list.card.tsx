@@ -22,7 +22,7 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
               <TriggerCard
                 key={projectId}
                 projectId={projectId}
-                triggerId={t?.repeatKey}
+                triggerId={t?.uuid}
                 phase={t?.phase?.name || 'N/A'}
                 type={t?.source === 'MANUAL' ? 'Manual' : 'Automated'}
                 isTriggered={t?.isTriggered}

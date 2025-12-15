@@ -46,7 +46,7 @@ export default function ProjectDashboard() {
   const walletData = useMemo(
     () => [
       {
-        name: 'Genosis Wallet',
+        name: 'Gnosis Wallet',
         value: Number(disbursementData?.safeBalance) || 0,
         color: '#3B82F6',
       },
@@ -149,7 +149,7 @@ export default function ProjectDashboard() {
                   ) : disbursementData ? (
                     <Card className="rounded-xl p-4">
                       <p className="text-lg font-medium">
-                        Genosis Wallet vs Total Disbursement
+                        Gnosis Wallet vs Total Disbursement
                       </p>
 
                       <div>

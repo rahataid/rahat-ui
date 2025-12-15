@@ -250,69 +250,80 @@ export default function AddAutomatedTriggerForm({
             />
 
             {!isEditing && source && (
-              <div className="bg-[#fcfcfd] border rounded-sm p-4 gap-4">
-                <FormField
-                  control={form.control}
-                  name="triggerStatement.sourceSubType"
-                  render={({ field }) => {
-                    return (
-                      <FormItem className="w-1/2 pr-2 mb-4">
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                          key={field.value}
-                        >
-                          {triggerSource === 'water_level_m' && (
-                            <SourceSubTypeField label="Level Type" />
-                          )}
-                          {triggerSource === 'discharge_m3s' && (
-                            <SourceSubTypeField label="Discharge Type" />
-                          )}
-                          {triggerSource === 'rainfall_mm' && (
-                            <SourceSubTypeField label="Measurement Period" />
-                          )}
-                          {triggerSource === 'prob_flood' && (
-                            <SourceSubTypeField label="Probability Period" />
-                          )}
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-
-                {triggerSourceSubType && (
-                  <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="col-span-2 bg-[#fcfcfd] gap-4">
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <FormField
+                    control={form.control}
+                    name="triggerStatement.sourceSubType"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            key={field.value}
+                          >
+                            {triggerSource === 'water_level_m' && (
+                              <SourceSubTypeField label="Level Type" />
+                            )}
+                            {triggerSource === 'discharge_m3s' && (
+                              <SourceSubTypeField label="Discharge Type" />
+                            )}
+                            {triggerSource === 'rainfall_mm' && (
+                              <SourceSubTypeField label="Measurement Period" />
+                            )}
+                            {triggerSource === 'prob_flood' && (
+                              <SourceSubTypeField label="Probability Period" />
+                            )}
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                  {source && source !== 'glofas' && (
                     <FormField
                       control={form.control}
-                      name="triggerStatement.operator"
+                      name="triggerStatement.stationId"
                       render={({ field }) => {
                         return (
                           <FormItem>
                             <Select
-                              onValueChange={field.onChange}
+                              onValueChange={(value) => {
+                                field.onChange(value);
+                                const selected = seriesList.find(
+                                  (s: any) => s.seriesId?.toString() === value,
+                                );
+                                form.setValue(
+                                  'triggerStatement.stationName',
+                                  selected?.stationName || '',
+                                );
+                              }}
                               value={field.value}
                               key={field.value}
+                              disabled={isEditing}
                             >
-                              <FormLabel>Operator</FormLabel>
+                              <FormLabel>Station</FormLabel>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select Operator" />
+                                <SelectTrigger
+                                  className={isEditing ? 'bg-gray-300' : ''}
+                                >
+                                  <SelectValue placeholder="Select Station" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {operatorOptions?.length ? (
-                                  operatorOptions?.map((option) => (
+                                {seriesList?.length ? (
+                                  seriesList?.map((option: any) => (
                                     <SelectItem
-                                      key={option.value}
-                                      value={option.value}
+                                      key={option.seriesId}
+                                      value={option.seriesId?.toString()}
                                     >
-                                      {option.label}
+                                      {option.stationName}
                                     </SelectItem>
                                   ))
                                 ) : (
                                   <p className="text-gray-500 text-sm">
-                                    No operator found
+                                    No station found
                                   </p>
                                 )}
                               </SelectContent>
@@ -322,50 +333,95 @@ export default function AddAutomatedTriggerForm({
                         );
                       }}
                     />
-                    {triggerOperator && (
+                  )}
+                </div>
+                {triggerSourceSubType && (
+                  <div className="col-span-2">
+                    <div className="grid grid-cols-2 gap-4 mb-4">
                       <FormField
                         control={form.control}
-                        name="triggerStatement.value"
+                        name="triggerStatement.operator"
                         render={({ field }) => {
                           return (
                             <FormItem>
-                              {triggerSource === 'water_level_m' && (
-                                <SourceValueField
-                                  field={field}
-                                  unit="m"
-                                  placeholder="Enter water level value in (m)"
-                                />
-                              )}
-                              {triggerSource === 'discharge_m3s' && (
-                                <SourceValueField
-                                  field={field}
-                                  unit="m³/s"
-                                  placeholder="Enter discharge value in m³/s"
-                                />
-                              )}
-                              {triggerSource === 'rainfall_mm' && (
-                                <SourceValueField
-                                  field={field}
-                                  unit="mm"
-                                  placeholder="Enter rainfall value in (mm)"
-                                />
-                              )}
-                              {triggerSource === 'prob_flood' && (
-                                <SourceValueField
-                                  field={field}
-                                  unit="%"
-                                  placeholder="Enter flood probability value in (%)"
-                                />
-                              )}
+                              <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                                key={field.value}
+                              >
+                                <FormLabel>Operator</FormLabel>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select Operator" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {operatorOptions?.length ? (
+                                    operatorOptions?.map((option) => (
+                                      <SelectItem
+                                        key={option.value}
+                                        value={option.value}
+                                      >
+                                        {option.label}
+                                      </SelectItem>
+                                    ))
+                                  ) : (
+                                    <p className="text-gray-500 text-sm">
+                                      No operator found
+                                    </p>
+                                  )}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
                             </FormItem>
                           );
                         }}
                       />
-                    )}
+                      {triggerOperator && (
+                        <FormField
+                          control={form.control}
+                          name="triggerStatement.value"
+                          render={({ field }) => {
+                            return (
+                              <FormItem>
+                                {triggerSource === 'water_level_m' && (
+                                  <SourceValueField
+                                    field={field}
+                                    unit="m"
+                                    placeholder="Enter water level value in (m)"
+                                  />
+                                )}
+                                {triggerSource === 'discharge_m3s' && (
+                                  <SourceValueField
+                                    field={field}
+                                    unit="m³/s"
+                                    placeholder="Enter discharge value in m³/s"
+                                  />
+                                )}
+                                {triggerSource === 'rainfall_mm' && (
+                                  <SourceValueField
+                                    field={field}
+                                    unit="mm"
+                                    placeholder="Enter rainfall value in (mm)"
+                                  />
+                                )}
+                                {triggerSource === 'prob_flood' && (
+                                  <SourceValueField
+                                    field={field}
+                                    unit="%"
+                                    placeholder="Enter flood probability value in (%)"
+                                  />
+                                )}
+                              </FormItem>
+                            );
+                          }}
+                        />
+                      )}
+                    </div>
                   </div>
                 )}
                 {triggerValue && (
-                  <div>
+                  <div className="col-span-2">
                     <div className="flex space-x-2 items-center ">
                       <p className="text-sm/6 text-primary">
                         Generated Expression
@@ -390,59 +446,7 @@ export default function AddAutomatedTriggerForm({
                 )}
               </div>
             )}
-            {source !== 'glofas' && (
-              <FormField
-                control={form.control}
-                name="triggerStatement.stationId"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <Select
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          const selected = seriesList.find(
-                            (s: any) => s.seriesId?.toString() === value,
-                          );
-                          form.setValue(
-                            'triggerStatement.stationName',
-                            selected?.stationName || '',
-                          );
-                        }}
-                        value={field.value}
-                        key={field.value}
-                        disabled={isEditing}
-                      >
-                        <FormLabel>Station</FormLabel>
-                        <FormControl>
-                          <SelectTrigger
-                            className={isEditing ? 'bg-gray-300' : ''}
-                          >
-                            <SelectValue placeholder="Select Source" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {seriesList?.length ? (
-                            seriesList?.map((option: any) => (
-                              <SelectItem
-                                key={option.seriesId}
-                                value={option.seriesId?.toString()}
-                              >
-                                {option.stationName}
-                              </SelectItem>
-                            ))
-                          ) : (
-                            <p className="text-gray-500 text-sm">
-                              No station found
-                            </p>
-                          )}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            )}
+
             <FormField
               control={form.control}
               name="description"

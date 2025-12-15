@@ -38,6 +38,7 @@ import {
 import {
   grievancePriority,
   grievanceStatus,
+  grievanceType,
 } from 'apps/rahat-ui/src/constants/aa.grievances.constants';
 function GrievancesTable() {
   const { id } = useParams();
@@ -138,11 +139,14 @@ function GrievancesTable() {
     if (key === 'priority') {
       return grievancePriority.find((p) => p.value === value)?.label || value;
     }
+    if (key === 'type') {
+      return grievanceType.find((t) => t.value === value)?.label || value;
+    }
     return value;
   };
 
   // Define filter display order
-  const filterOrder = ['title', 'status', 'priority'];
+  const filterOrder = ['title', 'status', 'priority', 'type'];
 
   // Sort filters according to the defined order
   const getOrderedFilters = () => {
@@ -210,6 +214,22 @@ function GrievancesTable() {
             </SelectContent>
           </Select>
           <Select
+            value={filters?.type || 'all'}
+            onValueChange={(value) => handleFilterChange('type', value)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Grievance Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Grievance Type</SelectItem>
+              {grievanceType.map((type) => (
+                <SelectItem key={type.value} value={type.value}>
+                  {type.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
             value={filters?.priority || 'all'}
             onValueChange={(value) => handleFilterChange('priority', value)}
           >
@@ -225,13 +245,6 @@ function GrievancesTable() {
               ))}
             </SelectContent>
           </Select>
-          <div className="flex items-center gap-2">
-            <AddButton
-              path={`/projects/aa/${id}/grievances/add`}
-              name="Grievance"
-              variant="default"
-            />
-          </div>
         </div>
       </div>
       <DemoTable table={table} loading={projectGrievances.isLoading} />

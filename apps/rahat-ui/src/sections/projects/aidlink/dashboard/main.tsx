@@ -68,9 +68,8 @@ export default function ProjectDashboard() {
     const totalDisbursed = Number(
       data
         ?.find((item: any) => item.name === 'DISBURSEMENT_TOTAL')
-        ?.data?.reduce((sum: number, curr: any) => sum + curr.amount, 0) || 0,
+        ?.data?.find((entry: any) => entry.id === 'COMPLETED')?.amount || 0,
     );
-
     const totalOffRamped = Number(offrampStatusData?.offRampedAmount) || 0; // Currently hardcoded, update when data is available
 
     return [
@@ -96,7 +95,7 @@ export default function ProjectDashboard() {
         bg: 'from-purple-50 to-purple-100 border-purple-200',
       },
     ];
-  }, [data]);
+  }, [data, offrampStatusData]);
 
   return (
     <ScrollArea className="h-[calc(100vh-60px)]">

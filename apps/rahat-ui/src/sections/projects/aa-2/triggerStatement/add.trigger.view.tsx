@@ -31,7 +31,12 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useRouter } from 'next/navigation';
 import { triggerStatementSchema } from './trigger.statement.schema';
-import { buildSourceOptions, buildSubtypeOptions, SourceConfig } from './utils';
+import {
+  buildSourceOptions,
+  buildSubtypeOptions,
+  SEP,
+  SourceConfig,
+} from './utils';
 import {
   Alert,
   AlertDescription,
@@ -231,6 +236,13 @@ export default function AddTriggerView() {
     activeTab,
   ]);
 
+  const sourceLabelMapper: Record<string, string> = {
+    water_level_m: 'DHM Water Level',
+    rainfall_mm: 'DHM Rainfall',
+    prob_flood: 'GLOFAS Flood Probability',
+    discharge_m3s: 'GFH Discharge',
+  };
+
   return (
     <div className="p-4">
       <Back />
@@ -330,9 +342,29 @@ export default function AddTriggerView() {
                   </div>
                   <p className="text-sm/6 font-medium mb-2">{t.title}</p>
                   <p className="text-muted-foreground text-sm/4">
-                    {`${t.source} . ${
-                      t.riverBasin
-                    } . ${t.time?.toLocaleString()}`}
+                    {t.riverBasin}
+
+                    {t.triggerStatement.stationName && (
+                      <>
+                        {SEP}
+                        {t.triggerStatement.stationName}
+                      </>
+                    )}
+
+                    {t.triggerStatement.source && (
+                      <>
+                        {SEP}
+                        {sourceLabelMapper[t.triggerStatement.source] || ''} (
+                        {t.triggerStatement.expression})
+                      </>
+                    )}
+
+                    {t.time && (
+                      <>
+                        {SEP}
+                        {t.time.toLocaleString()}
+                      </>
+                    )}
                   </p>
                 </div>
               );

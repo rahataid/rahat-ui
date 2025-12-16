@@ -5,6 +5,7 @@ export interface TriggerStatement {
   operator: string;
   expression: string;
   sourceSubType: string;
+  stationName?: string;
 }
 export interface SourceConfig {
   type: string;
@@ -61,3 +62,5 @@ export const buildSubtypeOptions = (
     ]),
   );
 };
+
+export const SEP = ' • ';

@@ -66,7 +66,7 @@ export function ForecastDataSection({
             {setIconLabel(source, sourceSubType)}
           </p>
           <Badge className="font-normal">
-            {formattedSourceSubType} {operator} {value} {unit || '%'}
+            ({formattedSourceSubType} {operator} {value} {unit || '%'})
           </Badge>
         </div>
       ) : null}

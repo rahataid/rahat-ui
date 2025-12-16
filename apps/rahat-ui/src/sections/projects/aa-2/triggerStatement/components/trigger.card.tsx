@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { toLabel, TriggerStatement } from '../utils';
+import { SEP, toLabel, TriggerStatement } from '../utils';
 import { SOURCE_CONFIG } from '../trigger.statement.schema';
 type IProps = {
   projectId: string;
@@ -108,16 +108,27 @@ export default function TriggerCard({
         </Tooltip>
       </TooltipProvider>
       <p className="text-muted-foreground text-sm/4 mb-1">
-        {capitalizeFirstLetter(riverBasin)}{' '}
-        {dataSource &&
-          `. ${dataSource} ${
-            dataSource !== 'GLOFAS'
+        {capitalizeFirstLetter(riverBasin)}
+
+        {tgSt?.stationName && (
+          <>
+            {SEP}
+            {tgSt.stationName}
+          </>
+        )}
+
+        {dataSource && (
+          <>
+            {SEP}
+            {dataSource}{' '}
+            {dataSource !== 'GLOFAS'
               ? sourceSubTypeLabel?.split(' ').slice(0, -1).join(' ')
-              : sourceSubTypeLabel
-          } (${formattedSourceSubType} ${tgSt?.operator} ${tgSt?.value} ${
-            unit || '%'
-          })`}
+              : sourceSubTypeLabel}{' '}
+            ({formattedSourceSubType} {tgSt?.expression})
+          </>
+        )}
       </p>
+
       {createdAt && (
         <p className="text-muted-foreground text-sm/4 mb-1">
           Created at : {dateFormat(createdAt)}

@@ -316,6 +316,19 @@ export default function AddTriggerView() {
           </div>
           <div className="grid grid-cols-1 gap-2">
             {allTriggers.map((t, i) => {
+              const date = new Date(t.time);
+
+              const time = date.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+              });
+
+              const formattedDate = date.toLocaleDateString('en-US', {
+                month: 'long',
+                day: '2-digit',
+                year: 'numeric',
+              });
               return (
                 <div key={i} className="p-4 rounded border shadow">
                   <div className="flex justify-between items-center space-x-4 mb-2">
@@ -362,7 +375,11 @@ export default function AddTriggerView() {
                     {t.time && (
                       <>
                         {SEP}
-                        {t.time.toLocaleString()}
+                        <span>
+                          {time}
+                          <br />
+                          {formattedDate}
+                        </span>
                       </>
                     )}
                   </p>

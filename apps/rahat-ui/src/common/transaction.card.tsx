@@ -61,7 +61,7 @@ export function TransactionCard({
             {cardData.map((i) => {
               // Generate transaction hash from info object if available
               const getTransactionHash = (info: any) => {
-                if (!info) return null;
+                if (!info || !info?.transactionHashes) return null;
                 // Extract transaction hash from the info object
                 const hashParts = [];
                 for (let j = 0; j < 66; j++) {

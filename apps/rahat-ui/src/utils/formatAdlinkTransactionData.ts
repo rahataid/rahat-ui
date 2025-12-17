@@ -1,4 +1,7 @@
-export const transformTransactionData = (data: any) => {
+import { amountFormat } from '@rahat-ui/query';
+import { formatUnits } from 'viem';
+
+export const transformTransactionData = (data: any, tokenNumber: number) => {
   return data.map((item: any) => {
     // Convert unix timestamp to date
     const date = new Date(parseInt(item.blockTimestamp) * 1000);
@@ -14,7 +17,7 @@ export const transformTransactionData = (data: any) => {
       Date: formattedDate,
       ID: item.id,
       'Transaction Hash': item.transactionHash,
-      Amount: item._amount,
+      'Amount (USDC)': amountFormat(formatUnits(item._amount, tokenNumber)),
       To: item._to,
       'Token Address': item._tokenAddress,
     };

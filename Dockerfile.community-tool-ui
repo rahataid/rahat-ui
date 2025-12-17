@@ -6,7 +6,7 @@ COPY dist/apps/community-tool-ui/package.json ./
 # Install build dependencies
 RUN apk add --no-cache python3 make g++ 
 
-RUN yarn install --production
+RUN yarn install --frozen-lockfile
 
 FROM node:20-alpine AS runner
 USER node

@@ -26,12 +26,12 @@ export default function ProjectLayoutRoot({
   const { secondPanel } = useSecondPanel();
 
   const uuid = useParams().id as UUID;
+  useEntities(uuid, PROJECT_SETTINGS_KEYS.ENTITIES);
   useAAProjectSettingsDatasource(uuid);
   useProjectContractSettings(uuid);
   useAAProjectSettingsHazardType(uuid);
   useProjectSubgraphSettings(uuid);
   useAAProjectSettingsContract(uuid);
-  useEntities(uuid, PROJECT_SETTINGS_KEYS.ENTITIES);
   useEntities(uuid, PROJECT_SETTINGS_KEYS.INKIND_ENTITIES);
   // useAAProjectSettingsDatasource(uuid);
   // useProjectContractSettings(uuid);

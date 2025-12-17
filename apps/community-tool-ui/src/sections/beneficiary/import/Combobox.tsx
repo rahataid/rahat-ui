@@ -65,14 +65,14 @@ export function ComboBox({
         });
       }
     } else {
-      const getExtraField = aiSuggestions.find(
-        (m: any) => m.sourceField === 'extras',
+      const secondMapping = aiSuggestions.find(
+        (m: any) => m.targetField === column,
       );
 
-      if (getExtraField) {
-        if (getExtraField.targetField) {
-          aiSuggestedFields.push(getExtraField.targetField);
-          getExtraField.other_similar.forEach((similar: any) => {
+      if (secondMapping) {
+        aiSuggestedFields.push(secondMapping.targetField);
+        if (Array.isArray(secondMapping.other_similar)) {
+          secondMapping.other_similar.forEach((similar: any) => {
             if (similar.label) {
               aiSuggestedFields.push(similar.label);
             }

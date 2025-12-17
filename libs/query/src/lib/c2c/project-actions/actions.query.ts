@@ -315,6 +315,7 @@ export const useGetOfframpDetails = (
 
   const query = useQuery({
     queryKey: ['get-getOfframpDetails', projectUUID, beneficiaryPhone],
+    enabled: !!beneficiaryPhone,
     queryFn: async () => {
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,

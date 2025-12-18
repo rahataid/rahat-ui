@@ -520,3 +520,37 @@ export const useGetDataSourceTypes = (uuid: UUID) => {
 
   return query;
 };
+
+export const useGetSeriesByDataSource = (
+  uuid: UUID,
+  dataSource: string | null,
+  type: string | null,
+) => {
+  const q = useProjectAction([MS_TRIGGERS_KEYS.SERIES]);
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
+
+  return useQuery({
+    queryKey: [MS_TRIGGERS_KEYS.SERIES, uuid, dataSource, type],
+    staleTime: 0,
+    enabled: !!dataSource,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.sourcesData.getSeriesByDataSource',
+          payload: {
+            dataSource,
+            type,
+            riverBasin:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'river_basin'
+              ],
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+};

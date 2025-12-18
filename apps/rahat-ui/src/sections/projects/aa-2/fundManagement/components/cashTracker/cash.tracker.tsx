@@ -213,7 +213,9 @@ export function CashTracker() {
           <p className="text-gray-500 mt-1">Track your cash flow here.</p>
         </div>
         <div className="flex gap-3">
-          {currentEntity?.alias === AARoles.UNICEFNepalCO
+          {(currentEntity?.alias === AARoles.UNICEFNepalCO ||
+            currentEntity?.alias === AARoles.Municipality) &&
+          currentEntity?.alias === AARoles.UNICEFNepalCO
             ? transactions?.data?.entityOutcomes[0]?.balance > 0
             : transactions?.data?.entityOutcomes[1]?.balance > 0 && (
                 <Button

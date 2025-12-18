@@ -64,6 +64,7 @@ export const PROJECT_SETTINGS_KEYS = {
 
 export const MS_TRIGGERS_KEYS = {
   DATASOURCETYPES: 'DATASOURCETYPES',
+  SERIES: 'SERIES',
 };
 
 export const TREASURY_SOURCES = [

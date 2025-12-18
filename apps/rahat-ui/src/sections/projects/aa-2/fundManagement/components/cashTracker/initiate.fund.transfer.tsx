@@ -270,41 +270,43 @@ export default function InitiateFundTransfer({}: {}) {
                 <SelectItem value="USD">USD</SelectItem>
               </SelectContent>
             </Select>
-            <Input
-              type="number"
-              placeholder="Enter amount"
-              value={formData.amount}
-              onChange={(e) => {
-                const value = Number(e.target.value);
+            <div className="flex flex-col gap-1">
+              <Input
+                type="number"
+                placeholder="Enter amount"
+                value={formData.amount}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
 
-                if (e.target.value === '') {
-                  setFormData({ ...formData, amount: '' });
-                  setError('');
-                  return;
-                }
+                  if (e.target.value === '') {
+                    setFormData({ ...formData, amount: '' });
+                    setError('');
+                    return;
+                  }
 
-                if (value < 0) {
-                  setError('Amount cannot be negative');
-                  return;
-                }
+                  if (value < 0) {
+                    setError('Amount cannot be negative');
+                    return;
+                  }
 
-                if (value > remainingBalance) {
-                  setError('Amount exceeds remaining balance');
-                  return;
-                }
-                if (currentEntity.alias === AARoles.Municipality) {
-                  if (value + pendingTransfers > remainingBalance) {
+                  if (value > remainingBalance) {
                     setError('Amount exceeds remaining balance');
                     return;
                   }
-                }
+                  if (currentEntity.alias === AARoles.Municipality) {
+                    if (value + pendingTransfers > remainingBalance) {
+                      setError('Amount exceeds remaining balance');
+                      return;
+                    }
+                  }
 
-                setError('');
-                setFormData({ ...formData, amount: value.toString() });
-              }}
-              className="flex-1"
-              error={error}
-            />
+                  setError('');
+                  setFormData({ ...formData, amount: value.toString() });
+                }}
+                className="flex-1"
+              />
+              {error && <p className="text-red-700 text-sm">{error}</p>}
+            </div>
           </div>
         </div>
 

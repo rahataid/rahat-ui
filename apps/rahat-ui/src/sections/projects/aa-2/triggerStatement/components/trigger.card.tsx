@@ -8,6 +8,8 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { SEP, toLabel, TriggerStatement } from '../utils';
+import { SOURCE_CONFIG } from '../trigger.statement.schema';
 type IProps = {
   projectId: string;
   triggerId: string;
@@ -22,6 +24,18 @@ type IProps = {
   triggerType?: string;
   version?: number;
   id?: number;
+  triggerStatement: TriggerStatement;
+};
+
+const renderPhaseBadgeColor = (phase: string) => {
+  switch (phase) {
+    case 'READINESS':
+      return 'bg-yellow-50 text-yellow-500';
+    case 'ACTIVATION':
+      return 'bg-red-50 text-red-500';
+    default:
+      return 'bg-green-50 text-green-500';
+  }
 };
 
 export default function TriggerCard({
@@ -38,18 +52,10 @@ export default function TriggerCard({
   triggerType,
   version,
   id,
+  triggerStatement: tgSt,
 }: IProps) {
   const router = useRouter();
-  const renderPhaseBadgeColor = (phase: string) => {
-    switch (phase) {
-      case 'READINESS':
-        return 'bg-yellow-50 text-yellow-500';
-      case 'ACTIVATION':
-        return 'bg-red-50 text-red-500';
-      default:
-        return 'bg-green-50 text-green-500';
-    }
-  };
+
   const handleRoute = () => {
     if (version) {
       router.push(
@@ -59,6 +65,12 @@ export default function TriggerCard({
       router.push(`/projects/aa/${projectId}/trigger-statements/${triggerId}`);
     }
   };
+
+  const sourceSubTypeLabel =
+    SOURCE_CONFIG[tgSt?.source as keyof typeof SOURCE_CONFIG]?.sourceSubType;
+  const unit = sourceSubTypeLabel?.match(/\((.*?)\)/)?.[1] || '';
+  const formattedSourceSubType = toLabel(tgSt?.sourceSubType);
+
   return (
     <div
       className="p-4 rounded border shadow cursor-pointer hover:shadow-md"
@@ -98,10 +110,27 @@ export default function TriggerCard({
         </Tooltip>
       </TooltipProvider>
       <p className="text-muted-foreground text-sm/4 mb-1">
-        {`${dataSource} ${dataSource && '.'} ${capitalizeFirstLetter(
-          riverBasin,
-        )}`}
+        {capitalizeFirstLetter(riverBasin)}
+
+        {tgSt?.stationName && (
+          <>
+            {SEP}
+            {tgSt.stationName}
+          </>
+        )}
+
+        {dataSource && (
+          <>
+            {SEP}
+            {dataSource}{' '}
+            {dataSource !== 'GLOFAS'
+              ? sourceSubTypeLabel?.split(' ').slice(0, -1).join(' ')
+              : sourceSubTypeLabel}{' '}
+            ({formattedSourceSubType} {tgSt?.expression})
+          </>
+        )}
       </p>
+
       {createdAt && (
         <p className="text-muted-foreground text-sm/4 mb-1">
           Created at : {dateFormat(createdAt)}

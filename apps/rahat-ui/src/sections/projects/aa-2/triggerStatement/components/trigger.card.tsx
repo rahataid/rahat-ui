@@ -24,6 +24,17 @@ type IProps = {
   id?: number;
 };
 
+const renderPhaseBadgeColor = (phase: string) => {
+  switch (phase) {
+    case 'READINESS':
+      return 'bg-yellow-50 text-yellow-500';
+    case 'ACTIVATION':
+      return 'bg-red-50 text-red-500';
+    default:
+      return 'bg-green-50 text-green-500';
+  }
+};
+
 export default function TriggerCard({
   projectId,
   triggerId,
@@ -40,16 +51,7 @@ export default function TriggerCard({
   id,
 }: IProps) {
   const router = useRouter();
-  const renderPhaseBadgeColor = (phase: string) => {
-    switch (phase) {
-      case 'READINESS':
-        return 'bg-yellow-50 text-yellow-500';
-      case 'ACTIVATION':
-        return 'bg-red-50 text-red-500';
-      default:
-        return 'bg-green-50 text-green-500';
-    }
-  };
+
   const handleRoute = () => {
     if (version) {
       router.push(

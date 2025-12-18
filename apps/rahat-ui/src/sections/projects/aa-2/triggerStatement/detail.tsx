@@ -34,13 +34,13 @@ export default function TriggerStatementDetail() {
   const searchparams = useSearchParams();
   const type = searchparams?.get('type');
   const version = searchparams.get('version') === 'true' ? true : false;
-  const triggerRepeatKey = version
+  const triggerIdKey = version
     ? triggerID
     : window.location.href.split('/').slice(-1)[0];
 
   const { data: trigger, isLoading } = useSingleTriggerStatement(
     id,
-    triggerRepeatKey,
+    triggerIdKey,
     version,
   );
 
@@ -54,7 +54,7 @@ export default function TriggerStatementDetail() {
   const handleDelete = async () => {
     await removeTrigger.mutateAsync({
       projectUUID: id,
-      triggerStatementPayload: { repeatKey: triggerRepeatKey as string },
+      triggerStatementPayload: { uuid: triggerIdKey as string },
     });
     router.push(
       `/projects/aa/${id}/trigger-statements/phase/${trigger?.phaseId}`,
@@ -102,7 +102,7 @@ export default function TriggerStatementDetail() {
               label="Edit"
               onFallback={() =>
                 router.push(
-                  `/projects/aa/${id}/trigger-statements/${triggerRepeatKey}/edit`,
+                  `/projects/aa/${id}/trigger-statements/${triggerIdKey}/edit`,
                 )
               }
               disabled={trigger?.phase?.isActive || trigger?.isTriggered}
@@ -114,7 +114,7 @@ export default function TriggerStatementDetail() {
               !trigger?.isTriggered && (
                 <ActivateTriggerDialog
                   projectId={id}
-                  repeatKey={triggerRepeatKey as string}
+                  triggerId={triggerIdKey as string}
                   version={version}
                   notes={trigger?.notes}
                 />

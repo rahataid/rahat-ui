@@ -22,7 +22,7 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
               <TriggerCard
                 key={projectId}
                 projectId={projectId}
-                triggerId={t?.repeatKey}
+                triggerId={t?.uuid}
                 phase={t?.phase?.name || 'N/A'}
                 type={t?.source === 'MANUAL' ? 'Manual' : 'Automated'}
                 isTriggered={t?.isTriggered}
@@ -31,6 +31,7 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
                 riverBasin={t?.phase?.source?.riverBasin || 'N/A'}
                 createdAt={t?.createdAt}
                 triggeredAt={t?.triggeredAt}
+                triggerStatement={t?.triggerStatement}
               />
             ))
           ) : (

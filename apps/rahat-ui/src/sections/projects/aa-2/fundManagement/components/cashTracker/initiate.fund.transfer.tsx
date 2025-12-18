@@ -1,6 +1,7 @@
 import {
   PROJECT_SETTINGS_KEYS,
   useGetBalance,
+  useGetTransactions,
   useInitateFundTransfer,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
@@ -21,6 +22,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useUserCurrentUser } from '@rumsan/react-query';
 import { Entities } from './cash.tracker';
+import { AARoles } from '@rahat-ui/auth';
 
 export default function InitiateFundTransfer({}: {}) {
   const [formData, setFormData] = useState({
@@ -30,6 +32,7 @@ export default function InitiateFundTransfer({}: {}) {
     currency: 'NPR',
     comments: '',
   });
+  const [error, setError] = useState('');
 
   const id = useParams().id as UUID;
   const router = useRouter();
@@ -58,7 +61,30 @@ export default function InitiateFundTransfer({}: {}) {
     id,
     currentEntity?.smartaccount || '',
   );
+  const { data: transactions } = useGetTransactions(id);
 
+  //get current entity pending transfer
+  const pendingTransfers = useMemo(() => {
+    if (
+      !transactions?.data?.entityOutcomes ||
+      !currentEntity?.alias ||
+      currentEntity.alias !== AARoles.Municipality
+    ) {
+      return 0;
+    }
+
+    const entity = transactions.data.entityOutcomes.find(
+      (entity: any) => entity.alias === currentEntity.alias,
+    );
+    // Calculate total pending amount
+    const totalPendingAmount = entity.pending.reduce(
+      (sum: number, item: any) => sum + Number(item.amount || 0),
+      0,
+    );
+    return totalPendingAmount;
+  }, [transactions?.data?.entityOutcomes]);
+
+  const remainingBalance = Number(balance?.data?.formatted || 0);
   // Check if a recipient should be disabled based on sender restrictions
   const isRecipientDisabled = (recipient: Entities): boolean => {
     // Don't allow sending to self
@@ -158,14 +184,13 @@ export default function InitiateFundTransfer({}: {}) {
         <div className="bg-gray-50 p-4 rounded-md">
           <p className="text-sm text-gray-500">Project Budget</p>
           <p className="text-xl text-blue-500 font-bold">
-            {Number(balance?.data?.formatted) + Number(balance?.data?.sent) ||
-              0}
+            {remainingBalance + Number(balance?.data?.sent) || 0}
           </p>
         </div>
         <div className="bg-gray-50 p-4 rounded-md">
           <p className="text-sm text-gray-500">Remaining Balance</p>
           <p className="text-xl text-blue-500 font-bold">
-            {balance?.data?.formatted || 0}
+            {remainingBalance || 0}
           </p>
         </div>
       </div>
@@ -249,10 +274,36 @@ export default function InitiateFundTransfer({}: {}) {
               type="number"
               placeholder="Enter amount"
               value={formData.amount}
-              onChange={(e) =>
-                setFormData({ ...formData, amount: e.target.value })
-              }
+              onChange={(e) => {
+                const value = Number(e.target.value);
+
+                if (e.target.value === '') {
+                  setFormData({ ...formData, amount: '' });
+                  setError('');
+                  return;
+                }
+
+                if (value < 0) {
+                  setError('Amount cannot be negative');
+                  return;
+                }
+
+                if (value > remainingBalance) {
+                  setError('Amount exceeds remaining balance');
+                  return;
+                }
+                if (currentEntity.alias === AARoles.Municipality) {
+                  if (value + pendingTransfers > remainingBalance) {
+                    setError('Amount exceeds remaining balance');
+                    return;
+                  }
+                }
+
+                setError('');
+                setFormData({ ...formData, amount: value.toString() });
+              }}
               className="flex-1"
+              error={error}
             />
           </div>
         </div>

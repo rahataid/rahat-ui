@@ -204,7 +204,6 @@ export function CashTracker() {
   }, [transactions, beneficiaryBalance]);
   balances.find((b) => b.alias === currentEntity?.alias)?.balance;
   console.log({ balances });
-
   return (
     <div>
       {/* Header Section */}
@@ -214,17 +213,21 @@ export function CashTracker() {
           <p className="text-gray-500 mt-1">Track your cash flow here.</p>
         </div>
         <div className="flex gap-3">
-          <Button
-            onClick={() =>
-              router.push(
-                `/projects/aa/${uuid}/fund-management/cash-tracker/initiate`,
-              )
-            }
-            className="text-blue-500 border-blue-500 hover:bg-blue-50"
-            variant="outline"
-          >
-            Initiate Fund Transfer
-          </Button>
+          {currentEntity?.alias === AARoles.UNICEFNepalCO
+            ? transactions?.data?.entityOutcomes[0]?.balance > 0
+            : transactions?.data?.entityOutcomes[1]?.balance > 0 && (
+                <Button
+                  onClick={() =>
+                    router.push(
+                      `/projects/aa/${uuid}/fund-management/cash-tracker/initiate`,
+                    )
+                  }
+                  className="text-blue-500 border-blue-500 hover:bg-blue-50"
+                  variant="outline"
+                >
+                  Initiate Fund Transfer
+                </Button>
+              )}
           {currentUser?.data?.roles?.includes(AARoles.UNICEFNepalCO) && (
             <Button
               onClick={() =>

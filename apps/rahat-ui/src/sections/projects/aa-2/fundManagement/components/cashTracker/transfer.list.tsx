@@ -3,7 +3,13 @@ import { useParams } from 'next/navigation';
 import { Entities, FundTransfer } from './cash.tracker';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { AlertCircle, ArrowRight, Check, Clock } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowRight,
+  Check,
+  Clock,
+  OctagonAlert,
+} from 'lucide-react';
 import { useState } from 'react';
 import {
   Dialog,
@@ -82,8 +88,11 @@ function TransferList({
     <>
       <div className="divide-y max-h-96 overflow-y-auto">
         {transfers?.length === 0 ? (
-          <div className="p-6 text-center">
-            <p className="text-gray-500">No transfers initiated yet</p>
+          <div className="h-96 flex items-center justify-center p-6 text-center">
+            <div className="flex flex-col items-center gap-2">
+              <OctagonAlert className="h-10 w-10 text-gray-400" />
+              <p className="text-sm text-gray-500">No transactions</p>
+            </div>
           </div>
         ) : (
           transfers?.map((transfer) => {

@@ -5,7 +5,7 @@ import Stock from 'apps/rahat-ui/src/sections/projects/aa-2/fundManagement/compo
 
 const StockPage = () => {
   return (
-    <RoleAuth roles={[AARoles.ADMIN, AARoles.UNICEFNepalCO]}>
+    <RoleAuth roles={[AARoles.UNICEFNepalCO]}>
       <Stock />
     </RoleAuth>
   );

@@ -23,6 +23,13 @@ import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useUserCurrentUser } from '@rumsan/react-query';
 import { Entities } from './cash.tracker';
 import { AARoles } from '@rahat-ui/auth';
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@radix-ui/react-tooltip';
+import { Info } from 'lucide-react';
+import { TooltipContent } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export default function InitiateFundTransfer({}: {}) {
   const [formData, setFormData] = useState({
@@ -50,6 +57,7 @@ export default function InitiateFundTransfer({}: {}) {
       currentUser?.data?.roles?.includes(e.alias.replace(/\s+/g, '')),
     );
   }, [currentUser, stakeholders]);
+  const currentEntityAlias = currentEntity?.alias?.replace(/\s+/g, '');
 
   useEffect(() => {
     if (currentEntity) {
@@ -67,22 +75,20 @@ export default function InitiateFundTransfer({}: {}) {
   const pendingTransfers = useMemo(() => {
     if (
       !transactions?.data?.entityOutcomes ||
-      !currentEntity?.alias ||
-      currentEntity.alias !== AARoles.Municipality
+      !currentEntityAlias ||
+      currentEntityAlias !== AARoles.UNICEFNepalCO
     ) {
       return 0;
     }
 
-    const entity = transactions.data.entityOutcomes.find(
-      (entity: any) => entity.alias === currentEntity.alias,
-    );
+    const entity = transactions.data.entityOutcomes[1];
     // Calculate total pending amount
     const totalPendingAmount = entity.pending.reduce(
       (sum: number, item: any) => sum + Number(item.amount || 0),
       0,
     );
     return totalPendingAmount;
-  }, [transactions?.data?.entityOutcomes]);
+  }, [transactions]);
 
   const remainingBalance = Number(balance?.data?.formatted || 0);
   // Check if a recipient should be disabled based on sender restrictions
@@ -162,6 +168,9 @@ export default function InitiateFundTransfer({}: {}) {
     });
     router.push(`/projects/aa/${id}/fund-management?tab=cashTracker`);
   };
+  const toAlias =
+    stakeholders?.find((s: Entities) => s.smartaccount === formData.to)
+      ?.alias || 'Municipility';
 
   return (
     <div className="p-6 space-y-6">
@@ -180,7 +189,7 @@ export default function InitiateFundTransfer({}: {}) {
       </div>
 
       {/* Budget & Balance */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <div className="bg-gray-50 p-4 rounded-md">
           <p className="text-sm text-gray-500">Project Budget</p>
           <p className="text-xl text-blue-500 font-bold">
@@ -191,6 +200,27 @@ export default function InitiateFundTransfer({}: {}) {
           <p className="text-sm text-gray-500">Remaining Balance</p>
           <p className="text-xl text-blue-500 font-bold">
             {remainingBalance || 0}
+          </p>
+        </div>
+        <div className="bg-gray-50 p-4 rounded-md">
+          <div className="flex">
+            <p className="text-sm text-gray-500">Pending Balance</p>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info
+                    size={16}
+                    className="text-muted-foreground cursor-help hover:text-primary transition-colors"
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{`Pending transter to ${toAlias}`}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <p className="text-xl text-blue-500 font-bold">
+            {pendingTransfers || 0}
           </p>
         </div>
       </div>
@@ -289,15 +319,13 @@ export default function InitiateFundTransfer({}: {}) {
                     return;
                   }
 
-                  if (value > remainingBalance) {
+                  const exceedsBalance =
+                    value > remainingBalance ||
+                    (currentEntityAlias === AARoles.UNICEFNepalCO &&
+                      value + pendingTransfers > remainingBalance);
+                  if (exceedsBalance) {
                     setError('Amount exceeds remaining balance');
                     return;
-                  }
-                  if (currentEntity.alias === AARoles.Municipality) {
-                    if (value + pendingTransfers > remainingBalance) {
-                      setError('Amount exceeds remaining balance');
-                      return;
-                    }
                   }
 
                   setError('');

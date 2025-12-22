@@ -29,7 +29,7 @@ export const useProjectBalance = (projectUUID: string) => {
 
   React.useEffect(() => {
     if (tokenBalanceQuery?.data) {
-      setProjectBalance(tokenBalanceQuery?.data);
+      setProjectBalance(tokenBalanceQuery?.data / 10);
     }
   }, [tokenBalanceQuery?.data]);
 

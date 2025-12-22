@@ -12,15 +12,19 @@ import { useRouter } from 'next/navigation';
 import { truncatedText } from 'apps/community-tool-ui/src/utils';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import dynamic from 'next/dynamic';
+import { toast } from 'react-toastify';
 const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
 
 export default function Confirmation() {
   const errorModule = useBoolean();
   const [errorData, setErrorData] = React.useState(null);
   const router = useRouter();
-  const { assignedFundData } = useFundAssignmentStore((state) => ({
-    assignedFundData: state.assignedFundData,
-  }));
+  const { assignedFundData, projectBalance } = useFundAssignmentStore(
+    (state) => ({
+      assignedFundData: state.assignedFundData,
+      projectBalance: state.projectBalance,
+    }),
+  );
 
   const { projectUUID, reserveTokenPayload } = assignedFundData;
 
@@ -56,6 +60,10 @@ export default function Confirmation() {
 
   const handleSubmit = async () => {
     reserveTokenPayload.totalTokensReserved = cardData[4].value;
+    if (projectBalance! < reserveTokenPayload.totalTokensReserved) {
+      toast.error('Insufficient project balance to assign funds');
+      return;
+    }
     try {
       const data = await reserveTokenForGroups.mutateAsync({
         projectUUID,

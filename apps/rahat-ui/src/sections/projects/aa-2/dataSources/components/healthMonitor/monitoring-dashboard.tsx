@@ -45,7 +45,7 @@ export default function MonitoringDashboard() {
 
     return sources.filter((item: any) =>
       newTabsList.some((key: string) =>
-        item.source_id.toLowerCase().startsWith(key.toLowerCase()),
+        item.source_id?.toLowerCase().startsWith(key.toLowerCase()),
       ),
     );
   }, [sources, newTabsList]);

@@ -2,7 +2,6 @@
 import { SourceHealthData } from '@rahat-ui/query';
 import { cn } from '@rahat-ui/shadcn/src';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   HoverCard,
@@ -11,6 +10,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/hover-card';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { formatDurationFromMinutes } from 'apps/rahat-ui/src/utils/formatDurationFromMinutes';
 import {
   Clock,
   Zap,
@@ -20,7 +20,9 @@ import {
   X,
   CopyCheck,
   Copy,
+  Hourglass,
 } from 'lucide-react';
+import { getDynamicColors, getSeverityFromData } from './utils/getDynamicColor';
 
 interface ApiStatusCardProps {
   data: SourceHealthData;
@@ -28,52 +30,7 @@ interface ApiStatusCardProps {
 }
 
 export function StatusCard({ data, className }: ApiStatusCardProps) {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'HEALTHY':
-        return 'text-green-500 bg-green-50 border-green-500';
-      case 'UNHEALTHY':
-        return 'text-red-500 bg-red-50 border-red-500';
-      case 'DEGRADED':
-        return 'text-yellow-500 bg-yellow-50 border-yellow-500';
-      default:
-        return 'text-muted-foreground bg-muted/10 border-border';
-    }
-  };
-
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case 'CRITICAL':
-        return 'text-red-500 bg-red-50 border-red-500';
-      case 'WARNING':
-        return 'text-yellow-500 bg-yellow-50 border-yellow-500';
-      case 'NORMAL':
-        return 'text-green-500 bg-green-50 border-green-500';
-      default:
-        return 'text-muted-foreground bg-muted/10 border-border';
-    }
-  };
-
-  const getValidityColor = (validity: string) => {
-    switch (validity) {
-      case 'VALID':
-        return 'text-green-500 bg-green-50 border-green-500';
-      case 'STALE':
-        return 'text-yellow-500 bg-yellow-50 border-yellow-500';
-      case 'EXPIRED':
-        return 'text-red-500 bg-red-50 border-red-500';
-      default:
-        return 'text-muted-foreground bg-muted/10 border-border';
-    }
-  };
-
-  const getSeverityFromData = (status: string, errors: any) => {
-    if (status === 'DOWN') return 'CRITICAL';
-    if (status === 'DEGRADED' || errors?.length > 0) return 'WARNING';
-    return 'NORMAL';
-  };
-
-  const severity = getSeverityFromData(data.status, data.errors);
+  const severity = getSeverityFromData(data.currentStatus, data.errors);
   const { clickToCopy, copyAction } = useCopy();
 
   return (
@@ -94,7 +51,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               <HoverCard>
                 <HoverCardTrigger asChild>
                   <p className="text-sm text-primary  transition-colors truncate mt-1 w-40 hover:cursor-pointer">
-                    {data.source_url}
+                    {data.sourceUrl}
                   </p>
                 </HoverCardTrigger>
                 <HoverCardContent
@@ -102,15 +59,15 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
                   align="start"
                 >
                   <div className="flex justify-between gap-4 rounded-sm">
-                    <p className="text-sm">{data.source_url}</p>
+                    <p className="text-sm">{data.sourceUrl}</p>
                   </div>
                 </HoverCardContent>
               </HoverCard>
               <button
-                onClick={() => clickToCopy(data.source_url, data.source_url)}
+                onClick={() => clickToCopy(data.sourceUrl, data.sourceUrl)}
                 className="ml-2 text-sm text-gray-500"
               >
-                {copyAction === data.source_url ? (
+                {copyAction === data.sourceUrl ? (
                   <CopyCheck className="w-4 h-4" />
                 ) : (
                   <Copy className="w-4 h-4" />
@@ -121,20 +78,25 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
           <div className="flex items-center gap-2 flex-shrink-0">
             <Badge
               variant="outline"
-              className={cn('text-xs font-medium', getSeverityColor(severity))}
+              className={cn('text-xs font-medium', getDynamicColors(severity))}
             >
               {severity}
             </Badge>
             <Badge
               variant="outline"
-              className={cn('text-xs font-medium', getStatusColor(data.status))}
+              className={cn(
+                'text-xs font-medium',
+                getDynamicColors(data.currentStatus),
+              )}
             >
-              {data.status === 'HEALTHY' ? (
+              {data.currentStatus === 'HEALTHY' ? (
                 <CheckCircle2 className="w-3 h-3 mr-1" />
               ) : (
                 <X className="w-3 h-3 mr-1" />
               )}
-              {data.status === 'HEALTHY' ? 'HEALTHY' : data.status}
+              {data.currentStatus === 'HEALTHY'
+                ? 'HEALTHY'
+                : data.currentStatus}
             </Badge>
           </div>
         </div>
@@ -148,6 +110,16 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
             </div>
             <span className="text-sm text-card-foreground font-mono">
               {dateFormat(data.last_checked) ?? '-'}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-metric-text">
+              <Hourglass className="w-4 h-4" />
+              <span>Fetch Interval</span>
+            </div>
+            <span className="text-sm text-card-foreground font-mono">
+              {formatDurationFromMinutes(data?.fetch_frequency_minutes)}
             </span>
           </div>
 
@@ -171,7 +143,7 @@ export function StatusCard({ data, className }: ApiStatusCardProps) {
               variant="outline"
               className={cn(
                 'text-xs font-medium',
-                getValidityColor(data.validity),
+                getDynamicColors(data.validity),
               )}
             >
               {data.validity ?? '-'}

@@ -23,7 +23,7 @@ const Main = () => {
   const { id } = useParams();
   const projectId = id as UUID;
 
-  useAAStations(projectId);
+  // useAAStations(projectId);
   useStellarSettings(projectId);
   useProjectInfo(projectId);
 

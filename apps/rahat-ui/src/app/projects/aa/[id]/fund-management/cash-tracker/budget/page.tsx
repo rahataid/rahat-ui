@@ -5,7 +5,7 @@ import Budget from 'apps/rahat-ui/src/sections/projects/aa-2/fundManagement/comp
 
 const BudgetPage = () => {
   return (
-    <RoleAuth roles={[AARoles.ADMIN, AARoles.UNICEFNepalCO]}>
+    <RoleAuth roles={[AARoles.UNICEFNepalCO]}>
       <Budget />
     </RoleAuth>
   );

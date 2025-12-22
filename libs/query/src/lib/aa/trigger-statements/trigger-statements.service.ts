@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { useSwal } from '../../../swal';
 import { useProjectSettingsStore } from '../../projects';
-import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
+import { MS_TRIGGERS_KEYS, PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 import { useSettingsStore } from '../../settings';
 
 export const useCreateTriggerStatement = () => {
@@ -114,7 +114,7 @@ export const useDeleteTriggerStatement = () => {
     }: {
       projectUUID: UUID;
       triggerStatementPayload: {
-        repeatKey: string;
+        uuid: string;
       };
     }) => {
       return q.mutateAsync({
@@ -321,8 +321,8 @@ export const useAATriggerStatements = (uuid: UUID, payload: any) => {
 
 export const useSingleTriggerStatement = (
   uuid: UUID,
-  repeatKey: string | string[] | number,
-  version: boolean,
+  triggerId: string | string[] | number,
+  version?: boolean,
 ) => {
   const q = useProjectAction();
   const alert = useSwal();
@@ -336,10 +336,10 @@ export const useSingleTriggerStatement = (
   const action = version ? 'ms.revertPhase.getOne' : 'ms.triggers.getOne';
   const payload = version
     ? {
-        id: repeatKey,
+        id: triggerId,
       }
     : {
-        repeatKey: repeatKey,
+        uuid: triggerId,
       };
   const query = useQuery({
     queryKey: ['triggerStatement', uuid, payload],
@@ -391,7 +391,7 @@ export const useActivateTrigger = () => {
     }: {
       projectUUID: UUID;
       activatePayload: {
-        repeatKey: string | string[];
+        uuid: string;
         notes?: string;
         triggerDocuments?: Array<{ mediaURL: string; fileName: string }>;
       };
@@ -404,9 +404,11 @@ export const useActivateTrigger = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['triggerstatement'] });
+      qc.invalidateQueries({
+        queryKey: ['triggerStatement', variables.projectUUID],
+      });
       toast.fire({
         title: 'Trigger activated.',
         text: 'Successfully activated trigger. You can view details of this from trigger details page.',
@@ -495,4 +497,60 @@ export const useExternalApiHealthMonitor = (uuid: UUID) => {
   });
 
   return query;
+};
+
+export const useGetDataSourceTypes = (uuid: UUID) => {
+  const q = useProjectAction([MS_TRIGGERS_KEYS.DATASOURCETYPES]);
+  const query = useQuery({
+    queryKey: [MS_TRIGGERS_KEYS.DATASOURCETYPES, uuid],
+    staleTime: Infinity,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.settings.get',
+          payload: {
+            name: MS_TRIGGERS_KEYS.DATASOURCETYPES,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};
+
+export const useGetSeriesByDataSource = (
+  uuid: UUID,
+  dataSource: string | null,
+  type: string | null,
+) => {
+  const q = useProjectAction([MS_TRIGGERS_KEYS.SERIES]);
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
+
+  return useQuery({
+    queryKey: [MS_TRIGGERS_KEYS.SERIES, uuid, dataSource, type],
+    staleTime: 0,
+    enabled: !!dataSource,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.sourcesData.getSeriesByDataSource',
+          payload: {
+            dataSource,
+            type,
+            riverBasin:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'river_basin'
+              ],
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
 };

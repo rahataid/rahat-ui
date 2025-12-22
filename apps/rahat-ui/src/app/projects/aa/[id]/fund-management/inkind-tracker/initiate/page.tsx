@@ -5,9 +5,7 @@ import InitiateInKindTransfer from 'apps/rahat-ui/src/sections/projects/aa-2/fun
 
 const InitiateInKindTransferPage = () => {
   return (
-    <RoleAuth
-      roles={[AARoles.ADMIN, AARoles.UNICEFNepalCO, AARoles.Municipality]}
-    >
+    <RoleAuth roles={[AARoles.UNICEFNepalCO, AARoles.Municipality]}>
       <InitiateInKindTransfer />
     </RoleAuth>
   );

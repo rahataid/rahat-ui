@@ -104,9 +104,11 @@ function StakeholderNode({
         </div>
 
         {/* Timestamp */}
-        <div className="mt-2 text-xs text-gray-500">
-          {formatDate(new Date(date))}
-        </div>
+        {(sent !== 0 || balance !== 0 || received !== 0) && (
+          <div className="mt-2 text-xs text-gray-500">
+            {formatDate(new Date(date))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -78,19 +78,19 @@ export const defaultNavConfig: NavConfigDB = {
       title: 'Payout',
       path: 'payout',
       icon: 'HandCoinsIcon',
-      roles: ['ADMIN', 'MANAGER'],
+      roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
     },
     {
       title: 'Communication Logs',
       path: 'communication-logs',
       icon: 'SmartphoneNfc',
-      roles: ['ADMIN', 'MANAGER'],
+      roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
     },
     {
       title: 'Grievances',
       path: 'grievances',
       icon: 'Coins',
-      roles: ['ADMIN', 'MANAGER'],
+      roles: ['ADMIN', 'MANAGER', 'UNICEFNepalCO', 'Municipality'],
     },
   ],
 };

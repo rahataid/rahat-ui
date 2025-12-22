@@ -70,6 +70,9 @@ export function CashTracker() {
       currentUser?.data?.roles?.includes(e.alias.replace(/\s+/g, '')),
     );
   }, [currentUser, entities]);
+  const contractSettings = useProjectSettingsStore(
+    (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
 
   const getCash = useGetCash(uuid);
   const confirmReceipt = async (payload: ConfirmReceipt) => {
@@ -122,14 +125,20 @@ export function CashTracker() {
                 e.smartaccount.toLocaleLowerCase() ===
                 flow.from.toLocaleLowerCase(),
             )?.alias,
-            to: entity.alias,
+            to:
+              flow.from?.toLowerCase() ===
+              contractSettings?.aaproject?.address?.toLowerCase()
+                ? 'Beneficiary'
+                : entity.alias,
             amount: flow.amount,
             timestamp: flow?.timestamp,
             status: flow.type === 'sent' ? 'sent' : ('received' as const),
             transactionHash: flow.transactionHash, // Include transaction hash if needed
             comments:
-              // Budget created when funds originate and end at the same entity
-              !resolveAlias(flow.from)
+              flow.from?.toLowerCase() ===
+              contractSettings?.aaproject?.address?.toLowerCase()
+                ? 'Claimed by Beneficiaries'
+                : !resolveAlias(flow.from)
                 ? 'Budget Created'
                 : flow.type === 'received'
                 ? `Claimed by ${entity.alias}`
@@ -185,7 +194,7 @@ export function CashTracker() {
               balance: Number(Number(entity.balance).toFixed(2)) || 0, // Default to 0 if balance is not available
               received:
                 entity.alias === 'Beneficiary'
-                  ? beneficiaryBalance?.data?.totalBalance || 0
+                  ? beneficiaryBalance?.data?.totalBalance / 10 || 0
                   : Number(Number(entity.received).toFixed(2)) || 0,
               sent: Number(Number(entity.sent).toFixed(2)) || 0,
               date:
@@ -202,9 +211,7 @@ export function CashTracker() {
     setBalance([]);
     fetchBalances();
   }, [transactions, beneficiaryBalance]);
-  balances.find((b) => b.alias === currentEntity?.alias)?.balance;
   console.log({ balances });
-
   return (
     <div>
       {/* Header Section */}
@@ -214,17 +221,23 @@ export function CashTracker() {
           <p className="text-gray-500 mt-1">Track your cash flow here.</p>
         </div>
         <div className="flex gap-3">
-          <Button
-            onClick={() =>
-              router.push(
-                `/projects/aa/${uuid}/fund-management/cash-tracker/initiate`,
-              )
-            }
-            className="text-blue-500 border-blue-500 hover:bg-blue-50"
-            variant="outline"
-          >
-            Initiate Fund Transfer
-          </Button>
+          {(currentEntity?.alias === AARoles.UNICEFNepalCO ||
+            currentEntity?.alias === AARoles.Municipality) &&
+          currentEntity?.alias === AARoles.UNICEFNepalCO
+            ? transactions?.data?.entityOutcomes[0]?.balance > 0
+            : transactions?.data?.entityOutcomes[1]?.balance > 0 && (
+                <Button
+                  onClick={() =>
+                    router.push(
+                      `/projects/aa/${uuid}/fund-management/cash-tracker/initiate`,
+                    )
+                  }
+                  className="text-blue-500 border-blue-500 hover:bg-blue-50"
+                  variant="outline"
+                >
+                  Initiate Fund Transfer
+                </Button>
+              )}
           {currentUser?.data?.roles?.includes(AARoles.UNICEFNepalCO) && (
             <Button
               onClick={() =>

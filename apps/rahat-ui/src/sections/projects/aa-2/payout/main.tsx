@@ -1,5 +1,4 @@
 'use client';
-import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import { DataCard, Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -13,6 +12,7 @@ import {
 import { UUID } from 'crypto';
 import { useMemo } from 'react';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import DynamicPieChart from '../../components/dynamicPieChart';
 
 export default function PayoutView() {
   const params = useParams();
@@ -55,7 +55,10 @@ export default function PayoutView() {
           description="Track all the payout reports here"
         />
         <div className="flex flex-end gap-2">
-          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
             <IconLabelBtn
               Icon={Plus}
               handleClick={() => {
@@ -86,27 +89,18 @@ export default function PayoutView() {
         <div className="flex-1 border rounded-sm p-4">
           <h1 className="text-lg font-medium mb-4">Payout Type</h1>
           <div className="w-full aspect-square">
-            <PieChart
-              chart={{
-                series: [
-                  {
-                    label: 'FSP',
-                    value: statsPayout?.payoutOverview?.payoutTypes?.FSP || 0,
-                  },
-                  {
-                    label: 'CVA',
-                    value:
-                      statsPayout?.payoutOverview?.payoutTypes?.VENDOR || 0,
-                  },
-                ],
-                colors: ['#F4A462', '#2A9D90'],
-              }}
-              custom={true}
-              projectAA={true}
-              donutSize="80%"
-              width="100%"
-              height="100%"
-              type="donut"
+            <DynamicPieChart
+              pieData={[
+                {
+                  label: 'FSP',
+                  value: statsPayout?.payoutOverview?.payoutTypes?.FSP || 0,
+                },
+                {
+                  label: 'CVA',
+                  value: statsPayout?.payoutOverview?.payoutTypes?.VENDOR || 0,
+                },
+              ]}
+              colors={['#F4A462', '#2A9D90']}
             />
           </div>
         </div>
@@ -114,28 +108,19 @@ export default function PayoutView() {
         <div className="flex-1 border rounded-sm p-4">
           <h1 className="text-lg font-medium mb-4">Payout Status</h1>
           <div className="w-full aspect-square">
-            <PieChart
-              chart={{
-                series: [
-                  {
-                    label: 'Success',
-                    value:
-                      statsPayout?.payoutOverview?.payoutStatus?.SUCCESS || 0,
-                  },
-                  {
-                    label: 'Failed',
-                    value:
-                      statsPayout?.payoutOverview?.payoutStatus?.FAILED || 0,
-                  },
-                ],
-                colors: ['#2A9D90', '#DC3545'],
-              }}
-              custom={true}
-              projectAA={true}
-              donutSize="80%"
-              width="100%"
-              height="100%"
-              type="donut"
+            <DynamicPieChart
+              pieData={[
+                {
+                  label: 'Success',
+                  value:
+                    statsPayout?.payoutOverview?.payoutStatus?.SUCCESS || 0,
+                },
+                {
+                  label: 'Failed',
+                  value: statsPayout?.payoutOverview?.payoutStatus?.FAILED || 0,
+                },
+              ]}
+              colors={['#2A9D90', '#DC3545']}
             />
           </div>
         </div>

@@ -1,7 +1,8 @@
 import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import React from 'react';
 import MapView from '../mapComponent/mapView';
-import { DataCard, Heading } from 'apps/rahat-ui/src/common';
+import { DataCard, Heading, NoResult } from 'apps/rahat-ui/src/common';
+import DynamicPieChart from '../../projects/components/dynamicPieChart';
 
 const STATS_CONSTANT = [
   'AGE_GROUPS',
@@ -74,19 +75,8 @@ const BeneficiaryDemographics = ({ benefStats }: any) => {
           {/* Gender Distribution */}
           <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
             <h1 className="text-sm font-medium">Gender Distribution</h1>
-            <div className="w-full flex-1 p-4 pt-0">
-              <PieChart
-                chart={{
-                  series: genderData,
-                  colors: genderColors,
-                }}
-                custom={true}
-                projectAA={true}
-                donutSize="80%"
-                width="100%"
-                height="100%"
-                type="donut"
-              />
+            <div className="w-full flex-1 p-4 pt-0 flex justify-center items-center">
+              <DynamicPieChart pieData={genderData} colors={genderColors} />
             </div>
           </div>
 
@@ -94,19 +84,25 @@ const BeneficiaryDemographics = ({ benefStats }: any) => {
           <div className="border rounded-sm p-2 flex flex-col h-full min-h-[300px]">
             <h1 className="text-sm font-medium">Age Group</h1>
             <div className="flex-1 p-2">
-              <BarChart
-                series={ageGroups.map((item) => item.value)}
-                categories={ageGroups.map((item) => item.label)}
-                colors={['#4A90E2']}
-                xaxisLabels
-                yaxisLabels
-                barHeight={20}
-                height="100%"
-                width="100%"
-                xaxisTitle="Age Group"
-                yaxisTitle="No. of Beneficiaries"
-                columnWidth="20%"
-              />
+              {ageGroups.length === 0 ? (
+                <div className="flex justify-center h-[300px] items-center">
+                  <NoResult size="small" />
+                </div>
+              ) : (
+                <BarChart
+                  series={ageGroups.map((item) => item.value)}
+                  categories={ageGroups.map((item) => item.label)}
+                  colors={['#4A90E2']}
+                  xaxisLabels
+                  yaxisLabels
+                  barHeight={20}
+                  height="100%"
+                  width="100%"
+                  xaxisTitle="Age Group"
+                  yaxisTitle="No. of Beneficiaries"
+                  columnWidth="20%"
+                />
+              )}
             </div>
           </div>
         </div>

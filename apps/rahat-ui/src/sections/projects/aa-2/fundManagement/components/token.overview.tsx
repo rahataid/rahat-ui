@@ -2,6 +2,7 @@
 import {
   PROJECT_SETTINGS_KEYS,
   useFetchTokenStatsStellar,
+  useFundAssignmentStore,
   useGroupsReservedFunds,
   usePagination,
   useProjectSettingsStore,
@@ -33,6 +34,9 @@ export default function TokensOverview() {
     settings: s.settings,
   }));
   const project = useProjectStore((p) => p.singleProject);
+  const projectBalance = useFundAssignmentStore(
+    (state) => state.projectBalance,
+  );
 
   const tokenStatus = () => {
     let disbursedValue = 0;
@@ -64,7 +68,15 @@ export default function TokensOverview() {
       {!isLoading ? (
         <div className="space-y-4 mb-4">
           {/* First Row - 4 Columns */}
-          <div className="grid xl:grid-cols-4 lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
+          <div className="grid xl:grid-cols-5 lg:grid-cols-5 md:grid-cols-2 grid-cols-1 gap-4">
+            <DataCard
+              className="rounded-sm h-[116px]"
+              title="Project Balance"
+              smallNumber={`Rs ${projectBalance}`}
+              infoIcon={true}
+              infoTooltip={'Project Balance'}
+              subtitle=" "
+            />
             {data?.data?.slice(0, 4).map((item, index) => {
               const isToken = item.name === 'Token';
               const isTokenPrice = item.name === 'Token Price';

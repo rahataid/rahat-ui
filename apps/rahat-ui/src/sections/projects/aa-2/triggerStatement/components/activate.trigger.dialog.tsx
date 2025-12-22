@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,30 +22,24 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { X, CloudUpload, LoaderCircle, FileCheck } from 'lucide-react';
-import {
-  useUploadFile,
-  useActivateTrigger,
-  useQueryClient,
-} from '@rahat-ui/query';
+import { useUploadFile, useActivateTrigger } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { toast } from 'react-toastify';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 
 type IProps = {
   projectId: UUID;
-  repeatKey: string;
+  triggerId: string;
   version?: boolean;
   notes?: string;
 };
 
 export default function ActivateTriggerDialog({
   projectId,
-  repeatKey,
+  triggerId,
   version,
   notes,
 }: IProps) {
-  const router = useRouter();
-  const queryClient = useQueryClient();
   const uploadFile = useUploadFile();
   const activateTrigger = useActivateTrigger();
   const [showModal, setShowModal] = React.useState<boolean>(false);
@@ -129,22 +122,8 @@ export default function ActivateTriggerDialog({
     try {
       await activateTrigger.mutateAsync({
         projectUUID: projectId,
-        activatePayload: { repeatKey: repeatKey, ...data },
+        activatePayload: { uuid: triggerId, ...data },
       });
-
-      // Build payload exactly as used in useSingleTriggerStatement hook
-      const payload = version
-        ? {
-            id: repeatKey,
-          }
-        : {
-            repeatKey: repeatKey,
-          };
-
-      queryClient.invalidateQueries({
-        queryKey: ['triggerStatement', projectId, payload],
-      });
-      // router.push(`/projects/aa/${projectID}/trigger-statements`);
     } catch (e) {
       console.error('Activate Trigger Error::', e);
     } finally {

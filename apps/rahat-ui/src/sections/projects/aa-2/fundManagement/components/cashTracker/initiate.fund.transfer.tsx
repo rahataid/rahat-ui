@@ -202,27 +202,29 @@ export default function InitiateFundTransfer({}: {}) {
             {remainingBalance || 0}
           </p>
         </div>
-        <div className="bg-gray-50 p-4 rounded-md">
-          <div className="flex">
-            <p className="text-sm text-gray-500">Pending Balance</p>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info
-                    size={16}
-                    className="text-muted-foreground cursor-help hover:text-primary transition-colors"
-                  />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{`Pending transter to ${toAlias}`}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+        {currentEntityAlias === AARoles.UNICEFNepalCO && (
+          <div className="bg-gray-50 p-4 rounded-md">
+            <div className="flex">
+              <p className="text-sm text-gray-500">Pending Balance</p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info
+                      size={16}
+                      className="text-muted-foreground cursor-help hover:text-primary transition-colors"
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{`Pending transter to ${toAlias}`}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <p className="text-xl text-blue-500 font-bold">
+              {pendingTransfers || 0}
+            </p>
           </div>
-          <p className="text-xl text-blue-500 font-bold">
-            {pendingTransfers || 0}
-          </p>
-        </div>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

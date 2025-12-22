@@ -132,9 +132,11 @@ export const useCreateBudget = (projectUUID: UUID) => {
         icon: 'success',
       });
       // Invalidate the transactions query to refresh the data
-      queryClient.invalidateQueries({
-        queryKey: ['aa.cash-tracker.getTransactions', projectUUID],
-      });
+      setTimeout(() => {
+        queryClient.invalidateQueries({
+          queryKey: ['aa.cash-tracker.getTransactions', projectUUID],
+        });
+      }, 20000);
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';
@@ -240,9 +242,11 @@ export const useGetCash = (projectUUID: UUID) => {
         icon: 'success',
       });
       // Invalidate the transactions query to refresh the data
-      queryClient.invalidateQueries({
-        queryKey: ['aa.cash-tracker.getTransactions', projectUUID],
-      });
+      setTimeout(() => {
+        queryClient.invalidateQueries({
+          queryKey: ['aa.cash-tracker.getTransactions', projectUUID],
+        });
+      }, 20000);
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';
@@ -286,9 +290,11 @@ export const useInitateInkindTransfer = (projectUUID: UUID) => {
         icon: 'success',
       });
       // Invalidate the transactions query to refresh the data
-      queryClient.invalidateQueries({
-        queryKey: ['aa.inkind-tracker.getTransactions', projectUUID],
-      });
+      setTimeout(() => {
+        queryClient.invalidateQueries({
+          queryKey: ['aa.inkind-tracker.getTransactions', projectUUID],
+        });
+      }, 20000);
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';

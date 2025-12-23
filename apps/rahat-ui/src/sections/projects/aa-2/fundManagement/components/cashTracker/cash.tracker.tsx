@@ -194,7 +194,7 @@ export function CashTracker() {
               balance: Number(Number(entity.balance).toFixed(2)) || 0, // Default to 0 if balance is not available
               received:
                 entity.alias === 'Beneficiary'
-                  ? beneficiaryBalance?.data?.totalBalance / 10 || 0
+                  ? beneficiaryBalance?.data?.totalBalance || 0
                   : Number(Number(entity.received).toFixed(2)) || 0,
               sent: Number(Number(entity.sent).toFixed(2)) || 0,
               date:

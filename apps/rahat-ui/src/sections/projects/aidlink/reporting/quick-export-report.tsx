@@ -1,7 +1,10 @@
 import {
   FilteredTransaction,
+  PROJECT_SETTINGS_KEYS,
   useGetBeneficiariesReport,
   useMutateGraphCall,
+  useProjectSettingsStore,
+  useReadRahatTokenDecimals,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
@@ -35,6 +38,14 @@ const QuickExportReport = ({
   const { mutateAsync: graphMutateAsync, isPending: isLoading } =
     useMutateGraphCall(projectUUID);
 
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+
+  const { data: tokenNumber } = useReadRahatTokenDecimals({
+    address: contractSettings?.rahattoken?.address,
+  });
+
   const handleQuickDownloadClick = async (value: string) => {
     if (value === 'beneficiaries_data') {
       const today = new Date();
@@ -63,6 +74,7 @@ const QuickExportReport = ({
           contractAddress,
           fromDate,
           toDate,
+          orderBy: 'blockTimestamp',
         },
       });
 
@@ -70,6 +82,7 @@ const QuickExportReport = ({
       if (response?.data?.transferProcesseds.length === 0) return;
       const newFormateData = transformTransactionData(
         response?.data?.transferProcesseds,
+        Number(tokenNumber),
       );
       exportToExcel(newFormateData, `transaction-history-${fromDate}`);
     }

@@ -1,9 +1,10 @@
 import { Coins } from 'lucide-react';
 import {
+  amountFormat,
   PROJECT_SETTINGS_KEYS,
   TransactionDetails,
-  useGetOfframpDetails,
   useProjectSettingsStore,
+  useReadRahatTokenBalanceOf,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
@@ -12,7 +13,7 @@ import { useQuery } from 'urql';
 import { TransactionsObject } from '../../../c2c/beneficiary/types';
 import { mergeTransactions } from '@rahat-ui/query/lib/c2c/utils';
 import TransactionTable from './transactionHistory';
-import { formatEther, formatUnits } from 'viem';
+import { formatUnits } from 'viem';
 import { useReadRahatTokenDecimals } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatToken';
 import { OfframpAccumulatorType } from './beneficiaryDetails';
 
@@ -32,21 +33,34 @@ const TransactionInfoSection = ({
   const [transactionList, setTransactionList] = useState<any>([]);
   const uuid = useParams().id as UUID;
 
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+
+  const { data: benfBalance } = useReadRahatTokenBalanceOf({
+    address: contractSettings?.rahattoken?.address,
+    args: [walletAddress as `0x${string}`],
+  });
+
+  const { data: tokenNumber } = useReadRahatTokenDecimals({
+    address: contractSettings?.rahattoken?.address,
+  });
+
   const cardData = useMemo(
     () => [
       {
         label: 'Available Balance',
-        value: totalDisbursedAmount - calculateOfframpData.total || 0,
+        value:
+          amountFormat(
+            formatUnits(benfBalance ?? BigInt(0), Number(tokenNumber)),
+          ) || 0,
       },
       { label: 'Disbursed Amount', value: totalDisbursedAmount || 0 },
       { label: 'Off-ramped Amount', value: calculateOfframpData.total || 0 },
     ],
-    [calculateOfframpData, totalDisbursedAmount],
+    [calculateOfframpData, totalDisbursedAmount, benfBalance, tokenNumber],
   );
 
-  const contractSettings = useProjectSettingsStore(
-    (state) => state.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
-  );
   const contractAddress = contractSettings?.c2cproject?.address;
 
   const [{ data, fetching, error }] = useQuery({
@@ -59,10 +73,6 @@ const TransactionInfoSection = ({
     },
     pause: !contractAddress || !walletAddress,
     requestPolicy: 'cache-and-network',
-  });
-
-  const { data: tokenNumber } = useReadRahatTokenDecimals({
-    address: contractSettings?.rahattoken?.address,
   });
 
   const newTransactionHistoryData = useMemo(() => {

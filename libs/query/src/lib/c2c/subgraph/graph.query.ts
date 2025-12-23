@@ -31,8 +31,8 @@ export const TransactionDetails = `
 `;
 
 export const FilteredTransaction = `
-  query FilteredTransaction($contractAddress: String, $fromDate: String, $toDate: String) {
-  transferProcesseds(where: {blockTimestamp_gte: $fromDate, blockTimestamp_lte: $toDate}) {
+  query FilteredTransaction($contractAddress: String, $fromDate: String, $toDate: String, $orderBy: String, $orderDirection:String="desc") {
+  transferProcesseds(where: {blockTimestamp_gte: $fromDate, blockTimestamp_lte: $toDate}, orderBy: $orderBy, orderDirection: $orderDirection) {
      blockTimestamp
       transactionHash
       _to

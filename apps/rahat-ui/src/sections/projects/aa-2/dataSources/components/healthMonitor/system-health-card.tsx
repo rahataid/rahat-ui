@@ -9,6 +9,7 @@ import {
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { CheckCircle, Info, X } from 'lucide-react';
+import { getDynamicColors } from './utils/getDynamicColor';
 
 export function SystemHealthCard({
   overall_status,
@@ -21,25 +22,19 @@ export function SystemHealthCard({
     DEGRADED: 'bg-yellow-50 text-yellow-700',
   };
 
-  const getBgColor = (status: string) => {
-    switch (status) {
-      case 'HEALTHY':
-        return 'text-green-500 bg-green-50 border-green-500';
-      case 'UNHEALTHY':
-        return 'text-red-500 bg-red-50 border-red-500';
-      case 'DEGRADED':
-        return 'text-yellow-500 bg-yellow-50 border-yellow-500';
-      default:
-        return 'text-muted-foreground bg-muted/10 border-border';
-    }
-  };
+  const calcHEALTHY = sources?.filter(
+    (s) => s.currentStatus === 'HEALTHY',
+  ).length;
+  const calcUNHEALTHY = sources?.filter(
+    (s) => s.currentStatus === 'UNHEALTHY',
+  ).length;
+  const calcDEGRADED = sources?.filter(
+    (s) => s.currentStatus === 'DEGRADED',
+  ).length;
 
-  const calcHEALTHY = sources?.filter((s) => s.status === 'HEALTHY').length;
-  const calcUNHEALTHY = sources?.filter((s) => s.status === 'UNHEALTHY').length;
-  const calcDEGRADED = sources?.filter((s) => s.status === 'DEGRADED').length;
   return (
     <Card
-      className={`border ${getBgColor(
+      className={`border ${getDynamicColors(
         overall_status,
       )} shadow-sm rounded-sm mb-1`}
     >

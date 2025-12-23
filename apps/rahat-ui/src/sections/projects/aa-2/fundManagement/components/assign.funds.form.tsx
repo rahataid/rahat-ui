@@ -36,6 +36,7 @@ import { Check, ChevronDown } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import { z } from 'zod';
 
 export default function AssignFundsForm() {
@@ -106,14 +107,21 @@ export default function AssignFundsForm() {
   //   beneficiariesGroupsMeta: state.beneficiariesGroupsMeta,
   // }));
 
-  const { setAssignedFundData } = useFundAssignmentStore((state) => ({
-    setAssignedFundData: state.setAssignedFundData,
-  }));
+  const { setAssignedFundData, projectBalance } = useFundAssignmentStore(
+    (state) => ({
+      setAssignedFundData: state.setAssignedFundData,
+      projectBalance: state.projectBalance,
+    }),
+  );
 
   const tokenPerBenef = form.watch('tokenAmountPerBenef');
   const selectedGroupId = form.watch('beneficiaryGroup');
 
   const handleAssignFunds = async (data: z.infer<typeof FormSchema>) => {
+    if (projectBalance! < Number(data.totalTokenAmount)) {
+      toast.error('Insufficient project balance to assign funds');
+      return;
+    }
     const reserveTokenPayload = {
       beneficiaryGroupId: data.beneficiaryGroup,
       numberOfTokens: Number(data.totalTokenAmount),

@@ -3,8 +3,12 @@ import {
   useFundAssignmentStore,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
-import { useReadRahatTokenBalanceOf } from '../contracts/token';
+import {
+  useReadRahatTokenBalanceOf,
+  useReadRahatTokenDecimals,
+} from '../contracts/token';
 import React from 'react';
+import { formatUnits } from 'viem';
 
 export const useProjectBalance = (projectUUID: string) => {
   const contractSettings = useProjectSettingsStore(
@@ -15,6 +19,10 @@ export const useProjectBalance = (projectUUID: string) => {
   const setProjectBalance = useFundAssignmentStore(
     (state) => state.setProjectBalance,
   );
+
+  const { data: tokenNumber } = useReadRahatTokenDecimals({
+    address: contractSettings?.rahattoken?.address,
+  });
 
   const tokenBalanceQuery = useReadRahatTokenBalanceOf({
     address: contractSettings?.rahattoken.address as `0x${string}`,
@@ -29,7 +37,11 @@ export const useProjectBalance = (projectUUID: string) => {
 
   React.useEffect(() => {
     if (tokenBalanceQuery?.data) {
-      setProjectBalance(tokenBalanceQuery?.data / 10);
+      const balance = formatUnits(
+        BigInt(tokenBalanceQuery?.data),
+        Number(tokenNumber),
+      );
+      setProjectBalance(Number(balance));
     }
   }, [tokenBalanceQuery?.data]);
 

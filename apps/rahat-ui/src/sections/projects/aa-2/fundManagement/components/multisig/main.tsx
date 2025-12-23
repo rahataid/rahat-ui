@@ -37,6 +37,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import Link from 'next/link';
+import { formatUnits } from 'viem';
 
 interface CardProps {
   title: string;
@@ -248,8 +249,11 @@ export default function MultiSigWalletView() {
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-medium">
-                          {tx?.value / 10} RHT
-                          {/* divisor is 10 because decimals is 1 */}
+                          {formatUnits(
+                            BigInt(tx?.value),
+                            tx?.tokenInfo?.decimals,
+                          )}{' '}
+                          RHT
                         </p>
                         <Badge className="font-medium">Success</Badge>
                       </div>

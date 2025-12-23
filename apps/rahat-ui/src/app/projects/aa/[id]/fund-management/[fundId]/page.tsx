@@ -5,7 +5,14 @@ import { AAFundManagementDetailView } from 'apps/rahat-ui/src/sections/projects/
 
 const Page = () => {
   return (
-    <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]}>
+    <RoleAuth
+      roles={[
+        AARoles.ADMIN,
+        AARoles.MANAGER,
+        AARoles.Municipality,
+        AARoles.UNICEFNepalCO,
+      ]}
+    >
       <AAFundManagementDetailView />
     </RoleAuth>
   );

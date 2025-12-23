@@ -52,7 +52,10 @@ export default function PhaseDetail() {
           description={`Detailed view of the ${phase?.name?.toLowerCase()} phase`}
         />
         <div className="flex space-x-2">
-          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
             <IconLabelBtn
               variant="outline"
               Icon={Settings}
@@ -65,7 +68,10 @@ export default function PhaseDetail() {
             />
           </RoleAuth>
 
-          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
             <IconLabelBtn
               variant="outline"
               className="text-primary border-primary"
@@ -75,7 +81,10 @@ export default function PhaseDetail() {
               handleClick={handleAddTriggerClick}
             />
           </RoleAuth>
-          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
             <>
               {isDisabled ? (
                 <IconLabelBtn Icon={Undo2} name="Revert" disabled />

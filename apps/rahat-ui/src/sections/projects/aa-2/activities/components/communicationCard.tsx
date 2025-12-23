@@ -127,7 +127,11 @@ export function CommunicationCard({
               <div className="flex gap-2">
                 {activityCommunication?.sessionStatus === SessionStatus.NEW && (
                   <RoleAuth
-                    roles={[AARoles.ADMIN, AARoles.MANAGER]}
+                    roles={[
+                      AARoles.ADMIN,
+                      AARoles.MANAGER,
+                      AARoles.Municipality,
+                    ]}
                     hasContent={false}
                   >
                     <Button

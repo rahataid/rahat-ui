@@ -5,7 +5,7 @@ import { VerificationPayout } from 'apps/rahat-ui/src/sections/projects/aa-2';
 
 const Page = () => {
   return (
-    <RoleAuth roles={[AARoles.ADMIN]}>
+    <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]}>
       <VerificationPayout />
     </RoleAuth>
   );

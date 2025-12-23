@@ -18,6 +18,7 @@ import { Copy, CopyCheck, Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { IProjectVendor } from './types';
 import { toast } from 'react-toastify';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 // import { DialogComponent } from '../activities/details/dialog.reuse';
 
 export const useProjectVendorTableColumns = (pagination: Pagination) => {
@@ -225,17 +226,19 @@ export const useProjectVendorRedemptionTableColumns = () => {
                   </div>
                 </div>
               ) : (
-                <DialogComponent
-                  onSubmit={() => handleApproveClick(row)}
-                  onCancel={() => null}
-                  title="Approve Redemption Request"
-                  subtitle="Are you sure you want to approve this redemption request?"
-                  trigger={
-                    <div className="cursor-pointer select-none text-[#297AD6]">
-                      Approve
-                    </div>
-                  }
-                />
+                <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]}>
+                  <DialogComponent
+                    onSubmit={() => handleApproveClick(row)}
+                    onCancel={() => null}
+                    title="Approve Redemption Request"
+                    subtitle="Are you sure you want to approve this redemption request?"
+                    trigger={
+                      <div className="cursor-pointer select-none text-[#297AD6]">
+                        Approve
+                      </div>
+                    }
+                  />
+                </RoleAuth>
               )}
             </div>
           </>

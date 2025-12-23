@@ -15,7 +15,10 @@ export default function FundManagementView() {
           title="Fund Management"
           description="Track all the fund management reports here"
         />
-        <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+        <RoleAuth
+          roles={[AARoles.ADMIN, AARoles.Municipality]}
+          hasContent={false}
+        >
           <IconLabelBtn
             Icon={Plus}
             handleClick={() =>

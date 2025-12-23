@@ -313,7 +313,10 @@ export default function useBeneficiaryGroupDetailsLogColumns(
                   strokeWidth={2.5}
                 />
               ) : (
-                <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+                <RoleAuth
+                  roles={[AARoles.ADMIN, AARoles.Municipality]}
+                  hasContent={false}
+                >
                   <RotateCcwIcon
                     className="w-6 h-6 xl:w-4 xl:h-4 text-blue-400 cursor-pointer"
                     strokeWidth={2.5}

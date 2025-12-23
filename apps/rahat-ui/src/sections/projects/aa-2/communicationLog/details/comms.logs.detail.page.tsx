@@ -34,7 +34,6 @@ import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
 import {
-  AudioLines,
   CloudDownload,
   LucideIcon,
   Mail,
@@ -50,6 +49,7 @@ import * as XLSX from 'xlsx';
 import CommsLogsTable from '../table/comms.logs.table';
 import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
 import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 type IHeadCardProps = {
   title: string;
   icon: LucideIcon;
@@ -217,18 +217,27 @@ export default function CommsLogsDetailPage() {
               {count?.data?.data &&
                 count?.data?.data?.FAIL > 0 &&
                 logs?.sessionDetails?.Transport?.name === 'VOICE' && (
-                  <Button
-                    type="button"
-                    onClick={retryFailed}
-                    disabled={
-                      mutateRetry.isPending
-                      // logs?.sessionDetails?.maxAttempts === 3
-                    }
-                    className=" gap-2 h-7"
+                  <RoleAuth
+                    roles={[
+                      AARoles.ADMIN,
+                      AARoles.MANAGER,
+                      AARoles.Municipality,
+                    ]}
+                    hasContent={false}
                   >
-                    <RefreshCcw className="h-3.5 w-3.5" />
-                    Retry Failed Requests
-                  </Button>
+                    <Button
+                      type="button"
+                      onClick={retryFailed}
+                      disabled={
+                        mutateRetry.isPending
+                        // logs?.sessionDetails?.maxAttempts === 3
+                      }
+                      className=" gap-2 h-7"
+                    >
+                      <RefreshCcw className="h-3.5 w-3.5" />
+                      Retry Failed Requests
+                    </Button>
+                  </RoleAuth>
                 )}
             </div>
           </div>

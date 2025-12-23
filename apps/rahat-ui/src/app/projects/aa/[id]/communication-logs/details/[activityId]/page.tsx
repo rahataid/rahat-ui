@@ -5,7 +5,14 @@ import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 const Page = () => {
   return (
-    <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]}>
+    <RoleAuth
+      roles={[
+        AARoles.ADMIN,
+        AARoles.MANAGER,
+        AARoles.Municipality,
+        AARoles.UNICEFNepalCO,
+      ]}
+    >
       <AACommunicationDetailsView />
     </RoleAuth>
   );

@@ -119,7 +119,10 @@ const StakeholdersGroupsDetails = (props: Props) => {
             }
           />
 
-          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
             <Button
               variant="default"
               type="button"

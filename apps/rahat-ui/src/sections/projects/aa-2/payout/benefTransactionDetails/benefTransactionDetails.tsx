@@ -58,7 +58,8 @@ export default function BeneficiaryTransactionLogDetails() {
     (status === 'COMPLETED' && transactionType === 'VENDOR_REIMBURSEMENT') ||
     ((status === 'FIAT_TRANSACTION_COMPLETED' ||
       status === 'TOKEN_TRANSACTION_COMPLETED') &&
-      (transactionType === 'TOKEN_TRANSFER' || transactionType === 'FIAT_TRANSFER'))
+      (transactionType === 'TOKEN_TRANSFER' ||
+        transactionType === 'FIAT_TRANSFER'))
   ) {
     totalSuccessAmount = amount * ONE_TOKEN_VALUE;
   }
@@ -78,7 +79,8 @@ export default function BeneficiaryTransactionLogDetails() {
   }
   const handleRedirect = () => {
     router.push(
-      `/beneficiary/${data?.data?.Beneficiary?.uuid}?projectId=${id}&groupId=${groupId as string
+      `/beneficiary/${data?.data?.Beneficiary?.uuid}?projectId=${id}&groupId=${
+        groupId as string
       }&txnDetailsId=${uuid}`,
     );
   };
@@ -86,16 +88,21 @@ export default function BeneficiaryTransactionLogDetails() {
     <div className="p-4 md:p-6  space-y-6">
       <div className=" flex justify-between items-center">
         <HeaderWithBack
-          path={`/projects/aa/${id as string}/payout/details/${groupId as string
-            }?from=${navigation ? navigation : ''}`}
+          path={`/projects/aa/${id as string}/payout/details/${
+            groupId as string
+          }?from=${navigation ? navigation : ''}`}
           subtitle="Detaild view of the selected payout transaction log"
           title="Transaction Log Details"
         />
         {data?.data?.payout?.type === 'FSP' && (
-          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
             <Button
-              className={`gap-2 text-sm ${!isPayoutTransactionFailed(data?.data?.status) && 'hidden'
-                }`}
+              className={`gap-2 text-sm ${
+                !isPayoutTransactionFailed(data?.data?.status) && 'hidden'
+              }`}
               onClick={handleTriggerSinglePayoutFailed}
             >
               <RotateCcw className="w-4 h-4" />
@@ -115,8 +122,9 @@ export default function BeneficiaryTransactionLogDetails() {
         <DataCard
           title="Amount Disbursed"
           Icon={Coins}
-          smallNumber={`Rs. ${totalSuccessAmount.toString() || totalFailedAmount.toString()
-            }`}
+          smallNumber={`Rs. ${
+            totalSuccessAmount.toString() || totalFailedAmount.toString()
+          }`}
           className="h-24 w-full rounded-sm pt-1"
         />
         {data?.data?.status.endsWith('COMPLETED') && (
@@ -140,8 +148,8 @@ export default function BeneficiaryTransactionLogDetails() {
               smallNumber={
                 data?.data?.payout?.type === 'FSP'
                   ? data?.data?.payout?.extras?.paymentProviderName
-                    .split('_')
-                    .join(' ')
+                      .split('_')
+                      .join(' ')
                   : data?.data?.payout?.mode
               }
               className="h-24 w-full rounded-sm"

@@ -15,6 +15,7 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import TokenOverviewSkeleton from './token.overview.skeleton';
 import DynamicPieChart from '../../../components/dynamicPieChart';
+import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 
 export default function TokensOverview() {
   const uuid = useParams().id;
@@ -84,18 +85,20 @@ export default function TokensOverview() {
               const infoTooltip = INFO_TOOL_TIPS[item.name];
 
               if (isToken) {
+                const assetUrl = getExplorerUrl({
+                  chainSettings:
+                    settings?.[projectId]?.[
+                      PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS
+                    ],
+                  target: 'asset',
+                  value:
+                    settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CONTRACT]
+                      ?.rahattoken?.address,
+                });
                 return (
                   <a
                     key={index}
-                    href={`https://stellar.expert/explorer/${
-                      settings?.[projectId]?.[
-                        PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS
-                      ]?.['network'] === 'mainnet'
-                        ? 'public'
-                        : 'testnet'
-                    }/asset/${
-                      item.value
-                    }-GCVLRQHGZYG32HZE3PKZ52NX5YFCNFDBUZDLUXQYMRS6WVBWSUOP5IYE-2`}
+                    href={assetUrl || '#'}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="cursor-pointer"

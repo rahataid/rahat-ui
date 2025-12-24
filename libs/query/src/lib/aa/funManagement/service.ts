@@ -171,6 +171,34 @@ export const useGetTransactions = (projectUUID: UUID) => {
   return query;
 };
 
+export const useGetCashApprovedByMe = (
+  projectUUID: UUID,
+  payload: { from: string; to: string },
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['aa.cash-tracker.getApprovedByMe', projectUUID],
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    enabled: !!payload.to && !!payload.from && payload.from !== payload.to,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
+        data: {
+          action: 'aa.cash-tracker.executeAction',
+          payload: {
+            ...payload,
+            action: 'get_cash_approved_by_me',
+          },
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};
+
 export const useGetBeneficiaryBalance = (projectUUID: UUID) => {
   const q = useProjectAction();
 
@@ -245,6 +273,9 @@ export const useGetCash = (projectUUID: UUID) => {
       setTimeout(() => {
         queryClient.invalidateQueries({
           queryKey: ['aa.cash-tracker.getTransactions', projectUUID],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ['aa.cash-tracker.getApprovedByMe', projectUUID],
         });
       }, 20000);
     },

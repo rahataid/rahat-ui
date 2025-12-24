@@ -3,7 +3,9 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 
 import {
+  PROJECT_SETTINGS_KEYS,
   useDeleteTriggerStatement,
+  useProjectSettingsStore,
   useProjectStore,
   useSingleTriggerStatement,
 } from '@rahat-ui/query';
@@ -25,6 +27,7 @@ import {
 } from './components';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 
 export default function TriggerStatementDetail() {
   const router = useRouter();
@@ -45,10 +48,16 @@ export default function TriggerStatementDetail() {
     version,
   );
   const project = useProjectStore((p) => p.singleProject);
-
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
   const phase = trigger?.phase?.name;
   const source = trigger?.source;
-
+  const txnUrl = getExplorerUrl({
+    chainSettings: settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+    target: 'tx',
+    value: trigger.transactionHash,
+  });
   const removeTrigger = useDeleteTriggerStatement();
 
   const versionType = type as string | undefined;
@@ -169,11 +178,7 @@ export default function TriggerStatementDetail() {
               <p className="mb-1">TxHash</p>
               {trigger?.transactionHash ? (
                 <Link
-                  href={
-                    project?.name == 'AA Unicef EVM'
-                      ? `https://sepolia.basescan.org/tx/${trigger.transactionHash}`
-                      : `https://stellar.expert/explorer/testnet/tx/${trigger.transactionHash}`
-                  }
+                  href={txnUrl || '#'}
                   target="_blank"
                   className="block overflow-hidden text-ellipsis whitespace-nowrap text-blue-500 hover:underline"
                 >

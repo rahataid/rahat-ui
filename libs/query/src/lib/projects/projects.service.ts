@@ -1590,7 +1590,11 @@ export const useOfframp = (uuid: UUID) => {
   }, [query.data]);
   return query;
 };
-export const useEntities = (uuid: UUID, name: string) => {
+export const useEntities = (
+  uuid: UUID,
+  name: string,
+  options?: { enabled?: boolean },
+) => {
   const q = useProjectAction([name]);
   const { setSettings, settings } = useProjectSettingsStore((state) => ({
     settings: state.settings,
@@ -1602,7 +1606,7 @@ export const useEntities = (uuid: UUID, name: string) => {
 
   const query = useQuery({
     queryKey: ['settings.get.entities', uuid, name],
-    enabled: isChainEVM,
+    enabled: isChainEVM ? options?.enabled : false,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,

@@ -53,7 +53,11 @@ export default function TriggerStatementDetail() {
   }));
   const phase = trigger?.phase?.name;
   const source = trigger?.source;
-
+  const txnUrl = getExplorerUrl({
+    chainSettings: settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+    target: 'tx',
+    value: trigger.transactionHash,
+  });
   const removeTrigger = useDeleteTriggerStatement();
 
   const versionType = type as string | undefined;
@@ -174,14 +178,7 @@ export default function TriggerStatementDetail() {
               <p className="mb-1">TxHash</p>
               {trigger?.transactionHash ? (
                 <Link
-                  href={
-                    getExplorerUrl({
-                      chainSettings:
-                        settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
-                      target: 'tx',
-                      value: trigger.transactionHash,
-                    }) || '#'
-                  }
+                  href={txnUrl || '#'}
                   target="_blank"
                   className="block overflow-hidden text-ellipsis whitespace-nowrap text-blue-500 hover:underline"
                 >

@@ -36,7 +36,7 @@ export const useProjectBalance = (projectUUID: string) => {
   });
 
   React.useEffect(() => {
-    if (tokenBalanceQuery?.data) {
+    if (tokenBalanceQuery?.data && tokenNumber) {
       const balance = formatUnits(
         BigInt(tokenBalanceQuery?.data),
         Number(tokenNumber),

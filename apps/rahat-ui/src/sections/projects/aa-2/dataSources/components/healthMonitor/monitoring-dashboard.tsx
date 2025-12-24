@@ -25,9 +25,6 @@ export default function MonitoringDashboard() {
 
   const sources = apiHealthMonitor?.sources;
 
-  // console.log(sources.length);
-  const { id: projectID } = useParams();
-
   const { data, isLoading } = useTabConfiguration(
     projectId as UUID,
     PROJECT_SETTINGS_KEYS.FORECAST_TAB_CONFIG,
@@ -45,7 +42,7 @@ export default function MonitoringDashboard() {
 
     return sources.filter((item: any) =>
       newTabsList.some((key: string) =>
-        item.source_id.toLowerCase().startsWith(key.toLowerCase()),
+        item?.adapterId?.toLowerCase()?.startsWith(key.toLowerCase()),
       ),
     );
   }, [sources, newTabsList]);

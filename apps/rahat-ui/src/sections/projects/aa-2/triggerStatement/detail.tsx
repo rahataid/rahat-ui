@@ -56,7 +56,7 @@ export default function TriggerStatementDetail() {
   const txnUrl = getExplorerUrl({
     chainSettings: settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
     target: 'tx',
-    value: trigger.transactionHash,
+    value: trigger?.transactionHash,
   });
   const removeTrigger = useDeleteTriggerStatement();
 

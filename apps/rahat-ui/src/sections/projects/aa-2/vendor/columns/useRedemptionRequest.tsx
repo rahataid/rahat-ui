@@ -3,13 +3,17 @@ import { useUserStore } from '@rumsan/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { IProjectRedemption } from '../types';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { useProjectSettingsStore } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { getAssetCode, getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { TOKEN_TO_AMOUNT_MULTIPLIER } from '@rahat-ui/query';
 import { Check, Copy, CopyCheck } from 'lucide-react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 
 export const useRedemptionRequestColumn = () => {
   const { id }: { id: UUID } = useParams();
@@ -78,11 +82,14 @@ export const useRedemptionRequestColumn = () => {
           <div className="flex flex-row">
             <div className="w-20 truncate">
               <a
-                href={getStellarTxUrl(
-                  settings,
-                  id,
-                  row?.original?.transactionHash,
-                )}
+                href={
+                  getExplorerUrl({
+                    chainSettings:
+                      settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+                    target: 'tx',
+                    value: row.original?.transactionHash,
+                  }) || '#'
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer "

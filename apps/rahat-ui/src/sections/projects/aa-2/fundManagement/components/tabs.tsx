@@ -1,4 +1,8 @@
-import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useEntities,
+  useTabConfiguration,
+} from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
@@ -41,6 +45,28 @@ export default function FundManagementTabs() {
   const { data, isLoading } = useTabConfiguration(
     projectID as UUID,
     PROJECT_SETTINGS_KEYS.FUNDMANAGEMENT_TAB_CONFIG,
+  );
+  const hasCashTracker = data?.value?.tabs?.some(
+    (tab: any) => tab.value === 'cashTrackers',
+  );
+
+  const hasInkindTracker = data?.value?.tabs?.some(
+    (tab: any) => tab.value === 'inkindTrackers',
+  );
+  const { isSuccess: isEntitiesFetched } = useEntities(
+    projectID as UUID,
+    PROJECT_SETTINGS_KEYS.ENTITIES,
+    {
+      enabled: hasCashTracker,
+    },
+  );
+
+  const { isSuccess: isInkindEntitiesFetched } = useEntities(
+    projectID as UUID,
+    PROJECT_SETTINGS_KEYS.ENTITIES,
+    {
+      enabled: isEntitiesFetched && hasInkindTracker,
+    },
   );
 
   const backendTabs: BackendTab[] =

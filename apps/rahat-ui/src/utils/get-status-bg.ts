@@ -17,7 +17,7 @@ export const PayoutTransactionFailedStatuses = [
 ] as const;
 
 export const getStatusBg = (status: string) => {
-  const normalizedStatus = status.toUpperCase().replace(/ /g, '_');
+  const normalizedStatus = status?.toUpperCase().replace(/ /g, '_');
   if (normalizedStatus === 'NOT_STARTED') {
     return 'bg-gray-200';
   }

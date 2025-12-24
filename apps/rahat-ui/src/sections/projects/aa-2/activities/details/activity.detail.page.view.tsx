@@ -1,4 +1,9 @@
-import { Back, Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
+import {
+  Back,
+  Heading,
+  IconLabelBtn,
+  NoResult,
+} from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { Edit, Pencil, RefreshCcw, Trash } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -58,78 +63,83 @@ export default function ActivitiesDetailView() {
             titleStyle="text-xl sm:text-4xl "
           />
         </div>
+        {activityDetail && (
+          <div className="flex flex-col gap-2 lg:flex-row items-center justify-center">
+            <div className="flex space-x-2">
+              <RoleAuth
+                roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+                hasContent={false}
+              >
+                <DialogComponent
+                  buttonIcon={Trash}
+                  buttonText="Delete"
+                  dialogTitle="Delete Activity"
+                  dialogDescription="Are you sure you want to delete this activity?"
+                  confirmButtonText="Remove"
+                  handleClick={() => removeActivity()}
+                  buttonClassName="rounded-sm w-full text-red-500 border-red-500 sm"
+                  confirmButtonClassName="rounded-sm w-full bg-red-500"
+                  variant="outline"
+                />
+              </RoleAuth>
 
-        <div className="flex flex-col gap-2 lg:flex-row items-center justify-center">
-          <div className="flex space-x-2">
+              <RoleAuth
+                roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+                hasContent={false}
+              >
+                <DialogComponent
+                  buttonIcon={Pencil}
+                  buttonText="Edit"
+                  dialogTitle="Edit Activity"
+                  dialogDescription="Are you sure you want to edit this activity?"
+                  confirmButtonText="Edit"
+                  handleClick={() => router.push(redirectUpdatePath)}
+                  buttonClassName="rounded-sm w-full"
+                  confirmButtonClassName="rounded-sm w-full bg-primary"
+                  variant="outline"
+                />
+              </RoleAuth>
+            </div>
             <RoleAuth
               roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
               hasContent={false}
             >
-              <DialogComponent
-                buttonIcon={Trash}
-                buttonText="Delete"
-                dialogTitle="Delete Activity"
-                dialogDescription="Are you sure you want to delete this activity?"
-                confirmButtonText="Remove"
-                handleClick={() => removeActivity()}
-                buttonClassName="rounded-sm w-full text-red-500 border-red-500 sm"
-                confirmButtonClassName="rounded-sm w-full bg-red-500"
-                variant="outline"
-              />
-            </RoleAuth>
-
-            <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-              hasContent={false}
-            >
-              <DialogComponent
-                buttonIcon={Pencil}
-                buttonText="Edit"
-                dialogTitle="Edit Activity"
-                dialogDescription="Are you sure you want to edit this activity?"
-                confirmButtonText="Edit"
-                handleClick={() => router.push(redirectUpdatePath)}
-                buttonClassName="rounded-sm w-full"
-                confirmButtonClassName="rounded-sm w-full bg-primary"
-                variant="outline"
+              <IconLabelBtn
+                Icon={RefreshCcw}
+                handleClick={() =>
+                  router.push(
+                    `/projects/aa/${projectId}/activities/${activityId}/update-status?from=detailPage${
+                      redirectTo ? `&backFrom=${redirectTo}` : ''
+                    }`,
+                  )
+                }
+                name="Update Status"
+                className="rounded-sm w-full "
               />
             </RoleAuth>
           </div>
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
-            <IconLabelBtn
-              Icon={RefreshCcw}
-              handleClick={() =>
-                router.push(
-                  `/projects/aa/${projectId}/activities/${activityId}/update-status?from=detailPage${
-                    redirectTo ? `&backFrom=${redirectTo}` : ''
-                  }`,
-                )
-              }
-              name="Update Status"
-              className="rounded-sm w-full "
+        )}
+      </div>
+      {activityDetail ? (
+        <div className="grid lg:grid-cols-2 gap-3 w-full">
+          <div className="flex flex-col gap-2 w-full">
+            <ActivityDetailCards
+              activityDetail={activityDetail}
+              loading={isLoading}
             />
-          </RoleAuth>
-        </div>
-      </div>
-      <div className="grid lg:grid-cols-2 gap-3 w-full">
-        <div className="flex flex-col gap-2 w-full">
-          <ActivityDetailCards
-            activityDetail={activityDetail}
-            loading={isLoading}
-          />
-          <DocumentList
-            documents={activityDetail?.activityDocuments}
+            <DocumentList
+              documents={activityDetail?.activityDocuments}
+              loading={isLoading}
+            />
+          </div>
+          <CommunicationList
+            activityCommunication={activityDetail?.activityCommunication}
             loading={isLoading}
           />
         </div>
-        <CommunicationList
-          activityCommunication={activityDetail?.activityCommunication}
-          loading={isLoading}
-        />
-      </div>
+      ) : (
+        <NoResult />
+      )}
     </div>
   );
 }

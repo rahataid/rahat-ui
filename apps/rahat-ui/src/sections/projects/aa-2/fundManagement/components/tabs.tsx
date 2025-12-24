@@ -47,17 +47,17 @@ export default function FundManagementTabs() {
     PROJECT_SETTINGS_KEYS.FUNDMANAGEMENT_TAB_CONFIG,
   );
   const hasCashTracker = data?.value?.tabs?.some(
-    (tab: any) => tab.value === 'cashTrackers',
+    (tab: any) => tab.value === 'cashTracker',
   );
 
   const hasInkindTracker = data?.value?.tabs?.some(
-    (tab: any) => tab.value === 'inkindTrackers',
+    (tab: any) => tab.value === 'inkindTracker',
   );
   const { isSuccess: isEntitiesFetched } = useEntities(
     projectID as UUID,
     PROJECT_SETTINGS_KEYS.ENTITIES,
     {
-      enabled: hasCashTracker,
+      enabled: hasCashTracker ? hasCashTracker : false,
     },
   );
 

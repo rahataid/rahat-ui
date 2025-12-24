@@ -226,7 +226,7 @@ export default function DisbursementHistoryDetail() {
     //   ? disbursement?.DisbursementBeneficiary[0]?.amount.toString()
     //   : '0';
     const amountString =
-      (disbursement?.amount / beneficiaryLength)?.toString() || '0';
+      (disbursement?.amount / beneficiaryLength)?.toFixed(2)?.toString() || '0';
     const parsedAmount = parseUnits(amountString, Number(tokenNumber));
     // const result = await disburseMultiSig.mutateAsync({
     //   amount: parsedAmount,
@@ -282,7 +282,7 @@ export default function DisbursementHistoryDetail() {
               >
                 Execute
               </Button>
-             )} 
+            )}
             {!approvals?.isExecuted &&
               disbursement?.status !== 'COMPLETED' &&
               approvals?.approvals?.length > 0 && (

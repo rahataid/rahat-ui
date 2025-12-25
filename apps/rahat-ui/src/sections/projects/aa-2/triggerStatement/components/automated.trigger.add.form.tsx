@@ -34,6 +34,25 @@ const operatorOptions = [
   { label: 'Less than or equal (<=)', value: '<=' },
 ];
 
+const SOURCE_META = {
+  water_level_m: {
+    unit: 'm',
+    placeholder: 'Enter water level value in (m)',
+  },
+  discharge_m3s: {
+    unit: 'm³/s',
+    placeholder: 'Enter discharge value in m³/s',
+  },
+  rainfall_mm: {
+    unit: 'mm',
+    placeholder: 'Enter rainfall value in (mm)',
+  },
+  prob_flood: {
+    unit: '%',
+    placeholder: 'Enter flood probability value in (%)',
+  },
+} as const;
+
 type IProps = {
   form: UseFormReturn<z.infer<typeof AutomatedFormSchema>>;
   phase: any;
@@ -121,29 +140,6 @@ export default function AddAutomatedTriggerForm({
             <p className="text-gray-500 text-sm">No type found</p>
           )}
         </SelectContent>
-      </>
-    );
-  };
-
-  const SourceValueField = ({
-    field,
-    unit,
-    placeholder,
-  }: {
-    field: ControllerRenderProps<
-      z.infer<typeof AutomatedFormSchema>,
-      'triggerStatement.value'
-    >;
-    unit: string;
-    placeholder: string;
-  }) => {
-    return (
-      <>
-        <FormLabel>Value ({unit})</FormLabel>
-        <FormControl>
-          <Input type="number" placeholder={placeholder} {...field} />
-        </FormControl>
-        <FormMessage />
       </>
     );
   };
@@ -377,36 +373,23 @@ export default function AddAutomatedTriggerForm({
                           control={form.control}
                           name="triggerStatement.value"
                           render={({ field }) => {
+                            const meta = SOURCE_META[triggerSource];
+
                             return (
                               <FormItem>
-                                {triggerSource === 'water_level_m' && (
-                                  <SourceValueField
-                                    field={field}
-                                    unit="m"
-                                    placeholder="Enter water level value in (m)"
+                                <FormLabel>
+                                  Value {meta?.unit ? `(${meta.unit})` : ''}
+                                </FormLabel>
+
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    placeholder={meta?.placeholder}
+                                    {...field}
                                   />
-                                )}
-                                {triggerSource === 'discharge_m3s' && (
-                                  <SourceValueField
-                                    field={field}
-                                    unit="m³/s"
-                                    placeholder="Enter discharge value in m³/s"
-                                  />
-                                )}
-                                {triggerSource === 'rainfall_mm' && (
-                                  <SourceValueField
-                                    field={field}
-                                    unit="mm"
-                                    placeholder="Enter rainfall value in (mm)"
-                                  />
-                                )}
-                                {triggerSource === 'prob_flood' && (
-                                  <SourceValueField
-                                    field={field}
-                                    unit="%"
-                                    placeholder="Enter flood probability value in (%)"
-                                  />
-                                )}
+                                </FormControl>
+
+                                <FormMessage />
                               </FormItem>
                             );
                           }}

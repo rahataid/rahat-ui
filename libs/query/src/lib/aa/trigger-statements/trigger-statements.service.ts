@@ -207,7 +207,7 @@ export const useDhmSingleSeriesWaterLevels = (
   activeTab: string,
   payload: {
     date: string;
-    seriesId: string;
+    seriesId: number;
   },
 ) => {
   const q = useProjectAction();

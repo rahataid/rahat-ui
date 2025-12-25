@@ -202,6 +202,46 @@ export const useDhmWaterLevels = (
   return query;
 };
 
+export const useDhmSingleSeriesWaterLevels = (
+  uuid: UUID,
+  activeTab: string,
+  payload: {
+    date: string;
+    seriesId: string;
+  },
+) => {
+  const q = useProjectAction();
+
+  const { date, ...rest } = payload;
+
+  const settings = useProjectSettingsStore((state) => state.settings);
+
+  const riverBasin =
+    settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.['river_basin'];
+
+  const query = useQuery({
+    queryKey: ['dhmsingleserieswaterlevels', uuid, activeTab, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.waterLevels.getDhmSingleSeries',
+          payload: {
+            ...rest,
+            from: date,
+            to: date,
+            riverBasin,
+            period: activeTab?.toUpperCase(),
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};
+
 export const useDhmRainfallLevels = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
 

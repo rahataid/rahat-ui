@@ -22,6 +22,7 @@ const GrievancesDetail = () => {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('groupId');
   const redirectToFund = searchParams.get('fundId');
+  const redirectToHomeTab = searchParams.get('tab') || 'list';
   const { data: details, refetch } = useGrievanceDetails({
     projectUUID: projectId,
     grievanceUUID: grievanceId,
@@ -47,7 +48,7 @@ const GrievancesDetail = () => {
     ? `/projects/aa/${projectId}/grievances/${redirectTo}`
     : redirectToFund
     ? `/projects/aa/${projectId}/grievances/${redirectToFund}`
-    : `/projects/aa/${projectId}/grievances`;
+    : `/projects/aa/${projectId}/grievances?tab=${redirectToHomeTab}`;
 
   return (
     <div className="p-4 mb-2">
@@ -68,7 +69,7 @@ const GrievancesDetail = () => {
                   variant="outline"
                   className="rounded flex gap-1 items-center text-sm font-medium w-auto"
                 >
-                  Change Status
+                  Update Status
                   <ChevronDown className="h-4 w-4 ml-1" />
                 </Button>
               </DropdownMenuTrigger>
@@ -97,7 +98,7 @@ const GrievancesDetail = () => {
               className="rounded flex gap-1 items-center text-sm font-medium w-auto"
               onClick={() =>
                 router.push(
-                  `/projects/aa/${projectId}/grievances/${grievanceId}/edit`,
+                  `/projects/aa/${projectId}/grievances/${grievanceId}/edit?from=details&tab=${redirectToHomeTab}`,
                 )
               }
             >
@@ -109,7 +110,7 @@ const GrievancesDetail = () => {
       </div>
 
       <div className="flex">
-        <div className="flex border rounded-xl flex-col gap-4 p-4 w-full">
+        <div className="flex-col gap-4 w-full">
           <GrievanceInfo grievance={details?.data} />
         </div>
       </div>

@@ -5,7 +5,9 @@ import { PaymentInitiation } from 'apps/rahat-ui/src/sections/projects/aa-2/payo
 
 const Page = () => {
   return (
-    <RoleAuth roles={[AARoles.ADMIN]}>
+    <RoleAuth
+      roles={[AARoles.ADMIN, AARoles.UNICEFNepalCO, AARoles.Municipality]}
+    >
       <PaymentInitiation />
     </RoleAuth>
   );

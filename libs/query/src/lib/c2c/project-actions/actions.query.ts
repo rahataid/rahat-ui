@@ -65,6 +65,10 @@ export const useGetTreasurySourcesSettings = (uuid: UUID) => {
 
 type DisbursementListHookParams = {
   projectUUID: UUID;
+  status: string;
+  disbursementType: string;
+  fromDate: string;
+  toDate: string;
 } & Pagination;
 
 export const useGetDisbursements = (params: DisbursementListHookParams) => {
@@ -72,7 +76,7 @@ export const useGetDisbursements = (params: DisbursementListHookParams) => {
   const { projectUUID, ...restParams } = params;
 
   const query = useQuery({
-    queryKey: ['get-disbursements'],
+    queryKey: ['get-disbursements', params],
     queryFn: async () => {
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
@@ -80,6 +84,26 @@ export const useGetDisbursements = (params: DisbursementListHookParams) => {
           // TODO: use dynamically from MS_ACTIONS
           action: 'c2cProject.disbursements.get',
           payload: restParams,
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
+export const usePendingDisbursements = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-pending-disbursements', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.disbursements.pending.get',
+          payload: {},
         },
       });
       return response.data;
@@ -124,6 +148,46 @@ export const useGetProjectReporting = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: 'c2cProject.reporting.list',
+          payload: {},
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
+export const useGetDisbursementSafeChart = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-disbursement-safe-chart', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getDisbursementSafeChart',
+          payload: {},
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
+export const useGetOfframpStatusChart = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-offramp-status-chart', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getOffRampStatus',
           payload: {},
         },
       });
@@ -251,6 +315,7 @@ export const useGetOfframpDetails = (
 
   const query = useQuery({
     queryKey: ['get-getOfframpDetails', projectUUID, beneficiaryPhone],
+    enabled: !!beneficiaryPhone,
     queryFn: async () => {
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
@@ -260,6 +325,26 @@ export const useGetOfframpDetails = (
             beneficiaryPhone,
             limit: 100,
           },
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
+export const useGetSafePending = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-getSafePending', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'c2cProject.getSafePending',
+          payload: {},
         },
       });
       return response.data;
@@ -285,21 +370,37 @@ export const useGetDisbursementApprovals = (
   const { projectUUID, disbursementUUID, transactionHash, ...restParams } =
     params;
 
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
   const query = useQuery({
     queryKey: ['get-disbursement-approvals', disbursementUUID],
     queryFn: async () => {
-      const response = await projectActions.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: 'c2cProject.getSafeTransaction',
-          payload: {
-            projectUUID: projectUUID,
-            transactionHash,
-            ...restParams,
+      try {
+        const response = await projectActions.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: 'c2cProject.getSafeTransaction',
+            payload: {
+              projectUUID: projectUUID,
+              transactionHash,
+              ...restParams,
+            },
           },
-        },
-      });
-      return response.data;
+        });
+        return response.data;
+      } catch (error) {
+        toast.fire({
+          title: 'Error',
+          icon: 'error',
+          text: 'Error to get safe transaction data',
+        });
+      }
     },
     enabled: !!transactionHash,
   });
@@ -358,14 +459,14 @@ export const useAddDisbursement = () => {
 
   return useMutation({
     mutationKey: ['add-disbursement'],
-    onSuccess(data, variables, context) {
-      Swal.fire({
-        title: 'Disbursement Created',
-        icon: 'success',
-        showConfirmButton: false,
-        timer: 1500,
-      });
-    },
+    // onSuccess(data, variables, context) {
+    //   Swal.fire({
+    //     title: 'Disbursement Created',
+    //     icon: 'success',
+    //     showConfirmButton: false,
+    //     timer: 1500,
+    //   });
+    // },
     onError(error, variables, context) {
       Swal.fire({
         title: 'Error',
@@ -462,7 +563,7 @@ export const useDisburseTokenUsingMultisig = () => {
       disbursementType: DisbursementSelectionType;
       beneficiaryAddresses?: `0x${string}`[];
       beneficiaryGroup?: UUID;
-      totalAmount?:string;
+      totalAmount?: string;
       details?: string;
     }) => {
       // Step 1: Create Safe Transaction

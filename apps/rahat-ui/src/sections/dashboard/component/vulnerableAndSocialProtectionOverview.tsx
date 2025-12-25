@@ -81,12 +81,12 @@ const VulnerableAndSocialProtectionOverview = ({
 }) => {
   // Extract stats from data array
   const socialProtection =
-    statsData.find(
+    statsData?.find(
       (s) => s.name === 'HOUSEHOLD_RECEIVING_SOCIAL_PROTECTION_BENEFITS',
     )?.data ?? [];
 
   const vulnerableCount =
-    statsData.find((s) => s.name === 'VULNERABLE_COUNT_STATS')?.data ?? {};
+    statsData?.find((s) => s.name === 'VULNERABLE_COUNT_STATS')?.data ?? {};
 
   // Map social protection benefits for chart
   const socialProtectionBenefits = socialProtection.map((item: any) => ({

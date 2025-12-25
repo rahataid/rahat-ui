@@ -25,12 +25,18 @@ import SearchInput from '../sections/projects/components/search.input';
 import React from 'react';
 
 import { NotificationButton } from './notification-button';
+import { useProjectList } from '@rahat-ui/query';
 
 export function Nav({ hasDefaultHeader = true }) {
   const { user, clearUser } = useUserStore((state) => ({
     user: state.user,
     clearUser: state.clearUser,
   }));
+
+  const { data: projects } = useProjectList();
+  const showNotification = projects?.data?.find(
+    (project) => project.type?.toLowerCase() === 'aa',
+  );
 
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const handleLogout = () => {
@@ -47,7 +53,7 @@ export function Nav({ hasDefaultHeader = true }) {
       <div className="h-14 fixed w-[calc(100vw-56px)] flex justify-between gap-4 items-center p-2 border-b z-40">
         <SearchInput className="w-1/4" name="" onSearch={() => {}} isDisabled />
         <div className="flex space-x-6 items-center">
-          {/* <NotificationButton unreadCount={3} /> */}
+          {showNotification && <NotificationButton unreadCount={3} />}
           <ConnectWallet />
           <DropdownMenu>
             <DropdownMenuTrigger>

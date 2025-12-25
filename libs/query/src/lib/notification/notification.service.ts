@@ -38,7 +38,7 @@ export const useGetAllNotificatons = () => {
     getNextPageParam: (lastPage) => {
       const { meta, data } = lastPage;
 
-      return meta.currentPage < meta.total ? meta.next : undefined;
+      return meta?.currentPage < meta?.total ? meta?.next : undefined;
     },
     initialPageParam: 1,
   });

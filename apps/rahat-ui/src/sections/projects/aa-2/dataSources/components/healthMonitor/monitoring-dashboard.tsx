@@ -8,6 +8,7 @@ import { StatusCardSkeleton } from './status-card-skeleton';
 import { SystemHealthSkeleton } from './system-health-skeleton';
 import {
   PROJECT_SETTINGS_KEYS,
+  SourceHealthData,
   useExternalApiHealthMonitor,
   useTabConfiguration,
 } from '@rahat-ui/query';
@@ -22,11 +23,7 @@ export default function MonitoringDashboard() {
   const { data: apiHealthMonitor, isLoading: loading } =
     useExternalApiHealthMonitor(projectId);
 
-  console.log(apiHealthMonitor);
   const sources = apiHealthMonitor?.sources;
-
-  // console.log(sources.length);
-  const { id: projectID } = useParams();
 
   const { data, isLoading } = useTabConfiguration(
     projectId as UUID,
@@ -45,7 +42,7 @@ export default function MonitoringDashboard() {
 
     return sources.filter((item: any) =>
       newTabsList.some((key: string) =>
-        item.source_id.toLowerCase().startsWith(key.toLowerCase()),
+        item?.adapterId?.toLowerCase()?.startsWith(key.toLowerCase()),
       ),
     );
   }, [sources, newTabsList]);
@@ -61,7 +58,7 @@ export default function MonitoringDashboard() {
   return (
     <div className="p-4">
       <div className="flex flex-col">
-        <Back path={`/projects/aa/${projectID}/data-sources`} />
+        <Back path={`/projects/aa/${projectId}/data-sources`} />
         <Heading
           title="Data Health Checker"
           description="Real-time health monitoring of external data sources"

@@ -13,6 +13,7 @@ import {
 } from '../../project-actions';
 import { UUID } from 'crypto';
 import { useProjectAction } from '../../../projects';
+import { toast } from 'react-toastify';
 
 //Temporary solution, should be changed when crypto is implemented
 export const useDepositTokenToProject = () => {
@@ -34,7 +35,7 @@ export const useMultiSigDisburseToken = ({
 
   return useMutation({
     onError: (error) => {
-      console.error(error);
+      toast.error(error?.message);
     },
     async onSuccess(data, variables, context) {
       await projectAction.mutateAsync({
@@ -62,14 +63,7 @@ export const useMultiSigDisburseToken = ({
       safeAddress: `0x{string}`;
       c2cProjectAddress: `0x{string}`;
     }) => {
-      console.log('beneficiaryAddresses', {
-        amount,
-        beneficiaryAddresses,
-        rahatTokenAddress,
-        safeAddress,
-        c2cProjectAddress,
-      });
-      // console.log("amount", amount, BigInt(parseEther(amount.toString())))
+      
       const encodedForDisburse = beneficiaryAddresses.map((beneficiary) => {
         return encodeFunctionData({
           abi: c2CProjectAbi,

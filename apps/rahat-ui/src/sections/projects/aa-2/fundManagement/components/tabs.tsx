@@ -1,21 +1,26 @@
 import {
+  PROJECT_SETTINGS_KEYS,
+  useEntities,
+  useTabConfiguration,
+} from '@rahat-ui/query';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
+import { UUID } from 'crypto';
+import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from 'libs/shadcn/src/components/ui/tabs';
-import FundManagementList from '../tables/fm.table';
-import TokensOverview from './token.overview';
-import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
-import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
-import { UUID } from 'crypto';
-import InKind from './inKind';
-import Counselling from './counselling';
+import FundManagementList from '../tables/fm.table';
 import { CashTracker } from './cashTracker/cash.tracker';
+import Counselling from './counselling';
+import InKind from './inKind';
 import { InKindTracker } from './inKindTracker';
-import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
-import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { MultiSigWalletView } from './multisig';
+import TokensOverview from './token.overview';
 
 const componentMap = {
   tokenOverview: TokensOverview,
@@ -24,6 +29,7 @@ const componentMap = {
   counselling: Counselling,
   cashTracker: CashTracker,
   inKindTracker: InKindTracker,
+  multisigWallet: MultiSigWalletView,
 };
 
 interface BackendTab {
@@ -39,6 +45,28 @@ export default function FundManagementTabs() {
   const { data, isLoading } = useTabConfiguration(
     projectID as UUID,
     PROJECT_SETTINGS_KEYS.FUNDMANAGEMENT_TAB_CONFIG,
+  );
+  const hasCashTracker = data?.value?.tabs?.some(
+    (tab: any) => tab.value === 'cashTracker',
+  );
+
+  const hasInkindTracker = data?.value?.tabs?.some(
+    (tab: any) => tab.value === 'inkindTracker',
+  );
+  const { isSuccess: isEntitiesFetched } = useEntities(
+    projectID as UUID,
+    PROJECT_SETTINGS_KEYS.ENTITIES,
+    {
+      enabled: hasCashTracker ? hasCashTracker : false,
+    },
+  );
+
+  const { isSuccess: isInkindEntitiesFetched } = useEntities(
+    projectID as UUID,
+    PROJECT_SETTINGS_KEYS.ENTITIES,
+    {
+      enabled: isEntitiesFetched && hasInkindTracker,
+    },
   );
 
   const backendTabs: BackendTab[] =

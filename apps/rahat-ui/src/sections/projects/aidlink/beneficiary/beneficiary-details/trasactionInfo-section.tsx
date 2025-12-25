@@ -14,63 +14,40 @@ import { mergeTransactions } from '@rahat-ui/query/lib/c2c/utils';
 import TransactionTable from './transactionHistory';
 import { formatEther, formatUnits } from 'viem';
 import { useReadRahatTokenDecimals } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatToken';
+import { OfframpAccumulatorType } from './beneficiaryDetails';
 
 interface ITrasactionInfoSectionProps {
   walletAddress: string;
   totalDisbursedAmount: number;
-  phoneNumber: string;
+  calculateOfframpData: OfframpAccumulatorType;
+  isPending: boolean;
 }
 
 const TransactionInfoSection = ({
   walletAddress,
   totalDisbursedAmount,
-  phoneNumber,
+  calculateOfframpData,
+  isPending,
 }: ITrasactionInfoSectionProps) => {
   const [transactionList, setTransactionList] = useState<any>([]);
   const uuid = useParams().id as UUID;
-
-  const { data: OfframpData, isPending } = useGetOfframpDetails(
-    uuid,
-    phoneNumber,
-  );
-
-  const transformedData = (OfframpData || []).reduce(
-    (
-      acc: { total: number; transactions: { date: string; amount: number }[] },
-      item: any,
-    ) => {
-      acc.total += item?.cryptoAmount || 0;
-
-      acc.transactions.push({
-        date: item.updatedAt,
-        amount: item.cryptoAmount,
-      });
-
-      return acc;
-    },
-    { total: 0, transactions: [] },
-  );
 
   const cardData = useMemo(
     () => [
       {
         label: 'Available Balance',
-        value: totalDisbursedAmount - transformedData.total || 0,
+        value: totalDisbursedAmount - calculateOfframpData.total || 0,
       },
       { label: 'Disbursed Amount', value: totalDisbursedAmount || 0 },
-      { label: 'Off-ramped Amount', value: transformedData.total || 0 },
+      { label: 'Off-ramped Amount', value: calculateOfframpData.total || 0 },
     ],
-    [transformedData, totalDisbursedAmount],
+    [calculateOfframpData, totalDisbursedAmount],
   );
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
   const contractAddress = contractSettings?.c2cproject?.address;
-
-  const tokenAddress = contractSettings?.rahattoken?.address;
-
-  // const {} = useGetOfframpDetails(uuid,);
 
   const [{ data, fetching, error }] = useQuery({
     query: TransactionDetails,
@@ -80,17 +57,19 @@ const TransactionInfoSection = ({
       first: 50,
       skip: 0,
     },
-    pause: !contractAddress,
+    pause: !contractAddress || !walletAddress,
+    requestPolicy: 'cache-and-network',
   });
 
-  const {data:tokenNumber} = useReadRahatTokenDecimals({address:contractSettings?.rahattoken?.address})
-  
+  const { data: tokenNumber } = useReadRahatTokenDecimals({
+    address: contractSettings?.rahattoken?.address,
+  });
 
   const newTransactionHistoryData = useMemo(() => {
     return (
       transactionList?.map((item: any) => ({
         date: item?.date,
-        amount: formatUnits(item?._amount,Number(tokenNumber)),
+        amount: formatUnits(item?._amount, Number(tokenNumber)),
       })) || []
     );
   }, [transactionList]);
@@ -136,8 +115,9 @@ const TransactionInfoSection = ({
           title="OFF-RAMPED HISTORY"
           description="List of all the off-ramps"
           isLoading={isPending}
+          isDisplayStatus
           error={error}
-          data={transformedData.transactions}
+          data={calculateOfframpData.transactions}
         />
       </div>
     </>

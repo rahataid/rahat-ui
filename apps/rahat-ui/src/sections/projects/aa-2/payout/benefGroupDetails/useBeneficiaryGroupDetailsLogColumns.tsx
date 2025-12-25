@@ -16,7 +16,10 @@ import {
   TriangleAlertIcon,
 } from 'lucide-react';
 import {
+  PROJECT_SETTINGS_KEYS,
   usePaymentProviders,
+  useProjectSettingsStore,
+  useProjectStore,
   useTriggerForOnePayoutFailed,
 } from '@rahat-ui/query';
 import { useCallback, useEffect, useState } from 'react';
@@ -27,7 +30,7 @@ import {
   PayoutTransactionStatus,
   transactionBgStatus,
 } from 'apps/rahat-ui/src/utils/get-status-bg';
-import { intlFormatDate } from 'apps/rahat-ui/src/utils';
+import { getExplorerUrl, intlFormatDate } from 'apps/rahat-ui/src/utils';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 function getTransactionStatusColor(status: string) {
@@ -59,7 +62,10 @@ export default function useBeneficiaryGroupDetailsLogColumns(
   const navigation = searchParams.get('from');
   const fspName = usePaymentProviders({ projectUUID: id as UUID });
   const { clickToCopy, copyAction } = useCopy();
-
+  const project = useProjectStore((p) => p.singleProject);
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
   const handleTriggerSinglePayoutFailed = useCallback(
     async (uuid: string) => {
       setPendingUuid(uuid); // Start tracking this row
@@ -148,11 +154,17 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       accessorKey: 'txHash',
       header: 'Transaction Hash',
       cell: ({ row }) => {
+        const txUrl = getExplorerUrl({
+          chainSettings:
+            settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+          target: 'tx',
+          value: row?.original?.txHash || '',
+        });
         return (
           <div>
             {row?.original?.txHash ? (
               <a
-                href={`https://stellar.expert/explorer/testnet/tx/${row?.original?.txHash}`}
+                href={txUrl ? txUrl : '#'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer"

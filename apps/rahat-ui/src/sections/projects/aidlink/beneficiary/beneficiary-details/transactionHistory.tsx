@@ -8,10 +8,13 @@ import {
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { FileWarning } from 'lucide-react';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { getBadgeColor } from 'apps/rahat-ui/src/utils/get-status-bg';
 
 type IDataType = {
   date: string;
   amount: number;
+  status?: string;
 };
 
 interface ITransactionTablePrps {
@@ -20,6 +23,7 @@ interface ITransactionTablePrps {
   isLoading: boolean;
   error: any;
   data: IDataType[] | [];
+  isDisplayStatus?: boolean;
 }
 
 export default function TransactionTable({
@@ -27,6 +31,7 @@ export default function TransactionTable({
   description,
   isLoading,
   error,
+  isDisplayStatus,
   data,
 }: ITransactionTablePrps) {
   useGraphQLErrorHandler({
@@ -55,16 +60,37 @@ export default function TransactionTable({
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 pb-2 text-sm font-medium text-muted-foreground border-b">
+            <div
+              className={`grid ${
+                isDisplayStatus ? 'grid-cols-3' : 'grid-cols-2'
+              }  gap-4 pb-2 text-sm font-medium text-muted-foreground border-b`}
+            >
               <div>Date</div>
+              {isDisplayStatus && <div className="text-center">Status</div>}
               <div className="text-right">Amount</div>
             </div>
             <div className="space-y-3">
               {data.map((transaction, index) => (
-                <div key={index} className="grid grid-cols-2 gap-4 text-sm">
+                <div
+                  key={index}
+                  className={`grid ${
+                    isDisplayStatus ? 'grid-cols-3' : 'grid-cols-2'
+                  } gap-4 text-sm`}
+                >
                   <div className="text-muted-foreground">
                     {dateFormat(transaction.date)}
                   </div>
+                  {isDisplayStatus && (
+                    <div className="text-center">
+                      <Badge
+                        className={`bg-green-50 ${getBadgeColor(
+                          transaction.status,
+                        )} text-xs`}
+                      >
+                        {transaction?.status}
+                      </Badge>
+                    </div>
+                  )}
                   <div className="text-right font-medium">
                     {transaction.amount} USDC
                   </div>

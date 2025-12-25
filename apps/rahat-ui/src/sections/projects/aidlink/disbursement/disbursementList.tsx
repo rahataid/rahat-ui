@@ -1,5 +1,14 @@
-import { useState } from 'react';
-import { Calendar, Eye, Check, X, Users, User } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import {
+  Calendar,
+  Eye,
+  Check,
+  X,
+  Users,
+  User,
+  CopyCheck,
+  Copy,
+} from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Select,
@@ -11,35 +20,96 @@ import {
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { NoResult, SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { DisbursementSelectionType } from '@rahat-ui/query';
-import { useParams, useRouter } from 'next/navigation';
+import {
+  DisbursementSelectionType,
+  useGetDisbursements,
+} from '@rahat-ui/query';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import {
+  endOfMonth,
+  endOfToday,
+  endOfWeek,
+  startOfMonth,
+  startOfToday,
+  startOfWeek,
+} from 'date-fns';
+import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 
 type Props = {
-  disbursements: any[];
-  loading: boolean;
+  disbursements?: any[];
+  loading?: boolean;
+  status: string;
 };
 
-export function DisbursementList({ disbursements, loading }: Props) {
-  const { id: projectUUID } = useParams() as { id: UUID };
-  const router = useRouter();
-
+export function DisbursementList({ status }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('');
   const [dateRange, setDateRange] = useState<string>('');
 
+  const { id: projectUUID } = useParams() as { id: UUID };
+  const searchParams = useSearchParams();
+  const queryParam = searchParams.get('tab');
+
+  const router = useRouter();
+  const { clickToCopy, copyAction } = useCopy();
+
+  const dateRangeData = useMemo(() => {
+    const today = new Date();
+
+    let fromDate = '';
+    let toDate = '';
+
+    if (dateRange === 'today') {
+      fromDate = dateFormat(startOfToday(), 'yyyy-MM-dd');
+      toDate = dateFormat(endOfToday(), 'yyyy-MM-dd');
+    }
+
+    if (dateRange === 'week') {
+      fromDate = dateFormat(
+        startOfWeek(today, { weekStartsOn: 0 }),
+        'yyyy-MM-dd',
+      );
+      toDate = dateFormat(endOfWeek(today, { weekStartsOn: 0 }), 'yyyy-MM-dd');
+    }
+
+    if (dateRange === 'month') {
+      fromDate = dateFormat(startOfMonth(today), 'yyyy-MM-dd');
+      toDate = dateFormat(endOfMonth(today), 'yyyy-MM-dd');
+    }
+
+    return {
+      fromDate,
+      toDate,
+    };
+  }, [dateRange]);
+
+  const { data: disbursements, isLoading } = useGetDisbursements({
+    projectUUID,
+    page: 1,
+    perPage: 20,
+    status: status,
+    disbursementType: typeFilter,
+    ...dateRangeData,
+  });
+
+  const handleClearButtonClick = () => {
+    setTypeFilter('');
+    setDateRange('');
+  };
+
   return (
     <div className="p-4 border bg-card rounded-sm mt-4">
       {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-4">
-        <SearchInput
+      <div className="flex justify-end flex-col sm:flex-row gap-2 mb-4">
+        {/* <SearchInput
           className="w-full"
           name="disbursements"
           value={searchQuery}
           onSearch={(e) => setSearchQuery(e.target.value)}
-        />
+        /> */}
         <Select value={typeFilter} onValueChange={setTypeFilter}>
           <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Select Type" />
@@ -64,43 +134,56 @@ export function DisbursementList({ disbursements, loading }: Props) {
             <SelectItem value="month">This Month</SelectItem>
           </SelectContent>
         </Select>
+        <Button onClick={handleClearButtonClick}>Clear</Button>
       </div>
 
       {/* Transaction Cards */}
       <ScrollArea className="h-[calc(100vh-310px)]">
         <div className="space-y-4">
-          {!loading ? (
+          {!isLoading ? (
             disbursements?.length > 0 ? (
               disbursements?.map((disbursement: any) => (
-                <div className="border p-4 rounded-sm space-y-2">
+                <div
+                  key={disbursement?.id}
+                  className="border p-4 rounded-sm space-y-2"
+                >
                   <div className="flex justify-between space-x-4">
-                    <div className="flex space-x-4">
-                      <div className="flex-shrink-0">
-                        {disbursement.disbursementType ===
-                        DisbursementSelectionType.GROUP ? (
+                    <div>
+                      {disbursement.disbursementType ===
+                      DisbursementSelectionType.GROUP ? (
+                        <div className="flex items-center gap-2">
                           <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
                             <Users className="h-5 w-5 text-gray-600" />
                           </div>
-                        ) : (
+                          <h3 className="text-sm/6 font-medium text-gray-900 capitalize break-all">
+                            {disbursement?.groupName}
+                          </h3>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
                           <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
                             <User className="h-5 w-5 text-gray-600" />
                           </div>
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="text-sm/6 font-medium text-gray-900">
-                          N/A
-                        </h3>
-                        {/* <p className="text-sm/4 text-gray-700 mb-3">
-                          {disbursement.disbursementType ===
-                          DisbursementSelectionType.GROUP
-                            ? disbursement.DisbursementBeneficiary?.length
-                            : truncateEthAddress(
-                                disbursement.DisbursementBeneficiary[0]
-                                  .beneficiaryWalletAddress || '',
-                              )}
-                        </p> */}
-                      </div>
+                          <h3 className="text-sm/6 font-medium text-gray-900">
+                            {disbursement?.beneficiaryAddresses[0] || 'N/A'}
+                          </h3>
+                          <button
+                            onClick={() =>
+                              clickToCopy(
+                                disbursement?.beneficiaryAddresses[0],
+                                disbursement?.id,
+                              )
+                            }
+                            className="ml-2 text-sm text-gray-500"
+                          >
+                            {copyAction === disbursement?.id ? (
+                              <CopyCheck className="w-4 h-4" />
+                            ) : (
+                              <Copy className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
+                      )}
                     </div>
                     <div>
                       <Badge
@@ -131,7 +214,11 @@ export function DisbursementList({ disbursements, loading }: Props) {
                         <p className="text-gray-500 mb-1 text-xs tracking-widest font-semibold">
                           PER BENEFICIARY
                         </p>
-                        <p className="text-sm">{disbursement.amount} USDC</p>
+                        <p className="text-sm">
+                          {disbursement?.amount /
+                            disbursement?.totalBeneficiaries}{' '}
+                          USDC
+                        </p>
                       </div>
                     )}
                     <div>
@@ -149,7 +236,10 @@ export function DisbursementList({ disbursements, loading }: Props) {
                       <div className="flex items-center space-x-1">
                         <Check className="h-4 w-4 text-green-600" />
                         <span className="text-sm text-green-600">
-                          0 successful
+                          {disbursement?.status === 'COMPLETED'
+                            ? disbursement?.totalBeneficiaries
+                            : 0}{' '}
+                          successful
                         </span>
                       </div>
                       <div className="flex items-center space-x-1">
@@ -165,7 +255,7 @@ export function DisbursementList({ disbursements, loading }: Props) {
                     className="flex items-center space-x-2 bg-transparent"
                     onClick={() =>
                       router.push(
-                        `/projects/aidlink/${projectUUID}/disbursement/${disbursement.uuid}`,
+                        `/projects/aidlink/${projectUUID}/disbursement/${disbursement.uuid}?from=${queryParam}`,
                       )
                     }
                   >

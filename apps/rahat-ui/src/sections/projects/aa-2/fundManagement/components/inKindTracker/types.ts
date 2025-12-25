@@ -10,6 +10,9 @@ export interface Entities {
   alias: string;
   name: string;
   type: StakeholderType;
+  address: string;
+  privatekey: string;
+  smartaccount: string;
 }
 
 export interface InKindTransfer {

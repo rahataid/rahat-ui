@@ -7,9 +7,11 @@ import {
   useDisburseTokenUsingMultisig,
   useFindC2CBeneficiaryGroups,
   useProjectBeneficiaries,
+  useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { TransactionInitiatedModal } from './transactionInitiatedModal';
 import React from 'react';
+import { SAFE_WALLET } from 'apps/rahat-ui/src/constants/safeWallet';
 
 type IProps = {
   type: DisbursementSelectionType | null;
@@ -22,6 +24,16 @@ export default function CreateDisbursementMain({ type }: IProps) {
   const [disbursementResult, setDisbursementResult] = React.useState<any>(null);
 
   const disburseMultiSig = useDisburseTokenUsingMultisig();
+
+  const safeWallet = useProjectSettingsStore(
+    (state) => state?.settings?.[projectUUID]?.['SAFE_WALLET']?.address,
+  );
+
+  const chainSettings = useProjectSettingsStore(
+    (state) => state?.settings?.[projectUUID]?.['BLOCKCHAIN'],
+  );
+
+  const safeNetwork = SAFE_WALLET[Number(chainSettings.chainid)];
 
   const { data: projectBeneficiaries, isLoading: isLoadingBeneficiaries } =
     useProjectBeneficiaries({
@@ -42,7 +54,8 @@ export default function CreateDisbursementMain({ type }: IProps) {
     });
 
   const validGroups = groups?.filter(
-    (group: any) => group._count.groupedBeneficiaries > 0,
+    (group: any) =>
+      group?._count?.groupedBeneficiaries || group?.totalBeneficiaries > 0,
   );
 
   const handleCreateDisbursement = async ({
@@ -55,7 +68,7 @@ export default function CreateDisbursementMain({ type }: IProps) {
     beneficiaries?: `0x${string}`[];
     beneficiaryGroup?: UUID;
     amount: string;
-    totalAmount?:string;
+    totalAmount?: string;
     details?: string;
   }) => {
     const result = await disburseMultiSig.mutateAsync({
@@ -80,12 +93,14 @@ export default function CreateDisbursementMain({ type }: IProps) {
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         data={disbursementResult}
+        safeNetwork={safeNetwork}
+        safeAddress={safeWallet}
       />
       {type === DisbursementSelectionType.INDIVIDUAL ? (
         <BeneficiaryDisbursementForm
           beneficiaries={projectBeneficiaries?.data}
           isLoading={isLoadingBeneficiaries}
-          handleDisbursement={(beneficiaries, amount,totalAmount,details) =>
+          handleDisbursement={(beneficiaries, amount, totalAmount, details) =>
             handleCreateDisbursement({
               beneficiaries,
               amount,
@@ -99,7 +114,12 @@ export default function CreateDisbursementMain({ type }: IProps) {
         <BeneficiaryGroupsDisbursementForm
           groups={validGroups}
           isLoading={isLoadingGroups}
-          handleDisbursement={(beneficiaryGroup, amount,totalAmount,details) =>
+          handleDisbursement={(
+            beneficiaryGroup,
+            amount,
+            totalAmount,
+            details,
+          ) =>
             handleCreateDisbursement({
               beneficiaryGroup,
               amount,

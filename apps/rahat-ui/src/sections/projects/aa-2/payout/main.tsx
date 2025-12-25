@@ -55,7 +55,10 @@ export default function PayoutView() {
           description="Track all the payout reports here"
         />
         <div className="flex flex-end gap-2">
-          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
             <IconLabelBtn
               Icon={Plus}
               handleClick={() => {

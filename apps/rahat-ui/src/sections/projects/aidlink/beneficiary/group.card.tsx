@@ -21,19 +21,23 @@ export default function GroupCard({ group, projectUUID }: GroupProps) {
       className="border rounded-sm hover:shadow-md transition-shadow"
     >
       <CardHeader className="pb-0">
-        <h4 className="font-semibold text-gray-900 truncate">{group.name}</h4>
+        <h4 className="font-semibold text-gray-900 break-words">
+          {group?.name}
+        </h4>
       </CardHeader>
       <CardContent className="pt-4">
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
             <p className="text-xs text-gray-500">Beneficiaries</p>
             <p className="font-semibold text-lg">
-              {group._count.groupedBeneficiaries}
+              {group?.totalBeneficiaries || group._count.groupedBeneficiaries}
             </p>
           </div>
           <div>
             <p className="text-xs text-gray-500">Total Disbursed</p>
-            <p className="font-semibold text-lg">N/A</p>
+            <p className="font-semibold text-lg">
+              {group?.totalCompletedAmount || 'N/A'}
+            </p>
           </div>
         </div>
 
@@ -60,7 +64,7 @@ export default function GroupCard({ group, projectUUID }: GroupProps) {
               View Details
             </Button>
           </Link>
-          <Button variant="outline" size="sm">
+          {/* <Button variant="outline" size="sm">
             <Edit className="h-4 w-4" />
           </Button>
           <Button
@@ -69,7 +73,7 @@ export default function GroupCard({ group, projectUUID }: GroupProps) {
             className="text-red-600 hover:text-red-700 bg-transparent"
           >
             <Trash2 className="h-4 w-4" />
-          </Button>
+          </Button> */}
         </div>
       </CardContent>
     </Card>

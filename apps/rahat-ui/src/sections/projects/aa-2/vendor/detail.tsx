@@ -26,7 +26,8 @@ export default function Detail() {
     'vendorOverview',
   );
 
-  const vendorDetails = useGetVendor(vendorId as UUID);
+  const { data: vendorsDetail } = useGetVendor(vendorId as UUID);
+  const vendor = vendorsDetail?.data?.find((v: any) => v.projectId === id);
 
   const { data, isLoading } = useGetVendorStellarStats({
     projectUUID: id,
@@ -51,7 +52,7 @@ export default function Detail() {
       <Back path={navRoute} />
       <Heading
         title="Vendor Details"
-        description={`Detailed view of the selected vendor (${vendorDetails?.data?.data?.name})`}
+        description={`Detailed view of the selected vendor (${vendor?.User?.name})`}
       />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="border bg-secondary rounded">
@@ -83,7 +84,7 @@ export default function Detail() {
 
         <TabsContent value="vendorOverview">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-            <ProfileCard data={vendorDetails?.data?.data} />
+            <ProfileCard data={vendor?.User} />
             <OverviewCard
               data={data?.data}
               loading={isLoading}

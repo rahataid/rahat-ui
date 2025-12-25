@@ -41,6 +41,7 @@ import { formatUnits } from 'viem';
 
 interface CardProps {
   title: string;
+  tip: string;
   content: string | number;
   color: string;
   icon: React.ReactNode;
@@ -71,12 +72,14 @@ export default function MultiSigWalletView() {
   const InfoCardData: CardProps[] = [
     {
       title: 'Total Balance',
+      tip: 'The total amount of available Rahat tokens currently held in the Safe wallet that can be proposed and added to the Project AA Project balance.',
       content: `${safeOwners?.tokenBalance} RHT` || 'N/A',
       color: 'green',
       icon: <Banknote strokeWidth={2.5} />,
     },
     {
       title: 'Signature Threshold',
+      tip: 'The minimum number of authorized owners who must approve and sign a multi-sig transaction in the Safe wallet before the transaction can be successfully executed.',
       content: `${safeOwners?.threshold || '-'} of ${
         safeOwners?.owners?.length || '-'
       }`,
@@ -85,13 +88,14 @@ export default function MultiSigWalletView() {
     },
     {
       title: 'Active Owners',
+      tip: 'The total number of active Safe wallet owners or admin who are authorized to sign and execute Gnosis multi-sig transactions.',
       content: safeOwners?.owners?.length || 'N/A',
       color: 'blue',
       icon: <Users strokeWidth={2.5} />,
     },
   ];
 
-  const InfoCard = ({ title, content, color, icon }: CardProps) => {
+  const InfoCard = ({ title, content, color, icon, tip }: CardProps) => {
     return (
       <Card
         className={`rounded-sm text-${color}-500 bg-${color}-50 border-${color}-100`}
@@ -107,8 +111,8 @@ export default function MultiSigWalletView() {
                     className="text-muted-foreground cursor-help hover:text-primary transition-colors"
                   />
                 </TooltipTrigger>
-                <TooltipContent>
-                  <p>{title}</p>
+                <TooltipContent className="w-72">
+                  <p>{tip}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -147,6 +151,7 @@ export default function MultiSigWalletView() {
             content={card.content}
             color={card.color}
             icon={card.icon}
+            tip={card.tip}
           />
         ))}
       </div>

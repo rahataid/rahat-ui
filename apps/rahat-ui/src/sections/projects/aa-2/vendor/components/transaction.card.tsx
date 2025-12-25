@@ -1,9 +1,14 @@
-import { useProjectSettingsStore } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { Heading } from 'apps/rahat-ui/src/common';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { getAssetCode, getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
+import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
+import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
+import { UUID } from 'crypto';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { ArrowLeftRight, Copy, CopyCheck, Info } from 'lucide-react';
 import { useParams } from 'next/navigation';
@@ -28,6 +33,12 @@ const Transaction = ({ amount, date, hash, title }: Txn) => {
     settings: s.settings,
   }));
   const { clickToCopy, copyAction } = useCopy();
+  const txnUrl = getExplorerUrl({
+    chainSettings:
+      settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+    target: 'tx',
+    value: hash,
+  });
   return (
     <div className="flex justify-between space-x-4 items-center">
       <div className="flex space-x-4 items-center">
@@ -43,7 +54,7 @@ const Transaction = ({ amount, date, hash, title }: Txn) => {
           <div className="flex gap-1">
             <a
               target="_blank"
-              href={getStellarTxUrl(settings, projectId, hash as string)}
+              href={txnUrl || '#'}
               className="cursor-pointer text-[14px] font-normal text-[#297AD6] leading-[16px]"
             >
               <p className="text-sm font-medium truncate w-24">{hash}</p>

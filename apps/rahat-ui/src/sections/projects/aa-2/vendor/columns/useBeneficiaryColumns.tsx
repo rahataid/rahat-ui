@@ -94,19 +94,16 @@ export const useVendorsBeneficiaryTableColumns = (
         const txHash = row?.original?.txHash as string;
 
         if (!txHash) return <div>N/A</div>;
-
+        const txnUrl = getExplorerUrl({
+          chainSettings: settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+          target: 'tx',
+          value: txHash,
+        });
         return (
           <div className="flex flex-row">
             <div className="w-20 truncate">
               <a
-                href={
-                  getExplorerUrl({
-                    chainSettings:
-                      settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
-                    target: 'tx',
-                    value: txHash,
-                  }) || '#'
-                }
+                href={txnUrl || '#'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline cursor-pointer  text-[14px] leading-[16px] font-normal !text-[#297AD6]"

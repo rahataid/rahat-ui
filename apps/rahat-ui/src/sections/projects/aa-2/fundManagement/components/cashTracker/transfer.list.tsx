@@ -19,6 +19,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { useGetCashApprovedByMe } from '@rahat-ui/query';
+import { AARoles } from '@rahat-ui/auth';
 
 function TransferList({
   transfers,
@@ -42,6 +44,14 @@ function TransferList({
     transfer: FundTransfer;
     pendingTransfer: any;
   } | null>(null);
+  const donorSmartAccount = entities.find(
+    (entity) => entity?.alias.replace(/\s+/g, '') === AARoles.UNICEFNepalCO,
+  )?.smartaccount;
+
+  const { data } = useGetCashApprovedByMe(id, {
+    from: donorSmartAccount || '',
+    to: currentEntity?.smartaccount || '',
+  });
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-GB', {
@@ -100,12 +110,16 @@ function TransferList({
             const isConfirmed =
               transfer.status === 'sent' || transfer.status === 'received';
             const isForCurrentUser = transfer.to === currentEntity?.alias;
-            const canConfirm = isPending && isForCurrentUser;
             const pendingTransfer = pendingTransfers.find(
               (pt) =>
                 pt.timestamp === transfer.timestamp &&
                 pt.amount === transfer.amount,
             );
+            const canConfirm =
+              isPending &&
+              isForCurrentUser &&
+              Number(data?.data?.formatted) >= pendingTransfer.amount;
+
             return (
               <div
                 key={transfer.id}

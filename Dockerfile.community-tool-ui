@@ -1,12 +1,19 @@
 # Install dependencies only when needed
 FROM node:20-alpine AS deps
 WORKDIR /usr/src/app
+
+# Copy package files for better layer caching
 COPY dist/apps/community-tool-ui/package.json ./
-RUN yarn install --production
+COPY dist/apps/community-tool-ui/yarn.lock* ./
+COPY dist/apps/community-tool-ui/pnpm-lock.yaml* ./
+
+RUN yarn install --production --frozen-lockfile
 
 FROM node:20-alpine AS runner
 USER node
 WORKDIR /usr/src/app
+
 COPY --chown=node:node dist/apps/community-tool-ui ./
 COPY --chown=node:node --from=deps /usr/src/app/node_modules ./node_modules
+
 CMD [ "yarn", "start" ]

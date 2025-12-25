@@ -34,8 +34,32 @@ jobs:
         run: |
           npm install -g pnpm@8.14.1 
 
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - uses: actions/cache@v3
+        name: Cache Nx outputs
+        with:
+          path: |
+            .nx/cache
+            dist
+          key: ${{ runner.os }}-nx-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            ${{ runner.os }}-nx-
+
       - name: Install dependencies
-        run: pnpm install     
+        run: pnpm install --frozen-lockfile
 
       - name: install dependencies and build apps
         run: |
@@ -59,6 +83,8 @@ jobs:
           file: Dockerfile.rahat-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           tags: esatya/rahat-ui:dev
+          cache-from: type=registry,ref=esatya/rahat-ui:buildcache
+          cache-to: type=registry,ref=esatya/rahat-ui:buildcache,mode=max
   
   community-tool-ui:
     name: community-tool-ui
@@ -80,8 +106,32 @@ jobs:
         run: |
           npm install -g pnpm@8.14.1 
 
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - uses: actions/cache@v3
+        name: Cache Nx outputs
+        with:
+          path: |
+            .nx/cache
+            dist
+          key: ${{ runner.os }}-nx-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            ${{ runner.os }}-nx-
+
       - name: Install dependencies
-        run: pnpm install     
+        run: pnpm install --frozen-lockfile
 
       - name: install dependencies and build apps
         run: |
@@ -105,3 +155,5 @@ jobs:
           file: Dockerfile.community-tool-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           tags: esatya/community-tool-ui:dev
+          cache-from: type=registry,ref=esatya/community-tool-ui:buildcache
+          cache-to: type=registry,ref=esatya/community-tool-ui:buildcache,mode=max

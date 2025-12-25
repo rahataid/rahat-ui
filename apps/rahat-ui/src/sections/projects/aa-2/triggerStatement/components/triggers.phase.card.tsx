@@ -53,7 +53,10 @@ export default function TriggersPhaseCard({
             } text-xs`}
           />
 
-          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
             <IconLabelBtn
               variant="outline"
               className={`border-primary text-primary ${

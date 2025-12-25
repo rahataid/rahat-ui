@@ -43,6 +43,7 @@ import {
   AlertTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 export const AutomatedFormSchema = z.object({
   title: z.string().min(2, { message: 'Please enter trigger title' }),
@@ -316,19 +317,6 @@ export default function AddTriggerView() {
           </div>
           <div className="grid grid-cols-1 gap-2">
             {allTriggers.map((t, i) => {
-              const date = new Date(t.time);
-
-              const time = date.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true,
-              });
-
-              const formattedDate = date.toLocaleDateString('en-US', {
-                month: 'long',
-                day: '2-digit',
-                year: 'numeric',
-              });
               return (
                 <div key={i} className="p-4 rounded border shadow">
                   <div className="flex justify-between items-center space-x-4 mb-2">
@@ -357,14 +345,14 @@ export default function AddTriggerView() {
                   <p className="text-muted-foreground text-sm/4">
                     {t.riverBasin}
 
-                    {t.triggerStatement.stationName && (
+                    {t?.triggerStatement?.stationName && (
                       <>
                         {SEP}
                         {t.triggerStatement.stationName}
                       </>
                     )}
 
-                    {t.triggerStatement.source && (
+                    {t?.triggerStatement?.source && (
                       <>
                         {SEP}
                         {sourceLabelMapper[t.triggerStatement.source] || ''} (
@@ -376,9 +364,9 @@ export default function AddTriggerView() {
                       <>
                         {SEP}
                         <span>
-                          {time}
+                          {dateFormat(t.time, 'hh:mm a')}
                           <br />
-                          {formattedDate}
+                          {dateFormat(t.time, 'MMMM dd, yyyy')}
                         </span>
                       </>
                     )}
@@ -395,7 +383,7 @@ export default function AddTriggerView() {
           <AlertDescription>
             <p>Please verify if data source types are available.</p>
             <ul className="list-inside list-disc text-sm">
-              <li>Check triggers settings 'DATASOURCETYPES'</li>
+              <li>Check triggers settings &apos;DATASOURCETYPES&apos;</li>
             </ul>
           </AlertDescription>
         </Alert>

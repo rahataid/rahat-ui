@@ -15,7 +15,14 @@ const VendorDetailsPage = dynamic(
 
 export default function Page() {
   return (
-    <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.UNICEFNepalCO]}>
+    <RoleAuth
+      roles={[
+        AARoles.ADMIN,
+        AARoles.MANAGER,
+        AARoles.Municipality,
+        AARoles.UNICEFNepalCO,
+      ]}
+    >
       <VendorDetailsPage />
     </RoleAuth>
   );

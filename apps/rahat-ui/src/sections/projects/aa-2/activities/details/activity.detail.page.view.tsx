@@ -67,7 +67,7 @@ export default function ActivitiesDetailView() {
           <div className="flex flex-col gap-2 lg:flex-row items-center justify-center">
             <div className="flex space-x-2">
               <RoleAuth
-                roles={[AARoles.ADMIN, AARoles.MANAGER]}
+                roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
                 hasContent={false}
               >
                 <DialogComponent
@@ -84,7 +84,7 @@ export default function ActivitiesDetailView() {
               </RoleAuth>
 
               <RoleAuth
-                roles={[AARoles.ADMIN, AARoles.MANAGER]}
+                roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
                 hasContent={false}
               >
                 <DialogComponent
@@ -101,7 +101,7 @@ export default function ActivitiesDetailView() {
               </RoleAuth>
             </div>
             <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.MANAGER]}
+              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
               hasContent={false}
             >
               <IconLabelBtn

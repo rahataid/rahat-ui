@@ -200,7 +200,10 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                 payoutData={payout}
               />
               {payout?.type === 'FSP' && (
-                <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+                <RoleAuth
+                  roles={[AARoles.ADMIN, AARoles.Municipality]}
+                  hasContent={false}
+                >
                   <Button
                     className={`gap-2 text-sm ${
                       payout?.hasFailedPayoutRequests === false && 'hidden'
@@ -222,7 +225,10 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                 (payout?.extras?.paymentProviderName ===
                   'Manual Bank Transfer' ||
                   payout?.extras?.paymentProviderName === 'Manual') && (
-                  <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+                  <RoleAuth
+                    roles={[AARoles.ADMIN, AARoles.Municipality]}
+                    hasContent={false}
+                  >
                     <Button
                       className={`gap-2 text-sm ${
                         payout?.status === 'COMPLETED' && 'hidden'

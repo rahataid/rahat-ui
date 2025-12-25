@@ -49,7 +49,6 @@ export default function AddAutomatedTriggerForm({
   sourceOptions,
   subTypeOptions,
 }: IProps) {
-  console.log({ sourceOptions, subTypeOptions });
   const source = form.watch('source');
   const triggerSource = form.watch('triggerStatement.source');
   const triggerSourceSubType = form.watch('triggerStatement.sourceSubType');
@@ -148,10 +147,6 @@ export default function AddAutomatedTriggerForm({
       </>
     );
   };
-  console.log(
-    { formValues: form.getValues().triggerStatement.source },
-    triggerSourceSubType,
-  );
 
   return (
     <>

@@ -172,6 +172,16 @@ export default function InitiateFundTransfer({}: {}) {
     stakeholders?.find((s: Entities) => s.smartaccount === formData.to)
       ?.alias || 'Municipility';
 
+  const handleClear = async () => {
+    setFormData({
+      from: currentEntity?.smartaccount || '',
+      to: '',
+      amount: '',
+      currency: 'NPR',
+      comments: '',
+    });
+    setError('');
+  };
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -316,8 +326,8 @@ export default function InitiateFundTransfer({}: {}) {
                     return;
                   }
 
-                  if (value < 0) {
-                    setError('Amount cannot be negative');
+                  if (value <= 0) {
+                    setError('Amount must be greater than 0');
                     return;
                   }
 
@@ -354,8 +364,8 @@ export default function InitiateFundTransfer({}: {}) {
 
         {/* Buttons */}
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline">
-            Cancel
+          <Button type="button" variant="outline" onClick={handleClear}>
+            Clear
           </Button>
           <Button
             type="submit"

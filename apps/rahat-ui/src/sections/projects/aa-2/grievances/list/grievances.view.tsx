@@ -78,7 +78,10 @@ function GrievancesView() {
           description="Track all the grievances in the project"
         />
         <div className="flex flex-end gap-2">
-          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -107,7 +110,10 @@ function GrievancesView() {
               </Tooltip>
             </TooltipProvider>
           </RoleAuth>
-          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
             <IconLabelBtn
               Icon={Plus}
               handleClick={() =>

@@ -259,18 +259,8 @@ export default function InitiateFundTransfer({}: {}) {
           <div>
             <Label>To</Label>
             <Select
-              onValueChange={(value) => {
-                const selectedStakeholder = stakeholders?.find(
-                  (s: Entities) => s.smartaccount === value,
-                );
-                const toValue =
-                  selectedStakeholder?.alias === 'Beneficiary'
-                    ? contractSettings?.aaproject?.address
-                    : value;
-                setFormData({ ...formData, to: toValue });
-              }}
               value={formData.to}
-              // onValueChange={(value) => setFormData({ ...formData, to: value })}
+              onValueChange={(value) => setFormData({ ...formData, to: value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select recipient" />
@@ -279,11 +269,7 @@ export default function InitiateFundTransfer({}: {}) {
                 {stakeholders?.map((s: Entities) => (
                   <SelectItem
                     key={s.address}
-                    value={
-                      s?.alias === 'Beneficiary'
-                        ? contractSettings?.aaproject?.address
-                        : s.smartaccount
-                    }
+                    value={s.smartaccount}
                     disabled={isRecipientDisabled(s)}
                   >
                     {s.alias}

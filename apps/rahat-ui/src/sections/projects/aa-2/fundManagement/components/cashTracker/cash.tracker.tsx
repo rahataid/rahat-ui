@@ -14,6 +14,7 @@ import {
   useGetBeneficiaryBalance,
   useGetCash,
   useGetTransactions,
+  useInitateFundTransfer,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 
@@ -73,11 +74,23 @@ export function CashTracker() {
   const contractSettings = useProjectSettingsStore(
     (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
+  const initiateFundTransfer = useInitateFundTransfer(uuid);
 
   const getCash = useGetCash(uuid);
   const confirmReceipt = async (payload: ConfirmReceipt) => {
     await getCash.mutateAsync({
       payload: payload,
+    });
+
+    //initiate amount for beneficiary
+    await initiateFundTransfer.mutateAsync({
+      payload: {
+        from: payload.from,
+        to: contractSettings?.aaproject?.address,
+        amount: payload.amount,
+        description: 'Payout to beneficiary',
+        alias: 'Beneficiary',
+      },
     });
   };
 
@@ -221,23 +234,20 @@ export function CashTracker() {
           <p className="text-gray-500 mt-1">Track your cash flow here.</p>
         </div>
         <div className="flex gap-3">
-          {(currentEntity?.alias === AARoles.UNICEFNepalCO ||
-            currentEntity?.alias === AARoles.Municipality) &&
-          currentEntity?.alias === AARoles.UNICEFNepalCO
-            ? transactions?.data?.entityOutcomes[0]?.balance > 0
-            : transactions?.data?.entityOutcomes[1]?.balance > 0 && (
-                <Button
-                  onClick={() =>
-                    router.push(
-                      `/projects/aa/${uuid}/fund-management/cash-tracker/initiate`,
-                    )
-                  }
-                  className="text-blue-500 border-blue-500 hover:bg-blue-50"
-                  variant="outline"
-                >
-                  Initiate Fund Transfer
-                </Button>
-              )}
+          {currentEntity?.alias === AARoles.UNICEFNepalCO &&
+            transactions?.data?.entityOutcomes[0]?.balance > 0 && (
+              <Button
+                onClick={() =>
+                  router.push(
+                    `/projects/aa/${uuid}/fund-management/cash-tracker/initiate`,
+                  )
+                }
+                className="text-blue-500 border-blue-500 hover:bg-blue-50"
+                variant="outline"
+              >
+                Initiate Fund Transfer
+              </Button>
+            )}
           {currentUser?.data?.roles?.includes(AARoles.UNICEFNepalCO) && (
             <Button
               onClick={() =>

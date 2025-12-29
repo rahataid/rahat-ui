@@ -43,7 +43,7 @@ const GarphQlProvider = ({ children }: any) => {
         }) : operation;
       },
       didAuthError(error) {
-        return error.graphQLErrors.some(e => e.extensions?.code === 'UNAUTHENTICATED');
+        return error.graphQLErrors.some(e => e.extensions?.['code'] === 'UNAUTHENTICATED');
       },
       async refreshAuth() {
         const result = await utilities.mutate(REFRESH_TOKEN_MUTATION, {token});

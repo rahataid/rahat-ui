@@ -44,19 +44,20 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
   const { navItems: menuItems } = useProjectNavItems(projectType);
   const { headerNav } = useProjectHeaderItems(projectType);
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
-    return (
-      <ResizablePanel minSize={40} key={index}>
-        {children}
-        {/* <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea> */}
-      </ResizablePanel>
-    );
+    return children;
+    // (
+    //   <ResizablePanel minSize={40} key={index}>
+    //     {children}
+    //     {/* <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea> */}
+    //   </ResizablePanel>
+    // );
   };
   const renderChildren = () => {
     if (Array.isArray(children)) {
       return children.map((child, index) => {
         return (
           <>
-            <ResizableHandle withHandle />
+            {/* <ResizableHandle withHandle /> */}
             {renderResizablePanel(child, index)}
           </>
         );
@@ -96,9 +97,9 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
         ))}
         <div className="w-full h-full">
           <ProjectNav component={headerNav} />
-          <ResizablePanelGroup direction="horizontal">
-            {renderChildren()}
-          </ResizablePanelGroup>
+          {/* <ResizablePanelGroup direction="horizontal"> */}
+          {renderChildren()}
+          {/* </ResizablePanelGroup> */}
         </div>
       </SidebarProvider>
     </>

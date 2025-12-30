@@ -12,7 +12,7 @@ import {
 
 import { useParams } from 'next/navigation';
 
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
+import { PROJECT_SETTINGS_KEYS, usePagination, useProjectBeneficiaries, useProjectSettingsStore } from '@rahat-ui/query';
 
 import {
   CustomPagination,
@@ -21,17 +21,24 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { useProjectBeneficiaryTableColumns } from './columns';
+import { useReadRahatTokenDecimals } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatToken';
 
 function BeneficiaryTable() {
   const { id } = useParams();
   const uuid = id as UUID;
 
+  const contractSettings = useProjectSettingsStore((state)=>state.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT]);
+   const { data: tokenNumber } = useReadRahatTokenDecimals({
+      address: contractSettings?.rahattoken?.address,
+    });
+  
+   
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
     usePagination();
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const columns = useProjectBeneficiaryTableColumns();
+  const columns = useProjectBeneficiaryTableColumns(Number(tokenNumber));
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,

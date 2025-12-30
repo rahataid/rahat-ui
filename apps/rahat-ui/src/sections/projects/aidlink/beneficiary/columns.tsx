@@ -13,8 +13,9 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useParams, useRouter } from 'next/navigation';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { formatUnits } from 'viem';
 
-export const useProjectBeneficiaryTableColumns = () => {
+export const useProjectBeneficiaryTableColumns = (tokenNumber:number) => {
   const router = useRouter();
   const { id } = useParams();
 
@@ -65,6 +66,11 @@ export const useProjectBeneficiaryTableColumns = () => {
       accessorKey: 'disbursedAmount',
       header: 'Disbursed Amount',
       cell: ({ row }) => <div> {row?.original?.amount || 'N/A'}</div>,
+    },
+    {
+      accessorKey: 'availableAmount',
+      header: 'Available Amount',
+      cell: ({ row }) => <div> {formatUnits(row?.original?.remaningBalance,tokenNumber )|| 'N/A'}</div>,
     },
     {
       id: 'actions',

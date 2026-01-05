@@ -46,7 +46,7 @@ export default function ProjectDashboard() {
   const walletData = useMemo(
     () => [
       {
-        name: 'Genosis Wallet',
+        name: 'Gnosis Wallet',
         value: Number(disbursementData?.safeBalance) || 0,
         color: '#3B82F6',
       },

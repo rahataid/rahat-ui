@@ -28,6 +28,7 @@ export default function Budget({}: {}) {
     currency: 'NPR',
   });
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [error, setError] = useState('');
 
   const id = useParams().id as UUID;
   const router = useRouter();
@@ -56,9 +57,7 @@ export default function Budget({}: {}) {
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount)) return '';
 
-    const formatted = numAmount.toLocaleString('en-IN', {
-      maximumFractionDigits: 0,
-    });
+    const formatted = numAmount.toLocaleString('en-IN', {});
 
     return currency === 'NPR' ? `Rs.${formatted}` : `$${formatted}`;
   };
@@ -98,21 +97,35 @@ export default function Budget({}: {}) {
                 <SelectItem value="USD">USD</SelectItem>
               </SelectContent>
             </Select>
-            <Input
-              type="number"
-              placeholder="Enter amount"
-              value={formData.amount}
-              onChange={(e) =>
-                setFormData({ ...formData, amount: e.target.value })
-              }
-              className="flex-1"
-            />
+            <div className="flex flex-col gap-1">
+              <Input
+                type="number"
+                placeholder="Enter amount"
+                value={formData.amount}
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value);
+                  if (value <= 0) {
+                    setError('Amount must be greater than 0');
+                    return;
+                  }
+                  setError('');
+
+                  setFormData({ ...formData, amount: value.toString() });
+                }}
+                className="flex-1"
+              />
+              {error && <p className="text-red-700 text-sm">{error}</p>}
+            </div>
           </div>
         </div>
 
         {/* Buttons */}
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setFormData({ amount: '', currency: 'NPR' })}
+          >
             Clear
           </Button>
           <Button

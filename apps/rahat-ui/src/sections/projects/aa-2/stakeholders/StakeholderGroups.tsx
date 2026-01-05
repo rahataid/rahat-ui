@@ -63,7 +63,10 @@ const StakeGoldersGroups = () => {
             value={filters?.search || ''}
           />
 
-          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
             <AddButton
               path={`/projects/aa/${id}/stakeholders/groups/add`}
               name="Stakeholder Group"

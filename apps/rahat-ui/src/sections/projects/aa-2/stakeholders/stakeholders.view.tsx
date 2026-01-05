@@ -134,7 +134,10 @@ function StakeholdersView() {
           </TabsTrigger>
         </TabsList>
 
-        <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+        <RoleAuth
+          roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+          hasContent={false}
+        >
           <IconLabelBtn
             name="Import Stakeholders"
             Icon={CloudDownload}
@@ -174,7 +177,7 @@ function StakeholdersView() {
                 value={filters?.supportArea || ''}
               />
               <RoleAuth
-                roles={[AARoles.ADMIN, AARoles.MANAGER]}
+                roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
                 hasContent={false}
               >
                 <AddButton

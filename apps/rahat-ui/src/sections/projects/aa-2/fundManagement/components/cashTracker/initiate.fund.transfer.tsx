@@ -172,6 +172,16 @@ export default function InitiateFundTransfer({}: {}) {
     stakeholders?.find((s: Entities) => s.smartaccount === formData.to)
       ?.alias || 'Municipility';
 
+  const handleClear = async () => {
+    setFormData({
+      from: currentEntity?.smartaccount || '',
+      to: '',
+      amount: '',
+      currency: 'NPR',
+      comments: '',
+    });
+    setError('');
+  };
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -249,18 +259,8 @@ export default function InitiateFundTransfer({}: {}) {
           <div>
             <Label>To</Label>
             <Select
-              onValueChange={(value) => {
-                const selectedStakeholder = stakeholders?.find(
-                  (s: Entities) => s.smartaccount === value,
-                );
-                const toValue =
-                  selectedStakeholder?.alias === 'Beneficiary'
-                    ? contractSettings?.aaproject?.address
-                    : value;
-                setFormData({ ...formData, to: toValue });
-              }}
               value={formData.to}
-              // onValueChange={(value) => setFormData({ ...formData, to: value })}
+              onValueChange={(value) => setFormData({ ...formData, to: value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select recipient" />
@@ -269,11 +269,7 @@ export default function InitiateFundTransfer({}: {}) {
                 {stakeholders?.map((s: Entities) => (
                   <SelectItem
                     key={s.address}
-                    value={
-                      s?.alias === 'Beneficiary'
-                        ? contractSettings?.aaproject?.address
-                        : s.smartaccount
-                    }
+                    value={s.smartaccount}
                     disabled={isRecipientDisabled(s)}
                   >
                     {s.alias}
@@ -316,8 +312,8 @@ export default function InitiateFundTransfer({}: {}) {
                     return;
                   }
 
-                  if (value < 0) {
-                    setError('Amount cannot be negative');
+                  if (value <= 0) {
+                    setError('Amount must be greater than 0');
                     return;
                   }
 
@@ -354,8 +350,8 @@ export default function InitiateFundTransfer({}: {}) {
 
         {/* Buttons */}
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline">
-            Cancel
+          <Button type="button" variant="outline" onClick={handleClear}>
+            Clear
           </Button>
           <Button
             type="submit"

@@ -73,7 +73,10 @@ export const useProjectStakeholdersTableColumns = () => {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
             <div className="flex items-center gap-2">
               <IconDialogComponent
                 Icon={Edit2}
@@ -175,7 +178,10 @@ export const useProjectStakeholdersGroupTableColumns = () => {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
             <div className="flex items-center gap-2">
               <Eye
                 className="hover:text-primary cursor-pointer"

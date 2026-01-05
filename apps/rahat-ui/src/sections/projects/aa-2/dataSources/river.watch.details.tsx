@@ -3,22 +3,16 @@ import { Info, WaterLevelView } from './components';
 import RiverWatchMap from './components/dhm/river.watch.map';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import {
-  PROJECT_SETTINGS_KEYS,
-  useDhmWaterLevels,
-  useProjectSettingsStore,
-} from '@rahat-ui/query';
+import { useDhmSingleSeriesWaterLevels } from '@rahat-ui/query';
 import React from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { addDays, format, min, subDays } from 'date-fns';
+import { format } from 'date-fns';
 
 export default function RiverWatchDetails() {
-  const params = useParams();
-  const projectId = params.id as UUID;
-
-  const { settings } = useProjectSettingsStore((state) => ({
-    settings: state.settings,
-  }));
+  const { id: projectId, riverWatchId: seriesId } = useParams() as {
+    id: UUID;
+    riverWatchId: string;
+  };
 
   const [activeTab, setActiveTab] = React.useState<string>('Point');
   const [pickedDate, setPickedDate] = React.useState<Date | undefined>(
@@ -30,48 +24,13 @@ export default function RiverWatchDetails() {
     [pickedDate],
   );
 
-  function getFormattedDateRange(selectedDate: Date): {
-    startDate: string;
-    endDate: string;
-  } {
-    const today = new Date();
-    const threeDaysAfter = addDays(selectedDate, 3);
-
-    const end = min([threeDaysAfter, today]); // choose whichever is earlier
-    const start = subDays(end, 6); // 7-day range
-
-    return {
-      startDate: format(start, 'yyyy/MM/dd'),
-      endDate: format(end, 'yyyy/MM/dd'),
-    };
-  }
-
-  const { startDate, endDate } = React.useMemo(() => {
-    return getFormattedDateRange(pickedDate ?? new Date());
-  }, [pickedDate]);
-
-  const { data: riverWatch, isLoading } = useDhmWaterLevels(
+  const { data: riverWatch, isLoading } = useDhmSingleSeriesWaterLevels(
     projectId,
-    {
-      riverBasin:
-        settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-          'river_basin'
-        ],
-      type: activeTab?.toUpperCase(),
-      // from: activeTab === 'Daily' ? startDate : formattedDate,
-      // to: activeTab === 'Daily' ? endDate : formattedDate,
-      from: formattedDate,
-      to: formattedDate,
-    },
     activeTab,
+    { date: formattedDate, seriesId },
   );
 
-  const updatedAt = riverWatch?.updatedAt;
-
-  const riverWatchInfoList = riverWatch?.info ?? [];
-
-  // This can be modified later to handle multiple rivers if needed
-  const primaryRiverWatchInfo = riverWatchInfoList[0] ?? null;
+  const updatedAt = riverWatch?.info?.waterLevel?.datetime;
 
   return (
     <div className="p-4">
@@ -85,21 +44,21 @@ export default function RiverWatchDetails() {
           <TableLoader />
         ) : (
           <div className="flex flex-col gap-4">
-            <Info riverWatch={primaryRiverWatchInfo} updatedAt={updatedAt} />
+            <Info riverWatch={riverWatch?.info} updatedAt={updatedAt} />
             <WaterLevelView
               activeTab={activeTab}
               setActiveTab={setActiveTab}
-              data={primaryRiverWatchInfo}
+              data={riverWatch?.info}
               selectedDate={pickedDate}
               setSelectedDate={setPickedDate}
             />
             <RiverWatchMap
               coordinates={[
                 {
-                  latitude: primaryRiverWatchInfo?.latitude,
-                  longitude: primaryRiverWatchInfo?.longitude,
-                  name: primaryRiverWatchInfo?.name,
-                  stationIndex: primaryRiverWatchInfo?.stationIndex,
+                  latitude: riverWatch?.info?.latitude,
+                  longitude: riverWatch?.info?.longitude,
+                  name: riverWatch?.info?.name,
+                  stationIndex: riverWatch?.info?.stationIndex,
                 },
               ]}
             />

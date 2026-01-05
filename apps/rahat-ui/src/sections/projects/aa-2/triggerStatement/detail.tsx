@@ -94,7 +94,10 @@ export default function TriggerStatementDetail() {
           } text-xs`}
         />
         <div className="flex space-x-2">
-          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
             <DeleteButton
               className={`rounded flex gap-1 items-center text-sm font-medium ${
                 version && 'hidden'
@@ -105,7 +108,10 @@ export default function TriggerStatementDetail() {
               disabled={trigger?.isTriggered || trigger?.phase?.isActive}
             />
           </RoleAuth>
-          <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
             <EditButton
               className={`rounded flex gap-1 items-center text-sm font-medium ${
                 version && 'hidden'
@@ -119,7 +125,10 @@ export default function TriggerStatementDetail() {
               disabled={trigger?.phase?.isActive || trigger?.isTriggered}
             />
           </RoleAuth>
-          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
             {source === 'MANUAL' &&
               !trigger?.phase?.isActive &&
               !trigger?.isTriggered && (

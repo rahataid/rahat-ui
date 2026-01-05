@@ -15,7 +15,7 @@ const AddTriggerStatementPage = dynamic(
 
 export default function Page() {
   return (
-    <RoleAuth roles={[AARoles.ADMIN]}>
+    <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]}>
       <AddTriggerStatementPage />
     </RoleAuth>
   );

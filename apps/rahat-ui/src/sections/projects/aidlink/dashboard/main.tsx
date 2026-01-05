@@ -46,7 +46,7 @@ export default function ProjectDashboard() {
   const walletData = useMemo(
     () => [
       {
-        name: 'Genosis Wallet',
+        name: 'Gnosis Wallet',
         value: Number(disbursementData?.safeBalance) || 0,
         color: '#3B82F6',
       },
@@ -59,46 +59,45 @@ export default function ProjectDashboard() {
     [disbursementData],
   );
 
-  const stats = useMemo(
-    () => {
-      const totalBeneficiaries = Number(
-        data?.find((item: any) => item.name === 'BENEFICIARY_TOTAL')?.data
-          ?.count || 0
-      );
-      
-      const totalDisbursed = Number(
-        data
-          ?.find((item: any) => item.name === 'DISBURSEMENT_TOTAL')
-          ?.data?.find((entry:any)=>entry.id === 'COMPLETED')?.amount ||0
-      );
-      const totalOffRamped = Number(offrampStatusData?.offRampedAmount) || 0; // Currently hardcoded, update when data is available
-      
-      return [
-        {
-          label: 'Total Beneficiaries',
-          value: formatNumber(totalBeneficiaries, 'international'),
-          icon: Users,
-          textColor: 'text-blue-600',
-          bg: 'from-blue-50 to-blue-100 border-blue-200',
-        },
-        {
-          label: 'Total Disbursed',
-          value: `${formatNumber(totalDisbursed, 'international')} USDC`,
-          icon: Wallet,
-          textColor: 'text-green-600',
-          bg: 'from-green-50 to-green-100 border-green-200',
-        },
-        {
-          label: 'Total Off-ramped',
-          value: `${formatNumber(totalOffRamped, 'international')} USDC`,
-          icon: CheckCircle,
-          textColor: 'text-purple-600',
-          bg: 'from-purple-50 to-purple-100 border-purple-200',
-        },
-      ];
-    },
-    [data,offrampStatusData],
-  );
+  const stats = useMemo(() => {
+    const totalBeneficiaries = Number(
+      data?.find((item: any) => item.name === 'BENEFICIARY_TOTAL')?.data
+        ?.count || 0,
+    );
+
+    const totalDisbursed = Number(
+      data
+        ?.find((item: any) => item.name === 'DISBURSEMENT_TOTAL')
+        ?.data?.filter((d: any) => d.id === 'COMPLETED')
+        ?.reduce((sum: number, curr: any) => sum + curr.amount, 0) || 0,
+    );
+
+    const totalOffRamped = Number(offrampStatusData?.offRampedAmount) || 0; // Currently hardcoded, update when data is available
+
+    return [
+      {
+        label: 'Total Beneficiaries',
+        value: formatNumber(totalBeneficiaries, 'international'),
+        icon: Users,
+        textColor: 'text-blue-600',
+        bg: 'from-blue-50 to-blue-100 border-blue-200',
+      },
+      {
+        label: 'Total Disbursed',
+        value: `${formatNumber(totalDisbursed, 'international')} USDC`,
+        icon: Wallet,
+        textColor: 'text-green-600',
+        bg: 'from-green-50 to-green-100 border-green-200',
+      },
+      {
+        label: 'Total Off-ramped',
+        value: `${formatNumber(totalOffRamped, 'international')} USDC`,
+        icon: CheckCircle,
+        textColor: 'text-purple-600',
+        bg: 'from-purple-50 to-purple-100 border-purple-200',
+      },
+    ];
+  }, [data]);
 
   return (
     <ScrollArea className="h-[calc(100vh-60px)]">

@@ -20,30 +20,7 @@ import {
 } from '@rahat-ui/query';
 import QuickExportReport from './quick-export-report';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
-
-// const recentExports = [
-//   {
-//     id: 1,
-//     name: 'Beneficiaries_Report_Aug2025.xlsx',
-//     date: 'August 19, 2025 at 1:38 PM',
-//     detail: '1,234 records',
-//     status: 'success',
-//   },
-//   {
-//     id: 2,
-//     name: 'Financial_Summary_Aug2025.pdf',
-//     date: 'August 18, 2025 at 3:22 PM',
-//     detail: '$123,456 total',
-//     status: 'failed',
-//   },
-//   {
-//     id: 3,
-//     name: 'Transaction_History_Aug2025.xlsx',
-//     date: 'August 17, 2025 at 11:15 AM',
-//     detail: '2,564 transactions',
-//     status: 'success',
-//   },
-// ];
+import { formatNumber } from 'apps/rahat-ui/src/utils/string';
 
 const fileExportData = [
   {
@@ -94,7 +71,10 @@ const ReportingPage = () => {
       },
       {
         title: 'Total Disbursement Amount',
-        value: `${completedData?.amount || 0} USDC`,
+        value: `${formatNumber(
+          completedData?.amount || 0,
+          'international',
+        )} USDC`,
         subtext: 'Successfully distributed',
         icon: DollarSign,
         iconColor: 'text-green-500',

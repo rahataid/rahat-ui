@@ -27,7 +27,7 @@ export default function RiverWatchDetails() {
   const { data: riverWatch, isLoading } = useDhmSingleSeriesWaterLevels(
     projectId,
     activeTab,
-    { date: formattedDate, seriesId },
+    { date: formattedDate, seriesId: Number(seriesId) },
   );
 
   const updatedAt = riverWatch?.info?.waterLevel?.datetime;

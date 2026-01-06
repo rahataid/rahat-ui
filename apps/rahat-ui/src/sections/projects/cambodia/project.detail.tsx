@@ -12,7 +12,7 @@ import DropdownComponent from '../components/dropdownComponent';
 import SpinnerLoader from '../components/spinner.loader';
 
 export default function ProjectDetail() {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear() - 1;
 
   const currentMonth = new Date().getMonth() + 1;
   const currentMonthName = MONTHS.find(

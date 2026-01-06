@@ -112,7 +112,7 @@ export default function CHWView() {
 
     XLSX.writeFile(workbook, 'HealthWorkers.xlsx');
   };
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear() - 1;
 
   const currentMonth = new Date().getMonth() + 1;
   const currentMonthName = MONTHS.find(

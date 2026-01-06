@@ -37,7 +37,7 @@ export default function MultisigProposeBtn({
   const handlePropose = async () => {
     if (isTxPending) {
       toast.warn(
-        'There is already a pending transaction. Please wait until it is resolved before proposing a new amount.',
+        'The previously proposed amount is still pending in the safe wallet. Please wait until the current tansaction is completed or executed, then try again to avoid conflicts',
       );
       return;
     }

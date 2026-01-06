@@ -141,6 +141,7 @@ export default function MultiSigWalletView() {
         <MultisigProposeBtn
           projectUUID={projectUUID}
           tokenBalance={safeOwners?.tokenBalance || ''}
+          isTxPending={safeOwners?.pendingTxCount > 0}
         />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">

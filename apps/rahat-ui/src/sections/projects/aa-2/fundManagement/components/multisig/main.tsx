@@ -51,8 +51,11 @@ export default function MultiSigWalletView() {
   const { id: projectUUID } = useParams() as { id: UUID };
   const { clickToCopy, copyAction } = useCopy();
 
-  const { data: safeOwners, isLoading: loadingSafeOwners } =
-    useGetAASafeOwners(projectUUID);
+  const {
+    data: safeOwners,
+    isLoading: loadingSafeOwners,
+    transfers,
+  } = useGetAASafeOwners(projectUUID);
 
   const chainSettings = useProjectSettingsStore(
     (state) =>
@@ -238,8 +241,8 @@ export default function MultiSigWalletView() {
           <CardContent className="p-4 pt-0">
             <ScrollArea className="h-[calc(100vh-555px)]">
               <div className="space-y-3">
-                {safeOwners?.transfers?.length ? (
-                  safeOwners?.transfers?.map((tx: any) => (
+                {transfers?.length ? (
+                  transfers?.map((tx: any) => (
                     <div
                       key={`${tx?.type}-${tx?.blockNumber}`}
                       className="flex items-center justify-between p-3 border rounded-sm"
@@ -250,18 +253,23 @@ export default function MultiSigWalletView() {
                           To: {truncateEthAddress(tx?.to)}
                         </p>
                         <p className="text-xs text-gray-600">
-                          {dateFormat(tx?.executionDate)}
+                          {dateFormat(tx?.modified)}
                         </p>
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-medium">
-                          {formatUnits(
-                            BigInt(tx?.value),
-                            tx?.tokenInfo?.decimals,
-                          )}{' '}
+                          {formatUnits(BigInt(tx?.value), safeOwners?.decimals)}{' '}
                           RHT
                         </p>
-                        <Badge className="font-medium">Success</Badge>
+                        <Badge
+                          className={`font-medium ${
+                            tx?.isSuccess
+                              ? 'bg-green-50 text-green-600 border-green-500'
+                              : 'bg-orange-50 text-orange-600 border-orange-500'
+                          }`}
+                        >
+                          {tx?.isSuccess ? 'Success' : 'Pending'}
+                        </Badge>
                       </div>
                     </div>
                   ))

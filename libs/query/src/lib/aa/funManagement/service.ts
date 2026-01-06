@@ -434,7 +434,7 @@ export const useGetInkind = (projectUUID: UUID) => {
 export const useGetAASafeOwners = (projectUUID: UUID) => {
   const q = useProjectAction(['aa', 'multisig-actions']);
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ['safeOwners', projectUUID],
     queryFn: async () => {
       const res = await q.mutateAsync({
@@ -447,6 +447,18 @@ export const useGetAASafeOwners = (projectUUID: UUID) => {
       return res.data;
     },
   });
+
+  return {
+    ...query,
+    transfers: query?.data?.transfers?.map((tx: any) => ({
+      type: tx.dataDecoded?.method,
+      blockNumber: tx.blockNumber,
+      to: tx.dataDecoded?.parameters[0]?.value,
+      value: tx.dataDecoded?.parameters[1]?.value,
+      isSuccess: tx.isExecuted && tx.isSuccessful,
+      modified: tx.modified,
+    })),
+  };
 };
 
 export const useCreateAASafeTransaction = () => {

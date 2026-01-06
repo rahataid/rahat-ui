@@ -25,20 +25,11 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Coins, Download, Home, Search, Settings2, Users } from 'lucide-react';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import ViewColumns from '../../components/view.columns';
 import * as XLSX from 'xlsx';
 import DropdownComponent from '../../components/dropdownComponent';
 import MONTHS from '../../../../utils/months.json';
-
 export default function CHWView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
@@ -121,21 +112,25 @@ export default function CHWView() {
 
     XLSX.writeFile(workbook, 'HealthWorkers.xlsx');
   };
-
   const currentYear = new Date().getFullYear();
+  const START_YEAR = 2025;
 
   const currentMonth = new Date().getMonth() + 1;
   const currentMonthName = MONTHS.find(
     (month) => month.value === currentMonth.toString(),
   );
 
-  const transformedYearData = Array.from({ length: 5 }, (_, index) => {
-    const year = currentYear + index;
-    return {
-      label: year.toString(),
-      value: year.toString(),
-    };
-  });
+  const transformedYearData = Array.from(
+    { length: currentYear + 5 - START_YEAR + 1 },
+    (_, index) => {
+      const year = START_YEAR + index;
+      return {
+        label: year.toString(),
+        value: year.toString(),
+      };
+    },
+  );
+
   const transformedMonthData =
     MONTHS.map((item) => ({
       label: item.label.toString(),
@@ -161,7 +156,6 @@ export default function CHWView() {
       year: undefined,
     });
   }, []);
-
   return (
     <>
       <div className="p-4 bg-white ">

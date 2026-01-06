@@ -855,7 +855,6 @@ export const useCHWList = (payload: any) => {
     });
     return response?.data || [];
   };
-
   return {
     ...query,
     fetchAllData,

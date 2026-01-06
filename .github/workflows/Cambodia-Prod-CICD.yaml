@@ -16,7 +16,7 @@ env:
 jobs:
   rahat-ui:
     name: rahat-ui
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, 'action') || contains(github.event.pull_request.title, 'action') || github.event_name == 'workflow_dispatch'
 
     steps:

@@ -20,9 +20,9 @@ export const SOURCE_CONFIG = {
     label: 'Glofas',
     sourceSubType: 'Flood Probability',
     subTypes: [
-      'two_years_max_prob',
-      'five_years_max_prob',
-      'twenty_years_max_prob',
+      'two_years_return_period',
+      'five_years_return_period',
+      'twenty_years_return_period',
     ],
   },
 } as const;

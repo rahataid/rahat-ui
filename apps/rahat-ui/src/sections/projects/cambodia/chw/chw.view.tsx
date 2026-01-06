@@ -112,20 +112,25 @@ export default function CHWView() {
 
     XLSX.writeFile(workbook, 'HealthWorkers.xlsx');
   };
-  const currentYear = new Date().getFullYear() - 1;
+  const currentYear = new Date().getFullYear();
+  const START_YEAR = 2025;
 
   const currentMonth = new Date().getMonth() + 1;
   const currentMonthName = MONTHS.find(
     (month) => month.value === currentMonth.toString(),
   );
 
-  const transformedYearData = Array.from({ length: 5 }, (_, index) => {
-    const year = currentYear + index;
-    return {
-      label: year.toString(),
-      value: year.toString(),
-    };
-  });
+  const transformedYearData = Array.from(
+    { length: currentYear + 5 - START_YEAR + 1 },
+    (_, index) => {
+      const year = START_YEAR + index;
+      return {
+        label: year.toString(),
+        value: year.toString(),
+      };
+    },
+  );
+
   const transformedMonthData =
     MONTHS.map((item) => ({
       label: item.label.toString(),

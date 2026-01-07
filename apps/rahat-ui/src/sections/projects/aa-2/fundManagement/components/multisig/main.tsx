@@ -242,9 +242,9 @@ export default function MultiSigWalletView() {
             <ScrollArea className="h-[calc(100vh-555px)]">
               <div className="space-y-3">
                 {transfers?.length ? (
-                  transfers?.map((tx: any) => (
+                  transfers?.map((tx: any, index: number) => (
                     <div
-                      key={`${tx?.type}-${tx?.blockNumber}`}
+                      key={`${index}-${tx?.type}-${tx?.blockNumber}`}
                       className="flex items-center justify-between p-3 border rounded-sm"
                     >
                       <div>
@@ -253,7 +253,7 @@ export default function MultiSigWalletView() {
                           To: {truncateEthAddress(tx?.to)}
                         </p>
                         <p className="text-xs text-gray-600">
-                          {dateFormat(tx?.modified)}
+                          {dateFormat(tx?.submissionDate)}
                         </p>
                       </div>
                       <div className="text-right">

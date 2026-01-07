@@ -456,7 +456,7 @@ export const useGetAASafeOwners = (projectUUID: UUID) => {
       to: tx.dataDecoded?.parameters[0]?.value,
       value: tx.dataDecoded?.parameters[1]?.value,
       isSuccess: tx.isExecuted && tx.isSuccessful,
-      modified: tx.modified,
+      submissionDate: tx.submissionDate,
     })),
   };
 };

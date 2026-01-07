@@ -463,6 +463,7 @@ export const useGetAASafeOwners = (projectUUID: UUID) => {
 
 export const useCreateAASafeTransaction = () => {
   const projectActions = useProjectAction(['aa', 'multisig-actions']);
+  const qc = useQueryClient();
 
   return useMutation({
     mutationKey: ['create-safe-transaction'],
@@ -483,6 +484,12 @@ export const useCreateAASafeTransaction = () => {
         },
       });
       return response;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: ['safeOwners'],
+        exact: false,
+      });
     },
   });
 };

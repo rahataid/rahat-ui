@@ -1,8 +1,8 @@
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
-import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { ArrowRight, Plus } from 'lucide-react';
+import TriggerDetailsCard from './trigger.details.card';
 
 type IProps = {
   title: string;
@@ -11,6 +11,8 @@ type IProps = {
   handleAddTrigger?: () => void;
   chartSeries: number[];
   chartLabels: string[];
+  requiredMandatoryTriggers: number;
+  requiredOptionalTriggers: number;
   mandatoryTriggers: number;
   optionalTriggers: number;
   triggeredMandatoryTriggers: number;
@@ -29,6 +31,8 @@ export default function TriggersPhaseCard({
   chartSeries,
   mandatoryTriggers,
   optionalTriggers,
+  requiredMandatoryTriggers,
+  requiredOptionalTriggers,
   triggeredMandatoryTriggers,
   triggeredOptionalTriggers,
   hideViewDetails = false,
@@ -99,40 +103,28 @@ export default function TriggersPhaseCard({
               width={250}
               height={200}
               showLegend={false}
-              colors={['#E8C468', '#297AD6']}
+              colors={['#297AD6', '#E8C468']}
               showDonutLabel={true}
             />
           )}
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <div className="bg-[#EAF2FB] rounded p-4">
-            <p className="text-sm/4">Mandatory</p>
-            <p className="font-semibold text-2xl/10">{mandatoryTriggers}</p>
-            <div>
-              <p className="text-muted-foreground text-sm/4 mb-1">{`${triggeredMandatoryTriggers} triggered`}</p>
-              <Progress
-                value={Math.floor(
-                  (triggeredMandatoryTriggers / mandatoryTriggers) * 100,
-                )}
-                className="h-2"
-                indicatorColor={'bg-[#297AD6]'}
-              />
-            </div>
-          </div>
-          <div className="bg-[#FCF6E9] rounded p-4">
-            <p className="text-sm/4">Optional</p>
-            <p className="font-semibold text-2xl/10">{optionalTriggers}</p>
-            <div>
-              <p className="text-muted-foreground text-sm/4 mb-1">{`${triggeredOptionalTriggers} triggered`}</p>
-              <Progress
-                value={Math.floor(
-                  (triggeredOptionalTriggers / optionalTriggers) * 100,
-                )}
-                className="h-2"
-                indicatorColor={'bg-[#E8C468]'}
-              />
-            </div>
-          </div>
+          <TriggerDetailsCard
+            title="Mandatory"
+            color="blue"
+            bgColor="bg-[#EAF2FB]"
+            totalTriggers={mandatoryTriggers}
+            totalTriggered={triggeredMandatoryTriggers}
+            totalRequiredTriggers={requiredMandatoryTriggers}
+          />
+          <TriggerDetailsCard
+            title="Optional"
+            color="yellow"
+            bgColor="bg-[#FCF6E9]"
+            totalTriggers={optionalTriggers}
+            totalTriggered={triggeredOptionalTriggers}
+            totalRequiredTriggers={requiredOptionalTriggers}
+          />
         </div>
       </div>
 

@@ -131,6 +131,8 @@ export default function PhaseDetail() {
               phase?.totalMandatoryTriggers,
               phase?.totalOptionalTriggers,
             ]}
+            requiredMandatoryTriggers={phase?.requiredMandatoryTriggers}
+            requiredOptionalTriggers={phase?.requiredOptionalTriggers}
             mandatoryTriggers={phase?.totalMandatoryTriggers}
             optionalTriggers={phase?.totalOptionalTriggers}
             triggeredMandatoryTriggers={phase?.totalMandatoryTriggersTriggered}

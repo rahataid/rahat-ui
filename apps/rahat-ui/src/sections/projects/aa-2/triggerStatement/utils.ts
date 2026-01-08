@@ -64,3 +64,15 @@ export const buildSubtypeOptions = (
 };
 
 export const SEP = ' • ';
+
+export const calculateRemainingTriggers = (
+  totalTriggers: number,
+  totalTriggered: number,
+) => {
+  if (!totalTriggers || !totalTriggered) return 0;
+  const remainingTriggers = totalTriggers - totalTriggered;
+  if (remainingTriggers < 0) {
+    return 0;
+  }
+  return remainingTriggers;
+};

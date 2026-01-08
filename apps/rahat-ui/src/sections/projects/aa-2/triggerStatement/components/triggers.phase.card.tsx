@@ -26,7 +26,7 @@ export default function TriggersPhaseCard({
   title,
   subtitle,
   hideAddTrigger = false,
-  handleAddTrigger = () => {},
+  handleAddTrigger,
   chartLabels,
   chartSeries,
   mandatoryTriggers,
@@ -37,14 +37,14 @@ export default function TriggersPhaseCard({
   triggeredOptionalTriggers,
   hideViewDetails = false,
   isActive,
-  handleViewDetails = () => {},
+  handleViewDetails,
 }: IProps) {
   const totalCharSeries = chartSeries.reduce((a, b) => a + b, 0);
 
   return (
     <div className="p-4 rounded border shadow-md flex flex-col justify-between">
       <div>
-        <div className="flex flex-wrap justify-between items-center space-x-4">
+        <div className="flex flex-wrap justify-between items-center gap-2">
           <Heading
             title={title}
             titleStyle="text-xl"
@@ -54,7 +54,7 @@ export default function TriggersPhaseCard({
               isActive
                 ? 'text-red-500 bg-red-100'
                 : 'text-green-500 bg-green-100'
-            } text-xs`}
+            } text-xs px-1`}
           />
 
           <RoleAuth
@@ -63,7 +63,7 @@ export default function TriggersPhaseCard({
           >
             <IconLabelBtn
               variant="outline"
-              className={`border-primary text-primary ${
+              className={`border-primary text-primary !m-0 ${
                 hideAddTrigger && 'hidden'
               }`}
               Icon={Plus}

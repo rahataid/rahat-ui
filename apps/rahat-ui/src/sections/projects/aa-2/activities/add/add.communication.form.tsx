@@ -5,6 +5,14 @@ import {
   useStakeholdersGroupsStore,
   useUploadFile,
 } from '@rahat-ui/query';
+import {
+  useState,
+  useEffect,
+  useRef,
+  Dispatch,
+  SetStateAction,
+  ChangeEvent,
+} from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   FormControl,
@@ -47,10 +55,10 @@ import {
 
 type IProps = {
   form: any;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setLoading: Dispatch<SetStateAction<boolean>>;
   appTransports: Transport[] | undefined;
   onSave: VoidFunction;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function AddCommunicationForm({
@@ -61,40 +69,38 @@ export default function AddCommunicationForm({
   setOpen,
 }: IProps) {
   const { id: projectId } = useParams();
-  const [audioFile, setAudioFile] = React.useState({
+  const [audioFile, setAudioFile] = useState({
     fileName: '',
     mediaURL: '',
   });
-  const [contentType, setContentType] = React.useState<ValidationContent | ''>(
-    '',
-  );
-  const [address, setAddress] = React.useState(false);
+  const [contentType, setContentType] = useState<ValidationContent | ''>('');
+  const [address, setAddress] = useState(false);
 
-  const [customFileName, setCustomFileName] = React.useState('');
+  const [customFileName, setCustomFileName] = useState('');
 
-  const [isRecording, setIsRecording] = React.useState(false);
-  const [isFinished, setIsFinished] = React.useState(false);
-  const [timer, setTimer] = React.useState(0);
-  const [recordedFile, setRecordedFile] = React.useState<string | null>(null);
-  const [chunks, setChunks] = React.useState<Blob[]>([]);
-  const [isPaused, setIsPaused] = React.useState(false);
-  const [showConfirmDialog, setShowConfirmDialog] = React.useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [recordedFile, setRecordedFile] = useState<string | null>(null);
+  const [chunks, setChunks] = useState<Blob[]>([]);
+  const [isPaused, setIsPaused] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-  const mediaRef = React.useRef<MediaRecorder | null>(null);
-  const timerRef = React.useRef<any>(null);
-  const streamRef = React.useRef<MediaStream | null>(null);
-  const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const animationRef = React.useRef<number | null>(null);
-  const analyserRef = React.useRef<AnalyserNode | null>(null);
-  const audioCtxRef = React.useRef<AudioContext | null>(null);
-  const isResettingRef = React.useRef(false);
+  const mediaRef = useRef<MediaRecorder | null>(null);
+  const timerRef = useRef<any>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationRef = useRef<number | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const isResettingRef = useRef(false);
 
   const pad = (num: number) => String(num).padStart(2, '0');
   const hh = pad(Math.floor(timer / 3600));
   const mm = pad(Math.floor((timer % 3600) / 60));
   const ss = pad(timer % 60);
 
-  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const fileUpload = useUploadFile();
 
   const stakeholdersGroups = useStakeholdersGroupsStore(
@@ -177,7 +183,7 @@ export default function AddCommunicationForm({
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!address) {
       // Clear any previous errors if transport doesn't require email
       form.clearErrors(fieldName('groupId'));
@@ -200,7 +206,7 @@ export default function AddCommunicationForm({
     });
   }, [address, stakeholdersGroup, beneficiaryGroup]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // const transportData = appTransports?.find(
     //   (t) => t.cuid === selectedTransport,
     // );
@@ -212,37 +218,45 @@ export default function AddCommunicationForm({
       setAddress(false);
     }
   }, [selectedTransport]);
+
   const renderGroups = () => {
     const selectedGroupType = form.watch(fieldName('groupType'));
     let groups = <SelectLabel>Please select group type</SelectLabel>;
-    switch (selectedGroupType) {
-      case 'STAKEHOLDERS':
-        groups = stakeholdersGroups
-          .filter((a) => a?._count?.stakeholders > 0)
-          .map((group: any) => (
-            <SelectItem key={group.id} value={group.uuid}>
-              {group?.name}
-            </SelectItem>
-          ));
-        break;
-      case 'BENEFICIARY':
-        groups = beneficiaryGroups
-          .filter((group: any) => group._count.groupedBeneficiaries > 0)
-          .map((group: any) => (
-            <SelectItem key={group.id} value={group.uuid}>
-              {group.name}
-            </SelectItem>
-          ));
-        break;
-      default:
-        break;
+    if (selectedGroupType === 'STAKEHOLDERS') {
+      const stakeholdersGroupsList = stakeholdersGroups.filter(
+        (a: any) => a?._count?.stakeholders > 0,
+      );
+      if (stakeholdersGroupsList.length > 0) {
+        groups = stakeholdersGroupsList.map((group: any) => (
+          <SelectItem key={group.id} value={group.uuid}>
+            {group?.name}
+          </SelectItem>
+        ));
+      } else {
+        groups = <SelectLabel>No stakeholders groups found</SelectLabel>;
+      }
+    }
+
+    if (selectedGroupType === 'BENEFICIARY') {
+      const beneficiaryGroupsList = beneficiaryGroups.filter(
+        (a: any) => a?._count?.groupedBeneficiaries > 0,
+      );
+      if (beneficiaryGroupsList.length > 0) {
+        groups = beneficiaryGroupsList.map((group: any) => (
+          <SelectItem key={group.id} value={group.uuid}>
+            {group?.name}
+          </SelectItem>
+        ));
+      } else {
+        groups = <SelectLabel>No beneficiary groups found</SelectLabel>;
+      }
     }
 
     return groups;
   };
 
   const handleAudioFileChange = async (
-    fileOrEvent: File | React.ChangeEvent<HTMLInputElement>,
+    fileOrEvent: File | ChangeEvent<HTMLInputElement>,
   ) => {
     let file: File | undefined;
 
@@ -267,11 +281,11 @@ export default function AddCommunicationForm({
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     form.setValue(fieldName('audioURL'), audioFile);
   }, [audioFile, setAudioFile]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setLoading(fileUpload.isPending);
   }, [fileUpload.isPending, !fileUpload.isPending]);
 
@@ -402,7 +416,7 @@ export default function AddCommunicationForm({
     streamRef.current?.getTracks().forEach((t) => t.stop());
     if (animationRef.current) cancelAnimationFrame(animationRef.current);
   };
-  React.useEffect(() => {
+  useEffect(() => {
     if (!selectedTransport || !appTransports?.length) return;
 
     const transportData = appTransports.find(
@@ -430,7 +444,7 @@ export default function AddCommunicationForm({
     setAddress(transportData?.validationAddress === 'EMAIL');
   }, [selectedTransport]);
 
-  // React.useEffect(() => {
+  // useEffect(() => {
   //   const selectedGroupType = form.watch(fieldName('groupType'));
   //   const selectedGroupId = form.watch(fieldName('groupId'));
 
@@ -567,11 +581,12 @@ export default function AddCommunicationForm({
                 <SelectContent>
                   {appTransports?.map((transport) => {
                     return (
-                      <>
-                        <SelectItem value={transport?.cuid as string}>
-                          {transport?.name}
-                        </SelectItem>
-                      </>
+                      <SelectItem
+                        key={transport?.cuid}
+                        value={transport?.cuid as string}
+                      >
+                        {transport?.name}
+                      </SelectItem>
                     );
                   })}
                 </SelectContent>

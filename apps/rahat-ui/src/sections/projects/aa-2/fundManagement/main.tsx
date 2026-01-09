@@ -11,10 +11,10 @@ import { useFundAssignmentStore } from '@rahat-ui/query';
 export default function FundManagementView() {
   const router = useRouter();
   const { id: projectUUID } = useParams() as { id: UUID };
-  useProjectBalance(projectUUID);
-  const projectBalance = useFundAssignmentStore(
-    (state) => state.projectBalance,
-  );
+  const projectBalance = useProjectBalance(projectUUID);
+  // const projectBalance = useFundAssignmentStore(
+  //   (state) => state.projectBalance,
+  // );
 
   return (
     <div className="p-4">

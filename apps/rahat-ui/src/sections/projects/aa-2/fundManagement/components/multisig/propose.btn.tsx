@@ -17,11 +17,13 @@ import { toast } from 'react-toastify';
 type Props = {
   projectUUID: UUID;
   tokenBalance: string;
+  isTxPending: boolean;
 };
 
 export default function MultisigProposeBtn({
   projectUUID,
   tokenBalance,
+  isTxPending,
 }: Props) {
   const [open, setOpen] = React.useState(false);
   const [amount, setAmount] = React.useState<number | ''>('');
@@ -33,6 +35,12 @@ export default function MultisigProposeBtn({
   };
 
   const handlePropose = async () => {
+    if (isTxPending) {
+      toast.warn(
+        'The previously proposed amount is still pending in the safe wallet. Please wait until the current tansaction is completed or executed, then try again to avoid conflicts',
+      );
+      return;
+    }
     if (Number(amount) > Number(tokenBalance)) {
       toast.warn('Proposed amount exceeds available token balance.');
       return;

@@ -36,9 +36,9 @@ export const useFundAssignmentStore: UseBoundStore<
   }),
   {
     devtoolsEnabled: true,
-    persistOptions: {
-      name: 'aaFundAssignmentStore',
-      storage: localStore,
-    },
+    // persistOptions: {
+    //   name: 'aaFundAssignmentStore',
+    //   storage: localStore,
+    // },
   },
 );

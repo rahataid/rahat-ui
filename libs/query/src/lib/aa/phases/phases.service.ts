@@ -12,20 +12,35 @@ export const useSinglePhase = (uuid: UUID, phaseId: UUID) => {
   const { setThreshhold } = usePhasesStore((state) => ({
     setThreshhold: state.setThreshold,
   }));
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
 
   const query = useQuery({
     queryKey: ['phase', uuid, phaseId],
     queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: 'ms.phases.getOne',
-          payload: {
-            uuid: phaseId,
+      try {
+        const mutate = await q.mutateAsync({
+          uuid,
+          data: {
+            action: 'ms.phases.getOne',
+            payload: {
+              uuid: phaseId,
+            },
           },
-        },
-      });
-      return mutate.data;
+        });
+        return mutate.data;
+      } catch (error: any) {
+        toast.fire({
+          title: 'Error while fetching phase details',
+          icon: 'error',
+          text: error.message,
+        });
+      }
     },
   });
   useEffect(() => {

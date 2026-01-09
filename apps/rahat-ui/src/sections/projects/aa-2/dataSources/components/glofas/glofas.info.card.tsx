@@ -59,9 +59,9 @@ export default function GlofasInfoCard({ glofas }: IProps) {
         <div className="w-full">
           <div className="flex justify-between gap-4">
             <Heading
-              title="Doda (Machheli) River at East West Highway"
+              title={glofas?.source?.riverBasin}
               titleStyle="text-xl/6 font-semibold"
-              description="Doda (Machheli) river at East West Highway"
+              description={glofas?.source?.riverBasin}
               updatedAt={updatedAt}
             />
             <div>

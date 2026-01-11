@@ -16,9 +16,9 @@ export const useProjectBalance = (projectUUID: string) => {
       state.settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
-  const setProjectBalance = useFundAssignmentStore(
-    (state) => state.setProjectBalance,
-  );
+  // const setProjectBalance = useFundAssignmentStore(
+  //   (state) => state.setProjectBalance,
+  // );
 
   const { data: tokenNumber } = useReadRahatTokenDecimals({
     address: contractSettings?.rahattoken?.address,
@@ -35,15 +35,24 @@ export const useProjectBalance = (projectUUID: string) => {
     },
   });
 
-  React.useEffect(() => {
-    if (tokenBalanceQuery?.data && tokenNumber) {
-      const balance = formatUnits(
-        BigInt(tokenBalanceQuery?.data),
-        Number(tokenNumber),
-      );
-      setProjectBalance(Number(balance));
-    }
-  }, [tokenBalanceQuery?.data]);
+  let projectBalance: string | undefined;
 
-  return tokenBalanceQuery;
+  if (tokenBalanceQuery?.data && tokenNumber) {
+    projectBalance = formatUnits(
+      BigInt(tokenBalanceQuery?.data),
+      Number(tokenNumber),
+    );
+  }
+
+  // React.useEffect(() => {
+  //   if (tokenBalanceQuery?.data && tokenNumber) {
+  //     const balance = formatUnits(
+  //       BigInt(tokenBalanceQuery?.data),
+  //       Number(tokenNumber),
+  //     );
+  //     setProjectBalance(Number(balance));
+  //   }
+  // }, [tokenBalanceQuery?.data]);
+
+  return Number(projectBalance);
 };

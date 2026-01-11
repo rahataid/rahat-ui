@@ -16,6 +16,7 @@ import { useParams } from 'next/navigation';
 import TokenOverviewSkeleton from './token.overview.skeleton';
 import DynamicPieChart from '../../../components/dynamicPieChart';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
+import { useProjectBalance } from 'apps/rahat-ui/src/hooks/aa/utils';
 
 export default function TokensOverview() {
   const uuid = useParams().id;
@@ -35,9 +36,10 @@ export default function TokensOverview() {
     settings: s.settings,
   }));
   const project = useProjectStore((p) => p.singleProject);
-  const projectBalance = useFundAssignmentStore(
-    (state) => state.projectBalance,
-  );
+  const projectBalance = useProjectBalance(projectId);
+  // const projectBalance = useFundAssignmentStore(
+  //   (state) => state.projectBalance,
+  // );
 
   const tokenStatus = () => {
     let disbursedValue = 0;

@@ -7,6 +7,7 @@ import {
   useReservationStats,
 } from '@rahat-ui/query';
 import { useReadAaProjectTokenBudget } from 'apps/rahat-ui/src/hooks/aa/contracts/aaProject';
+import { useProjectBalance } from 'apps/rahat-ui/src/hooks/aa/utils';
 import { UUID } from 'crypto';
 import { cn } from 'libs/shadcn/src';
 import { Button } from 'libs/shadcn/src/components/ui/button';
@@ -107,12 +108,11 @@ export default function AssignFundsForm() {
   //   beneficiariesGroupsMeta: state.beneficiariesGroupsMeta,
   // }));
 
-  const { setAssignedFundData, projectBalance } = useFundAssignmentStore(
-    (state) => ({
-      setAssignedFundData: state.setAssignedFundData,
-      projectBalance: state.projectBalance,
-    }),
-  );
+  const projectBalance = useProjectBalance(projectId);
+
+  const { setAssignedFundData } = useFundAssignmentStore((state) => ({
+    setAssignedFundData: state.setAssignedFundData,
+  }));
 
   const tokenPerBenef = form.watch('tokenAmountPerBenef');
   const selectedGroupId = form.watch('beneficiaryGroup');

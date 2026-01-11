@@ -94,7 +94,7 @@ export default function RiverWatchView() {
             <Heading
               title={primaryRiverWatchInfo?.name}
               titleStyle="text-xl/6 font-semibold"
-              description={primaryRiverWatchInfo?.description}
+              description={primaryRiverWatchInfo?.basin}
               updatedAt={updatedAt}
             />
             <div>

@@ -1,6 +1,7 @@
 import {
   FilteredTransaction,
   PROJECT_SETTINGS_KEYS,
+  useGetBeneficiariesOfframpedRecords,
   useGetBeneficiariesReport,
   useMutateGraphCall,
   useProjectSettingsStore,
@@ -12,7 +13,10 @@ import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { dateToTimestamp } from 'apps/rahat-ui/src/utils/dateToTimeStamp';
 import { exportToExcel } from 'apps/rahat-ui/src/utils/exportToExcle';
-import { transformTransactionData } from 'apps/rahat-ui/src/utils/formatAdlinkTransactionData';
+import {
+  transformOfframpedData,
+  transformTransactionData,
+} from 'apps/rahat-ui/src/utils/formatAdlinkTransactionData';
 import { UUID } from 'crypto';
 import { subWeeks } from 'date-fns';
 import { Download, FileSpreadsheet } from 'lucide-react';
@@ -35,6 +39,9 @@ const QuickExportReport = ({
   contractAddress,
 }: IQuickExportReportProps) => {
   const { mutateAsync, isPending } = useGetBeneficiariesReport();
+  const { mutateAsync: getOfframpedRecords, isPending: isOfframpedLoading } =
+    useGetBeneficiariesOfframpedRecords();
+
   const { mutateAsync: graphMutateAsync, isPending: isLoading } =
     useMutateGraphCall(projectUUID);
 
@@ -59,9 +66,11 @@ const QuickExportReport = ({
       //guard
       if (result.length === 0) return;
       exportToExcel(result, `beneficiaries-report-${fromDate}`);
+      return;
     }
+
     // for transaction history report
-    else if (value === 'transaction_history') {
+    if (value === 'transaction_history') {
       const now = new Date();
       const oneWeekAgo = subWeeks(now, 1);
 
@@ -85,12 +94,34 @@ const QuickExportReport = ({
         Number(tokenNumber),
       );
       exportToExcel(newFormateData, `transaction-history-${fromDate}`);
+      return;
+    }
+
+    // for offramped transaction report
+    if (value === 'offramped_transaction') {
+      const today = new Date();
+      const oneWeekAgo = subWeeks(today, 1);
+
+      const fromDate = dateFormat(oneWeekAgo, 'yyyy-MM-dd');
+      const toDate = dateFormat(today, 'yyyy-MM-dd');
+
+      const result = await getOfframpedRecords({
+        projectUUID,
+        fromDate,
+        toDate,
+      });
+
+      //guard
+      if (result.length === 0) return;
+      const newFormateData = transformOfframpedData(result);
+      exportToExcel(newFormateData, `offramped-transaction-report-${fromDate}`);
+      return;
     }
   };
 
   return (
     <div>
-      {(isPending || isLoading) && (
+      {(isPending || isLoading || isOfframpedLoading) && (
         <div className="absolute inset-0 bg-gray-300 bg-opacity-30 flex items-center justify-center">
           <Loader />
         </div>

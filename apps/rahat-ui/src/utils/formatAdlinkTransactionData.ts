@@ -1,5 +1,6 @@
 import { amountFormat } from '@rahat-ui/query';
 import { formatUnits } from 'viem';
+import { dateFormat } from './dateFormate';
 
 export const transformTransactionData = (data: any, tokenNumber: number) => {
   return data.map((item: any) => {
@@ -22,4 +23,22 @@ export const transformTransactionData = (data: any, tokenNumber: number) => {
       'Token Address': item._tokenAddress,
     };
   });
+};
+
+export const transformOfframpedData = (data: any[]) => {
+  return data
+    .flat() // flatten nested arrays
+    .map((item: any) => ({
+      Date: dateFormat(item.createdAt, 'yyyy/MM/dd'),
+      'Phone Number': item.phoneNumber,
+      'Transaction Hash': item.txHash,
+      Provider: item.provider,
+      'Crypto Amount': item.cryptoAmount,
+      'Fiat Conversion Amount': item.fiatConversionAmount,
+      'Fiat Tx Amount': item.fiatTxAmount,
+      'Fiat Currency': item.fiatCurrency,
+      Token: item.token,
+      Status: item.status,
+      Fee: item.fee,
+    }));
 };

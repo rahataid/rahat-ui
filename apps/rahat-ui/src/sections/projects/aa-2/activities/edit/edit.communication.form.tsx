@@ -7,6 +7,14 @@ import {
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
+  useState,
+  useEffect,
+  useRef,
+  Dispatch,
+  SetStateAction,
+  ChangeEvent,
+} from 'react';
+import {
   FormControl,
   FormField,
   FormItem,
@@ -49,16 +57,16 @@ import { useWatch } from 'react-hook-form';
 type IProps = {
   form: any;
   appTransports: Transport[] | undefined;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setLoading: Dispatch<SetStateAction<boolean>>;
   index: number;
   onClose: VoidFunction;
-  setIsRecording: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsFinished: React.Dispatch<React.SetStateAction<boolean>>;
-  setRecordedFile: React.Dispatch<React.SetStateAction<string | null>>;
+  setIsRecording: Dispatch<SetStateAction<boolean>>;
+  setIsFinished: Dispatch<SetStateAction<boolean>>;
+  setRecordedFile: Dispatch<SetStateAction<string | null>>;
   isRecording: boolean;
   isFinished: boolean;
   recordedFile: string | null;
-  setAudioIsUploaded: React.Dispatch<React.SetStateAction<boolean>>;
+  setAudioIsUploaded: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function EditCommunicationForm({
@@ -77,32 +85,30 @@ export default function EditCommunicationForm({
 }: IProps) {
   const { id: projectId } = useParams();
 
-  const [audioFile, setAudioFile] = React.useState({});
-  const [contentType, setContentType] = React.useState<ValidationContent | ''>(
-    '',
-  );
-  const [address, setAddress] = React.useState(false);
-  const [customFileName, setCustomFileName] = React.useState('');
+  const [audioFile, setAudioFile] = useState({});
+  const [contentType, setContentType] = useState<ValidationContent | ''>('');
+  const [address, setAddress] = useState(false);
+  const [customFileName, setCustomFileName] = useState('');
 
-  const [timer, setTimer] = React.useState(0);
-  const [chunks, setChunks] = React.useState<Blob[]>([]);
-  const [isPaused, setIsPaused] = React.useState(false);
-  const [showConfirmDialog, setShowConfirmDialog] = React.useState(false);
+  const [timer, setTimer] = useState(0);
+  const [chunks, setChunks] = useState<Blob[]>([]);
+  const [isPaused, setIsPaused] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-  const mediaRef = React.useRef<MediaRecorder | null>(null);
-  const timerRef = React.useRef<any>(null);
-  const streamRef = React.useRef<MediaStream | null>(null);
-  const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const animationRef = React.useRef<number | null>(null);
-  const analyserRef = React.useRef<AnalyserNode | null>(null);
-  const audioCtxRef = React.useRef<AudioContext | null>(null);
-  const isResettingRef = React.useRef(false);
+  const mediaRef = useRef<MediaRecorder | null>(null);
+  const timerRef = useRef<any>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationRef = useRef<number | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const isResettingRef = useRef(false);
 
   const pad = (num: number) => String(num).padStart(2, '0');
   const hh = pad(Math.floor(timer / 3600));
   const mm = pad(Math.floor((timer % 3600) / 60));
   const ss = pad(timer % 60);
-  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
   );
@@ -112,16 +118,14 @@ export default function EditCommunicationForm({
   );
 
   const fieldName = (name: string) => `activityCommunication.${index}.${name}`; // Dynamic field name generator
-  const initialMessageRef = React.useRef(form.getValues(fieldName('message')));
-  const initialAudioURLRef = React.useRef(
-    form.getValues(fieldName('audioURL')),
-  );
+  const initialMessageRef = useRef(form.getValues(fieldName('message')));
+  const initialAudioURLRef = useRef(form.getValues(fieldName('audioURL')));
 
   const selectedTransport = form.watch(fieldName('transportId'));
   const sessionId = form.watch(fieldName('sessionId'));
   const message = form.watch(fieldName('message'));
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!selectedTransport || !appTransports?.length) return;
 
     const transportData = appTransports.find(
@@ -164,7 +168,7 @@ export default function EditCommunicationForm({
   const { data: beneficiaryGroup, isLoading: isLoadingss } =
     useSingleBeneficiaryGroup(projectId as UUID, beneficiaryId);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const transportData = appTransports?.find(
       (t) => t.cuid === selectedTransport,
     );
@@ -173,7 +177,7 @@ export default function EditCommunicationForm({
 
     if (stakeholdersGroup && Array.isArray(stakeholdersGroup.stakeholders)) {
       const hasValidEmail = stakeholdersGroup.stakeholders.some(
-        (s) => s?.email?.trim() !== '',
+        (s: any) => s?.email?.trim() !== '',
       );
 
       if (!hasValidEmail) {
@@ -188,7 +192,7 @@ export default function EditCommunicationForm({
     }
   }, [stakeholdersGroup, selectedTransport]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const transportData = appTransports?.find(
       (t) => t.cuid === selectedTransport,
     );
@@ -200,7 +204,7 @@ export default function EditCommunicationForm({
       Array.isArray(beneficiaryGroup?.groupedBeneficiaries)
     ) {
       const hasValidEmail = beneficiaryGroup?.groupedBeneficiaries?.some(
-        (s) => s?.Beneficiary?.pii?.email.trim() !== '',
+        (s: any) => s?.Beneficiary?.pii?.email.trim() !== '',
       );
 
       if (!hasValidEmail) {
@@ -217,36 +221,45 @@ export default function EditCommunicationForm({
 
   const isSaveDisabled =
     !activityCommunication.groupType || !activityCommunication.groupId;
+
   const renderGroups = () => {
     const selectedGroupType = form.watch(fieldName('groupType'));
     let groups = <SelectLabel>Please select group type</SelectLabel>;
-    switch (selectedGroupType) {
-      case 'STAKEHOLDERS':
-        groups = stakeholdersGroups
-          .filter((a) => a?._count?.stakeholders > 0)
-          .map((group: any) => (
-            <SelectItem key={group.id} value={group.uuid}>
-              {group?.name}
-            </SelectItem>
-          ));
-        break;
-      case 'BENEFICIARY':
-        groups = beneficiaryGroups
-          .filter((group: any) => group._count.groupedBeneficiaries > 0)
-          .map((group: any) => (
-            <SelectItem key={group.id} value={group.uuid}>
-              {group.name}
-            </SelectItem>
-          ));
-        break;
-      default:
-        break;
+    if (selectedGroupType === 'STAKEHOLDERS') {
+      const stakeholdersGroupsList = stakeholdersGroups.filter(
+        (a: any) => a?._count?.stakeholders > 0,
+      );
+      if (stakeholdersGroupsList.length > 0) {
+        groups = stakeholdersGroupsList.map((group: any) => (
+          <SelectItem key={group.id} value={group.uuid}>
+            {group?.name}
+          </SelectItem>
+        ));
+      } else {
+        groups = <SelectLabel>No stakeholders groups found</SelectLabel>;
+      }
     }
+
+    if (selectedGroupType === 'BENEFICIARY') {
+      const beneficiaryGroupsList = beneficiaryGroups.filter(
+        (a: any) => a?._count?.groupedBeneficiaries > 0,
+      );
+      if (beneficiaryGroupsList.length > 0) {
+        groups = beneficiaryGroupsList.map((group: any) => (
+          <SelectItem key={group.id} value={group.uuid}>
+            {group?.name}
+          </SelectItem>
+        ));
+      } else {
+        groups = <SelectLabel>No beneficiary groups found</SelectLabel>;
+      }
+    }
+
     return groups;
   };
 
   const handleAudioFileChange = async (
-    fileOrEvent: File | React.ChangeEvent<HTMLInputElement>,
+    fileOrEvent: File | ChangeEvent<HTMLInputElement>,
   ) => {
     let file: File | undefined;
 
@@ -270,11 +283,11 @@ export default function EditCommunicationForm({
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     form.setValue(fieldName('audioURL'), audioFile);
   }, [audioFile, setAudioFile]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setLoading(fileUpload.isPending);
   }, [fileUpload.isPending, !fileUpload.isPending]);
   const isSessionComplete = Boolean(sessionId);
@@ -386,7 +399,7 @@ export default function EditCommunicationForm({
     streamRef.current?.getTracks().forEach((t) => t.stop());
     if (animationRef.current) cancelAnimationFrame(animationRef.current);
   };
-  React.useEffect(() => {
+  useEffect(() => {
     if (!selectedTransport || !appTransports?.length) return;
 
     const transportData = appTransports.find(

@@ -62,23 +62,6 @@ const initialFormState: PaymentState = {
   paymentProvider: {},
 };
 
-const payoutTypes = {
-  value: {
-    types: [
-      {
-        key: 'FSP',
-        label: 'FSP',
-        payoutmethod: true,
-      },
-      {
-        key: 'CVA',
-        label: 'CVA',
-        toggle: true,
-      },
-    ],
-  },
-};
-
 export default function PaymentInitiation() {
   const params = useParams();
   const projectID = params.id as UUID;

@@ -21,6 +21,7 @@ import { useState, useEffect } from 'react';
 import { PriorityChip, TypeChip } from '../components';
 import { TooltipText } from 'apps/rahat-ui/src/components/tootltip.text';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 
 type IProps = {
   grievance: {
@@ -45,17 +46,17 @@ type IProps = {
     closedAt?: string;
     resolvedAt?: string;
   };
-  closeSecondPanel: VoidFunction;
 };
 
 export default function GrievanceDetailSplitView({
   grievance: initialGrievance,
-  closeSecondPanel,
 }: IProps) {
   const router = useRouter();
   const { id: projectId } = useParams() as { id: UUID };
   const searchParams = useSearchParams();
   const redirectToHomeTab = searchParams.get('tab') || 'list';
+
+  const { closeSecondPanel } = useSecondPanel();
 
   // Fetch latest grievance details to ensure data is up-to-date
   const { data: grievanceDetails, refetch: refetchGrievanceDetails } =
@@ -85,14 +86,12 @@ export default function GrievanceDetailSplitView({
     router.push(
       `/projects/aa/${projectId}/grievances/${grievance?.uuid}/edit?from=split&tab=${redirectToHomeTab}`,
     );
-    closeSecondPanel();
   };
 
   const handleViewFull = () => {
     router.push(
       `/projects/aa/${projectId}/grievances/${grievance?.uuid}?tab=${redirectToHomeTab}`,
     );
-    closeSecondPanel();
   };
 
   const handleStatusChange = (value: string) => {

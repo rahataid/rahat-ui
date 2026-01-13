@@ -1,6 +1,10 @@
 # Install dependencies only when needed
 FROM node:20-alpine AS deps
 WORKDIR /usr/src/app
+
+# Enable pnpm
+RUN corepack enable
+
 COPY dist/apps/rahat-ui/package.json ./
 RUN pnpm install
 

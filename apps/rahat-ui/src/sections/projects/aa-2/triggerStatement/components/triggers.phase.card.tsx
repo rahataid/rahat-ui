@@ -1,8 +1,8 @@
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
-import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { ArrowRight, Plus } from 'lucide-react';
+import TriggerDetailsCard from './trigger.details.card';
 
 type IProps = {
   title: string;
@@ -11,6 +11,8 @@ type IProps = {
   handleAddTrigger?: () => void;
   chartSeries: number[];
   chartLabels: string[];
+  requiredMandatoryTriggers: number;
+  requiredOptionalTriggers: number;
   mandatoryTriggers: number;
   optionalTriggers: number;
   triggeredMandatoryTriggers: number;
@@ -24,23 +26,25 @@ export default function TriggersPhaseCard({
   title,
   subtitle,
   hideAddTrigger = false,
-  handleAddTrigger = () => {},
+  handleAddTrigger,
   chartLabels,
   chartSeries,
   mandatoryTriggers,
   optionalTriggers,
+  requiredMandatoryTriggers,
+  requiredOptionalTriggers,
   triggeredMandatoryTriggers,
   triggeredOptionalTriggers,
   hideViewDetails = false,
   isActive,
-  handleViewDetails = () => {},
+  handleViewDetails,
 }: IProps) {
   const totalCharSeries = chartSeries.reduce((a, b) => a + b, 0);
 
   return (
     <div className="p-4 rounded border shadow-md flex flex-col justify-between">
       <div>
-        <div className="flex flex-wrap justify-between items-center space-x-4">
+        <div className="flex flex-wrap justify-between items-center gap-2">
           <Heading
             title={title}
             titleStyle="text-xl"
@@ -50,7 +54,7 @@ export default function TriggersPhaseCard({
               isActive
                 ? 'text-red-500 bg-red-100'
                 : 'text-green-500 bg-green-100'
-            } text-xs`}
+            } text-xs px-1`}
           />
 
           <RoleAuth
@@ -59,7 +63,7 @@ export default function TriggersPhaseCard({
           >
             <IconLabelBtn
               variant="outline"
-              className={`border-primary text-primary ${
+              className={`border-primary text-primary !m-0 ${
                 hideAddTrigger && 'hidden'
               }`}
               Icon={Plus}
@@ -99,40 +103,28 @@ export default function TriggersPhaseCard({
               width={250}
               height={200}
               showLegend={false}
-              colors={['#E8C468', '#297AD6']}
+              colors={['#297AD6', '#E8C468']}
               showDonutLabel={true}
             />
           )}
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <div className="bg-[#EAF2FB] rounded p-4">
-            <p className="text-sm/4">Mandatory</p>
-            <p className="font-semibold text-2xl/10">{mandatoryTriggers}</p>
-            <div>
-              <p className="text-muted-foreground text-sm/4 mb-1">{`${triggeredMandatoryTriggers} triggered`}</p>
-              <Progress
-                value={Math.floor(
-                  (triggeredMandatoryTriggers / mandatoryTriggers) * 100,
-                )}
-                className="h-2"
-                indicatorColor={'bg-[#297AD6]'}
-              />
-            </div>
-          </div>
-          <div className="bg-[#FCF6E9] rounded p-4">
-            <p className="text-sm/4">Optional</p>
-            <p className="font-semibold text-2xl/10">{optionalTriggers}</p>
-            <div>
-              <p className="text-muted-foreground text-sm/4 mb-1">{`${triggeredOptionalTriggers} triggered`}</p>
-              <Progress
-                value={Math.floor(
-                  (triggeredOptionalTriggers / optionalTriggers) * 100,
-                )}
-                className="h-2"
-                indicatorColor={'bg-[#E8C468]'}
-              />
-            </div>
-          </div>
+          <TriggerDetailsCard
+            title="Mandatory"
+            color="blue"
+            bgColor="bg-[#EAF2FB]"
+            totalTriggers={mandatoryTriggers}
+            totalTriggered={triggeredMandatoryTriggers}
+            totalRequiredTriggers={requiredMandatoryTriggers}
+          />
+          <TriggerDetailsCard
+            title="Optional"
+            color="yellow"
+            bgColor="bg-[#FCF6E9]"
+            totalTriggers={optionalTriggers}
+            totalTriggered={triggeredOptionalTriggers}
+            totalRequiredTriggers={requiredOptionalTriggers}
+          />
         </div>
       </div>
 

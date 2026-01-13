@@ -54,7 +54,10 @@ const TriggerDetailsCard = ({
           <div className="flex items-center justify-between">
             <p>Remaining</p>
             <p className="text-gray-700">
-              {calculateRemainingTriggers(totalTriggers, totalTriggered)}
+              {calculateRemainingTriggers(
+                totalRequiredTriggers,
+                totalTriggered,
+              )}
             </p>
           </div>
         </div>

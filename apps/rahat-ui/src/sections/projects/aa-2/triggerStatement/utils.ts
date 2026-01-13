@@ -66,11 +66,12 @@ export const buildSubtypeOptions = (
 export const SEP = ' • ';
 
 export const calculateRemainingTriggers = (
-  totalTriggers: number,
+  totalRequiredTriggers: number,
   totalTriggered: number,
 ) => {
-  if (!totalTriggers || !totalTriggered) return 0;
-  const remainingTriggers = totalTriggers - totalTriggered;
+  if (totalRequiredTriggers === undefined || totalTriggered === undefined)
+    return 0;
+  const remainingTriggers = totalRequiredTriggers - totalTriggered;
   if (remainingTriggers < 0) {
     return 0;
   }

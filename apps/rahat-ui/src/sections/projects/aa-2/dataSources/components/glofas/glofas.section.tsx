@@ -10,6 +10,7 @@ import React from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { NoResult, TableLoader } from 'apps/rahat-ui/src/common';
 import GlofasPeriodDataTable from './glofas.periodData.table';
+import Link from 'next/link';
 
 export function GlofasSection() {
   const params = useParams();
@@ -71,8 +72,20 @@ export function GlofasSection() {
   }
   return (
     <ScrollArea className="h-[calc(100vh-220px)]">
-      <GlofasInfoCard glofas={glofasData} />
-      <div className="bg-card overflow-hidden p-4 border shadow rounded-sm mt-4">
+      <div className="flex flex-col gap-4">
+        <Link href={`/projects/aa/${projectId}/data-sources/glofas-details/2`}>
+          <GlofasInfoCard glofas={glofasData} />
+        </Link>
+
+        <Link href={`/projects/aa/${projectId}/data-sources/glofas-details/5`}>
+          <GlofasInfoCard glofas={glofasData} />
+        </Link>
+
+        <Link href={`/projects/aa/${projectId}/data-sources/glofas-details/20`}>
+          <GlofasInfoCard glofas={glofasData} />
+        </Link>
+      </div>
+      {/* <div className="bg-card overflow-hidden p-4 border shadow rounded-sm mt-4">
         <img
           src={glofasData?.info?.hydrographImageUrl}
           alt="hydrograph-chart"
@@ -95,7 +108,7 @@ export function GlofasSection() {
         headerData={returnPeriodHeaders20yr}
         bodyData={returnPeriodData20yr}
         title="ECMWF-ENS > 20 yr RP"
-      />
+      /> */}
     </ScrollArea>
   );
 }

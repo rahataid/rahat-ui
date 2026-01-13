@@ -36,9 +36,9 @@ export default function GlofasInfoCard({ glofas }: IProps) {
         value: dateFormat(glofas?.info?.forecastDate),
       },
       {
-        icon: TriangleAlert,
-        label: 'Alert Level',
-        value: glofas?.info?.pointForecastData?.alertLevel?.data,
+        icon: Calendar,
+        label: 'Return Period',
+        value: '2 Years',
       },
       {
         icon: ChartNoAxesColumn,
@@ -50,6 +50,11 @@ export default function GlofasInfoCard({ glofas }: IProps) {
         label: 'Peak Forecasted',
         value: glofas?.info?.pointForecastData?.peakForecasted?.data,
       },
+      {
+        icon: TriangleAlert,
+        label: 'Alert Level',
+        value: glofas?.info?.pointForecastData?.alertLevel?.data,
+      },
     ],
     [glofas],
   );
@@ -57,18 +62,20 @@ export default function GlofasInfoCard({ glofas }: IProps) {
     <div className="flex flex-col space-y-4">
       <div className="p-4 rounded-sm border shadow flex justify-between space-x-4">
         <div className="w-full">
-          <div className="flex justify-between gap-4">
+          <div className="flex justify-between gap-4 z-50">
             <Heading
-              title={glofas?.source?.riverBasin}
+              // title={glofas?.source?.riverBasin}
+              title="Doda (Macheeli) River Basin"
               titleStyle="text-xl/6 font-semibold"
-              description={glofas?.source?.riverBasin}
+              // description={glofas?.source?.riverBasin}
+              description="this this description for testing propose"
               updatedAt={updatedAt}
             />
             <div>
               <Badge>Steady</Badge>
             </div>
           </div>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-5 gap-4">
             {cardData?.map((d) => {
               const Icon = d.icon;
               return (
@@ -94,26 +101,26 @@ export default function GlofasInfoCard({ glofas }: IProps) {
           </div>
         </div>
         <div className="p-4 rounded-sm border shadow min-w-max">
-          <div>
+          <div className="text-center">
             <p className="font-semibold text-xl/10">Maximum Probability</p>
             <p className="text-xs/4">
               Max Probability Step:{' '}
               {glofas?.info?.pointForecastData?.maxProbabilityStep?.data}
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-2">
-            <div className="p-4 text-center">
+          <div className="">
+            <div className="pt-2 text-center">
               <div className="text-primary font-semibold">{val2yr} %</div>
-              <div className="text-sm mt-1">2 years</div>
+              <div className="text-sm">2 years</div>
             </div>
-            <div className="p-4 text-center">
+            {/* <div className="p-4 text-center">
               <div className="text-primary font-semibold">{val5yr} %</div>
               <div className="text-sm mt-1">5 years</div>
             </div>
             <div className="p-4 text-center">
               <div className="text-primary font-semibold">{val20yr} %</div>
               <div className="text-sm mt-1">20 years</div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

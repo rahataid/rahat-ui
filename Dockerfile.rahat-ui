@@ -2,11 +2,11 @@
 FROM node:20-alpine AS deps
 WORKDIR /usr/src/app
 COPY dist/apps/rahat-ui/package.json ./
-RUN yarn install
+RUN pnpm install
 
 FROM node:20-alpine AS runner
 USER node
 WORKDIR /usr/src/app
 COPY --chown=node:node dist/apps/rahat-ui/ ./
 COPY --chown=node:node --from=deps /usr/src/app/node_modules ./node_modules
-CMD [ "yarn", "start" ]
+CMD [ "pnpm", "start" ]

@@ -282,6 +282,60 @@ export const useGetBeneficiariesReport = () => {
   });
 };
 
+export const useGetBeneficiariesOfframpedRecords = () => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      fromDate,
+      toDate,
+    }: {
+      projectUUID: UUID;
+      fromDate: string;
+      toDate: string;
+    }) => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'beneficiary.get_beneficiary_details_by_project',
+          payload: {
+            projectId: projectUUID,
+            fromDate,
+            toDate,
+          },
+        },
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data.length === 0) {
+        toast.fire({
+          title: 'No Beneficiary record found.',
+          text: 'Please try selecting a different date range.',
+          icon: 'error',
+        });
+      }
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message || 'An error occured!';
+      toast.fire({
+        title: 'Error while getting report.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 export const useGetBenefDisbursementDetails = (
   projectUUID: UUID,
   userUuid: string,

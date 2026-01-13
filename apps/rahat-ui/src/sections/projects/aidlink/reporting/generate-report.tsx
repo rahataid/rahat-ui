@@ -16,6 +16,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   FilteredTransaction,
   PROJECT_SETTINGS_KEYS,
+  useGetBeneficiariesOfframpedRecords,
   useGetBeneficiariesReport,
   useMutateGraphCall,
   useProjectSettingsStore,
@@ -26,7 +27,10 @@ import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { exportToExcel } from 'apps/rahat-ui/src/utils/exportToExcle';
 import { dateToTimestamp } from 'apps/rahat-ui/src/utils/dateToTimeStamp';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
-import { transformTransactionData } from 'apps/rahat-ui/src/utils/formatAdlinkTransactionData';
+import {
+  transformOfframpedData,
+  transformTransactionData,
+} from 'apps/rahat-ui/src/utils/formatAdlinkTransactionData';
 
 interface fileDetailsType {
   title: string;
@@ -98,6 +102,9 @@ const GenerateReport = ({
   });
 
   const { mutateAsync, isPending } = useGetBeneficiariesReport();
+  const { mutateAsync: getOfframpedRecords, isPending: isOfframpedLoading } =
+    useGetBeneficiariesOfframpedRecords();
+
   const { mutateAsync: graphMutateAsync, isPending: isLoading } =
     useMutateGraphCall(projectUUID);
 
@@ -119,9 +126,11 @@ const GenerateReport = ({
       //guard
       if (result.length === 0) return;
       exportToExcel(result, `beneficiaries-report-${fromDate}`);
+      return;
     }
+
     // for transaction history report
-    else if (data?.reportType === 'transaction_history') {
+    if (data?.reportType === 'transaction_history') {
       const fromDate = dateToTimestamp(data.startDate.toISOString());
       const toDate = dateToTimestamp(data.endDate.toISOString());
       const response = await graphMutateAsync({
@@ -142,16 +151,31 @@ const GenerateReport = ({
         Number(tokenNumber),
       );
       exportToExcel(newFormateData, `transaction-history-${fromDate}`);
+      return;
+    }
 
-      // Handle transaction history report generation
-    } else if (data?.reportType === 'offramped_transaction') {
-      // Handle offramped transaction report generation
+    // for offramped transaction report
+    if (data?.reportType === 'offramped_transaction') {
+      const fromDate = dateFormat(data.startDate, 'yyyy-MM-dd');
+      const toDate = dateFormat(data.endDate, 'yyyy-MM-dd');
+
+      const result = await getOfframpedRecords({
+        projectUUID,
+        fromDate,
+        toDate,
+      });
+
+      //guard
+      if (result.length === 0) return;
+      const newFormateData = transformOfframpedData(result);
+      exportToExcel(newFormateData, `offramped-transaction-report-${fromDate}`);
+      return;
     }
   };
 
   return (
     <>
-      {(isPending || isLoading) && (
+      {(isPending || isLoading || isOfframpedLoading) && (
         <div className="absolute inset-0 bg-gray-300 bg-opacity-30 flex items-center justify-center">
           <Loader />
         </div>

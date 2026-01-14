@@ -8,7 +8,7 @@ import {
   ChartNoAxesColumn,
 } from 'lucide-react';
 import React from 'react';
-import { formateDataFormTextData } from './utils/formateDataFormTextData';
+import { formateDateFromText } from './utils/formateDataFormTextData';
 
 type IProps = {
   glofas: Record<string, any>;
@@ -35,7 +35,7 @@ export default function GlofasInfoCard({ glofas }: IProps) {
       {
         icon: ChartLine,
         label: 'Peak Forecasted',
-        value: formateDataFormTextData(
+        value: formateDateFromText(
           glofas?.info?.pointForecastData?.peakForecasted?.data,
         ),
       },

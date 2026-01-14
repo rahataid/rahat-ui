@@ -1,6 +1,6 @@
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
-export const formateDataFormTextData = (text: string) => {
+export const formateDateFromText = (text: string) => {
   if (!text) return 'N/A';
 
   const match = text.match(/\d{4}-\d{2}-\d{2}/);

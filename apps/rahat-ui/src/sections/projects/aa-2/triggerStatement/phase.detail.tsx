@@ -5,7 +5,13 @@ import {
   IconLabelBtn,
   TableLoader,
 } from 'apps/rahat-ui/src/common';
-import { AlertTriangle, Plus, Settings, Undo2 } from 'lucide-react';
+import {
+  AlertCircleIcon,
+  AlertTriangle,
+  Plus,
+  Settings,
+  Undo2,
+} from 'lucide-react';
 import { TriggersListTabs, TriggersPhaseCard } from './components';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -24,7 +30,7 @@ export default function PhaseDetail() {
   const projectId = params.id as UUID;
   const phaseId = params.phaseId as UUID;
 
-  const { data: phase, isLoading } = useSinglePhase(projectId, phaseId);
+  const { data: phase, isLoading, error } = useSinglePhase(projectId, phaseId);
 
   const revertPhase = useRevertPhase();
 
@@ -41,9 +47,26 @@ export default function PhaseDetail() {
       payload: { phaseUuid: phaseId },
     });
   };
-  return isLoading ? (
-    <TableLoader />
-  ) : (
+
+  if (isLoading) {
+    return <TableLoader />;
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 w-full h-full">
+        <Back path={`/projects/aa/${projectId}/trigger-statements`} />
+        <div className="text-gray-400 flex justify-center items-center h-full w-full flex-col gap-3">
+          <AlertCircleIcon size={70} />
+          <p className="text-xl">
+            Data not available at the moment. Please try again later.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
     <div className="p-4">
       <Back path={`/projects/aa/${projectId}/trigger-statements`} />
       <div className="flex justify-between items-center">
@@ -131,6 +154,8 @@ export default function PhaseDetail() {
               phase?.totalMandatoryTriggers,
               phase?.totalOptionalTriggers,
             ]}
+            requiredMandatoryTriggers={phase?.requiredMandatoryTriggers}
+            requiredOptionalTriggers={phase?.requiredOptionalTriggers}
             mandatoryTriggers={phase?.totalMandatoryTriggers}
             optionalTriggers={phase?.totalOptionalTriggers}
             triggeredMandatoryTriggers={phase?.totalMandatoryTriggersTriggered}

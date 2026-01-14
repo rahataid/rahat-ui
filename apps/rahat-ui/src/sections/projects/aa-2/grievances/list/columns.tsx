@@ -21,12 +21,7 @@ export const useGrievancesTableColumns = () => {
   const { setSecondPanelComponent } = useSecondPanel();
 
   const openSplitDetailView = (grievance: any) => {
-    setSecondPanelComponent(
-      <GrievanceDetailSplitView
-        grievance={grievance}
-        closeSecondPanel={() => setSecondPanelComponent(null)}
-      />,
-    );
+    setSecondPanelComponent(<GrievanceDetailSplitView grievance={grievance} />);
   };
 
   const columns: ColumnDef<any>[] = [

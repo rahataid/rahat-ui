@@ -28,6 +28,7 @@ import {
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
+import { AlertCircleIcon } from 'lucide-react';
 
 export default function TriggerStatementDetail() {
   const router = useRouter();
@@ -42,11 +43,11 @@ export default function TriggerStatementDetail() {
     ? triggerID
     : window.location.href.split('/').slice(-1)[0];
 
-  const { data: trigger, isLoading } = useSingleTriggerStatement(
-    id,
-    triggerIdKey,
-    version,
-  );
+  const {
+    data: trigger,
+    isLoading,
+    error,
+  } = useSingleTriggerStatement(id, triggerIdKey, version);
   const project = useProjectStore((p) => p.singleProject);
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
@@ -71,9 +72,26 @@ export default function TriggerStatementDetail() {
       `/projects/aa/${id}/trigger-statements/phase/${trigger?.phaseId}`,
     );
   };
-  return isLoading ? (
-    <TableLoader />
-  ) : (
+
+  if (isLoading) {
+    return <TableLoader />;
+  }
+
+  if (error || !trigger) {
+    return (
+      <div className="p-4 w-full h-full">
+        <Back path={`/projects/aa/${id}/trigger-statements`} />
+        <div className="text-gray-400 flex justify-center items-center h-full w-full flex-col gap-3">
+          <AlertCircleIcon size={70} />
+          <p className="text-xl">
+            Trigger Details not available at the moment. Please try again later.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
     <div className="p-4">
       <Back />
       <div className="flex justify-between items-center mb-4">

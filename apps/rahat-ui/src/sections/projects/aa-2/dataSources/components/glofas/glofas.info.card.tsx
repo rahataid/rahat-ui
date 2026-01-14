@@ -1,44 +1,31 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Heading } from 'apps/rahat-ui/src/common';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { UUID } from 'crypto';
 import {
   Calendar,
   TriangleAlert,
   ChartLine,
   ChartNoAxesColumn,
 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
+import { formateDataFormTextData } from './utils/formateDataFormTextData';
 
 type IProps = {
   glofas: Record<string, any>;
 };
 
 export default function GlofasInfoCard({ glofas }: IProps) {
-  const router = useRouter();
-  const params = useParams();
-  const projectId = params.id as UUID;
-  const updatedAt = glofas?.updatedAt;
-
-  const maxProbability =
-    glofas?.info?.pointForecastData?.maxProbability?.data ?? '';
-
-  const [val2yr, val5yr, val20yr] = maxProbability
-    ? maxProbability.split('/').map((str: string) => str.trim())
-    : ['N/A', 'N/A', 'N/A'];
-
   const cardData = React.useMemo(
     () => [
       {
         icon: Calendar,
         label: 'Forecast Date',
-        value: dateFormat(glofas?.info?.forecastDate),
+        value: dateFormat(glofas?.info?.forecastDate, 'MMMM d, yyyy'),
       },
       {
         icon: Calendar,
         label: 'Return Period',
-        value: '2 Years',
+        value: glofas?.info?.returnPeriod || 'N/A',
       },
       {
         icon: ChartNoAxesColumn,
@@ -48,7 +35,9 @@ export default function GlofasInfoCard({ glofas }: IProps) {
       {
         icon: ChartLine,
         label: 'Peak Forecasted',
-        value: glofas?.info?.pointForecastData?.peakForecasted?.data,
+        value: formateDataFormTextData(
+          glofas?.info?.pointForecastData?.peakForecasted?.data,
+        ),
       },
       {
         icon: TriangleAlert,
@@ -64,18 +53,16 @@ export default function GlofasInfoCard({ glofas }: IProps) {
         <div className="w-full">
           <div className="flex justify-between gap-4 z-50">
             <Heading
-              // title={glofas?.source?.riverBasin}
-              title="Doda (Macheeli) River Basin"
+              title={glofas?.source?.riverBasin}
               titleStyle="text-xl/6 font-semibold"
-              // description={glofas?.source?.riverBasin}
-              description="this this description for testing propose"
-              updatedAt={updatedAt}
+              description={glofas?.source?.riverBasin}
+              updatedAt={glofas?.updatedAt}
             />
             <div>
-              <Badge>Steady</Badge>
+              <Badge className="font-light">Steady</Badge>
             </div>
           </div>
-          <div className="grid grid-cols-5 gap-4">
+          <div className="grid grid-cols-5 gap-2">
             {cardData?.map((d) => {
               const Icon = d.icon;
               return (
@@ -105,22 +92,16 @@ export default function GlofasInfoCard({ glofas }: IProps) {
             <p className="font-semibold text-xl/10">Maximum Probability</p>
             <p className="text-xs/4">
               Max Probability Step:{' '}
-              {glofas?.info?.pointForecastData?.maxProbabilityStep?.data}
+              {glofas?.info?.pointForecastData?.maxProbabilityStep?.data ||
+                'N/A'}
             </p>
           </div>
-          <div className="">
-            <div className="pt-2 text-center">
-              <div className="text-primary font-semibold">{val2yr} %</div>
-              <div className="text-sm">2 years</div>
+
+          <div className="pt-2 text-center">
+            <div className="text-primary font-semibold">
+              {glofas?.info?.pointForecastData?.maxProbability?.data || 'N/A'} %
             </div>
-            {/* <div className="p-4 text-center">
-              <div className="text-primary font-semibold">{val5yr} %</div>
-              <div className="text-sm mt-1">5 years</div>
-            </div>
-            <div className="p-4 text-center">
-              <div className="text-primary font-semibold">{val20yr} %</div>
-              <div className="text-sm mt-1">20 years</div>
-            </div> */}
+            <div className="text-sm">{glofas?.info?.returnPeriod}</div>
           </div>
         </div>
       </div>

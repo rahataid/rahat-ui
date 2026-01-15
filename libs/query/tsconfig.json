@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "esnext",
     "jsx": "react",
     "forceConsistentCasingInFileNames": true,
     "strict": true,

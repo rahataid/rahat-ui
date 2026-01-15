@@ -1,11 +1,11 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import React from 'react';
 import { Copy, CopyCheck, Store, User, Users } from 'lucide-react';
 import HeaderWithBack from '../../components/header.with.back';
 import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { mapStatus } from '@rahat-ui/query';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
 export default function BeneficiaryDetail() {
   const { id, benId } = useParams() as { id: UUID; benId: UUID };

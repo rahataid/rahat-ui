@@ -14,6 +14,14 @@ export const useElkenyaBeneficiaryTableColumns = ({
   const router = useRouter();
 
   function getDynamicColor(status: string) {
+    if (status === 'LENSES') {
+      return 'bg-teal-50 text-teal-500';
+    }
+
+    if (status === 'FRAMES') {
+      return 'bg-violet-50 text-violet-500';
+    }
+
     if (status === 'READING_GLASSES' || status === 'WALK_IN') {
       return 'bg-blue-50 text-blue-500';
     }

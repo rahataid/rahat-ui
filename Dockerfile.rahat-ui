@@ -9,11 +9,12 @@ COPY dist/apps/rahat-ui/package.json ./
 RUN pnpm install
 
 FROM node:20-alpine AS runner
-USER node
 WORKDIR /usr/src/app
 
-# Enable pnpm
+# Enable pnpm (must run before USER node)
 RUN corepack enable
+
+USER node
 
 COPY --chown=node:node dist/apps/rahat-ui/ ./
 COPY --chown=node:node --from=deps /usr/src/app/node_modules ./node_modules

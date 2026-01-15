@@ -99,7 +99,7 @@ export default function GlofasInfoCard({ glofas }: IProps) {
 
           <div className="pt-2 text-center">
             <div className="text-primary font-semibold">
-              {glofas?.info?.pointForecastData?.maxProbability?.data || 'N/A'} %
+              {glofas?.info?.pointForecastData?.maxProbability?.data ?? 'N/A'} %
             </div>
             <div className="text-sm">{glofas?.info?.returnPeriod}</div>
           </div>

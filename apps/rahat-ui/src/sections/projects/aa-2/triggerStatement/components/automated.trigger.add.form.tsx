@@ -393,6 +393,11 @@ export default function AddAutomatedTriggerForm({
                                   <Input
                                     type="number"
                                     placeholder={meta?.placeholder}
+                                    step="1"
+                                    min="1"
+                                    max={
+                                      source === 'glofas' ? '100' : undefined
+                                    }
                                     {...field}
                                   />
                                 </FormControl>

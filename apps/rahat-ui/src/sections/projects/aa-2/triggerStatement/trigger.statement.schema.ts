@@ -88,6 +88,32 @@ export const triggerStatementSchemaBase = z
       });
     }
 
+    // Validate value is a positive integer
+    if (data.value !== undefined && !isNaN(data.value)) {
+      if (!Number.isInteger(data.value)) {
+        ctx.addIssue({
+          path: ['value'],
+          message: 'Value must be a positive integer',
+          code: z.ZodIssueCode.custom,
+        });
+      } else if (data.value <= 0) {
+        ctx.addIssue({
+          path: ['value'],
+          message: 'Value must be a positive integer',
+          code: z.ZodIssueCode.custom,
+        });
+      }
+
+      // For Glofas (prob_flood), value cannot exceed 100
+      if (data.source === 'prob_flood' && data.value > 100) {
+        ctx.addIssue({
+          path: ['value'],
+          message: 'Value cannot exceed 100 for flood probability',
+          code: z.ZodIssueCode.custom,
+        });
+      }
+    }
+
     if (
       data.sourceSubType &&
       (!data.expression || data.expression.trim().length < 3)

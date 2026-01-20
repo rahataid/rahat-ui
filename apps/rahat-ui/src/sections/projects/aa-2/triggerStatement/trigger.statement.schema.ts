@@ -36,6 +36,13 @@ const operatorValues = ['>', '<', '=', '>=', '<='] as const;
 
 const numericValueSchema = z.coerce.number().finite();
 
+const fieldLabels: Record<keyof typeof SOURCE_CONFIG, string> = {
+  water_level_m: 'Level Type',
+  discharge_m3s: 'Discharge Type',
+  rainfall_mm: 'Measurement Period',
+  prob_flood: 'Probability Period',
+};
+
 export const triggerStatementSchemaBase = z
   .object({
     source: z.enum(sourceValues),
@@ -155,9 +162,9 @@ export const triggerStatementSchema = triggerStatementSchemaBase.superRefine(
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: `sourceSubType must be one of [${config.subTypes.join(
-          ', ',
-        )}] for ${value.source}`,
+        message: `${
+          fieldLabels[value.source]
+        } must be one of [${config.subTypes.join(', ')}]`,
         path: ['sourceSubType'],
       });
     }

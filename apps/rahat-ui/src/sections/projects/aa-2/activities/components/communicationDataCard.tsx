@@ -1,20 +1,29 @@
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Mail, MessageSquare, PencilIcon, Phone, Trash2 } from 'lucide-react';
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { Transport } from '@rumsan/connect/src/types';
 import {
   useBeneficiariesGroupStore,
   useStakeholdersGroupsStore,
 } from '@rahat-ui/query';
 import { DialogComponent } from '../details/dialog.reuse';
+import { CommunicationData } from 'apps/rahat-ui/src/types/communication';
+import { UseFormReturn } from 'react-hook-form';
+import { z } from 'zod';
+import { createCommunicationFormSchema } from '../schemas/activity.schemas';
 
-type IProps = {
-  form: any;
-  communicationData: any[];
+type CommunicationFormData = z.infer<
+  ReturnType<typeof createCommunicationFormSchema>
+>;
+
+interface CommunicationDataCardProps {
+  form: UseFormReturn<CommunicationFormData>;
+  communicationData: CommunicationData[];
   appTransports: Transport[] | undefined;
   onRemove: (index: number) => void;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  open: boolean;
+}
 
 const CommunicationDataCard = ({
   form,
@@ -22,12 +31,8 @@ const CommunicationDataCard = ({
   appTransports,
   onRemove,
   setOpen,
-}: IProps) => {
-  const [audioFile, setAudioFile] = React.useState({
-    fileName: '',
-    mediaURL: '',
-  });
-
+  open = false,
+}: CommunicationDataCardProps) => {
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
   );
@@ -37,39 +42,28 @@ const CommunicationDataCard = ({
   );
 
   // Handle the edit button click
-  const editButtonClickHandler = (i: number) => {
-    // e.preventDefault();
-    form.watch('activityCommunication');
+  const handleEditClick = (i: number) => {
     const itemData = communicationData[i];
-    handleEditClick(itemData);
+
     onRemove(i);
-  };
-
-  const fieldName = (name: string) => `activityCommunication.${name}`; // Dynamic field name generator
-
-  const handleEditClick = (itemData: any) => {
     setOpen(true);
-    setAudioFile(itemData?.audioURL);
-    // for setting the group id
-    setTimeout(() => {
-      form.setValue(fieldName('groupId'), itemData.groupId);
-    }, 50);
-    form.setValue(
-      fieldName('communicationTitle'),
-      itemData?.communicationTitle,
-    );
-    form.setValue(fieldName('groupType'), itemData?.groupType);
-    form.setValue(fieldName('message'), itemData?.message);
-    form.setValue(fieldName('subject'), itemData?.subject);
-    form.setValue(fieldName('transportId'), itemData?.transportId);
-    form.setValue(fieldName('audioURL'), audioFile);
+
+    form.setValue('communicationTitle', itemData.communicationTitle || '');
+    form.setValue('sessionId', itemData.sessionId);
+    form.setValue('communicationId', itemData.communicationId);
+    form.setValue('groupId', itemData.groupId);
+    form.setValue('groupType', itemData.groupType);
+    form.setValue('message', itemData.message);
+    form.setValue('subject', itemData.subject);
+    form.setValue('transportId', itemData.transportId);
+    form.setValue('audioURL', itemData.audioURL);
   };
 
   const handleRemoveclick = (index: number) => {
     const scrollPosition = window.scrollY;
+    setOpen(false);
     onRemove(index);
     window.scrollTo(0, scrollPosition);
-    setOpen(false);
   };
 
   return (
@@ -115,10 +109,12 @@ const CommunicationDataCard = ({
                       <span>•</span>
                       <span>
                         {' '}
-                        {stakeholdersGroups?.find((g) => g.uuid === t.groupId)
-                          ?.name ||
-                          beneficiaryGroups?.find((g) => g.uuid === t.groupId)
-                            ?.name}
+                        {stakeholdersGroups?.find(
+                          (g: any) => g.uuid === t.groupId,
+                        )?.name ||
+                          beneficiaryGroups?.find(
+                            (g: any) => g.uuid === t.groupId,
+                          )?.name}
                       </span>
                     </div>
                   </div>
@@ -135,18 +131,18 @@ const CommunicationDataCard = ({
                         src={t?.audioURL?.mediaURL}
                         controls
                         className="w-full h-10 "
-                        // onPlay={() => setIsPlaying(true)}
-                        // onPause={() => setIsPlaying(false)}
                       />
                     </div>
                   )}
                 </div>
 
                 <div className="flex gap-2 justify-center items-center">
-                  <PencilIcon
-                    className=" text-blue-500 hover:text-blue-600 transition-colors hover:cursor-pointer hover:bg-slate-100 w-4 flex justify-center h-4  border-none p-0 hover:none "
-                    onClick={() => editButtonClickHandler(i)}
-                  />
+                  {!open && (
+                    <PencilIcon
+                      className=" text-blue-500 hover:text-blue-600 transition-colors hover:cursor-pointer hover:bg-slate-100 w-4 flex justify-center h-4  border-none p-0 hover:none "
+                      onClick={() => handleEditClick(i)}
+                    />
+                  )}
                   <DialogComponent
                     buttonIcon={Trash2}
                     buttonText=""

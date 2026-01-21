@@ -44,7 +44,7 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { toast } from 'react-toastify';
-import { Back, Heading } from 'apps/rahat-ui/src/common';
+import { Back, Heading, NoResult } from 'apps/rahat-ui/src/common';
 import { useUserList } from '@rumsan/react-query';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 import { DurationData } from '../add/add.activity.view';
@@ -199,8 +199,11 @@ export default function EditActivity() {
   useActivitiesCategories(projectID as UUID);
 
   usePhases(projectID as UUID);
-  const { data: activityDetail, isLoading: isActivityLoading } =
-    useSingleActivity(projectID as UUID, activityID);
+  const {
+    data: activityDetail,
+    isLoading: isActivityLoading,
+    error,
+  } = useSingleActivity(projectID as UUID, activityID);
 
   const { categories } = useActivitiesStore((state) => ({
     categories: state.categories,
@@ -427,6 +430,28 @@ export default function EditActivity() {
   //   return false;
   // });
 
+  if (isActivityLoading) {
+    return (
+      <div className='p-4 h-full'>
+        <Back path={redirectUpdatePath} />
+        <div className="flex justify-center items-center h-full">
+          <Loader />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className='p-4 h-full'>
+        <Back path={redirectUpdatePath} />
+        <div className="flex justify-center items-center h-full">
+          <NoResult message="Error while loading activity details" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Form {...form}>
       <form
@@ -435,388 +460,382 @@ export default function EditActivity() {
       >
         <div className="p-4 h-full">
           <Back path={redirectUpdatePath} />
-          {isActivityLoading ? (
-            <div className="flex justify-center items-center h-full">
-              <Loader />
-            </div>
-          ) : (
-            <>
-              <div className="mb-2 flex flex-col space-y-0">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <Heading
-                      title={`Edit Activity `}
-                      description="Edit the form below to update  activity"
-                    />
-                  </div>
+          <>
+            <div className="mb-2 flex flex-col space-y-0">
+              <div className="flex justify-between items-center">
+                <div>
+                  <Heading
+                    title={`Edit Activity `}
+                    description="Edit the form below to update  activity"
+                  />
+                </div>
 
-                  <div className="flex justify-end mt-8">
-                    <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-36"
-                        onClick={handleReset}
-                      >
-                        Reset
-                      </Button>
-                      <Button
-                        className="  w-36"
-                        type="submit"
-                        disabled={
-                          updateActivity?.isPending ||
-                          uploadFile?.isPending ||
-                          audioUploading ||
-                          open
-                        }
-                      >
-                        Update
-                      </Button>
-                    </div>
+                <div className="flex justify-end mt-8">
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-36"
+                      onClick={handleReset}
+                    >
+                      Reset
+                    </Button>
+                    <Button
+                      className="  w-36"
+                      type="submit"
+                      disabled={
+                        updateActivity?.isPending ||
+                        uploadFile?.isPending ||
+                        audioUploading ||
+                        open
+                      }
+                    >
+                      Update
+                    </Button>
                   </div>
                 </div>
               </div>
-              <ScrollArea className=" h-[calc(100vh-230px)]">
-                <div className="rounded-xl border p-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="title"
-                      render={({ field }) => {
-                        return (
-                          <FormItem className="col-span-2">
-                            <FormLabel>Activity title</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="text"
-                                placeholder="Enter activity title"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="responsibility"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Responsibility</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                            key={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select responsibility" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {users?.data.map((item) => (
-                                <SelectItem
-                                  key={item.uuid}
-                                  value={item.uuid as string}
-                                >
-                                  {item.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="source"
-                      render={({ field }) => {
-                        return (
-                          <FormItem>
-                            <FormLabel>Responsible Station</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="text"
-                                placeholder="Enter responsible station"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="phaseId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Phase</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                            key={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select phase" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {phases.map((item) => (
-                                <SelectItem key={item.id} value={item.uuid}>
-                                  {item.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="categoryId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Category</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                            key={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select category" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {categories.map((item) => (
-                                <SelectItem key={item.id} value={item.uuid}>
-                                  {item.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {selectedPhase &&
-                      selectedPhase?.name !== 'PREPAREDNESS' && (
-                        <FormField
-                          control={form.control}
-                          name="isAutomated"
-                          render={({ field }) => {
-                            return (
-                              <FormItem className="col-span-2">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={(checked) =>
-                                      field.onChange(checked)
-                                    }
-                                  />
-                                </FormControl>
-                                <FormLabel className="text-sm font-normal ml-2">
-                                  Is Automated Activity?
-                                </FormLabel>
-                                <FormMessage />
-                              </FormItem>
-                            );
-                          }}
-                        />
-                      )}
-
-                    {selectedPhaseId &&
-                      selectedPhase?.name !== 'PREPAREDNESS' && (
-                        <FormField
-                          control={form.control}
-                          name="leadTime"
-                          render={({ field }) => {
-                            const [lead, unitValue] = field.value?.split(
-                              ' ',
-                            ) ?? ['', ''];
-                            // Default unit to 'days' if not set
-                            const unit = !unitValue ? 'days' : unitValue;
-                            return (
-                              <FormItem>
-                                <FormLabel>Lead Time</FormLabel>
-                                <div className="grid grid-cols-4">
-                                  <Input
-                                    type="text"
-                                    placeholder="Enter lead time"
-                                    className="col-span-3 rounded-r-none "
-                                    value={lead}
-                                    onChange={(e) => {
-                                      const newLead = e.target.value;
-                                      field.onChange(
-                                        newLead
-                                          ? `${newLead} ${unit}`
-                                          : ` ${unit}`,
-                                      );
-                                    }}
-                                  />
-                                  <Select
-                                    value={unit}
-                                    onValueChange={(val) => {
-                                      field.onChange(
-                                        lead ? `${lead} ${val}` : ` ${val}`,
-                                      );
-                                    }}
-                                  >
-                                    <FormControl>
-                                      <SelectTrigger className="rounded-l-none">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      {DurationData.map((item) => (
-                                        <SelectItem
-                                          key={item.value}
-                                          value={item.value}
-                                        >
-                                          {item.label}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                                <FormMessage />
-                              </FormItem>
-                            );
-                          }}
-                        />
-                      )}
-
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => {
-                        return (
-                          <FormItem className="col-span-2">
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                              <Textarea
-                                placeholder="Enter description"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
-                  </div>
+            </div>
+            <ScrollArea className=" h-[calc(100vh-230px)]">
+              <div className="rounded-xl border p-4">
+                <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="activityDocuments"
+                    name="title"
                     render={({ field }) => {
-                      const activityDocuments = field.value || [];
                       return (
-                        <FormItem className="mt-4">
+                        <FormItem className="col-span-2">
+                          <FormLabel>Activity title</FormLabel>
                           <FormControl>
-                            <div className="relative border border-dashed rounded p-1.5">
-                              <div className="absolute inset-0 flex gap-2 items-center justify-center">
-                                <CloudUpload
-                                  size={25}
-                                  strokeWidth={2}
-                                  className="text-primary"
-                                />
-                                <p className="text-sm font-medium">
-                                  Drop files to upload, or{' '}
-                                  <span className="text-primary">browse</span>
-                                </p>
-                              </div>
-                              <Input
-                                className="opacity-0 cursor-pointer"
-                                type="file"
-                                multiple
-                                onChange={handleFileChange}
-                              />
-                            </div>
+                            <Input
+                              type="text"
+                              placeholder="Enter activity title"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
-                          <p className="text-xs text-end text-orange-500">
-                            *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX
-                            or CSV under 5 MB.
-                          </p>
-                          <div className="grid sm:grid-cols-2  lg:grid-cols-3 xl:grid-cols-5 gap-4 p-2">
-                            {activityDocuments?.map((file) => (
-                              <div
-                                key={file.fileName}
-                                className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 flex items-center gap-3 hover:cursor-pointer hover:bg-gray-100"
+                        </FormItem>
+                      );
+                    }}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="responsibility"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Responsibility</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          key={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select responsibility" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {users?.data.map((item) => (
+                              <SelectItem
+                                key={item.uuid}
+                                value={item.uuid as string}
                               >
-                                {uploadFile.isPending &&
-                                uploadingFileName === file.fileName ? (
-                                  <LoaderCircle className="text-green-600 animate-spin w-9 h-9" />
-                                ) : (
-                                  <FileCheck className="w-9 h-9 text-green-600" />
-                                )}
-                                <p className="text-xs  flex  items-center gap-2">
-                                  {file.fileName}
-                                </p>
-                                <X
-                                  strokeWidth={2.5}
-                                  onClick={() => {
-                                    const updated = activityDocuments.filter(
-                                      (f) => f.fileName !== file.fileName,
-                                    );
-                                    field.onChange(updated);
-                                  }}
-                                  className="cursor-pointer text-red-500 w-8 h-8"
-                                />
-                              </div>
+                                {item.name}
+                              </SelectItem>
                             ))}
-                          </div>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="source"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel>Responsible Station</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder="Enter responsible station"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phaseId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phase</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          key={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select phase" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {phases.map((item) => (
+                              <SelectItem key={item.id} value={item.uuid}>
+                                {item.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="categoryId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          key={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select category" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {categories.map((item) => (
+                              <SelectItem key={item.id} value={item.uuid}>
+                                {item.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {selectedPhase && selectedPhase?.name !== 'PREPAREDNESS' && (
+                    <FormField
+                      control={form.control}
+                      name="isAutomated"
+                      render={({ field }) => {
+                        return (
+                          <FormItem className="col-span-2">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={(checked) =>
+                                  field.onChange(checked)
+                                }
+                              />
+                            </FormControl>
+                            <FormLabel className="text-sm font-normal ml-2">
+                              Is Automated Activity?
+                            </FormLabel>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  )}
+
+                  {selectedPhaseId &&
+                    selectedPhase?.name !== 'PREPAREDNESS' && (
+                      <FormField
+                        control={form.control}
+                        name="leadTime"
+                        render={({ field }) => {
+                          const [lead, unitValue] = field.value?.split(' ') ?? [
+                            '',
+                            '',
+                          ];
+                          // Default unit to 'days' if not set
+                          const unit = !unitValue ? 'days' : unitValue;
+                          return (
+                            <FormItem>
+                              <FormLabel>Lead Time</FormLabel>
+                              <div className="grid grid-cols-4">
+                                <Input
+                                  type="text"
+                                  placeholder="Enter lead time"
+                                  className="col-span-3 rounded-r-none "
+                                  value={lead}
+                                  onChange={(e) => {
+                                    const newLead = e.target.value;
+                                    field.onChange(
+                                      newLead
+                                        ? `${newLead} ${unit}`
+                                        : ` ${unit}`,
+                                    );
+                                  }}
+                                />
+                                <Select
+                                  value={unit}
+                                  onValueChange={(val) => {
+                                    field.onChange(
+                                      lead ? `${lead} ${val}` : ` ${val}`,
+                                    );
+                                  }}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger className="rounded-l-none">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {DurationData.map((item) => (
+                                      <SelectItem
+                                        key={item.value}
+                                        value={item.value}
+                                      >
+                                        {item.label}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    )}
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => {
+                      return (
+                        <FormItem className="col-span-2">
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Enter description"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
                         </FormItem>
                       );
                     }}
                   />
                 </div>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="border-dashed border-primary text-primary text-md w-full mt-4"
-                  onClick={() => {
-                    setOpen(!open);
+                <FormField
+                  control={form.control}
+                  name="activityDocuments"
+                  render={({ field }) => {
+                    const activityDocuments = field.value || [];
+                    return (
+                      <FormItem className="mt-4">
+                        <FormControl>
+                          <div className="relative border border-dashed rounded p-1.5">
+                            <div className="absolute inset-0 flex gap-2 items-center justify-center">
+                              <CloudUpload
+                                size={25}
+                                strokeWidth={2}
+                                className="text-primary"
+                              />
+                              <p className="text-sm font-medium">
+                                Drop files to upload, or{' '}
+                                <span className="text-primary">browse</span>
+                              </p>
+                            </div>
+                            <Input
+                              className="opacity-0 cursor-pointer"
+                              type="file"
+                              multiple
+                              onChange={handleFileChange}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                        <p className="text-xs text-end text-orange-500">
+                          *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
+                          CSV under 5 MB.
+                        </p>
+                        <div className="grid sm:grid-cols-2  lg:grid-cols-3 xl:grid-cols-5 gap-4 p-2">
+                          {activityDocuments?.map((file) => (
+                            <div
+                              key={file.fileName}
+                              className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 flex items-center gap-3 hover:cursor-pointer hover:bg-gray-100"
+                            >
+                              {uploadFile.isPending &&
+                              uploadingFileName === file.fileName ? (
+                                <LoaderCircle className="text-green-600 animate-spin w-9 h-9" />
+                              ) : (
+                                <FileCheck className="w-9 h-9 text-green-600" />
+                              )}
+                              <p className="text-xs  flex  items-center gap-2">
+                                {file.fileName}
+                              </p>
+                              <X
+                                strokeWidth={2.5}
+                                onClick={() => {
+                                  const updated = activityDocuments.filter(
+                                    (f) => f.fileName !== file.fileName,
+                                  );
+                                  field.onChange(updated);
+                                }}
+                                className="cursor-pointer text-red-500 w-8 h-8"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </FormItem>
+                    );
                   }}
-                >
-                  Add Communication
-                  {!open ? (
-                    <Plus className="ml-2" size={16} strokeWidth={3} />
-                  ) : (
-                    <Minus className="ml-2" size={16} strokeWidth={3} />
-                  )}
-                </Button>
-
-                {open && (
-                  <AddCommunicationForm
-                    form={communicationForm}
-                    setOpen={setOpen}
-                    onSave={handleSave}
-                    setLoading={setAudioUploading}
-                    appTransports={appTransports}
-                  />
-                )}
-
-                <CommunicationDataCard
-                  form={communicationForm}
-                  communicationData={communicationData}
-                  appTransports={appTransports}
-                  onRemove={handleRemove}
-                  setOpen={setOpen}
-                  open={open}
                 />
-              </ScrollArea>
-            </>
-          )}
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="border-dashed border-primary text-primary text-md w-full mt-4"
+                onClick={() => {
+                  setOpen(!open);
+                }}
+              >
+                Add Communication
+                {!open ? (
+                  <Plus className="ml-2" size={16} strokeWidth={3} />
+                ) : (
+                  <Minus className="ml-2" size={16} strokeWidth={3} />
+                )}
+              </Button>
+
+              {open && (
+                <AddCommunicationForm
+                  form={communicationForm}
+                  setOpen={setOpen}
+                  onSave={handleSave}
+                  setLoading={setAudioUploading}
+                  appTransports={appTransports}
+                />
+              )}
+
+              <CommunicationDataCard
+                form={communicationForm}
+                communicationData={communicationData}
+                appTransports={appTransports}
+                onRemove={handleRemove}
+                setOpen={setOpen}
+                open={open}
+              />
+            </ScrollArea>
+          </>
         </div>
       </form>
     </Form>

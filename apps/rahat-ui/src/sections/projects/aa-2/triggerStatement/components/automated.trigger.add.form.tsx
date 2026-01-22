@@ -88,6 +88,14 @@ export default function AddAutomatedTriggerForm({
 
   React.useEffect(() => {
     if (source) {
+      // Reset source-related fields when source changes
+      form.setValue('triggerStatement.sourceSubType', '');
+      form.setValue('triggerStatement.stationId', '');
+      form.setValue('triggerStatement.stationName', '');
+      form.setValue('triggerStatement.operator', undefined);
+      form.setValue('triggerStatement.value', undefined);
+      form.setValue('triggerStatement.expression', '');
+
       switch (source) {
         case 'dhm:waterlevel':
           form.setValue('triggerStatement.source', 'water_level_m');
@@ -105,7 +113,7 @@ export default function AddAutomatedTriggerForm({
           break;
       }
     }
-  }, [source]);
+  }, [source, form]);
 
   React.useEffect(() => {
     if (triggerSourceSubType && triggerOperator && triggerValue) {
@@ -385,6 +393,11 @@ export default function AddAutomatedTriggerForm({
                                   <Input
                                     type="number"
                                     placeholder={meta?.placeholder}
+                                    step="1"
+                                    min="1"
+                                    max={
+                                      source === 'glofas' ? '100' : undefined
+                                    }
                                     {...field}
                                   />
                                 </FormControl>

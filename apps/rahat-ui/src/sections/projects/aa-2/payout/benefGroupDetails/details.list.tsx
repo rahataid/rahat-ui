@@ -26,18 +26,13 @@ import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
-import {
-  CloudDownload,
-  RotateCcw,
-  Ticket,
-  User,
-  StoreIcon,
-} from 'lucide-react';
+import { CloudDownload, RotateCcw } from 'lucide-react';
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
 import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
 import * as XLSX from 'xlsx';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
+import { getPayoutTransactionStatusOptions } from './utils';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const params = useParams();
@@ -138,7 +133,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
     {
       label: 'Amount Disbursed',
-      smallNumber: `Rs. ${payout?.totalSuccessAmount}` ?? 0,
+      smallNumber: `Rs. ${payout?.totalSuccessAmount}`,
       infoIcon: true,
       infoToolTip: 'Total amount disbursed in this payout',
     },
@@ -160,7 +155,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       badge: true,
     },
   ];
-  console.log('pay', payout?.extras?.paymentProviderName);
+
   const handleSearch = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
       const value = event?.target?.value ?? '';
@@ -189,7 +184,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
               status={payout?.status
                 .toLowerCase()
                 .replace(/_/g, ' ')
-                .replace(/^./, (char) => char.toUpperCase())}
+                .replace(/^./, (char: string) => char.toUpperCase())}
               badgeClassName={isCompleteBgStatus(payout?.status)}
             />
           </div>
@@ -332,61 +327,42 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             value={filters?.search || ''}
           />
 
-          {payout?.type === 'FSP' && (
-            <SelectComponent
-              name="Transaction Type"
-              options={[
-                'ALL',
-                'TOKEN_TRANSFER',
-                'FIAT_TRANSFER',
-                'VENDOR_REIMBURSEMENT',
-              ]}
-              onChange={(value) =>
-                handleFilterChange({
-                  target: { name: 'transactionType', value },
-                })
-              }
-              value={filters?.transactionType || ''}
-              className="flex-[1]"
-            />
-          )}
+          {payout?.type === 'FSP' &&
+            payout?.extras?.paymentProviderType !== 'manual_bank_transfer' && (
+              <SelectComponent
+                name="Transaction Type"
+                options={[
+                  'ALL',
+                  'TOKEN_TRANSFER',
+                  'FIAT_TRANSFER',
+                  'VENDOR_REIMBURSEMENT',
+                ]}
+                onChange={(value) =>
+                  handleFilterChange({
+                    target: { name: 'transactionType', value },
+                  })
+                }
+                value={filters?.transactionType || ''}
+                className="flex-[1]"
+              />
+            )}
 
-          {payout?.type === 'FSP' ? (
-            <SelectComponent
-              name="Status"
-              options={[
-                'ALL',
-                'PENDING',
-                'TOKEN_TRANSACTION_INITIATED',
-                'TOKEN_TRANSACTION_COMPLETED',
-                'TOKEN_TRANSACTION_FAILED',
-                'FIAT_TRANSACTION_INITIATED',
-                'FIAT_TRANSACTION_COMPLETED',
-                'FIAT_TRANSACTION_FAILED',
-                'COMPLETED',
-                'FAILED',
-              ]}
-              onChange={(value) =>
-                handleFilterChange({
-                  target: { name: 'transactionStatus', value },
-                })
-              }
-              value={filters?.transactionStatus || ''}
-              className="flex-[1]"
-            />
-          ) : (
-            <SelectComponent
-              name="Status"
-              options={['ALL', 'PENDING', 'COMPLETED', 'FAILED']}
-              onChange={(value) =>
-                handleFilterChange({
-                  target: { name: 'transactionStatus', value },
-                })
-              }
-              value={filters?.transactionStatus || ''}
-              className="flex-[1]"
-            />
-          )}
+          <SelectComponent
+            name="Status"
+            options={
+              getPayoutTransactionStatusOptions(
+                payout?.type,
+                payout?.extras?.paymentProviderType,
+              ) as string[]
+            }
+            onChange={(value) =>
+              handleFilterChange({
+                target: { name: 'transactionStatus', value },
+              })
+            }
+            value={filters?.transactionStatus || ''}
+            className="flex-[1]"
+          />
         </div>
         <BeneficiariesGroupTable table={table} loading={payoutLogsLoading} />
 

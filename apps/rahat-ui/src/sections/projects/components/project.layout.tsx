@@ -1,14 +1,8 @@
 'use client';
 
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/src/components/ui/resizable';
 import React, { FC } from 'react';
 import { ProjectType } from './nav-items.types';
 import { ProjectNav } from './project-header';
-import ProjectNavView from './project.nav.view';
 import { useProjectHeaderItems } from './useProjectHeaderItems';
 import { useProjectNavItems } from './useProjectNavItems';
 import { SidebarProvider } from '@rahat-ui/shadcn/src/components/ui/sidebar';
@@ -43,50 +37,9 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
 
   const { navItems: menuItems } = useProjectNavItems(projectType);
   const { headerNav } = useProjectHeaderItems(projectType);
-  const renderResizablePanel = (children: React.ReactNode, index?: number) => {
-    return children;
-    // (
-    //   <ResizablePanel minSize={40} key={index}>
-    //     {children}
-    //     {/* <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea> */}
-    //   </ResizablePanel>
-    // );
-  };
-  const renderChildren = () => {
-    if (Array.isArray(children)) {
-      return children.map((child, index) => {
-        return (
-          <>
-            {/* <ResizableHandle withHandle /> */}
-            {renderResizablePanel(child, index)}
-          </>
-        );
-      });
-    }
-    return (
-      <>
-        {/* <ResizableHandle /> */}
-        {renderResizablePanel(children)}
-      </>
-    );
-  };
 
   return (
     <>
-      {/* <ProjectNav component={headerNav} />
-      <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={15} minSize={15} maxSize={15}>
-          {menuItems.map((item) => (
-            <ProjectNavView
-              key={item.title}
-              title={item.title}
-              items={item.children}
-            />
-          ))}
-          {navFooter}
-        </ResizablePanel>
-        {renderChildren()}
-      </ResizablePanelGroup> */}
       <SidebarProvider>
         {menuItems.map((item) => (
           <ProjectSidebar
@@ -97,9 +50,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
         ))}
         <div className="w-full h-full">
           <ProjectNav component={headerNav} />
-          {/* <ResizablePanelGroup direction="horizontal"> */}
-          {renderChildren()}
-          {/* </ResizablePanelGroup> */}
+          {children}
         </div>
       </SidebarProvider>
     </>

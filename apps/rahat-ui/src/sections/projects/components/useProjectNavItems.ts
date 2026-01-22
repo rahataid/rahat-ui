@@ -10,6 +10,7 @@ import { useNavItems as useSmsVoucherNavItems } from '../sms-voucher/useELKenyaN
 import { useNavItems as useCambodiaNavItems } from '../cambodia/useCambodiaNavItems';
 import { useNavItems as useCommsNavItems } from '../comms/useCommsNavItems';
 import { useNavItems as useELKenyaNavItems } from '../el-kenya/useELKenyaNavItems';
+import { useNavItems as useELCRMNavItems } from '../el-crm';
 
 const hooks = {
   [ProjectTypes.ANTICIPATORY_ACTION]: useAANavItems,
@@ -21,6 +22,7 @@ const hooks = {
   'el-kenya': useELKenyaNavItems,
   'el-cambodia': useCambodiaNavItems,
   'sms-voucher': useSmsVoucherNavItems,
+  'el-crm': useELCRMNavItems,
   ALL: useProjectListNavItems,
 };
 

@@ -262,20 +262,70 @@ export const useDhmRainfallLevels = (uuid: UUID, payload: any) => {
   return query;
 };
 
-export const useGlofasWaterLevels = (uuid: UUID, payload: any) => {
+export const useAllGlofasProbFlood = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
 
   const query = useQuery({
-    queryKey: ['glofaswaterlevels', uuid],
+    queryKey: ['glofas_prob_flood_all', uuid],
     queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: 'ms.waterLevels.getGlofas',
-          payload: payload,
-        },
-      });
-      return mutate.data;
+      try {
+        const mutate = await q.mutateAsync({
+          uuid,
+          data: {
+            action: 'ms.probFlood.getAllGlofas',
+            payload: payload,
+          },
+        });
+        return mutate.data;
+      } catch (error: any) {
+        toast.fire({
+          title: 'Error loading Glofas details',
+          text: 'Failed to fetch Glofas details',
+          icon: 'error',
+        });
+      }
+    },
+  });
+
+  return query;
+};
+
+export const useGlofasProbFloodDetails = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  const query = useQuery({
+    queryKey: ['glofas_prob_flood_details', uuid],
+    queryFn: async () => {
+      try {
+        const mutate = await q.mutateAsync({
+          uuid,
+          data: {
+            action: 'ms.probFlood.getOneGlofas',
+            payload: payload,
+          },
+        });
+        return mutate.data;
+      } catch (error: any) {
+        toast.fire({
+          title: 'Error loading Glofas details',
+          text: 'Failed to fetch Glofas details',
+          icon: 'error',
+        });
+      }
     },
   });
 

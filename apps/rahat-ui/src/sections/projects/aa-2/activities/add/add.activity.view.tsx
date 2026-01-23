@@ -196,7 +196,7 @@ export default function AddActivities() {
     const newCommunication: CommunicationData = {
       communicationTitle: communicationFormData?.communicationTitle || '',
       groupType: (communicationFormData?.groupType || '') as GroupType,
-      groupId: communicationFormData?.groupId || '',
+      groupId: communicationFormData?.groupId || [],
       transportId: communicationFormData?.transportId || '',
       message: communicationFormData?.message || '',
       subject: communicationFormData?.subject || '',

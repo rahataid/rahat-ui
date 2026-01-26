@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 
-import { useSingleStakeholdersGroup } from '@rahat-ui/query';
+import {
+  useDeleteStakeholdersGroups,
+  useSingleStakeholdersGroup,
+  useUpdateStakeholdersGroups,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   getCoreRowModel,
@@ -13,19 +17,19 @@ import {
 import {
   ClientSidePagination,
   DataCard,
+  DeleteButton,
   DemoTable,
   HeaderWithBack,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
-import { Plus, User } from 'lucide-react';
+import { Pencil, Plus, User } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useProjectStakeholdersGroupTableColumns } from './columns';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { DialogComponent } from './component/dialog.reuse';
 
-type Props = {};
-
-const StakeholdersGroupsDetails = (props: Props) => {
+const StakeholdersGroupsDetails = () => {
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -36,6 +40,8 @@ const StakeholdersGroupsDetails = (props: Props) => {
     projectId,
     groupId,
   );
+  const { mutate: updateGroup, isPending } = useUpdateStakeholdersGroups();
+  const { mutate: deleteGroup } = useDeleteStakeholdersGroups();
 
   const table = useReactTable({
     data: groupDetails?.stakeholders || [],
@@ -53,6 +59,26 @@ const StakeholdersGroupsDetails = (props: Props) => {
     },
   });
 
+  const handleEditClick = (groupName: string) => {
+    updateGroup({
+      projectUUID: projectId,
+      stakeholdersGroupPayload: {
+        uuid: groupId,
+        name: groupName,
+      },
+    });
+  };
+
+  const handleDeleteClick = () => {
+    deleteGroup({
+      projectUUID: projectId,
+      stakeholdersGroupPayload: {
+        uuid: groupId,
+      },
+    });
+    router.push(`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`);
+  };
+
   return (
     <div className="p-4 ">
       <div className="flex justify-between items-center">
@@ -61,6 +87,32 @@ const StakeholdersGroupsDetails = (props: Props) => {
           subtitle="Detailed view of the selected stakeholders group"
           path={`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`}
         />
+        <div className="flex gap-2">
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
+            <DialogComponent
+              isLoading={isPending}
+              buttonIcon={Pencil}
+              buttonText="Edit Group Name"
+              dialogTitle="Edit Group Name"
+              dialogDescription="Are you sure you want to edit this group name?"
+              confirmButtonText="Edit"
+              handleClick={handleEditClick}
+              buttonClassName="rounded-sm w-full"
+              confirmButtonClassName="rounded-sm w-full bg-primary"
+              variant="outline"
+            />
+          </RoleAuth>
+
+          <DeleteButton
+            name="stakeholders group"
+            handleContinueClick={handleDeleteClick}
+            className="rounded-sm w-full flex gap-1 items-center p-1"
+            label="Delete Group"
+          />
+        </div>
       </div>
       <div className="flex gap-6 mb-3">
         <DataCard

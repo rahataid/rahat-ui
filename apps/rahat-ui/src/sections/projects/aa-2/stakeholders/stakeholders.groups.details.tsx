@@ -106,12 +106,17 @@ const StakeholdersGroupsDetails = () => {
             />
           </RoleAuth>
 
-          <DeleteButton
-            name="stakeholders group"
-            handleContinueClick={handleDeleteClick}
-            className="rounded-sm w-full flex gap-1 items-center p-1"
-            label="Delete Group"
-          />
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
+            <DeleteButton
+              name="stakeholders group"
+              handleContinueClick={handleDeleteClick}
+              className="rounded-sm w-full flex gap-1 items-center p-1"
+              label="Delete Group"
+            />
+          </RoleAuth>
         </div>
       </div>
       <div className="flex gap-6 mb-3">

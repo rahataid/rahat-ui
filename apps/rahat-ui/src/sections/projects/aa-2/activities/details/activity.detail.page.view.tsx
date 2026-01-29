@@ -5,7 +5,7 @@ import {
   NoResult,
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
-import { Edit, Pencil, RefreshCcw, Trash } from 'lucide-react';
+import { Pencil, RefreshCcw, Trash } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { DocumentList } from '../components/documentCard';
 import CommunicationList from './activity.communication.list.card';
@@ -14,6 +14,7 @@ import { useDeleteActivities, useSingleActivity } from '@rahat-ui/query';
 import React from 'react';
 import { DialogComponent } from './dialog.reuse';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
 
 export default function ActivitiesDetailView() {
   const router = useRouter();
@@ -23,10 +24,11 @@ export default function ActivitiesDetailView() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('from');
 
-  const { data: activityDetail, isLoading = false } = useSingleActivity(
-    projectId,
-    activityId,
-  );
+  const {
+    data: activityDetail,
+    isLoading,
+    error,
+  } = useSingleActivity(projectId, activityId);
   const activitiesListPath = redirectTo
     ? `/projects/aa/${projectId}/activities/list/${redirectTo}`
     : `/projects/aa/${projectId}/activities`;
@@ -39,18 +41,42 @@ export default function ActivitiesDetailView() {
 
   const deleteActivity = useDeleteActivities();
 
-  const removeActivity = () => {
-    deleteActivity.mutateAsync({
-      projectUUID: projectId,
-      activityPayload: {
-        uuid: activityId,
-      },
-    });
+  const removeActivity = async () => {
+    try {
+      await deleteActivity.mutateAsync({
+        projectUUID: projectId,
+        activityPayload: {
+          uuid: activityId,
+        },
+      });
+      router.push(activitiesListPath);
+    } catch (error) {
+      console.error('Error::', error);
+    }
   };
 
-  React.useEffect(() => {
-    deleteActivity.isSuccess && router.push(activitiesListPath);
-  }, [deleteActivity.isSuccess]);
+  if (isLoading) {
+    return (
+      <div className="h-full p-4">
+        <Back path={activitiesListPath} />
+        <div className="h-full flex justify-center items-center">
+          <Loader />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="h-full p-4">
+        <Back path={activitiesListPath} />
+        <NoResult
+          className="h-full flex justify-center items-center"
+          message="Error while loading activity details"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="h-[calc(100vh-65px)] p-4">

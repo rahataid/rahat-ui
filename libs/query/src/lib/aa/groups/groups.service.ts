@@ -378,10 +378,17 @@ export const useUpdateStakeholdersGroups = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       q.reset();
       qc.invalidateQueries({
         queryKey: ['stakeholdersGroups', 'stakeholders'],
+      });
+      qc.invalidateQueries({
+        queryKey: [
+          'stakeholdersGroup',
+          variables.projectUUID,
+          variables.stakeholdersGroupPayload.uuid,
+        ],
       });
       toast.fire({
         title: 'Stakeholders group updated successfully',

@@ -4,7 +4,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { ArrowUpRightSquare } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { weatherServices } from './constant';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
@@ -26,7 +26,7 @@ export default function ExternalLinks() {
                 <CardTitle className="text-sm font-medium flex items-start justify-between gap-2">
                   <span className="leading-tight">{service.title}</span>
                   <TooltipComponent
-                    Icon={ArrowUpRightSquare}
+                    Icon={ArrowUpRight}
                     tip="View details"
                     handleOnClick={() => undefined}
                     iconStyle="text-primary"

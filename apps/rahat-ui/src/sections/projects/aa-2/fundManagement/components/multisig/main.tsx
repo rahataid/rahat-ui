@@ -15,7 +15,7 @@ import {
   CircleCheckBig,
   CopyCheck,
   Info,
-  ArrowUpRightSquare,
+  ArrowUpRight,
 } from 'lucide-react';
 import { Heading, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { useParams } from 'next/navigation';
@@ -177,7 +177,7 @@ export default function MultiSigWalletView() {
               </CardTitle>
 
               <TooltipComponent
-                Icon={ArrowUpRightSquare}
+                Icon={ArrowUpRight}
                 tip="View all safe owner details."
                 handleOnClick={openSafeTx}
                 iconStyle="text-primary"

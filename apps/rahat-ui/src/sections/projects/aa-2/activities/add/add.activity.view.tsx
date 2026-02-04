@@ -190,6 +190,18 @@ export default function AddActivities() {
     }
   }, [selectedPhase, form]);
 
+  useEffect(() => {
+    if (phaseId && phases.length > 0) {
+      const phaseExists = phases.find((p) => p.uuid === phaseId);
+      if (phaseExists) {
+        form.setValue('phaseId', phaseId, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+      }
+    }
+  }, [phaseId, phases, form]);
+
   // Handle to add the communication data to  stored in a local state
   const handleSave = () => {
     const communicationFormData = communicationForm.getValues();
@@ -407,8 +419,8 @@ export default function AddActivities() {
                       <FormLabel>Phase</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
+                        defaultValue={phaseId || field.value}
+                        value={phaseId || field.value}
                         disabled={!!phaseId}
                       >
                         <FormControl>

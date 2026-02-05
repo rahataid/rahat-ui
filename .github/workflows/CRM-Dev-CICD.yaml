@@ -1,4 +1,4 @@
-name: AA Dev UNICEF CI/CD
+name: CRM Dev CI/CD
 on:
   push:
     branches:
@@ -34,7 +34,7 @@ jobs:
           secrets: |
             github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
             github/data/general/docker/esatya password | DOCKERHUB_TOKEN ;
-            github/data/rahat/rahat-ui/dev/aa/unicef rahat-ui | ENV ;
+            github/data/rahat/rahat-ui/dev/crm rahat-ui | ENV ;
 
       - name: create environment file
         run: |
@@ -73,8 +73,8 @@ jobs:
           file: Dockerfile.rahat-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           tags: |
-            esatya/rahat-ui:aa-dev-unicef
-            esatya/rahat-ui:aa-dev-unicef-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
+            esatya/rahat-ui:crm-dev
+            esatya/rahat-ui:crm-dev-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
 
     outputs:
       sha_short: ${{ steps.vars.outputs.sha_short }}

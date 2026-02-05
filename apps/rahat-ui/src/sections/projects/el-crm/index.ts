@@ -1,2 +1,5 @@
 export * from './useELCRMNavItems';
-export * from './main';
+export * from './dashboard';
+export * from './customers';
+export * from './consumers';
+export * from './communications';

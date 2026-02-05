@@ -432,7 +432,7 @@ export default function EditActivity() {
 
   if (isActivityLoading) {
     return (
-      <div className='p-4 h-full'>
+      <div className="p-4 h-full">
         <Back path={redirectUpdatePath} />
         <div className="flex justify-center items-center h-full">
           <Loader />
@@ -443,7 +443,7 @@ export default function EditActivity() {
 
   if (error) {
     return (
-      <div className='p-4 h-full'>
+      <div className="p-4 h-full">
         <Back path={redirectUpdatePath} />
         <div className="flex justify-center items-center h-full">
           <NoResult message="Error while loading activity details" />
@@ -676,9 +676,7 @@ export default function EditActivity() {
                                   onChange={(e) => {
                                     const newLead = e.target.value;
                                     field.onChange(
-                                      newLead
-                                        ? `${newLead} ${unit}`
-                                        : ` ${unit}`,
+                                      newLead ? `${newLead} ${unit}` : '',
                                     );
                                   }}
                                 />

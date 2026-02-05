@@ -139,11 +139,9 @@ export const useProjectVendorRedemptionTableColumns = () => {
           <div className="flex flex-row">
             <div className="w-20 truncate">
               <a
-                href={getStellarTxUrl(
-                  settings,
-                  id,
-                  row?.original?.transactionHash,
-                )}
+                href={`https://sepolia.basescan.org/tx/${row.getValue(
+                  'transactionHash',
+                )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer "

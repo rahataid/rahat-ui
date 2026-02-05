@@ -91,7 +91,7 @@ export default function BeneficiaryTransactionLogDetails() {
           path={`/projects/aa/${id as string}/payout/details/${
             groupId as string
           }?from=${navigation ? navigation : ''}`}
-          subtitle="Detaild view of the selected payout transaction log"
+          subtitle="Detail view of the selected payout transaction log"
           title="Transaction Log Details"
         />
         {data?.data?.payout?.type === 'FSP' && (

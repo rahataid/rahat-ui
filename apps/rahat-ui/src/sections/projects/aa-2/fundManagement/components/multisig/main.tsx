@@ -15,7 +15,7 @@ import {
   CircleCheckBig,
   CopyCheck,
   Info,
-  ExternalLink,
+  ExternalLinkIcon,
 } from 'lucide-react';
 import { Heading, NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { useParams } from 'next/navigation';
@@ -36,8 +36,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import Link from 'next/link';
 import { formatUnits } from 'viem';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
 interface CardProps {
   title: string;
@@ -97,6 +97,14 @@ export default function MultiSigWalletView() {
       icon: <Users strokeWidth={2.5} />,
     },
   ];
+
+  const openSafeTx = () => {
+    window.open(
+      `https://app.safe.global/transactions/queue?safe=${safeNetwork}:${safeWallet}`,
+      '_blank',
+      'noopener,noreferrer',
+    );
+  };
 
   const InfoCard = ({ title, content, color, icon, tip }: CardProps) => {
     return (
@@ -167,13 +175,13 @@ export default function MultiSigWalletView() {
               <CardTitle className="text-sm lg:text-base">
                 Safe Wallet Details
               </CardTitle>
-              <Link
-                href={`https://app.safe.global/transactions/queue?safe=${safeNetwork}:${safeWallet}`}
-                target="_blank"
-                className="text-primary"
-              >
-                <ExternalLink size={18} strokeWidth={2.5} />
-              </Link>
+
+              <TooltipComponent
+                Icon={ExternalLinkIcon}
+                tip="Redirect to Safe Wallet"
+                handleOnClick={openSafeTx}
+                iconStyle="text-primary"
+              />
             </div>
           </CardHeader>
           <CardContent className="space-y-4 p-4 pt-0">

@@ -1,22 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Mail,
   MessageSquare,
   Mic,
-  ChevronDown,
-  ChevronUp,
-  Edit,
-  Send,
-  Play,
-  Pause,
-  ArrowUpRight,
   SendHorizonal,
   LoaderCircle,
+  ArrowUpRightSquare,
 } from 'lucide-react';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import { IconLabelBtn, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useTriggerCommunication } from '@rahat-ui/query';
@@ -25,8 +18,9 @@ import { UUID } from 'crypto';
 import { SessionStatus } from '@rumsan/connect/src/types';
 import MessageWithToggle from './messageWithToggle';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
-import Link from 'next/link';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+import { useRouter } from 'next/navigation';
 
 interface BaseCommunication {
   communicationTitle?: string;
@@ -61,6 +55,7 @@ export function CommunicationCard({
   activityCommunication,
 }: CommunicationCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const router = useRouter();
 
   const getIcon = () => {
     switch (activityCommunication?.transportName) {
@@ -80,6 +75,16 @@ export function CommunicationCard({
   const [loadingButtons, setLoadingButtons] = React.useState<string[]>([]);
   const trigger = useTriggerCommunication();
   const activityId = activityID as string;
+
+  const redirectLink = useMemo(
+    () =>
+      `/projects/aa/${projectId}/communication-logs/commsdetails/${
+        activityCommunication?.communicationId
+      }@${activityId}@${activityCommunication?.sessionId}?from=activities${
+        redirectTo ? `&backFrom=${redirectTo}` : ''
+      }`,
+    [activityCommunication, redirectTo, activityId, projectId],
+  );
 
   const triggerCommunication = async (
     activityId: string,
@@ -110,18 +115,12 @@ export function CommunicationCard({
                   {activityCommunication?.groupName}
                 </h3>
                 {activityCommunication?.sessionStatus !== SessionStatus.NEW && (
-                  <Link
-                    href={`/projects/aa/${projectId}/communication-logs/commsdetails/${
-                      activityCommunication?.communicationId
-                    }@${activityId}@${
-                      activityCommunication?.sessionId
-                    }?from=activities${
-                      redirectTo ? `&backFrom=${redirectTo}` : ''
-                    }`}
-                    className="items-center justify-center hover:bg-gray-100"
-                  >
-                    <ArrowUpRight size={20} className="text-blue-800" />
-                  </Link>
+                  <TooltipComponent
+                    Icon={ArrowUpRightSquare}
+                    tip="View Communication Log"
+                    handleOnClick={() => router.push(redirectLink)}
+                    iconStyle="text-primary"
+                  />
                 )}
               </div>
               <div className="flex gap-2">

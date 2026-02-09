@@ -3,6 +3,12 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export default function useDailyMonitoringTableColumn() {
   const { id: projectId } = useParams();
@@ -54,12 +60,21 @@ export default function useDailyMonitoringTableColumn() {
       cell: ({ row }) => {
         return (
           <div className="flex gap-4 items-center">
-            <Eye
-              className="cursor-pointer hover:text-primary"
-              size={20}
-              strokeWidth={1.5}
-              onClick={() => handleEyeClick(row.original.groupKey)}
-            />
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Eye
+                    className="cursor-pointer hover:text-primary"
+                    size={20}
+                    strokeWidth={1.5}
+                    onClick={() => handleEyeClick(row.original.groupKey)}
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary" side="top">
+                  <p className="text-xs font-medium">View details</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       },

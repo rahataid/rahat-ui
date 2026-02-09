@@ -133,12 +133,21 @@ export default function usePayoutTransactionLogTableColumn() {
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={20}
-              strokeWidth={1.5}
-              onClick={() => handleEyeClick(row?.original?.uuid)}
-            />
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Eye
+                    className="hover:text-primary cursor-pointer"
+                    size={20}
+                    strokeWidth={1.5}
+                    onClick={() => handleEyeClick(row?.original?.uuid)}
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary" side="top">
+                  <p className="text-xs font-medium">View details</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       },

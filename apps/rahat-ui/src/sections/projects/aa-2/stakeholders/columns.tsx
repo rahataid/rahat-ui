@@ -10,6 +10,12 @@ import { useDeleteStakeholders } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { RoleAuth, AARoles } from '@rahat-ui/auth';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export const useProjectStakeholdersTableColumns = () => {
   const router = useRouter();
@@ -78,43 +84,70 @@ export const useProjectStakeholdersTableColumns = () => {
             hasContent={false}
           >
             <div className="flex items-center gap-2">
-              <IconDialogComponent
-                Icon={Edit2}
-                buttonText=""
-                confirmButtonText="Edit"
-                dialogDescription="Are you sure you want to edit?"
-                dialogTitle="Edit"
-                handleClick={() =>
-                  setTimeout(() => {
-                    router.push(
-                      `/projects/aa/${id}/stakeholders/${row.original.uuid}/edit?from="listPage"`,
-                    );
-                  }, 500)
-                }
-                variant="default"
-              />
-              <IconDialogComponent
-                Icon={Trash2}
-                buttonText=""
-                confirmButtonText="Delete"
-                dialogDescription="Are you sure you want to delete?"
-                dialogTitle="Delete"
-                handleClick={() => {
-                  handleDelete(row.original.uuid);
-                }}
-                variant="destructive"
-                color="red"
-              />
-              <Eye
-                className="hover:text-primary cursor-pointer"
-                size={16}
-                strokeWidth={1.5}
-                onClick={() =>
-                  router.push(
-                    `/projects/aa/${id}/stakeholders/${row.original.uuid}`,
-                  )
-                }
-              />
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <IconDialogComponent
+                      Icon={Edit2}
+                      buttonText=""
+                      confirmButtonText="Edit"
+                      dialogDescription="Are you sure you want to edit?"
+                      dialogTitle="Edit"
+                      handleClick={() =>
+                        setTimeout(() => {
+                          router.push(
+                            `/projects/aa/${id}/stakeholders/${row.original.uuid}/edit?from="listPage"`,
+                          );
+                        }, 500)
+                      }
+                      variant="default"
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-secondary" side="top">
+                    <p className="text-xs font-medium">Edit</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <IconDialogComponent
+                      Icon={Trash2}
+                      buttonText=""
+                      confirmButtonText="Delete"
+                      dialogDescription="Are you sure you want to delete?"
+                      dialogTitle="Delete"
+                      handleClick={() => {
+                        handleDelete(row.original.uuid);
+                      }}
+                      variant="destructive"
+                      color="red"
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-secondary" side="top">
+                    <p className="text-xs font-medium">Delete</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Eye
+                      className="hover:text-primary cursor-pointer"
+                      size={16}
+                      strokeWidth={1.5}
+                      onClick={() =>
+                        router.push(
+                          `/projects/aa/${id}/stakeholders/${row.original.uuid}`,
+                        )
+                      }
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-secondary" side="top">
+                    <p className="text-xs font-medium">View details</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </RoleAuth>
         );
@@ -183,16 +216,25 @@ export const useProjectStakeholdersGroupTableColumns = () => {
             hasContent={false}
           >
             <div className="flex items-center gap-2">
-              <Eye
-                className="hover:text-primary cursor-pointer"
-                size={16}
-                strokeWidth={1.5}
-                onClick={() =>
-                  router.push(
-                    `/projects/aa/${id}/stakeholders/${row.original.uuid}?groupId=${groupId}`,
-                  )
-                }
-              />
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Eye
+                      className="hover:text-primary cursor-pointer"
+                      size={16}
+                      strokeWidth={1.5}
+                      onClick={() =>
+                        router.push(
+                          `/projects/aa/${id}/stakeholders/${row.original.uuid}?groupId=${groupId}`,
+                        )
+                      }
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-secondary" side="top">
+                    <p className="text-xs font-medium">View details</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </RoleAuth>
         );

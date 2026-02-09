@@ -91,7 +91,16 @@ export default function RecentPaymentCard({
       </div>
       {/* View Icon */}
       <button onClick={onView}>
-        <Eye className="w-5 h-5 text-muted-foreground" />
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger>
+              <Eye className="w-5 h-5 text-muted-foreground" />
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary" side="top">
+              <p className="text-xs font-medium">View details</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </button>
     </div>
   );

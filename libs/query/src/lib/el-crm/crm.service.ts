@@ -1,7 +1,8 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useSwal } from '../../swal';
 import { UUID } from 'crypto';
 import { useRSQuery } from '@rumsan/react-query';
+import { useProjectAction } from '../projects';
 
 export const useUploadCustomers = () => {
   const { rumsanService } = useRSQuery();
@@ -44,4 +45,24 @@ export const useUploadCustomers = () => {
       });
     },
   });
+};
+
+export const useCustomers = (uuid: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['customers', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'elProject.getAllVendor',
+          payload: {},
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
 };

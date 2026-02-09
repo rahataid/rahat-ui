@@ -27,9 +27,10 @@ import { useCustomersTableColumn } from './useCustomersTableColumn';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import Link from 'next/link';
+import { useCustomers } from '@rahat-ui/query';
 
 // Sample customer data
-const customers = [
+const dummyCustomers = [
   {
     id: 1,
     name: 'John Smith',
@@ -88,7 +89,9 @@ export default function CustomersPage() {
 
   const { id: projectUUID } = useParams() as { id: UUID };
 
-  const filteredCustomers = customers.filter((customer) => {
+  const { data: customers } = useCustomers(projectUUID);
+
+  const filteredCustomers = customers?.filter((customer) => {
     const matchesStatus =
       statusFilter === 'all' ||
       customer.status.toLowerCase() === statusFilter.toLowerCase();
@@ -98,14 +101,14 @@ export default function CustomersPage() {
     return matchesStatus && matchesSearch;
   });
 
-  const totalCustomers = customers.length;
-  const activeCustomers = customers.filter(
+  const totalCustomers = customers?.length;
+  const activeCustomers = customers?.filter(
     (c) => c.category === 'Active',
   ).length;
-  const inactiveCustomers = customers.filter(
+  const inactiveCustomers = customers?.filter(
     (c) => c.category === 'Inactive',
   ).length;
-  const newlyInactiveCustomers = customers.filter(
+  const newlyInactiveCustomers = customers?.filter(
     (c) => c.category === 'Newly Inactive',
   ).length;
 
@@ -113,7 +116,7 @@ export default function CustomersPage() {
 
   const table = useReactTable({
     manualPagination: true,
-    data: filteredCustomers,
+    data: filteredCustomers || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -228,7 +231,7 @@ export default function CustomersPage() {
             <div className="flex items-center justify-between">
               <CardTitle>Customer List</CardTitle>
               <div className="text-sm text-muted-foreground">
-                Showing {filteredCustomers.length} of {customers.length}{' '}
+                Showing {filteredCustomers?.length} of {customers?.length}{' '}
                 customers
               </div>
             </div>

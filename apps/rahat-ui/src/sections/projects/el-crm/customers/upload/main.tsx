@@ -23,6 +23,7 @@ import {
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
+import { useUploadCustomers } from '@rahat-ui/query';
 
 export default function CustomersUploadPage() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -62,15 +63,31 @@ export default function CustomersUploadPage() {
     }
   };
 
+  const uploadCustomers = useUploadCustomers();
+  const allowedExtensions: { [key: string]: string } = {
+    xlsx: 'excel',
+    xls: 'excel',
+  };
+
   const handleUpload = async () => {
     if (!selectedFile) return;
 
     setUploadStatus('uploading');
 
+    // Determine doctype based on file extension
+    const extension = selectedFile.name.split('.').pop()?.toLowerCase();
+    const doctype = extension ? allowedExtensions[extension] : '';
+
+    await uploadCustomers.mutateAsync({
+      projectId: projectUUID,
+      selectedFile,
+      doctype,
+    });
+
     // Simulate upload
-    setTimeout(() => {
-      setUploadStatus('success');
-    }, 2000);
+    // setTimeout(() => {
+    //   setUploadStatus('success');
+    // }, 2000);
   };
 
   const handleRemoveFile = () => {
@@ -212,7 +229,7 @@ export default function CustomersUploadPage() {
                   disabled={!selectedFile || uploadStatus === 'uploading'}
                   className="flex-1"
                 >
-                  {uploadStatus === 'uploading' ? (
+                  {uploadCustomers.isPending ? (
                     <>
                       <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                       Uploading...
@@ -224,7 +241,7 @@ export default function CustomersUploadPage() {
                     </>
                   )}
                 </Button>
-                <Link href="/customers">
+                <Link href={`/projects/el-crm/${projectUUID}/customers`}>
                   <Button variant="outline">Cancel</Button>
                 </Link>
               </div>

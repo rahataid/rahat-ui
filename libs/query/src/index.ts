@@ -17,6 +17,7 @@ export * from './lib/el-kenya';
 export * from './lib/el-cambodia';
 // export * from './lib/aa/trigger-statements';
 // export * from './lib/aa/activities';
+export * from './lib/el-crm';
 
 export * from './lib/c2c';
 

@@ -38,16 +38,17 @@ export default function CustomersPage() {
 
   const { data: customers, isLoading } = useCustomers(projectUUID);
 
-  const totalCustomers = customers?.length;
-  const activeCustomers = customers?.filter(
-    (c: Customer) => c.category === CustomerCategory.ACTIVE,
-  ).length;
-  const inactiveCustomers = customers?.filter(
-    (c: Customer) => c.category === CustomerCategory.INACTIVE,
-  ).length;
-  const newlyInactiveCustomers = customers?.filter(
-    (c: Customer) => c.category === CustomerCategory.NEWLY_INACTIVE,
-  ).length;
+  const totalCustomers = customers?.length || 0;
+  const activeCustomers =
+    customers?.filter((c: Customer) => c.category === CustomerCategory.ACTIVE)
+      .length || 0;
+  const inactiveCustomers =
+    customers?.filter((c: Customer) => c.category === CustomerCategory.INACTIVE)
+      .length || 0;
+  const newlyInactiveCustomers =
+    customers?.filter(
+      (c: Customer) => c.category === CustomerCategory.NEWLY_INACTIVE,
+    ).length || 0;
 
   const columns = useCustomersTableColumn();
 
@@ -177,7 +178,7 @@ export default function CustomersPage() {
               <div className="flex items-center justify-between">
                 <CardTitle>Customer List</CardTitle>
                 <div className="text-sm text-muted-foreground">
-                  Showing {customers?.length} of {customers?.length} customers
+                  Showing {totalCustomers} of {totalCustomers} customers
                 </div>
               </div>
             </CardHeader>

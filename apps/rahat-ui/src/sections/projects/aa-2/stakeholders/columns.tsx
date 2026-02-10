@@ -151,35 +151,47 @@ export const useProjectStakeholdersGroupTableColumns = () => {
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <div> {row.getValue('name')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('name')} maxLength={10} />
+      ),
     },
     {
       accessorKey: 'phone',
       header: 'Phone number',
-      cell: ({ row }) => <div> {row.getValue('phone')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('phone')} maxLength={14} />
+      ),
     },
     {
       accessorKey: 'email',
       header: 'Email',
-      cell: ({ row }) => <div> {row.getValue('email')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('email')} maxLength={10} />
+      ),
     },
     {
       accessorKey: 'designation',
       header: 'Designation',
-      cell: ({ row }) => <div> {row.getValue('designation')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('designation')} maxLength={14} />
+      ),
     },
 
     {
       accessorKey: 'organization',
       header: 'Organization',
-      cell: ({ row }) => <div> {row.getValue('organization')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('organization')} maxLength={10} />
+      ),
     },
     {
       accessorKey: 'supportArea',
       header: 'Support Area',
       cell: ({ row }) =>
         row?.original?.supportArea.length > 0 ? (
-          <Badge className="w-auto">{row.original.supportArea[0]}</Badge>
+          <Badge className="w-auto">
+            <TruncatedCell text={row.original.supportArea[0]} maxLength={14} />
+          </Badge>
         ) : (
           []
         ),
@@ -187,7 +199,9 @@ export const useProjectStakeholdersGroupTableColumns = () => {
     {
       accessorKey: 'municipality',
       header: 'Municipality',
-      cell: ({ row }) => <div> {row.getValue('municipality')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('municipality')} maxLength={10} />
+      ),
     },
 
     {
@@ -267,14 +281,14 @@ export const useProjectSelectStakeholdersTableColumns = () => {
       accessorKey: 'email',
       header: 'Email',
       cell: ({ row }) => (
-        <TruncatedCell text={row.getValue('email')} maxLength={10} />
+        <TruncatedCell text={row.getValue('email')} maxLength={14} />
       ),
     },
     {
       accessorKey: 'designation',
       header: 'Designation',
       cell: ({ row }) => (
-        <TruncatedCell text={row.getValue('designation')} maxLength={14} />
+        <TruncatedCell text={row.getValue('designation')} maxLength={10} />
       ),
     },
 

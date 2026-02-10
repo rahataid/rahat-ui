@@ -27,61 +27,8 @@ import { useCustomersTableColumn } from './useCustomersTableColumn';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import Link from 'next/link';
-import { useCustomers } from '@rahat-ui/query';
-
-// Sample customer data
-const dummyCustomers = [
-  {
-    id: 1,
-    name: 'John Smith',
-    lastPurchaseDate: '2024-01-15',
-    status: 'Active',
-    email: 'john.smith@email.com',
-    phone: '+1-555-0123',
-    category: 'Active',
-    source: 'Primary',
-  },
-  {
-    id: 2,
-    name: 'Sarah Johnson',
-    lastPurchaseDate: '2024-01-10',
-    status: 'Inactive',
-    email: 'sarah.johnson@email.com',
-    phone: '+1-555-0124',
-    category: 'Inactive',
-    source: 'Secondary',
-  },
-  {
-    id: 3,
-    name: 'Michael Brown',
-    lastPurchaseDate: '2024-01-20',
-    status: 'Newly Active',
-    email: 'michael.brown@email.com',
-    phone: '+1-555-0125',
-    category: 'Active',
-    source: 'Primary',
-  },
-  {
-    id: 4,
-    name: 'Emily Davis',
-    lastPurchaseDate: '2024-01-18',
-    status: 'Active',
-    email: 'emily.davis@email.com',
-    phone: '+1-555-0126',
-    category: 'Newly Inactive',
-    source: 'Primary',
-  },
-  {
-    id: 5,
-    name: 'David Wilson',
-    lastPurchaseDate: '2023-12-28',
-    status: 'Inactive',
-    email: 'david.wilson@email.com',
-    phone: '+1-555-0127',
-    category: 'Inactive',
-    source: 'Secondary',
-  },
-];
+import { Customer, CustomerCategory, useCustomers } from '@rahat-ui/query';
+import SpinnerLoader from '../../components/spinner.loader';
 
 export default function CustomersPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -89,34 +36,31 @@ export default function CustomersPage() {
 
   const { id: projectUUID } = useParams() as { id: UUID };
 
-  const { data: customers } = useCustomers(projectUUID);
-
-  const filteredCustomers = customers?.filter((customer) => {
-    const matchesStatus =
-      statusFilter === 'all' ||
-      customer.status.toLowerCase() === statusFilter.toLowerCase();
-    const matchesSearch =
-      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.email.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
+  const { data: customers, isLoading } = useCustomers(projectUUID);
 
   const totalCustomers = customers?.length;
   const activeCustomers = customers?.filter(
-    (c) => c.category === 'Active',
+    (c: Customer) => c.category === CustomerCategory.ACTIVE,
   ).length;
   const inactiveCustomers = customers?.filter(
-    (c) => c.category === 'Inactive',
+    (c: Customer) => c.category === CustomerCategory.INACTIVE,
   ).length;
   const newlyInactiveCustomers = customers?.filter(
-    (c) => c.category === 'Newly Inactive',
+    (c: Customer) => c.category === CustomerCategory.NEWLY_INACTIVE,
   ).length;
 
   const columns = useCustomersTableColumn();
 
+  const tableData = React.useMemo(() => {
+    return customers?.map((c: Customer) => ({
+      ...c,
+      email: c?.extras?.email,
+    }));
+  }, [customers]);
+
   const table = useReactTable({
     manualPagination: true,
-    data: filteredCustomers || [],
+    data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -140,107 +84,109 @@ export default function CustomersPage() {
           </Link>
         </div>
       </div>
+      {isLoading ? (
+        <SpinnerLoader />
+      ) : (
+        <div className="flex-1 p-6 space-y-6">
+          <div className="grid gap-4 md:grid-cols-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Customers
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{totalCustomers}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Active Customers
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">
+                  {activeCustomers}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Inactive Customers
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-orange-600">
+                  {inactiveCustomers}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Newly Inactive Customers
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-red-600">
+                  {newlyInactiveCustomers}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-      <div className="flex-1 p-6 space-y-6">
-        <div className="grid gap-4 md:grid-cols-4">
+          {/* Filters Section */}
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Customers
-              </CardTitle>
+            <CardHeader>
+              <CardTitle className="text-lg">Filters</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totalCustomers}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                Active Customers
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                {activeCustomers}
+              <div className="flex flex-wrap gap-4">
+                {/* Search */}
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder="Search customers..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+
+                {/* Status Filter */}
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Filter by category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Category</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value="newly active">Newly Active</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
+
+          {/* Customers Table */}
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                Inactive Customers
-              </CardTitle>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Customer List</CardTitle>
+                <div className="text-sm text-muted-foreground">
+                  Showing {customers?.length} of {customers?.length} customers
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-600">
-                {inactiveCustomers}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                Newly Inactive Customers
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">
-                {newlyInactiveCustomers}
-              </div>
+              <DemoTable table={table} tableHeight="h-[calc(100vh-595px)]" />
             </CardContent>
           </Card>
         </div>
-
-        {/* Filters Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Filters</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-4">
-              {/* Search */}
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Search customers..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-
-              {/* Status Filter */}
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Category</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                  <SelectItem value="newly active">Newly Active</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Customers Table */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Customer List</CardTitle>
-              <div className="text-sm text-muted-foreground">
-                Showing {filteredCustomers?.length} of {customers?.length}{' '}
-                customers
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <DemoTable table={table} tableHeight="h-[calc(100vh-595px)]" />
-          </CardContent>
-        </Card>
-      </div>
+      )}
     </div>
   );
 }

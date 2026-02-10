@@ -1,6 +1,16 @@
+import { CustomerCategory, CustomerSource } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import { useParams, useRouter } from 'next/navigation';
+
+interface CustomerTableRow {
+  name: string;
+  email: string;
+  phone: string;
+  lastPurchaseDate: Date;
+  category: CustomerCategory;
+  source: CustomerSource;
+}
 
 export const useCustomersTableColumn = () => {
   const { id } = useParams();
@@ -19,7 +29,7 @@ export const useCustomersTableColumn = () => {
     }
   };
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<CustomerTableRow>[] = [
     {
       accessorKey: 'name',
       header: 'Customer Name',
@@ -38,7 +48,13 @@ export const useCustomersTableColumn = () => {
     {
       accessorKey: 'lastPurchaseDate',
       header: 'Last Purchase Date',
-      cell: ({ row }) => <div>{row.getValue('lastPurchaseDate') || 'N/A'}</div>,
+      cell: ({ row }) => (
+        <div>
+          {row.getValue('lastPurchaseDate')
+            ? new Date(row.getValue('lastPurchaseDate')).toLocaleDateString()
+            : 'N/A'}
+        </div>
+      ),
     },
     {
       accessorKey: 'category',

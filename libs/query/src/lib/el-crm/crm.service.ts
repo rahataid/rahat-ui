@@ -56,7 +56,7 @@ export const useCustomers = (uuid: UUID) => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'elProject.getAllVendor',
+          action: 'elProject.crm.getAllVendor',
           payload: {},
         },
       });

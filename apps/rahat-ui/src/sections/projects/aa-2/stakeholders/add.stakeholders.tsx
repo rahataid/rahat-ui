@@ -129,7 +129,7 @@ export default function AddStakeholders() {
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleCreateStakeholders)}>
-          <div className=" p-4 rounded-lg border bg-card gap-3">
+          <div className=" p-4 rounded-sm border bg-card gap-3">
             <div className="grid grid-cols-2 gap-4 mb-4 mt-5">
               <FormField
                 control={form.control}

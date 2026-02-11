@@ -48,7 +48,7 @@ export function DataCard({
   truncate = true,
 }: CardProps) {
   return (
-    <Card className={cn('flex flex-col rounded justify-center', className)}>
+    <Card className={cn('flex flex-col rounded-lg border justify-center', className)}>
       <CardHeader className="pb-2 p-4">
         <div className="flex items-start justify-between ">
           <div className="flex items-center gap-3">

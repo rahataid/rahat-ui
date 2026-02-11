@@ -80,10 +80,10 @@ const StakeGoldersGroups = () => {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {stakeholdersGroups?.map((i: any, index: number) => {
                 return (
-                  <div key={index} className="rounded-md border shadow p-4">
+                  <div key={index} className="rounded-sm border shadow p-4">
                     <div className="flex flex-col space-y-2">
                       <div
-                        className="cursor-pointer rounded-md bg-secondary grid place-items-center h-28"
+                        className="cursor-pointer rounded-sm bg-secondary grid place-items-center h-28"
                         onClick={() => {
                           router.push(
                             `/projects/aa/${id}/stakeholders/groups/${i.uuid}`,
@@ -109,26 +109,6 @@ const StakeGoldersGroups = () => {
             <NoResult message="No Stakeholder Groups Available" />
           )}
         </ScrollArea>
-
-        <CustomPagination
-          meta={
-            stakeholdersGroupsMeta || {
-              total: 0,
-              currentPage: 0,
-              lastPage: 0,
-              perPage: 0,
-              next: null,
-              prev: null,
-            }
-          }
-          handleNextPage={setNextPage}
-          handlePrevPage={setPrevPage}
-          handlePageSizeChange={setPerPage}
-          currentPage={pagination.page}
-          perPage={pagination.perPage}
-          total={0}
-          setPagination={setPagination}
-        />
       </div>
     </>
   );

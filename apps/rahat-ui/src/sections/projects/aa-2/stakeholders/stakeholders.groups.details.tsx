@@ -64,7 +64,7 @@ const StakeholdersGroupsDetails = (props: Props) => {
       </div>
       <div className="flex gap-6 mb-3">
         <DataCard
-          className="border-solid w-1/4  h-1/4 rounded-md"
+          className="border-solid w-1/4  h-1/4 rounded-sm"
           iconStyle="bg-white text-secondary-muted"
           title="Total Stakeholders"
           Icon={User}

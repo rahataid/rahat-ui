@@ -155,7 +155,7 @@ export const useAppCommunicationSettings = (enabled = true) => {
         const d = await appSettings.mutateAsync();
         return d.data.data?.value || {};
       },
-      staleTime: 5 * 60 * 60 * 1000,
+      staleTime: 5 * 60 * 60 * 1000, // 5 hours
       enabled: !!queryClient && enabled,
     },
     queryClient,

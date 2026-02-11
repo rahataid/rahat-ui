@@ -236,7 +236,6 @@ export default function ActivitiesList() {
           total={table.getRowModel().rows?.length}
         />
       )}
-      <>hello</>
       <div className=" border-gray-100 overflow-hidden rounded-lg border ">
         <DemoTable
           table={table}

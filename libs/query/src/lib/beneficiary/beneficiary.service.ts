@@ -177,7 +177,7 @@ export const useBeneficiaryList = (payload: any): any => {
     {
       queryKey: [TAGS.GET_BENEFICIARIES, payload],
       queryFn: () => benClient.list(payload),
-      staleTime: 1000 * 60 * 10, // 10 minutes
+      staleTime: 10 * 60 * 1000, // 10 minutes
       placeholderData: keepPreviousData,
     },
     queryClient,

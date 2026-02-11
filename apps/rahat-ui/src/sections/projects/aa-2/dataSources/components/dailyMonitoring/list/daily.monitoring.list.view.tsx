@@ -27,23 +27,20 @@ import { UUID } from 'crypto';
 
 import { format } from 'date-fns';
 import { CalendarIcon, Plus, Trash2 } from 'lucide-react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import useDailyMonitoringTableColumn from '../useDailyMonitoringTableColumn';
-import DailyMonitoringTable from './daily.monitoring.table';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+// TODO: This component will be removed if not used anywhere
+// import DailyMonitoringTable from './daily.monitoring.table';
 
 export default function DailyMonitoringListView() {
   const params = useParams();
   const projectId = params.id as UUID;
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [userSearchText, setUserSearchText] = React.useState<string>('');
-  const [locationFilterItem, setLocationFilterItem] =
-    React.useState<string>('');
-  const [dateFilterItem, setDateFilterItem] = React.useState<string>('');
+
   const [date, setDate] = React.useState<Date | null>(null);
-  const { filters, setFilters } = usePagination();
+  const { filters } = usePagination();
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],

@@ -33,7 +33,7 @@ export const useFetchTokenStatsStellar = (payload: any) => {
     // queryKey: ['aa.stellar.getStellarStats', restPayloadString],
     queryKey: ['aa.chain.getDisbursementStats', restPayloadString],
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    staleTime: 20 * 60 * 1000, // 20 minutes
     queryFn: async () => {
       const mutate = await projectBalance.mutateAsync({
         uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',

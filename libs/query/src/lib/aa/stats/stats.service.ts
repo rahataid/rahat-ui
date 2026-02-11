@@ -23,6 +23,7 @@ export const usePhasesStats = (uuid: UUID) => {
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   useEffect(() => {
@@ -48,6 +49,7 @@ export const useAllStats = (uuid: UUID) => {
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   return query;
@@ -68,6 +70,7 @@ export const useCommsStats = (uuid: UUID) => {
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   return query;
@@ -88,6 +91,7 @@ export const useSingleStat = (uuid: UUID, name: string) => {
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   return query;
@@ -110,6 +114,7 @@ export const useCommuicationStatsforBeneficiaryandStakeHolders = (
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   return query;

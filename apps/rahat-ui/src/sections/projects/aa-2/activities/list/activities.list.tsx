@@ -62,8 +62,6 @@ export default function ActivitiesList() {
     setPagination,
     setFilters,
     filters,
-    setBackwardPage,
-    setForwardPage,
   } = usePagination();
   React.useEffect(() => {
     const titleStr = Array.isArray(title) ? title[0] : title;

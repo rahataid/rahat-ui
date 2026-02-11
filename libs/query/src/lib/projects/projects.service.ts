@@ -293,7 +293,8 @@ export const useProjectContractSettings = (uuid: UUID) => {
 
   const query = useQuery({
     queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid, PROJECT_SETTINGS_KEYS.CONTRACT],
-    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT]),
+    enabled:
+      !!uuid && isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT]),
     // enabled: !!settings[uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
@@ -344,7 +345,8 @@ export const useProjectSafeWalletSettings = (uuid: UUID) => {
       uuid,
       PROJECT_SETTINGS_KEYS.SAFE_WALLET,
     ],
-    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SAFE_WALLET]),
+    enabled:
+      !!uuid && isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SAFE_WALLET]),
     // enabled: !!settings[uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
@@ -391,7 +393,8 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
 
   const query = useQuery({
     queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid, PROJECT_SETTINGS_KEYS.SUBGRAPH],
-    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH]),
+    enabled:
+      !!uuid && isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH]),
     // enabled: !!settings[uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
@@ -443,7 +446,8 @@ export const useProjectBlockChainSettings = (uuid: UUID) => {
       uuid,
       PROJECT_SETTINGS_KEYS.BLOCKCHAIN,
     ],
-    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.BLOCKCHAIN]),
+    enabled:
+      !!uuid && isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.BLOCKCHAIN]),
     // enabled: !!settings[uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
@@ -632,6 +636,7 @@ export const useProjectList = (
       queryKey: [TAGS.GET_ALL_PROJECTS, payload],
       // todo, add support for pagination
       queryFn: () => projectClient.list(payload as any),
+      staleTime: 5 * 60 * 60 * 1000, // 5 hours
       refetchOnWindowFocus: true,
       retryOnMount: true,
     },
@@ -685,6 +690,7 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
     queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, restPayloadString],
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    staleTime: 20 * 60 * 1000, // 20 minutes
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,

@@ -55,11 +55,11 @@ export const useUserCreate = () => {
 
 export const useUsersList = (payload: any): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
-  const userClient = getUserClient(rumsanService.client);
   const query = useQuery(
     {
       queryKey: ['get_all_user', payload],
       queryFn: () => rumsanService.user.listUsers(payload),
+      staleTime: 10 * 60 * 1000, // 10 min
     },
     queryClient,
   );
@@ -101,16 +101,17 @@ export const useUserUpdate = () => {
 
 export const useRoleList = (payload?: ListRole): any => {
   const { queryClient, rumsanService } = useRSQuery();
-  const roleClient = getUserClient(rumsanService.client);
   const query = useQuery(
     {
       queryKey: ['get_all_roles'],
       queryFn: () => rumsanService.role.listRole(payload),
+      staleTime: 10 * 60 * 1000, // 10 min
     },
     queryClient,
   );
   return query;
 };
+
 export const useCreateRole = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const roleClient = getRoleClient(rumsanService.client);

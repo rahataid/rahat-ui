@@ -31,6 +31,11 @@ interface ServiceProviderProps {
 }
 
 export function ServiceProvider({ children }: ServiceProviderProps) {
+  // will hold all of the api call until, user is authenticated and the app is ready to be used
+  const { isAuthenticated } = useAuthStore((state) => ({
+    isAuthenticated: state.isAuthenticated,
+  }));
+
   const qc = useQueryClient();
   const { queryClient, rumsanService, setQueryClient, setRumsanService } =
     useRSQuery();
@@ -65,11 +70,11 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
       }),
     [],
   );
-  useAcessManagerSettings();
+  useAcessManagerSettings(isAuthenticated);
   // useRahatTreasurySettings();
-  useAppContractSettings();
-  useAppNavSettings();
-  useAppCommunicationSettings();
+  useAppContractSettings(isAuthenticated);
+  useAppNavSettings(isAuthenticated);
+  useAppCommunicationSettings(isAuthenticated);
 
   const commsSettings = useSettingsStore((s) => s.commsSettings);
 

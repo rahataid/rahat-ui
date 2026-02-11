@@ -93,6 +93,7 @@ export const useRoleList = (payload?: ListRole): any => {
     {
       queryKey: [TAGS.GET_ALL_ROLES],
       queryFn: () => rumsanService.role.listRole(payload),
+      staleTime: 1000 * 60 * 5, // 5 minutes
     },
     queryClient,
   );

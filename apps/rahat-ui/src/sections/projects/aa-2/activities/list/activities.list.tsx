@@ -10,7 +10,6 @@ import {
   usePhasesStore,
 } from '@rahat-ui/query';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
-import ActivitiesTable from './activities.table';
 
 import { UUID } from 'crypto';
 import ActivitiesTableFilters from './activities.table.filters';
@@ -30,6 +29,9 @@ import { CloudDownloadIcon, Plus } from 'lucide-react';
 
 import FiltersTags from 'apps/rahat-ui/src/common/filtersTags';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+
+// TODO:Remove this table if used nowhere
+// import ActivitiesTable from './activities.table';
 
 export default function ActivitiesList() {
   const { id: projectID, title } = useParams();
@@ -236,11 +238,12 @@ export default function ActivitiesList() {
           total={table.getRowModel().rows?.length}
         />
       )}
-
+      <>hello</>
       <div className=" border-gray-100 overflow-hidden rounded-lg border ">
-        <ActivitiesTable
+        <DemoTable
           table={table}
-          tableheight={
+          loading={isLoading}
+          tableHeight={
             Object.keys(filters).length === 1
               ? 'h-[calc(100vh-320px)]'
               : 'h-[calc(100vh-380px)]'

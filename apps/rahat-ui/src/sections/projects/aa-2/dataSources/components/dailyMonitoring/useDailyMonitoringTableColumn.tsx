@@ -5,25 +5,25 @@ import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagina
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { TruncatedCell } from '../../../stakeholders/component/TruncatedCell';
 
-// type DailyMonitoringRow = {
-//   dataEntryBy?: string;
-//   createdAt?: string;
-//   riverBasin?: string;
-//   groupKey: string;
-// };
+type DailyMonitoringRow = {
+  dataEntryBy?: string;
+  createdAt?: string;
+  riverBasin?: string;
+  groupKey: string;
+};
 
 export default function useDailyMonitoringTableColumn() {
   const { id: projectId } = useParams();
   const router = useRouter();
 
-  const handleEyeClick = (id: any) => {
+  const handleEyeClick = (id: string) => {
     setPaginationToLocalStorage();
     router.push(
       `/projects/aa/${projectId}/data-sources/daily-monitoring/${id}`,
     );
   };
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<DailyMonitoringRow>[] = [
     {
       accessorKey: 'dataEntryBy',
       header: 'Created By',

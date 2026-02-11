@@ -16,65 +16,33 @@ import {
 } from '@tanstack/react-table';
 import { useConsumersTableColumn } from './useConsumersTableColumn';
 import { Search } from 'lucide-react';
-
-const consumers = [
-  {
-    id: 1,
-    name: 'Maria Garcia',
-    lastRedemptionDate: '2024-01-15', // renamed from lastPurchaseDate
-    phone: '+1-555-0201',
-  },
-  {
-    id: 2,
-    name: 'James Wilson',
-    lastRedemptionDate: '2024-01-12', // renamed from lastPurchaseDate
-    phone: '+1-555-0202',
-  },
-  {
-    id: 3,
-    name: 'Lisa Chen',
-    lastRedemptionDate: '2024-01-18', // renamed from lastPurchaseDate
-    phone: '+1-555-0203',
-  },
-  {
-    id: 4,
-    name: 'Robert Taylor',
-    lastRedemptionDate: '2024-01-20', // renamed from lastPurchaseDate
-    phone: '+1-555-0204',
-  },
-  {
-    id: 5,
-    name: 'Anna Rodriguez',
-    lastRedemptionDate: '2024-01-14', // renamed from lastPurchaseDate
-    phone: '+1-555-0205',
-  },
-  {
-    id: 6,
-    name: 'Kevin Lee',
-    lastRedemptionDate: '2024-01-16', // renamed from lastPurchaseDate
-    phone: '+1-555-0206',
-  },
-];
+import { useConsumers } from '@rahat-ui/query';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
 
 export default function ConsumersView() {
+  const { id: projectUUID } = useParams() as { id: UUID };
+
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredConsumers = consumers.filter((consumer) => {
-    const matchesSearch =
-      consumer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      consumer.phone.includes(searchTerm);
-    return matchesSearch;
-  });
+  const { data: consumers, isLoading } = useConsumers(projectUUID);
 
-  const totalConsumers = consumers.length;
-  const messageDeliverySuccessful = 4; // Static value since we removed message status
-  const messageDeliveryFailed = 2; // Static value since we removed message status
-  const consumersCompleting1Year = 5; // Static value since we removed year completed
+  // const filteredConsumers = consumers.filter((consumer: any) => {
+  //   const matchesSearch =
+  //     consumer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     consumer.phone.includes(searchTerm);
+  //   return matchesSearch;
+  // });
+
+  const totalConsumers = consumers?.length || 0;
+  const messageDeliverySuccessful = 0;
+  const messageDeliveryFailed = 0;
+  const consumersCompleting1Year = 0;
 
   const columns = useConsumersTableColumn();
   const table = useReactTable({
     manualPagination: true,
-    data: filteredConsumers,
+    data: consumers || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -164,8 +132,7 @@ export default function ConsumersView() {
             <div className="flex items-center justify-between">
               <CardTitle>Consumer List</CardTitle>
               <div className="text-sm text-muted-foreground">
-                Showing {filteredConsumers.length} of {consumers.length}{' '}
-                consumers
+                Showing {totalConsumers} of {totalConsumers} consumers
               </div>
             </div>
           </CardHeader>

@@ -3,6 +3,14 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { TruncatedCell } from '../../../stakeholders/component/TruncatedCell';
+
+// type DailyMonitoringRow = {
+//   dataEntryBy?: string;
+//   createdAt?: string;
+//   riverBasin?: string;
+//   groupKey: string;
+// };
 
 export default function useDailyMonitoringTableColumn() {
   const { id: projectId } = useParams();
@@ -19,9 +27,9 @@ export default function useDailyMonitoringTableColumn() {
     {
       accessorKey: 'dataEntryBy',
       header: 'Created By',
-      cell: ({ row }) => {
-        return row.getValue('dataEntryBy');
-      },
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('dataEntryBy')} maxLength={25} />
+      ),
     },
     {
       accessorKey: 'createdAt',
@@ -31,21 +39,20 @@ export default function useDailyMonitoringTableColumn() {
         const filterDate = new Date(filterValue);
         return rowDate.toDateString() === filterDate.toDateString();
       },
-      cell: ({ row }) => {
-        const createdAt = row.getValue('createdAt') as string;
-        if (createdAt) {
-          return dateFormat(createdAt);
-        }
-        return 'N/A';
-      },
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={dateFormat(row.getValue('createdAt')) || 'N/A'}
+          maxLength={30}
+        />
+      ),
     },
 
     {
       accessorKey: 'riverBasin',
-      header: 'River Basin',
-      cell: ({ row }) => {
-        return row.getValue('riverBasin');
-      },
+      header: 'River Basin Demotable',
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('riverBasin')} maxLength={35} />
+      ),
     },
     {
       id: 'actions',

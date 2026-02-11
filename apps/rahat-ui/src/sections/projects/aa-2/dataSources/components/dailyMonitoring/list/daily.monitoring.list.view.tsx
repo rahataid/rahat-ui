@@ -18,6 +18,7 @@ import {
 } from '@tanstack/react-table';
 import {
   ClientSidePagination,
+  DemoTable,
   IconLabelBtn,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
@@ -154,8 +155,8 @@ export default function DailyMonitoringListView() {
         </RoleAuth>
       </div>
       <div className="border bg-card rounded">
-        <DailyMonitoringTable table={table} loading={isLoading} />
-
+        {/* <DailyMonitoringTable table={table} loading={isLoading} /> */}
+        <DemoTable table={table} loading={isLoading} />
         <ClientSidePagination table={table} />
       </div>
     </div>

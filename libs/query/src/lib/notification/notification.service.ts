@@ -35,7 +35,7 @@ export const useGetAllNotificatons = () => {
         page: pageParam,
         perPage: 10,
       }),
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 5 * 60 * 1000, // 5 minutes
     getNextPageParam: (lastPage) => {
       const { meta, data } = lastPage;
 

@@ -2,7 +2,6 @@ import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, TriangleAlert } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { IFundManagement } from '../types';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
   Tooltip,
@@ -10,6 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 
 export enum FundStatus {
   NOT_DISBURSED = 'NOT_DISBURSED',
@@ -46,28 +46,19 @@ export const useFundManagementTableColumns = () => {
       accessorFn: (row) => row?.title,
       header: 'Title',
       cell: ({ row }) => (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="truncate w-48 hover:cursor-pointer">
-                {row?.original?.title || 'N/A'}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent
-              side="bottom"
-              className="w-80 rounded-sm text-justify "
-            >
-              <p>{row?.original?.title || 'N/A'}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <TruncatedCell text={row?.original?.title || 'N/A'} maxLength={10} />
       ),
     },
     {
       accessorKey: 'beneficiaryGroup',
       header: 'Beneficiary Group',
       cell: ({ row }) => {
-        return <div>{row.original?.group?.name || 'N/A'}</div>;
+        return (
+          <TruncatedCell
+            text={row.original?.group?.name || 'N/A'}
+            maxLength={15}
+          />
+        );
       },
     },
     {
@@ -88,7 +79,12 @@ export const useFundManagementTableColumns = () => {
     {
       accessorKey: 'createdBy',
       header: 'Created By',
-      cell: ({ row }) => <div>{row.getValue('createdBy') || 'N/A'}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={row.getValue('createdBy') || 'N/A'}
+          maxLength={15}
+        />
+      ),
     },
     {
       accessorKey: 'status',

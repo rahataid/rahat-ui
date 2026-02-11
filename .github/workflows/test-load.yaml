@@ -1,11 +1,5 @@
 name: AA Test Load CI/CD
 on:
-  push:
-    branches:
-      - 'test-load'
-  pull_request:
-    branches:
-      - 'test-load'
   workflow_dispatch:
 env:
   CI: false

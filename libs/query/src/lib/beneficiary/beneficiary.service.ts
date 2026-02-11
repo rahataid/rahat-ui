@@ -83,7 +83,7 @@ export const useBeneficiaryGroupsList = (payload: any): any => {
     {
       queryKey: [TAGS.GET_BENEFICIARIES_GROUPS, payload],
       queryFn: () => listBeneficiaryGroups(payload),
-      staleTime: 1000 * 60 * 10, // 10 minutes
+      staleTime: 10 * 60 * 1000, // 10 minutes
     },
     queryClient,
   );

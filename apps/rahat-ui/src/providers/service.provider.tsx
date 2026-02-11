@@ -168,8 +168,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
       communicationService &&
       commsQueryClient &&
       chainSettings.id &&
-      newCommsQueryClient &&
-      newCommunicationService
+      newCommsQueryClient
     );
   }, [
     rumsanService,
@@ -178,7 +177,6 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     commsQueryClient,
     chainSettings.id,
     newCommsQueryClient,
-    newCommunicationService,
   ]);
 
   if (!isAppReady) {

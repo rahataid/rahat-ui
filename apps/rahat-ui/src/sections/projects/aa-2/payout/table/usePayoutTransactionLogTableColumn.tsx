@@ -41,7 +41,12 @@ export default function usePayoutTransactionLogTableColumn() {
       accessorKey: 'totalBeneficiaries',
       header: 'Total Beneficiaries',
       cell: ({ row }) => (
-        <div className="w-5">{row.getValue('totalBeneficiaries')}</div>
+        <div className="w-5">
+          <TruncatedCell
+            text={row.getValue('totalBeneficiaries')}
+            maxLength={10}
+          />
+        </div>
       ),
     },
 
@@ -49,29 +54,37 @@ export default function usePayoutTransactionLogTableColumn() {
       accessorKey: 'totalTokenAssigned',
       header: 'Total Amount Disbursed',
       cell: ({ row }) => (
-        <div className="">Rs. {row.original.totalSuccessAmount}</div>
+        <TruncatedCell
+          text={`Rs. ${row.original.totalSuccessAmount}`}
+          maxLength={10}
+        />
       ),
     },
     {
       accessorKey: 'amountperBenef',
       header: 'Amount per beneficiary',
       cell: ({ row }) => (
-        <div>
-          Rs. {''}
-          {(row.original.totalTokenAssigned * 1) /
-            row.original.totalBeneficiaries}
-        </div>
+        <TruncatedCell
+          text={`Rs. ${
+            (row.original.totalTokenAssigned * 1) /
+            row.original.totalBeneficiaries
+          }`}
+          maxLength={10}
+        />
       ),
     },
     {
       accessorKey: 'payoutType',
       header: 'Payout Type',
       cell: ({ row }) => (
-        <div>
-          {row.getValue('payoutType') === 'VENDOR'
-            ? 'CVA'
-            : row.getValue('payoutType')}
-        </div>
+        <TruncatedCell
+          text={
+            row.getValue('payoutType') === 'VENDOR'
+              ? 'CVA'
+              : row.getValue('payoutType')
+          }
+          maxLength={10}
+        />
       ),
     },
     {

@@ -8,10 +8,21 @@ import { ColumnDef } from '@tanstack/react-table';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import { Copy, CopyCheck } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+
+type VendorTransactionRow = {
+  transactionType?: string;
+  beneficiaryWalletAddress: string;
+  amount?: number | string;
+  txHash?: string;
+  info?: {
+    mode?: 'OFFLINE' | 'ONLINE' | string;
+  };
+  updatedAt?: string;
+};
 
 export const useVendorsTransactionTableColumns = () => {
   const { id } = useParams();
@@ -21,16 +32,19 @@ export const useVendorsTransactionTableColumns = () => {
   }));
   const { clickToCopy, copyAction } = useCopy();
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<VendorTransactionRow>[] = [
     {
       accessorKey: 'topic',
       header: 'Topic',
       cell: ({ row }) => (
-        <div>
-          {row.original?.transactionType
-            ? formatEnumString(row.original?.transactionType)
-            : 'N/A'}
-        </div>
+        <TruncatedCell
+          text={
+            row.original?.transactionType
+              ? formatEnumString(row.original?.transactionType)
+              : 'N/A'
+          }
+          maxLength={20}
+        />
       ),
     },
     {
@@ -42,9 +56,11 @@ export const useVendorsTransactionTableColumns = () => {
         }
         return (
           <div className="flex flex-row">
-            <div className="w-20 truncate text-[14px] leading-[16px] font-normal !text-[#475263]">
-              {row.original?.beneficiaryWalletAddress}
-            </div>
+            <TruncatedCell
+              text={row.original?.beneficiaryWalletAddress}
+              maxLength={10}
+              className="w-20"
+            />
             <button
               onClick={() =>
                 clickToCopy(
@@ -72,13 +88,16 @@ export const useVendorsTransactionTableColumns = () => {
         const convertedAmount = amountNum * TOKEN_TO_AMOUNT_MULTIPLIER;
 
         return (
-          <div>
-            {amountNum > 0
-              ? `Rs. ${Intl.NumberFormat('en-IN').format(
-                  Math.round(convertedAmount),
-                )}`
-              : 'N/A'}
-          </div>
+          <TruncatedCell
+            text={
+              amountNum > 0
+                ? `Rs. ${Intl.NumberFormat('en-IN').format(
+                    Math.round(convertedAmount),
+                  )}`
+                : 'N/A'
+            }
+            maxLength={20}
+          />
         );
       },
     },
@@ -107,7 +126,7 @@ export const useVendorsTransactionTableColumns = () => {
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer "
               >
-                {row.getValue('txHash')}
+                <TruncatedCell text={row.getValue('txHash')} maxLength={10} />
               </a>
             </div>
             <button
@@ -147,9 +166,12 @@ export const useVendorsTransactionTableColumns = () => {
       accessorKey: 'timeStamp',
       header: 'Timestamp',
       cell: ({ row }) => (
-        <div>
-          {row?.original?.updatedAt ? dateFormat(row?.original?.updatedAt) : ''}
-        </div>
+        <TruncatedCell
+          text={
+            row?.original?.updatedAt ? dateFormat(row?.original?.updatedAt) : ''
+          }
+          maxLength={30}
+        />
       ),
     },
   ];

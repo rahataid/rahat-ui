@@ -78,6 +78,7 @@ export default function ImportStakeholder() {
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadStakeholders = useUploadStakeholders();
   const createStakeholdersGroup = useCreateStakeholdersGroups();
+  const projectAction = useProjectAction();
 
   const { stakeholdersGroups } = useStakeholdersGroupsStore((state) => ({
     stakeholdersGroups: state.stakeholdersGroups,
@@ -376,9 +377,7 @@ export default function ImportStakeholder() {
         doctype,
         projectId: id,
       });
-
       const successCount = response?.data?.successCount || 0;
-      const createdStakeholders = response?.data?.stakeholders || [];
 
       if (successCount === 0) {
         toast.warning('No stakeholders were imported');
@@ -386,12 +385,37 @@ export default function ImportStakeholder() {
         return;
       }
 
-      const importedUUIDs = createdStakeholders.map((s: any) => s.uuid);
-      setImportedStakeholderUUIDs(importedUUIDs);
-      setDuplicatePhonesFromServer(new Set());
-      setDuplicateEmailFromServer(new Set());
-      toast.dismiss();
-      setShowGroupModal(true);
+      try {
+        const stakeholdersResponse = await projectAction.mutateAsync({
+          uuid: id,
+          data: {
+            action: 'aaProject.stakeholders.getAll',
+            payload: {
+              page: 1,
+              perPage: successCount,
+              sort: 'createdAt',
+              order: 'desc',
+            },
+          },
+        });
+        const fetchedStakeholders = stakeholdersResponse?.response?.data || [];
+        console.log('Fetched Stakeholders:', fetchedStakeholders);
+        const importedUUIDs = fetchedStakeholders
+          .slice(0, successCount)
+          .map((s: any) => s.uuid);
+
+        setImportedStakeholderUUIDs(importedUUIDs);
+        setDuplicatePhonesFromServer(new Set());
+        setDuplicateEmailFromServer(new Set());
+        toast.dismiss();
+        setShowGroupModal(true);
+      } catch (fetchError) {
+        console.error('Error fetching stakeholders:', fetchError);
+        toast.warning(
+          'Stakeholders imported but could not retrieve IDs for grouping.',
+        );
+        router.push(`/projects/aa/${id}/stakeholders?tab=stakeholders`);
+      }
     } catch (error: any) {
       const message: string =
         error?.response?.data?.message || error?.message || '';
@@ -529,10 +553,10 @@ export default function ImportStakeholder() {
               />
 
               <div
-                className="flex items-center border rounded-sm  cursor-pointer w-full"
+                className="flex items-center border rounded-sm cursor-pointer w-full"
                 onClick={() => inputRef.current?.click()}
               >
-                <span className="flex items-center bg-gray-100 text-blue-400 px-4 py-2 font-semibold text-sm hover:bg-gray-200 transition-colors space-x-3">
+                <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-4 py-2 font-semibold text-sm hover:bg-gray-200 transition-colors space-x-3">
                   {selectedFile ? (
                     <>
                       <Repeat2 size={22} className="px-1" /> Replace
@@ -542,7 +566,7 @@ export default function ImportStakeholder() {
                       <Share size={22} className="px-1" />
                       Choose File
                     </>
-                  )}
+                  )}  
                 </span>
                 <span className="px-4 py-2 flex-grow truncate">{fileName}</span>
               </div>
@@ -647,6 +671,7 @@ export default function ImportStakeholder() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-sm p-6 max-w-md w-full shadow-xl m-4">
             {!showGroupForm ? (
+              // Initial confirmation
               <>
                 <h3 className="text-lg text-center text-primary font-semibold mb-4">
                   Import Successful
@@ -655,7 +680,7 @@ export default function ImportStakeholder() {
                     {importedStakeholderUUIDs.length === 1
                       ? 'stakeholder has'
                       : 'stakeholders have'}{' '}
-                    been added to your directory
+                    been added to stakeholder list.
                   </p>
                 </h3>
 
@@ -667,19 +692,19 @@ export default function ImportStakeholder() {
                 <div className="space-y-2 mb-6">
                   {/* Create a Group card */}
                   <div className="border hover-bg-blue-50/40 rounded-sm overflow-hidden">
-                    <div className="w-full text-left p-4 hover:bg-blue-50 transition-colors">
+                    <div className="w-full text-left p-4 transition-colors">
                       <div className="flex items-start gap-3">
                         <Users
                           size={30}
                           className="px-1 mt-1 text-primary bg-gray-100 rounded-sm"
                         />
                         <div className="flex-1">
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
                             <span className="font-semibold text-gray-800">
                               Create a Group
                             </span>
-                            <span className="text-xs font-medium text-blue-600">
-                              RECOMMENDED →
+                            <span className="text-xs px-2 py-0.5 rounded-sm bg-gray-100 font-semibold text-blue-600">
+                              RECOMMENDED
                             </span>
                           </div>
                           <p className="text-xs text-gray-600 mt-1">
@@ -693,7 +718,7 @@ export default function ImportStakeholder() {
 
                   {/* Skip for Now card */}
                   <div className="border border-gray-200 rounded-sm overflow-hidden">
-                    <div className="w-full text-left p-4 hover:bg-blue-50 transition-colors">
+                    <div className="w-full text-left p-4 transition-colors">
                       <div className="flex items-start gap-3">
                         <X
                           size={30}

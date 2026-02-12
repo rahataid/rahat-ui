@@ -12,13 +12,14 @@ import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.tabl
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
-import { getAssetCode, getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
+import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
 import { UUID } from 'crypto';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { IProjectVendor } from './types';
 import { toast } from 'react-toastify';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
 // import { DialogComponent } from '../activities/details/dialog.reuse';
 
 export const useProjectVendorTableColumns = (pagination: Pagination) => {
@@ -38,7 +39,9 @@ export const useProjectVendorTableColumns = (pagination: Pagination) => {
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('name')} maxLength={30} />
+      ),
     },
     {
       accessorKey: 'phone',
@@ -88,9 +91,11 @@ export const useProjectVendorRedemptionTableColumns = () => {
           uuid: row.original?.uuid,
         },
       });
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(e);
-      return toast.error(e?.message || 'Failed to approve redemption request');
+      const errorMessage =
+        e instanceof Error ? e.message : 'Failed to approve redemption request';
+      return toast.error(errorMessage);
     }
   };
 

@@ -7,13 +7,14 @@ import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
-import { getAssetCode, getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
+import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { TOKEN_TO_AMOUNT_MULTIPLIER } from '@rahat-ui/query';
-import { Check, Copy, CopyCheck } from 'lucide-react';
+import { Copy, CopyCheck } from 'lucide-react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
+import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 
 export const useRedemptionRequestColumn = () => {
   const { id }: { id: UUID } = useParams();
@@ -28,22 +29,26 @@ export const useRedemptionRequestColumn = () => {
       accessorKey: 'tokenAmount',
       header: 'Token Amount',
       cell: ({ row }) => (
-        <div>
-          {row.original?.tokenAmount} {getAssetCode(settings, id)}
-        </div>
+        <TruncatedCell
+          text={`${row.original?.tokenAmount} ${getAssetCode(settings, id)}`}
+          maxLength={20}
+        />
       ),
     },
     {
       accessorKey: 'totalAmount',
       header: 'Total Amount',
       cell: ({ row }) => (
-        <div>
-          {row.original?.tokenAmount
-            ? `Rs. ${
-                Number(row.original?.tokenAmount) * TOKEN_TO_AMOUNT_MULTIPLIER
-              }`
-            : 'N/A'}
-        </div>
+        <TruncatedCell
+          text={
+            row.original?.tokenAmount
+              ? `Rs. ${
+                  Number(row.original?.tokenAmount) * TOKEN_TO_AMOUNT_MULTIPLIER
+                }`
+              : 'N/A'
+          }
+          maxLength={20}
+        />
       ),
     },
     {
@@ -94,7 +99,10 @@ export const useRedemptionRequestColumn = () => {
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer "
               >
-                {row.getValue('transactionHash')}
+                <TruncatedCell
+                  text={row.getValue('transactionHash')}
+                  maxLength={10}
+                />
               </a>
             </div>
             <button
@@ -120,11 +128,14 @@ export const useRedemptionRequestColumn = () => {
       accessorKey: 'approvedBy',
       header: 'Approved By',
       cell: ({ row }) => (
-        <div className="flex gap-1">
-          {row.original?.redemptionStatus === 'APPROVED'
-            ? user?.data?.name || 'N/A'
-            : 'N/A'}
-        </div>
+        <TruncatedCell
+          text={
+            row.original?.redemptionStatus === 'APPROVED'
+              ? user?.data?.name || 'N/A'
+              : 'N/A'
+          }
+          maxLength={20}
+        />
       ),
     },
     {
@@ -132,9 +143,14 @@ export const useRedemptionRequestColumn = () => {
       header: 'Requested Date',
       cell: ({ row }) => (
         <div className="flex gap-1">
-          {row?.original?.createdAt
-            ? dateFormat(row.original?.createdAt)
-            : 'N/A'}
+          {row?.original?.createdAt ? (
+            <TruncatedCell
+              text={dateFormat(row.original?.createdAt)}
+              maxLength={20}
+            />
+          ) : (
+            'N/A'
+          )}
         </div>
       ),
     },
@@ -144,9 +160,14 @@ export const useRedemptionRequestColumn = () => {
       cell: ({ row }) => (
         <div className="flex gap-1">
           {row.original?.redemptionStatus === 'APPROVED' &&
-          row?.original?.approvedAt
-            ? dateFormat(row.original?.approvedAt)
-            : 'N/A'}
+          row?.original?.approvedAt ? (
+            <TruncatedCell
+              text={dateFormat(row.original?.approvedAt)}
+              maxLength={20}
+            />
+          ) : (
+            'N/A'
+          )}
         </div>
       ),
     },

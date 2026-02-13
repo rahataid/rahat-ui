@@ -59,23 +59,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # -----------------------------
-      # Import Secrets from Vault
-      # -----------------------------
-      - name: Import Secrets
-        id: vault
-        uses: hashicorp/vault-action@v2.4.0
-        with:
-          url: ${{ secrets.VAULT_URL }}
-          token: ${{ secrets.VAULT_TOKEN }}
-          secrets: |
-            github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
-            github/data/general/docker/esatya password | DOCKERHUB_TOKEN ;
-            github/data/rahat/rahat-ui/demo/aa/testload rahat-ui-test | ENV ;
-
-      - name: Create environment file
-        run: |
-          tee .env <<<"$ENV"
+      
 
       # -----------------------------
       # Node + PNPM Setup
@@ -94,10 +78,28 @@ jobs:
           run_install: false
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Build application
         run: pnpm nx build ${{ matrix.app }}
+    
+    # -----------------------------
+      # Import Secrets from Vault
+      # -----------------------------
+      - name: Import Secrets
+        id: vault
+        uses: hashicorp/vault-action@v2.4.0
+        with:
+          url: ${{ secrets.VAULT_URL }}
+          token: ${{ secrets.VAULT_TOKEN }}
+          secrets: |
+            github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
+            github/data/general/docker/esatya password | DOCKERHUB_TOKEN ;
+            github/data/rahat/rahat-ui/demo/aa/testload rahat-ui-test | ENV ;
+
+      - name: Create environment file
+        run: |
+          tee .env <<<"$ENV"
 
       # -----------------------------
       # Docker Setup

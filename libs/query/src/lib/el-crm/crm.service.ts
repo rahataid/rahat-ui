@@ -47,22 +47,26 @@ export const useUploadCustomers = () => {
   });
 };
 
-export const useCustomers = (uuid: UUID) => {
+export const useCustomers = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['customers', uuid],
+    queryKey: ['customers', uuid, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
           action: 'elProject.crm.getAllVendor',
-          payload: {},
+          payload,
         },
       });
-      return mutate.data;
+      return mutate;
     },
   });
 
-  return query;
+  return {
+    ...query,
+    customers: query.data?.data || [],
+    meta: query.data?.response?.meta || {},
+  };
 };

@@ -32,18 +32,17 @@ import { CalendarIcon, Send, Plus, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-
-const messageTemplates = [
-  'Welcome Message',
-  'Product Update',
-  'Reminder',
-  'Appointment Confirmation',
-  'Follow-up Message',
-];
+import {
+  useCreateElCrmCampaign,
+  useListElCrmTemplate,
+  useListElCrmTransport,
+} from '@rahat-ui/query';
+import { options } from 'numeral';
+import { stat } from 'fs';
 
 // Validation schema
 const composeMessageSchema = z.object({
-  groupSelection: z.string().min(1, 'Please select a group'),
+  targetType: z.string().min(1, 'Please select a group'),
   statusFilter: z.string().optional(),
   messagingChannel: z.string().min(1, 'Please select a messaging channel'),
   scheduleDate: z.date().optional(),
@@ -73,7 +72,7 @@ export default function ComposeMessageView() {
   } = useForm<ComposeMessageForm>({
     resolver: zodResolver(composeMessageSchema),
     defaultValues: {
-      groupSelection: '',
+      targetType: '',
       statusFilter: '',
       messagingChannel: '',
       scheduleDate: undefined,
@@ -84,12 +83,27 @@ export default function ComposeMessageView() {
     },
   });
 
-  const groupSelection = watch('groupSelection');
+  const groupSelection = watch('targetType');
   const scheduleDate = watch('scheduleDate');
 
+  const transport = useListElCrmTransport(projectUUID);
+  const templates = useListElCrmTemplate(projectUUID);
+  const createCampaign = useCreateElCrmCampaign(projectUUID);
+
+  console.log('Templates:', templates.data);
   const onSubmit = (data: ComposeMessageForm) => {
     console.log('Submitting form with:', data);
     // Handle form submission here
+    const payload = {
+      targetType: data.targetType,
+      name: ' Campaign - ' + new Date().toLocaleString(),
+      options: data.statusFilter
+        ? { vendorStatus: data.statusFilter.toUpperCase() }
+        : undefined,
+      transportId: data.messagingChannel,
+      message: data.selectedTemplate,
+    };
+    createCampaign.mutateAsync(payload);
   };
 
   const handleCreateTemplate = (data: ComposeMessageForm) => {
@@ -136,7 +150,7 @@ export default function ComposeMessageView() {
                   <div className="space-y-2">
                     <Label htmlFor="group-selection">Select Group</Label>
                     <Controller
-                      name="groupSelection"
+                      name="targetType"
                       control={control}
                       render={({ field }) => (
                         <>
@@ -153,17 +167,15 @@ export default function ComposeMessageView() {
                               <SelectValue placeholder="Select group type" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="customers">
-                                Customers
-                              </SelectItem>
-                              <SelectItem value="consumers">
+                              <SelectItem value="VENDOR">Customers</SelectItem>
+                              <SelectItem value="BENEFICIARY">
                                 Consumers
                               </SelectItem>
                             </SelectContent>
                           </Select>
-                          {errors.groupSelection && (
+                          {errors.targetType && (
                             <p className="text-sm text-red-500">
-                              {errors.groupSelection.message}
+                              {errors.targetType.message}
                             </p>
                           )}
                         </>
@@ -172,7 +184,7 @@ export default function ComposeMessageView() {
                   </div>
 
                   {/* Condition Filter - only shows when Customer is selected */}
-                  {groupSelection === 'customers' && (
+                  {groupSelection === 'VENDOR' && (
                     <div className="space-y-2">
                       <Label htmlFor="condition-filter">Condition Filter</Label>
                       <Controller
@@ -215,8 +227,14 @@ export default function ComposeMessageView() {
                               <SelectValue placeholder="Select channel" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="sms">SMS</SelectItem>
-                              <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                              {transport.data?.map((channel: any) => (
+                                <SelectItem
+                                  key={channel.cuid}
+                                  value={channel.cuid.toString()}
+                                >
+                                  {channel.name.toUpperCase()}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                           {errors.messagingChannel && (
@@ -340,12 +358,12 @@ export default function ComposeMessageView() {
                         <SelectValue placeholder="Choose existing template" />
                       </SelectTrigger>
                       <SelectContent>
-                        {messageTemplates.map((template) => (
+                        {templates?.data?.map((template: any) => (
                           <SelectItem
-                            key={template}
-                            value={template.toLowerCase().replace(/\s+/g, '-')}
+                            key={template.cuid}
+                            value={template?.externalId}
                           >
-                            {template}
+                            {template.name}
                           </SelectItem>
                         ))}
                       </SelectContent>

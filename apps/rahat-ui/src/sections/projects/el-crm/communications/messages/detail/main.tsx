@@ -14,52 +14,16 @@ import { ArrowLeft, Send } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { UUID } from 'crypto';
-
-const messagesList = [
-  {
-    id: 1,
-    name: 'Welcome Campaign',
-    channel: 'SMS',
-    group: 'Customers',
-    status: 'Active',
-    recipients: 245,
-    createdDate: '2024-01-20',
-    messageContent:
-      "Welcome to our service! We're excited to have you on board. Your account has been successfully created.",
-    groupStatus: 'Active customers - 245 recipients',
-  },
-  {
-    id: 2,
-    name: 'Product Launch',
-    channel: 'WhatsApp',
-    group: 'Active Users',
-    status: 'Draft',
-    recipients: 189,
-    createdDate: '2024-01-19',
-    messageContent:
-      "We've just launched new features in our app! Check out the latest updates and improvements.",
-    groupStatus: 'Active users - 189 recipients',
-  },
-  {
-    id: 3,
-    name: 'Appointment Reminder',
-    channel: 'SMS',
-    group: 'Customers',
-    status: 'Scheduled',
-    recipients: 312,
-    createdDate: '2024-01-18',
-    messageContent:
-      'Reminder about your upcoming appointment scheduled for tomorrow at 2:00 PM.',
-    groupStatus: 'Inactive customers - 312 recipients',
-  },
-];
+import { useGetElCrmCampaign, useTriggerElCrmCampaign } from '@rahat-ui/query';
 
 export default function MessageDetailPage() {
   const { id: projectUUID, messageId } = useParams() as {
     id: UUID;
     messageId: string;
   };
-  const message = messagesList.find((m) => m.id === Number(messageId));
+  const { data: campaign } = useGetElCrmCampaign(projectUUID, messageId);
+  const trigger = useTriggerElCrmCampaign(projectUUID);
+  console.log(campaign);
 
   const getChannelColor = (channel: string) => {
     switch (channel) {
@@ -86,10 +50,11 @@ export default function MessageDetailPage() {
   };
 
   const handleSendMessage = () => {
-    console.log('Sending message:', message?.id);
+    console.log('Sending message:', campaign?.uuid);
+    trigger.mutate({ uuid: campaign?.uuid || '' });
   };
 
-  if (!message) {
+  if (!campaign) {
     return (
       <div className="flex flex-col h-full">
         <div className="border-b border-border bg-card/50 px-6 py-4">
@@ -138,7 +103,7 @@ export default function MessageDetailPage() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-foreground">
-              {message.name}
+              {campaign.name}
             </h1>
             <p className="text-muted-foreground">View message details</p>
           </div>
@@ -158,7 +123,7 @@ export default function MessageDetailPage() {
                   <Label className="text-sm font-medium text-muted-foreground">
                     Message Name
                   </Label>
-                  <p className="text-sm mt-2 font-medium">{message.name}</p>
+                  <p className="text-sm mt-2 font-medium">{campaign.name}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">
@@ -166,10 +131,10 @@ export default function MessageDetailPage() {
                   </Label>
                   <div className="mt-2">
                     <Badge
-                      className={getChannelColor(message.channel)}
+                      className={getChannelColor(campaign.transportName)}
                       variant="secondary"
                     >
-                      {message.channel}
+                      {campaign.transportName}
                     </Badge>
                   </div>
                 </div>
@@ -177,20 +142,20 @@ export default function MessageDetailPage() {
                   <Label className="text-sm font-medium text-muted-foreground">
                     Group
                   </Label>
-                  <p className="text-sm mt-2">{message.group}</p>
+                  <p className="text-sm mt-2">{campaign.targetType}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">
                     Recipients
                   </Label>
-                  <p className="text-sm mt-2">{message.recipients}</p>
+                  <p className="text-sm mt-2">{campaign.recipients}</p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">
                     Created Date
                   </Label>
                   <p className="text-sm mt-2">
-                    {format(new Date(message.createdDate), 'MMM dd, yyyy')}
+                    {format(new Date(campaign.createdAt), 'MMM dd, yyyy')}
                   </p>
                 </div>
                 <div>
@@ -198,8 +163,8 @@ export default function MessageDetailPage() {
                     Status
                   </Label>
                   <div className="mt-2">
-                    <Badge variant={getStatusVariant(message.status)}>
-                      {message.status}
+                    <Badge variant={getStatusVariant(campaign.status)}>
+                      {campaign.status}
                     </Badge>
                   </div>
                 </div>
@@ -211,7 +176,7 @@ export default function MessageDetailPage() {
                 </Label>
                 <Card className="mt-2">
                   <CardContent className="p-4">
-                    <p className="text-sm">{message.groupStatus}</p>
+                    <p className="text-sm">{campaign.groupStatus}</p>
                   </CardContent>
                 </Card>
               </div>
@@ -223,7 +188,7 @@ export default function MessageDetailPage() {
                 <Card className="mt-2">
                   <CardContent className="p-4">
                     <p className="text-sm whitespace-pre-wrap">
-                      {message.messageContent}
+                      {campaign.message}
                     </p>
                   </CardContent>
                 </Card>

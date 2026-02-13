@@ -14,6 +14,12 @@ import { PayoutMode } from 'libs/query/src/lib/aa';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 type VendorBeneficiaryRow = {
   walletAddress: string;
@@ -68,21 +74,37 @@ export const useVendorsBeneficiaryTableColumns = (
               maxLength={10}
               className="w-20 text-400 text-[#475263] text-[14px] leading-[16px] font-normal"
             />
-            <button
-              onClick={() =>
-                clickToCopy(
-                  row.original?.walletAddress,
-                  row.original?.walletAddress,
-                )
-              }
-              className="ml-2 text-sm text-gray-500"
-            >
-              {copyAction === row.original?.walletAddress ? (
-                <CopyCheck className="w-4 h-4" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )}
-            </button>
+
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger
+                  className="flex items-center gap-3 cursor-pointer"
+                  onClick={() =>
+                    clickToCopy(
+                      row.original?.walletAddress,
+                      row.original?.walletAddress,
+                    )
+                  }
+                >
+                  {copyAction === row.original?.walletAddress ? (
+                    <CopyCheck size={15} strokeWidth={1.5} />
+                  ) : (
+                    <Copy
+                      className="text-slate-500"
+                      size={15}
+                      strokeWidth={1.5}
+                    />
+                  )}
+                </TooltipTrigger>
+                <TooltipContent className=" rounded-sm" side="bottom">
+                  <p className="text-xs font-medium">
+                    {copyAction === row.original?.walletAddress
+                      ? 'copied'
+                      : 'click to copy'}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       },
@@ -129,18 +151,34 @@ export const useVendorsBeneficiaryTableColumns = (
                 <TruncatedCell text={row.getValue('txHash')} maxLength={10} />
               </a>
             </div>
-            <button
-              onClick={() =>
-                clickToCopy(row.getValue('txHash'), row.getValue('txHash'))
-              }
-              className="ml-2 text-sm text-gray-500"
-            >
-              {copyAction === row.getValue('txHash') ? (
-                <CopyCheck className="w-4 h-4" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )}
-            </button>
+
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger
+                  className="flex items-center gap-3 cursor-pointer"
+                  onClick={() =>
+                    clickToCopy(row.getValue('txHash'), row.getValue('txHash'))
+                  }
+                >
+                  {copyAction === row.getValue('txHash') ? (
+                    <CopyCheck size={15} strokeWidth={1.5} />
+                  ) : (
+                    <Copy
+                      className="text-slate-500"
+                      size={15}
+                      strokeWidth={1.5}
+                    />
+                  )}
+                </TooltipTrigger>
+                <TooltipContent className=" rounded-sm" side="bottom">
+                  <p className="text-xs font-medium">
+                    {copyAction === row.getValue('txHash')
+                      ? 'copied'
+                      : 'click to copy'}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       },

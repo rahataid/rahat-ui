@@ -15,6 +15,12 @@ import { Copy, CopyCheck } from 'lucide-react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export const useRedemptionRequestColumn = () => {
   const { id }: { id: UUID } = useParams();
@@ -105,21 +111,37 @@ export const useRedemptionRequestColumn = () => {
                 />
               </a>
             </div>
-            <button
-              onClick={() =>
-                clickToCopy(
-                  row.getValue('transactionHash'),
-                  row.getValue('transactionHash'),
-                )
-              }
-              className="ml-2 text-sm text-gray-500"
-            >
-              {copyAction === row.getValue('transactionHash') ? (
-                <CopyCheck className="w-4 h-4" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )}
-            </button>
+
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger
+                  className="flex items-center gap-3 cursor-pointer"
+                  onClick={() =>
+                    clickToCopy(
+                      row.getValue('transactionHash'),
+                      row.getValue('transactionHash'),
+                    )
+                  }
+                >
+                  {copyAction === row.getValue('transactionHash') ? (
+                    <CopyCheck size={15} strokeWidth={1.5} />
+                  ) : (
+                    <Copy
+                      className="text-slate-500"
+                      size={15}
+                      strokeWidth={1.5}
+                    />
+                  )}
+                </TooltipTrigger>
+                <TooltipContent className=" rounded-sm" side="bottom">
+                  <p className="text-xs font-medium">
+                    {copyAction === row.getValue('transactionHash')
+                      ? 'copied'
+                      : 'click to copy'}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       },

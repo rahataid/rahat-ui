@@ -71,22 +71,26 @@ export const useCustomers = (uuid: UUID, payload: any) => {
   };
 };
 
-export const useConsumers = (uuid: UUID) => {
+export const useConsumers = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['consumers', uuid],
+    queryKey: ['consumers', uuid, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
           action: 'elProject.crm.getAllBeneficiary',
-          payload: {},
+          payload,
         },
       });
-      return mutate.data;
+      return mutate;
     },
   });
 
-  return query;
+  return {
+    ...query,
+    consumers: query.data?.data || [],
+    meta: query.data?.response?.meta || {},
+  };
 };

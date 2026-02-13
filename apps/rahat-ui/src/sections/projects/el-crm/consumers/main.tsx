@@ -16,16 +16,30 @@ import {
 } from '@tanstack/react-table';
 import { useConsumersTableColumn } from './useConsumersTableColumn';
 import { Search } from 'lucide-react';
-import { useConsumers } from '@rahat-ui/query';
+import { useConsumers, usePagination } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export default function ConsumersView() {
   const { id: projectUUID } = useParams() as { id: UUID };
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { data: consumers, isLoading } = useConsumers(projectUUID);
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+    setFilters,
+    filters,
+  } = usePagination();
+
+  const { consumers, meta, isLoading } = useConsumers(projectUUID, {
+    ...filters,
+    ...pagination,
+  });
 
   // const filteredConsumers = consumers.filter((consumer: any) => {
   //   const matchesSearch =
@@ -138,6 +152,15 @@ export default function ConsumersView() {
           </CardHeader>
           <CardContent>
             <DemoTable table={table} tableHeight="h-[calc(100vh-595px)]" />
+            <CustomPagination
+              meta={meta}
+              handleNextPage={setNextPage}
+              handlePrevPage={setPrevPage}
+              handlePageSizeChange={setPerPage}
+              currentPage={pagination.page}
+              perPage={pagination.perPage}
+              total={meta.total}
+            />
           </CardContent>
         </Card>
       </div>

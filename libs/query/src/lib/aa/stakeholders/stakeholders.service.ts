@@ -52,6 +52,7 @@ export const useStakeholders = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
+    staleTime: 10 * 60 * 1000, // 10 minutes
   });
 
   useEffect(() => {
@@ -75,6 +76,7 @@ export const useCreateStakeholders = <
   >,
 ): UseMutationResult<TData, TError, StakeholderArgs, TContext> => {
   const q = useProjectAction();
+  const qc = useQueryClient();
   const alert = useSwal();
 
   const toast = alert.mixin({
@@ -98,6 +100,7 @@ export const useCreateStakeholders = <
       onSuccess: (data, variables, ctx) => {
         q.reset();
         options?.onSuccess?.(data, variables, ctx);
+        qc.invalidateQueries({ queryKey: ['stakeholders'] });
         toast.fire({
           title: 'Stakeholder added successfully',
           icon: 'success',

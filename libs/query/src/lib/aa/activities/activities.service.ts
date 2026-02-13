@@ -72,6 +72,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
+    staleTime: 30 * 60 * 1000, // 30 minutes
     placeholderData: keepPreviousData,
   });
 
@@ -135,6 +136,7 @@ export const useActivitiesHavingComms = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
+    staleTime: 30 * 60 * 1000, // 30 minutes
   });
   const activitiesData = query?.data?.data?.map((d: any) => ({
     id: d?.uuid,
@@ -191,12 +193,14 @@ export const useSingleActivity = (
         throw error;
       }
     },
+    staleTime: 30 * 60 * 1000, // 30 minutes
   });
   return query;
 };
 
 export const useCreateActivities = () => {
   const q = useProjectAction();
+  const qc = useQueryClient();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -222,6 +226,7 @@ export const useCreateActivities = () => {
     },
     onSuccess: () => {
       q.reset();
+      qc.invalidateQueries({ queryKey: ['activities'] });
       toast.fire({
         title: 'Activity added successfully',
         icon: 'success',

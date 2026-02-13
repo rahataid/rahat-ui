@@ -9,16 +9,12 @@ import {
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Label } from '@rahat-ui/shadcn/components/label';
-import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import { paths } from '../../../routes/paths';
 import { toast } from 'react-toastify';
 import Image from 'next/image';
 import posthog from 'posthog-js';
 
 export default function AuthPage() {
-  const router = useRouter();
-  // const { authQuery } = useRumsanService();
   const [isEmailValid, setIsEmailValid] = React.useState<boolean>(false);
   const [otp, setOtp] = useState('');
   const [otpinputError, setOtpinputError] = useState(false);

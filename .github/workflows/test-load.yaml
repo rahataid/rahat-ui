@@ -1,0 +1,134 @@
+name: AA Test Load CI/CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      apps_to_build:
+        description: "Apps to build (comma-separated: rahat-ui,community-tool-ui). Leave empty for all."
+        required: false
+        default: ""
+        type: string
+      tag_suffix:
+        description: "Tag suffix (e.g., test-load)"
+        required: true
+        default: "test-load"
+        type: string
+      
+
+concurrency:
+  group: aa-test-load-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: false
+  REGISTRY: docker.io
+  IMAGE_NAMESPACE: esatya
+
+jobs:
+  setup:
+    name: Setup Build Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Generate build matrix
+        id: set-matrix
+        run: |
+          APPS="${{ inputs.apps_to_build }}"
+          if [ -z "$APPS" ]; then
+            APPS="rahat-ui,community-tool-ui"
+          fi
+
+          JSON=$(printf '%s\n' "$APPS" | awk -F',' '{printf "["; for(i=1;i<=NF;i++) printf "\"%s\"%s",$i,(i==NF?"":","); printf "]"}')
+          echo "matrix={\"app\":$JSON}" >> $GITHUB_OUTPUT
+
+  build:
+    name: Build & Push - ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    needs: setup
+
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      
+
+      # -----------------------------
+      # Node Setup
+      # -----------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.10.0
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Activate PNPM
+        run: corepack prepare pnpm@8.14.1 --activate
+
+      - name: Install dependencies
+        run: pnpm install 
+
+      - name: Build application
+        run: pnpm build:all
+
+    
+    # -----------------------------
+      # Import Secrets from Vault
+      # -----------------------------
+      - name: Import Secrets
+        id: vault
+        uses: hashicorp/vault-action@v2.4.0
+        with:
+          url: ${{ secrets.VAULT_URL }}
+          token: ${{ secrets.VAULT_TOKEN }}
+          secrets: |
+            github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
+            github/data/general/docker/esatya password | DOCKERHUB_TOKEN ;
+            github/data/rahat/rahat-ui/demo/aa/testload rahat-ui-test | ENV ;
+
+      - name: Create environment file
+        run: |
+          tee .env <<<"$ENV"
+
+      # -----------------------------
+      # Docker Setup
+      # -----------------------------
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+
+      - name: Extract Git metadata
+        id: meta
+        run: |
+          echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          echo "run_number=${GITHUB_RUN_NUMBER}" >> $GITHUB_OUTPUT
+
+      # -----------------------------
+      # Docker Build & Push
+      # -----------------------------
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.${{ matrix.app }}
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: |
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ steps.meta.outputs.short_sha }}-${{ steps.meta.outputs.run_number }}

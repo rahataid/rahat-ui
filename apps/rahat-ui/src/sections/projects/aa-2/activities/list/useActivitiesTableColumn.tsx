@@ -58,7 +58,7 @@ export default function useActivitiesTableColumn() {
       header: 'Category',
       cell: ({ row }) => (
         <Badge className="rounded-xl capitalize text-xs font-normal text-muted-foreground">
-          {row.getValue('category')}
+          <TruncatedCell text={row.getValue('category')} maxLength={15} />
         </Badge>
       ),
     },
@@ -94,11 +94,12 @@ export default function useActivitiesTableColumn() {
           <Badge
             className={`rounded-xl capitalize text-xs font-normal ${bgColor}`}
           >
-            {status
+            <TruncatedCell text={status} maxLength={10} />
+            {/* {status
               .toLowerCase()
               .split('_')
               .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ')}
+              .join(' ')} */}
           </Badge>
         );
       },

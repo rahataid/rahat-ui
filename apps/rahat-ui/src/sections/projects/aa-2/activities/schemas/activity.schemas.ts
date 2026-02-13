@@ -60,7 +60,7 @@ const baseCommunicationFormSchema = z.object({
       message: 'Communication title must be at least 2 characters',
     }),
   groupType: z.string().min(1, { message: 'Please select group type' }),
-  groupId: z.string().min(1, { message: 'Please select group' }),
+  groupId: z.array(z.string()).min(1, { message: 'Please select group at least one' }),
   transportId: z
     .string()
     .min(1, { message: 'Please select communication type' }),

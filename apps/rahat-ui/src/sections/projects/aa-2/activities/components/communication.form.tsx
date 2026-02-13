@@ -27,11 +27,13 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import MultipleSelector, {
+  type Option,
+} from '@rahat-ui/shadcn/src/components/custom/multi-select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { Transport, ValidationContent } from '@rumsan/connect/src/types';
 import { UUID } from 'crypto';
@@ -52,10 +54,10 @@ import {
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { validateGroupEmails } from 'apps/rahat-ui/src/utils/validateGroupEmails';
-import { renderGroups } from './renderGroup';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { createCommunicationFormSchema } from '../schemas/activity.schemas';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
 
 type CommunicationFormData = z.infer<
   ReturnType<typeof createCommunicationFormSchema>
@@ -115,10 +117,48 @@ export default function AddCommunicationForm({
   const groupType = form.watch('groupType');
   const groupId = form.watch('groupId');
 
+  // Convert groups to Option[] format
+  const groupOptions = useMemo<Option[]>(() => {
+    if (groupType === 'STAKEHOLDERS') {
+      const stakeholdersGroupsList = stakeholdersGroups.filter(
+        (a: any) => a?._count?.stakeholders > 0,
+      );
+      return stakeholdersGroupsList.map((group: any) => ({
+        label: group?.name || '',
+        value: group.uuid,
+      }));
+    }
+
+    if (groupType === 'BENEFICIARY') {
+      const beneficiaryGroupsList = beneficiaryGroups.filter(
+        (a: any) => a?._count?.groupedBeneficiaries > 0,
+      );
+      return beneficiaryGroupsList.map((group: any) => ({
+        label: group?.name || '',
+        value: group.uuid,
+      }));
+    }
+
+    return [];
+  }, [groupType, stakeholdersGroups, beneficiaryGroups]);
+
+  // Get actual selected options with labels
+  const selectedGroups = useMemo(() => {
+    if (!groupId) return [];
+    return groupId
+      .map((id: string) => groupOptions.find((opt: Option) => opt.value === id))
+      .filter(Boolean) as Option[];
+  }, [groupId, groupOptions]);
+
+  // TODO: we have to check every selected group id email is validation. for now we are only checking first selected group id email.
   const stakeholderId =
-    groupType === 'STAKEHOLDERS' && groupId ? (groupId as UUID) : ('' as UUID);
+    groupType === 'STAKEHOLDERS' && selectedGroups[0]?.value
+      ? (selectedGroups[0].value as UUID)
+      : ('' as UUID);
   const beneficiaryId =
-    groupType === 'BENEFICIARY' && groupId ? (groupId as UUID) : ('' as UUID);
+    groupType === 'BENEFICIARY' && selectedGroups[0]?.value
+      ? (selectedGroups[0].value as UUID)
+      : ('' as UUID);
 
   const { data: stakeholdersGroup, isLoading: stakeholdersGroupLoading } =
     useSingleStakeholdersGroup(projectId as UUID, stakeholderId);
@@ -398,24 +438,35 @@ export default function AddCommunicationForm({
           name="groupId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Group</FormLabel>
-              <Select value={field.value} onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={'Select group'} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectGroup>
-                    {renderGroups(
-                      form,
-                      stakeholdersGroups,
-                      beneficiaryGroups,
-                      isLoading,
-                    )}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <FormLabel>Groups</FormLabel>
+              <FormControl>
+                <MultipleSelector
+                  options={groupOptions}
+                  value={selectedGroups}
+                  inputProps={{
+                    className: 'outline-none',
+                  }}
+                  groupClassName="h-36 rounded"
+                  onChange={(options: Option[]) => {
+                    field.onChange(options.map((opt: Option) => opt.value));
+                  }}
+                  placeholder={
+                    groupType ? 'Select groups' : 'Select group type first'
+                  }
+                  loading={isLoading}
+                  loadingIndicator={
+                    <div className="flex items-center justify-center p-6">
+                      <Loader />
+                    </div>
+                  }
+                  emptyIndicator={
+                    <p className="text-sm text-muted-foreground">
+                      No groups found
+                    </p>
+                  }
+                  disabled={isLoading || !groupType}
+                />
+              </FormControl>
               {form.formState.errors.groupId && (
                 <FormMessage>
                   {form.formState.errors.groupId.message}

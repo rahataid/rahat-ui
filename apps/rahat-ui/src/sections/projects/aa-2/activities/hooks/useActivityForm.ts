@@ -25,7 +25,7 @@ export const useActivityForm = (
     defaultValues: {
       communicationTitle: '',
       groupType: '',
-      groupId: '',
+      groupId: [],
       transportId: '',
       message: '',
       subject: '',

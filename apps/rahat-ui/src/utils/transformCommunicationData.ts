@@ -25,7 +25,8 @@ export const transformCommunicationData = (
 
       return {
         ...communication,
-        message: '', // Clear message for URL transports
+        message: '',
+        groupId: communication.groupId ? [communication.groupId] : [],
         audioURL: messageObj
           ? {
               fileName: messageObj.fileName || '',
@@ -38,6 +39,7 @@ export const transformCommunicationData = (
     // For other transports (SMS/EMAIL), message is a string
     return {
       ...communication,
+      groupId: communication.groupId ? [communication.groupId] : [],
       message:
         typeof communication.message === 'string' ? communication.message : '',
       audioURL: undefined, // Clear audioURL for non-URL transports

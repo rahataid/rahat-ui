@@ -38,6 +38,11 @@ export function DialogComponent({
 }: PaymentDialogProps) {
   const [open, setOpen] = useState(false);
 
+  const handleSubmitClick = () => {
+    handleClick();
+    setOpen(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
       <DialogTrigger>
@@ -75,7 +80,7 @@ export function DialogComponent({
           </Button>
           <Button
             type="submit"
-            onClick={handleClick}
+            onClick={handleSubmitClick}
             className={cn(confirmButtonClassName, 'w-full rounded-sm')}
           >
             {confirmButtonText}

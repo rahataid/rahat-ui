@@ -1,7 +1,6 @@
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   AddButton,
-  CustomPagination,
   NoResult,
   SearchInput,
   SpinnerLoader,
@@ -10,7 +9,6 @@ import { Users } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useCallback } from 'react';
 import {
-  usePagination,
   useStakeholdersGroups,
   useStakeholdersGroupsStore,
 } from '@rahat-ui/query';
@@ -21,37 +19,32 @@ const StakeGoldersGroups = () => {
   const { id } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const {
-    pagination,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    filters,
-    setPagination,
-    setFilters,
-  } = usePagination();
+  const [filters, setFilters] = React.useState({ search: '' });
 
   const { isLoading } = useStakeholdersGroups(id as UUID, {
-    page: pagination.page,
-    perPage: pagination.perPage,
     sort: 'createdAt',
     order: 'desc',
+    perPage: 1000,
     ...filters,
   });
 
-  const { stakeholdersGroups, stakeholdersGroupsMeta } =
-    useStakeholdersGroupsStore((state) => ({
-      stakeholdersGroups: state.stakeholdersGroups,
-      stakeholdersGroupsMeta: state.stakeholdersGroupsMeta,
-    }));
+  const { stakeholdersGroups } = useStakeholdersGroupsStore((state) => ({
+    stakeholdersGroups: state.stakeholdersGroups,
+  }));
 
   const handleSearch = useCallback(
     (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
       const value = event?.target?.value ?? '';
       setFilters({ ...filters, [key]: value });
     },
-    [filters],
+    [filters, setFilters],
   );
+
+  React.useEffect(() => {
+    if (searchParams.get('tab') === 'stakeholdersGroup') {
+      setFilters({ search: '' });
+    }
+  }, [searchParams]);
   return (
     <>
       <div className="p-4 rounded-sm border">

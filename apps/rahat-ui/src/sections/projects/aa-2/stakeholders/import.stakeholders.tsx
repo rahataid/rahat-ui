@@ -80,6 +80,12 @@ export default function ImportStakeholder() {
   const createStakeholdersGroup = useCreateStakeholdersGroups();
   const projectAction = useProjectAction();
 
+  const { data: stakeholdersGroupsData } = useStakeholdersGroups(id, {
+    sort: 'createdAt',
+    order: 'desc',
+    perPage: 1000,
+  });
+
   const { stakeholdersGroups } = useStakeholdersGroupsStore((state) => ({
     stakeholdersGroups: state.stakeholdersGroups,
   }));
@@ -490,11 +496,12 @@ export default function ImportStakeholder() {
       return;
     }
 
-    const groupExists = stakeholdersGroups?.some(
+    const existingGroups =
+      stakeholdersGroupsData?.data || stakeholdersGroups || [];
+    const groupExists = existingGroups?.some(
       (group: any) =>
         group.name.toLowerCase() === groupName.trim().toLowerCase(),
     );
-
     if (groupExists) {
       setGroupError('A group with this name already exists');
       return;
@@ -564,7 +571,7 @@ export default function ImportStakeholder() {
                       <Share size={22} className="px-1" />
                       Choose File
                     </>
-                  )}  
+                  )}
                 </span>
                 <span className="px-4 py-2 flex-grow truncate">{fileName}</span>
               </div>

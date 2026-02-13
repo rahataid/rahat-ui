@@ -187,6 +187,7 @@ export const useDhmWaterLevels = (
 
   const query = useQuery({
     queryKey: ['dhmwaterlevels', uuid, activeTab, from, to],
+    staleTime: 15 * 60 * 1000, // 15 minutes
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -257,6 +258,7 @@ export const useDhmRainfallLevels = (uuid: UUID, payload: any) => {
       });
       return mutate.data;
     },
+    staleTime: 15 * 60 * 1000, // 15 minutes
   });
 
   return query;
@@ -292,6 +294,7 @@ export const useAllGlofasProbFlood = (uuid: UUID, payload: any) => {
         });
       }
     },
+    staleTime: 5 * 60 * 60 * 1000, // 5 hrs
   });
 
   return query;
@@ -327,6 +330,7 @@ export const useGlofasProbFloodDetails = (uuid: UUID, payload: any) => {
         });
       }
     },
+    staleTime: 5 * 60 * 60 * 1000, // 5 hrs
   });
 
   return query;
@@ -365,6 +369,7 @@ export const useGFHWaterLevels = (uuid: UUID, payload: any) => {
         throw error;
       }
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   return query;
@@ -400,6 +405,7 @@ export const useAATriggerStatements = (uuid: UUID, payload: any) => {
       });
       return mutate.data;
     },
+    staleTime: 15 * 60 * 1000, // 15 minutes
   });
   React.useEffect(() => {
     if (query.data) {
@@ -458,6 +464,7 @@ export const useSingleTriggerStatement = (
         throw error;
       }
     },
+    staleTime: 15 * 60 * 1000, // 15 minutes
   });
   return query;
 };
@@ -584,6 +591,7 @@ export const useExternalApiHealthMonitor = (uuid: UUID) => {
       });
       return mutate.data;
     },
+    staleTime: 15 * 60 * 1000, // 15 minutes
   });
 
   return query;

@@ -83,6 +83,7 @@ export const useBeneficiaryGroupsList = (payload: any): any => {
     {
       queryKey: [TAGS.GET_BENEFICIARIES_GROUPS, payload],
       queryFn: () => listBeneficiaryGroups(payload),
+      staleTime: 10 * 60 * 1000, // 10 minutes
     },
     queryClient,
   );
@@ -176,6 +177,7 @@ export const useBeneficiaryList = (payload: any): any => {
     {
       queryKey: [TAGS.GET_BENEFICIARIES, payload],
       queryFn: () => benClient.list(payload),
+      staleTime: 10 * 60 * 1000, // 10 minutes
       placeholderData: keepPreviousData,
     },
     queryClient,
@@ -483,9 +485,11 @@ export const useUploadBeneficiary = () => {
           return;
         }
         if (data?.data?.discardedBeneficiaries?.length > 0) {
-          const phoneNumber = data?.data?.discardedBeneficiaries?.map((d:any) => {
-            return d?.phoneNumber;
-          });
+          const phoneNumber = data?.data?.discardedBeneficiaries?.map(
+            (d: any) => {
+              return d?.phoneNumber;
+            },
+          );
           toast.fire({
             icon: 'success',
             title: `Some beneficiaries were discarded due to error in Xcapit Wallet Creation.${phoneNumber}`,

@@ -45,7 +45,7 @@ export const useChainSettings = () => {
         const d = await appSettings.mutateAsync();
         return d.data.data?.value || {};
       },
-
+      staleTime: 5 * 60 * 60 * 1000, // 5 hours
       enabled: !!queryClient,
     },
     queryClient,
@@ -60,7 +60,7 @@ export const useChainSettings = () => {
   return query;
 };
 
-export const useAcessManagerSettings = () => {
+export const useAcessManagerSettings = (enabled = true) => {
   const { queryClient } = useRSQuery();
   const appSettings = useAppSettingsMutate('ACCESS_MANAGER');
   const { setAccessManagerSettings } = useSettingsStore();
@@ -72,8 +72,8 @@ export const useAcessManagerSettings = () => {
         const d = await appSettings.mutateAsync();
         return d.data.data?.value || {};
       },
-
-      enabled: !!queryClient,
+      staleTime: 5 * 60 * 60 * 1000, // 5 hours
+      enabled: !!queryClient && enabled,
     },
     queryClient,
   );
@@ -114,7 +114,7 @@ export const useAcessManagerSettings = () => {
 //   return query;
 // };
 
-export const useAppContractSettings = () => {
+export const useAppContractSettings = (enabled = true) => {
   const { queryClient } = useRSQuery();
 
   const appSettings = useAppSettingsMutate('CONTRACTS');
@@ -127,8 +127,8 @@ export const useAppContractSettings = () => {
         const d = await appSettings.mutateAsync();
         return d.data.data?.value || {};
       },
-
-      enabled: !!queryClient,
+      staleTime: 5 * 60 * 60 * 1000, // 5 hours
+      enabled: !!queryClient && enabled,
     },
     queryClient,
   );
@@ -142,7 +142,7 @@ export const useAppContractSettings = () => {
   return query;
 };
 
-export const useAppCommunicationSettings = () => {
+export const useAppCommunicationSettings = (enabled = true) => {
   const { queryClient } = useRSQuery();
 
   const appSettings = useAppSettingsMutate('COMMUNICATION');
@@ -155,8 +155,8 @@ export const useAppCommunicationSettings = () => {
         const d = await appSettings.mutateAsync();
         return d.data.data?.value || {};
       },
-
-      enabled: !!queryClient,
+      staleTime: 5 * 60 * 60 * 1000, // 5 hours
+      enabled: !!queryClient && enabled,
     },
     queryClient,
   );
@@ -170,7 +170,7 @@ export const useAppCommunicationSettings = () => {
   return query;
 };
 
-export const useAppNavSettings = () => {
+export const useAppNavSettings = (enabled = true) => {
   const { queryClient } = useRSQuery();
 
   const appSettings = useAppSettingsMutate('NAV_SETTINGS');
@@ -183,8 +183,8 @@ export const useAppNavSettings = () => {
         const d = await appSettings.mutateAsync();
         return d.data.data?.value || {};
       },
-
-      enabled: !!queryClient,
+      staleTime: 5 * 60 * 60 * 1000, // 5 hours
+      enabled: !!queryClient && enabled,
     },
     queryClient,
   );

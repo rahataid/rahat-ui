@@ -115,19 +115,49 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       header: 'Beneficiary Wallet Address',
       cell: ({ row }) => (
         <div
-          onClick={() =>
-            clickToCopy(
-              row?.original?.beneficiaryWalletAddress,
-              row?.original?.id,
-            )
-          }
+          // onClick={() =>
+          //   clickToCopy(
+          //     row?.original?.beneficiaryWalletAddress,
+          //     row?.original?.id,
+          //   )
+          // }
           className="flex items-center gap-2"
         >
           <TruncatedCell
             text={row?.original?.beneficiaryWalletAddress || 'N/A'}
             maxLength={10}
           />
-          {copyAction === row?.original?.id ? (
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger
+                className="flex items-center gap-3 cursor-pointer"
+                onClick={() =>
+                  clickToCopy(
+                    row?.original?.beneficiaryWalletAddress || '',
+                    row?.original?.id,
+                  )
+                }
+              >
+                {copyAction === row?.original?.id ? (
+                  <CopyCheck size={15} strokeWidth={1.5} />
+                ) : (
+                  <Copy
+                    className="text-slate-500"
+                    size={15}
+                    strokeWidth={1.5}
+                  />
+                )}
+              </TooltipTrigger>
+              <TooltipContent className=" rounded-sm" side="bottom">
+                <p className="text-xs font-medium">
+                  {copyAction === row?.original?.id
+                    ? 'copied'
+                    : 'click to copy'}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          {/* {copyAction === row?.original?.id ? (
             <CopyCheck size={15} strokeWidth={1.5} />
           ) : (
             <Copy
@@ -135,7 +165,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
               size={15}
               strokeWidth={1.5}
             />
-          )}
+          )} */}
         </div>
       ),
     },
@@ -144,28 +174,41 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       header: 'Transaction Wallet ID',
       cell: ({ row }) => {
         return (
-          <div
-            onClick={() =>
-              clickToCopy(
-                row?.original?.info?.offrampWalletAddress || '',
-                row?.original?.uuid,
-              )
-            }
-            className="flex items-center gap-2"
-          >
+          <div className="flex items-center gap-2">
             <TruncatedCell
               text={row?.original?.info?.offrampWalletAddress || 'N/A'}
               maxLength={10}
             />
-            {copyAction === row?.original?.uuid ? (
-              <CopyCheck size={15} strokeWidth={1.5} />
-            ) : (
-              <Copy
-                className="text-slate-500 cursor-pointer"
-                size={15}
-                strokeWidth={1.5}
-              />
-            )}
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger
+                  className="flex items-center gap-3 cursor-pointer"
+                  onClick={() =>
+                    clickToCopy(
+                      row?.original?.info?.offrampWalletAddress || '',
+                      row?.original?.uuid,
+                    )
+                  }
+                >
+                  {copyAction === row?.original?.uuid ? (
+                    <CopyCheck size={15} strokeWidth={1.5} />
+                  ) : (
+                    <Copy
+                      className="text-slate-500"
+                      size={15}
+                      strokeWidth={1.5}
+                    />
+                  )}
+                </TooltipTrigger>
+                <TooltipContent className=" rounded-sm" side="bottom">
+                  <p className="text-xs font-medium">
+                    {copyAction === row?.original?.uuid
+                      ? 'copied'
+                      : 'click to copy'}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       },

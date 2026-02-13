@@ -17,12 +17,10 @@ import {
 } from 'lucide-react';
 import {
   PROJECT_SETTINGS_KEYS,
-  usePaymentProviders,
   useProjectSettingsStore,
-  useProjectStore,
   useTriggerForOnePayoutFailed,
 } from '@rahat-ui/query';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
@@ -33,6 +31,7 @@ import {
 import { getExplorerUrl, intlFormatDate } from 'apps/rahat-ui/src/utils';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
+import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 function getTransactionStatusColor(status: string) {
   switch (status.toLowerCase()) {
     case 'completed':
@@ -46,28 +45,47 @@ function getTransactionStatusColor(status: string) {
   }
 }
 
-const editableStatuses = [
+const editableStatuses: PayoutTransactionStatus[] = [
   PayoutTransactionStatus.FIAT_TRANSACTION_INITIATED,
   PayoutTransactionStatus.PENDING,
   PayoutTransactionStatus.TOKEN_TRANSACTION_INITIATED,
-] as const;
+];
+
+type BeneficiaryGroupDetailsLogRow = {
+  id: string;
+  beneficiaryWalletAddress: string;
+  uuid: UUID;
+  txHash?: string;
+  amount?: number;
+  status: PayoutTransactionStatus;
+  transactionType?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  payout?: {
+    type?: string;
+  };
+  info?: {
+    offrampWalletAddress?: string;
+    error?: string;
+  };
+  isCompleted?: boolean;
+};
+
 export default function useBeneficiaryGroupDetailsLogColumns(
   payoutType: string,
 ) {
   const { id, detailID } = useParams();
   const router = useRouter();
   const triggerForPayoutFailed = useTriggerForOnePayoutFailed();
-  const [pendingUuid, setPendingUuid] = useState<string | null>(null);
+  const [pendingUuid, setPendingUuid] = useState<UUID | null>(null);
   const searchParams = useSearchParams();
   const navigation = searchParams.get('from');
-  const fspName = usePaymentProviders({ projectUUID: id as UUID });
   const { clickToCopy, copyAction } = useCopy();
-  const project = useProjectStore((p) => p.singleProject);
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
   const handleTriggerSinglePayoutFailed = useCallback(
-    async (uuid: string) => {
+    async (uuid: UUID) => {
       setPendingUuid(uuid); // Start tracking this row
       try {
         await triggerForPayoutFailed.mutateAsync({
@@ -84,31 +102,62 @@ export default function useBeneficiaryGroupDetailsLogColumns(
     [triggerForPayoutFailed, id],
   );
 
-  const handleEyeClick = (uuid: any) => {
+  const handleEyeClick = (uuid: UUID) => {
     router.push(
       `/projects/aa/${id}/payout/transaction-details/${uuid}?groupId=${detailID}&${
         navigation ? `from=${navigation}` : ''
       }`,
     );
   };
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<BeneficiaryGroupDetailsLogRow>[] = [
     {
       accessorKey: 'beneficiaryWalletAddress',
       header: 'Beneficiary Wallet Address',
       cell: ({ row }) => (
         <div
-          onClick={() =>
-            clickToCopy(
-              row?.original?.beneficiaryWalletAddress,
-              row?.original?.id,
-            )
-          }
+          // onClick={() =>
+          //   clickToCopy(
+          //     row?.original?.beneficiaryWalletAddress,
+          //     row?.original?.id,
+          //   )
+          // }
           className="flex items-center gap-2"
         >
-          <p className="truncate w-20 ">
-            {row?.original?.beneficiaryWalletAddress || 'N/A'}
-          </p>
-          {copyAction === row?.original?.id ? (
+          <TruncatedCell
+            text={row?.original?.beneficiaryWalletAddress || 'N/A'}
+            maxLength={10}
+          />
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger
+                className="flex items-center gap-3 cursor-pointer"
+                onClick={() =>
+                  clickToCopy(
+                    row?.original?.beneficiaryWalletAddress || '',
+                    row?.original?.id,
+                  )
+                }
+              >
+                {copyAction === row?.original?.id ? (
+                  <CopyCheck size={15} strokeWidth={1.5} />
+                ) : (
+                  <Copy
+                    className="text-slate-500"
+                    size={15}
+                    strokeWidth={1.5}
+                  />
+                )}
+              </TooltipTrigger>
+              <TooltipContent className=" rounded-sm" side="bottom">
+                <p className="text-xs font-medium">
+                  {copyAction === row?.original?.id
+                    ? 'copied'
+                    : 'click to copy'}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          {/* {copyAction === row?.original?.id ? (
             <CopyCheck size={15} strokeWidth={1.5} />
           ) : (
             <Copy
@@ -116,7 +165,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
               size={15}
               strokeWidth={1.5}
             />
-          )}
+          )} */}
         </div>
       ),
     },
@@ -125,27 +174,41 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       header: 'Transaction Wallet ID',
       cell: ({ row }) => {
         return (
-          <div
-            onClick={() =>
-              clickToCopy(
-                row?.original?.info?.offrampWalletAddress,
-                row?.original?.uuid,
-              )
-            }
-            className="flex items-center gap-2"
-          >
-            <p className="truncate w-20 ">
-              {row?.original?.info?.offrampWalletAddress || 'N/A'}
-            </p>
-            {copyAction === row?.original?.uuid ? (
-              <CopyCheck size={15} strokeWidth={1.5} />
-            ) : (
-              <Copy
-                className="text-slate-500 cursor-pointer"
-                size={15}
-                strokeWidth={1.5}
-              />
-            )}
+          <div className="flex items-center gap-2">
+            <TruncatedCell
+              text={row?.original?.info?.offrampWalletAddress || 'N/A'}
+              maxLength={10}
+            />
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger
+                  className="flex items-center gap-3 cursor-pointer"
+                  onClick={() =>
+                    clickToCopy(
+                      row?.original?.info?.offrampWalletAddress || '',
+                      row?.original?.uuid,
+                    )
+                  }
+                >
+                  {copyAction === row?.original?.uuid ? (
+                    <CopyCheck size={15} strokeWidth={1.5} />
+                  ) : (
+                    <Copy
+                      className="text-slate-500"
+                      size={15}
+                      strokeWidth={1.5}
+                    />
+                  )}
+                </TooltipTrigger>
+                <TooltipContent className=" rounded-sm" side="bottom">
+                  <p className="text-xs font-medium">
+                    {copyAction === row?.original?.uuid
+                      ? 'copied'
+                      : 'click to copy'}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       },
@@ -169,7 +232,7 @@ export default function useBeneficiaryGroupDetailsLogColumns(
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer"
               >
-                <p className="truncate w-20">{row?.original?.txHash}</p>
+                <TruncatedCell text={row?.original?.txHash} maxLength={10} />
               </a>
             ) : (
               'N/A'
@@ -185,20 +248,31 @@ export default function useBeneficiaryGroupDetailsLogColumns(
         if (payoutType === 'FSP')
           return (
             <div>
-              Rs.{' '}
-              {row?.original?.status === 'FIAT_TRANSACTION_COMPLETED' ||
-              row.original?.status === 'COMPLETED'
-                ? row.original?.amount * ONE_TOKEN_VALUE
-                : 0}
+              <TruncatedCell
+                text={`Rs. ${
+                  row?.original?.status === 'FIAT_TRANSACTION_COMPLETED' ||
+                  row.original?.status === 'COMPLETED'
+                    ? row.original?.amount! * ONE_TOKEN_VALUE
+                    : 0
+                }`}
+                maxLength={15}
+              />
             </div>
           );
         else {
           const status = row.original?.status;
-          return status === 'COMPLETED'
-            ? row.original?.amount
-              ? `Rs. ${row?.original?.amount * ONE_TOKEN_VALUE}`
-              : 'Rs. 0'
-            : 'Rs. 0';
+          return status === 'COMPLETED' ? (
+            row.original?.amount ? (
+              <TruncatedCell
+                text={`Rs. ${row.original.amount * ONE_TOKEN_VALUE}`}
+                maxLength={15}
+              />
+            ) : (
+              'Rs. 0'
+            )
+          ) : (
+            'Rs. 0'
+          );
         }
       },
     },
@@ -206,18 +280,21 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       accessorKey: 'transactionType',
       header: 'Transaction Type',
       cell: ({ row }) => {
-        const type = row?.original?.transactionType;
+        const type = row?.original?.transactionType ?? 'unknown';
         return (
           <Badge
             className={`rounded-xl capitalize ${getTransactionStatusColor(
               type,
             )}`}
           >
-            {type
-              .toLowerCase()
-              .split('_')
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ')}
+            <TruncatedCell
+              text={type
+                .toLowerCase()
+                .split('_')
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ')}
+              maxLength={20}
+            />
           </Badge>
         );
       },
@@ -227,14 +304,16 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       header: 'Payout Status',
       cell: ({ row }) => {
         const status = row?.original?.status;
-        console.log(row?.original?.payout?.type, 'sdda');
         return (
           <Badge className={`rounded-xl w-auto ${transactionBgStatus(status)}`}>
-            {status
-              .toLowerCase()
-              .split('_')
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ')}
+            <TruncatedCell
+              text={status
+                .toLowerCase()
+                .split('_')
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ')}
+              maxLength={20}
+            />
           </Badge>
         );
       },
@@ -248,9 +327,19 @@ export default function useBeneficiaryGroupDetailsLogColumns(
         if (payout?.type === 'FSP') {
           return (
             <div className="flex flex-col text-[10px]">
-              <span>{intlFormatDate(createdAt)}</span>
+              <span>
+                <TruncatedCell
+                  text={intlFormatDate(createdAt)}
+                  maxLength={25}
+                />
+              </span>
               {status?.includes('COMPLETED') && (
-                <span>{intlFormatDate(updatedAt)}</span>
+                <span>
+                  <TruncatedCell
+                    text={intlFormatDate(updatedAt)}
+                    maxLength={25}
+                  />
+                </span>
               )}
             </div>
           );
@@ -258,9 +347,19 @@ export default function useBeneficiaryGroupDetailsLogColumns(
           return (
             <div className="flex flex-col text-[10px]">
               {status === 'COMPLETED' ? (
-                <span>{intlFormatDate(updatedAt)}</span>
+                <span>
+                  <TruncatedCell
+                    text={intlFormatDate(updatedAt)}
+                    maxLength={25}
+                  />
+                </span>
               ) : (
-                <span>{intlFormatDate(createdAt)}</span>
+                <span>
+                  <TruncatedCell
+                    text={intlFormatDate(createdAt)}
+                    maxLength={25}
+                  />
+                </span>
               )}
             </div>
           );
@@ -272,7 +371,6 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       header: 'Actions',
       enableHiding: false,
       cell: ({ row }) => {
-        console.log('row', row);
         return (
           <div className="flex items-center space-x-2">
             {row.original?.isCompleted === false &&

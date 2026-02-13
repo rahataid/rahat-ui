@@ -1,10 +1,8 @@
 'use client';
 import * as React from 'react';
-import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
 
-import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import {
   Tooltip,
   TooltipProvider,
@@ -13,6 +11,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useParams, useRouter } from 'next/navigation';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
 
 export const useProjectBeneficiaryTableColumns = () => {
   const router = useRouter();
@@ -25,30 +24,36 @@ export const useProjectBeneficiaryTableColumns = () => {
       accessorKey: 'wallet',
       header: 'Wallet',
       cell: ({ row }) => (
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger
-              className="flex items-center gap-3 cursor-pointer"
-              onClick={() =>
-                clickToCopy(row?.original?.walletAddress, row?.original?.uuid)
-              }
-            >
-              <p>{truncateEthAddress(row?.original?.walletAddress)}</p>
-              {copyAction === row?.original?.uuid ? (
-                <CopyCheck size={15} strokeWidth={1.5} />
-              ) : (
-                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
-              )}
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary" side="bottom">
-              <p className="text-xs font-medium">
-                {copyAction === row?.original?.uuid
-                  ? 'copied'
-                  : 'click to copy'}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <div className="flex items-center gap-2">
+          <TruncatedCell text={row?.original?.walletAddress} maxLength={15} />
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger
+                className="flex items-center gap-3 cursor-pointer"
+                onClick={() =>
+                  clickToCopy(row.original?.walletAddress, row?.original?.uuid)
+                }
+              >
+                {copyAction === row?.original?.uuid ? (
+                  <CopyCheck size={15} strokeWidth={1.5} />
+                ) : (
+                  <Copy
+                    className="text-slate-500"
+                    size={15}
+                    strokeWidth={1.5}
+                  />
+                )}
+              </TooltipTrigger>
+              <TooltipContent className=" rounded-sm" side="bottom">
+                <p className="text-xs font-medium">
+                  {copyAction === row?.original?.uuid
+                    ? 'copied'
+                    : 'click to copy'}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       ),
     },
     {
@@ -93,30 +98,36 @@ export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
       accessorKey: 'walletAddress',
       header: 'Wallet',
       cell: ({ row }) => (
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger
-              className="flex items-center gap-3 cursor-pointer"
-              onClick={() =>
-                clickToCopy(row?.original?.walletAddress, row?.original?.uuid)
-              }
-            >
-              <p>{truncateEthAddress(row?.original?.walletAddress)}</p>
-              {copyAction === row?.original?.uuid ? (
-                <CopyCheck size={15} strokeWidth={1.5} />
-              ) : (
-                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
-              )}
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary" side="bottom">
-              <p className="text-xs font-medium">
-                {copyAction === row?.original?.uuid
-                  ? 'copied'
-                  : 'click to copy'}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <div className="flex items-center gap-2">
+          <TruncatedCell text={row?.original?.walletAddress} maxLength={15} />
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger
+                className="flex items-center gap-3 cursor-pointer"
+                onClick={() =>
+                  clickToCopy(row.original?.walletAddress, row?.original?.uuid)
+                }
+              >
+                {copyAction === row?.original?.uuid ? (
+                  <CopyCheck size={15} strokeWidth={1.5} />
+                ) : (
+                  <Copy
+                    className="text-slate-500"
+                    size={15}
+                    strokeWidth={1.5}
+                  />
+                )}
+              </TooltipTrigger>
+              <TooltipContent className=" rounded-sm" side="bottom">
+                <p className="text-xs font-medium">
+                  {copyAction === row?.original?.uuid
+                    ? 'copied'
+                    : 'click to copy'}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       ),
     },
 

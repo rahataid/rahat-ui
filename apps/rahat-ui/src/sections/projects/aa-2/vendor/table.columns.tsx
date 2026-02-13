@@ -6,21 +6,32 @@ import { useApproveVendorTokenRedemption } from '@rahat-ui/query/lib/aa';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useUserStore } from '@rumsan/react-query';
 import { Pagination } from '@rumsan/sdk/types';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import { DialogComponent } from 'apps/rahat-ui/src/components/dialog';
 import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
-import { getAssetCode, getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
+import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
 import { UUID } from 'crypto';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { IProjectVendor } from './types';
 import { toast } from 'react-toastify';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
 // import { DialogComponent } from '../activities/details/dialog.reuse';
 
+interface ITableColumnProps {
+  redemptionStatus: string;
+  approvedAt: string;
+  uuid: string;
+  vendor: {
+    name: string;
+  };
+  tokenAmount: number;
+  transactionHash: string;
+}
 export const useProjectVendorTableColumns = (pagination: Pagination) => {
   const { id } = useParams();
   const router = useRouter();
@@ -38,7 +49,9 @@ export const useProjectVendorTableColumns = (pagination: Pagination) => {
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('name')} maxLength={30} />
+      ),
     },
     {
       accessorKey: 'phone',
@@ -75,9 +88,9 @@ export const useProjectVendorRedemptionTableColumns = () => {
   const approveVendorTokenRedemption = useApproveVendorTokenRedemption();
   const { clickToCopy, copyAction } = useCopy();
 
-  const handleApproveClick = async (row: any) => {
+  const handleApproveClick = async (row: Row<ITableColumnProps>) => {
     try {
-      if (row?.redemptionStatus === 'APPROVED') {
+      if (row?.original?.redemptionStatus === 'APPROVED') {
         throw new Error('Status is already Approved');
       }
 
@@ -88,43 +101,57 @@ export const useProjectVendorRedemptionTableColumns = () => {
           uuid: row.original?.uuid,
         },
       });
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(e);
-      return toast.error(e?.message || 'Failed to approve redemption request');
+      const errorMessage =
+        e instanceof Error ? e.message : 'Failed to approve redemption request';
+      return toast.error(errorMessage);
     }
   };
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<ITableColumnProps>[] = [
     {
       accessorKey: 'name',
       header: 'Vendor Name',
-      cell: ({ row }) => <div>{row.original?.vendor?.name || 'N/A'}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={row.original?.vendor?.name || 'N/A'}
+          maxLength={30}
+        />
+      ),
     },
     {
       accessorKey: 'tokenAmount',
       header: 'Total Token',
       cell: ({ row }) => (
-        <div>
-          {row.getValue('tokenAmount')
-            ? `${Number(row.getValue('tokenAmount'))} ${getAssetCode(
-                settings,
-                id,
-              )}`
-            : 'N/A'}
-        </div>
+        <TruncatedCell
+          text={
+            row.getValue('tokenAmount')
+              ? `${Number(row.getValue('tokenAmount'))} ${getAssetCode(
+                  settings,
+                  id,
+                )}`
+              : 'N/A'
+          }
+          maxLength={15}
+        />
       ),
     },
     {
       accessorKey: 'amount',
       header: 'Total Amount',
       cell: ({ row }) => (
-        <div>
-          {row.getValue('tokenAmount')
-            ? `Rs. ${
-                Number(row.getValue('tokenAmount')) * TOKEN_TO_AMOUNT_MULTIPLIER
-              }`
-            : 'N/A'}
-        </div>
+        <TruncatedCell
+          text={
+            row.getValue('tokenAmount')
+              ? `Rs. ${
+                  Number(row.getValue('tokenAmount')) *
+                  TOKEN_TO_AMOUNT_MULTIPLIER
+                }`
+              : 'N/A'
+          }
+          maxLength={15}
+        />
       ),
     },
 
@@ -185,11 +212,16 @@ export const useProjectVendorRedemptionTableColumns = () => {
                 : '#175CD3',
           }}
         >
-          {row.original?.redemptionStatus === 'APPROVED'
-            ? 'Approved'
-            : row.original?.redemptionStatus === 'STELLAR_VERIFIED'
-            ? 'Requested ✓'
-            : 'Requested'}
+          <TruncatedCell
+            text={
+              row.original?.redemptionStatus === 'APPROVED'
+                ? 'Approved'
+                : row.original?.redemptionStatus === 'STELLAR_VERIFIED'
+                ? 'Requested ✓'
+                : 'Requested'
+            }
+            maxLength={15}
+          />
         </Badge>
       ),
     },
@@ -197,11 +229,14 @@ export const useProjectVendorRedemptionTableColumns = () => {
       accessorKey: 'approvedBy',
       header: 'Approved By',
       cell: ({ row }) => (
-        <div>
-          {row.original?.redemptionStatus === 'APPROVED'
-            ? user?.data?.name || 'N/A'
-            : 'N/A'}
-        </div>
+        <TruncatedCell
+          text={
+            row.original?.redemptionStatus === 'APPROVED'
+              ? user?.data?.name || 'N/A'
+              : 'N/A'
+          }
+          maxLength={15}
+        />
       ),
     },
     {
@@ -216,12 +251,15 @@ export const useProjectVendorRedemptionTableColumns = () => {
               {status === 'approved' ? (
                 <div className="font-inter font-normal text-[12px] leading-[20px] tracking-[0] text-[#475263]">
                   <div>Approved on:</div>
-                  <div>
-                    {row.original?.redemptionStatus === 'APPROVED' &&
-                    row.original?.approvedAt
-                      ? dateFormat(row.original?.approvedAt)
-                      : 'N/A'}
-                  </div>
+                  <TruncatedCell
+                    text={
+                      row.original?.redemptionStatus === 'APPROVED' &&
+                      row.original?.approvedAt
+                        ? dateFormat(row.original?.approvedAt)
+                        : 'N/A'
+                    }
+                    maxLength={30}
+                  />
                 </div>
               ) : (
                 <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]}>

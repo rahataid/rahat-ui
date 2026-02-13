@@ -2,33 +2,14 @@
 
 import * as React from 'react';
 import { useParams } from 'next/navigation';
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@rahat-ui/shadcn/components/table';
-import {
-  ScrollArea,
-  ScrollBar,
-} from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useActivitiesHavingComms, usePagination } from '@rahat-ui/query';
-
 import { UUID } from 'crypto';
 import useCommsActivitiesTableColumns from './useCommsActivitesTableColumns';
 import {
   CustomPagination,
-  NoResult,
+  DemoTable,
   SearchInput,
-  SpinnerLoader,
 } from 'apps/rahat-ui/src/common';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 
@@ -77,13 +58,6 @@ export default function CommsActivitiesTable() {
     });
   };
 
-  const handleSearch = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, key: string) => {
-      setFilters({ ...filters, [key]: event.target.value });
-    },
-    [filters],
-  );
-
   return (
     <div className="space-y-4">
       <div className="flex justify-between gap-2">
@@ -123,59 +97,13 @@ export default function CommsActivitiesTable() {
             value={filters?.status || ''}
           /> */}
       </div>
-      <div className=" bg-card border rounded">
-        <ScrollArea className="h-[calc(100vh-320px)]">
-          <Table>
-            <TableHeader className="sticky top-0 bg-card">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    {isLoading ? <SpinnerLoader /> : <NoResult />}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-
+      <div className=" bg-card border rounded p-4">
+        <DemoTable
+          table={table}
+          tableHeight={'h-[calc(100vh-320px)]'}
+          loading={isLoading}
+          message="No Activities Found"
+        />
         <CustomPagination
           meta={
             activitiesMeta || {
@@ -195,7 +123,6 @@ export default function CommsActivitiesTable() {
           perPage={pagination.perPage}
           total={activitiesMeta?.lastPage || 0}
         />
-        {/* <ClientSidePagination table={table} /> */}
       </div>
     </div>
   );

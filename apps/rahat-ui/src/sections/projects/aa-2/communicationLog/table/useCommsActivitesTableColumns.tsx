@@ -2,13 +2,8 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 function getStatusBg(status: string) {
   if (status === 'Not Started') {
     return 'bg-gray-200 text-black';
@@ -46,21 +41,7 @@ export default function useCommsActivitiesTableColumns() {
       accessorKey: 'title',
       header: 'Title',
       cell: ({ row }) => (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="truncate w-48 hover:cursor-pointer">
-                {row.getValue('title')}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent
-              side="bottom"
-              className="w-80 rounded-sm text-justify "
-            >
-              <p>{row.getValue('title')}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <TruncatedCell text={row.getValue('title')} maxLength={20} />
       ),
     },
     {
@@ -68,8 +49,10 @@ export default function useCommsActivitiesTableColumns() {
       header: 'Date',
       cell: ({ row }) => (
         <div className="capitalize min-w-32">
-          {/* {dateFormat(row.original.updatedAt, 'MMMM d, yyyy')} */}
-          {dateFormat(row.original.updatedAt)}
+          <TruncatedCell
+            text={dateFormat(row.original?.updatedAt)}
+            maxLength={30}
+          />
         </div>
       ),
     },

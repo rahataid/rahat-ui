@@ -1,11 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';

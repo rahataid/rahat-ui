@@ -18,9 +18,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { X } from 'lucide-react';
 
 import { useGrievanceList, usePagination } from '@rahat-ui/query';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
-  AddButton,
   CustomPagination,
   DemoTable,
   SearchInput,
@@ -62,7 +60,6 @@ function GrievancesTable() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [sorting, setSorting] = React.useState<SortingState>([]);
   // We're not using columnFilters directly since we're handling filters manually
-  const [, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const columns = useGrievancesTableColumns();
 
   const projectGrievances = useGrievanceList({

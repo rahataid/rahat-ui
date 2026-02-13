@@ -15,16 +15,27 @@ import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provide
 import GrievanceDetailSplitView from '../details/grievance.detail.split.view';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
-import { TooltipText } from 'apps/rahat-ui/src/components/tootltip.text';
-
+import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+interface GrievanceTableRow {
+  id: string;
+  title: string;
+  reportedBy: string;
+  type: string;
+  createdByUser: {
+    name: string;
+  };
+  createdAt: string;
+  priority: string;
+  status: string;
+}
 export const useGrievancesTableColumns = () => {
   const { setSecondPanelComponent } = useSecondPanel();
 
-  const openSplitDetailView = (grievance: any) => {
+  const openSplitDetailView = (grievance: GrievanceTableRow) => {
     setSecondPanelComponent(<GrievanceDetailSplitView grievance={grievance} />);
   };
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<GrievanceTableRow>[] = [
     {
       accessorKey: 'id',
       header: 'ID',
@@ -34,22 +45,14 @@ export const useGrievancesTableColumns = () => {
       accessorKey: 'title',
       header: 'Title',
       cell: ({ row }) => (
-        <TooltipText
-          titleClassName="w-24"
-          title={row.getValue('title')}
-          content={row.getValue('title')}
-        />
+        <TruncatedCell text={row.getValue('title')} maxLength={30} />
       ),
     },
     {
       accessorKey: 'reportedBy',
       header: 'Reported By',
       cell: ({ row }) => (
-        <TooltipText
-          titleClassName="w-24"
-          title={row.getValue('reportedBy')}
-          content={row.getValue('reportedBy')}
-        />
+        <TruncatedCell text={row.getValue('reportedBy')} maxLength={30} />
       ),
     },
     {
@@ -64,13 +67,21 @@ export const useGrievancesTableColumns = () => {
     {
       accessorKey: 'createdBy',
       header: 'Created By',
-      cell: ({ row }) => <div> {row.original?.createdByUser?.name}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={row.original?.createdByUser?.name}
+          maxLength={30}
+        />
+      ),
     },
     {
       accessorKey: 'createdAt',
       header: 'Created On',
       cell: ({ row }) => (
-        <div> {formatDateFull(row.getValue('createdAt'))}</div>
+        <TruncatedCell
+          text={formatDateFull(row.getValue('createdAt'))}
+          maxLength={25}
+        />
       ),
     },
     {

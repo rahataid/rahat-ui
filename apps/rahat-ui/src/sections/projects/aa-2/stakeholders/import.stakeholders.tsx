@@ -104,7 +104,6 @@ export default function ImportStakeholder() {
     if (data.length < 2) return true;
 
     const headers = data[0].map((h: any) => h?.toString().toLowerCase().trim());
-    console.log(headers);
 
     return data.slice(1).some((row) =>
       requiredHeaders
@@ -399,7 +398,6 @@ export default function ImportStakeholder() {
           },
         });
         const fetchedStakeholders = stakeholdersResponse?.response?.data || [];
-        console.log('Fetched Stakeholders:', fetchedStakeholders);
         const importedUUIDs = fetchedStakeholders
           .slice(0, successCount)
           .map((s: any) => s.uuid);

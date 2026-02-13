@@ -29,9 +29,31 @@ export const useNavItems = () => {
         },
         {
           title: 'Communications',
-          path: `/projects/el-crm/${id}/communications`,
+          path: `/projects/el-crm/${id}/communications/summary`,
           subtitle: 20,
           icon: <MessageSquare size={18} strokeWidth={1.5} />,
+          children: [
+            {
+              title: 'Summary',
+              path: `/projects/el-crm/${id}/communications/summary`,
+              subtitle: 20,
+            },
+            {
+              title: 'Templates',
+              path: `/projects/el-crm/${id}/communications/templates`,
+              subtitle: 20,
+            },
+            {
+              title: 'Scheduled',
+              path: `/projects/el-crm/${id}/communications/scheduled`,
+              subtitle: 20,
+            },
+            {
+              title: 'Messages',
+              path: `/projects/el-crm/${id}/communications/messages`,
+              subtitle: 20,
+            },
+          ],
         },
       ],
     },

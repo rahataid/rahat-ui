@@ -62,7 +62,7 @@ const messageLogs = [
   },
 ];
 
-export default function CommunicationView() {
+export default function SummaryView() {
   const { id: projectUUID } = useParams() as { id: UUID };
 
   const columns = useCommsTableColumn();
@@ -86,7 +86,9 @@ export default function CommunicationView() {
               Send messages and track communication logs
             </p>
           </div>
-          <Link href={`/projects/el-crm/${projectUUID}/communications/compose`}>
+          <Link
+            href={`/projects/el-crm/${projectUUID}/communications/messages/compose`}
+          >
             <Button>
               <Plus className="mr-2 h-4 w-4" />
               Create Message

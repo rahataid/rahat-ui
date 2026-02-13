@@ -28,6 +28,8 @@ type IProps = {
 export function NavMain(items: IProps) {
   const currentPath = usePathname();
   const activePath = currentPath.split('/')[4];
+  const activeSubPath = currentPath.split('/')[5];
+
   const { setOpenMobile, setOpen } = useSidebar();
 
   return (
@@ -45,7 +47,14 @@ export function NavMain(items: IProps) {
             >
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.title}>
+                  <SidebarMenuButton
+                    tooltip={item.title}
+                    className={
+                      isActive
+                        ? 'bg-primary text-white rounded'
+                        : 'text-muted-foreground rounded hover:text-foreground'
+                    }
+                  >
                     {item.icon}
                     <span>{item.title}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -53,15 +62,27 @@ export function NavMain(items: IProps) {
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    {item.children?.map((subItem) => (
-                      <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton asChild>
-                          <a href={subItem.path}>
-                            <span>{subItem.title}</span>
-                          </a>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
+                    {item.children?.map((subItem) => {
+                      const isSubActive =
+                        (subItem.path as string)?.split('/')[5] ===
+                        activeSubPath;
+                      return (
+                        <SidebarMenuSubItem key={subItem.title}>
+                          <Link href={subItem.path as string}>
+                            <SidebarMenuSubButton
+                              asChild
+                              className={
+                                isSubActive
+                                  ? 'text-primary font-medium'
+                                  : 'text-muted-foreground rounded hover:text-foreground'
+                              }
+                            >
+                              <span>{subItem.title}</span>
+                            </SidebarMenuSubButton>
+                          </Link>
+                        </SidebarMenuSubItem>
+                      );
+                    })}
                   </SidebarMenuSub>
                 </CollapsibleContent>
               </SidebarMenuItem>
@@ -76,7 +97,7 @@ export function NavMain(items: IProps) {
                   tooltip={item.title}
                   className={
                     isActive
-                      ? 'bg-blue-500 text-white rounded'
+                      ? 'bg-primary text-white rounded'
                       : 'text-muted-foreground rounded hover:text-foreground'
                   }
                 >

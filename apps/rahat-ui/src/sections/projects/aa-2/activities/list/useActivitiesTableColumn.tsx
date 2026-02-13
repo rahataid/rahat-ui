@@ -154,22 +154,42 @@ export default function useActivitiesTableColumn() {
               loading={false}
               iconStyle="w-4 h-4"
             /> */}
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={20}
-              strokeWidth={1.5}
-              onClick={() => handleEyeClick(row.original.id)}
-            />
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Eye
+                    className="hover:text-primary cursor-pointer"
+                    size={20}
+                    strokeWidth={1.5}
+                    onClick={() => handleEyeClick(row.original.id)}
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary" side="top">
+                  <p className="text-xs font-medium">View details</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <RoleAuth
               roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
               hasContent={false}
             >
-              <RefreshCcw
-                className="hover:text-primary cursor-pointer"
-                size={20}
-                strokeWidth={1.5}
-                onClick={() => handleUpdateStatusIconClick(row.original.id)}
-              />
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <RefreshCcw
+                      className="hover:text-primary cursor-pointer"
+                      size={20}
+                      strokeWidth={1.5}
+                      onClick={() =>
+                        handleUpdateStatusIconClick(row.original.id)
+                      }
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-secondary" side="top">
+                    <p className="text-xs font-medium">Update</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </RoleAuth>
           </div>
         );

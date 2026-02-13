@@ -323,22 +323,40 @@ export default function useBeneficiaryGroupDetailsLogColumns(
                   roles={[AARoles.ADMIN, AARoles.Municipality]}
                   hasContent={false}
                 >
-                  <RotateCcwIcon
-                    className="w-6 h-6 xl:w-4 xl:h-4 text-blue-400 cursor-pointer"
-                    strokeWidth={2.5}
-                    onClick={() =>
-                      handleTriggerSinglePayoutFailed(row.original.uuid)
-                    }
-                  />
+                  <TooltipProvider delayDuration={100}>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <RotateCcwIcon
+                          className="w-6 h-6 xl:w-4 xl:h-4 text-blue-400 cursor-pointer"
+                          strokeWidth={2.5}
+                          onClick={() =>
+                            handleTriggerSinglePayoutFailed(row.original.uuid)
+                          }
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-secondary" side="top">
+                        <p className="text-xs font-medium">Update</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </RoleAuth>
               ))}
 
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={20}
-              strokeWidth={1.5}
-              onClick={() => handleEyeClick(row?.original?.uuid)}
-            />
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Eye
+                    className="hover:text-primary cursor-pointer"
+                    size={20}
+                    strokeWidth={1.5}
+                    onClick={() => handleEyeClick(row?.original?.uuid)}
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary" side="top">
+                  <p className="text-xs font-medium">View details</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       },

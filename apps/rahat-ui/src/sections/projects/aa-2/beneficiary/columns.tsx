@@ -63,16 +63,25 @@ export const useProjectBeneficiaryTableColumns = () => {
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() =>
-                router.push(
-                  `/projects/aa/${id}/beneficiary/${row.original.uuid}`,
-                )
-              }
-            />
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Eye
+                    className="hover:text-primary cursor-pointer"
+                    size={16}
+                    strokeWidth={1.5}
+                    onClick={() =>
+                      router.push(
+                        `/projects/aa/${id}/beneficiary/${row.original.uuid}`,
+                      )
+                    }
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary" side="top">
+                  <p className="text-xs font-medium">View details</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       },
@@ -129,16 +138,25 @@ export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
 
         return (
           <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() =>
-                router.push(
-                  `/projects/aa/${id}/beneficiary/${row?.original?.benefId}?groupId=${groupId}`,
-                )
-              }
-            />
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Eye
+                    className="hover:text-primary cursor-pointer"
+                    size={16}
+                    strokeWidth={1.5}
+                    onClick={() =>
+                      router.push(
+                        `/projects/aa/${id}/beneficiary/${row?.original?.benefId}?groupId=${groupId}`,
+                      )
+                    }
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary" side="top">
+                  <p className="text-xs font-medium">View details</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       },

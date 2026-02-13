@@ -3,6 +3,12 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export const useFMDetailTableColumns = () => {
   const { id, fundId } = useParams();
@@ -54,12 +60,21 @@ export const useFMDetailTableColumns = () => {
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() => handleViewClick(row.original.beneficiaryId)}
-            />
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Eye
+                    className="hover:text-primary cursor-pointer"
+                    size={16}
+                    strokeWidth={1.5}
+                    onClick={() => handleViewClick(row.original.beneficiaryId)}
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary" side="top">
+                  <p className="text-xs font-medium">View details</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       },

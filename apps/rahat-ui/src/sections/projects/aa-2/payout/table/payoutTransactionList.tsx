@@ -67,7 +67,6 @@ export default function PayoutTransactionList() {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  console.log(payouts);
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
@@ -92,7 +91,6 @@ export default function PayoutTransactionList() {
     },
     [filters],
   );
-  console.log(payouts);
   return (
     <div className="p-4">
       <div className="flex flex-col space-y-0">

@@ -7,9 +7,9 @@ const useCopy = () => {
     navigator.clipboard.writeText(text);
     setCopyAction(index);
 
-    // setTimeout(() => {
-    //   setCopyAction(null);
-    // }, 800);
+    setTimeout(() => {
+      setCopyAction(null);
+    }, 5000);
   };
 
   return { copyAction, clickToCopy };

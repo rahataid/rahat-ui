@@ -12,6 +12,12 @@ import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import { Copy, CopyCheck } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 type VendorTransactionRow = {
   transactionType?: string;
@@ -61,21 +67,37 @@ export const useVendorsTransactionTableColumns = () => {
               maxLength={10}
               className="w-20"
             />
-            <button
-              onClick={() =>
-                clickToCopy(
-                  row.original?.beneficiaryWalletAddress,
-                  row.original?.beneficiaryWalletAddress,
-                )
-              }
-              className="ml-2 text-sm text-gray-500"
-            >
-              {copyAction === row.original?.beneficiaryWalletAddress ? (
-                <CopyCheck className="w-4 h-4" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )}
-            </button>
+
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger
+                  className="flex items-center gap-3 cursor-pointer"
+                  onClick={() =>
+                    clickToCopy(
+                      row.original?.beneficiaryWalletAddress,
+                      row.original?.beneficiaryWalletAddress,
+                    )
+                  }
+                >
+                  {copyAction === row.original?.beneficiaryWalletAddress ? (
+                    <CopyCheck size={15} strokeWidth={1.5} />
+                  ) : (
+                    <Copy
+                      className="text-slate-500"
+                      size={15}
+                      strokeWidth={1.5}
+                    />
+                  )}
+                </TooltipTrigger>
+                <TooltipContent className=" rounded-sm" side="bottom">
+                  <p className="text-xs font-medium">
+                    {copyAction === row.original?.beneficiaryWalletAddress
+                      ? 'copied'
+                      : 'click to copy'}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       },

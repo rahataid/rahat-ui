@@ -9,7 +9,6 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 
 export const useFMDetailTableColumns = () => {

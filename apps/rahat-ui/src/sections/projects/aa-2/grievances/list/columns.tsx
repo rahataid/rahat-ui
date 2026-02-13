@@ -9,15 +9,15 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { StatusChip, PriorityChip, TypeChip } from '../components';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
-import GrievanceDetailSplitView from '../details/grievance.detail.split.view';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import { UUID } from 'crypto';
 interface GrievanceTableRow {
   id: string;
+  uuid: string;
   title: string;
   reportedBy: string;
   type: string;
@@ -29,11 +29,10 @@ interface GrievanceTableRow {
   status: string;
 }
 export const useGrievancesTableColumns = () => {
-  const { setSecondPanelComponent } = useSecondPanel();
-
-  const openSplitDetailView = (grievance: GrievanceTableRow) => {
-    setSecondPanelComponent(<GrievanceDetailSplitView grievance={grievance} />);
-  };
+  const router = useRouter();
+  const { id: projectId } = useParams() as { id: UUID };
+  const searchParams = useSearchParams();
+  const redirectToHomeTab = searchParams.get('tab') || 'list';
 
   const columns: ColumnDef<GrievanceTableRow>[] = [
     {
@@ -113,7 +112,11 @@ export const useGrievancesTableColumns = () => {
               className="hover:text-primary cursor-pointer"
               size={16}
               strokeWidth={1.5}
-              onClick={() => openSplitDetailView(row.original)}
+              onClick={() =>
+                router.push(
+                  `/projects/aa/${projectId}/grievances/${row.original.uuid}?tab=${redirectToHomeTab}`,
+                )
+              }
             />
           </div>
         );

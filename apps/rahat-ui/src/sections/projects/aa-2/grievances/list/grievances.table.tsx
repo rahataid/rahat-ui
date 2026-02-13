@@ -4,7 +4,6 @@ import * as React from 'react';
 import { memo, useState } from 'react';
 
 import {
-  ColumnFiltersState,
   SortingState,
   VisibilityState,
   getCoreRowModel,

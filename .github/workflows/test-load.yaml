@@ -14,9 +14,9 @@ on:
         default: "test-load"
         type: string
       env_secret_name:
-        description: "Environment secret name"
+        description: "Environment secret name in Vault"
         required: true
-        default: "ENV_AA_TEST_LOAD"
+        default: "github/data/rahat/aa/testload env"
         type: string
 
 concurrency:
@@ -26,7 +26,7 @@ concurrency:
 env:
   CI: false
   REGISTRY: docker.io
-  IMAGE_NAMESPACE: ${{ secrets.DOCKERHUB_USERNAME }}
+  IMAGE_NAMESPACE: esatya
 
 jobs:
   setup:
@@ -63,34 +63,44 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      
+      # -----------------------------
+      # Import Secrets from Vault
+      # -----------------------------
+      - name: Import Secrets
+        id: vault
+        uses: hashicorp/vault-action@v2.4.0
+        with:
+          url: ${{ secrets.VAULT_URL }}
+          token: ${{ secrets.VAULT_TOKEN }}
+          secrets: |
+            github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
+            github/data/general/docker/esatya password | DOCKERHUB_TOKEN ;
+            github/data/rahat/rahat-ui/demo/testload env | ENV ;
+
+      - name: Create environment file
+        run: |
+          tee .env <<<"$ENV"
+
+      # -----------------------------
+      # Node + PNPM Setup
+      # -----------------------------
       - name: Setup PNPM
         uses: pnpm/action-setup@v3
         with:
-            version: 8.14.1
-            run_install: false
+          version: 8.14.1
+          run_install: false
 
-       
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-            node-version: 20.10.0
-            cache: "pnpm"
+          node-version: 20.10.0
+          cache: "pnpm"
 
-       
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build application
-        run: pnpm build:all
-
-
-      # -----------------------------
-      # Environment Injection
-      # -----------------------------
-      - name: Inject environment file
-        run: |
-          echo "${{ secrets[inputs.env_secret_name] }}" > .env
+        run: pnpm nx build ${{ matrix.app }}
 
       # -----------------------------
       # Docker Setup
@@ -101,8 +111,8 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
 
       - name: Extract Git metadata
         id: meta
@@ -124,5 +134,3 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}
             ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ steps.meta.outputs.short_sha }}-${{ steps.meta.outputs.run_number }}
-
-     

@@ -54,6 +54,8 @@ import {
 import { useActivityForm } from '../hooks/useActivityForm';
 import { buildCommunicationPayloads } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
 
+import ViewTemplate from '../components/viewTemplate';
+
 export const DurationData = [
   { value: 'hours', label: 'Hours' },
   { value: 'days', label: 'Days' },
@@ -76,6 +78,7 @@ export default function AddActivities() {
   const phaseId = searchParams.get('phaseId');
   const navPae = searchParams.get('nav');
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
 
   const { data: users } = useUserList({
     page: 1,
@@ -312,6 +315,7 @@ export default function AddActivities() {
 
               <div className="flex justify-end mt-8">
                 <div className="flex gap-2">
+                  <ViewTemplate open={isOpen} setOpen={setIsOpen} />
                   <Button
                     type="button"
                     variant="outline"

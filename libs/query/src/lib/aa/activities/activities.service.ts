@@ -12,6 +12,16 @@ import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
+type ActivityTemplateFilters = {
+  page?: number;
+  perPage?: number;
+  phase?: string;
+  hasCommunication?: boolean;
+  category?: string;
+  title?: string;
+  isAutomated?: boolean;
+  appId?: string;
+};
 export const useActivitiesCategories = (uuid: UUID) => {
   const q = useProjectAction();
   const { setCategories } = useActivitiesStore((state) => ({
@@ -439,4 +449,28 @@ export const useUpdateActivityStatus = () => {
       });
     },
   });
+};
+
+export const useActivityTemplates = (
+  uuid: UUID,
+  filters: ActivityTemplateFilters,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['activityTemplates', uuid, filters],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.library.getActivityTemplates',
+          payload: {
+            ...filters,
+          },
+        },
+      });
+      return mutate.response;
+    },
+  });
+  return query;
 };

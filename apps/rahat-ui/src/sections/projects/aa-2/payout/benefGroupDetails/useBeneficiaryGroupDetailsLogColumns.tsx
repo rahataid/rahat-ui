@@ -245,18 +245,16 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       accessorKey: 'amount',
       header: 'Amount Disbursed',
       cell: ({ row }) => {
+        const amount =
+          row?.original?.status === 'FIAT_TRANSACTION_COMPLETED' ||
+          row.original?.status === 'COMPLETED'
+            ? row.original?.amount! * ONE_TOKEN_VALUE
+            : 0;
+
         if (payoutType === 'FSP')
           return (
             <div>
-              <TruncatedCell
-                text={`Rs. ${
-                  row?.original?.status === 'FIAT_TRANSACTION_COMPLETED' ||
-                  row.original?.status === 'COMPLETED'
-                    ? row.original?.amount! * ONE_TOKEN_VALUE
-                    : 0
-                }`}
-                maxLength={15}
-              />
+              <TruncatedCell text={`Rs. ${amount}`} maxLength={15} />
             </div>
           );
         else {

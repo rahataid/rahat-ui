@@ -49,9 +49,7 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: ({ row }) => (
-        <TruncatedCell text={row.getValue('title')} maxLength={20} />
-      ),
+      cell: ({ row }) => <TruncatedCell text={row.getValue('title')} />,
     },
     {
       accessorKey: 'category',

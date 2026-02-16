@@ -85,15 +85,16 @@ export default function useIndividualCommonLogsTableColumns(
     {
       accessorKey: 'timestamp',
       header: 'Timestamp',
-      cell: ({ row }) => (
-        <TruncatedCell
-          text={new Date(row.original.timestamp).toLocaleString('en-US', {
+      cell: ({ row }) => {
+        const timestamp = new Date(row.original.timestamp).toLocaleString(
+          'en-US',
+          {
             dateStyle: 'medium',
             timeStyle: 'short',
-          })}
-          maxLength={25}
-        />
-      ),
+          },
+        );
+        return <TruncatedCell text={timestamp} maxLength={25} />;
+      },
     },
     {
       accessorKey: 'sessionStatus',

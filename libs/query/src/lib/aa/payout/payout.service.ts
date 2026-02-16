@@ -1,12 +1,10 @@
 import { UUID } from 'crypto';
-import axios from 'axios';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useSwal } from 'libs/query/src/swal';
-import { PROJECT_SETTINGS_KEYS, TAGS } from 'libs/query/src/config';
-import { useProjectAction, useProjectSettingsStore } from '../../projects';
-import { Pagination } from '@rumsan/sdk/types';
+import { TAGS } from 'libs/query/src/config';
+import { useProjectAction } from '../../projects';
 import { useRSQuery } from '@rumsan/react-query';
 
 export enum PayoutType {
@@ -98,6 +96,7 @@ export const usePayouts = (projectUUID: UUID, payload: Payout) => {
       });
       return mutate;
     },
+    staleTime: 5 * 60 * 60 * 1000, // 5 hrs
   });
   return query;
 };
@@ -117,6 +116,7 @@ export const usePayoutStats = (projectUUID: UUID) => {
       });
       return mutate.data;
     },
+    staleTime: 1 * 60 * 60 * 1000, // 1 hrs
   });
   return query;
 };
@@ -135,6 +135,7 @@ export const useSinglePayout = (projectUUID: UUID, payload: { uuid: UUID }) => {
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hr
   });
   return query;
 };
@@ -154,6 +155,7 @@ export const useGetPayoutLogs = (projectUUID: UUID, payload: any) => {
       });
       return mutate;
     },
+    staleTime: 60 * 60 * 1000, // 1 hr
   });
   return query;
 };
@@ -173,9 +175,11 @@ export const useGetPayoutLog = (projectUUID: UUID, payload: any) => {
       });
       return mutate;
     },
+    staleTime: 60 * 60 * 1000, // 1 hr
   });
   return query;
 };
+
 export const useUpdatePayout = () => {
   const qc = useQueryClient();
   const q = useProjectAction();
@@ -206,6 +210,7 @@ export const useUpdatePayout = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
+      qc.invalidateQueries({ queryKey: ['payout-stats'] });
       toast.fire({
         title: 'Payout updated successfully',
         icon: 'success',
@@ -255,6 +260,7 @@ export const useTriggerForPayoutFailed = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
+      qc.invalidateQueries({ queryKey: ['payout-stats'] });
       toast.fire({
         title: 'Payout Triggerd successfully',
         icon: 'success',
@@ -304,6 +310,7 @@ export const useTriggerForOnePayoutFailed = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
+      qc.invalidateQueries({ queryKey: ['payout-stats'] });
       toast.fire({
         title: 'Payout updated successfully',
         icon: 'success',

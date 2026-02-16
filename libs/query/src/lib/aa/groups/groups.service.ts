@@ -213,6 +213,7 @@ export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
+    staleTime: 20 * 60 * 1000, // 20 minutes
   });
 
   useEffect(() => {
@@ -324,6 +325,7 @@ export const useBeneficiariesGroups = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
+    staleTime: 20 * 60 * 1000, // 20 minutes
   });
 
   useEffect(() => {

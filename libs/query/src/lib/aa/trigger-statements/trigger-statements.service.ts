@@ -464,7 +464,6 @@ export const useSingleTriggerStatement = (
         throw error;
       }
     },
-    staleTime: 15 * 60 * 1000, // 15 minutes
   });
   return query;
 };

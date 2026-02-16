@@ -50,10 +50,15 @@ import CommsLogsTable from '../table/comms.logs.table';
 import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
 import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
-type IHeadCardProps = {
-  title: string;
-  icon: LucideIcon;
-  content: string;
+
+type SessionLog = {
+  address: string;
+  status: string;
+  duration?: string | number;
+  attempts: number;
+  maxAttempts: number;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export default function CommsLogsDetailPage() {
@@ -157,14 +162,14 @@ export default function CommsLogsDetailPage() {
 
   const onFailedExports = () => {
     const logs = sessionLogs?.httpReponse?.data?.data?.filter(
-      (log: any) => log?.status === BroadcastStatus.FAIL,
+      (log: SessionLog) => log?.status === BroadcastStatus.FAIL,
     );
 
     if (!logs?.length) return;
 
     const rowsToDownload = logs || [];
     const workbook = XLSX.utils.book_new();
-    const worksheetData = rowsToDownload?.map((log: any) => ({
+    const worksheetData = rowsToDownload?.map((log: SessionLog) => ({
       Address: log.address,
       Status: log.status,
     }));
@@ -172,6 +177,51 @@ export default function CommsLogsDetailPage() {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');
 
     XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
+  };
+
+  const onExportAll = () => {
+    const logsData = sessionLogs?.httpReponse?.data?.data;
+    if (!logsData || logsData.length === 0) return;
+
+    const workbook = XLSX.utils.book_new();
+    const worksheetData = logsData?.map((log: SessionLog) => {
+      const message = logs?.communicationDetail?.message;
+      const messageText =
+        typeof message === 'string'
+          ? message
+          : message?.fileName
+          ? `Voice: ${message.fileName}`
+          : 'N/A';
+
+      return {
+        'Activity Title': activityDetail?.title || 'N/A',
+        'Activity Description': activityDetail?.description || 'N/A',
+        'Activity Status': activityDetail?.status || 'N/A',
+        'Activity Phase': activityDetail?.phase?.name || 'N/A',
+        'Group Name': logs?.groupName || 'N/A',
+        'Triggered Date': logs?.sessionDetails?.createdAt
+          ? dateFormat(logs?.sessionDetails?.createdAt)
+          : 'N/A',
+        'Total Audience Count': logsMeta?.total || 0,
+        'Successfully Delivered': count?.data?.data?.SUCCESS ?? 0,
+        'Failed Delivered': count?.data?.data?.FAIL ?? 0,
+        'Group Type': logs?.communicationDetail?.groupType || 'N/A',
+        'Communication Title':
+          logs?.communicationDetail?.communicationTitle || 'N/A',
+        'Communication Type': logs?.sessionDetails?.Transport?.name || 'N/A',
+        'Communication Message': messageText,
+        'Audience (Address)': log.address || 'N/A',
+        'Audience Status': log.status || 'N/A',
+        Duration: log.duration || 'N/A',
+        Attempts: log.attempts || 0,
+        'Max Attempts': log.maxAttempts || 0,
+        'Created At': log.createdAt ? dateFormat(log.createdAt) : 'N/A',
+        'Updated At': log.updatedAt ? dateFormat(log.updatedAt) : 'N/A',
+      };
+    });
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'AllLogs');
+    XLSX.writeFile(workbook, 'AllCommunicationLogs.xlsx');
   };
 
   const handleSearch = React.useCallback(
@@ -205,6 +255,15 @@ export default function CommsLogsDetailPage() {
               description="Here is the detailed view of selected communication"
             />
             <div className="flex gap-2 flex-col md:flex-row">
+              <Button
+                variant="outline"
+                className=" gap-2 h-7"
+                onClick={onExportAll}
+                disabled={!sessionLogs?.httpReponse?.data?.data?.length}
+              >
+                <CloudDownload className="h-3.5 w-3.5" />
+                Export All Logs
+              </Button>
               <Button
                 variant="outline"
                 className=" gap-2 h-7"
@@ -428,7 +487,6 @@ export default function CommsLogsDetailPage() {
 }
 
 function renderMessage(message: any) {
-  console.log(message);
   if (typeof message === 'string') {
     return message;
   }

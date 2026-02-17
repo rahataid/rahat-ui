@@ -139,19 +139,17 @@ export const useProjectVendorRedemptionTableColumns = () => {
     {
       accessorKey: 'amount',
       header: 'Total Amount',
-      cell: ({ row }) => (
-        <TruncatedCell
-          text={
-            row.getValue('tokenAmount')
-              ? `Rs. ${
-                  Number(row.getValue('tokenAmount')) *
-                  TOKEN_TO_AMOUNT_MULTIPLIER
-                }`
-              : 'N/A'
-          }
-          maxLength={15}
-        />
-      ),
+      cell: ({ row }) => {
+        const totalAmount = row.getValue('tokenAmount')
+          ? Number(row.getValue('tokenAmount')) * TOKEN_TO_AMOUNT_MULTIPLIER
+          : 0;
+        return (
+          <TruncatedCell
+            text={row.getValue('tokenAmount') ? `Rs. ${totalAmount}` : 'N/A'}
+            maxLength={15}
+          />
+        );
+      },
     },
 
     {

@@ -36,17 +36,17 @@ export const useRedemptionRequestColumn = () => {
     {
       accessorKey: 'totalAmount',
       header: 'Total Amount',
-      cell: ({ row }) => (
-        <TruncatedCell
-          text={
-            row.original?.tokenAmount
-              ? `Rs. ${
-                  Number(row.original?.tokenAmount) * TOKEN_TO_AMOUNT_MULTIPLIER
-                }`
-              : 'N/A'
-          }
-        />
-      ),
+      cell: ({ row }) => {
+        const totalAmount = row.original?.tokenAmount
+          ? Number(row.original.tokenAmount) * TOKEN_TO_AMOUNT_MULTIPLIER
+          : 0;
+
+        return (
+          <TruncatedCell
+            text={row.original?.tokenAmount ? `Rs. ${totalAmount}` : 'N/A'}
+          />
+        );
+      },
     },
     {
       accessorKey: 'redemptionStatus',

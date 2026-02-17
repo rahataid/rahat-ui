@@ -63,15 +63,14 @@ export default function usePayoutTransactionLogTableColumn() {
     {
       accessorKey: 'amountperBenef',
       header: 'Amount per beneficiary',
-      cell: ({ row }) => (
-        <TruncatedCell
-          text={`Rs. ${
-            (row.original.totalTokenAssigned * 1) /
-            row.original.totalBeneficiaries
-          }`}
-          maxLength={10}
-        />
-      ),
+      cell: ({ row }) => {
+        const amountPerBeneficiary =
+          (row.original.totalTokenAssigned * 1) /
+          row.original.totalBeneficiaries;
+        return (
+          <TruncatedCell text={`Rs. ${amountPerBeneficiary}`} maxLength={10} />
+        );
+      },
     },
     {
       accessorKey: 'payoutType',

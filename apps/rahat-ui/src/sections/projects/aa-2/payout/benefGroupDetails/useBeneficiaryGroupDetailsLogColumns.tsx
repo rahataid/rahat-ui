@@ -183,16 +183,11 @@ export default function useBeneficiaryGroupDetailsLogColumns(
           );
         else {
           const status = row.original?.status;
-          const amount =
-            status === 'COMPLETED'
-              ? row.original?.amount! * ONE_TOKEN_VALUE
-              : 0;
+          const amount = row.original?.amount! * ONE_TOKEN_VALUE;
+
           return status === 'COMPLETED' ? (
             row.original?.amount ? (
-              <TruncatedCell
-                text={`Rs. ${row.original.amount * ONE_TOKEN_VALUE}`}
-                maxLength={15}
-              />
+              <TruncatedCell text={`Rs. ${amount}`} maxLength={15} />
             ) : (
               'Rs. 0'
             )

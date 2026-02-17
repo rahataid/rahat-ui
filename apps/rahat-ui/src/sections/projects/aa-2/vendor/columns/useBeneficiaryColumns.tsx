@@ -87,7 +87,6 @@ export const useVendorsBeneficiaryTableColumns = (
               settings,
               id,
             )}`}
-            maxLength={20}
           />
         ) : (
           'N/A'
@@ -133,10 +132,7 @@ export const useVendorsBeneficiaryTableColumns = (
         const status = row.original?.status;
         return status === 'COMPLETED' ? (
           row.getValue('benTokens') ? (
-            <TruncatedCell
-              text={`Rs. ${row.getValue('benTokens')}`}
-              maxLength={20}
-            />
+            <TruncatedCell text={`Rs. ${row.getValue('benTokens')}`} />
           ) : (
             'N/A'
           )

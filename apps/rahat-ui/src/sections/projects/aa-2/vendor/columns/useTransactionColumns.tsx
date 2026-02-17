@@ -45,7 +45,6 @@ export const useVendorsTransactionTableColumns = () => {
               ? formatEnumString(row.original?.transactionType)
               : 'N/A'
           }
-          maxLength={20}
         />
       ),
     },
@@ -87,7 +86,6 @@ export const useVendorsTransactionTableColumns = () => {
                   )}`
                 : 'N/A'
             }
-            maxLength={20}
           />
         );
       },

@@ -33,22 +33,18 @@ export default function useIndividualCommonLogsTableColumns(
       accessorKey: 'title',
       header: 'Communication Title',
       cell: ({ row }: { row: CommonLogRow }) => (
-        <TruncatedCell text={row.getValue('title')} maxLength={20} />
+        <TruncatedCell text={row.getValue('title')} />
       ),
     },
     {
       accessorKey: 'groupName',
       header: 'Group Name',
-      cell: ({ row }) => (
-        <TruncatedCell text={row.getValue('groupName')} maxLength={20} />
-      ),
+      cell: ({ row }) => <TruncatedCell text={row.getValue('groupName')} />,
     },
     {
       accessorKey: 'group_type',
       header: 'Group Type',
-      cell: ({ row }) => (
-        <TruncatedCell text={row.getValue('group_type')} maxLength={20} />
-      ),
+      cell: ({ row }) => <TruncatedCell text={row.getValue('group_type')} />,
     },
     ...(type === 'voice'
       ? [
@@ -77,7 +73,7 @@ export default function useIndividualCommonLogsTableColumns(
             accessorKey: 'message',
             header: 'Message',
             cell: ({ row }: { row: CommonLogRow }) => (
-              <TruncatedCell text={row.getValue('message')} maxLength={20} />
+              <TruncatedCell text={row.getValue('message')} />
             ),
           },
         ]),

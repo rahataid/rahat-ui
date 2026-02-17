@@ -30,7 +30,6 @@ export const useRedemptionRequestColumn = () => {
       cell: ({ row }) => (
         <TruncatedCell
           text={`${row.original?.tokenAmount} ${getAssetCode(settings, id)}`}
-          maxLength={20}
         />
       ),
     },
@@ -46,7 +45,6 @@ export const useRedemptionRequestColumn = () => {
                 }`
               : 'N/A'
           }
-          maxLength={20}
         />
       ),
     },
@@ -122,7 +120,6 @@ export const useRedemptionRequestColumn = () => {
               ? user?.data?.name || 'N/A'
               : 'N/A'
           }
-          maxLength={20}
         />
       ),
     },
@@ -132,10 +129,7 @@ export const useRedemptionRequestColumn = () => {
       cell: ({ row }) => (
         <div className="flex gap-1">
           {row?.original?.createdAt ? (
-            <TruncatedCell
-              text={dateFormat(row.original?.createdAt)}
-              maxLength={20}
-            />
+            <TruncatedCell text={dateFormat(row.original?.createdAt)} />
           ) : (
             'N/A'
           )}
@@ -149,10 +143,7 @@ export const useRedemptionRequestColumn = () => {
         <div className="flex gap-1">
           {row.original?.redemptionStatus === 'APPROVED' &&
           row?.original?.approvedAt ? (
-            <TruncatedCell
-              text={dateFormat(row.original?.approvedAt)}
-              maxLength={20}
-            />
+            <TruncatedCell text={dateFormat(row.original?.approvedAt)} />
           ) : (
             'N/A'
           )}

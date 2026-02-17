@@ -78,9 +78,7 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'source',
       header: 'Responsible Station ',
-      cell: ({ row }) => (
-        <TruncatedCell text={row.getValue('source')} maxLength={20} />
-      ),
+      cell: ({ row }) => <TruncatedCell text={row.getValue('source')} />,
     },
     {
       accessorKey: 'status',
@@ -102,7 +100,7 @@ export default function useActivitiesTableColumn() {
       header: 'Completed By',
       cell: ({ row }) => {
         const completedBy = row.getValue('completedBy') as string;
-        return <TruncatedCell text={completedBy || 'N/A'} maxLength={20} />;
+        return <TruncatedCell text={completedBy || 'N/A'} />;
       },
     },
     {
@@ -114,12 +112,7 @@ export default function useActivitiesTableColumn() {
           const d = new Date(completedAt);
           const localeDate = d.toLocaleDateString();
           const localeTime = d.toLocaleTimeString();
-          return (
-            <TruncatedCell
-              text={`${localeDate} ${localeTime}`}
-              maxLength={20}
-            />
-          );
+          return <TruncatedCell text={`${localeDate} ${localeTime}`} />;
         }
         return 'N/A';
       },

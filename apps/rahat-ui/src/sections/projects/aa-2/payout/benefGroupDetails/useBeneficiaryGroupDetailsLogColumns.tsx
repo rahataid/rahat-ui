@@ -219,7 +219,6 @@ export default function useBeneficiaryGroupDetailsLogColumns(
                 .split('_')
                 .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(' ')}
-              maxLength={20}
             />
           </Badge>
         );
@@ -238,7 +237,6 @@ export default function useBeneficiaryGroupDetailsLogColumns(
                 .split('_')
                 .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(' ')}
-              maxLength={20}
             />
           </Badge>
         );

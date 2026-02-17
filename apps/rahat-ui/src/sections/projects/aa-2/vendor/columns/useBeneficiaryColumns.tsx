@@ -6,20 +6,15 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Pagination } from '@rumsan/sdk/types';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
-import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
 import { formatTokenAmount } from 'apps/rahat-ui/src/utils/stellar';
 import { PayoutMode } from 'libs/query/src/lib/aa';
-import { Copy, CopyCheck, Eye } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
-import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+
+import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 
 type VendorBeneficiaryRow = {
   walletAddress: string;
@@ -58,7 +53,6 @@ export const useVendorsBeneficiaryTableColumns = (
     );
   };
 
-  const { clickToCopy, copyAction } = useCopy();
   const columns: ColumnDef<VendorBeneficiaryRow>[] = [
     {
       accessorKey: 'walletAddress',
@@ -74,37 +68,10 @@ export const useVendorsBeneficiaryTableColumns = (
               maxLength={10}
               className="w-20 text-400 text-[#475263] text-[14px] leading-[16px] font-normal"
             />
-
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger
-                  className="flex items-center gap-3 cursor-pointer"
-                  onClick={() =>
-                    clickToCopy(
-                      row.original?.walletAddress,
-                      row.original?.walletAddress,
-                    )
-                  }
-                >
-                  {copyAction === row.original?.walletAddress ? (
-                    <CopyCheck size={15} strokeWidth={1.5} />
-                  ) : (
-                    <Copy
-                      className="text-slate-500"
-                      size={15}
-                      strokeWidth={1.5}
-                    />
-                  )}
-                </TooltipTrigger>
-                <TooltipContent className=" rounded-sm" side="bottom">
-                  <p className="text-xs font-medium">
-                    {copyAction === row.original?.walletAddress
-                      ? 'copied'
-                      : 'click to copy'}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <CopyTooltip
+              value={row.original?.walletAddress}
+              uniqueKey={row.original?.uuid}
+            />
           </div>
         );
       },
@@ -151,34 +118,10 @@ export const useVendorsBeneficiaryTableColumns = (
                 <TruncatedCell text={row.getValue('txHash')} maxLength={10} />
               </a>
             </div>
-
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger
-                  className="flex items-center gap-3 cursor-pointer"
-                  onClick={() =>
-                    clickToCopy(row.getValue('txHash'), row.getValue('txHash'))
-                  }
-                >
-                  {copyAction === row.getValue('txHash') ? (
-                    <CopyCheck size={15} strokeWidth={1.5} />
-                  ) : (
-                    <Copy
-                      className="text-slate-500"
-                      size={15}
-                      strokeWidth={1.5}
-                    />
-                  )}
-                </TooltipTrigger>
-                <TooltipContent className=" rounded-sm" side="bottom">
-                  <p className="text-xs font-medium">
-                    {copyAction === row.getValue('txHash')
-                      ? 'copied'
-                      : 'click to copy'}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <CopyTooltip
+              value={row.getValue('txHash')}
+              uniqueKey={row.original?.uuid}
+            />
           </div>
         );
       },

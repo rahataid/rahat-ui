@@ -120,18 +120,10 @@ export const useVendorsTransactionTableColumns = () => {
                 <TruncatedCell text={row.getValue('txHash')} maxLength={10} />
               </a>
             </div>
-            {/* <button
-              onClick={() =>
-                clickToCopy(row.getValue('txHash'), row.getValue('txHash'))
-              }
-              className="ml-2 text-sm text-gray-500"
-            >
-              {copyAction === row.getValue('txHash') ? (
-                <CopyCheck className="w-4 h-4" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )}
-            </button> */}
+            <CopyTooltip
+              value={row.original?.txHash}
+              uniqueKey={row.original?.txHash}
+            />
           </div>
         );
       },

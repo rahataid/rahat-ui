@@ -1,23 +1,15 @@
 'use client';
 import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { Copy, CopyCheck, Eye } from 'lucide-react';
+import { Eye } from 'lucide-react';
 
-import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useParams, useRouter } from 'next/navigation';
-import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
+import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 
 export const useProjectBeneficiaryTableColumns = () => {
   const router = useRouter();
   const { id } = useParams();
-
-  const { clickToCopy, copyAction } = useCopy();
 
   const columns: ColumnDef<any>[] = [
     {
@@ -26,33 +18,10 @@ export const useProjectBeneficiaryTableColumns = () => {
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <TruncatedCell text={row?.original?.walletAddress} maxLength={15} />
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger
-                className="flex items-center gap-3 cursor-pointer"
-                onClick={() =>
-                  clickToCopy(row.original?.walletAddress, row?.original?.uuid)
-                }
-              >
-                {copyAction === row?.original?.uuid ? (
-                  <CopyCheck size={15} strokeWidth={1.5} />
-                ) : (
-                  <Copy
-                    className="text-slate-500"
-                    size={15}
-                    strokeWidth={1.5}
-                  />
-                )}
-              </TooltipTrigger>
-              <TooltipContent className=" rounded-sm" side="bottom">
-                <p className="text-xs font-medium">
-                  {copyAction === row?.original?.uuid
-                    ? 'copied'
-                    : 'click to copy'}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <CopyTooltip
+            value={row.original?.walletAddress}
+            uniqueKey={row.original?.uuid}
+          />
         </div>
       ),
     },
@@ -91,8 +60,6 @@ export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
   const router = useRouter();
   const { id, groupId } = useParams();
 
-  const { clickToCopy, copyAction } = useCopy();
-
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'walletAddress',
@@ -100,33 +67,10 @@ export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <TruncatedCell text={row?.original?.walletAddress} maxLength={15} />
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger
-                className="flex items-center gap-3 cursor-pointer"
-                onClick={() =>
-                  clickToCopy(row.original?.walletAddress, row?.original?.uuid)
-                }
-              >
-                {copyAction === row?.original?.uuid ? (
-                  <CopyCheck size={15} strokeWidth={1.5} />
-                ) : (
-                  <Copy
-                    className="text-slate-500"
-                    size={15}
-                    strokeWidth={1.5}
-                  />
-                )}
-              </TooltipTrigger>
-              <TooltipContent className=" rounded-sm" side="bottom">
-                <p className="text-xs font-medium">
-                  {copyAction === row?.original?.uuid
-                    ? 'copied'
-                    : 'click to copy'}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <CopyTooltip
+            value={row.original?.walletAddress}
+            uniqueKey={row.original?.uuid}
+          />
         </div>
       ),
     },

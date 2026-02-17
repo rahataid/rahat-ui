@@ -12,12 +12,8 @@ import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import { Copy, CopyCheck } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
-import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+
+import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 
 type VendorTransactionRow = {
   transactionType?: string;
@@ -67,37 +63,10 @@ export const useVendorsTransactionTableColumns = () => {
               maxLength={10}
               className="w-20"
             />
-
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger
-                  className="flex items-center gap-3 cursor-pointer"
-                  onClick={() =>
-                    clickToCopy(
-                      row.original?.beneficiaryWalletAddress,
-                      row.original?.beneficiaryWalletAddress,
-                    )
-                  }
-                >
-                  {copyAction === row.original?.beneficiaryWalletAddress ? (
-                    <CopyCheck size={15} strokeWidth={1.5} />
-                  ) : (
-                    <Copy
-                      className="text-slate-500"
-                      size={15}
-                      strokeWidth={1.5}
-                    />
-                  )}
-                </TooltipTrigger>
-                <TooltipContent className=" rounded-sm" side="bottom">
-                  <p className="text-xs font-medium">
-                    {copyAction === row.original?.beneficiaryWalletAddress
-                      ? 'copied'
-                      : 'click to copy'}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <CopyTooltip
+              value={row.original?.beneficiaryWalletAddress}
+              uniqueKey={row.original?.beneficiaryWalletAddress}
+            />
           </div>
         );
       },
@@ -151,7 +120,7 @@ export const useVendorsTransactionTableColumns = () => {
                 <TruncatedCell text={row.getValue('txHash')} maxLength={10} />
               </a>
             </div>
-            <button
+            {/* <button
               onClick={() =>
                 clickToCopy(row.getValue('txHash'), row.getValue('txHash'))
               }
@@ -162,7 +131,7 @@ export const useVendorsTransactionTableColumns = () => {
               ) : (
                 <Copy className="w-4 h-4" />
               )}
-            </button>
+            </button> */}
           </div>
         );
       },

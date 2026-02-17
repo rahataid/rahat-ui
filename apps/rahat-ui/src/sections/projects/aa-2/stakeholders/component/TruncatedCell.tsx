@@ -35,7 +35,7 @@ export function TruncatedCell({
           </span>
         </TooltipTrigger>
         <TooltipContent className="rounded-sm">
-          <p className="max-w-xs break-words ">{text}</p>
+          <p className=" break-words ">{text}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

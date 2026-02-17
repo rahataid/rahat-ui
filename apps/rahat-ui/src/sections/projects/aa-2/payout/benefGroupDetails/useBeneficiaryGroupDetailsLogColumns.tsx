@@ -7,14 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import {
-  CheckIcon,
-  Copy,
-  CopyCheck,
-  Eye,
-  RotateCcwIcon,
-  TriangleAlertIcon,
-} from 'lucide-react';
+import { CheckIcon, Eye, RotateCcwIcon, TriangleAlertIcon } from 'lucide-react';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
@@ -23,7 +16,6 @@ import {
 import { useCallback, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import {
   PayoutTransactionStatus,
   transactionBgStatus,
@@ -32,6 +24,7 @@ import { getExplorerUrl, intlFormatDate } from 'apps/rahat-ui/src/utils';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 function getTransactionStatusColor(status: string) {
   switch (status.toLowerCase()) {
     case 'completed':
@@ -80,7 +73,6 @@ export default function useBeneficiaryGroupDetailsLogColumns(
   const [pendingUuid, setPendingUuid] = useState<UUID | null>(null);
   const searchParams = useSearchParams();
   const navigation = searchParams.get('from');
-  const { clickToCopy, copyAction } = useCopy();
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
@@ -114,58 +106,16 @@ export default function useBeneficiaryGroupDetailsLogColumns(
       accessorKey: 'beneficiaryWalletAddress',
       header: 'Beneficiary Wallet Address',
       cell: ({ row }) => (
-        <div
-          // onClick={() =>
-          //   clickToCopy(
-          //     row?.original?.beneficiaryWalletAddress,
-          //     row?.original?.id,
-          //   )
-          // }
-          className="flex items-center gap-2"
-        >
+        <div className="flex items-center gap-2">
           <TruncatedCell
             text={row?.original?.beneficiaryWalletAddress || 'N/A'}
             maxLength={10}
           />
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger
-                className="flex items-center gap-3 cursor-pointer"
-                onClick={() =>
-                  clickToCopy(
-                    row?.original?.beneficiaryWalletAddress || '',
-                    row?.original?.id,
-                  )
-                }
-              >
-                {copyAction === row?.original?.id ? (
-                  <CopyCheck size={15} strokeWidth={1.5} />
-                ) : (
-                  <Copy
-                    className="text-slate-500"
-                    size={15}
-                    strokeWidth={1.5}
-                  />
-                )}
-              </TooltipTrigger>
-              <TooltipContent className=" rounded-sm" side="bottom">
-                <p className="text-xs font-medium">
-                  {copyAction === row?.original?.id
-                    ? 'copied'
-                    : 'click to copy'}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          {/* {copyAction === row?.original?.id ? (
-            <CopyCheck size={15} strokeWidth={1.5} />
-          ) : (
-            <Copy
-              className="text-slate-500 cursor-pointer"
-              size={15}
-              strokeWidth={1.5}
-            />
-          )} */}
+
+          <CopyTooltip
+            value={row?.original?.beneficiaryWalletAddress || ''}
+            uniqueKey={row?.original?.id}
+          />
         </div>
       ),
     },
@@ -179,36 +129,10 @@ export default function useBeneficiaryGroupDetailsLogColumns(
               text={row?.original?.info?.offrampWalletAddress || 'N/A'}
               maxLength={10}
             />
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger
-                  className="flex items-center gap-3 cursor-pointer"
-                  onClick={() =>
-                    clickToCopy(
-                      row?.original?.info?.offrampWalletAddress || '',
-                      row?.original?.uuid,
-                    )
-                  }
-                >
-                  {copyAction === row?.original?.uuid ? (
-                    <CopyCheck size={15} strokeWidth={1.5} />
-                  ) : (
-                    <Copy
-                      className="text-slate-500"
-                      size={15}
-                      strokeWidth={1.5}
-                    />
-                  )}
-                </TooltipTrigger>
-                <TooltipContent className=" rounded-sm" side="bottom">
-                  <p className="text-xs font-medium">
-                    {copyAction === row?.original?.uuid
-                      ? 'copied'
-                      : 'click to copy'}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <CopyTooltip
+              value={row?.original?.info?.offrampWalletAddress || ''}
+              uniqueKey={row?.original?.uuid}
+            />
           </div>
         );
       },
@@ -259,6 +183,10 @@ export default function useBeneficiaryGroupDetailsLogColumns(
           );
         else {
           const status = row.original?.status;
+          const amount =
+            status === 'COMPLETED'
+              ? row.original?.amount! * ONE_TOKEN_VALUE
+              : 0;
           return status === 'COMPLETED' ? (
             row.original?.amount ? (
               <TruncatedCell

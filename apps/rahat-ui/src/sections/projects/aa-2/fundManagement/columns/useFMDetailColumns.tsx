@@ -1,20 +1,14 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { Copy, CopyCheck, Eye } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 
 export const useFMDetailTableColumns = () => {
   const { id, fundId } = useParams();
   const router = useRouter();
-  const { clickToCopy, copyAction } = useCopy();
   const handleViewClick = (fmId: string) => {
     console.log('benefwallet', fmId);
     router.push(`/projects/aa/${id}/beneficiary/${fmId}?fundId=${fundId}`);
@@ -30,36 +24,10 @@ export const useFMDetailTableColumns = () => {
             text={row.original?.Beneficiary?.walletAddress}
             maxLength={15}
           />
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger
-                className="flex items-center gap-3 cursor-pointer"
-                onClick={() =>
-                  clickToCopy(
-                    row.original?.Beneficiary?.walletAddress,
-                    row?.original?.uuid,
-                  )
-                }
-              >
-                {copyAction === row?.original?.uuid ? (
-                  <CopyCheck size={15} strokeWidth={1.5} />
-                ) : (
-                  <Copy
-                    className="text-slate-500"
-                    size={15}
-                    strokeWidth={1.5}
-                  />
-                )}
-              </TooltipTrigger>
-              <TooltipContent className=" rounded-sm" side="bottom">
-                <p className="text-xs font-medium">
-                  {copyAction === row?.original?.uuid
-                    ? 'copied'
-                    : 'click to copy'}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <CopyTooltip
+            value={row.original?.Beneficiary?.walletAddress}
+            uniqueKey={row.original?.uuid}
+          />
         </div>
       ),
     },

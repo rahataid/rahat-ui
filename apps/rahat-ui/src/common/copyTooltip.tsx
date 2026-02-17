@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { Copy, CopyCheck } from 'lucide-react';
 import {
   Tooltip,
-  TooltipContent,
   TooltipProvider,
   TooltipTrigger,
+  TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 
 interface CopyTooltipProps {
-  value: string; // text to copy
-  uniqueKey: string | number; // unique row identifier
+  value: string;
+  uniqueKey: string | number;
   size?: number;
   strokeWidth?: number;
   className?: string;
@@ -22,24 +23,17 @@ export default function CopyTooltip({
   strokeWidth = 1.5,
   className = '',
 }: CopyTooltipProps) {
-  const [copiedKey, setCopiedKey] = useState<string | number | null>(null);
+  const { copyAction, clickToCopy } = useCopy();
   const [open, setOpen] = useState(false);
 
-  const handleCopy = async () => {
+  const handleCopy = () => {
     if (!value) return;
 
-    await navigator.clipboard.writeText(value);
-
-    setCopiedKey(uniqueKey);
+    clickToCopy(value, uniqueKey);
     setOpen(true);
-
-    setTimeout(() => {
-      setCopiedKey(null);
-      setOpen(false);
-    }, 1500);
   };
 
-  const isCopied = copiedKey === uniqueKey;
+  const isCopied = copyAction === uniqueKey;
 
   return (
     <TooltipProvider delayDuration={100}>

@@ -9,17 +9,17 @@ import { Pagination } from '@rumsan/sdk/types';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { DialogComponent } from 'apps/rahat-ui/src/components/dialog';
 import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
-import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
 import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
 import { UUID } from 'crypto';
-import { Copy, CopyCheck, Eye } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { IProjectVendor } from './types';
 import { toast } from 'react-toastify';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
+import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 // import { DialogComponent } from '../activities/details/dialog.reuse';
 
 interface ITableColumnProps {
@@ -86,7 +86,6 @@ export const useProjectVendorRedemptionTableColumns = () => {
     settings: s.settings,
   }));
   const approveVendorTokenRedemption = useApproveVendorTokenRedemption();
-  const { clickToCopy, copyAction } = useCopy();
 
   const handleApproveClick = async (row: Row<ITableColumnProps>) => {
     try {
@@ -173,24 +172,16 @@ export const useProjectVendorRedemptionTableColumns = () => {
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer "
               >
-                {row.getValue('transactionHash')}
+                <TruncatedCell
+                  text={row.getValue('transactionHash')}
+                  maxLength={10}
+                />
               </a>
             </div>
-            <button
-              onClick={() =>
-                clickToCopy(
-                  row.getValue('transactionHash'),
-                  row.getValue('transactionHash'),
-                )
-              }
-              className="ml-2 text-sm text-gray-500"
-            >
-              {copyAction === row.getValue('transactionHash') ? (
-                <CopyCheck className="w-4 h-4" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )}
-            </button>
+            <CopyTooltip
+              value={row.getValue('transactionHash')}
+              uniqueKey={row.getValue('transactionHash')}
+            />
           </div>
         );
       },

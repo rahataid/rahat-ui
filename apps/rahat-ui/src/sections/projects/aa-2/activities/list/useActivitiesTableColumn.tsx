@@ -93,11 +93,6 @@ export default function useActivitiesTableColumn() {
             className={`rounded-xl capitalize text-xs font-normal ${bgColor}`}
           >
             <TruncatedCell text={status} maxLength={10} />
-            {/* {status
-              .toLowerCase()
-              .split('_')
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ')} */}
           </Badge>
         );
       },

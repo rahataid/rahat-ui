@@ -26,8 +26,7 @@ import { useParams } from 'next/navigation';
 import { useActivityTemplates } from '@rahat-ui/query/lib/aa/activities/activities.service';
 import { UUID } from 'crypto';
 import { Filter, ChevronRight, Zap, Wrench } from 'lucide-react';
-import { filter } from 'lodash';
-import { PHASE } from '../activities-constants';
+import { AUTOMATION_TYPE, PHASE } from '../activities-constants';
 
 interface ViewTemplateProps {
   open: boolean;
@@ -83,23 +82,7 @@ const ViewTemplate = ({ open, setOpen }: ViewTemplateProps) => {
           <div className="grid grid-cols-1 gap-3">
             {/* Phase */}
             <div className="space-y-2">
-              {/* <label className="text-sm font-medium">Phase</label>
-              <select
-                value={filters.phase}
-                onChange={(e) =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    phase: e.target.value,
-                    page: 1,
-                  }))
-                }
-                className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-              >
-                <option value="">All Phases</option>
-                <option value="Preparedness">Preparedness</option>
-                <option value="Readiness">Readiness</option>
-                <option value="Activation">Activation</option>
-              </select> */}
+              <label className="text-sm font-medium">Phase</label>
               <Select
                 value={filters.phase}
                 onValueChange={(value) =>
@@ -164,28 +147,36 @@ const ViewTemplate = ({ open, setOpen }: ViewTemplateProps) => {
             {/* Automated */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Type</label>
-              <select
+
+              <Select
                 value={
                   filters.isAutomated === undefined
                     ? ''
                     : filters.isAutomated.toString()
                 }
-                onChange={(e) =>
+                onValueChange={(value) =>
                   setFilters((prev) => ({
                     ...prev,
-                    isAutomated:
-                      e.target.value === ''
-                        ? undefined
-                        : e.target.value === 'true',
+                    isAutomated: value === '' ? undefined : value === 'true',
                     page: 1,
                   }))
                 }
-                className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
               >
-                <option value="">All Types</option>
-                <option value="true">Automated</option>
-                <option value="false">Manual</option>
-              </select>
+                <SelectTrigger className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Type</SelectLabel>
+                    {AUTOMATION_TYPE.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>

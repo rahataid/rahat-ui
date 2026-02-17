@@ -298,6 +298,9 @@ export default function AddActivities() {
     }
   }, [responsibility, users, form]);
 
+  const handleSelectTemplate = (payload: any) => {
+    console.log('payload:', payload);
+  };
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
@@ -315,7 +318,11 @@ export default function AddActivities() {
 
               <div className="flex justify-end mt-8">
                 <div className="flex gap-2">
-                  <ViewTemplate open={isOpen} setOpen={setIsOpen} />
+                  <ViewTemplate
+                    open={isOpen}
+                    setOpen={setIsOpen}
+                    onSelectTemplate={handleSelectTemplate}
+                  />
                   <Button
                     type="button"
                     variant="outline"

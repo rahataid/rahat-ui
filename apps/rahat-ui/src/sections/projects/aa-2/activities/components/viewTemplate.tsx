@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Sheet,
   SheetClose,
@@ -26,32 +26,71 @@ import { useParams } from 'next/navigation';
 import { useActivityTemplates } from '@rahat-ui/query/lib/aa/activities/activities.service';
 import { UUID } from 'crypto';
 import { Filter, ChevronRight, Zap, Wrench } from 'lucide-react';
-import { AUTOMATION_TYPE, PHASE } from '../activities-constants';
+import {
+  AUTOMATION_TYPE,
+  PHASE,
+} from 'apps/rahat-ui/src/constants/aa.constants';
+import { useDebounce, usePagination } from '@rahat-ui/query';
 
 interface ViewTemplateProps {
   open: boolean;
   setOpen: (open: boolean) => void;
+  onSelectTemplate?: (template: Template) => void; // Add this prop for template selection callback
+}
+interface Template {
+  uuid: string;
+  title: string;
+  description: string;
+  phase?: {
+    name: string;
+  };
+  category?: {
+    name: string;
+  };
+  isAutomated: boolean;
 }
 
-const ViewTemplate = ({ open, setOpen }: ViewTemplateProps) => {
+const ViewTemplate = ({
+  open,
+  setOpen,
+  onSelectTemplate,
+}: ViewTemplateProps) => {
   const { id }: { id: UUID } = useParams();
-  const [filters, setFilters] = useState<{
-    page: number;
-    perPage: number;
-    phase: string;
-    category: string;
-    title: string;
-    isAutomated: boolean | undefined;
-  }>({
-    page: 1,
-    perPage: 50,
-    phase: '',
-    category: '',
-    title: '',
-    isAutomated: undefined,
-  });
 
-  const { data: templates, isLoading } = useActivityTemplates(id, filters);
+  // const [filters, setFilters] = useState<{
+  //   page: number;
+  //   perPage: number;
+  //   phase: string;
+  //   category: string;
+  //   title: string;
+  //   isAutomated: boolean | undefined;
+  // }>({
+  //   page: 1,
+  //   perPage: 50,
+  //   phase: '',
+  //   category: debouncedSearch.category || '',
+  //   title: debouncedSearch.title || '',
+  //   isAutomated: undefined,
+  // });
+  const { pagination, filters, setNextPage, setPrevPage, setFilters } =
+    usePagination();
+
+  const debouncedTitleSearch = useDebounce(filters.title || '', 500);
+  const debouncedCategorySearch = useDebounce(filters.category || '', 500);
+
+  const { data: templates, isLoading } = useActivityTemplates(id, {
+    page: pagination.page,
+    perPage: pagination.perPage,
+    phase: filters.phase,
+    category: debouncedCategorySearch,
+    title: debouncedTitleSearch,
+    isAutomated:
+      filters.isAutomated === 'true'
+        ? true
+        : filters.isAutomated === 'false'
+        ? false
+        : undefined,
+  });
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -86,7 +125,7 @@ const ViewTemplate = ({ open, setOpen }: ViewTemplateProps) => {
               <Select
                 value={filters.phase}
                 onValueChange={(value) =>
-                  setFilters((prev) => ({
+                  setFilters((prev: Template) => ({
                     ...prev,
                     phase: value,
                     page: 1,
@@ -117,7 +156,7 @@ const ViewTemplate = ({ open, setOpen }: ViewTemplateProps) => {
                 placeholder="Search category..."
                 value={filters.category}
                 onChange={(e) =>
-                  setFilters((prev) => ({
+                  setFilters((prev: Template) => ({
                     ...prev,
                     category: e.target.value,
                     page: 1,
@@ -134,7 +173,7 @@ const ViewTemplate = ({ open, setOpen }: ViewTemplateProps) => {
                 placeholder="Search by title..."
                 value={filters.title}
                 onChange={(e) =>
-                  setFilters((prev) => ({
+                  setFilters((prev: Template) => ({
                     ...prev,
                     title: e.target.value,
                     page: 1,
@@ -155,7 +194,7 @@ const ViewTemplate = ({ open, setOpen }: ViewTemplateProps) => {
                     : filters.isAutomated.toString()
                 }
                 onValueChange={(value) =>
-                  setFilters((prev) => ({
+                  setFilters((prev: Template) => ({
                     ...prev,
                     isAutomated: value === '' ? undefined : value === 'true',
                     page: 1,
@@ -203,7 +242,7 @@ const ViewTemplate = ({ open, setOpen }: ViewTemplateProps) => {
             </div>
           )}
 
-          {templates?.data?.map((item: any) => (
+          {templates?.data?.map((item: Template) => (
             <div
               key={item.uuid}
               className="group border border-border rounded-lg p-4 hover:border-primary hover:shadow-md transition-all duration-200 bg-card hover:bg-muted/50"
@@ -251,7 +290,7 @@ const ViewTemplate = ({ open, setOpen }: ViewTemplateProps) => {
 
               <Button
                 onClick={() => {
-                  console.log('[v0] Template selected:', item.uuid);
+                  onSelectTemplate?.(item);
                   // Add your selection logic here
                 }}
                 className="w-full mt-4 gap-2"
@@ -270,12 +309,13 @@ const ViewTemplate = ({ open, setOpen }: ViewTemplateProps) => {
               variant="outline"
               size="sm"
               disabled={!templates.meta.prev}
-              onClick={() =>
-                setFilters((prev) => ({
-                  ...prev,
-                  page: (prev.page || 1) - 1,
-                }))
-              }
+              // onClick={() =>
+              //   setFilters((prev) => ({
+              //     ...prev,
+              //     page: (prev.page || 1) - 1,
+              //   }))
+              // }
+              onClick={() => setPrevPage()}
               className="flex-1"
             >
               ← Previous
@@ -291,12 +331,13 @@ const ViewTemplate = ({ open, setOpen }: ViewTemplateProps) => {
               variant="outline"
               size="sm"
               disabled={!templates.meta.next}
-              onClick={() =>
-                setFilters((prev) => ({
-                  ...prev,
-                  page: (prev.page || 1) + 1,
-                }))
-              }
+              // onClick={() =>
+              //   setFilters((prev) => ({
+              //     ...prev,
+              //     page: (prev.page || 1) + 1,
+              //   }))
+              // }
+              onClick={() => setNextPage()}
               className="flex-1"
             >
               Next →

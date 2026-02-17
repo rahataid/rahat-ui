@@ -26,3 +26,13 @@ export const INFO_TOOL_TIPS: Record<string, string> = {
   'Average Duration':
     'Gap between Activation phase triggered and successful disbursement',
 };
+
+export const PHASE = [
+  { value: 'preparedness', label: 'Preparedness' },
+  { value: 'readiness', label: 'Readiness' },
+  { value: 'activation', label: 'Activation' },
+];
+export const AUTOMATION_TYPE = [
+  { value: 'true', label: 'Automated' },
+  { value: 'false', label: 'Manual' },
+];

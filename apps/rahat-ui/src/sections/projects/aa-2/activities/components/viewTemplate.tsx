@@ -75,20 +75,20 @@ const ViewTemplate = ({
     title: debouncedTitleSearch,
     isAutomated:
       filters.isAutomated === 'true'
-        ? true
+        ? 'true'
         : filters.isAutomated === 'false'
-        ? false
-        : undefined,
+        ? 'false'
+        : '',
   });
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
+      {/* <SheetTrigger asChild>
         <Button className="gap-2">
           <Filter className="w-4 h-4" />
           View Templates
         </Button>
-      </SheetTrigger>
+      </SheetTrigger> */}
 
       <SheetContent className="w-[600px] sm:w-[700px] overflow-y-auto">
         <SheetHeader className="pb-4 border-b">
@@ -116,7 +116,7 @@ const ViewTemplate = ({
                 onValueChange={(value) =>
                   setFilters((prev: Template) => ({
                     ...prev,
-                    phase: value,
+                    phase: value === 'all' ? '' : value,
                     page: 1,
                   }))
                 }
@@ -178,14 +178,19 @@ const ViewTemplate = ({
 
               <Select
                 value={
-                  filters.isAutomated === undefined
+                  filters.isAutomated === ''
                     ? ''
                     : filters.isAutomated.toString()
                 }
                 onValueChange={(value) =>
                   setFilters((prev: Template) => ({
                     ...prev,
-                    isAutomated: value === '' ? undefined : value === 'true',
+                    isAutomated:
+                      value === 'all'
+                        ? ''
+                        : value === 'true'
+                        ? 'true'
+                        : 'false',
                     page: 1,
                   }))
                 }

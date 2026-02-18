@@ -38,6 +38,8 @@ import {
   usePagination,
   useSingleStakeholdersGroup,
   useStakeholders,
+  useStakeholdersGroups,
+  useStakeholdersGroupsStore,
   useStakeholdersStore,
   useUpdateStakeholdersGroups,
 } from '@rahat-ui/query';
@@ -74,6 +76,15 @@ const UpdateOrAddStakeholdersGroup = () => {
 
   const debounceSearch = useDebounce(filters, 500);
   useStakeholders(projectId, { ...pagination, ...debounceSearch });
+
+  useStakeholdersGroups(projectId, {
+    sort: 'createdAt',
+    order: 'desc',
+  });
+
+  const { stakeholdersGroups } = useStakeholdersGroupsStore((state) => ({
+    stakeholdersGroups: state.stakeholdersGroups,
+  }));
 
   const { data: stakeholdersGroupDetail } = useSingleStakeholdersGroup(
     projectId,
@@ -117,6 +128,22 @@ const UpdateOrAddStakeholdersGroup = () => {
   const handleCreateGroup = async (
     data: z.infer<typeof stakeholderGroupSchema>,
   ) => {
+    const existingGroups = stakeholdersGroups || [];
+    const groupExists = existingGroups?.some((group: any) => {
+      if (isEditing && group.uuid === groupId) {
+        return false;
+      }
+      return group.name.toLowerCase() === data.name.trim().toLowerCase();
+    });
+
+    if (groupExists) {
+      form.setError('name', {
+        type: 'manual',
+        message: 'A group with this name already exists',
+      });
+      return;
+    }
+
     const stakeholdersList = data.stakeholders.map((uuid) => ({ uuid }));
 
     const payload = {

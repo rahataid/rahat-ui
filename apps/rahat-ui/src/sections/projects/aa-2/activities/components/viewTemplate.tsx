@@ -31,23 +31,12 @@ import {
   PHASE,
 } from 'apps/rahat-ui/src/constants/aa.constants';
 import { useDebounce, usePagination } from '@rahat-ui/query';
+import { Template } from 'apps/rahat-ui/src/types/activities';
 
 interface ViewTemplateProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   onSelectTemplate?: (template: Template) => void; // Add this prop for template selection callback
-}
-interface Template {
-  uuid: string;
-  title: string;
-  description: string;
-  phase?: {
-    name: string;
-  };
-  category?: {
-    name: string;
-  };
-  isAutomated: boolean;
 }
 
 const ViewTemplate = ({
@@ -109,7 +98,7 @@ const ViewTemplate = ({
           </SheetDescription>
         </SheetHeader>
 
-        {/* ================= FILTER SECTION ================= */}
+        {/* Filter Section */}
         <div className="mt-6 space-y-4">
           <div className="flex items-center gap-2 mb-4">
             <Filter className="w-4 h-4 text-muted-foreground" />
@@ -220,7 +209,7 @@ const ViewTemplate = ({
           </div>
         </div>
 
-        {/* ================= TEMPLATE LIST ================= */}
+        {/* Template List */}
         <div className="mt-8 space-y-3">
           {isLoading && (
             <div className="space-y-3">
@@ -291,6 +280,7 @@ const ViewTemplate = ({
               <Button
                 type="button"
                 onClick={() => {
+                  setOpen(false);
                   onSelectTemplate?.(item);
                   // Add your selection logic here
                 }}
@@ -303,19 +293,12 @@ const ViewTemplate = ({
           ))}
         </div>
 
-        {/* ================= PAGINATION ================= */}
         {templates?.meta && (
           <div className="flex items-center justify-between gap-3 mt-8 pt-6 border-t">
             <Button
               variant="outline"
               size="sm"
               disabled={!templates.meta.prev}
-              // onClick={() =>
-              //   setFilters((prev) => ({
-              //     ...prev,
-              //     page: (prev.page || 1) - 1,
-              //   }))
-              // }
               onClick={() => setPrevPage()}
               className="flex-1"
             >
@@ -332,12 +315,6 @@ const ViewTemplate = ({
               variant="outline"
               size="sm"
               disabled={!templates.meta.next}
-              // onClick={() =>
-              //   setFilters((prev) => ({
-              //     ...prev,
-              //     page: (prev.page || 1) + 1,
-              //   }))
-              // }
               onClick={() => setNextPage()}
               className="flex-1"
             >

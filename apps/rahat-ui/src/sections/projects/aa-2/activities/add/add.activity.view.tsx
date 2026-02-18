@@ -11,6 +11,7 @@ import {
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import {
   Form,
   FormControl,
@@ -55,6 +56,7 @@ import { useActivityForm } from '../hooks/useActivityForm';
 import { buildCommunicationPayloads } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
 
 import ViewTemplate from '../components/viewTemplate';
+import { Template } from 'apps/rahat-ui/src/types/activities';
 
 export const DurationData = [
   { value: 'hours', label: 'Hours' },
@@ -95,6 +97,9 @@ export default function AddActivities() {
   const { phases } = usePhasesStore((state) => ({
     phases: state.phases,
   }));
+  if (users) {
+    console.log('users from store:', users);
+  }
   if (phases) {
     console.log('phase from store:', phases);
   }
@@ -300,9 +305,9 @@ export default function AddActivities() {
     }
   }, [responsibility, users, form]);
 
-  const handleSelectTemplate = (payload: any) => {
+  const handleSelectTemplate = (payload: Template) => {
     console.log('payload:', payload);
-
+    form.clearErrors();
     // Populate form fields with template data
     if (payload.title) {
       form.setValue('title', payload.title);
@@ -310,6 +315,9 @@ export default function AddActivities() {
 
     if (payload.description) {
       form.setValue('description', payload.description);
+    }
+    if (payload.managerId) {
+      form.setValue('responsibility', payload.managerId);
     }
 
     if (payload.source) {
@@ -357,8 +365,6 @@ export default function AddActivities() {
         }));
       setCommunicationData(mappedCommunications);
     }
-
-    // toast.success('Template loaded successfully');
   };
   return (
     <Form {...form}>
@@ -538,7 +544,25 @@ export default function AddActivities() {
                     </FormItem>
                   )}
                 />
-
+                <FormField
+                  control={form.control}
+                  name="isTemplate"
+                  render={({ field }) => {
+                    return (
+                      <FormItem className=" w-[200px]   ">
+                        <div className="flex items-center justify-between w-full">
+                          <FormLabel>Save as Template</FormLabel>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </div>
+                      </FormItem>
+                    );
+                  }}
+                />
                 {selectedPhase && selectedPhase?.name !== 'PREPAREDNESS' && (
                   <FormField
                     control={form.control}
@@ -627,11 +651,12 @@ export default function AddActivities() {
                   name="description"
                   render={({ field }) => {
                     return (
-                      <FormItem className="col-span-2">
+                      <FormItem className="col-span-2 ">
                         <FormLabel>Description</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Enter description"
+                            placeholder="Enter description "
+                            className=" rounded"
                             {...field}
                           />
                         </FormControl>

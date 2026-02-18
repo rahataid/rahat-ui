@@ -5,7 +5,7 @@ import { AAUpdateStatus } from 'apps/rahat-ui/src/sections/projects/aa-2/activit
 
 const Page = () => {
   return (
-    <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]}>
+    <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}>
       <AAUpdateStatus />
     </RoleAuth>
   );

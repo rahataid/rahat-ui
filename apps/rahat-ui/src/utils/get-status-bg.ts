@@ -17,7 +17,7 @@ export const PayoutTransactionFailedStatuses = [
 ] as const;
 
 export const getStatusBg = (status: string) => {
-  const normalizedStatus = status.toUpperCase().replace(/ /g, '_');
+  const normalizedStatus = status?.toUpperCase().replace(/ /g, '_');
   if (normalizedStatus === 'NOT_STARTED') {
     return 'bg-gray-200';
   }
@@ -76,4 +76,16 @@ export const transactionBgStatus = (
 
 export const isPayoutTransactionFailed = (status?: string): boolean => {
   return !!status && PayoutTransactionFailedStatuses.includes(status as any);
+};
+
+export const getBadgeColor = (status: string | undefined) => {
+  if (!status) return;
+
+  if (['SUCCESSFUL'].includes(status)) {
+    return 'text-green-600 border-green-500';
+  }
+  if (['CANCLELLED'].includes(status)) {
+    return 'text-yellow-600 border-yellow-500';
+  }
+  return 'text-red-600 border-red-600';
 };

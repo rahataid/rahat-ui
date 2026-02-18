@@ -10,6 +10,7 @@ import { Edit2, Trash2 } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import StakeHolderInfo from './staholders.info';
 import { useDeleteStakeholders, useStakeholderDetails } from '@rahat-ui/query';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 const StakeholdersDetail = () => {
   const router = useRouter();
   const params = useParams();
@@ -37,8 +38,11 @@ const StakeholdersDetail = () => {
           subtitle="Detailed view of the selected stakeholder"
           path={routeNav}
         />
-        <div className=" flex flex-end justify-end gap-3 mt-auto">
-          {/* <Button
+        <RoleAuth
+          roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+        >
+          <div className=" flex flex-end justify-end gap-3 mt-auto">
+            {/* <Button
             variant="outline"
             style={{ borderColor: 'red' }}
             className="flex items-center gap-3 rounded-md w-36 text-red-600"
@@ -47,30 +51,31 @@ const StakeholdersDetail = () => {
             <span className="text-lg font-thin">Delete</span>
           </Button> */}
 
-          <DeleteButton
-            className="rounded flex gap-1 items-center text-sm font-medium"
-            name="stakeholder"
-            label="Delete"
-            handleContinueClick={handleDelete}
-          />
-          <EditButton
-            className="rounded flex gap-1 items-center text-sm font-medium"
-            label="Edit"
-            onFallback={() =>
-              router.push(
-                `/projects/aa/${projectId}/stakeholders/${stakeholderId}/edit`,
-              )
-            }
-          />
+            <DeleteButton
+              className="rounded flex gap-1 items-center text-sm font-medium"
+              name="stakeholder"
+              label="Delete"
+              handleContinueClick={handleDelete}
+            />
+            <EditButton
+              className="rounded flex gap-1 items-center text-sm font-medium"
+              label="Edit"
+              onFallback={() =>
+                router.push(
+                  `/projects/aa/${projectId}/stakeholders/${stakeholderId}/edit`,
+                )
+              }
+            />
 
-          {/* <Button
+            {/* <Button
             variant="outline"
             className="flex  rounded-md  items-center gap-3 w-36"
           >
             <Edit2 size={16} />
             <span className="text-lg font-thin">Edit</span>
           </Button> */}
-        </div>
+          </div>
+        </RoleAuth>
       </div>
 
       <div className="flex">

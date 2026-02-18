@@ -25,7 +25,7 @@ const DashboardMain = () => {
         <VulnerableAndSocialProtectionOverview statsData={data?.benefStats} />
         <AccessAndInclusion statsData={data?.benefStats} />
         <DisasterImpactAndEarlyWarning statsData={data?.benefStats} />
-        <CommunicationsAndOutreach commsStats={data.commsStats} />
+        <CommunicationsAndOutreach commsStats={data?.commsStats} />
       </ScrollArea>
     </div>
   );

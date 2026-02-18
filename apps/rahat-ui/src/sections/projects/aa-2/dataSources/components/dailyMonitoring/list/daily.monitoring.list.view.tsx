@@ -138,7 +138,10 @@ export default function DailyMonitoringListView() {
             Clear Date
           </Button>
         )}
-        <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+        <RoleAuth
+          roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+          hasContent={false}
+        >
           <IconLabelBtn
             handleClick={() =>
               router.push(

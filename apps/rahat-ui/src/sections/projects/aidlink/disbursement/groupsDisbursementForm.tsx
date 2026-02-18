@@ -20,7 +20,7 @@ type IProps = {
   handleDisbursement: (
     beneficiaryGroups: UUID,
     amount: string,
-    totalAmount:string,
+    totalAmount: string,
     details?: string,
   ) => void;
   isSubmitting: boolean;
@@ -58,9 +58,12 @@ export function BeneficiaryGroupsDisbursementForm({
     (group) => group.uuid === selectedGroup,
   );
   const totalBeneficiaries =
-    selectedGroupData?._count?.groupedBeneficiaries || 0;
+    selectedGroupData?._count?.groupedBeneficiaries ||
+    selectedGroupData?.totalBeneficiaries ||
+    0;
+
   const amountPerBeneficiaryNum = Number.parseFloat(amountPerBeneficiary) || 0;
-  const totalAmount = totalBeneficiaries * amountPerBeneficiaryNum;
+  const totalAmount = Math.round(totalBeneficiaries * amountPerBeneficiaryNum*100)/100
 
   const onSubmit = (data: FormData) => {
     const { amountPerBeneficiary, disbursementPurpose } = data;
@@ -69,7 +72,7 @@ export function BeneficiaryGroupsDisbursementForm({
       selectedGroup as UUID,
       amountPerBeneficiary,
       totalAmount?.toString(),
-      disbursementPurpose
+      disbursementPurpose,
     );
   };
 
@@ -101,7 +104,7 @@ export function BeneficiaryGroupsDisbursementForm({
                   >
                     <RadioGroupItem value={group.uuid} className="mt-1" />
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-gray-900 break-all">
                         {group.name}
                       </div>
                       {/* <div className="text-sm text-gray-600 mt-1">
@@ -111,7 +114,9 @@ export function BeneficiaryGroupsDisbursementForm({
                         <div className="flex items-center gap-1">
                           <Users className="h-3 w-3" />
                           <span>
-                            {group._count.groupedBeneficiaries} beneficiaries
+                            {group?._count?.groupedBeneficiaries ||
+                              group?.totalBeneficiaries}{' '}
+                            beneficiaries
                           </span>
                         </div>
                         <div className="flex items-center gap-1">

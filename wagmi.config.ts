@@ -28,7 +28,7 @@ import { rahatTreasuryAbi } from './abis/rp/RahatTreasury';
 import { vendorAbi } from './abis/rp/Vendor';
 import { redemptionsAbi } from './abis/rp/Redemptions';
 import { rahatCVACambodiaAbi } from './abis/cambodia/RahatCVACambodia';
-import { rahatCvaKenyaProjectAbi } from './abis/el-kenya/RahatCVAKenyaProject'
+import { rahatCvaKenyaProjectAbi } from './abis/el-kenya/RahatCVAKenyaProject';
 
 const ELConfig = [
   {
@@ -190,6 +190,16 @@ const C2CConfig = [
     ],
     plugins: [react()],
   },
+  {
+    out: 'apps/rahat-ui/src/hooks/c2c/contracts/rahatAccessManager.ts',
+    contracts: [
+      {
+        name: 'RahatAccessManager',
+        abi: rahatAccessManagerAbi,
+      },
+    ],
+    plugins: [react()],
+  },
 ];
 
 const RPConfig = [
@@ -253,7 +263,6 @@ const RPConfig = [
     ],
     plugins: [react()],
   },
-  
 ];
 const KenyaConfig = [
   {
@@ -316,7 +325,6 @@ const KenyaConfig = [
     ],
     plugins: [react()],
   },
-  
 ];
 const CambodiaConfig = [
   {
@@ -379,7 +387,6 @@ const CambodiaConfig = [
     ],
     plugins: [react()],
   },
-  
 ];
 export default defineConfig([
   ...ELConfig,
@@ -388,5 +395,5 @@ export default defineConfig([
   ...C2CConfig,
   ...RPConfig,
   ...KenyaConfig,
-  ...CambodiaConfig
+  ...CambodiaConfig,
 ]);

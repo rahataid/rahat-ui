@@ -6,8 +6,15 @@ import { ITransactions } from '../types/transactions';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { format } from 'date-fns';
 import { dateFormat } from '../utils/dateFormate';
-import { intlDateFormat, intlFormatDate } from '../utils';
+import { getExplorerUrl, intlDateFormat, intlFormatDate } from '../utils';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+  useProjectStore,
+} from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 interface IProps {
   cardTitle: string;
@@ -24,6 +31,12 @@ export function TransactionCard({
   loading = false,
   cardHeight = 'h-[calc(80vh-200px)]',
 }: IProps) {
+  const uuid = useParams().id;
+  const projectId = uuid as UUID;
+  const project = useProjectStore((p) => p.singleProject);
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
   return (
     <div className=" rounded-md p-4">
       <Heading
@@ -57,25 +70,28 @@ export function TransactionCard({
           <div className=" pt-3 flex flex-col space-y-2">
             {cardData.map((i) => {
               // Generate transaction hash from info object if available
-              const getTransactionHash = (info: any) => {
+              const getTransactionHash = (info: any): string | null => {
                 if (!info) return null;
-                // Extract transaction hash from the info object
-                const hashParts = [];
-                for (let j = 0; j < 66; j++) {
-                  if (info[j]) {
-                    hashParts.push(info[j]);
-                  }
+
+                if (Array.isArray(info.transactionHashes)) {
+                  return info.transactionHashes.join('');
                 }
-                return hashParts.join('');
+
+                if (Array.isArray(info)) {
+                  return info.join('');
+                }
+
+                return null;
               };
 
               const transactionHash = getTransactionHash(i.info);
-              const explorerUrl =
-                i.chainInfo?.explorerUrl ||
-                'https://stellar.expert/explorer/testnet';
-              const txUrl = transactionHash
-                ? `${explorerUrl}/tx/${transactionHash}`
-                : `${explorerUrl}/tx/${i.hash || ''}`;
+
+              const txUrl = getExplorerUrl({
+                chainSettings:
+                  settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+                target: 'tx',
+                value: transactionHash || '#',
+              });
 
               // Determine transaction status
               const isSuccessful =
@@ -86,7 +102,7 @@ export function TransactionCard({
               return (
                 <a
                   key={i.title}
-                  href={txUrl}
+                  href={txUrl || '#'}
                   target="_blank"
                   className="flex items-center justify-between px-4 py-3 border-gray-100 "
                 >

@@ -51,7 +51,14 @@ const allowedExtensions: { [key: string]: string } = {
   xlsx: 'excel',
   xls: 'excel',
   json: 'json',
-  csv: 'csv',
+};
+
+const isValidInternationalPhoneNumber = (phone: string): boolean => {
+  if (!phone || typeof phone !== 'string') return false;
+  const cleanedPhone = phone.replace(/[^\d+]/g, '');
+  const e164Pattern = /^\+[1-9]\d{1,14}$/;
+  const localPattern = /^[1-9]\d{6,14}$/;
+  return e164Pattern.test(cleanedPhone) || localPattern.test(cleanedPhone);
 };
 
 const ImportBeneficiary = () => {
@@ -172,7 +179,7 @@ const ImportBeneficiary = () => {
                     {isMissing
                       ? 'Required field is missing'
                       : isInvalidPhone
-                      ? 'Invalid phone format as consist of a string'
+                      ? 'Invalid phone number format.'
                       : isDuplicatePhone
                       ? 'Phone is duplicated within the file'
                       : isDuplicatePhoneFromServer
@@ -221,7 +228,7 @@ const ImportBeneficiary = () => {
       !Object.prototype.hasOwnProperty.call(allowedExtensions, extension)
     ) {
       return toast.error(
-        'Unsupported file format. Please upload an Excel, JSON, or CSV file.',
+        'Unsupported file format. Please upload an Excel or JSON file.',
       );
     }
     if (file) {
@@ -268,7 +275,12 @@ const ImportBeneficiary = () => {
           if (phoneIndex !== -1) {
             const phone = newRow[phoneIndex]?.toString().trim() ?? '';
 
-            if (/[A-Za-z]/.test(phone) || phone.length !== 10) {
+            //  if (/[A-Za-z]/.test(phone) || phone.length !== 10) {
+            //   invalidPhoneStrings.add(phone);
+            // }
+
+            // Use international phone validation
+            if (!isValidInternationalPhoneNumber(phone)) {
               invalidPhoneStrings.add(phone);
             }
 

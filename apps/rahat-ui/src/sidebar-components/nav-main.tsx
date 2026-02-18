@@ -64,7 +64,7 @@ export function NavMain(items: IProps) {
               </SidebarMenuItem>
             </Collapsible>
           ) : (
-            <SidebarMenuItem>
+            <SidebarMenuItem key={item.title}>
               <Link href={item.path as string}>
                 {item.wrapper ? (
                   item.wrapper(

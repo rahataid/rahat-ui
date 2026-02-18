@@ -161,7 +161,7 @@ export default function useActivitiesTableColumn() {
               onClick={() => handleEyeClick(row.original.id)}
             />
             <RoleAuth
-              roles={[AARoles.ADMIN, AARoles.MANAGER]}
+              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
               hasContent={false}
             >
               <RefreshCcw

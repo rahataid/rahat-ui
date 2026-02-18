@@ -23,7 +23,10 @@ export default function PayoutConfirmationDialog({
 }: IProps) {
   return (
     <AlertDialog>
-      <RoleAuth roles={[AARoles.ADMIN]} hasContent={false}>
+      <RoleAuth
+        roles={[AARoles.ADMIN, AARoles.Municipality]}
+        hasContent={false}
+      >
         <AlertDialogTrigger asChild>
           {payoutData?.type === 'FSP' && (
             <Button

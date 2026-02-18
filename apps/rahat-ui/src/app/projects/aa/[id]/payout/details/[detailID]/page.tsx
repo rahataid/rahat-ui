@@ -5,7 +5,14 @@ import { BeneficiaryGroupTransactionDetailsList } from 'apps/rahat-ui/src/sectio
 
 const Page = () => {
   return (
-    <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]}>
+    <RoleAuth
+      roles={[
+        AARoles.ADMIN,
+        AARoles.MANAGER,
+        AARoles.Municipality,
+        AARoles.UNICEFNepalCO,
+      ]}
+    >
       <BeneficiaryGroupTransactionDetailsList />
     </RoleAuth>
   );

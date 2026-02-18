@@ -24,11 +24,9 @@ export default function EditTrigger() {
   const triggerRepeatKey = pathSegments[triggerIndex + 1];
 
   const triggerDetailPage = `/projects/aa/${projectId}/trigger-statements/${triggerRepeatKey}`;
-  const version = false;
   const { data: trigger, isLoading } = useSingleTriggerStatement(
     projectId,
     triggerRepeatKey,
-    version,
   );
 
   const triggerType = trigger?.source === 'MANUAL' ? 'manual' : 'automated';

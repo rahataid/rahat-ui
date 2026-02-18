@@ -142,10 +142,16 @@ export default function DailyMonitoringDetailView() {
           path={`/projects/aa/${projectId}/data-sources?tab=dailyMonitoring`}
         />
         <div className="flex gap-4 items-center">
-          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
             <EditButton path={dailyMonitoringEditPath} />
           </RoleAuth>
-          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
             <DeleteButton name="project" handleContinueClick={onDelete} />
           </RoleAuth>
         </div>

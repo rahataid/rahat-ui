@@ -14,7 +14,12 @@ import {
 } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import {
+  ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import { useSelectBeneficiaryColumns } from './useSelectBeneficiaryColumns';
 import { toast } from 'react-toastify';
 import {
@@ -36,7 +41,10 @@ export default function CreateBeneficiaryGroup() {
   const FormSchema = z.object({
     name: z
       .string()
-      .min(4, { message: 'Group name must be at least 4 character' }),
+      .min(4, { message: 'Group name must be at least 4 character' })
+      .regex(/^[A-Za-z\s]+$/, {
+        message: 'Group name can only contain letters and spaces',
+      }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -48,17 +56,17 @@ export default function CreateBeneficiaryGroup() {
 
   const {
     pagination,
-    filters,
     setNextPage,
     setPrevPage,
     setPerPage,
     selectedListItems,
     setSelectedListItems,
-    setFilters,
     setPagination,
   } = usePagination();
 
-  console.log({ selectedListItems });
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -66,7 +74,6 @@ export default function CreateBeneficiaryGroup() {
     order: 'desc',
     sort: 'createdAt',
     projectUUID,
-    ...filters,
   });
 
   const beneficiaries = projectBeneficiaries.data?.response?.data || [];
@@ -93,16 +100,19 @@ export default function CreateBeneficiaryGroup() {
     getCoreRowModel: getCoreRowModel(),
     onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => row.uuid,
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnFiltersChange: setColumnFilters,
     state: {
       rowSelection: selectedListItems,
+      columnFilters,
     },
   });
 
-  const selectedBeneficiaryCount = Object.keys(selectedListItems).length || 0;
+  const selectedBeneficiaries = Object.keys(selectedListItems)
+    .filter((uuid) => selectedListItems[uuid])
+    .map((uuid) => ({ uuid }));
 
-  const selectedBeneficiaries = table
-    .getSelectedRowModel()
-    .rows?.map((row) => ({ uuid: row.original?.uuid }));
+  const selectedBeneficiaryCount = selectedBeneficiaries.length;
 
   const handleClear = () => {
     setSelectedListItems({});
@@ -113,6 +123,7 @@ export default function CreateBeneficiaryGroup() {
   const handleBeneficiaryGroupCreation = async (
     data: z.infer<typeof FormSchema>,
   ) => {
+    if (selectedBeneficiaries.length === 0) return;
     try {
       const payload = {
         name: data?.name,
@@ -145,7 +156,14 @@ export default function CreateBeneficiaryGroup() {
       />
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleBeneficiaryGroupCreation)}>
+        <form
+          onSubmit={form.handleSubmit(handleBeneficiaryGroupCreation)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+            }
+          }}
+        >
           {/* Group Name Input */}
           <FormField
             control={form.control}
@@ -179,7 +197,12 @@ export default function CreateBeneficiaryGroup() {
               {/* Search Input */}
               <SearchInput
                 name="beneficiary name"
-                onSearch={(e) => console.log(e.target.value)}
+                value={
+                  (table.getColumn('name')?.getFilterValue() as string) ?? ''
+                }
+                onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+                  table.getColumn('name')?.setFilterValue(event.target.value)
+                }
               />
 
               {/* Beneficiary Table */}
@@ -190,6 +213,7 @@ export default function CreateBeneficiaryGroup() {
                 handlePageSizeChange={setPerPage}
                 handlePrevPage={setPrevPage}
                 perPage={pagination.perPage}
+                setPagination={setPagination}
                 meta={meta || { total: 0, currentPage: 0 }}
               />
             </div>
@@ -199,7 +223,7 @@ export default function CreateBeneficiaryGroup() {
               <Button type="button" variant="outline" onClick={handleClear}>
                 Clear
               </Button>
-              <Button disabled={selectedBeneficiaryCount === 0}>
+              <Button type="submit" disabled={selectedBeneficiaryCount === 0}>
                 Add ({selectedBeneficiaryCount} beneficiaries)
               </Button>
             </div>

@@ -75,7 +75,10 @@ export default function PhaseCard({
               .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
               .join(' ')}
           </Badge>
-          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
             <div
               className="flex items-center gap-2 text-blue-500 text-xs hover:cursor-pointer hover:rounded-sm hover:bg-gray-50 hover:p-1 hover:text-sm "
               onClick={(e) => {

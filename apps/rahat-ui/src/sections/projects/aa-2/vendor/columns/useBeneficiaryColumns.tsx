@@ -1,9 +1,13 @@
-import { useProjectSettingsStore } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Pagination } from '@rumsan/sdk/types';
 import { ColumnDef } from '@tanstack/react-table';
 import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
 import {
   formatTokenAmount,
@@ -90,12 +94,16 @@ export const useVendorsBeneficiaryTableColumns = (
         const txHash = row?.original?.txHash as string;
 
         if (!txHash) return <div>N/A</div>;
-
+        const txnUrl = getExplorerUrl({
+          chainSettings: settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+          target: 'tx',
+          value: txHash,
+        });
         return (
           <div className="flex flex-row">
             <div className="w-20 truncate">
               <a
-                href={getStellarTxUrl(settings, id, row?.original?.txHash)}
+                href={txnUrl || '#'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline cursor-pointer  text-[14px] leading-[16px] font-normal !text-[#297AD6]"

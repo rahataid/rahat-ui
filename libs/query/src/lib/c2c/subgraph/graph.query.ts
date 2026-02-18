@@ -9,7 +9,7 @@ export const ProjectDetails = `
 `;
 
 export const TransactionDetails = `
-  query MyQuery($contractAddress: String!, $to: String="", $first: Int=5, $skip: Int=0, $orderDirection:String="desc") {
+  query MyQuery($contractAddress: String!, $to: String="", $first: Int, $skip: Int, $orderBy: String, $orderDirection:String="desc") {
     transfers(where: {to: $contractAddress}) {
       blockNumber
       blockTimestamp
@@ -18,7 +18,7 @@ export const TransactionDetails = `
       transactionHash
       value
     }
-    transferProcesseds(where: {_to_contains: $to}, first: $first, skip: $skip, orderDirection: $orderDirection) {
+    transferProcesseds(where: {_to_contains: $to}, first: $first, skip: $skip, orderBy : $orderBy, orderDirection: $orderDirection) {
       blockTimestamp
       transactionHash
       _to
@@ -31,8 +31,8 @@ export const TransactionDetails = `
 `;
 
 export const FilteredTransaction = `
-  query FilteredTransaction($contractAddress: String, $fromDate: String, $toDate: String) {
-  transferProcesseds(where: {blockTimestamp_gte: $fromDate, blockTimestamp_lte: $toDate}) {
+  query FilteredTransaction($contractAddress: String, $fromDate: String, $toDate: String, $orderBy: String, $orderDirection:String="desc") {
+  transferProcesseds(where: {blockTimestamp_gte: $fromDate, blockTimestamp_lte: $toDate}, orderBy: $orderBy, orderDirection: $orderDirection) {
      blockTimestamp
       transactionHash
       _to

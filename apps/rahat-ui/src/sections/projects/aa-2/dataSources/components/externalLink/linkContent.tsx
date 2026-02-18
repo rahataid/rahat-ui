@@ -4,9 +4,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { ExternalLink } from 'lucide-react';
+import {  ExternalLinkIcon } from 'lucide-react';
 import { weatherServices } from './constant';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
 export default function ExternalLinks() {
   return (
@@ -24,7 +25,12 @@ export default function ExternalLinks() {
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium flex items-start justify-between gap-2">
                   <span className="leading-tight">{service.title}</span>
-                  <ExternalLink className="h-4 w-4 flex-shrink-0 mt-0.5 group-hover:text-blue-700" />
+                  <TooltipComponent
+                    Icon={ExternalLinkIcon}
+                    tip={`Redirect to ${service.subtitle}`}
+                    handleOnClick={() => undefined}
+                    iconStyle="text-primary"
+                  />
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-0">

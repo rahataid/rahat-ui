@@ -85,7 +85,7 @@ export default function RiverWatchView() {
         className="p-4 rounded-sm border shadow flex justify-between space-x-4 cursor-pointer hover:shadow-md"
         onClick={() =>
           router.push(
-            `/projects/aa/${projectId}/data-sources/dhm/river-watch/${riverWatch?.id}`,
+            `/projects/aa/${projectId}/data-sources/dhm/river-watch/${primaryRiverWatchInfo?.series_id}`,
           )
         }
       >
@@ -94,7 +94,7 @@ export default function RiverWatchView() {
             <Heading
               title={primaryRiverWatchInfo?.name}
               titleStyle="text-xl/6 font-semibold"
-              description={primaryRiverWatchInfo?.description}
+              description={primaryRiverWatchInfo?.basin}
               updatedAt={updatedAt}
             />
             <div>

@@ -28,11 +28,13 @@ export const INFO_TOOL_TIPS: Record<string, string> = {
 };
 
 export const PHASE = [
+  { value: 'all', label: 'All' },
   { value: 'preparedness', label: 'Preparedness' },
   { value: 'readiness', label: 'Readiness' },
   { value: 'activation', label: 'Activation' },
 ];
 export const AUTOMATION_TYPE = [
+  { value: 'all', label: 'All' },
   { value: 'true', label: 'Automated' },
   { value: 'false', label: 'Manual' },
 ];

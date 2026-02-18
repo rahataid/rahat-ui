@@ -95,7 +95,9 @@ export default function AddActivities() {
   const { phases } = usePhasesStore((state) => ({
     phases: state.phases,
   }));
-
+  if (phases) {
+    console.log('phase from store:', phases);
+  }
   const activitiesListPath =
     navPae === 'mainPage'
       ? `/projects/aa/${projectID}/activities`
@@ -300,6 +302,63 @@ export default function AddActivities() {
 
   const handleSelectTemplate = (payload: any) => {
     console.log('payload:', payload);
+
+    // Populate form fields with template data
+    if (payload.title) {
+      form.setValue('title', payload.title);
+    }
+
+    if (payload.description) {
+      form.setValue('description', payload.description);
+    }
+
+    if (payload.source) {
+      form.setValue('source', payload.source);
+    }
+
+    if (payload.phase?.uuid) {
+      form.setValue('phaseId', payload.phase.uuid);
+    }
+
+    if (payload.category?.uuid) {
+      form.setValue('categoryId', payload.category.uuid);
+    }
+
+    if (payload.leadTime) {
+      form.setValue('leadTime', payload.leadTime);
+    }
+
+    if (typeof payload.isAutomated === 'boolean') {
+      form.setValue('isAutomated', payload.isAutomated);
+    }
+
+    if (payload.activityDocuments && Array.isArray(payload.activityDocuments)) {
+      form.setValue('activityDocuments', payload.activityDocuments);
+    }
+
+    // If there are activity communications, populate them
+    if (
+      payload.activityCommunication &&
+      Array.isArray(payload.activityCommunication) &&
+      payload.activityCommunication.length > 0
+    ) {
+      // Map the activity communication data to match your CommunicationData format
+      const mappedCommunications: CommunicationData[] =
+        payload.activityCommunication.map((comm: any) => ({
+          communicationTitle: comm.communicationTitle || '',
+          groupType: comm.groupType || '',
+          groupId: comm.groupId || '',
+          transportId: comm.transportId || '',
+          message: comm.message || '',
+          subject: comm.subject || '',
+          audioURL: comm.audioURL || { mediaURL: '', fileName: '' },
+          sessionId: comm.sessionId || '',
+          communicationId: comm.communicationId || '',
+        }));
+      setCommunicationData(mappedCommunications);
+    }
+
+    // toast.success('Template loaded successfully');
   };
   return (
     <Form {...form}>
@@ -318,11 +377,6 @@ export default function AddActivities() {
 
               <div className="flex justify-end mt-8">
                 <div className="flex gap-2">
-                  <ViewTemplate
-                    open={isOpen}
-                    setOpen={setIsOpen}
-                    onSelectTemplate={handleSelectTemplate}
-                  />
                   <Button
                     type="button"
                     variant="outline"
@@ -331,6 +385,11 @@ export default function AddActivities() {
                   >
                     Clear
                   </Button>
+                  <ViewTemplate
+                    open={isOpen}
+                    setOpen={setIsOpen}
+                    onSelectTemplate={handleSelectTemplate}
+                  />
                   <Button
                     className="w-36"
                     type="submit"

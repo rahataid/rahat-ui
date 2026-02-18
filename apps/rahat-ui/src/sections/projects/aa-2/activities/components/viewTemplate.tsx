@@ -289,6 +289,7 @@ const ViewTemplate = ({
               </div>
 
               <Button
+                type="button"
                 onClick={() => {
                   onSelectTemplate?.(item);
                   // Add your selection logic here

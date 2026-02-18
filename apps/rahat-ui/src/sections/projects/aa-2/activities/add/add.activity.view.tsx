@@ -37,6 +37,7 @@ import { UUID } from 'crypto';
 import {
   CloudUpload,
   FileCheck,
+  Filter,
   LoaderCircle,
   Minus,
   Plus,
@@ -57,6 +58,7 @@ import { buildCommunicationPayloads } from 'apps/rahat-ui/src/utils/buildCommuni
 
 import ViewTemplate from '../components/viewTemplate';
 import { Template } from 'apps/rahat-ui/src/types/activities';
+import dynamic from 'next/dynamic';
 
 export const DurationData = [
   { value: 'hours', label: 'Hours' },
@@ -72,6 +74,11 @@ export default function AddActivities() {
   const [uploadingFileName, setUploadingFileName] = useState<string | null>(
     null,
   );
+
+  // const ViewTemplate = dynamic(() => import('../components/viewTemplate'), {
+  //   ssr: false,
+  //   loading: () => <p>Loading templates...</p>,
+  // });
 
   const createActivity = useCreateActivities();
   const uploadFile = useUploadFile();
@@ -306,7 +313,6 @@ export default function AddActivities() {
   }, [responsibility, users, form]);
 
   const handleSelectTemplate = (payload: Template) => {
-    console.log('payload:', payload);
     form.clearErrors();
     // Populate form fields with template data
     if (payload.title) {
@@ -366,6 +372,9 @@ export default function AddActivities() {
       setCommunicationData(mappedCommunications);
     }
   };
+  const handleViewTemplates = () => {
+    setIsOpen(true);
+  };
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
@@ -391,11 +400,22 @@ export default function AddActivities() {
                   >
                     Clear
                   </Button>
-                  <ViewTemplate
-                    open={isOpen}
-                    setOpen={setIsOpen}
-                    onSelectTemplate={handleSelectTemplate}
-                  />
+
+                  <Button
+                    className="gap-2"
+                    type="button"
+                    onClick={handleViewTemplates}
+                  >
+                    <Filter className="w-4 h-4" />
+                    View Templates
+                  </Button>
+                  {isOpen && (
+                    <ViewTemplate
+                      open={isOpen}
+                      setOpen={setIsOpen}
+                      onSelectTemplate={handleSelectTemplate}
+                    />
+                  )}
                   <Button
                     className="w-36"
                     type="submit"

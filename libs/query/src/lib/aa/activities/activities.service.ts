@@ -19,7 +19,7 @@ type ActivityTemplateFilters = {
   hasCommunication?: boolean;
   category?: string;
   title?: string;
-  isAutomated?: boolean;
+  isAutomated?: string;
   appId?: string;
 };
 export const useActivitiesCategories = (uuid: UUID) => {

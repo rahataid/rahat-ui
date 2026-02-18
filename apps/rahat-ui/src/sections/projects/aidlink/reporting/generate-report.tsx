@@ -15,8 +15,11 @@ import { FileSpreadsheet, FileText } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   FilteredTransaction,
+  PROJECT_SETTINGS_KEYS,
   useGetBeneficiariesReport,
   useMutateGraphCall,
+  useProjectSettingsStore,
+  useReadRahatTokenDecimals,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
@@ -98,6 +101,14 @@ const GenerateReport = ({
   const { mutateAsync: graphMutateAsync, isPending: isLoading } =
     useMutateGraphCall(projectUUID);
 
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+
+  const { data: tokenNumber } = useReadRahatTokenDecimals({
+    address: contractSettings?.rahattoken?.address,
+  });
+
   const onSubmit = async (data: FormValues) => {
     // for beneficiaries data report
     if (data?.reportType === 'beneficiaries_data') {
@@ -119,6 +130,7 @@ const GenerateReport = ({
           contractAddress,
           fromDate,
           toDate,
+          orderBy: 'blockTimestamp',
         },
       });
 
@@ -127,6 +139,7 @@ const GenerateReport = ({
 
       const newFormateData = transformTransactionData(
         response?.data?.transferProcesseds,
+        Number(tokenNumber),
       );
       exportToExcel(newFormateData, `transaction-history-${fromDate}`);
 

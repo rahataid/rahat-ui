@@ -199,3 +199,55 @@ export function normalizeCell(cell: any) {
 
   return cell;
 }
+
+export type ExplorerTarget = 'asset' | 'tx' | 'address';
+
+export type ChainSettings =
+  | {
+      type: 'evm';
+      explorerurl: string;
+    }
+  | {
+      type: 'stellar';
+      network: 'mainnet' | 'testnet';
+    };
+
+export const getExplorerUrl = ({
+  chainSettings,
+  target,
+  value,
+}: {
+  chainSettings?: ChainSettings;
+  target: ExplorerTarget;
+  value?: string;
+}): string | null => {
+  if (!chainSettings || !value) return null;
+
+  if (chainSettings.type === 'evm') {
+    const evmPathMap: Record<ExplorerTarget, string> = {
+      asset: 'token',
+      address: 'address',
+      tx: 'tx',
+    };
+
+    // Remove trailing slash and any existing path segments (like /tx/, /address/, etc.)
+    let baseUrl = chainSettings.explorerurl.replace(/\/$/, '');
+    baseUrl = baseUrl.replace(/\/(tx|token|address)$/, '');
+
+    return `${baseUrl}/${evmPathMap[target]}/${value}`;
+  }
+
+  if (chainSettings.type === 'stellar') {
+    const network = chainSettings.network === 'mainnet' ? 'public' : 'testnet';
+
+    const stellarPathMap: Record<ExplorerTarget, string> = {
+      asset: 'asset',
+      address: 'account',
+      tx: 'tx',
+    };
+
+    return `https://stellar.expert/explorer/${network}/${stellarPathMap[target]}/${value}`;
+  }
+
+  return null;
+};

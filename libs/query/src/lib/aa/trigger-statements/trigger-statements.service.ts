@@ -114,7 +114,7 @@ export const useDeleteTriggerStatement = () => {
     }: {
       projectUUID: UUID;
       triggerStatementPayload: {
-        repeatKey: string;
+        uuid: string;
       };
     }) => {
       return q.mutateAsync({
@@ -187,12 +187,53 @@ export const useDhmWaterLevels = (
 
   const query = useQuery({
     queryKey: ['dhmwaterlevels', uuid, activeTab, from, to],
+    staleTime: 15 * 60 * 1000, // 15 minutes
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
           action: 'ms.waterLevels.getDhm',
           payload: payload,
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};
+
+export const useDhmSingleSeriesWaterLevels = (
+  uuid: UUID,
+  activeTab: string,
+  payload: {
+    date: string;
+    seriesId: number;
+  },
+) => {
+  const q = useProjectAction();
+
+  const { date, ...rest } = payload;
+
+  const settings = useProjectSettingsStore((state) => state.settings);
+
+  const riverBasin =
+    settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.['river_basin'];
+
+  const query = useQuery({
+    queryKey: ['dhmsingleserieswaterlevels', uuid, activeTab, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.waterLevels.getDhmSingleSeries',
+          payload: {
+            ...rest,
+            from: date,
+            to: date,
+            riverBasin,
+            period: activeTab?.toUpperCase(),
+          },
         },
       });
       return mutate.data;
@@ -217,26 +258,79 @@ export const useDhmRainfallLevels = (uuid: UUID, payload: any) => {
       });
       return mutate.data;
     },
+    staleTime: 15 * 60 * 1000, // 15 minutes
   });
 
   return query;
 };
 
-export const useGlofasWaterLevels = (uuid: UUID, payload: any) => {
+export const useAllGlofasProbFlood = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
 
   const query = useQuery({
-    queryKey: ['glofaswaterlevels', uuid],
+    queryKey: ['glofas_prob_flood_all', uuid],
     queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: 'ms.waterLevels.getGlofas',
-          payload: payload,
-        },
-      });
-      return mutate.data;
+      try {
+        const mutate = await q.mutateAsync({
+          uuid,
+          data: {
+            action: 'ms.probFlood.getAllGlofas',
+            payload: payload,
+          },
+        });
+        return mutate.data;
+      } catch (error: any) {
+        toast.fire({
+          title: 'Error loading Glofas details',
+          text: 'Failed to fetch Glofas details',
+          icon: 'error',
+        });
+      }
     },
+    staleTime: 5 * 60 * 60 * 1000, // 5 hrs
+  });
+
+  return query;
+};
+
+export const useGlofasProbFloodDetails = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  const query = useQuery({
+    queryKey: ['glofas_prob_flood_details', uuid],
+    queryFn: async () => {
+      try {
+        const mutate = await q.mutateAsync({
+          uuid,
+          data: {
+            action: 'ms.probFlood.getOneGlofas',
+            payload: payload,
+          },
+        });
+        return mutate.data;
+      } catch (error: any) {
+        toast.fire({
+          title: 'Error loading Glofas details',
+          text: 'Failed to fetch Glofas details',
+          icon: 'error',
+        });
+      }
+    },
+    staleTime: 5 * 60 * 60 * 1000, // 5 hrs
   });
 
   return query;
@@ -275,6 +369,7 @@ export const useGFHWaterLevels = (uuid: UUID, payload: any) => {
         throw error;
       }
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   return query;
@@ -310,6 +405,7 @@ export const useAATriggerStatements = (uuid: UUID, payload: any) => {
       });
       return mutate.data;
     },
+    staleTime: 15 * 60 * 1000, // 15 minutes
   });
   React.useEffect(() => {
     if (query.data) {
@@ -321,8 +417,8 @@ export const useAATriggerStatements = (uuid: UUID, payload: any) => {
 
 export const useSingleTriggerStatement = (
   uuid: UUID,
-  repeatKey: string | string[] | number,
-  version: boolean,
+  triggerId: string | string[] | number,
+  version?: boolean,
 ) => {
   const q = useProjectAction();
   const alert = useSwal();
@@ -336,10 +432,10 @@ export const useSingleTriggerStatement = (
   const action = version ? 'ms.revertPhase.getOne' : 'ms.triggers.getOne';
   const payload = version
     ? {
-        id: repeatKey,
+        id: triggerId,
       }
     : {
-        repeatKey: repeatKey,
+        uuid: triggerId,
       };
   const query = useQuery({
     queryKey: ['triggerStatement', uuid, payload],
@@ -368,6 +464,7 @@ export const useSingleTriggerStatement = (
         throw error;
       }
     },
+    staleTime: 15 * 60 * 1000, // 15 minutes
   });
   return query;
 };
@@ -391,7 +488,7 @@ export const useActivateTrigger = () => {
     }: {
       projectUUID: UUID;
       activatePayload: {
-        repeatKey: string | string[];
+        uuid: string;
         notes?: string;
         triggerDocuments?: Array<{ mediaURL: string; fileName: string }>;
       };
@@ -404,9 +501,11 @@ export const useActivateTrigger = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['triggerstatement'] });
+      qc.invalidateQueries({
+        queryKey: ['triggerStatement', variables.projectUUID],
+      });
       toast.fire({
         title: 'Trigger activated.',
         text: 'Successfully activated trigger. You can view details of this from trigger details page.',
@@ -492,6 +591,7 @@ export const useExternalApiHealthMonitor = (uuid: UUID) => {
       });
       return mutate.data;
     },
+    staleTime: 15 * 60 * 1000, // 15 minutes
   });
 
   return query;
@@ -517,4 +617,38 @@ export const useGetDataSourceTypes = (uuid: UUID) => {
   });
 
   return query;
+};
+
+export const useGetSeriesByDataSource = (
+  uuid: UUID,
+  dataSource: string | null,
+  type: string | null,
+) => {
+  const q = useProjectAction([MS_TRIGGERS_KEYS.SERIES]);
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
+
+  return useQuery({
+    queryKey: [MS_TRIGGERS_KEYS.SERIES, uuid, dataSource, type],
+    staleTime: 0,
+    enabled: !!dataSource,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.sourcesData.getSeriesByDataSource',
+          payload: {
+            dataSource,
+            type,
+            riverBasin:
+              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                'river_basin'
+              ],
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
 };

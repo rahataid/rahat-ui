@@ -5,7 +5,7 @@ import { AddDailyMonitoring } from 'apps/rahat-ui/src/sections/projects/aa-2/dat
 
 const Page = () => {
   return (
-    <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]}>
+    <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}>
       <AddDailyMonitoring />
     </RoleAuth>
   );

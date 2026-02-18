@@ -2,9 +2,11 @@
 import {
   PROJECT_SETTINGS_KEYS,
   useFetchTokenStatsStellar,
+  useFundAssignmentStore,
   useGroupsReservedFunds,
   usePagination,
   useProjectSettingsStore,
+  useProjectStore,
 } from '@rahat-ui/query';
 import { DataCard, Heading, TransactionCard } from 'apps/rahat-ui/src/common';
 import { INFO_TOOL_TIPS } from 'apps/rahat-ui/src/constants/aa.constants';
@@ -13,6 +15,8 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import TokenOverviewSkeleton from './token.overview.skeleton';
 import DynamicPieChart from '../../../components/dynamicPieChart';
+import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
+import { useProjectBalance } from 'apps/rahat-ui/src/hooks/aa/utils';
 
 export default function TokensOverview() {
   const uuid = useParams().id;
@@ -31,6 +35,11 @@ export default function TokensOverview() {
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
+  const project = useProjectStore((p) => p.singleProject);
+  const projectBalance = useProjectBalance(projectId);
+  // const projectBalance = useFundAssignmentStore(
+  //   (state) => state.projectBalance,
+  // );
 
   const tokenStatus = () => {
     let disbursedValue = 0;
@@ -63,6 +72,14 @@ export default function TokensOverview() {
         <div className="space-y-4 mb-4">
           {/* First Row - 4 Columns */}
           <div className="grid xl:grid-cols-4 lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
+            {/* <DataCard
+              className="rounded-sm h-[116px]"
+              title="Project Balance"
+              smallNumber={`Rs ${projectBalance}`}
+              infoIcon={true}
+              infoTooltip={'Project Balance'}
+              subtitle=" "
+            /> */}
             {data?.data?.slice(0, 4).map((item, index) => {
               const isToken = item.name === 'Token';
               const isTokenPrice = item.name === 'Token Price';
@@ -70,18 +87,20 @@ export default function TokensOverview() {
               const infoTooltip = INFO_TOOL_TIPS[item.name];
 
               if (isToken) {
+                const assetUrl = getExplorerUrl({
+                  chainSettings:
+                    settings?.[projectId]?.[
+                      PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS
+                    ],
+                  target: 'asset',
+                  value:
+                    settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CONTRACT]
+                      ?.rahattoken?.address,
+                });
                 return (
                   <a
                     key={index}
-                    href={`https://stellar.expert/explorer/${
-                      settings?.[projectId]?.[
-                        PROJECT_SETTINGS_KEYS.STELLAR_SETTINGS
-                      ]?.['network'] === 'mainnet'
-                        ? 'public'
-                        : 'testnet'
-                    }/asset/${
-                      item.value
-                    }-GCVLRQHGZYG32HZE3PKZ52NX5YFCNFDBUZDLUXQYMRS6WVBWSUOP5IYE-2`}
+                    href={assetUrl || '#'}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="cursor-pointer"

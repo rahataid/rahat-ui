@@ -64,7 +64,10 @@ export default function ActivitiesView() {
           description="Track all the activities reports here"
         />
         <div className="flex flex-end gap-2">
-          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
             <IconLabelBtn
               Icon={CloudDownloadIcon}
               handleClick={handleDownloadReport}
@@ -72,7 +75,10 @@ export default function ActivitiesView() {
               variant="outline"
             />
           </RoleAuth>
-          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
             <IconLabelBtn
               Icon={Plus}
               handleClick={() =>

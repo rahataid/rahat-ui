@@ -4,7 +4,7 @@ import { useParams, usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { ProjectLayout } from '../../sections/projects/components';
 import DashboardLayout from '../dashboard/layout';
-import GarphQlProvider from '@rahat-ui/query/lib/aa/graph/graphql-query-client';
+import GarphQlProvider from '@rahat-ui/query/lib/c2c/subgraph/graphql-query-client';
 import { UUID } from 'crypto';
 import {
   useProjectContractSettings,

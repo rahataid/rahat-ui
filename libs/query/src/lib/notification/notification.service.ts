@@ -35,10 +35,11 @@ export const useGetAllNotificatons = () => {
         page: pageParam,
         perPage: 10,
       }),
+    staleTime: 5 * 60 * 1000, // 5 minutes
     getNextPageParam: (lastPage) => {
       const { meta, data } = lastPage;
 
-      return meta.currentPage < meta.total ? meta.next : undefined;
+      return meta?.currentPage < meta?.total ? meta?.next : undefined;
     },
     initialPageParam: 1,
   });

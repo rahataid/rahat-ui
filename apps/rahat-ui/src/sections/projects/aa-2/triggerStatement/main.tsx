@@ -73,6 +73,8 @@ export default function TriggerStatementView() {
                   d?.phaseStats?.totalMandatoryTriggers || 0,
                   d?.phaseStats?.totalOptionalTriggers || 0,
                 ]}
+                requiredMandatoryTriggers={d?.requiredMandatoryTriggers || 0}
+                requiredOptionalTriggers={d?.requiredOptionalTriggers || 0}
                 mandatoryTriggers={d?.phaseStats?.totalMandatoryTriggers || 0}
                 optionalTriggers={d?.phaseStats?.totalOptionalTriggers || 0}
                 triggeredMandatoryTriggers={

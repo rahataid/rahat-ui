@@ -40,9 +40,7 @@ export function RoleAuth({
               <ShieldX className="w-10 h-10 text-red-600 dark:text-red-400" />
             </div>
 
-            <h3 className="text-2xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-              Access Denied
-            </h3>
+            <h3 className="text-2xl font-bold text-red-600 ">Access Denied</h3>
 
             <p className="text-muted-foreground">
               You don't have permission to access this page. Please contact your
@@ -50,10 +48,10 @@ export function RoleAuth({
             </p>
 
             <Button
-              onClick={() => router.push('/')}
-              className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white"
+              onClick={router.back}
+              className="bg-gradient-to-r bg-blue-500 hover:bg-blue-600 text-white"
             >
-              Return to Home
+              Return Back
             </Button>
           </div>
         </div>

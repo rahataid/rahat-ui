@@ -19,7 +19,7 @@ const GlofasPeriodDataTable = ({
   return (
     <div className="bg-card p-4 rounded-sm border shadow mt-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="font-semibold text-lg">{title}</h1>
+        <h1 className="font-semibold text-lg capitalize">{title}</h1>
       </div>
       <div className="overflow-auto">
         <table className="min-w-full bg-white border border-gray-200">

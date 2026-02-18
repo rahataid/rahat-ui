@@ -54,7 +54,7 @@ const Main = () => {
           triggeersStats={data?.triggeersStats}
           projectId={projectId}
         />
-        <DigitalAccessOverview stats={data.benefStats} />
+        <DigitalAccessOverview stats={data?.benefStats} />
         <AccessAndResilienceOverview data={data?.benefStats} />
         <CommunicationAnalytics
           benefStats={data?.benefStats}

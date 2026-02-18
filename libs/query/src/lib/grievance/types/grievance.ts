@@ -11,25 +11,29 @@ export type GetGrievanceList = Pagination & {
 
 export enum GrievanceType {
   TECHNICAL = 'TECHNICAL',
-  OPERATIONAL = 'OPERATIONAL',
-  FINANCIAL = 'FINANCIAL',
+  NON_TECHNICAL = 'NON_TECHNICAL',
   OTHER = 'OTHER',
 }
 
 export enum GrievanceStatus {
   NEW = 'NEW',
-  IN_PROGRESS = 'IN_PROGRESS',
+  UNDER_REVIEW = 'UNDER_REVIEW',
   RESOLVED = 'RESOLVED',
   CLOSED = 'CLOSED',
-  REJECTED = 'REJECTED',
 }
 
 export enum GrievancePriority {
   LOW = 'LOW',
   MEDIUM = 'MEDIUM',
   HIGH = 'HIGH',
-  CRITICAL = 'CRITICAL',
 }
+
+export type Tag = {
+  id: string;
+  text: string;
+};
+
+export type SanitizedTags = string[];
 
 export type GrievanceFormData = {
   reportedBy: string;
@@ -39,4 +43,5 @@ export type GrievanceFormData = {
   description: string;
   status?: GrievanceStatus;
   priority: GrievancePriority;
+  tags: SanitizedTags;
 };

@@ -15,7 +15,7 @@ const STATS_CONSTANT = [
 const BeneficiaryDemographics = ({ benefStats }: any) => {
   // Helper to get stat by name
   const getStat = (name: string) =>
-    benefStats.find((s) => s.name === name)?.data ?? [];
+    benefStats?.find((s) => s.name === name)?.data ?? [];
 
   // Map over `k` and build object keyed by stat name
   const mappedStats = STATS_CONSTANT.reduce((acc, key) => {

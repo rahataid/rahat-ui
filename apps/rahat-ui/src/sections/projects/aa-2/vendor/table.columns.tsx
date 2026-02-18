@@ -18,6 +18,7 @@ import { Copy, CopyCheck, Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { IProjectVendor } from './types';
 import { toast } from 'react-toastify';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 // import { DialogComponent } from '../activities/details/dialog.reuse';
 
 export const useProjectVendorTableColumns = (pagination: Pagination) => {
@@ -138,11 +139,9 @@ export const useProjectVendorRedemptionTableColumns = () => {
           <div className="flex flex-row">
             <div className="w-20 truncate">
               <a
-                href={getStellarTxUrl(
-                  settings,
-                  id,
-                  row?.original?.transactionHash,
-                )}
+                href={`https://sepolia.basescan.org/tx/${row.getValue(
+                  'transactionHash',
+                )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer "
@@ -225,17 +224,19 @@ export const useProjectVendorRedemptionTableColumns = () => {
                   </div>
                 </div>
               ) : (
-                <DialogComponent
-                  onSubmit={() => handleApproveClick(row)}
-                  onCancel={() => null}
-                  title="Approve Redemption Request"
-                  subtitle="Are you sure you want to approve this redemption request?"
-                  trigger={
-                    <div className="cursor-pointer select-none text-[#297AD6]">
-                      Approve
-                    </div>
-                  }
-                />
+                <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]}>
+                  <DialogComponent
+                    onSubmit={() => handleApproveClick(row)}
+                    onCancel={() => null}
+                    title="Approve Redemption Request"
+                    subtitle="Are you sure you want to approve this redemption request?"
+                    trigger={
+                      <div className="cursor-pointer select-none text-[#297AD6]">
+                        Approve
+                      </div>
+                    }
+                  />
+                </RoleAuth>
               )}
             </div>
           </>

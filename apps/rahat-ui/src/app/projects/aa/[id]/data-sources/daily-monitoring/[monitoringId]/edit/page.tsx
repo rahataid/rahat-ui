@@ -7,7 +7,7 @@ import { AADataSourcesDailyMonitoringEditView } from 'apps/rahat-ui/src/sections
 
 const Page = () => {
   return (
-    <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]}>
+    <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}>
       <EditDailyMonitoring />
     </RoleAuth>
   );

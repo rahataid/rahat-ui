@@ -143,6 +143,9 @@ dependencies:
   '@urql/core':
     specifier: ^4.3.0
     version: 4.3.0
+  '@urql/exchange-auth':
+    specifier: ^3.0.0
+    version: 3.0.0(@urql/core@4.3.0)
   add:
     specifier: ^2.0.6
     version: 2.0.6
@@ -9295,6 +9298,15 @@ packages:
       - graphql
     dev: false
 
+  /@urql/exchange-auth@3.0.0(@urql/core@4.3.0):
+    resolution: {integrity: sha512-tj09xiOR2f1J2h8TE9uZWjRZipCdmDoTewEytOacDQ+0Teo+yIZxm3ppHxolQtiA51OHrGYiNTkMte8HtfvaBw==}
+    peerDependencies:
+      '@urql/core': ^6.0.0
+    dependencies:
+      '@urql/core': 4.3.0
+      wonka: 6.3.5
+    dev: false
+
   /@verdaccio/auth@8.0.0-next-8.1:
     resolution: {integrity: sha512-sPmHdnYuRSMgABCsTJEfz8tb/smONsWVg0g4KK2QycyYZ/A+RwZLV1JLiQb4wzu9zvS0HSloqWqkWlyNHW3mtw==}
     engines: {node: '>=18'}
@@ -13241,7 +13253,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-easy-sort: 1.6.0(react-dom@18.2.0)(react@18.2.0)
-      tailwind-merge: 3.3.1
+      tailwind-merge: 3.4.0
     transitivePeerDependencies:
       - '@types/react'
       - '@types/react-dom'
@@ -22229,8 +22241,8 @@ packages:
     resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
     dev: false
 
-  /tailwind-merge@3.3.1:
-    resolution: {integrity: sha512-gBXpgUm/3rp1lMZZrM/w7D8GKqshif0zAymAhbCyIt8KMe+0v9DQ7cdYLR4FHH/cKpdTXb+A/tKKU3eolfsI+g==}
+  /tailwind-merge@3.4.0:
+    resolution: {integrity: sha512-uSaO4gnW+b3Y2aWoWfFpX62vn2sR3skfhbjsEnaBI81WD1wBLlHZe5sWf0AqjksNdYTbGBEd0UasQMT3SNV15g==}
     dev: false
 
   /tailwind@4.0.0:

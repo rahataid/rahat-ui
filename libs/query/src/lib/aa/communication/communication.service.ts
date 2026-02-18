@@ -27,6 +27,7 @@ export const useGetCommunicationLogs = (
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   return query;
@@ -133,6 +134,7 @@ export const useGetIndividualLogs = (
       });
       return mutate;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   return {

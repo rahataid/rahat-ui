@@ -60,6 +60,9 @@ export default function AssignFundsForm() {
       .min(1, { message: 'Enter valid amount' })
       .refine((val) => /^\d+$/.test(val), {
         message: 'Amount must be a positive integer',
+      })
+      .refine((val) => Number(val) > 0, {
+        message: 'Amount must be greater than 0',
       }),
     totalTokenAmount: z
       .string()

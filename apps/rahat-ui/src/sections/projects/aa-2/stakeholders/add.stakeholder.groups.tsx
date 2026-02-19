@@ -14,12 +14,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import {
-  ClientSidePagination,
   CustomPagination,
   DemoTable,
   HeaderWithBack,
   Heading,
-  SearchInput,
 } from 'apps/rahat-ui/src/common';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';

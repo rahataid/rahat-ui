@@ -104,7 +104,9 @@ export default function usePayoutTransactionLogTableColumn() {
         const status = row?.original?.status;
         return (
           <Badge
-            className={`rounded-xl capitalize ${isCompleteBgStatus(status)}`}
+            className={`rounded-xl text-[10px] capitalize ${isCompleteBgStatus(
+              status,
+            )}`}
           >
             {status
               .toLowerCase()
@@ -121,7 +123,7 @@ export default function usePayoutTransactionLogTableColumn() {
         const time = row.getValue('timeStamp') as string;
         return (
           <div className="flex gap-1 text-[10px]">
-            <TruncatedCell text={dateFormat(time)} maxLength={30} />
+            <TruncatedCell text={dateFormat(time)} maxLength={15} />
           </div>
         );
       },

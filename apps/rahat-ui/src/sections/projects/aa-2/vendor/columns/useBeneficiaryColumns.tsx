@@ -82,7 +82,7 @@ export const useVendorsBeneficiaryTableColumns = (
       cell: ({ row }) => {
         return row.getValue('benTokens') ? (
           <TruncatedCell
-            text={`Rs. ${formatTokenAmount(
+            text={`${formatTokenAmount(
               row.getValue('benTokens'),
               settings,
               id,

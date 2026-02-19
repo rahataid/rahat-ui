@@ -43,16 +43,12 @@ export const useGrievancesTableColumns = () => {
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: ({ row }) => (
-        <TruncatedCell text={row.getValue('title')} maxLength={30} />
-      ),
+      cell: ({ row }) => <TruncatedCell text={row.getValue('title')} />,
     },
     {
       accessorKey: 'reportedBy',
       header: 'Reported By',
-      cell: ({ row }) => (
-        <TruncatedCell text={row.getValue('reportedBy')} maxLength={30} />
-      ),
+      cell: ({ row }) => <TruncatedCell text={row.getValue('reportedBy')} />,
     },
     {
       accessorKey: 'type',
@@ -77,10 +73,7 @@ export const useGrievancesTableColumns = () => {
       accessorKey: 'createdAt',
       header: 'Created On',
       cell: ({ row }) => (
-        <TruncatedCell
-          text={formatDateFull(row.getValue('createdAt'))}
-          maxLength={25}
-        />
+        <TruncatedCell text={formatDateFull(row.getValue('createdAt'))} />
       ),
     },
     {
@@ -88,7 +81,11 @@ export const useGrievancesTableColumns = () => {
       header: 'Priority',
       cell: ({ row }) => (
         <div>
-          <PriorityChip priority={row.getValue('priority')} showIcon={false} />
+          <PriorityChip
+            priority={row.getValue('priority')}
+            showIcon={false}
+            className="text-[10px]"
+          />
         </div>
       ),
     },
@@ -97,7 +94,11 @@ export const useGrievancesTableColumns = () => {
       header: 'Status',
       cell: ({ row }) => (
         <div>
-          <StatusChip status={row.getValue('status')} showIcon={false} />
+          <StatusChip
+            status={row.getValue('status')}
+            showIcon={false}
+            className="text-[10px]"
+          />
         </div>
       ),
     },

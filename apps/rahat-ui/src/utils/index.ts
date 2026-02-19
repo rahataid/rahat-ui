@@ -230,7 +230,11 @@ export const getExplorerUrl = ({
       tx: 'tx',
     };
 
-    return `${chainSettings.explorerurl}/${evmPathMap[target]}/${value}`;
+    // Remove trailing slash and any existing path segments (like /tx/, /address/, etc.)
+    let baseUrl = chainSettings.explorerurl.replace(/\/$/, '');
+    baseUrl = baseUrl.replace(/\/(tx|token|address)$/, '');
+
+    return `${baseUrl}/${evmPathMap[target]}/${value}`;
   }
 
   if (chainSettings.type === 'stellar') {

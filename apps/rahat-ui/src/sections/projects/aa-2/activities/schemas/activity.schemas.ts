@@ -29,7 +29,19 @@ export const createActivityFormSchema = (
   return baseActivityFormSchema.superRefine((data, ctx) => {
     const selectedPhase = phases.find((p) => p.uuid === data.phaseId);
     if (selectedPhase?.name !== 'PREPAREDNESS') {
-      if (!data.leadTime || data.leadTime.length === 0) {
+      if (!data.leadTime) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Lead time is required for this phase',
+          path: ['leadTime'],
+        });
+        return;
+      }
+
+      const parts = data.leadTime.split(' ');
+      const valuePart = parts[0]?.trim();
+
+      if (!valuePart) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Lead time is required for this phase',

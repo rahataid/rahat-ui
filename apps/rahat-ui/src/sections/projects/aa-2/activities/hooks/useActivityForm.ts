@@ -40,6 +40,7 @@ export const useActivityForm = (
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    mode: 'onChange',
     defaultValues: {
       title: '',
       responsibility: '',

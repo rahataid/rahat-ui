@@ -210,6 +210,7 @@ const UpdateOrAddStakeholdersGroup = () => {
       rowSelection: selectedListItems,
     },
   });
+  const { stakeholders: stakeholdersError } = form.formState.errors;
 
   return (
     <div className="p-4">
@@ -269,9 +270,9 @@ const UpdateOrAddStakeholdersGroup = () => {
 
             <DemoTable table={table} tableHeight="h-[calc(100vh-520px)]" />
 
-            {form.formState.errors.stakeholders && (
+            {stakeholdersError && (
               <p className="text-sm text-red-500 mt-2">
-                {form.formState.errors.stakeholders.message}
+                {stakeholdersError.message}
               </p>
             )}
 

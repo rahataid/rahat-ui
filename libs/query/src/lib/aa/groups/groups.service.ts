@@ -37,6 +37,7 @@ export const useCreateStakeholdersGroups = <
     'mutationFn'
   >,
 ): UseMutationResult<TData, TError, StakeholderGroupArgs, TContext> => {
+  const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
 
@@ -64,6 +65,9 @@ export const useCreateStakeholdersGroups = <
     },
     onSuccess: (data, variables, ctx) => {
       q.reset();
+      qc.invalidateQueries({
+        queryKey: ['stakeholdersGroups'],
+      });
       options?.onSuccess?.(data, variables, ctx);
       toast.fire({
         title: 'Stakeholders Group added successfully',

@@ -1,4 +1,3 @@
-
 export type GroupType = 'STAKEHOLDERS' | 'BENEFICIARY';
 
 export type TransportName = 'EMAIL' | 'SMS' | 'VOICE' | 'IVR';
@@ -13,7 +12,7 @@ export interface CommunicationData {
   groupType: GroupType;
   groupId: string;
   transportId: string;
-  message?: string;
+  message?: string | AudioFile;
   subject?: string;
   audioURL?: AudioFile;
   sessionId?: string;

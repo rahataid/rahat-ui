@@ -180,7 +180,7 @@ const ViewTemplate = ({
                 value={
                   filters.isAutomated === ''
                     ? 'all'
-                    : filters.isAutomated.toString()
+                    : filters.isAutomated?.toString()
                 }
                 onValueChange={(value) =>
                   setFilters((prev: Template) => ({

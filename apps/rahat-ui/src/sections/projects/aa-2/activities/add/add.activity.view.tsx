@@ -103,12 +103,15 @@ export default function AddActivities() {
   const { phases } = usePhasesStore((state) => ({
     phases: state.phases,
   }));
-  if (users) {
-    console.log('users from store:', users);
-  }
-  if (phases) {
-    console.log('phase from store:', phases);
-  }
+  // if (users) {
+  //   console.log('users from store:', users);
+  // }
+  // if (phases) {
+  //   console.log('phase from store:', phases);
+  // }
+  // if (categories) {
+  //   console.log('categories from store:', categories);
+  // }
   const activitiesListPath =
     navPae === 'mainPage'
       ? `/projects/aa/${projectID}/activities`
@@ -330,15 +333,19 @@ export default function AddActivities() {
     }
 
     if (payload.phase?.name) {
-      const phaseId = phases.find((p) => p.name === payload.phase?.name)?.id;
+      const phaseId = phases.find(
+        (p) => p.name.toLowerCase() === payload.phase?.name.toLowerCase(),
+      )?.uuid;
       form.setValue('phaseId', phaseId);
     }
 
     if (payload.category?.name) {
-      const categoryId = categories.find(
-        (c) => c.name === payload.category?.name,
-      )?.id;
-      form.setValue('categoryId', categoryId);
+      const categoryUuid = categories.find(
+        (c) => c.name.toLowerCase() === payload.category?.name.toLowerCase(),
+      )?.uuid;
+      if (categoryUuid) {
+        form.setValue('categoryId', categoryUuid);
+      }
     }
 
     if (payload.leadTime) {
@@ -361,17 +368,25 @@ export default function AddActivities() {
     ) {
       // Map the activity communication data to match your CommunicationData format
       const mappedCommunications: CommunicationData[] =
-        payload.activityCommunication.map((comm: any) => ({
-          communicationTitle: comm.communicationTitle || '',
-          groupType: comm.groupType || '',
-          groupId: comm.groupId || '',
-          transportId: comm.transportId || '',
-          message: comm.message || '',
-          subject: comm.subject || '',
-          audioURL: comm.audioURL || { mediaURL: '', fileName: '' },
-          sessionId: comm.sessionId || '',
-          communicationId: comm.communicationId || '',
-        }));
+        payload.activityCommunication.map((comm: any) => {
+          // Check if message is an object (audioURL) or string
+          const isMessageObject =
+            typeof comm.message === 'object' && comm.message !== null;
+
+          return {
+            communicationTitle: comm.communicationTitle || '',
+            groupType: comm.groupType || '',
+            groupId: comm.groupId || '',
+            transportId: comm.transportId || '',
+            message: isMessageObject ? '' : comm.message || '',
+            subject: comm.subject || '',
+            audioURL: isMessageObject
+              ? comm.message
+              : comm.audioURL || { mediaURL: '', fileName: '' },
+            sessionId: comm.sessionId || '',
+            communicationId: comm.communicationId || '',
+          };
+        });
       setCommunicationData(mappedCommunications);
     }
   };

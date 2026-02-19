@@ -1,15 +1,25 @@
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import { getSessionColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+
+interface IndividualCommonLogRow {
+  title?: string;
+  groupName?: string;
+  group_type?: string;
+  media_url?: string;
+  message?: string;
+  timestamp: string | number | Date;
+  sessionStatus?: string;
+  communicationId: string;
+  uuid: string;
+  sessionId: string;
+}
+
+type CommonLogRow = Row<IndividualCommonLogRow>;
 
 export default function useIndividualCommonLogsTableColumns(
   type: 'sms' | 'email' | 'voice',
@@ -18,76 +28,30 @@ export default function useIndividualCommonLogsTableColumns(
   const router = useRouter();
   const [isPlaying, setIsPlaying] = React.useState(false);
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<IndividualCommonLogRow>[] = [
     {
       accessorKey: 'title',
       header: 'Communication Title',
-      cell: ({ row }: { row: any }) => (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="truncate w-28 hover:cursor-pointer">
-                {row.getValue('title')}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent
-              side="bottom"
-              className="w-80 rounded-sm text-justify"
-            >
-              <p>{row.getValue('title')}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+      cell: ({ row }: { row: CommonLogRow }) => (
+        <TruncatedCell text={row.getValue('title')} />
       ),
     },
     {
       accessorKey: 'groupName',
       header: 'Group Name',
-      cell: ({ row }: { row: any }) => (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="truncate w-28 hover:cursor-pointer">
-                {row.getValue('groupName')}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent
-              side="bottom"
-              className="w-80 rounded-sm text-justify"
-            >
-              <p>{row.getValue('groupName')}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ),
+      cell: ({ row }) => <TruncatedCell text={row.getValue('groupName')} />,
     },
     {
       accessorKey: 'group_type',
       header: 'Group Type',
-      cell: ({ row }) => (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="truncate w-28 hover:cursor-pointer">
-                {row.getValue('group_type')}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent
-              side="bottom"
-              className="w-80 rounded-sm text-justify"
-            >
-              <p>{row.getValue('group_type')}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ),
+      cell: ({ row }) => <TruncatedCell text={row.getValue('group_type')} />,
     },
     ...(type === 'voice'
       ? [
           {
             accessorKey: 'media_url',
             header: 'Message',
-            cell: ({ row }: { row: any }) => {
+            cell: ({ row }: { row: CommonLogRow }) => {
               return (
                 <div className="relative w-auto lg:w-[150px] h-[40px] overflow-hidden">
                   <div className="w-full h-full overflow-hidden">
@@ -108,22 +72,8 @@ export default function useIndividualCommonLogsTableColumns(
           {
             accessorKey: 'message',
             header: 'Message',
-            cell: ({ row }: { row: any }) => (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="truncate w-28 hover:cursor-pointer">
-                      {row.getValue('message')}
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="bottom"
-                    className="w-80 rounded-sm text-justify "
-                  >
-                    <p>{row.getValue('message')}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            cell: ({ row }: { row: CommonLogRow }) => (
+              <TruncatedCell text={row.getValue('message')} />
             ),
           },
         ]),
@@ -131,31 +81,16 @@ export default function useIndividualCommonLogsTableColumns(
     {
       accessorKey: 'timestamp',
       header: 'Timestamp',
-      cell: ({ row }) => (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center space-x-2 gap-2">
-                {new Date(row.original.timestamp).toLocaleString('en-US', {
-                  dateStyle: 'medium',
-                  timeStyle: 'short',
-                })}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent
-              side="bottom"
-              className="w-80 rounded-sm text-justify"
-            >
-              <p>
-                {new Date(row.original.timestamp).toLocaleString('en-US', {
-                  dateStyle: 'full',
-                  timeStyle: 'long',
-                })}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ),
+      cell: ({ row }) => {
+        const timestamp = new Date(row.original.timestamp).toLocaleString(
+          'en-US',
+          {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+          },
+        );
+        return <TruncatedCell text={timestamp} maxLength={25} />;
+      },
     },
     {
       accessorKey: 'sessionStatus',

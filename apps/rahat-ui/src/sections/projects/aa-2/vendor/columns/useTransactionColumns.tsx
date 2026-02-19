@@ -5,11 +5,9 @@ import {
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
-import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
-import { Copy, CopyCheck } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
@@ -32,7 +30,6 @@ export const useVendorsTransactionTableColumns = () => {
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
-  const { clickToCopy, copyAction } = useCopy();
 
   const columns: ColumnDef<VendorTransactionRow>[] = [
     {

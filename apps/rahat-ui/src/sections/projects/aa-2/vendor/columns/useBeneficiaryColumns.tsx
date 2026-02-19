@@ -4,19 +4,27 @@ import {
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Pagination } from '@rumsan/sdk/types';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
-import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
-import {
-  formatTokenAmount,
-  getStellarTxUrl,
-} from 'apps/rahat-ui/src/utils/stellar';
-import { toTitleCase } from 'apps/rahat-ui/src/utils/string';
+import { formatTokenAmount } from 'apps/rahat-ui/src/utils/stellar';
 import { PayoutMode } from 'libs/query/src/lib/aa';
-import { Copy, CopyCheck, Eye } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+
+import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
+
+type VendorBeneficiaryRow = {
+  walletAddress: string;
+  benTokens?: string;
+  txHash?: string;
+  amountDisbursed?: string;
+  syncStatus?: string;
+  status?: string;
+  uuid: string;
+};
 
 export const useVendorsBeneficiaryTableColumns = (
   mode: PayoutMode,
@@ -45,8 +53,7 @@ export const useVendorsBeneficiaryTableColumns = (
     );
   };
 
-  const { clickToCopy, copyAction } = useCopy();
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<VendorBeneficiaryRow>[] = [
     {
       accessorKey: 'walletAddress',
       header: 'Wallet Address',
@@ -56,24 +63,15 @@ export const useVendorsBeneficiaryTableColumns = (
         }
         return (
           <div className="flex flex-row">
-            <div className="w-20 truncate text-400 text-[#475263] text-[14px] leading-[16px] font-normal">
-              {row.original?.walletAddress}
-            </div>
-            <button
-              onClick={() =>
-                clickToCopy(
-                  row.original?.walletAddress,
-                  row.original?.walletAddress,
-                )
-              }
-              className="ml-2 text-sm text-gray-500"
-            >
-              {copyAction === row.original?.walletAddress ? (
-                <CopyCheck className="w-4 h-4" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )}
-            </button>
+            <TruncatedCell
+              text={row.original?.walletAddress}
+              maxLength={10}
+              className="w-20 text-400 text-[#475263] text-[14px] leading-[16px] font-normal"
+            />
+            <CopyTooltip
+              value={row.original?.walletAddress}
+              uniqueKey={row.original?.uuid}
+            />
           </div>
         );
       },
@@ -82,9 +80,17 @@ export const useVendorsBeneficiaryTableColumns = (
       accessorKey: 'benTokens',
       header: 'Token Amount',
       cell: ({ row }) => {
-        return row.getValue('benTokens')
-          ? formatTokenAmount(row.getValue('benTokens'), settings, id)
-          : 'N/A';
+        return row.getValue('benTokens') ? (
+          <TruncatedCell
+            text={`${formatTokenAmount(
+              row.getValue('benTokens'),
+              settings,
+              id,
+            )}`}
+          />
+        ) : (
+          'N/A'
+        );
       },
     },
     {
@@ -108,21 +114,13 @@ export const useVendorsBeneficiaryTableColumns = (
                 rel="noopener noreferrer"
                 className="hover:underline cursor-pointer  text-[14px] leading-[16px] font-normal !text-[#297AD6]"
               >
-                {row.getValue('txHash')}
+                <TruncatedCell text={row.getValue('txHash')} maxLength={10} />
               </a>
             </div>
-            <button
-              onClick={() =>
-                clickToCopy(row.getValue('txHash'), row.getValue('txHash'))
-              }
-              className="ml-2 text-sm text-gray-500"
-            >
-              {copyAction === row.getValue('txHash') ? (
-                <CopyCheck className="w-4 h-4" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )}
-            </button>
+            <CopyTooltip
+              value={row.getValue('txHash')}
+              uniqueKey={row.original?.uuid}
+            />
           </div>
         );
       },
@@ -132,11 +130,15 @@ export const useVendorsBeneficiaryTableColumns = (
       header: 'Amount Disbursed',
       cell: ({ row }) => {
         const status = row.original?.status;
-        return status === 'COMPLETED'
-          ? row.getValue('benTokens')
-            ? `Rs. ${row.getValue('benTokens')}`
-            : 'N/A'
-          : 'Rs. 0';
+        return status === 'COMPLETED' ? (
+          row.getValue('benTokens') ? (
+            <TruncatedCell text={`Rs. ${row.getValue('benTokens')}`} />
+          ) : (
+            'N/A'
+          )
+        ) : (
+          'Rs. 0'
+        );
       },
     },
     ...(mode === PayoutMode.OFFLINE
@@ -144,9 +146,8 @@ export const useVendorsBeneficiaryTableColumns = (
           {
             accessorKey: 'syncStatus',
             header: 'Sync Status',
-            cell: ({ row }) => {
+            cell: ({ row }: { row: Row<VendorBeneficiaryRow> }) => {
               const status = row.original?.status;
-              console.log('status:', status);
               return (
                 <Badge
                   className="text-xs font-normal"

@@ -7,11 +7,11 @@ import usePayoutTransactionLogTableColumn from './usePayoutTransactionLogTableCo
 import {
   Back,
   CustomPagination,
+  DemoTable,
   Heading,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 
-import PayoutTable from './payoutTable';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { UUID } from 'crypto';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
@@ -67,7 +67,6 @@ export default function PayoutTransactionList() {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  console.log(payouts);
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
@@ -92,7 +91,6 @@ export default function PayoutTransactionList() {
     },
     [filters],
   );
-  console.log(payouts);
   return (
     <div className="p-4">
       <div className="flex flex-col space-y-0">
@@ -132,7 +130,7 @@ export default function PayoutTransactionList() {
             className="flex-[1]"
           />
         </div>
-        <PayoutTable table={table} loading={isLoading} />
+        <DemoTable table={table} loading={isLoading} />
         <CustomPagination
           currentPage={pagination.page}
           handleNextPage={setNextPage}

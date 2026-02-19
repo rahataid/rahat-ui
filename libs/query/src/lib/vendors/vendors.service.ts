@@ -54,6 +54,7 @@ export const useVendorList = (
       },
       queryFn: () => vendorClient.list(payload),
       placeholderData: keepPreviousData,
+      staleTime: 10 * 60 * 1000, // 10 min
     },
     queryClient,
   );
@@ -94,6 +95,7 @@ export const useGetVendorStats = (): UseQueryResult<any, Error> => {
   return useQuery({
     queryKey: [TAGS.GET_VENDOr_STATS],
     queryFn: () => listBeneficiaryStats(),
+    staleTime: 10 * 60 * 1000, // 10 min
   });
 };
 

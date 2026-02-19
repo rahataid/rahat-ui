@@ -122,6 +122,7 @@ export const useDailyMonitoring = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
   return query;
 };
@@ -141,6 +142,7 @@ export const useGaugeReading = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
   return query;
 };
@@ -162,6 +164,7 @@ export const useGaugeForecast = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
   return query;
 };

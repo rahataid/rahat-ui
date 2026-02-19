@@ -62,8 +62,6 @@ export default function MapView({
       type: MARKER_TYPE?.BENEFICIARY,
     })) || [];
 
-  console.log(mappedCoordinate, 'map');
-
   const DEFAULT_LAT = mappedCoordinate[0]?.latitude;
   const DEFAULT_LNG = mappedCoordinate[0]?.longitude;
 

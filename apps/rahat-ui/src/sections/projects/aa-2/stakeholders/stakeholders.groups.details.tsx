@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import {
   useDeleteStakeholdersGroups,
   useSingleStakeholdersGroup,
-  useUpdateStakeholdersGroups,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -23,11 +22,13 @@ import {
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
-import { Pencil, Plus, User } from 'lucide-react';
+import { Plus, User } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useProjectStakeholdersGroupTableColumns } from './columns';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
-import { DialogComponent } from './component/dialog.reuse';
+import { ConflictDialog } from './component/conflict-dialog';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
 
 const StakeholdersGroupsDetails = () => {
   const router = useRouter();
@@ -35,13 +36,16 @@ const StakeholdersGroupsDetails = () => {
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [conflictActivities, setConflictActivities] = useState<string[]>([]);
+  const conflictDialogOpen = useBoolean();
+
   const columns = useProjectStakeholdersGroupTableColumns();
   const { data: groupDetails, isLoading } = useSingleStakeholdersGroup(
     projectId,
     groupId,
   );
-  const { mutate: updateGroup, isPending } = useUpdateStakeholdersGroups();
-  const { mutate: deleteGroup } = useDeleteStakeholdersGroups();
+  const { mutateAsync: deleteGroup, isPending: isDeleting } =
+    useDeleteStakeholdersGroups();
 
   const table = useReactTable({
     data: groupDetails?.stakeholders || [],
@@ -59,28 +63,41 @@ const StakeholdersGroupsDetails = () => {
     },
   });
 
-  const handleEditClick = (groupName: string) => {
-    updateGroup({
+  const handleDeleteClick = async () => {
+    const response = await deleteGroup({
       projectUUID: projectId,
       stakeholdersGroupPayload: {
         uuid: groupId,
-        name: groupName,
       },
     });
-  };
 
-  const handleDeleteClick = () => {
-    deleteGroup({
-      projectUUID: projectId,
-      stakeholdersGroupPayload: {
-        uuid: groupId,
-      },
-    });
-    router.push(`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`);
+    // Check if response has isSuccess flag and activities
+    if (response?.isSuccess === false && response?.activities) {
+      // Show conflict modal with activities list
+      setConflictActivities(response.activities);
+      conflictDialogOpen.onTrue();
+    } else if (response?.isSuccess !== false) {
+      // Delete was successful, navigate back
+      router.push(
+        `/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`,
+      );
+    }
   };
 
   return (
     <div className="p-4 ">
+      {isDeleting && (
+        <div className="absolute inset-0 bg-gray-900 bg-opacity-30 flex items-center justify-center z-50">
+          <Loader />
+        </div>
+      )}
+      <ConflictDialog
+        open={conflictDialogOpen.value}
+        onOpenChange={conflictDialogOpen.setValue}
+        activities={conflictActivities}
+        groupName={groupDetails?.name || 'Stakeholder Group'}
+      />
+
       <div className="flex justify-between items-center">
         <HeaderWithBack
           title={groupDetails?.name}
@@ -92,29 +109,12 @@ const StakeholdersGroupsDetails = () => {
             roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
             hasContent={false}
           >
-            <DialogComponent
-              isLoading={isPending}
-              buttonIcon={Pencil}
-              buttonText="Edit Group Name"
-              dialogTitle="Edit Group Name"
-              dialogDescription="Are you sure you want to edit this group name?"
-              confirmButtonText="Edit"
-              handleClick={handleEditClick}
-              buttonClassName="rounded-sm w-full"
-              confirmButtonClassName="rounded-sm w-full bg-primary"
-              variant="outline"
-            />
-          </RoleAuth>
-
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
             <DeleteButton
               name="stakeholders group"
               handleContinueClick={handleDeleteClick}
               className="rounded-sm w-full flex gap-1 items-center p-1"
               label="Delete Group"
+              disabled={isDeleting}
             />
           </RoleAuth>
         </div>

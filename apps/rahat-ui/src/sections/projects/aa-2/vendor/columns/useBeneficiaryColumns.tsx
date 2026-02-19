@@ -12,7 +12,7 @@ import { formatTokenAmount } from 'apps/rahat-ui/src/utils/stellar';
 import { PayoutMode } from 'libs/query/src/lib/aa';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 

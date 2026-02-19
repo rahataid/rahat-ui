@@ -6,7 +6,7 @@ import { Eye } from 'lucide-react';
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
-import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 interface PayoutTransactionLogRow {
   groupName: string;
   totalBeneficiaries: number;

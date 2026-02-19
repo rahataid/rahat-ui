@@ -6,7 +6,7 @@ import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
-import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
 // function getStatusBg(status: string) {
 //   if (status === 'NOT_STARTED') {

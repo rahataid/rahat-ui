@@ -4,7 +4,7 @@ import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import { getSessionColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
-import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
 interface IndividualCommonLogRow {
   title?: string;

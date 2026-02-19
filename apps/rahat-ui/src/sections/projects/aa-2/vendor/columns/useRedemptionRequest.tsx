@@ -12,7 +12,7 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { TOKEN_TO_AMOUNT_MULTIPLIER } from '@rahat-ui/query';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
-import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 

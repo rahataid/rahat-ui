@@ -3,7 +3,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 function getStatusBg(status: string) {
   if (status === 'Not Started') {
     return 'bg-gray-200 text-black';

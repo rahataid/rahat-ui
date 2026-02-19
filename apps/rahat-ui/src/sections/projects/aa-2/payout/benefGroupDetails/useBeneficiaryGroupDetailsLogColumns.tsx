@@ -23,7 +23,7 @@ import {
 import { getExplorerUrl, intlFormatDate } from 'apps/rahat-ui/src/utils';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
-import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 function getTransactionStatusColor(status: string) {
   switch (status.toLowerCase()) {

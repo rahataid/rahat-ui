@@ -11,7 +11,7 @@ import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import { Copy, CopyCheck } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 

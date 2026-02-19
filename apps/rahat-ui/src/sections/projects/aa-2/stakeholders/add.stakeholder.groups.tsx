@@ -166,12 +166,15 @@ const UpdateOrAddStakeholdersGroup = () => {
     try {
       if (isEditing) {
         await updateStakeholdersGroup.mutateAsync(updatePayload);
+        router.replace(
+          `/projects/aa/${projectId}/stakeholders/groups/${groupId}`,
+        );
       } else {
         await createStakeholdersGroup.mutateAsync(payload);
+        router.push(
+          `/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`,
+        );
       }
-      router.push(
-        `/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`,
-      );
     } catch (error) {
       console.error('Error creating/updating group:', error);
     }
@@ -220,15 +223,15 @@ const UpdateOrAddStakeholdersGroup = () => {
             <HeaderWithBack
               title={
                 isEditing
-                  ? 'Add Stakeholder to Group'
+                  ? 'Update Stakeholder Group Details'
                   : 'Create Stakeholder Group'
               }
-              subtitle={
+              subtitle={isEditing ? '' : 'Fill the form below to create a new'}
+              path={
                 isEditing
-                  ? 'Select stakeholders from the list below to add them to selected'
-                  : 'Fill the form below to create a new'
+                  ? `/projects/aa/${projectId}/stakeholders/groups/${groupId}`
+                  : `/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`
               }
-              path={`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`}
             />
             <div className="ml-1 mb-1">
               <FormField

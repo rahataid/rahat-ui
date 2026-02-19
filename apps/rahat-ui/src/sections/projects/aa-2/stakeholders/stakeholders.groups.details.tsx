@@ -18,7 +18,7 @@ import {
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
-import { Plus, User } from 'lucide-react';
+import { RefreshCw, User } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useProjectStakeholdersGroupTableColumns } from './columns';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
@@ -133,7 +133,7 @@ const StakeholdersGroupsDetails = (props: Props) => {
               }
               className=""
             >
-              <Plus size={18} className="mr-1" /> Add StakeHolder
+              <RefreshCw size={18} className="mr-1" /> Update StakeHolder Group
             </Button>
           </RoleAuth>
         </div>

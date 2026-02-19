@@ -63,9 +63,12 @@ export const useCreateStakeholdersGroups = <
         },
       }) as TData;
     },
-    onSuccess: (data, variables, ctx) => {
+    onSuccess: async (data, variables, ctx) => {
       q.reset();
-      qc.invalidateQueries({
+      await qc.invalidateQueries({
+        queryKey: ['stakeholdersGroups'],
+      });
+      await qc.refetchQueries({
         queryKey: ['stakeholdersGroups'],
       });
       options?.onSuccess?.(data, variables, ctx);
@@ -384,10 +387,19 @@ export const useUpdateStakeholdersGroups = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       q.reset();
-      qc.invalidateQueries({
-        queryKey: ['stakeholdersGroups', 'stakeholders'],
+      await qc.invalidateQueries({
+        queryKey: ['stakeholdersGroups'],
+      });
+      await qc.invalidateQueries({
+        queryKey: ['stakeholdersGroup'],
+      });
+      await qc.refetchQueries({
+        queryKey: ['stakeholdersGroups'],
+      });
+      await qc.refetchQueries({
+        queryKey: ['stakeholdersGroup'],
       });
       toast.fire({
         title: 'Stakeholders group updated successfully',
@@ -434,10 +446,13 @@ export const useDeleteStakeholdersGroups = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       q.reset();
-      qc.invalidateQueries({
-        queryKey: ['stakeholdersGroups', 'stakeholders'],
+      await qc.invalidateQueries({
+        queryKey: ['stakeholdersGroups'],
+      });
+      await qc.refetchQueries({
+        queryKey: ['stakeholdersGroups'],
       });
       toast.fire({
         title: 'Stakeholders Group removed successfully',

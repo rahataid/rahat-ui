@@ -4,7 +4,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 
 import { useParams, useRouter } from 'next/navigation';
-import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 
 export const useProjectBeneficiaryTableColumns = () => {

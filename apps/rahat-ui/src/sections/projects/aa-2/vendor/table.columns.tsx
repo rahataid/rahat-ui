@@ -18,7 +18,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { IProjectVendor } from './types';
 import { toast } from 'react-toastify';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
-import { TruncatedCell } from '../stakeholders/component/TruncatedCell';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 // import { DialogComponent } from '../activities/details/dialog.reuse';
 

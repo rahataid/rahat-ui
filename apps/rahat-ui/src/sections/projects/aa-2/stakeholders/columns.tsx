@@ -10,7 +10,7 @@ import { UUID } from 'crypto';
 import { RoleAuth, AARoles } from '@rahat-ui/auth';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
-import { TruncatedCell } from './component/TruncatedCell';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
 export const useProjectStakeholdersTableColumns = () => {
   const router = useRouter();

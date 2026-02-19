@@ -41,7 +41,6 @@ import {
   LoaderCircle,
   Minus,
   Plus,
-  View,
   X,
 } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';

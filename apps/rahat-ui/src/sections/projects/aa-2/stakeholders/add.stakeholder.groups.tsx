@@ -9,14 +9,11 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { useProjectSelectStakeholdersTableColumns } from './columns';
-import { mockData } from 'apps/rahat-ui/src/common/data/data';
 import {
-  ClientSidePagination,
   CustomPagination,
   DemoTable,
   HeaderWithBack,
   Heading,
-  SearchInput,
 } from 'apps/rahat-ui/src/common';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -68,7 +65,7 @@ const UpdateOrAddStakeholdersGroup = () => {
   useEffect(() => {
     if (isEditing && stakeholdersGroupDetail) {
       const preSelected = stakeholdersGroupDetail?.stakeholders?.reduce(
-        (acc, stakeholder) => {
+        (acc: Record<string, boolean>, stakeholder: { uuid: string }) => {
           acc[stakeholder.uuid] = true;
           return acc;
         },
@@ -82,9 +79,6 @@ const UpdateOrAddStakeholdersGroup = () => {
   const createStakeholdersGroup = useCreateStakeholdersGroups();
   const updateStakeholdersGroup = useUpdateStakeholdersGroups();
 
-  const handleSearch = (event, key) => {
-    setFilters({ ...filters, [key]: event.target.value });
-  };
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const columns = useProjectSelectStakeholdersTableColumns();
   const table = useReactTable({

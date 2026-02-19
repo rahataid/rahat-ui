@@ -7,7 +7,6 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/sheet';
 import {
   Select,
@@ -45,22 +44,6 @@ const ViewTemplate = ({
   onSelectTemplate,
 }: ViewTemplateProps) => {
   const { id }: { id: UUID } = useParams();
-
-  // const [filters, setFilters] = useState<{
-  //   page: number;
-  //   perPage: number;
-  //   phase: string;
-  //   category: string;
-  //   title: string;
-  //   isAutomated: boolean | undefined;
-  // }>({
-  //   page: 1,
-  //   perPage: 50,
-  //   phase: '',
-  //   category: debouncedSearch.category || '',
-  //   title: debouncedSearch.title || '',
-  //   isAutomated: undefined,
-  // });
   const { pagination, filters, setNextPage, setPrevPage, setFilters } =
     usePagination();
 
@@ -83,13 +66,6 @@ const ViewTemplate = ({
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      {/* <SheetTrigger asChild>
-        <Button className="gap-2">
-          <Filter className="w-4 h-4" />
-          View Templates
-        </Button>
-      </SheetTrigger> */}
-
       <SheetContent className="w-[600px] sm:w-[700px] overflow-y-auto">
         <SheetHeader className="pb-4 border-b">
           <SheetTitle className="text-2xl">Available Templates</SheetTitle>

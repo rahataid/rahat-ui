@@ -74,11 +74,6 @@ export default function AddActivities() {
     null,
   );
 
-  // const ViewTemplate = dynamic(() => import('../components/viewTemplate'), {
-  //   ssr: false,
-  //   loading: () => <p>Loading templates...</p>,
-  // });
-
   const createActivity = useCreateActivities();
   const uploadFile = useUploadFile();
   const { id: projectID } = useParams();
@@ -103,15 +98,7 @@ export default function AddActivities() {
   const { phases } = usePhasesStore((state) => ({
     phases: state.phases,
   }));
-  // if (users) {
-  //   console.log('users from store:', users);
-  // }
-  // if (phases) {
-  //   console.log('phase from store:', phases);
-  // }
-  // if (categories) {
-  //   console.log('categories from store:', categories);
-  // }
+
   const activitiesListPath =
     navPae === 'mainPage'
       ? `/projects/aa/${projectID}/activities`
@@ -317,28 +304,30 @@ export default function AddActivities() {
   const handleSelectTemplate = (payload: Template) => {
     form.clearErrors();
     // Populate form fields with template data
-    if (payload.title) {
-      form.setValue('title', payload.title);
-    }
+    const fieldMappings = {
+      title: payload.title,
+      description: payload.description,
+      responsibility: payload.managerId,
+      source: payload.source,
+      leadTime: payload.leadTime,
+      isAutomated: payload.isAutomated,
+      activityDocuments: payload.activityDocuments,
+    } as const;
 
-    if (payload.description) {
-      form.setValue('description', payload.description);
-    }
-    if (payload.managerId) {
-      form.setValue('responsibility', payload.managerId);
-    }
+    Object.entries(fieldMappings).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        form.setValue(key as keyof typeof fieldMappings, value);
+      }
+    });
 
-    if (payload.source) {
-      form.setValue('source', payload.source);
-    }
-
+    // Handle phase lookup
     if (payload.phase?.name) {
       const phaseId = phases.find(
         (p) => p.name.toLowerCase() === payload.phase?.name.toLowerCase(),
       )?.uuid;
-      form.setValue('phaseId', phaseId);
+      if (phaseId) form.setValue('phaseId', phaseId);
     }
-
+    // Handle category lookup
     if (payload.category?.name) {
       const categoryUuid = categories.find(
         (c) => c.name.toLowerCase() === payload.category?.name.toLowerCase(),
@@ -347,19 +336,6 @@ export default function AddActivities() {
         form.setValue('categoryId', categoryUuid);
       }
     }
-
-    if (payload.leadTime) {
-      form.setValue('leadTime', payload.leadTime);
-    }
-
-    if (typeof payload.isAutomated === 'boolean') {
-      form.setValue('isAutomated', payload.isAutomated);
-    }
-
-    if (payload.activityDocuments && Array.isArray(payload.activityDocuments)) {
-      form.setValue('activityDocuments', payload.activityDocuments);
-    }
-
     // If there are activity communications, populate them
     if (
       payload.activityCommunication &&
@@ -368,9 +344,9 @@ export default function AddActivities() {
     ) {
       // Map the activity communication data to match your CommunicationData format
       const mappedCommunications: CommunicationData[] =
-        payload.activityCommunication.map((comm: any) => {
+        payload.activityCommunication.map((comm) => {
           // Check if message is an object (audioURL) or string
-          const isMessageObject =
+          const isAudioMessage =
             typeof comm.message === 'object' && comm.message !== null;
 
           return {
@@ -378,9 +354,9 @@ export default function AddActivities() {
             groupType: comm.groupType || '',
             groupId: comm.groupId || '',
             transportId: comm.transportId || '',
-            message: isMessageObject ? '' : comm.message || '',
+            message: isAudioMessage ? '' : comm.message || '',
             subject: comm.subject || '',
-            audioURL: isMessageObject
+            audioURL: isAudioMessage
               ? comm.message
               : comm.audioURL || { mediaURL: '', fileName: '' },
             sessionId: comm.sessionId || '',

@@ -41,6 +41,7 @@ import {
   LoaderCircle,
   Minus,
   Plus,
+  View,
   X,
 } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -56,7 +57,7 @@ import {
 import { useActivityForm } from '../hooks/useActivityForm';
 import { buildCommunicationPayloads } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
 
-import ViewTemplate from '../components/viewTemplate';
+import ViewTemplate from 'apps/rahat-ui/src/sections/projects/aa-2/activities/components/viewTemplate';
 import { Template } from 'apps/rahat-ui/src/types/activities';
 
 export const DurationData = [

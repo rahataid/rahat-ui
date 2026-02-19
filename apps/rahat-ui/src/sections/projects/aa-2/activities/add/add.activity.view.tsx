@@ -58,7 +58,6 @@ import { buildCommunicationPayloads } from 'apps/rahat-ui/src/utils/buildCommuni
 
 import ViewTemplate from '../components/viewTemplate';
 import { Template } from 'apps/rahat-ui/src/types/activities';
-import dynamic from 'next/dynamic';
 
 export const DurationData = [
   { value: 'hours', label: 'Hours' },
@@ -330,12 +329,16 @@ export default function AddActivities() {
       form.setValue('source', payload.source);
     }
 
-    if (payload.phase?.uuid) {
-      form.setValue('phaseId', payload.phase.uuid);
+    if (payload.phase?.name) {
+      const phaseId = phases.find((p) => p.name === payload.phase?.name)?.id;
+      form.setValue('phaseId', phaseId);
     }
 
-    if (payload.category?.uuid) {
-      form.setValue('categoryId', payload.category.uuid);
+    if (payload.category?.name) {
+      const categoryId = categories.find(
+        (c) => c.name === payload.category?.name,
+      )?.id;
+      form.setValue('categoryId', categoryId);
     }
 
     if (payload.leadTime) {
@@ -372,9 +375,7 @@ export default function AddActivities() {
       setCommunicationData(mappedCommunications);
     }
   };
-  const handleViewTemplates = () => {
-    setIsOpen(true);
-  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
@@ -404,7 +405,7 @@ export default function AddActivities() {
                   <Button
                     className="gap-2"
                     type="button"
-                    onClick={handleViewTemplates}
+                    onClick={() => setIsOpen(true)}
                   >
                     <Filter className="w-4 h-4" />
                     View Templates

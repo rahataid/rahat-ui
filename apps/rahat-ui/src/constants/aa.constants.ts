@@ -29,9 +29,9 @@ export const INFO_TOOL_TIPS: Record<string, string> = {
 
 export const PHASE = [
   { value: 'all', label: 'All' },
-  { value: 'preparedness', label: 'Preparedness' },
-  { value: 'readiness', label: 'Readiness' },
-  { value: 'activation', label: 'Activation' },
+  { value: 'Preparedness', label: 'Preparedness' },
+  { value: 'Readiness', label: 'Readiness' },
+  { value: 'Activation', label: 'Activation' },
 ];
 export const AUTOMATION_TYPE = [
   { value: 'all', label: 'All' },

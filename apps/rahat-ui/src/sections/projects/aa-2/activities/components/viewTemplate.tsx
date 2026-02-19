@@ -112,7 +112,7 @@ const ViewTemplate = ({
             <div className="space-y-2">
               <label className="text-sm font-medium">Phase</label>
               <Select
-                value={filters.phase}
+                value={filters.phase === '' ? 'all' : filters.phase}
                 onValueChange={(value) =>
                   setFilters((prev: Template) => ({
                     ...prev,
@@ -179,7 +179,7 @@ const ViewTemplate = ({
               <Select
                 value={
                   filters.isAutomated === ''
-                    ? ''
+                    ? 'all'
                     : filters.isAutomated.toString()
                 }
                 onValueChange={(value) =>

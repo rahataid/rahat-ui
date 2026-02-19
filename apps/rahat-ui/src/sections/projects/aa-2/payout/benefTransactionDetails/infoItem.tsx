@@ -37,11 +37,7 @@ export default function InfoItem({
           <>
             {link ? (
               <a
-                href={
-                  project?.name == 'AA Unicef EVM'
-                    ? `https://sepolia.basescan.org/tx/${value}`
-                    : getStellarTxUrl(settings, projectId, value)
-                }
+                href={`https://sepolia.basescan.org/tx/${value}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer truncate w-24"

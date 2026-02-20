@@ -55,6 +55,7 @@ export function TemplateDetailsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl p-4 overflow-hidden">
         <DialogHeader className="p-6 pb-2">
+          <h3 className="flex semi-bold items-center gap-2">Activity Title</h3>
           <DialogTitle className="text-xl font-semibold flex items-center justify-between">
             <TruncatedCell text={template.title} maxLength={50} />
             <Badge

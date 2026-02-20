@@ -66,7 +66,6 @@ export const DurationData = [
 
 export default function AddActivities() {
   const [open, setOpen] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [audioUploading, setAudioUploading] = useState<boolean>(false);
   const [communicationData, setCommunicationData] = useState<
     CommunicationData[]

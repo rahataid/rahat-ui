@@ -36,4 +36,5 @@ export interface Template {
   activityDocuments: any;
   activityCommunication: any;
   isAutomated: boolean;
+  hasCommunication: boolean;
 }

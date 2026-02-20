@@ -58,6 +58,7 @@ import { buildCommunicationPayloads } from 'apps/rahat-ui/src/utils/buildCommuni
 
 import ViewTemplate from 'apps/rahat-ui/src/sections/projects/aa-2/activities/components/viewTemplate';
 import { Template } from 'apps/rahat-ui/src/types/activities';
+import TemplateDetailsDialog from '../components/templateDetailsDialog';
 
 export const DurationData = [
   { value: 'hours', label: 'Hours' },
@@ -66,6 +67,7 @@ export const DurationData = [
 
 export default function AddActivities() {
   const [open, setOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [audioUploading, setAudioUploading] = useState<boolean>(false);
   const [communicationData, setCommunicationData] = useState<
     CommunicationData[]
@@ -367,6 +369,12 @@ export default function AddActivities() {
     }
   };
 
+  // const handleViewTemplateDetails = (template: Template) => {
+  //   // You can set the selected template in state if you want to display its details in the dialog
+  //   // For now, we'll just open the dialog
+  //   setIsDialogOpen(true);
+  // };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
@@ -406,6 +414,7 @@ export default function AddActivities() {
                       open={isOpen}
                       setOpen={setIsOpen}
                       onSelectTemplate={handleSelectTemplate}
+                      // viewTemplateDetails={handleViewTemplateDetails}
                     />
                   )}
                   <Button

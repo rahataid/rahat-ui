@@ -82,45 +82,6 @@ export const useCreateElCrmCampaign = (projectUUID: UUID) => {
   });
 };
 
-export const useUpdateCampaign = (projectUUID: UUID) => {
-  const action = useProjectAction();
-  const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
-  return useMutation({
-    mutationFn: async (data: any) => {
-      const res = await action.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: UPDATE_CAMPAIGN,
-          payload: data,
-        },
-      });
-      return res.data;
-    },
-    onSuccess: () => {
-      toast.fire({
-        title: 'Campaign updated successfully',
-        icon: 'success',
-      });
-      queryClient.invalidateQueries({
-        queryKey: [queryKeys.elCrmCampaignList],
-      });
-    },
-    onError: () => {
-      toast.fire({
-        title: 'Error while updating campaign.',
-        icon: 'error',
-      });
-    },
-  });
-};
-
 export const useTriggerElCrmCampaign = (projectUUID: UUID) => {
   const action = useProjectAction();
   const queryClient = useQueryClient();
@@ -190,45 +151,6 @@ export const useListElCrmCampaign = (
     data: query?.data?.data || [],
     meta: query?.data?.meta,
   };
-};
-
-export const useListRpCommunicationStats = (projectUUID: UUID) => {
-  const action = useProjectAction();
-
-  return useQuery({
-    queryKey: ['rpCampaignStats'],
-    queryFn: async () => {
-      const res = await action.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: GET_ALL_COMMUNICATION_STATS,
-          payload: {},
-        },
-      });
-      return res.data;
-    },
-  });
-};
-
-export const useListRpCommunicationLogs = (
-  projectUUID: UUID,
-  payload: Pagination,
-) => {
-  const action = useProjectAction();
-
-  return useQuery({
-    queryKey: ['rpCommunicationLogs', projectUUID, payload],
-    queryFn: async () => {
-      const res = await action.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: GET_ALL_COMMUNICATION_LOGS,
-          payload: payload,
-        },
-      });
-      return res;
-    },
-  });
 };
 
 export const useListElCrmCampaignLog = (projectUUID: UUID, payload: any) => {

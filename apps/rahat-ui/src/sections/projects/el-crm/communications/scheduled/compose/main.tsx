@@ -21,30 +21,36 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/components/select';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Plus } from 'lucide-react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
+import {
+  useCreateElCrmCampaign,
+  useListElCrmTemplate,
+  useListElCrmTransport,
+  useTriggerElCrmCampaign,
+} from '@rahat-ui/query';
 
 // Validation schema
 const scheduleMessageSchema = z.object({
-  groupSelection: z.string().min(1, 'Please select a group'),
+  name: z.string().min(1, 'Message name is required'),
+  targetType: z.string().min(1, 'Please select a group'),
   statusFilter: z.string().optional(),
   messagingChannel: z.string().min(1, 'Please select a messaging channel'),
   scheduleType: z.string().min(1, 'Please select a schedule type'),
   scheduleDateTime: z.string().optional(),
   automaticCondition: z.string().optional(),
   isRecurring: z.boolean().default(false),
-  customMessage: z
-    .string()
-    .min(1, 'Please enter a message')
-    .max(1000, 'Message must be less than 1000 characters'),
+  customMessage: z.string().optional(),
+  selectedTemplate: z.string().optional(),
 });
 
 type ScheduleMessageForm = z.infer<typeof scheduleMessageSchema>;
 
 export default function ComposeScheduleView() {
   const { id: projectUUID } = useParams() as { id: UUID };
+  const router = useRouter();
 
   const {
     control,
@@ -52,14 +58,16 @@ export default function ComposeScheduleView() {
     handleSubmit,
     watch,
     formState: { errors },
+    reset,
     setValue,
   } = useForm<ScheduleMessageForm>({
     resolver: zodResolver(scheduleMessageSchema),
     defaultValues: {
-      groupSelection: '',
+      name: '',
+      targetType: '',
       statusFilter: '',
       messagingChannel: '',
-      scheduleType: '',
+      scheduleType: 'manual',
       scheduleDateTime: '',
       automaticCondition: '',
       isRecurring: false,
@@ -67,12 +75,48 @@ export default function ComposeScheduleView() {
     },
   });
 
-  const groupSelection = watch('groupSelection');
+  const transport = useListElCrmTransport(projectUUID);
+  const templates = useListElCrmTemplate(projectUUID);
+  const createCampaign = useCreateElCrmCampaign(projectUUID);
+  const trigger = useTriggerElCrmCampaign(projectUUID);
+
+  const groupSelection = watch('targetType');
   const scheduleType = watch('scheduleType');
 
-  const onSubmit = (data: ScheduleMessageForm) => {
+  const onSubmit = async (data: ScheduleMessageForm) => {
     console.log('Scheduling message with:', data);
     // Handle form submission here
+
+    const options: any = {};
+
+    // Vendor status filter
+    if (data.statusFilter) {
+      options.vendorStatus = data.statusFilter.toUpperCase();
+    }
+
+    // Manual scheduling
+    if (scheduleType === 'manual' && data.scheduleDateTime) {
+      const scheduledDate = new Date(data.scheduleDateTime);
+      options.scheduledTimestamp = scheduledDate.toISOString();
+      options.attemptIntervalMinutes = '5';
+    }
+
+    const payload = {
+      targetType: data.targetType,
+      name: data.name,
+      options: Object.keys(options).length ? options : undefined,
+      transportId: data.messagingChannel,
+      message: data.selectedTemplate,
+    };
+    const capaign = await createCampaign.mutateAsync(payload);
+    console.log('Created campaign:', capaign);
+
+    if (capaign.uuid) {
+      trigger.mutateAsync({ uuid: capaign.uuid });
+    }
+
+    reset();
+    router.push(`/projects/el-crm/${projectUUID}/communications/scheduled`);
   };
 
   return (
@@ -108,11 +152,25 @@ export default function ComposeScheduleView() {
               <div className="grid gap-6 md:grid-cols-2">
                 {/* Left Column */}
                 <div className="space-y-4">
+                  {/* Name */}
+                  <div className="space-y-2">
+                    <Label htmlFor="name"> Name</Label>
+                    <Input
+                      id="name"
+                      placeholder="e.g., Welcome Message"
+                      {...register('name')}
+                    />
+                    {errors.name && (
+                      <p className="text-sm text-red-500">
+                        {errors.name.message}
+                      </p>
+                    )}
+                  </div>
                   {/* Group Selection */}
                   <div className="space-y-2">
                     <Label htmlFor="group-selection">Select Group</Label>
                     <Controller
-                      name="groupSelection"
+                      name="targetType"
                       control={control}
                       render={({ field }) => (
                         <>
@@ -129,17 +187,15 @@ export default function ComposeScheduleView() {
                               <SelectValue placeholder="Select group type" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="customers">
-                                Customers
-                              </SelectItem>
-                              <SelectItem value="consumers">
+                              <SelectItem value="VENDOR">Customers</SelectItem>
+                              <SelectItem value="BENEFICIARY">
                                 Consumers
                               </SelectItem>
                             </SelectContent>
                           </Select>
-                          {errors.groupSelection && (
+                          {errors.targetType && (
                             <p className="text-sm text-red-500">
-                              {errors.groupSelection.message}
+                              {errors.targetType.message}
                             </p>
                           )}
                         </>
@@ -148,7 +204,7 @@ export default function ComposeScheduleView() {
                   </div>
 
                   {/* Condition Filter - only shows when Customer is selected */}
-                  {groupSelection === 'customers' && (
+                  {groupSelection === 'VENDOR' && (
                     <div className="space-y-2">
                       <Label htmlFor="condition-filter">Condition Filter</Label>
                       <Controller
@@ -191,8 +247,14 @@ export default function ComposeScheduleView() {
                               <SelectValue placeholder="Select channel" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="sms">SMS</SelectItem>
-                              <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                              {transport.data?.map((channel: any) => (
+                                <SelectItem
+                                  key={channel.cuid}
+                                  value={channel.cuid.toString()}
+                                >
+                                  {channel.name.toUpperCase()}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                           {errors.messagingChannel && (
@@ -319,7 +381,51 @@ export default function ComposeScheduleView() {
                       </Label>
                     </div>
                   )}
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Template Management</Label>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() =>
+                          router.push(
+                            `/projects/el-crm/${projectUUID}/communications/templates/create`,
+                          )
+                        }
+                        className="w-full"
+                      >
+                        <Plus className="mr-2 h-4 w-4" />
+                        Create New Template
+                      </Button>
+                    </div>
+                  </div>
                 </div>
+              </div>
+
+              {/* Template Selection */}
+              <div className="space-y-2">
+                <Label htmlFor="template">Select Template</Label>
+                <Controller
+                  name="selectedTemplate"
+                  control={control}
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose existing template" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {templates?.data?.map((template: any) => (
+                          <SelectItem
+                            key={template.cuid}
+                            value={template?.externalId}
+                          >
+                            {template.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
 
               {/* Custom Message */}

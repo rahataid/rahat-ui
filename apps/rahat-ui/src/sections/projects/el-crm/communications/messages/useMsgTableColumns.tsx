@@ -21,16 +21,12 @@ export const useMsgTableColumn = () => {
     }
   };
 
-  const getStatusVariant = (status: string) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Active':
-        return 'default';
-      case 'Draft':
-        return 'secondary';
-      case 'Scheduled':
-        return 'outline';
+      case 'Sent':
+        return 'bg-green-100 text-green-800';
       default:
-        return 'secondary';
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -41,38 +37,48 @@ export const useMsgTableColumn = () => {
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-      accessorKey: 'channel',
+      accessorKey: 'transportName',
       header: 'Channel',
       cell: ({ row }) => (
         <Badge
-          className={getChannelColor(row.getValue('channel'))}
+          className={getChannelColor(row.getValue('transportName'))}
           variant="secondary"
         >
-          {row.getValue('channel')}
+          {row.getValue('transportName')}
         </Badge>
       ),
     },
     {
-      accessorKey: 'group',
+      accessorKey: 'targetType',
       header: 'Group',
-      cell: ({ row }) => <div>{row.getValue('group') || 'N/A'}</div>,
+      cell: ({ row }) => <div>{row.getValue('targetType') || 'N/A'}</div>,
     },
     {
-      accessorKey: 'recipients',
+      accessorKey: 'recipientCount',
       header: 'Recipients',
-      cell: ({ row }) => <div>{row.getValue('recipients') || 'N/A'}</div>,
+      cell: ({ row }) => <div>{row.getValue('recipientCount') || 'N/A'}</div>,
     },
     {
-      accessorKey: 'createdDate',
+      accessorKey: 'createdAt',
       header: 'Created Date',
-      cell: ({ row }) => <div>{row.getValue('createdDate') || 'N/A'}</div>,
+      cell: ({ row }) => (
+        <div>
+          {row.getValue('createdAt')
+            ? new Date(row.getValue('createdAt')).toLocaleString()
+            : 'N/A'}
+        </div>
+      ),
     },
     {
-      accessorKey: 'status',
+      accessorKey: 'sessionId',
       header: 'Status',
       cell: ({ row }) => (
-        <Badge variant={getStatusVariant(row.getValue('status'))}>
-          {row.getValue('status')}
+        <Badge
+          className={getStatusColor(
+            row.getValue('sessionId') ? 'Sent' : 'Draft',
+          )}
+        >
+          {row.getValue('sessionId') ? 'Sent' : 'Draft'}
         </Badge>
       ),
     },
@@ -83,7 +89,7 @@ export const useMsgTableColumn = () => {
       cell: ({ row }) => {
         return (
           <Link
-            href={`/projects/el-crm/${id}/communications/messages/${row.original.id}`}
+            href={`/projects/el-crm/${id}/communications/messages/${row.original.uuid}`}
           >
             <Eye className="h-4 w-4 rounded-full hover:bg-gray-300" />
           </Link>

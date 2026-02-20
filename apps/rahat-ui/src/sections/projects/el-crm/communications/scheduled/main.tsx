@@ -28,105 +28,40 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import DemoTable from 'apps/rahat-ui/src/components/table';
-
-const scheduledMessages = [
-  {
-    id: 1,
-    templateName: 'Welcome Message',
-    channel: 'SMS',
-    group: 'New Customers',
-    scheduledDate: '2024-02-15',
-    scheduledTime: '10:00 AM',
-    recipientCount: 245,
-    status: 'Scheduled',
-    templateContent:
-      "Welcome to our service! We're excited to have you on board.",
-  },
-  {
-    id: 2,
-    templateName: 'Product Update',
-    channel: 'WhatsApp',
-    group: 'Active Users',
-    scheduledDate: '2024-02-14',
-    scheduledTime: '02:00 PM',
-    recipientCount: 189,
-    status: 'Scheduled',
-    templateContent: "We've just launched new features in our app!",
-  },
-  {
-    id: 3,
-    templateName: 'Appointment Reminder',
-    channel: 'SMS',
-    group: 'Customers',
-    scheduledDate: '2024-02-20',
-    scheduledTime: '09:00 AM',
-    recipientCount: 312,
-    status: 'Pending',
-    templateContent: 'This is a reminder about your upcoming appointment.',
-  },
-  {
-    id: 4,
-    templateName: 'Re-engagement Campaign',
-    channel: 'WhatsApp',
-    group: 'Inactive Users',
-    scheduledDate: '2024-02-18',
-    scheduledTime: '11:30 AM',
-    recipientCount: 567,
-    status: 'Scheduled',
-    templateContent: "We miss you! Check out what's new and come back to us.",
-  },
-];
+import {
+  useListElCrmCampaign,
+  useListElCrmTemplate,
+  useListElCrmTransport,
+  usePagination,
+} from '@rahat-ui/query';
+import FiltersTags from '../../../components/filtersTags';
 
 export default function ScheduledView() {
   const { id: projectUUID } = useParams() as { id: UUID };
 
-  const [messages, setMessages] = useState(scheduledMessages);
-  const [selectedMessage, setSelectedMessage] = useState<
-    (typeof scheduledMessages)[0] | null
-  >(null);
-  const [filterTemplate, setFilterTemplate] = useState('all');
-  const [filterChannel, setFilterChannel] = useState('all');
   const [filterDate, setFilterDate] = useState('all');
 
-  const handleDelete = (id: number) => {
-    setMessages(messages.filter((m) => m.id !== id));
-  };
-
-  const clearFilters = () => {
-    setFilterTemplate('all');
-    setFilterChannel('all');
-    setFilterDate('all');
-  };
-
-  const filteredMessages = scheduledMessages.filter((message) => {
-    const templateMatch =
-      filterTemplate === 'all' ||
-      message.templateName.toLowerCase().includes(filterTemplate.toLowerCase());
-    const channelMatch =
-      filterChannel === 'all' || message.channel === filterChannel;
-    const dateMatch =
-      filterDate === 'all' || message.scheduledDate === filterDate;
-
-    return templateMatch && channelMatch && dateMatch;
+  const { pagination, filters, setFilters } = usePagination();
+  const { data } = useListElCrmCampaign(projectUUID, {
+    page: pagination.page,
+    perPage: 1000,
+    isScheduled: true,
+    ...filters,
   });
+  const { data: templates } = useListElCrmTemplate(projectUUID);
+  const transport = useListElCrmTransport(projectUUID);
 
-  const hasActiveFilters =
-    filterTemplate !== 'all' || filterChannel !== 'all' || filterDate !== 'all';
-  const uniqueTemplates = Array.from(
-    new Set(scheduledMessages.map((m) => m.templateName)),
-  );
-  const uniqueChannels = Array.from(
-    new Set(scheduledMessages.map((m) => m.channel)),
-  );
-  const uniqueDates = Array.from(
-    new Set(scheduledMessages.map((m) => m.scheduledDate)),
-  ).sort();
+  const messageIds = new Set(data?.map((d: any) => d.message));
+
+  const scheduledTemplates =
+    templates?.filter((template: any) => messageIds.has(template.externalId)) ||
+    [];
 
   const columns = useScheduledTableColumn();
 
   const table = useReactTable({
     manualPagination: true,
-    data: filteredMessages,
+    data: data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -156,7 +91,7 @@ export default function ScheduledView() {
       </div>
 
       <div className="flex-1 p-6">
-        {messages.length === 0 ? (
+        {data.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-96 text-center">
             <Clock className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold text-foreground mb-2">
@@ -176,24 +111,14 @@ export default function ScheduledView() {
           </div>
         ) : (
           <Card>
-            {hasActiveFilters && (
-              <CardHeader>
-                {/* <div className="flex items-center justify-between"> */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="gap-2 bg-transparent"
-                >
-                  <X className="h-4 w-4" />
-                  Clear Filters
-                </Button>
-                {/* </div> */}
-              </CardHeader>
+            {Object.keys(filters).length != 0 && (
+              <FiltersTags
+                filters={filters}
+                setFilters={setFilters}
+                total={data?.length}
+              />
             )}
-            <CardContent
-              className={`space-y-4 ${!hasActiveFilters ? 'mt-6' : ''}`}
-            >
+            <CardContent className={`space-y-4 ${true ? 'mt-6' : ''}`}>
               {/* Filters */}
               <div className="grid gap-4 md:grid-cols-3 bg-muted/50 p-4 rounded-lg">
                 {/* Template Filter */}
@@ -202,17 +127,22 @@ export default function ScheduledView() {
                     Template
                   </Label>
                   <Select
-                    value={filterTemplate}
-                    onValueChange={setFilterTemplate}
+                    value={filters?.message || ''}
+                    onValueChange={(value) => {
+                      setFilters((prev) => ({
+                        ...prev,
+                        message: value === 'all' ? undefined : value,
+                      }));
+                    }}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="All Templates" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Templates</SelectItem>
-                      {uniqueTemplates.map((template) => (
-                        <SelectItem key={template} value={template}>
-                          {template}
+                      {scheduledTemplates.map((template) => (
+                        <SelectItem key={template} value={template.externalId}>
+                          {template.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -225,17 +155,22 @@ export default function ScheduledView() {
                     Channel
                   </Label>
                   <Select
-                    value={filterChannel}
-                    onValueChange={setFilterChannel}
+                    value={filters?.transportId || ''}
+                    onValueChange={(value) => {
+                      setFilters((prev) => ({
+                        ...prev,
+                        transportId: value === 'all' ? undefined : value,
+                      }));
+                    }}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="All Channels" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Channels</SelectItem>
-                      {uniqueChannels.map((channel) => (
-                        <SelectItem key={channel} value={channel}>
-                          {channel}
+                      {transport?.data?.map((channel) => (
+                        <SelectItem key={channel} value={channel.cuid}>
+                          {channel.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -253,21 +188,21 @@ export default function ScheduledView() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Dates</SelectItem>
-                      {uniqueDates.map((date) => (
+                      {/* {uniqueDates.map((date) => (
                         <SelectItem key={date} value={date}>
                           {format(new Date(date), 'MMM dd, yyyy')}
                         </SelectItem>
-                      ))}
+                      ))} */}
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
               {/* Results Count */}
-              <div className="text-sm text-muted-foreground">
+              {/* <div className="text-sm text-muted-foreground">
                 Showing {filteredMessages.length} of {scheduledMessages.length}{' '}
                 messages
-              </div>
+              </div> */}
 
               {/* Table */}
               <DemoTable table={table} />

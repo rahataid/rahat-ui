@@ -73,11 +73,8 @@ export function TemplateDetailsDialog({
               {template.leadTime || '—'}
             </InfoItem>
 
-            <InfoItem icon={<User size={16} />} label="Manager">
+            <InfoItem icon={<User size={16} />} label="Responsibility">
               {template.manager?.name}
-              <div className="text-xs text-muted-foreground">
-                {template.manager?.email}
-              </div>
             </InfoItem>
 
             <InfoItem label="Phase">

@@ -43,15 +43,13 @@ interface ViewTemplateProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   onSelectTemplate?: (template: Template) => void; // Add this prop for template selection callback
-  // viewTemplateDetails?: (template: Template) => void; // Add this prop for viewing template details
 }
 
 const ViewTemplate = ({
   open,
   setOpen,
   onSelectTemplate,
-}: // viewTemplateDetails,
-ViewTemplateProps) => {
+}: ViewTemplateProps) => {
   const { id }: { id: UUID } = useParams();
   const { pagination, filters, setNextPage, setPrevPage, setFilters } =
     usePagination();
@@ -76,24 +74,7 @@ ViewTemplateProps) => {
         ? 'false'
         : '',
     hasCommunication: filters.hasCommunication === 'true' ? 'true' : '',
-    // : filters.hasCommunication === 'false'
-    // ? 'false'
-    // : '',
   });
-
-  const handleViewTemplateDetails = (template: Template) => {
-    // You can set the selected template in state if you want to display its details in the dialog
-    // For now, we'll just open the dialog
-    setIsDialogOpen(true);
-    console.log('Viewing template details for:', template);
-    return (
-      <TemplateDetailsDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        template={template}
-      />
-    );
-  };
 
   return (
     <>

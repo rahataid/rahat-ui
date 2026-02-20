@@ -368,12 +368,6 @@ export default function AddActivities() {
     }
   };
 
-  // const handleViewTemplateDetails = (template: Template) => {
-  //   // You can set the selected template in state if you want to display its details in the dialog
-  //   // For now, we'll just open the dialog
-  //   setIsDialogOpen(true);
-  // };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>

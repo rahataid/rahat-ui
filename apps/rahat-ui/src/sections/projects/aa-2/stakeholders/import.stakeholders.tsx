@@ -2,11 +2,19 @@
 
 import React, { useRef, useState } from 'react';
 import * as XLSX from 'xlsx';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   ScrollArea,
@@ -22,10 +30,14 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/table';
 
 import { ClientSidePagination, HeaderWithBack } from 'apps/rahat-ui/src/common';
-import { CloudDownload, Repeat2, Share } from 'lucide-react';
+import { CloudDownload, Repeat2, Share, Users, X } from 'lucide-react';
 import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
-import { useUploadStakeholders } from '@rahat-ui/query';
+import {
+  useUploadStakeholders,
+  useCreateStakeholdersGroups,
+  useProjectAction,
+  useStakeholdersGroups,
+} from '@rahat-ui/query';
 import {
   ColumnDef,
   flexRender,
@@ -55,8 +67,23 @@ export default function ImportStakeholder() {
   const [data, setData] = useState<any[][]>([]);
   const [fileName, setFileName] = useState<string>('No File Choosen');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [importedStakeholderUUIDs, setImportedStakeholderUUIDs] = useState<
+    string[]
+  >([]);
+  const showGroupModal = useBoolean();
+  const showGroupForm = useBoolean();
+  const [groupName, setGroupName] = useState('');
+  const [groupError, setGroupError] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadStakeholders = useUploadStakeholders();
+  const createStakeholdersGroup = useCreateStakeholdersGroups();
+  const projectAction = useProjectAction();
+
+  const { data: stakeholdersGroupsData } = useStakeholdersGroups(id, {
+    sort: 'createdAt',
+    order: 'desc',
+  });
+
   const [duplicatePhonesFromServer, setDuplicatePhonesFromServer] = useState<
     Set<string>
   >(new Set());
@@ -77,7 +104,6 @@ export default function ImportStakeholder() {
     if (data.length < 2) return true;
 
     const headers = data[0].map((h: any) => h?.toString().toLowerCase().trim());
-    console.log(headers);
 
     return data.slice(1).some((row) =>
       requiredHeaders
@@ -345,16 +371,48 @@ export default function ImportStakeholder() {
     const doctype = allowedExtensions[extension];
 
     try {
-      await uploadStakeholders.mutateAsync({
+      const response = await uploadStakeholders.mutateAsync({
         selectedFile,
         doctype,
         projectId: id,
       });
+      const successCount = response?.data?.successCount || 0;
 
-      // Clear duplicates if successful
-      setDuplicatePhonesFromServer(new Set());
+      if (successCount === 0) {
+        toast.warning('No stakeholders were imported');
+        router.push(`/projects/aa/${id}/stakeholders?tab=stakeholders`);
+        return;
+      }
 
-      router.push(`/projects/aa/${id}/stakeholders?tab=stakeholders`);
+      try {
+        const stakeholdersResponse = await projectAction.mutateAsync({
+          uuid: id,
+          data: {
+            action: 'aaProject.stakeholders.getAll',
+            payload: {
+              page: 1,
+              perPage: successCount,
+              sort: 'createdAt',
+              order: 'desc',
+            },
+          },
+        });
+        const fetchedStakeholders = stakeholdersResponse?.response?.data || [];
+        const importedUUIDs = fetchedStakeholders
+          .slice(0, successCount)
+          .map((s: any) => s.uuid);
+
+        setImportedStakeholderUUIDs(importedUUIDs);
+        setDuplicatePhonesFromServer(new Set());
+        setDuplicateEmailFromServer(new Set());
+        toast.dismiss();
+        showGroupModal.onTrue();
+      } catch (fetchError) {
+        toast.warning(
+          'Stakeholders imported but could not retrieve IDs for grouping.',
+        );
+        router.push(`/projects/aa/${id}/stakeholders?tab=stakeholders`);
+      }
     } catch (error: any) {
       const message: string =
         error?.response?.data?.message || error?.message || '';
@@ -422,7 +480,48 @@ export default function ImportStakeholder() {
     }
   }, [duplicateEmails]);
 
-  console.log('emails', duplicateEmails);
+  // Group creation handler
+  const handleCreateGroup = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!groupName.trim()) {
+      setGroupError('Group name is required');
+      return;
+    }
+
+    const existingGroups = stakeholdersGroupsData?.data || [];
+    const groupExists = existingGroups?.some(
+      (group: any) =>
+        group.name.toLowerCase() === groupName.trim().toLowerCase(),
+    );
+    if (groupExists) {
+      setGroupError('A group with this name already exists');
+      return;
+    }
+
+    const stakeholdersList = importedStakeholderUUIDs.map((uuid) => ({ uuid }));
+
+    try {
+      await createStakeholdersGroup.mutateAsync({
+        projectUUID: id,
+        stakeholdersGroupPayload: {
+          name: groupName,
+          stakeholders: stakeholdersList,
+        },
+      });
+      showGroupModal.onFalse();
+      showGroupForm.onFalse();
+      setGroupName('');
+      router.push(`/projects/aa/${id}/stakeholders?tab=stakeholdersGroup`);
+    } catch (error: any) {
+      console.error('❌ Group creation failed:', error);
+      const errorMsg =
+        error?.response?.data?.message || 'Failed to create group';
+      console.error('Error message:', errorMsg);
+      setGroupError(errorMsg);
+    }
+  };
+
   return (
     <>
       <div className="p-4  h-[calc(100vh-120px)]">
@@ -455,10 +554,10 @@ export default function ImportStakeholder() {
               />
 
               <div
-                className="flex items-center border rounded-md  cursor-pointer w-full"
+                className="flex items-center border rounded-sm cursor-pointer w-full"
                 onClick={() => inputRef.current?.click()}
               >
-                <span className="flex items-center bg-gray-100 text-blue-400 px-4 py-2 font-semibold text-sm hover:bg-gray-200 transition-colors space-x-3">
+                <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-4 py-2 font-semibold text-sm hover:bg-gray-200 transition-colors space-x-3">
                   {selectedFile ? (
                     <>
                       <Repeat2 size={22} className="px-1" /> Replace
@@ -567,6 +666,171 @@ export default function ImportStakeholder() {
           </Button>
         </div>
       </div>
+
+      {/* Group Creation Modal */}
+      <Dialog
+        open={showGroupModal.value}
+        onOpenChange={(open) => {
+          if (!open) {
+            showGroupModal.onFalse();
+            showGroupForm.onFalse();
+            setGroupName('');
+            setGroupError('');
+          }
+        }}
+      >
+        <DialogContent className="rounded-sm max-w-md">
+          {!showGroupForm.value ? (
+            // Initial confirmation
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-center text-primary">
+                  Import Successful
+                </DialogTitle>
+                <DialogDescription className="text-center">
+                  {importedStakeholderUUIDs.length}{' '}
+                  {importedStakeholderUUIDs.length === 1
+                    ? 'stakeholder has'
+                    : 'stakeholders have'}{' '}
+                  been added to stakeholder list.
+                </DialogDescription>
+              </DialogHeader>
+
+              <p className="text-sm text-black mb-2 font-medium">
+                Would you like to organize them into a group?
+              </p>
+
+              <div className="space-y-2 mb-2">
+                {/* Create a Group card */}
+                <div className="border hover-bg-blue-50/40 rounded-sm overflow-hidden">
+                  <div className="w-full text-left p-4 transition-colors">
+                    <div className="flex items-start gap-3">
+                      <Users
+                        size={30}
+                        className="px-1 mt-1 text-primary bg-gray-100 rounded-sm"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-gray-800">
+                            Create a Group
+                          </span>
+                          <span className="text-xs px-2 py-0.5 rounded-sm bg-gray-100 font-semibold text-blue-600">
+                            RECOMMENDED
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1">
+                          Name and organize these stakeholders for streamlined
+                          communication and bulk actions.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Skip for Now card */}
+                <div className="border border-gray-200 rounded-sm overflow-hidden">
+                  <div className="w-full text-left p-4 transition-colors">
+                    <div className="flex items-start gap-3">
+                      <X
+                        size={30}
+                        className="px-1 mt-0.5 text-primary rounded-sm bg-gray-100"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-gray-800">
+                            Skip for Now
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1">
+                          Stakeholders are saved individually. You can group
+                          them anytime from the stakeholder list.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => {
+                    showGroupModal.onFalse();
+                    toast.success('Stakeholders imported successfully!');
+                    router.push(
+                      `/projects/aa/${id}/stakeholders?tab=stakeholders`,
+                    );
+                  }}
+                >
+                  Skip
+                </Button>
+                <Button
+                  className="flex-1"
+                  onClick={() => showGroupForm.onTrue()}
+                >
+                  Create Group
+                </Button>
+              </div>
+            </>
+          ) : (
+            <form onSubmit={handleCreateGroup}>
+              <DialogHeader>
+                <DialogTitle>Create Stakeholder Group</DialogTitle>
+                <DialogDescription>
+                  Creating a group for {importedStakeholderUUIDs.length}{' '}
+                  imported{' '}
+                  {importedStakeholderUUIDs.length === 1
+                    ? 'stakeholder'
+                    : 'stakeholders'}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="mt-4 mb-4">
+                <label className="block text-sm font-medium mb-2">
+                  Group Name <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="text"
+                  value={groupName}
+                  onChange={(e) => {
+                    setGroupName(e.target.value);
+                    setGroupError('');
+                  }}
+                  placeholder="Enter group name"
+                  className="w-full"
+                  autoFocus
+                />
+                {groupError && (
+                  <p className="text-red-500 text-xs mt-1">{groupError}</p>
+                )}
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1 rounded-sm"
+                  onClick={() => {
+                    showGroupForm.onFalse();
+                    setGroupName('');
+                    setGroupError('');
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  type="submit"
+                  className="flex-1 rounded-sm"
+                  disabled={createStakeholdersGroup.isPending}
+                >
+                  {createStakeholdersGroup.isPending
+                    ? 'Creating...'
+                    : 'Create Group'}
+                </Button>
+              </div>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

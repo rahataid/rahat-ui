@@ -1,17 +1,12 @@
-import { useRouter, useParams, useSearchParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { Eye, RefreshCcw } from 'lucide-react';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
 // function getStatusBg(status: string) {
 //   if (status === 'NOT_STARTED') {
@@ -54,30 +49,14 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: ({ row }) => (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="truncate w-48 hover:cursor-pointer">
-                {row.getValue('title')}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent
-              side="bottom"
-              className="w-80 rounded-sm text-justify "
-            >
-              <p>{row.getValue('title')}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ),
+      cell: ({ row }) => <TruncatedCell text={row.getValue('title')} />,
     },
     {
       accessorKey: 'category',
       header: 'Category',
       cell: ({ row }) => (
         <Badge className="rounded-xl capitalize text-xs font-normal text-muted-foreground">
-          {row.getValue('category')}
+          <TruncatedCell text={row.getValue('category')} maxLength={15} />
         </Badge>
       ),
     },
@@ -98,8 +77,8 @@ export default function useActivitiesTableColumn() {
     },
     {
       accessorKey: 'source',
-      header: 'Responsible Station',
-      cell: ({ row }) => <div>{row.getValue('source')}</div>,
+      header: 'Responsible Station ',
+      cell: ({ row }) => <TruncatedCell text={row.getValue('source')} />,
     },
     {
       accessorKey: 'status',
@@ -111,11 +90,7 @@ export default function useActivitiesTableColumn() {
           <Badge
             className={`rounded-xl capitalize text-xs font-normal ${bgColor}`}
           >
-            {status
-              .toLowerCase()
-              .split('_')
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ')}
+            <TruncatedCell text={status} maxLength={10} />
           </Badge>
         );
       },
@@ -125,7 +100,7 @@ export default function useActivitiesTableColumn() {
       header: 'Completed By',
       cell: ({ row }) => {
         const completedBy = row.getValue('completedBy') as string;
-        return <div className="">{completedBy || 'N/A'}</div>;
+        return <TruncatedCell text={completedBy || 'N/A'} />;
       },
     },
     {
@@ -137,7 +112,7 @@ export default function useActivitiesTableColumn() {
           const d = new Date(completedAt);
           const localeDate = d.toLocaleDateString();
           const localeTime = d.toLocaleTimeString();
-          return `${localeDate} ${localeTime}`;
+          return <TruncatedCell text={`${localeDate} ${localeTime}`} />;
         }
         return 'N/A';
       },

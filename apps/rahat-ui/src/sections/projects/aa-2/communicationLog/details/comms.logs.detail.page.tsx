@@ -50,10 +50,22 @@ import CommsLogsTable from '../table/comms.logs.table';
 import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
 import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
-type IHeadCardProps = {
-  title: string;
-  icon: LucideIcon;
-  content: string;
+
+type SessionLog = {
+  address: string;
+  status: string;
+  disposition?: {
+    duration?: string | number;
+    answerTime?: string;
+    endTime?: string;
+    disposition?: string;
+  };
+  message?: string;
+  error?: string;
+  attempts: number;
+  maxAttempts: number;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export default function CommsLogsDetailPage() {
@@ -81,7 +93,6 @@ export default function CommsLogsDetailPage() {
     setFilters,
   } = usePagination();
 
-  // logs?.sessionLogs
   const debounceSearch = useDebounce(filters, 500);
   const { data: logs, isLoading } = useGetCommunicationLogs(
     projectID as UUID,
@@ -157,14 +168,14 @@ export default function CommsLogsDetailPage() {
 
   const onFailedExports = () => {
     const logs = sessionLogs?.httpReponse?.data?.data?.filter(
-      (log: any) => log?.status === BroadcastStatus.FAIL,
+      (log: SessionLog) => log?.status === BroadcastStatus.FAIL,
     );
 
     if (!logs?.length) return;
 
     const rowsToDownload = logs || [];
     const workbook = XLSX.utils.book_new();
-    const worksheetData = rowsToDownload?.map((log: any) => ({
+    const worksheetData = rowsToDownload?.map((log: SessionLog) => ({
       Address: log.address,
       Status: log.status,
     }));
@@ -172,6 +183,102 @@ export default function CommsLogsDetailPage() {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');
 
     XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
+  };
+
+  const getLogRowMapper = (communicationType: string, messageText: string) => {
+    const commonFields = (log: SessionLog) => ({
+      'Group Name': logs?.groupName || 'N/A',
+      'Group Type': logs?.communicationDetail?.groupType || 'N/A',
+      'Communication Type': logs?.sessionDetails?.Transport?.name || 'N/A',
+      'Communication Title':
+        logs?.communicationDetail?.communicationTitle || 'N/A',
+    });
+
+    const typeSpecificFields: Record<
+      string,
+      (log: SessionLog) => Record<string, any>
+    > = {
+      EMAIL: (log) => ({
+        Subject: logs?.communicationDetail?.subject || 'N/A',
+        Message: messageText,
+        'Audience Email': log.address || 'N/A',
+        Status: log.status || 'N/A',
+      }),
+      VOICE: (log) => ({
+        'Audience Number': log.address || 'N/A',
+        Status: log.status || 'N/A',
+        Duration:
+          log.status === 'FAIL'
+            ? log.disposition?.disposition || log.message || log.error || 'N/A'
+            : log.disposition?.duration !== null &&
+              log.disposition?.duration !== undefined
+            ? log.disposition.duration
+            : 'N/A',
+        Attempts: log.attempts || 0,
+        'Max Attempts': log.maxAttempts || 0,
+      }),
+      SMS: (log) => ({
+        Message: messageText,
+        'Audience Number': log.address || 'N/A',
+        Status: log.status || 'N/A',
+      }),
+    };
+
+    const dateFields = (log: SessionLog) => ({
+      'Triggered Date': logs?.sessionDetails?.createdAt
+        ? dateFormat(logs?.sessionDetails?.createdAt)
+        : 'N/A',
+      'Created Date': log.createdAt ? dateFormat(log.createdAt) : 'N/A',
+      'Updated Date': log.updatedAt ? dateFormat(log.updatedAt) : 'N/A',
+    });
+
+    const getFields =
+      typeSpecificFields[communicationType] || typeSpecificFields.SMS;
+
+    return (log: SessionLog) => ({
+      ...commonFields(log),
+      ...getFields(log),
+      ...dateFields(log),
+    });
+  };
+
+  const onExportAll = () => {
+    const logsData = sessionLogs?.httpReponse?.data?.data;
+    if (!logsData || logsData.length === 0) return;
+
+    const communicationType =
+      logs?.sessionDetails?.Transport?.name || 'Communication';
+    const fileName = `${communicationType} Logs.xlsx`;
+
+    const message = logs?.communicationDetail?.message;
+    const messageText =
+      typeof message === 'string'
+        ? message
+        : message?.fileName
+        ? `${message.fileName}`
+        : 'N/A';
+
+    const workbook = XLSX.utils.book_new();
+
+    const rowMapper = getLogRowMapper(communicationType, messageText);
+    const communicationLogsData = logsData.map(rowMapper);
+    const logsWorksheet = XLSX.utils.json_to_sheet(communicationLogsData);
+    XLSX.utils.book_append_sheet(workbook, logsWorksheet, 'Communication Logs');
+
+    const detailsData = [
+      {
+        'Activity Title': activityDetail?.title || 'N/A',
+        'Activity Description': activityDetail?.description || 'N/A',
+        Phase: activityDetail?.phase?.name || 'N/A',
+        'Activity Status': activityDetail?.status || 'N/A',
+        'Total Audience Count': logsMeta?.total || 0,
+        'Successfully Delivered': count?.data?.data?.SUCCESS ?? 0,
+        'Failed Delivered': count?.data?.data?.FAIL ?? 0,
+      },
+    ];
+    const detailsWorksheet = XLSX.utils.json_to_sheet(detailsData);
+    XLSX.utils.book_append_sheet(workbook, detailsWorksheet, 'Details');
+    XLSX.writeFile(workbook, fileName);
   };
 
   const handleSearch = React.useCallback(
@@ -205,6 +312,15 @@ export default function CommsLogsDetailPage() {
               description="Here is the detailed view of selected communication"
             />
             <div className="flex gap-2 flex-col md:flex-row">
+              <Button
+                variant="outline"
+                className=" gap-2 h-7"
+                onClick={onExportAll}
+                disabled={!sessionLogs?.httpReponse?.data?.data?.length}
+              >
+                <CloudDownload className="h-3.5 w-3.5" />
+                Export All Logs
+              </Button>
               <Button
                 variant="outline"
                 className=" gap-2 h-7"
@@ -428,7 +544,6 @@ export default function CommsLogsDetailPage() {
 }
 
 function renderMessage(message: any) {
-  console.log(message);
   if (typeof message === 'string') {
     return message;
   }

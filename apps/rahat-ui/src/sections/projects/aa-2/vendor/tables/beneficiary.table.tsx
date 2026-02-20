@@ -41,15 +41,12 @@ export default function VendorsBeneficiaryList({
 
   const {
     pagination,
-    selectedListItems,
-    setSelectedListItems,
     setNextPage,
     setPrevPage,
     setPerPage,
     filters,
     setFilters,
     setPagination,
-    resetSelectedListItems,
   } = usePagination();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});

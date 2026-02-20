@@ -15,6 +15,7 @@ import {
   Back,
   CustomPagination,
   DataCard,
+  DemoTable,
   Heading,
   SearchInput,
   TableLoader,
@@ -27,12 +28,13 @@ import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { UUID } from 'crypto';
 import { CloudDownload, RotateCcw } from 'lucide-react';
-import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import PayoutConfirmationDialog from './payoutTriggerConfirmationModel';
 import useBeneficiaryGroupDetailsLogColumns from './useBeneficiaryGroupDetailsLogColumns';
 import * as XLSX from 'xlsx';
 import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
 import { getPayoutTransactionStatusOptions } from './utils';
+// TODO: remove this table if used nowhgere
+// import BeneficiariesGroupTable from './beneficiariesGroupTable';
 
 export default function BeneficiaryGroupTransactionDetailsList() {
   const params = useParams();
@@ -364,7 +366,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
             className="flex-[1]"
           />
         </div>
-        <BeneficiariesGroupTable table={table} loading={payoutLogsLoading} />
+        <DemoTable table={table} loading={payoutLogsLoading} />
 
         <CustomPagination
           currentPage={pagination.page}

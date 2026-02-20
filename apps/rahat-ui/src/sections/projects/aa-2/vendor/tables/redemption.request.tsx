@@ -13,15 +13,8 @@ export default function RedemptionRequestTable() {
   const { id, vendorId } = useParams();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const {
-    filters,
-    setFilters,
-    pagination,
-    setPagination,
-    setNextPage,
-    setPerPage,
-    setPrevPage,
-  } = usePagination();
+  const { pagination, setPagination, setNextPage, setPerPage, setPrevPage } =
+    usePagination();
 
   const { data, isLoading } = useVendorTokenRedemptionList({
     projectUUID: id,

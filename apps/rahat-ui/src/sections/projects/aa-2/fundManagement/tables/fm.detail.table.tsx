@@ -8,8 +8,6 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
 import { useFMDetailTableColumns } from '../columns/useFMDetailColumns';
 import {
   ClientSidePagination,
@@ -29,9 +27,7 @@ export default function FundManagementDetailTable({
   group,
   loading,
   title,
-  status,
 }: IProps) {
-  const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

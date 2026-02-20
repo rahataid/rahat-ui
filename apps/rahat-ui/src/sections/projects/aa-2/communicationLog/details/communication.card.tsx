@@ -131,7 +131,6 @@ export function CommunicationDetailCard({
 
     XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
   };
-  console.log(activityCommunication, 'detail from the single communication');
   return (
     <Card className="rounded-sm pb-0 flex flex-col justify-between">
       <CardHeader className="pb-2">

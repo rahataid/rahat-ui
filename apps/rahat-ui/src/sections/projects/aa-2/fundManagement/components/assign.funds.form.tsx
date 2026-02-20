@@ -60,6 +60,9 @@ export default function AssignFundsForm() {
       .min(1, { message: 'Enter valid amount' })
       .refine((val) => /^\d+$/.test(val), {
         message: 'Amount must be a positive integer',
+      })
+      .refine((val) => Number(val) > 0, {
+        message: 'Amount must be greater than 0',
       }),
     totalTokenAmount: z
       .string()
@@ -83,7 +86,6 @@ export default function AssignFundsForm() {
   const totalReservedTokens =
     reservationStats?.data?.totalReservedTokens?._sum?.benTokens || 0;
   const availableBudget = parsedProjectBudget - totalReservedTokens;
-  console.log(projectBudget);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -94,6 +96,8 @@ export default function AssignFundsForm() {
       totalTokenAmount: '0',
       totalTokensReserved: 0,
     },
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
   });
 
   const benGroups = useBeneficiaryGroups(projectId, {
@@ -362,10 +366,7 @@ export default function AssignFundsForm() {
                 Clear
               </Button>
 
-              <Button
-                className="px-10 rounded-sm w-40"
-                disabled={!form.formState.isValid}
-              >
+              <Button type="submit" className="px-10 rounded-sm w-40">
                 Confirm
               </Button>
             </div>

@@ -38,8 +38,7 @@ import {
   AccordionTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/accordion';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-import TemplateDetailsDialog from './templateDetailsDialog';
-
+import { TemplateDetailsDialog } from './templateDetailsDialog';
 interface ViewTemplateProps {
   open: boolean;
   setOpen: (open: boolean) => void;

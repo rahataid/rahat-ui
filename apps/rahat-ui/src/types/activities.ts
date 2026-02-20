@@ -32,6 +32,16 @@ export interface Template {
     uuid: UUID;
     name: string;
   };
+  notes: string;
+  manager: {
+    uuid: UUID;
+    name: string;
+    email: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  completedAt: string;
+  status: string;
   leadTime: string;
   activityDocuments: any;
   activityCommunication: any;

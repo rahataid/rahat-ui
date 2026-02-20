@@ -58,7 +58,6 @@ import { buildCommunicationPayloads } from 'apps/rahat-ui/src/utils/buildCommuni
 
 import ViewTemplate from 'apps/rahat-ui/src/sections/projects/aa-2/activities/components/viewTemplate';
 import { Template } from 'apps/rahat-ui/src/types/activities';
-import TemplateDetailsDialog from '../components/templateDetailsDialog';
 
 export const DurationData = [
   { value: 'hours', label: 'Hours' },

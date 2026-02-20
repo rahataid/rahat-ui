@@ -16,14 +16,26 @@ export interface IActivitiesItem {
   status: string;
   activityType: string;
   activtiyComm: Record<string, any>;
-  activityDocuments: any;
+  activityDocuments: {
+    mediaURL: string;
+    fileName: string;
+  }[];
+  activityCommunication: {
+    groupId: string;
+    message: string;
+    groupType: string;
+    transportId: string;
+    communicationId: string;
+    communicationTitle: string;
+  }[];
 }
+
 export interface Template {
   uuid: UUID;
   title: string;
   description: string;
   managerId: UUID;
-  phase?: {
+  phase: {
     uuid: UUID;
     name: string;
   };
@@ -46,5 +58,6 @@ export interface Template {
   activityDocuments: any;
   activityCommunication: any;
   isAutomated: boolean;
+  completedBy: string;
   hasCommunication: boolean;
 }

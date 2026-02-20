@@ -10,11 +10,12 @@ import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { FileText, Clock, User } from 'lucide-react';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import { Template } from 'apps/rahat-ui/src/types/activities';
 
 interface TemplateDetailsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  template: any;
+  template: Template | null;
 }
 
 export function TemplateDetailsDialog({
@@ -81,7 +82,9 @@ export function TemplateDetailsDialog({
 
             <InfoItem label="Phase">
               <Badge
-                className={`${getPhaseBadgeColor(template.phase?.name)} border`}
+                className={`${getPhaseBadgeColor(
+                  template?.phase?.name,
+                )} border`}
               >
                 {template.phase?.name}
               </Badge>
@@ -119,18 +122,23 @@ export function TemplateDetailsDialog({
           {template.activityDocuments?.length > 0 && (
             <Section title="Documents">
               <div className="space-y-2">
-                {template.activityDocuments.map((doc: any, index: number) => (
-                  <a
-                    key={index}
-                    href={doc.mediaURL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 p-2 border rounded-md hover:bg-muted transition"
-                  >
-                    <FileText size={16} />
-                    <span className="text-sm">{doc.fileName}</span>
-                  </a>
-                ))}
+                {template.activityDocuments.map(
+                  (
+                    doc: Partial<Template['activityDocuments']>,
+                    index: number,
+                  ) => (
+                    <a
+                      key={index}
+                      href={doc.mediaURL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-2 border rounded-md hover:bg-muted transition"
+                    >
+                      <FileText size={16} />
+                      <span className="text-sm">{doc.fileName}</span>
+                    </a>
+                  ),
+                )}
               </div>
             </Section>
           )}
@@ -140,7 +148,10 @@ export function TemplateDetailsDialog({
             <Section title="Communications">
               <div className="space-y-3">
                 {template.activityCommunication.map(
-                  (comm: any, index: number) => (
+                  (
+                    comm: Partial<Template['activityCommunication']>,
+                    index: number,
+                  ) => (
                     <div
                       key={index}
                       className="border rounded-lg p-3 bg-muted/40"

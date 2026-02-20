@@ -11,7 +11,7 @@ import {
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Label } from '@rahat-ui/shadcn/components/label';
-import { ArrowLeft, RefreshCcw, Send } from 'lucide-react';
+import { ArrowLeft, Send } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { UUID } from 'crypto';
@@ -21,7 +21,6 @@ import {
   useListElCrmBroadCastCount,
   useListElCrmSessionBroadcast,
   usePagination,
-  useRetryFailedSession,
 } from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
@@ -63,16 +62,6 @@ export default function MessageDetailPage() {
       enabled: !!campaign?.sessionId,
     },
   );
-  const mutateRetry = useRetryFailedSession(projectUUID);
-
-  const retryFailed = async () => {
-    try {
-      const res = await mutateRetry.mutateAsync(campaign?.sessionId || '');
-    } catch (error) {
-      console.error('Retry failed:', error);
-    }
-  };
-
   const columns = useCommsLogsTableColumns();
   const {
     pagination,
@@ -120,11 +109,6 @@ export default function MessageDetailPage() {
     }
   };
 
-  const handleSendMessage = () => {
-    console.log('Sending message:', campaign?.uuid);
-    trigger.mutate({ uuid: campaign?.uuid || '' });
-  };
-
   if (!campaign) {
     return (
       <div className="flex flex-col h-full">
@@ -160,6 +144,9 @@ export default function MessageDetailPage() {
       </div>
     );
   }
+  console.log('Session Logs:', logs);
+
+  // logs?.sessionDetails?.Transport?.name,
 
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
@@ -195,23 +182,6 @@ export default function MessageDetailPage() {
               </h1>
               <p className="text-muted-foreground">View message details</p>
             </div>
-          </div>
-
-          <div className="flex gap-4">
-            {count && count?.FAIL > 0 && (
-              <Button type="button" onClick={retryFailed} className="gap-2 ">
-                <RefreshCcw className="h-3.5 w-3.5" />
-                Retry Failed Requests
-              </Button>
-            )}
-            <Button
-              disabled={!!campaign.sessionId}
-              onClick={handleSendMessage}
-              className="min-w-[140px]"
-            >
-              <Send className="mr-2 h-4 w-4" />
-              Send Message
-            </Button>
           </div>
         </div>
       </div>
@@ -297,9 +267,7 @@ export default function MessageDetailPage() {
                       <Label className="text-sm font-medium text-muted-foreground">
                         Recipients
                       </Label>
-                      <p className="text-sm mt-2">
-                        {campaign?.recipientCount || 0}
-                      </p>
+                      <p className="text-sm mt-2">{logs?.length || 0}</p>
                     </div>
 
                     <div>

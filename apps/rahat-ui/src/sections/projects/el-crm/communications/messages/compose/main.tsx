@@ -30,28 +30,25 @@ import { Calendar } from '@rahat-ui/shadcn/components/calendar';
 import { format } from 'date-fns';
 import { CalendarIcon, Send, Plus, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
-
-const messageTemplates = [
-  'Welcome Message',
-  'Product Update',
-  'Reminder',
-  'Appointment Confirmation',
-  'Follow-up Message',
-];
+import {
+  useCreateElCrmCampaign,
+  useListElCrmTemplate,
+  useListElCrmTransport,
+} from '@rahat-ui/query';
+import { options } from 'numeral';
+import { stat } from 'fs';
 
 // Validation schema
 const composeMessageSchema = z.object({
-  groupSelection: z.string().min(1, 'Please select a group'),
+  name: z.string().min(1, 'Name is required'),
+  targetType: z.string().min(1, 'Please select a group'),
   statusFilter: z.string().optional(),
   messagingChannel: z.string().min(1, 'Please select a messaging channel'),
   scheduleDate: z.date().optional(),
   selectedTemplate: z.string().optional(),
-  customMessage: z
-    .string()
-    .min(1, 'Please enter a message')
-    .max(500, 'Message must be less than 500 characters'),
+  customMessage: z.string().optional(),
   newTemplateName: z.string().optional(),
   newTemplateContent: z.string().optional(),
 });
@@ -60,7 +57,7 @@ type ComposeMessageForm = z.infer<typeof composeMessageSchema>;
 
 export default function ComposeMessageView() {
   const { id: projectUUID } = useParams() as { id: UUID };
-  const [showTemplateCreator, setShowTemplateCreator] = useState(false);
+  const router = useRouter();
 
   const {
     control,
@@ -73,32 +70,36 @@ export default function ComposeMessageView() {
   } = useForm<ComposeMessageForm>({
     resolver: zodResolver(composeMessageSchema),
     defaultValues: {
-      groupSelection: '',
+      targetType: '',
       statusFilter: '',
       messagingChannel: '',
-      scheduleDate: undefined,
       selectedTemplate: '',
       customMessage: '',
-      newTemplateName: '',
-      newTemplateContent: '',
     },
   });
 
-  const groupSelection = watch('groupSelection');
-  const scheduleDate = watch('scheduleDate');
+  const groupSelection = watch('targetType');
 
-  const onSubmit = (data: ComposeMessageForm) => {
+  const transport = useListElCrmTransport(projectUUID);
+  const templates = useListElCrmTemplate(projectUUID);
+  const createCampaign = useCreateElCrmCampaign(projectUUID);
+
+  console.log('Templates:', templates.data);
+  const onSubmit = async (data: ComposeMessageForm) => {
     console.log('Submitting form with:', data);
     // Handle form submission here
-  };
-
-  const handleCreateTemplate = (data: ComposeMessageForm) => {
-    console.log('Creating template:', {
-      name: data.newTemplateName,
-      content: data.newTemplateContent,
-    });
-    setShowTemplateCreator(false);
+    const payload = {
+      targetType: data.targetType,
+      name: data.name,
+      options: data.statusFilter
+        ? { vendorStatus: data.statusFilter.toUpperCase() }
+        : undefined,
+      transportId: data.messagingChannel,
+      message: data.selectedTemplate,
+    };
+    await createCampaign.mutateAsync(payload);
     reset();
+    router.push(`/projects/el-crm/${projectUUID}/communications/messages`);
   };
 
   return (
@@ -132,11 +133,25 @@ export default function ComposeMessageView() {
               <div className="grid gap-6 md:grid-cols-2">
                 {/* Left Column */}
                 <div className="space-y-4">
+                  {/* Name */}
+                  <div className="space-y-2">
+                    <Label htmlFor="name"> Name</Label>
+                    <Input
+                      id="name"
+                      placeholder="e.g., Welcome Message"
+                      {...register('name')}
+                    />
+                    {errors.name && (
+                      <p className="text-sm text-red-500">
+                        {errors.name.message}
+                      </p>
+                    )}
+                  </div>
                   {/* Group Selection */}
                   <div className="space-y-2">
                     <Label htmlFor="group-selection">Select Group</Label>
                     <Controller
-                      name="groupSelection"
+                      name="targetType"
                       control={control}
                       render={({ field }) => (
                         <>
@@ -153,17 +168,15 @@ export default function ComposeMessageView() {
                               <SelectValue placeholder="Select group type" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="customers">
-                                Customers
-                              </SelectItem>
-                              <SelectItem value="consumers">
+                              <SelectItem value="VENDOR">Customers</SelectItem>
+                              <SelectItem value="BENEFICIARY">
                                 Consumers
                               </SelectItem>
                             </SelectContent>
                           </Select>
-                          {errors.groupSelection && (
+                          {errors.targetType && (
                             <p className="text-sm text-red-500">
-                              {errors.groupSelection.message}
+                              {errors.targetType.message}
                             </p>
                           )}
                         </>
@@ -172,7 +185,7 @@ export default function ComposeMessageView() {
                   </div>
 
                   {/* Condition Filter - only shows when Customer is selected */}
-                  {groupSelection === 'customers' && (
+                  {groupSelection === 'VENDOR' && (
                     <div className="space-y-2">
                       <Label htmlFor="condition-filter">Condition Filter</Label>
                       <Controller
@@ -198,7 +211,26 @@ export default function ComposeMessageView() {
                       />
                     </div>
                   )}
+                </div>
 
+                {/* Right Column */}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Template Management</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() =>
+                        router.push(
+                          `/projects/el-crm/${projectUUID}/communications/templates/create`,
+                        )
+                      }
+                      className="w-full"
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Create New Template
+                    </Button>
+                  </div>
                   {/* Messaging Channel */}
                   <div className="space-y-2">
                     <Label htmlFor="messaging-channel">Messaging Channel</Label>
@@ -215,8 +247,14 @@ export default function ComposeMessageView() {
                               <SelectValue placeholder="Select channel" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="sms">SMS</SelectItem>
-                              <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                              {transport.data?.map((channel: any) => (
+                                <SelectItem
+                                  key={channel.cuid}
+                                  value={channel.cuid.toString()}
+                                >
+                                  {channel.name.toUpperCase()}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                           {errors.messagingChannel && (
@@ -229,104 +267,7 @@ export default function ComposeMessageView() {
                     />
                   </div>
                 </div>
-
-                {/* Right Column */}
-                <div className="space-y-4">
-                  {/* Schedule Message */}
-                  <div className="space-y-2">
-                    <Label>Schedule Message</Label>
-                    <Controller
-                      name="scheduleDate"
-                      control={control}
-                      render={({ field }) => (
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className="w-full justify-start text-left font-normal bg-transparent"
-                            >
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {field.value ? (
-                                format(field.value, 'PPP')
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0">
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      )}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Template Management</Label>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() =>
-                        setShowTemplateCreator(!showTemplateCreator)
-                      }
-                      className="w-full"
-                    >
-                      <Plus className="mr-2 h-4 w-4" />
-                      Create New Template
-                    </Button>
-                  </div>
-                </div>
               </div>
-
-              {showTemplateCreator && (
-                <Card className="border-dashed">
-                  <CardHeader>
-                    <CardTitle className="text-lg">
-                      Create New Template
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="template-name">Template Name</Label>
-                      <Input
-                        id="template-name"
-                        placeholder="Enter template name"
-                        {...register('newTemplateName')}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="template-content">Template Content</Label>
-                      <Textarea
-                        id="template-content"
-                        placeholder="Enter template content..."
-                        {...register('newTemplateContent')}
-                        rows={3}
-                      />
-                    </div>
-                    <div className="flex justify-end space-x-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setShowTemplateCreator(false)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        type="button"
-                        onClick={handleSubmit(handleCreateTemplate)}
-                      >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Create Template
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
 
               {/* Template Selection */}
               <div className="space-y-2">
@@ -340,12 +281,12 @@ export default function ComposeMessageView() {
                         <SelectValue placeholder="Choose existing template" />
                       </SelectTrigger>
                       <SelectContent>
-                        {messageTemplates.map((template) => (
+                        {templates?.data?.map((template: any) => (
                           <SelectItem
-                            key={template}
-                            value={template.toLowerCase().replace(/\s+/g, '-')}
+                            key={template.cuid}
+                            value={template?.externalId}
                           >
-                            {template}
+                            {template.name}
                           </SelectItem>
                         ))}
                       </SelectContent>

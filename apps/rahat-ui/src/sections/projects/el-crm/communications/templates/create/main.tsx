@@ -22,19 +22,23 @@ import {
 } from '@rahat-ui/shadcn/components/select';
 import { ArrowLeft, Save } from 'lucide-react';
 import Link from 'next/link';
+import { useListElCrmTransport, useCreateTemplate } from '@rahat-ui/query';
+import { UUID } from 'crypto';
+import { useParams, useRouter } from 'next/navigation';
+import { form } from 'viem/chains';
 
 // Validation schema
 const createTemplateSchema = z.object({
-  templateName: z
+  name: z
     .string()
     .min(1, 'Template name is required')
     .max(100, 'Template name must be less than 100 characters'),
-  messagingChannel: z.string().min(1, 'Please select a messaging channel'),
   transport: z.string().min(1, 'Please select a transport'),
-  content: z
+  body: z
     .string()
     .min(1, 'Template content is required')
     .max(2000, 'Template content must be less than 2000 characters'),
+  type: z.string().min(1, 'Please select a template type'),
 });
 
 type CreateTemplateForm = z.infer<typeof createTemplateSchema>;
@@ -45,31 +49,36 @@ export default function CreateTemplateView() {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<CreateTemplateForm>({
     resolver: zodResolver(createTemplateSchema),
     defaultValues: {
-      templateName: '',
-      messagingChannel: '',
+      name: '',
       transport: '',
-      content: '',
+      body: '',
+      type: 'TEXT',
     },
   });
+  const { id: projectUUID } = useParams() as { id: UUID };
+  const router = useRouter();
 
-  const onSubmit = (data: CreateTemplateForm) => {
+  const transport = useListElCrmTransport(projectUUID);
+  const createTemplate = useCreateTemplate(projectUUID);
+  const onSubmit = async (data: CreateTemplateForm) => {
     console.log('Saving template:', data);
-    // Handle form submission here
+    await createTemplate.mutateAsync(data);
+    reset();
+    router.push(`/projects/el-crm/${projectUUID}/communications/templates`);
   };
 
   return (
     <div className="flex flex-col h-full">
       <div className="border-b border-border bg-card/50 px-6 py-4">
         <div className="flex items-center gap-4">
-          <Link href="/communication/templates">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Button>
-          </Link>
+          <Button variant="outline" size="sm" onClick={() => router.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
           <div>
             <h1 className="text-2xl font-bold text-foreground">
               Create Message Template
@@ -97,80 +106,51 @@ export default function CreateTemplateView() {
                     <Input
                       id="template-name"
                       placeholder="e.g., Welcome Message"
-                      {...register('templateName')}
+                      {...register('name')}
                     />
-                    {errors.templateName && (
+                    {errors.name && (
                       <p className="text-sm text-red-500">
-                        {errors.templateName.message}
+                        {errors.name.message}
                       </p>
                     )}
-                  </div>
-
-                  {/* Messaging Channel */}
-                  <div className="space-y-2">
-                    <Label htmlFor="messaging-channel">Messaging Channel</Label>
-                    <Controller
-                      name="messagingChannel"
-                      control={control}
-                      render={({ field }) => (
-                        <>
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select channel" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="sms">SMS</SelectItem>
-                              <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          {errors.messagingChannel && (
-                            <p className="text-sm text-red-500">
-                              {errors.messagingChannel.message}
-                            </p>
-                          )}
-                        </>
-                      )}
-                    />
                   </div>
                 </div>
 
                 {/* Right Column */}
-                <div className="space-y-4">
-                  {/* Transport Selection */}
-                  <div className="space-y-2">
-                    <Label htmlFor="transport">Select Transport</Label>
-                    <Controller
-                      name="transport"
-                      control={control}
-                      render={({ field }) => (
-                        <>
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select transport" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="primary">Primary</SelectItem>
-                              <SelectItem value="secondary">
-                                Secondary
+                {/* Messaging Channel */}
+                <div className="space-y-2">
+                  <Label htmlFor="messaging-channel">Messaging Channel</Label>
+                  <Controller
+                    name="transport"
+                    control={control}
+                    render={({ field }) => (
+                      <>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select channel" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {transport.data?.map((channel: any) => (
+                              <SelectItem
+                                key={channel.cuid}
+                                value={channel.cuid.toString()}
+                              >
+                                {channel.name.toUpperCase()}
                               </SelectItem>
-                              <SelectItem value="backup">Backup</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          {errors.transport && (
-                            <p className="text-sm text-red-500">
-                              {errors.transport.message}
-                            </p>
-                          )}
-                        </>
-                      )}
-                    />
-                  </div>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {errors.transport && (
+                          <p className="text-sm text-red-500">
+                            {errors.transport.message}
+                          </p>
+                        )}
+                      </>
+                    )}
+                  />
                 </div>
               </div>
 
@@ -180,13 +160,11 @@ export default function CreateTemplateView() {
                 <Textarea
                   id="content"
                   placeholder="Enter your message template here... You can use {{variable}} for dynamic content"
-                  {...register('content')}
+                  {...register('body')}
                   rows={6}
                 />
-                {errors.content && (
-                  <p className="text-sm text-red-500">
-                    {errors.content.message}
-                  </p>
+                {errors.body && (
+                  <p className="text-sm text-red-500">{errors.body.message}</p>
                 )}
                 <p className="text-xs text-muted-foreground">
                   Tip: Use double curly braces {'{{variable}}'} for dynamic

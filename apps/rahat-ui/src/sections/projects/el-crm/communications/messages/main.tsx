@@ -28,7 +28,10 @@ export default function MessagesView() {
     setPerPage,
   } = usePagination();
   const columns = useMsgTableColumn();
-  const { data } = useListElCrmCampaign(projectUUID, pagination);
+  const { data } = useListElCrmCampaign(projectUUID, {
+    page: pagination.page,
+    perPage: 1000,
+  });
 
   const table = useReactTable({
     manualPagination: true,

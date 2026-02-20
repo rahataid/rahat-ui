@@ -21,16 +21,12 @@ export const useMsgTableColumn = () => {
     }
   };
 
-  const getStatusVariant = (status: string) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Active':
-        return 'default';
-      case 'Draft':
-        return 'secondary';
-      case 'Scheduled':
-        return 'outline';
+      case 'Sent':
+        return 'bg-green-100 text-green-800';
       default:
-        return 'secondary';
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -58,9 +54,9 @@ export const useMsgTableColumn = () => {
       cell: ({ row }) => <div>{row.getValue('targetType') || 'N/A'}</div>,
     },
     {
-      accessorKey: 'recipients',
+      accessorKey: 'recipientCount',
       header: 'Recipients',
-      cell: ({ row }) => <div>{row.getValue('recipients') || 'N/A'}</div>,
+      cell: ({ row }) => <div>{row.getValue('recipientCount') || 'N/A'}</div>,
     },
     {
       accessorKey: 'createdAt',
@@ -74,11 +70,15 @@ export const useMsgTableColumn = () => {
       ),
     },
     {
-      accessorKey: 'status',
+      accessorKey: 'sessionId',
       header: 'Status',
       cell: ({ row }) => (
-        <Badge variant={getStatusVariant(row.getValue('status'))}>
-          {row.getValue('status')}
+        <Badge
+          className={getStatusColor(
+            row.getValue('sessionId') ? 'Sent' : 'Draft',
+          )}
+        >
+          {row.getValue('sessionId') ? 'Sent' : 'Draft'}
         </Badge>
       ),
     },

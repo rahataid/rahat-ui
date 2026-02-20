@@ -1,6 +1,11 @@
 import { MS_ACTIONS } from '@rahataid/sdk';
 import { Pagination } from '@rumsan/sdk/types';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { useProjectAction } from '../projects';
@@ -19,7 +24,11 @@ const GET_ALL_COMMUNICATION_LOGS = 'elProject.campaign.communication_logs';
 const GET_ALL_COMMUNICATION_STATS = 'elProject.campaign.communication_stats';
 const GET_CAMPAIGN_LOGS = 'elProject.campaign.log';
 const CREATE_TEMPLATE = 'elProject.campaign.create_template';
+const DELETE_TEMPLATE = 'elProject.campaign.delete_template';
 const GET_TEMPLATE = 'elProject.campaign.list_templates';
+const SYNC_TEMPLATE = 'elProject.campaign.sync_templates';
+const BROADCAST_COUNT = 'elProject.campaign.broadcast_count';
+const SESSION_BROADCAST = 'elProject.campaign.list_session_broadcasts';
 
 const queryKeys = {
   //elCrmQueryKeys
@@ -29,6 +38,8 @@ const queryKeys = {
   elCrmListTransport: 'elCrmListTransport',
   elCrmCreateTemplate: 'elCrmCreateTemplate',
   elCrmListTemplate: 'elCrmListTemplate',
+  elCrmBroadcastCount: 'elCrmBroadcastCount',
+  elCrmSessionBroadcast: 'elCrmSessionBroadcast',
 };
 
 // Hooks for create campaign
@@ -157,7 +168,7 @@ export const useTriggerElCrmCampaign = (projectUUID: UUID) => {
 
 export const useListElCrmCampaign = (
   projectUUID: UUID,
-  payload: Pagination & { [key: string]: string },
+  payload: Pagination & { [key: string]: string | boolean },
 ) => {
   const action = useProjectAction();
 
@@ -260,7 +271,7 @@ export const useListElCrmTransport = (projectUUID: UUID) => {
   const action = useProjectAction();
 
   return useQuery({
-    queryKey: [queryKeys.elCrmListTransport, projectUUID],
+    queryKey: [queryKeys.elCrmListTransport],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
@@ -313,6 +324,84 @@ export const useCreateTemplate = (projectUUID: UUID) => {
   });
 };
 
+export const useDeleteTemplate = (projectUUID: UUID) => {
+  const action = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async (cuid: string) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: DELETE_TEMPLATE,
+          payload: { cuid },
+        },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.fire({
+        title: 'Template Deleted successfully',
+        icon: 'success',
+      });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.elCrmListTemplate],
+      });
+    },
+    onError: () => {
+      toast.fire({
+        title: 'Error while deleting template.',
+        icon: 'error',
+      });
+    },
+  });
+};
+
+export const useSyncTemplate = (projectUUID: UUID) => {
+  const action = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async (data: any) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: SYNC_TEMPLATE,
+          payload: data,
+        },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.fire({
+        title: 'Template Synced successfully',
+        icon: 'success',
+      });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.elCrmListTemplate],
+      });
+    },
+    onError: () => {
+      toast.fire({
+        title: 'Error while syncing template.',
+        icon: 'error',
+      });
+    },
+  });
+};
+
 export const useListElCrmTemplate = (projectUUID: UUID) => {
   const action = useProjectAction();
 
@@ -327,6 +416,96 @@ export const useListElCrmTemplate = (projectUUID: UUID) => {
         },
       });
       return res.data;
+    },
+  });
+};
+
+export const useListElCrmSessionBroadcast = (
+  projectUUID: UUID,
+  payload: any,
+  options?: UseQueryOptions,
+) => {
+  const action = useProjectAction();
+
+  return useQuery({
+    queryKey: [queryKeys.elCrmSessionBroadcast, projectUUID, payload],
+    enabled: options?.enabled,
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: SESSION_BROADCAST,
+          payload,
+        },
+      });
+      return res.data;
+    },
+  });
+};
+
+export const useListElCrmBroadCastCount = (
+  projectUUID: UUID,
+  payload: { sessionId: string },
+  options?: UseQueryOptions,
+) => {
+  const action = useProjectAction();
+
+  return useQuery({
+    queryKey: [queryKeys.elCrmBroadcastCount, projectUUID, payload.sessionId],
+    enabled: options?.enabled,
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: BROADCAST_COUNT,
+          payload,
+        },
+      });
+      return res.data;
+    },
+  });
+};
+
+export const useRetryFailedSession = (uuid: UUID) => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    // queryKey: ['retryfailed', uuid, communicationId],
+    mutationFn: async (sessionId: string) => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'elProject.campaign.retry_session',
+          payload: {
+            sessionId,
+          },
+        },
+      });
+      return mutate.data;
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Success!',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message || 'An error occured!';
+      q.reset();
+      toast.fire({
+        title: 'Error while retrying.',
+        icon: 'error',
+        text: errorMessage,
+      });
     },
   });
 };

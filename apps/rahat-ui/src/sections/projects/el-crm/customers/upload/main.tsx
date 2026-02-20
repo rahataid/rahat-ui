@@ -19,6 +19,7 @@ import {
   FileSpreadsheet,
   X,
   CheckCircle,
+  Download,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -110,7 +111,7 @@ export default function CustomersUploadPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="border-b border-border bg-card/50 px-6 py-4">
+      <div className="flex justify-between items-center border-b border-border bg-card/50 px-6 py-4">
         <div className="flex items-center gap-4">
           <Link href={`/projects/el-crm/${projectUUID}/customers`}>
             <Button variant="outline" size="sm">
@@ -127,6 +128,12 @@ export default function CustomersUploadPage() {
             </p>
           </div>
         </div>
+        <a href="/files/sample_customers.xlsx" download>
+          <Button className="mr-2" variant="outline">
+            <Download className="mr-2 h-4 w-4" />
+            Download Sample
+          </Button>
+        </a>
       </div>
 
       <div className="flex-1 p-6">

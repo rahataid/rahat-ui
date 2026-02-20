@@ -108,18 +108,12 @@ export default function CustomersPage() {
     <div className="flex flex-col h-full">
       <div className="border-b border-border bg-card/50 px-6 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex-1">
+          <div>
             <h1 className="text-2xl font-bold text-foreground">Customers</h1>
             <p className="text-muted-foreground">
               Manage customer relationships and data
             </p>
           </div>
-          <a href="/files/sample_customers.xlsx" download>
-            <Button className="mr-2" variant="outline">
-              <Download className="mr-2 h-4 w-4" />
-              Download Sample
-            </Button>
-          </a>
           <Link href={`/projects/el-crm/${projectUUID}/customers/upload`}>
             <Button>
               <Upload className="mr-2 h-4 w-4" />

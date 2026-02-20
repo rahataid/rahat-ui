@@ -16,7 +16,7 @@ type ActivityTemplateFilters = {
   page?: number;
   perPage?: number;
   phase?: string;
-  hasCommunication?: boolean;
+  hasCommunication?: string;
   category?: string;
   title?: string;
   isAutomated?: string;

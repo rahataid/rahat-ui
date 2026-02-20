@@ -11,7 +11,7 @@ const StakeHolderInfo = ({ stakeholder }: IProps) => {
   return (
     <>
       <div className="flex items-center">
-        <div className="h-24 w-24 rounded-md  bg-gray-700 flex justify-center items-center">
+        <div className="h-24 w-24 rounded-sm  bg-gray-700 flex justify-center items-center">
           <User className="" color="white" />
         </div>
 

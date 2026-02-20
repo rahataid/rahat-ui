@@ -322,6 +322,31 @@ const UpdateOrAddStakeholdersGroup = () => {
           </div>
         </form>
       </Form>
+        {/* <div className="flex justify-end gap-4">
+          <Button
+            className="w-48 rounded-sm"
+            onClick={() => {
+              setStakeholdersGroupName('');
+              resetSelectedListItems();
+            }}
+            variant="outline"
+          >
+            Clear
+          </Button>
+          <Button
+            className="w-48 rounded-sm"
+            onClick={handleCreateGroup}
+            disabled={
+              !Object.keys(selectedListItems).length || !stakeholdersGroupName
+            }
+          >
+            Add
+            {Object.keys(selectedListItems).length
+              ? `(${Object.keys(selectedListItems).length} stakeholders)`
+              : ''}
+          </Button>
+        </div> */}
+      {/* </div> */}
     </div>
   );
 };

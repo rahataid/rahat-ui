@@ -143,11 +143,11 @@ const UpdateOrAddStakeholdersGroup = () => {
           } stakeholder group`}
           path={`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`}
         />
-        <div className="ml-1 mb-1">
+        <div className="ml-1 mb-4">
           <Label className="mb-2"> Stakeholder Group Name</Label>
           <Input
             placeholder="Write stakeholder group name"
-            className="w-full rounded-md"
+            className="w-full rounded-sm mt-2"
             // value={stakeholdersGroupName || stakeholdersGroupDetail?.name}
             value={stakeholdersGroupName}
             onChange={(e) => setStakeholdersGroupName(e.target.value)}
@@ -155,7 +155,7 @@ const UpdateOrAddStakeholdersGroup = () => {
         </div>
       </div>
 
-      <div className="rounded-md border p-4 ml-1">
+      <div className="rounded-xl border p-4 ml-1">
         <div className="">
           <Heading
             title=" Select Stakeholders"
@@ -196,7 +196,7 @@ const UpdateOrAddStakeholdersGroup = () => {
 
         <div className="flex justify-end gap-4">
           <Button
-            className="w-48 rounded-md"
+            className="w-48 rounded-sm"
             onClick={() => {
               setStakeholdersGroupName('');
               resetSelectedListItems();
@@ -206,7 +206,7 @@ const UpdateOrAddStakeholdersGroup = () => {
             Clear
           </Button>
           <Button
-            className="w-48 rounded-md"
+            className="w-48 rounded-sm"
             onClick={handleCreateGroup}
             disabled={
               !Object.keys(selectedListItems).length || !stakeholdersGroupName

@@ -2,11 +2,19 @@
 
 import React, { useRef, useState } from 'react';
 import * as XLSX from 'xlsx';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   ScrollArea,
@@ -22,22 +30,13 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/table';
 
 import { ClientSidePagination, HeaderWithBack } from 'apps/rahat-ui/src/common';
-import {
-  CloudDownload,
-  Group,
-  Repeat2,
-  Share,
-  User,
-  Users,
-  X,
-} from 'lucide-react';
+import { CloudDownload, Repeat2, Share, Users, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 import {
   useUploadStakeholders,
   useCreateStakeholdersGroups,
   useProjectAction,
   useStakeholdersGroups,
-  useStakeholdersGroupsStore,
 } from '@rahat-ui/query';
 import {
   ColumnDef,
@@ -71,8 +70,8 @@ export default function ImportStakeholder() {
   const [importedStakeholderUUIDs, setImportedStakeholderUUIDs] = useState<
     string[]
   >([]);
-  const [showGroupModal, setShowGroupModal] = useState(false);
-  const [showGroupForm, setShowGroupForm] = useState(false);
+  const showGroupModal = useBoolean();
+  const showGroupForm = useBoolean();
   const [groupName, setGroupName] = useState('');
   const [groupError, setGroupError] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -83,12 +82,7 @@ export default function ImportStakeholder() {
   const { data: stakeholdersGroupsData } = useStakeholdersGroups(id, {
     sort: 'createdAt',
     order: 'desc',
-    perPage: 1000,
   });
-
-  const { stakeholdersGroups } = useStakeholdersGroupsStore((state) => ({
-    stakeholdersGroups: state.stakeholdersGroups,
-  }));
 
   const [duplicatePhonesFromServer, setDuplicatePhonesFromServer] = useState<
     Set<string>
@@ -412,9 +406,8 @@ export default function ImportStakeholder() {
         setDuplicatePhonesFromServer(new Set());
         setDuplicateEmailFromServer(new Set());
         toast.dismiss();
-        setShowGroupModal(true);
+        showGroupModal.onTrue();
       } catch (fetchError) {
-        console.error('Error fetching stakeholders:', fetchError);
         toast.warning(
           'Stakeholders imported but could not retrieve IDs for grouping.',
         );
@@ -496,8 +489,7 @@ export default function ImportStakeholder() {
       return;
     }
 
-    const existingGroups =
-      stakeholdersGroupsData?.data || stakeholdersGroups || [];
+    const existingGroups = stakeholdersGroupsData?.data || [];
     const groupExists = existingGroups?.some(
       (group: any) =>
         group.name.toLowerCase() === groupName.trim().toLowerCase(),
@@ -517,12 +509,16 @@ export default function ImportStakeholder() {
           stakeholders: stakeholdersList,
         },
       });
-      setShowGroupModal(false);
-      setShowGroupForm(false);
+      showGroupModal.onFalse();
+      showGroupForm.onFalse();
       setGroupName('');
       router.push(`/projects/aa/${id}/stakeholders?tab=stakeholdersGroup`);
     } catch (error: any) {
-      setGroupError(error?.response?.data?.message || 'Failed to create group');
+      console.error('❌ Group creation failed:', error);
+      const errorMsg =
+        error?.response?.data?.message || 'Failed to create group';
+      console.error('Error message:', errorMsg);
+      setGroupError(errorMsg);
     }
   };
 
@@ -672,160 +668,169 @@ export default function ImportStakeholder() {
       </div>
 
       {/* Group Creation Modal */}
-      {showGroupModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-sm p-6 max-w-md w-full shadow-xl m-4">
-            {!showGroupForm ? (
-              // Initial confirmation
-              <>
-                <h3 className="text-lg text-center text-primary font-semibold mb-4">
+      <Dialog
+        open={showGroupModal.value}
+        onOpenChange={(open) => {
+          if (!open) {
+            showGroupModal.onFalse();
+            showGroupForm.onFalse();
+            setGroupName('');
+            setGroupError('');
+          }
+        }}
+      >
+        <DialogContent className="rounded-sm max-w-md">
+          {!showGroupForm.value ? (
+            // Initial confirmation
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-center text-primary">
                   Import Successful
-                  <p className="text-sm text-gray-500 font-normal mt-1">
-                    {importedStakeholderUUIDs.length}{' '}
-                    {importedStakeholderUUIDs.length === 1
-                      ? 'stakeholder has'
-                      : 'stakeholders have'}{' '}
-                    been added to stakeholder list.
-                  </p>
-                </h3>
+                </DialogTitle>
+                <DialogDescription className="text-center">
+                  {importedStakeholderUUIDs.length}{' '}
+                  {importedStakeholderUUIDs.length === 1
+                    ? 'stakeholder has'
+                    : 'stakeholders have'}{' '}
+                  been added to stakeholder list.
+                </DialogDescription>
+              </DialogHeader>
 
-                <p className="text-sm text-black mb-2 font-medium">
-                  Would you like to organize them into a group?
-                </p>
+              <p className="text-sm text-black mb-2 font-medium">
+                Would you like to organize them into a group?
+              </p>
 
-                {/* Updated disclaimer cards – matching the UI you showed */}
-                <div className="space-y-2 mb-6">
-                  {/* Create a Group card */}
-                  <div className="border hover-bg-blue-50/40 rounded-sm overflow-hidden">
-                    <div className="w-full text-left p-4 transition-colors">
-                      <div className="flex items-start gap-3">
-                        <Users
-                          size={30}
-                          className="px-1 mt-1 text-primary bg-gray-100 rounded-sm"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-gray-800">
-                              Create a Group
-                            </span>
-                            <span className="text-xs px-2 py-0.5 rounded-sm bg-gray-100 font-semibold text-blue-600">
-                              RECOMMENDED
-                            </span>
-                          </div>
-                          <p className="text-xs text-gray-600 mt-1">
-                            Name and organize these stakeholders for streamlined
-                            communication and bulk actions.
-                          </p>
+              <div className="space-y-2 mb-2">
+                {/* Create a Group card */}
+                <div className="border hover-bg-blue-50/40 rounded-sm overflow-hidden">
+                  <div className="w-full text-left p-4 transition-colors">
+                    <div className="flex items-start gap-3">
+                      <Users
+                        size={30}
+                        className="px-1 mt-1 text-primary bg-gray-100 rounded-sm"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-gray-800">
+                            Create a Group
+                          </span>
+                          <span className="text-xs px-2 py-0.5 rounded-sm bg-gray-100 font-semibold text-blue-600">
+                            RECOMMENDED
+                          </span>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Skip for Now card */}
-                  <div className="border border-gray-200 rounded-sm overflow-hidden">
-                    <div className="w-full text-left p-4 transition-colors">
-                      <div className="flex items-start gap-3">
-                        <X
-                          size={30}
-                          className="px-1 mt-0.5 text-primary rounded-sm bg-gray-100"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <span className="font-semibold text-gray-800">
-                              Skip for Now
-                            </span>
-                          </div>
-                          <p className="text-xs text-gray-600 mt-1">
-                            Stakeholders are saved individually. You can group
-                            them anytime from the stakeholder list.
-                          </p>
-                        </div>
+                        <p className="text-xs text-gray-600 mt-1">
+                          Name and organize these stakeholders for streamlined
+                          communication and bulk actions.
+                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex gap-3">
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    onClick={() => {
-                      setShowGroupModal(false);
-                      toast.success('Stakeholders imported successfully!');
-                      router.push(
-                        `/projects/aa/${id}/stakeholders?tab=stakeholders`,
-                      );
-                    }}
-                  >
-                    Skip
-                  </Button>
-                  <Button
-                    className="flex-1"
-                    onClick={() => setShowGroupForm(true)}
-                  >
-                    Create Group
-                  </Button>
+                {/* Skip for Now card */}
+                <div className="border border-gray-200 rounded-sm overflow-hidden">
+                  <div className="w-full text-left p-4 transition-colors">
+                    <div className="flex items-start gap-3">
+                      <X
+                        size={30}
+                        className="px-1 mt-0.5 text-primary rounded-sm bg-gray-100"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-gray-800">
+                            Skip for Now
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1">
+                          Stakeholders are saved individually. You can group
+                          them anytime from the stakeholder list.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </>
-            ) : (
-              <form onSubmit={handleCreateGroup}>
-                <h3 className="text-lg font-semibold mb-2">
-                  Create Stakeholder Group
-                </h3>
-                <p className="text-sm text-gray-600 mb-6">
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => {
+                    showGroupModal.onFalse();
+                    toast.success('Stakeholders imported successfully!');
+                    router.push(
+                      `/projects/aa/${id}/stakeholders?tab=stakeholders`,
+                    );
+                  }}
+                >
+                  Skip
+                </Button>
+                <Button
+                  className="flex-1"
+                  onClick={() => showGroupForm.onTrue()}
+                >
+                  Create Group
+                </Button>
+              </div>
+            </>
+          ) : (
+            <form onSubmit={handleCreateGroup}>
+              <DialogHeader>
+                <DialogTitle>Create Stakeholder Group</DialogTitle>
+                <DialogDescription>
                   Creating a group for {importedStakeholderUUIDs.length}{' '}
                   imported{' '}
                   {importedStakeholderUUIDs.length === 1
                     ? 'stakeholder'
                     : 'stakeholders'}
-                </p>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">
-                    Group Name <span className="text-red-500">*</span>
-                  </label>
-                  <Input
-                    type="text"
-                    value={groupName}
-                    onChange={(e) => {
-                      setGroupName(e.target.value);
-                      setGroupError('');
-                    }}
-                    placeholder="Enter group name"
-                    className="w-full"
-                    autoFocus
-                  />
-                  {groupError && (
-                    <p className="text-red-500 text-xs mt-1">{groupError}</p>
-                  )}
-                </div>
-                <div className="flex gap-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="flex-1 rounded-sm"
-                    onClick={() => {
-                      setShowGroupForm(false);
-                      setGroupName('');
-                      setGroupError('');
-                    }}
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="flex-1 rounded-sm"
-                    disabled={createStakeholdersGroup.isPending}
-                  >
-                    {createStakeholdersGroup.isPending
-                      ? 'Creating...'
-                      : 'Create Group'}
-                  </Button>
-                </div>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="mt-4 mb-4">
+                <label className="block text-sm font-medium mb-2">
+                  Group Name <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="text"
+                  value={groupName}
+                  onChange={(e) => {
+                    setGroupName(e.target.value);
+                    setGroupError('');
+                  }}
+                  placeholder="Enter group name"
+                  className="w-full"
+                  autoFocus
+                />
+                {groupError && (
+                  <p className="text-red-500 text-xs mt-1">{groupError}</p>
+                )}
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1 rounded-sm"
+                  onClick={() => {
+                    showGroupForm.onFalse();
+                    setGroupName('');
+                    setGroupError('');
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  type="submit"
+                  className="flex-1 rounded-sm"
+                  disabled={createStakeholdersGroup.isPending}
+                >
+                  {createStakeholdersGroup.isPending
+                    ? 'Creating...'
+                    : 'Create Group'}
+                </Button>
+              </div>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

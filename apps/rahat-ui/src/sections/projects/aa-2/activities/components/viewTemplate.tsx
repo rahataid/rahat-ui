@@ -324,7 +324,6 @@ const ViewTemplate = ({
                     onClick={() => {
                       setOpen(false);
                       onSelectTemplate?.(item);
-                      // Add your selection logic here
                     }}
                     className="w-full mt-4 gap-2"
                   >

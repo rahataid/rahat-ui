@@ -71,14 +71,16 @@ export function TemplateDetailsDialog({
         <DialogHeader className="p-6 pb-2">
           <h3 className="flex semi-bold items-center gap-2">Activity Title</h3>
           <DialogTitle className="text-xl font-semibold flex items-center justify-between">
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               <TruncatedCell
                 text={template.title}
                 maxLength={50}
                 className="max-w-[400px] text-wrap"
               />
               <Badge
-                className={`${getStatusBadgeVariant(template.status)} border`}
+                className={`${getStatusBadgeVariant(
+                  template.status,
+                )} border h-6 px-2 text-xs font-medium`}
               >
                 {template.status}
               </Badge>

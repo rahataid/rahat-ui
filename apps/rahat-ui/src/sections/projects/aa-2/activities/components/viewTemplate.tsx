@@ -39,10 +39,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/accordion';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { TemplateDetailsDialog } from './templateDetailsDialog';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 interface ViewTemplateProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  onSelectTemplate?: (template: Template) => void; // Add this prop for template selection callback
+  onSelectTemplate?: (template: Template) => void;
 }
 
 const ViewTemplate = ({
@@ -261,11 +262,19 @@ const ViewTemplate = ({
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-base text-foreground truncate group-hover:text-primary transition-colors">
-                      {item.title}
+                      <TruncatedCell
+                        text={item.title}
+                        maxLength={50}
+                        className="max-w-[350px] text-wrap"
+                      />
                     </h3>
 
                     <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                      {item.description}
+                      <TruncatedCell
+                        text={item.description}
+                        maxLength={45}
+                        className="max-w-[350px] text-wrap"
+                      />
                     </p>
 
                     <div className="flex flex-wrap gap-2 mt-3">
@@ -366,11 +375,14 @@ const ViewTemplate = ({
           </SheetFooter>
         </SheetContent>
       </Sheet>
+
       {/* View Details dialog */}
       <TemplateDetailsDialog
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         template={selectedTemplate}
+        onSelectTemplate={onSelectTemplate}
+        setOpen={setOpen}
       />
     </>
   );

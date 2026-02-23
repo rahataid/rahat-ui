@@ -19,6 +19,7 @@ import {
   FileSpreadsheet,
   X,
   CheckCircle,
+  Download,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -130,6 +131,12 @@ export default function CustomersUploadPage() {
         <Link href={`/projects/el-crm/${projectUUID}/customers/upload/retry`}>
           <Button>Failed Batches</Button>
         </Link>
+        <a href="/files/sample_customers.xlsx" download>
+          <Button className="mr-2" variant="outline">
+            <Download className="mr-2 h-4 w-4" />
+            Download Sample
+          </Button>
+        </a>
       </div>
 
       <div className="flex-1 p-6">

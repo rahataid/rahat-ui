@@ -71,16 +71,30 @@ export function TemplateDetailsDialog({
         <DialogHeader className="p-6 pb-2">
           <h3 className="flex semi-bold items-center gap-2">Activity Title</h3>
           <DialogTitle className="text-xl font-semibold flex items-center justify-between">
-            <TruncatedCell
-              text={template.title}
-              maxLength={50}
-              className="max-w-[400px] text-wrap"
-            />
-            <Badge
-              className={`${getStatusBadgeVariant(template.status)} border`}
+            <div className="flex gap-2">
+              <TruncatedCell
+                text={template.title}
+                maxLength={50}
+                className="max-w-[400px] text-wrap"
+              />
+              <Badge
+                className={`${getStatusBadgeVariant(template.status)} border`}
+              >
+                {template.status}
+              </Badge>
+            </div>
+            <Button
+              type="button"
+              onClick={() => {
+                onOpenChange(false);
+                setOpen(false);
+                onSelectTemplate?.(template);
+              }}
+              className="gap-2"
             >
-              {template.status}
-            </Badge>
+              Choose Template
+              <ChevronRight className="w-4 h-4" />
+            </Button>
           </DialogTitle>
         </DialogHeader>
         <Separator />
@@ -261,7 +275,7 @@ export function TemplateDetailsDialog({
               </Section>
             </>
           )}
-          <Button
+          {/* <Button
             type="button"
             onClick={() => {
               onOpenChange(false);
@@ -272,7 +286,7 @@ export function TemplateDetailsDialog({
           >
             Choose Template
             <ChevronRight className="w-4 h-4" />
-          </Button>
+          </Button> */}
         </ScrollArea>
       </DialogContent>
     </Dialog>

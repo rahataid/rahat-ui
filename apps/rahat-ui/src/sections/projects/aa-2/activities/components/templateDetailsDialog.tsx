@@ -8,25 +8,39 @@ import {
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { FileText, Clock, User } from 'lucide-react';
+import { FileText, Clock, User, ChevronRight } from 'lucide-react';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import { Template } from 'apps/rahat-ui/src/types/activities';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
-interface TemplateDetailsDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  template: Template | null;
-}
+import {
+  useBeneficiariesGroupStore,
+  useListAllTransports,
+  useStakeholdersGroupsStore,
+} from '@rahat-ui/query';
+import {
+  BeneficiaryGroup,
+  StakeholderGroup,
+  TemplateDetailsDialogProps,
+} from '../types';
 
 export function TemplateDetailsDialog({
   open,
   onOpenChange,
   template,
+  onSelectTemplate,
+  setOpen,
 }: TemplateDetailsDialogProps) {
   if (!template) return null;
+  const appTransports = useListAllTransports();
 
   const isCompleted = template.status === 'COMPLETED';
-
+  const stakeholdersGroups: StakeholderGroup[] = useStakeholdersGroupsStore(
+    (state) => state.stakeholdersGroups,
+  );
+  const beneficiaryGroups: BeneficiaryGroup[] = useBeneficiariesGroupStore(
+    (state) => state.beneficiariesGroups,
+  );
   const getPhaseBadgeColor = (phase: string) => {
     switch (phase?.toUpperCase()) {
       case 'READINESS':
@@ -57,7 +71,11 @@ export function TemplateDetailsDialog({
         <DialogHeader className="p-6 pb-2">
           <h3 className="flex semi-bold items-center gap-2">Activity Title</h3>
           <DialogTitle className="text-xl font-semibold flex items-center justify-between">
-            <TruncatedCell text={template.title} maxLength={50} />
+            <TruncatedCell
+              text={template.title}
+              maxLength={50}
+              className="max-w-[400px] text-wrap"
+            />
             <Badge
               className={`${getStatusBadgeVariant(template.status)} border`}
             >
@@ -96,7 +114,7 @@ export function TemplateDetailsDialog({
           {/* Description */}
           {template.description && (
             <Section title="Description">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground text-justify">
                 {template.description}
               </p>
             </Section>
@@ -149,47 +167,80 @@ export function TemplateDetailsDialog({
                   (
                     comm: Partial<Template['activityCommunication']>,
                     index: number,
-                  ) => (
-                    <div
-                      key={index}
-                      className="border rounded-lg p-3 bg-muted/40"
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium">
-                          {comm.communicationTitle}
-                        </span>
-                        <Badge variant="outline">{comm.groupType}</Badge>
-                      </div>
+                  ) => {
+                    const transportName = appTransports?.find(
+                      (t) => t.cuid === comm.transportId,
+                    )?.name;
+                    const groupName =
+                      comm.groupType === 'BENEFICIARY'
+                        ? beneficiaryGroups.find((g) => g.uuid === comm.groupId)
+                        : stakeholdersGroups.find(
+                            (g) => g.uuid === comm.groupId,
+                          );
+                    return (
+                      <div
+                        key={index}
+                        className="border rounded-lg p-3 bg-muted/40"
+                      >
+                        <div className="flex items-center justify-between  ">
+                          <div className="flex flex-col space-y-1">
+                            {/* NEW: Communication Name */}
+                            {transportName && (
+                              <span className="text-xs font-medium text-muted-foreground">
+                                Communication Type: {transportName}
+                              </span>
+                            )}
 
-                      {typeof comm.message === 'string' ? (
-                        <p className="text-sm text-muted-foreground">
-                          {comm.message}
-                        </p>
-                      ) : comm.message?.fileName?.endsWith('.mp3') ? (
-                        <div className="space-y-2">
-                          <p className="text-sm font-medium">
-                            {comm.message.fileName}
-                          </p>
-                          <audio controls className="w-full">
-                            <source
-                              src={comm.message.mediaURL}
-                              type="audio/mpeg"
-                            />
-                            Your browser does not support the audio element.
-                          </audio>
+                            <span className="text-sm font-medium text-muted-foreground">
+                              Title:{comm.communicationTitle}
+                            </span>
+                          </div>
+
+                          <Badge variant="outline">{comm.groupType}</Badge>
                         </div>
-                      ) : (
-                        <a
-                          href={comm.message?.mediaURL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-blue-600 underline"
-                        >
-                          {comm.message?.fileName}
-                        </a>
-                      )}
-                    </div>
-                  ),
+
+                        {typeof comm.message === 'string' ? (
+                          <>
+                            {transportName === 'EMAIL' && (
+                              <p className="text-sm text-muted-foreground">
+                                Subject: {comm.subject}
+                              </p>
+                            )}
+                            <p className="text-sm text-muted-foreground text-justify">
+                              Message: {comm.message}
+                            </p>
+                          </>
+                        ) : comm.message?.fileName?.endsWith('.mp3') ? (
+                          <div className="space-y-2">
+                            <p className="text-sm font-medium">
+                              {comm.message.fileName}
+                            </p>
+                            <audio controls className="w-full">
+                              <source
+                                src={comm.message.mediaURL}
+                                type="audio/mpeg"
+                              />
+                              Your browser does not support the audio element.
+                            </audio>
+                          </div>
+                        ) : (
+                          <a
+                            href={comm.message?.mediaURL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 underline"
+                          >
+                            {comm.message?.fileName}
+                          </a>
+                        )}
+
+                        {/* Group Name */}
+                        <span className="text-sm font-medium text-muted-foreground">
+                          Group Name: {groupName?.name || '—'}
+                        </span>
+                      </div>
+                    );
+                  },
                 )}
               </div>
             </Section>
@@ -210,6 +261,18 @@ export function TemplateDetailsDialog({
               </Section>
             </>
           )}
+          <Button
+            type="button"
+            onClick={() => {
+              onOpenChange(false);
+              setOpen(false);
+              onSelectTemplate?.(template);
+            }}
+            className="w-full mt-4 gap-2"
+          >
+            Choose Template
+            <ChevronRight className="w-4 h-4" />
+          </Button>
         </ScrollArea>
       </DialogContent>
     </Dialog>

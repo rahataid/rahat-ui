@@ -110,7 +110,7 @@ export default function CustomersUploadPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="border-b border-border bg-card/50 px-6 py-4">
+      <div className="flex justify-between items-center border-b border-border bg-card/50 px-6 py-4">
         <div className="flex items-center gap-4">
           <Link href={`/projects/el-crm/${projectUUID}/customers`}>
             <Button variant="outline" size="sm">
@@ -127,6 +127,9 @@ export default function CustomersUploadPage() {
             </p>
           </div>
         </div>
+        <Link href={`/projects/el-crm/${projectUUID}/customers/upload/retry`}>
+          <Button>Failed Batches</Button>
+        </Link>
       </div>
 
       <div className="flex-1 p-6">

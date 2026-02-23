@@ -70,3 +70,71 @@ export const useCustomers = (uuid: UUID, payload: any) => {
     meta: query.data?.response?.meta || {},
   };
 };
+
+export const useFailedBatch = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['failed-batch', uuid, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'elProject.crm.getFailedBatch',
+          payload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return {
+    ...query,
+    failedBatch: query.data?.data || [],
+    // meta: query.data?.response?.meta || {},
+  };
+};
+
+export const useRetryCustomerImport = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      payload,
+    }: {
+      projectUUID: UUID;
+      payload: { batchUUID: UUID };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'elProject.crm.retryImport',
+          payload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Batch retry initiated successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while retrying batch.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};

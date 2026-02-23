@@ -128,6 +128,9 @@ export default function CustomersUploadPage() {
             </p>
           </div>
         </div>
+        <Link href={`/projects/el-crm/${projectUUID}/customers/upload/retry`}>
+          <Button>Failed Batches</Button>
+        </Link>
         <a href="/files/sample_customers.xlsx" download>
           <Button className="mr-2" variant="outline">
             <Download className="mr-2 h-4 w-4" />

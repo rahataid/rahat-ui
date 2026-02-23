@@ -35,9 +35,16 @@ import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 import { UUID } from 'crypto';
 import {
+  TooltipContent,
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+} from 'libs/shadcn/src/components/ui/tooltip';
+import {
   CloudUpload,
   FileCheck,
   Filter,
+  Info,
   LoaderCircle,
   Minus,
   Plus,
@@ -557,25 +564,43 @@ export default function AddActivities() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="isTemplate"
-                  render={({ field }) => {
-                    return (
-                      <FormItem className=" w-[200px]   ">
-                        <div className="flex items-center justify-between w-full">
-                          <FormLabel>Save as Template</FormLabel>
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                        </div>
-                      </FormItem>
-                    );
-                  }}
-                />
+                <div className="flex items-center gap-4">
+                  <FormField
+                    control={form.control}
+                    name="isTemplate"
+                    render={({ field }) => {
+                      return (
+                        <FormItem className=" w-[200px]   ">
+                          <div className="flex items-center justify-between w-full">
+                            <FormLabel>Save as Template</FormLabel>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                          </div>
+                        </FormItem>
+                      );
+                    }}
+                  />
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info
+                          size={18}
+                          className="text-muted-foreground cursor-help hover:text-primary transition-colors"
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          This will save the activity as a template for future
+                          use.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 {selectedPhase && selectedPhase?.name !== 'PREPAREDNESS' && (
                   <FormField
                     control={form.control}

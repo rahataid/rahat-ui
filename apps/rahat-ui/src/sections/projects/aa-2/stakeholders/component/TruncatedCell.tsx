@@ -34,7 +34,7 @@ export function TruncatedCell({
             {displayText}
           </span>
         </TooltipTrigger>
-        <TooltipContent className="rounded-sm">
+        <TooltipContent className={`rounded-sm ${className}`}>
           <p className=" break-words ">{text}</p>
         </TooltipContent>
       </Tooltip>

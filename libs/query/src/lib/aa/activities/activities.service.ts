@@ -234,11 +234,13 @@ export const useCreateActivities = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['activities'] });
       toast.fire({
-        title: 'Activity added successfully',
+        title: data?.data?.isTemplate
+          ? 'Activity and its template added successfully'
+          : 'Activity created successfully',
         icon: 'success',
       });
     },

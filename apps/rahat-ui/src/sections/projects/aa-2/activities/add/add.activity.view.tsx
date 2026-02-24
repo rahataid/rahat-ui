@@ -442,7 +442,6 @@ export default function AddActivities() {
                       open={isOpen}
                       setOpen={setIsOpen}
                       onSelectTemplate={handleSelectTemplate}
-                      // viewTemplateDetails={handleViewTemplateDetails}
                     />
                   )}
                   <Button
@@ -630,22 +629,6 @@ export default function AddActivities() {
                       );
                     }}
                   />
-                  {/* <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info
-                          size={18}
-                          className="text-muted-foreground cursor-help hover:text-primary transition-colors"
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>
-                          This will save the activity as a template for future
-                          use.
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider> */}
                 </div>
                 {selectedPhase && selectedPhase?.name !== 'PREPAREDNESS' && (
                   <FormField

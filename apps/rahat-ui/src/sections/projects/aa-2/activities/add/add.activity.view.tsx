@@ -64,7 +64,7 @@ import { useActivityForm } from '../hooks/useActivityForm';
 import { buildCommunicationPayloads } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
 import ViewTemplate from 'apps/rahat-ui/src/sections/projects/aa-2/activities/components/viewTemplate';
 import { Template } from 'apps/rahat-ui/src/types/activities';
-import ConfirmationDialog from '../components/confirmationDialog';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 
 export const DurationData = [
   { value: 'hours', label: 'Hours' },
@@ -843,9 +843,10 @@ export default function AddActivities() {
         </div>
       </form>
       <ConfirmationDialog
-        isTemplateComfirmOpen={isTemplateComfirmOpen}
-        cancelTemplateToggle={cancelTemplateToggle}
-        confirmTemplateToggle={confirmTemplateToggle}
+        isConfirmationDialogOpen={isTemplateComfirmOpen}
+        onCancel={cancelTemplateToggle}
+        onConfirm={confirmTemplateToggle}
+        dialogTitle="Confirm Template"
       />
     </Form>
   );

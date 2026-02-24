@@ -10,40 +10,39 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 type ConfirmationDialogProps = {
-  isTemplateComfirmOpen: boolean;
-  cancelTemplateToggle: () => void;
-  confirmTemplateToggle: () => void;
+  isConfirmationDialogOpen: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+  dialogTitle?: string;
 };
 const ConfirmationDialog = ({
-  isTemplateComfirmOpen,
-  cancelTemplateToggle,
-  confirmTemplateToggle,
+  isConfirmationDialogOpen,
+  onCancel,
+  onConfirm,
+  dialogTitle = 'Confirm Action',
 }: ConfirmationDialogProps) => {
   return (
     <Dialog
-      open={isTemplateComfirmOpen}
+      open={isConfirmationDialogOpen}
       onOpenChange={(nextOpen) => {
-        if (!nextOpen) cancelTemplateToggle();
+        if (!nextOpen) onCancel();
       }}
     >
       <DialogContent className="sm:max-w-[420px]">
         <DialogHeader>
-          <DialogTitle>Confirm Template</DialogTitle>
+          <DialogTitle>{dialogTitle}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          Are you sure you want to save this activity as a template?
+          This action cannot be undone. Are you sure you want to perform this
+          action?
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={cancelTemplateToggle}
-            >
+            <Button type="button" variant="secondary" onClick={onCancel}>
               Cancel
             </Button>
           </DialogClose>
-          <Button type="button" onClick={confirmTemplateToggle}>
+          <Button type="button" onClick={onConfirm}>
             Confirm
           </Button>
         </DialogFooter>

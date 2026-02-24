@@ -138,3 +138,23 @@ export const useRetryCustomerImport = () => {
     },
   });
 };
+
+export const useCustomerStats = (uuid: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['customer-stats', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'elProject.getVendorStats',
+          payload: {},
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};

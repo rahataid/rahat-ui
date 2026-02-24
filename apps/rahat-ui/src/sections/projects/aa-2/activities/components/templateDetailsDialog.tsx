@@ -24,6 +24,8 @@ import {
   TemplateDetailsDialogProps,
 } from '../types';
 import Link from 'next/link';
+import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
+import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 
 export function TemplateDetailsDialog({
   open,
@@ -42,29 +44,6 @@ export function TemplateDetailsDialog({
   const beneficiaryGroups: BeneficiaryGroup[] = useBeneficiariesGroupStore(
     (state) => state.beneficiariesGroups,
   );
-  const getPhaseBadgeColor = (phase: string) => {
-    switch (phase?.toUpperCase()) {
-      case 'READINESS':
-        return 'bg-blue-100 text-blue-700 border-blue-200';
-      case 'PREPAREDNESS':
-        return 'bg-purple-100 text-purple-700 border-purple-200';
-      case 'ACTIVATION':
-        return 'bg-red-100 text-red-700 border-red-200';
-      default:
-        return 'bg-gray-100 text-gray-700 border-gray-200';
-    }
-  };
-
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case 'COMPLETED':
-        return 'bg-green-100 text-green-700 border-green-200';
-      case 'NOT_STARTED':
-        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-      default:
-        return 'bg-gray-100 text-gray-700 border-gray-200';
-    }
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -79,7 +58,7 @@ export function TemplateDetailsDialog({
                 className="max-w-[400px] text-wrap"
               />
               <Badge
-                className={`${getStatusBadgeVariant(
+                className={`${getStatusBg(
                   template.status,
                 )} border h-6 px-2 text-xs font-medium`}
               >
@@ -115,9 +94,7 @@ export function TemplateDetailsDialog({
 
             <InfoItem label="Phase">
               <Badge
-                className={`${getPhaseBadgeColor(
-                  template?.phase?.name,
-                )} border`}
+                className={`${getPhaseColor(template?.phase?.name)} border`}
               >
                 {template.phase?.name}
               </Badge>

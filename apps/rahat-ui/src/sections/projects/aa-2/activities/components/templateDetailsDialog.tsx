@@ -226,7 +226,8 @@ export function TemplateDetailsDialog({
                               Message: {comm.message}
                             </p>
                           </>
-                        ) : comm.message?.fileName?.endsWith('.mp3') ? (
+                        ) : comm.message?.fileName?.endsWith('.mp3') ||
+                          comm.message?.fileName?.endsWith('.wav') ? (
                           <div className="space-y-2">
                             <p className="text-sm font-medium">
                               {comm.message.fileName}

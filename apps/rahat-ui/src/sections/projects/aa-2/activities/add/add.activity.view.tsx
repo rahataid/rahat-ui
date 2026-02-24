@@ -593,15 +593,32 @@ export default function AddActivities() {
                     </FormItem>
                   )}
                 />
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-8">
                   <FormField
                     control={form.control}
                     name="isTemplate"
                     render={({ field }) => {
                       return (
-                        <FormItem className=" w-[200px]   ">
+                        <FormItem className=" w-[200px]">
                           <div className="flex items-center justify-between w-full">
-                            <FormLabel>Save as Template</FormLabel>
+                            <FormLabel>Save as Template</FormLabel>{' '}
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild className="-ml-4">
+                                  <Info
+                                    size={18}
+                                    className="text-muted-foreground cursor-help hover:text-primary transition-colors"
+                                  />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>
+                                    This will save the activity as a template
+                                    for future use. If disabled, this will not
+                                    be saved as template
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                             <FormControl>
                               <Switch
                                 checked={field.value}
@@ -613,7 +630,7 @@ export default function AddActivities() {
                       );
                     }}
                   />
-                  <TooltipProvider>
+                  {/* <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Info
@@ -628,7 +645,7 @@ export default function AddActivities() {
                         </p>
                       </TooltipContent>
                     </Tooltip>
-                  </TooltipProvider>
+                  </TooltipProvider> */}
                 </div>
                 {selectedPhase && selectedPhase?.name !== 'PREPAREDNESS' && (
                   <FormField

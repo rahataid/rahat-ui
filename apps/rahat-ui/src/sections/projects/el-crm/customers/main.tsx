@@ -33,9 +33,22 @@ import {
   CustomerSource,
   useCustomers,
   usePagination,
+  useCustomerStats,
 } from '@rahat-ui/query';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+
+interface Stat {
+  name:
+    | 'TOTAL_CUSTOMER'
+    | 'ACTIVE_CUSTOMER'
+    | 'INACTIVE_CUSTOMER'
+    | 'NEWLY_INACTIVE_CUSTOMER';
+  data: number;
+  group: 'VENDOR';
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export default function CustomersPage() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -75,17 +88,17 @@ export default function CustomersPage() {
     [filters],
   );
 
-  const totalCustomers = customers?.length || 0;
+  const { data: stats } = useCustomerStats(projectUUID);
+
+  const totalCustomers =
+    stats?.find((stat: Stat) => stat.name === 'TOTAL_CUSTOMER')?.data || 0;
   const activeCustomers =
-    customers?.filter((c: Customer) => c.category === CustomerCategory.ACTIVE)
-      .length || 0;
+    stats?.find((stat: Stat) => stat.name === 'ACTIVE_CUSTOMER')?.data || 0;
   const inactiveCustomers =
-    customers?.filter((c: Customer) => c.category === CustomerCategory.INACTIVE)
-      .length || 0;
+    stats?.find((stat: Stat) => stat.name === 'INACTIVE_CUSTOMER')?.data || 0;
   const newlyInactiveCustomers =
-    customers?.filter(
-      (c: Customer) => c.category === CustomerCategory.NEWLY_INACTIVE,
-    ).length || 0;
+    stats?.find((stat: Stat) => stat.name === 'NEWLY_INACTIVE_CUSTOMER')
+      ?.data || 0;
 
   const columns = useCustomersTableColumn();
 

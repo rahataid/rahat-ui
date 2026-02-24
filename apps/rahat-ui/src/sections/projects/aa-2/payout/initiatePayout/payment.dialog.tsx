@@ -15,24 +15,35 @@ import { PaymentState } from './payment';
 export type PaymentDialogProps = {
   handleSubmit: () => void;
   formState: PaymentState;
+  handleDialogOpen: () => Promise<boolean>;
 };
-export function PaymentDialog({ formState, handleSubmit }: PaymentDialogProps) {
+export function PaymentDialog({
+  formState,
+  handleSubmit,
+  handleDialogOpen,
+}: PaymentDialogProps) {
   const [open, setOpen] = useState(false);
-  console.log(formState?.group?.groupedBeneficiaries.length === 0);
+  // console.log(formState?.group?.groupedBeneficiaries.length === 0);
+
+  // Handlers goes here
+  const handleDialogBox = async () => {
+    const isValid = await handleDialogOpen();
+
+    console.debug('isValid', isValid);
+
+    if (!isValid) {
+      return;
+    }
+
+    setOpen(true);
+  };
+
   return (
     <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
       <Button
         className="rounded-sm w-48"
-        disabled={
-          !formState.method ||
-          formState?.group?.groupedBeneficiaries?.length === 0 ||
-          Object.keys(formState.group).length === 0 ||
-          (formState.method === 'FSP' &&
-            Object.keys(formState.paymentProvider).length === 0) ||
-          (formState.mode === 'OFFLINE' &&
-            Object.keys(formState.vendor).length === 0)
-        }
-        onClick={() => setOpen(true)}
+        type="button"
+        onClick={handleDialogBox}
       >
         Confirm
       </Button>

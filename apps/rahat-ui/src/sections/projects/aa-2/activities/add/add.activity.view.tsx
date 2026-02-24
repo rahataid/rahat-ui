@@ -62,9 +62,9 @@ import {
 } from 'apps/rahat-ui/src/types/communication';
 import { useActivityForm } from '../hooks/useActivityForm';
 import { buildCommunicationPayloads } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
-
 import ViewTemplate from 'apps/rahat-ui/src/sections/projects/aa-2/activities/components/viewTemplate';
 import { Template } from 'apps/rahat-ui/src/types/activities';
+import ConfirmationDialog from '../components/confirmationDialog';
 
 export const DurationData = [
   { value: 'hours', label: 'Hours' },
@@ -73,6 +73,8 @@ export const DurationData = [
 
 export default function AddActivities() {
   const [open, setOpen] = useState(false);
+  const [isTemplateComfirmOpen, setIsTemplateConfirmOpen] = useState(false);
+  const [pendingTemplateValue, setPendingTemplateValue] = useState(false);
   const [audioUploading, setAudioUploading] = useState<boolean>(false);
   const [communicationData, setCommunicationData] = useState<
     CommunicationData[]
@@ -258,13 +260,11 @@ export default function AddActivities() {
       ...rest,
     };
     let payload;
-
     if (communicationData?.length) {
       const activityCommunicationPayload = buildCommunicationPayloads(
         communicationData,
         appTransports,
       );
-
       payload = {
         ...payloadData,
         activityCommunication: activityCommunicationPayload,
@@ -284,6 +284,35 @@ export default function AddActivities() {
       form.reset();
       setCommunicationData([]);
     }
+  };
+
+  const handleTemplateToggle = (nextValue: boolean) => {
+    if (nextValue) {
+      setPendingTemplateValue(true);
+      setIsTemplateConfirmOpen(true);
+      return;
+    }
+
+    form.setValue('isTemplate', false, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  };
+
+  const confirmTemplateToggle = () => {
+    if (pendingTemplateValue) {
+      form.setValue('isTemplate', true, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+    setPendingTemplateValue(false);
+    setIsTemplateConfirmOpen(false);
+  };
+
+  const cancelTemplateToggle = () => {
+    setPendingTemplateValue(false);
+    setIsTemplateConfirmOpen(false);
   };
 
   const resetForm = () => {
@@ -576,7 +605,7 @@ export default function AddActivities() {
                             <FormControl>
                               <Switch
                                 checked={field.value}
-                                onCheckedChange={field.onChange}
+                                onCheckedChange={handleTemplateToggle}
                               />
                             </FormControl>
                           </div>
@@ -813,6 +842,11 @@ export default function AddActivities() {
           </ScrollArea>
         </div>
       </form>
+      <ConfirmationDialog
+        isTemplateComfirmOpen={isTemplateComfirmOpen}
+        cancelTemplateToggle={cancelTemplateToggle}
+        confirmTemplateToggle={confirmTemplateToggle}
+      />
     </Form>
   );
 }

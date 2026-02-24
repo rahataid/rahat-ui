@@ -23,6 +23,7 @@ import {
   StakeholderGroup,
   TemplateDetailsDialogProps,
 } from '../types';
+import Link from 'next/link';
 
 export function TemplateDetailsDialog({
   open,
@@ -159,7 +160,7 @@ export function TemplateDetailsDialog({
                     doc: Partial<Template['activityDocuments']>,
                     index: number,
                   ) => (
-                    <a
+                    <Link
                       key={index}
                       href={doc.mediaURL}
                       target="_blank"
@@ -168,7 +169,7 @@ export function TemplateDetailsDialog({
                     >
                       <FileText size={16} />
                       <span className="text-sm">{doc.fileName}</span>
-                    </a>
+                    </Link>
                   ),
                 )}
               </div>
@@ -241,14 +242,14 @@ export function TemplateDetailsDialog({
                             </audio>
                           </div>
                         ) : (
-                          <a
+                          <Link
                             href={comm.message?.mediaURL}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-sm text-blue-600 underline"
                           >
                             {comm.message?.fileName}
-                          </a>
+                          </Link>
                         )}
 
                         {/* Group Name */}
@@ -278,18 +279,6 @@ export function TemplateDetailsDialog({
               </Section>
             </>
           )}
-          {/* <Button
-            type="button"
-            onClick={() => {
-              onOpenChange(false);
-              setOpen(false);
-              onSelectTemplate?.(template);
-            }}
-            className="w-full mt-4 gap-2"
-          >
-            Choose Template
-            <ChevronRight className="w-4 h-4" />
-          </Button> */}
         </ScrollArea>
       </DialogContent>
     </Dialog>

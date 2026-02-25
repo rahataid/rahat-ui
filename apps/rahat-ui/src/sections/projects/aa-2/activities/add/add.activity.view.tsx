@@ -51,7 +51,13 @@ import {
   X,
 } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import React, { useMemo, useEffect, useState, ChangeEvent } from 'react';
+import React, {
+  useMemo,
+  useEffect,
+  useState,
+  ChangeEvent,
+  useCallback,
+} from 'react';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 import AddCommunicationForm from '../components/communication.form';
@@ -408,15 +414,16 @@ export default function AddActivities() {
       communicationId: comm.communicationId || '',
     };
   };
-
-  const handleSelectTemplate = (payload: Template) => {
-    form.clearErrors();
-    setBasicFields(payload);
-    setPhase(payload);
-    setCategory(payload);
-    setCommunications(payload);
-  };
-
+  const handleSelectTemplate = useCallback(
+    (payload: Template) => {
+      form.clearErrors();
+      setBasicFields(payload);
+      setPhase(payload);
+      setCategory(payload);
+      setCommunications(payload);
+    },
+    [form, phases, categories],
+  );
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>

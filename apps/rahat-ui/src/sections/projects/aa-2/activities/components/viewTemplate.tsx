@@ -40,6 +40,8 @@ import {
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { TemplateDetailsDialog } from './templateDetailsDialog';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+
 interface ViewTemplateProps {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -54,11 +56,10 @@ const ViewTemplate = ({
   const { id }: { id: UUID } = useParams();
   const { pagination, filters, setNextPage, setPrevPage, setFilters } =
     usePagination();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const viewTemplateDialog = useBoolean(false);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
     null,
   );
-
   const debouncedTitleSearch = useDebounce(filters.title || '', 500);
   const debouncedCategorySearch = useDebounce(filters.category || '', 500);
 
@@ -313,7 +314,7 @@ const ViewTemplate = ({
                     className="w-full mt-4 gap-2"
                     onClick={() => {
                       setSelectedTemplate(item);
-                      setIsDialogOpen(true);
+                      viewTemplateDialog.onTrue();
                     }}
                   >
                     <Eye className="w-4 h-4" />
@@ -377,8 +378,8 @@ const ViewTemplate = ({
 
       {/* View Details dialog */}
       <TemplateDetailsDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
+        open={viewTemplateDialog.value}
+        onOpenChange={viewTemplateDialog.setValue}
         template={selectedTemplate}
         onSelectTemplate={onSelectTemplate}
         setOpen={setOpen}

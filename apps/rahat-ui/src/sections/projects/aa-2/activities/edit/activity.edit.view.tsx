@@ -1,5 +1,5 @@
 'use client';
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { z } from 'zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -174,6 +174,7 @@ import Loader from 'apps/community-tool-ui/src/components/Loader';
 // };
 
 export default function EditActivity() {
+  // State goes here
   const [open, setOpen] = useState(false);
   const [audioUploading, setAudioUploading] = useState<boolean>(false);
   const [communicationData, setCommunicationData] = useState<
@@ -183,14 +184,21 @@ export default function EditActivity() {
     null,
   );
 
+  // Ref goes here
+  const addCommunicationBtnRef = useRef<HTMLButtonElement>(null);
+
+  // Router goes here
   const router = useRouter();
   const searchParams = useSearchParams();
   const backFrom = searchParams.get('backFrom');
+
+  // Hooks goes here
   const uploadFile = useUploadFile();
   const updateActivity = useUpdateActivities();
   const { id: projectID, activityID } = useParams();
   const redirectTo = searchParams.get('from');
 
+  // Query goes here
   const { data: users } = useUserList({
     page: 1,
     perPage: 9999,
@@ -234,6 +242,7 @@ export default function EditActivity() {
     appTransports,
   );
 
+  // Handlers goes here
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
@@ -299,43 +308,6 @@ export default function EditActivity() {
   const selectedPhaseId = form.watch('phaseId');
   const selectedPhase = phases.find((d) => d.uuid === selectedPhaseId);
 
-  useEffect(() => {
-    if (selectedPhase?.name === 'PREPAREDNESS') {
-      form.setValue('isAutomated', false);
-    }
-  }, [selectedPhase, form]);
-
-  const handleUpdateActivity = async (data: z.infer<typeof FormSchema>) => {
-    let payload;
-
-    if (communicationData?.length) {
-      const activityCommunicationPayload = buildCommunicationPayloads(
-        communicationData,
-        appTransports,
-      );
-
-      payload = {
-        uuid: activityID,
-        ...data,
-        activityCommunication: activityCommunicationPayload,
-      };
-    } else {
-      payload = {
-        uuid: activityID,
-        ...data,
-      };
-    }
-    try {
-      await updateActivity.mutateAsync({
-        projectUUID: projectID as UUID,
-        activityUpdatePayload: payload,
-      });
-      router.push(redirectUpdatePath);
-    } catch (e) {
-      console.error('Error::', e);
-    }
-  };
-
   const handleSave = () => {
     const communicationFormData = communicationForm.getValues();
     const newCommunication: CommunicationData = {
@@ -378,6 +350,61 @@ export default function EditActivity() {
       setCommunicationData(transformedData);
     }
   };
+
+  // Effect goes here
+  useEffect(() => {
+    if (selectedPhase?.name === 'PREPAREDNESS') {
+      form.setValue('isAutomated', false);
+    }
+  }, [selectedPhase, form]);
+
+  const handleUpdateActivity = async (data: z.infer<typeof FormSchema>) => {
+    let payload;
+
+    if (communicationData?.length) {
+      const activityCommunicationPayload = buildCommunicationPayloads(
+        communicationData,
+        appTransports,
+      );
+
+      payload = {
+        uuid: activityID,
+        ...data,
+        activityCommunication: activityCommunicationPayload,
+      };
+    } else {
+      payload = {
+        uuid: activityID,
+        ...data,
+      };
+    }
+    try {
+      await updateActivity.mutateAsync({
+        projectUUID: projectID as UUID,
+        activityUpdatePayload: payload,
+      });
+      router.push(redirectUpdatePath);
+    } catch (e) {
+      console.error('Error::', e);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (isActivityLoading) return;
+
+    if (window.location.hash === '#comm') {
+      setTimeout(() => {
+        if (!addCommunicationBtnRef.current) return;
+
+        addCommunicationBtnRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+        setOpen(true);
+      }, 300);
+    }
+  }, [isActivityLoading]);
 
   // this will set default values when activity detail is loaded
   useEffect(() => {
@@ -799,6 +826,7 @@ export default function EditActivity() {
               </div>
 
               <Button
+                ref={addCommunicationBtnRef}
                 type="button"
                 variant="outline"
                 className="border-dashed border-primary text-primary text-md w-full mt-4"

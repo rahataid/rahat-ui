@@ -38,12 +38,11 @@ import {
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 
-import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import useBeneficiariesGroupTableColumn from './useBeneficiariesGroupTablecolumn';
 import { PaymentDialog } from './payment.dialog';
 import { PayoutSkeleton } from './pauoutSkeleton';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Check, ChevronDown } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { paymentSchema } from './schemas/payout.validation';
@@ -55,6 +54,22 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from 'libs/shadcn/src/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from 'libs/shadcn/src/components/ui/command';
+import { cn } from '@rahat-ui/shadcn/src';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
+import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
 
 export interface PaymentState {
   method: string; // dynamic payout type key
@@ -93,15 +108,17 @@ export default function PaymentInitiation() {
 
   const formState = watch();
 
-  const { data: paymentProviders } = usePaymentProviders({
-    projectUUID: projectID,
-  });
-  const { data: beneficiaryGroups } = useBeneficiariesGroups(projectID, {
-    perPage: '100',
-    tokenAssigned: true,
-    hasPayout: false,
-  });
-  const { data: vendors } = useAAVendorsList({
+  const { data: paymentProviders, isLoading: isPaymentProvidersLoading } =
+    usePaymentProviders({
+      projectUUID: projectID,
+    });
+  const { data: beneficiaryGroups, isLoading: isBeneficiaryGroupsLoading } =
+    useBeneficiariesGroups(projectID, {
+      perPage: '100',
+      tokenAssigned: true,
+      hasPayout: false,
+    });
+  const { data: vendors, isLoading: isVendorsLoading } = useAAVendorsList({
     projectUUID: projectID,
     page: 1,
     perPage: 100,
@@ -250,23 +267,23 @@ export default function PaymentInitiation() {
                   control={control}
                   name="group"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Beneficiary Group</FormLabel>
-                      <FormControl>
-                        <SelectComponent
-                          name="Beneficiary Group"
-                          options={beneficiaryGroups?.data?.map(
-                            (group: any) => group.name,
-                          )}
-                          value={field.value?.name || ''}
-                          onChange={(value) => {
-                            const selectedGroup = beneficiaryGroups?.data?.find(
-                              (group: any) => group.name === value,
-                            );
-                            field.onChange(selectedGroup);
-                          }}
-                        />
-                      </FormControl>
+                    <FormItem className="flex flex-col space-y-3 w-full">
+                      <FormLabel className="mt-1">Beneficiary Group</FormLabel>
+                      <DropdownSearch
+                        selectedLabel={field.value?.name}
+                        placeholder="Select Beneficiary Group"
+                        searchPlaceholder="Search beneficiary group..."
+                        emptyMessage="No beneficiary group found."
+                        isLoading={isBeneficiaryGroupsLoading}
+                        options={
+                          beneficiaryGroups?.data?.map((p: any) => ({
+                            label: p.name,
+                            value: p.id,
+                            data: p,
+                          })) || []
+                        }
+                        onSelect={field.onChange}
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
@@ -277,21 +294,23 @@ export default function PaymentInitiation() {
                     control={control}
                     name="vendor"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Vendor</FormLabel>
-                        <FormControl>
-                          <SelectComponent
-                            name="Vendor"
-                            options={vendors?.data?.map((v: any) => v.name)}
-                            value={field.value?.name || ''}
-                            onChange={(value) => {
-                              const selectedVendor = vendors?.data?.find(
-                                (v: any) => v.name === value,
-                              );
-                              field.onChange(selectedVendor);
-                            }}
-                          />
-                        </FormControl>
+                      <FormItem className="flex flex-col space-y-3 w-full">
+                        <FormLabel className="mt-1">Vendor</FormLabel>
+                        <DropdownSearch
+                          selectedLabel={field.value?.name}
+                          placeholder="Select Vendor"
+                          searchPlaceholder="Search vendor..."
+                          emptyMessage="No vendor found."
+                          isLoading={isVendorsLoading}
+                          options={
+                            vendors?.data?.map((v: any) => ({
+                              label: v.name,
+                              value: v.uuid,
+                              data: v,
+                            })) || []
+                          }
+                          onSelect={field.onChange}
+                        />
                         <FormMessage />
                       </FormItem>
                     )}
@@ -306,23 +325,23 @@ export default function PaymentInitiation() {
                       control={control}
                       name="paymentProvider"
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Payout Method</FormLabel>
-                          <FormControl>
-                            <SelectComponent
-                              name="Payment Provider"
-                              options={paymentProviders?.map(
-                                (p: any) => p.name,
-                              )}
-                              value={field.value?.name || ''}
-                              onChange={(value) => {
-                                const selected = paymentProviders?.find(
-                                  (p: any) => p.name === value,
-                                );
-                                field.onChange(selected);
-                              }}
-                            />
-                          </FormControl>
+                        <FormItem className="flex flex-col space-y-3 w-full">
+                          <FormLabel className="mt-1">Payout Method</FormLabel>
+                          <DropdownSearch
+                            selectedLabel={field.value?.name}
+                            placeholder="Select Payment Provider"
+                            searchPlaceholder="Search provider..."
+                            emptyMessage="No provider found."
+                            isLoading={isPaymentProvidersLoading}
+                            options={
+                              paymentProviders?.map((p: any) => ({
+                                label: p.name,
+                                value: p.id,
+                                data: p,
+                              })) || []
+                            }
+                            onSelect={field.onChange}
+                          />
                           <FormMessage />
                         </FormItem>
                       )}

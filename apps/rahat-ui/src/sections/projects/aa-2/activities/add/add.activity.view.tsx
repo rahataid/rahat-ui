@@ -336,9 +336,7 @@ export default function AddActivities() {
     }
   }, [responsibility, users, form]);
 
-  const handleSelectTemplate = (payload: Template) => {
-    form.clearErrors();
-    // Populate form fields with template data
+  const setBasicFields = (payload: Template) => {
     const fieldMappings = {
       title: payload.title,
       description: payload.description,
@@ -354,52 +352,69 @@ export default function AddActivities() {
         form.setValue(key as keyof typeof fieldMappings, value);
       }
     });
+  };
+  const setPhase = (payload: Template) => {
+    if (!payload.phase?.name) return;
 
-    // Handle phase lookup
-    if (payload.phase?.name) {
-      const phaseId = phases.find(
-        (p) => p.name.toLowerCase() === payload.phase?.name.toLowerCase(),
-      )?.uuid;
-      if (phaseId) form.setValue('phaseId', phaseId);
+    const phaseId = phases.find(
+      (p) => p.name.toLowerCase() === payload.phase!.name.toLowerCase(),
+    )?.uuid;
+
+    if (phaseId) {
+      form.setValue('phaseId', phaseId);
     }
-    // Handle category lookup
-    if (payload.category?.name) {
-      const categoryUuid = categories.find(
-        (c) => c.name.toLowerCase() === payload.category?.name.toLowerCase(),
-      )?.uuid;
-      if (categoryUuid) {
-        form.setValue('categoryId', categoryUuid);
-      }
+  };
+  const setCategory = (payload: Template) => {
+    if (!payload.category?.name) return;
+
+    const categoryUuid = categories.find(
+      (c) => c.name.toLowerCase() === payload.category!.name.toLowerCase(),
+    )?.uuid;
+
+    if (categoryUuid) {
+      form.setValue('categoryId', categoryUuid);
     }
-    // If there are activity communications, populate them
+  };
+  const setCommunications = (payload: Template) => {
     if (
-      payload.activityCommunication &&
-      Array.isArray(payload.activityCommunication) &&
-      payload.activityCommunication.length > 0
+      !payload.activityCommunication ||
+      !Array.isArray(payload.activityCommunication) ||
+      payload.activityCommunication.length === 0
     ) {
-      // Map the activity communication data to match your CommunicationData format
-      const mappedCommunications: CommunicationData[] =
-        payload.activityCommunication.map((comm) => {
-          // Check if message is an object (audioURL) or string
-          const isAudioMessage =
-            typeof comm.message === 'object' && comm.message !== null;
-
-          return {
-            communicationTitle: comm.communicationTitle || '',
-            groupType: comm.groupType || '',
-            groupId: comm.groupId || '',
-            transportId: comm.transportId || '',
-            message: isAudioMessage ? '' : comm.message || '',
-            subject: comm.subject || '',
-            audioURL: isAudioMessage
-              ? comm.message
-              : comm.audioURL || { mediaURL: '', fileName: '' },
-            sessionId: comm.sessionId || '',
-            communicationId: comm.communicationId || '',
-          };
-        });
-      setCommunicationData(mappedCommunications);
+      return;
     }
+
+    const mappedCommunications: CommunicationData[] =
+      payload.activityCommunication.map(mapCommunication);
+
+    setCommunicationData(mappedCommunications);
+  };
+
+  const mapCommunication = (comm: CommunicationData): CommunicationData => {
+    const isAudioMessage =
+      typeof comm.message === 'object' && comm.message !== null;
+
+    return {
+      communicationTitle: comm.communicationTitle || '',
+      groupType: comm.groupType || '',
+      groupId: comm.groupId || '',
+      transportId: comm.transportId || '',
+      message: isAudioMessage ? '' : comm.message || '',
+      subject: comm.subject || '',
+      audioURL: isAudioMessage
+        ? comm.message
+        : comm.audioURL || { mediaURL: '', fileName: '' },
+      sessionId: comm.sessionId || '',
+      communicationId: comm.communicationId || '',
+    };
+  };
+
+  const handleSelectTemplate = (payload: Template) => {
+    form.clearErrors();
+    setBasicFields(payload);
+    setPhase(payload);
+    setCategory(payload);
+    setCommunications(payload);
   };
 
   return (

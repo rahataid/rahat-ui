@@ -14,7 +14,7 @@ export interface CommunicationData {
   transportId: string;
   message?: string | AudioFile;
   subject?: string;
-  audioURL?: AudioFile;
+  audioURL?: AudioFile | string;
   sessionId?: string;
   communicationId?: string;
 }

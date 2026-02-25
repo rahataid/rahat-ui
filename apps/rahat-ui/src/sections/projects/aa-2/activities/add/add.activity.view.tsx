@@ -868,6 +868,7 @@ export default function AddActivities() {
         onCancel={cancelTemplateToggle}
         onConfirm={confirmTemplateToggle}
         dialogTitle="Confirm Template"
+        dialogMessage="Are you sure you want to save this activity as a template?"
       />
     </Form>
   );

@@ -14,12 +14,14 @@ type ConfirmationDialogProps = {
   onCancel: () => void;
   onConfirm: () => void;
   dialogTitle?: string;
+  dialogMessage?: string;
 };
 const ConfirmationDialog = ({
   isConfirmationDialogOpen,
   onCancel,
   onConfirm,
   dialogTitle = 'Confirm Action',
+  dialogMessage = 'This action cannot be undone. Are you sure you want to perform this action?',
 }: ConfirmationDialogProps) => {
   return (
     <Dialog
@@ -32,10 +34,7 @@ const ConfirmationDialog = ({
         <DialogHeader>
           <DialogTitle>{dialogTitle}</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          This action cannot be undone. Are you sure you want to perform this
-          action?
-        </div>
+        <div className="grid gap-4 py-4">{dialogMessage}</div>
         <DialogFooter>
           <DialogClose asChild>
             <Button type="button" variant="secondary" onClick={onCancel}>

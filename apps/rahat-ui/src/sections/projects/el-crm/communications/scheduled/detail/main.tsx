@@ -115,7 +115,7 @@ export default function MessageDetailPage() {
         <div className="border-b border-border bg-card/50 px-6 py-4">
           <div className="flex items-center gap-4">
             <Link
-              href={`/projects/el-crm/${projectUUID}/communications/messages`}
+              href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
             >
               <Button variant="outline" size="sm">
                 <ArrowLeft className="mr-2 h-4 w-4" />

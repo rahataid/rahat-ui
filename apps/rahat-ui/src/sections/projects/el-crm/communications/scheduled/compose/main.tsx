@@ -31,6 +31,8 @@ import {
   useListElCrmTransport,
   useTriggerElCrmCampaign,
 } from '@rahat-ui/query';
+import { useState } from 'react';
+import { CHANNELS } from '../../const';
 
 // Validation schema
 const scheduleMessageSchema = z.object({
@@ -51,7 +53,12 @@ type ScheduleMessageForm = z.infer<typeof scheduleMessageSchema>;
 export default function ComposeScheduleView() {
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
-
+  const [selectedChannelName, setSelectedChannelName] = useState<string | null>(
+    null,
+  );
+  const [templateMode, setTemplateMode] = useState<'existing' | 'new'>(
+    'existing',
+  );
   const {
     control,
     register,
@@ -241,7 +248,16 @@ export default function ComposeScheduleView() {
                         <>
                           <Select
                             value={field.value}
-                            onValueChange={field.onChange}
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                              const selectedChannel = transport.data?.find(
+                                (channel: any) =>
+                                  channel.cuid.toString() === value,
+                              );
+                              setSelectedChannelName(
+                                selectedChannel?.name || null,
+                              );
+                            }}
                           >
                             <SelectTrigger>
                               <SelectValue placeholder="Select channel" />
@@ -381,69 +397,96 @@ export default function ComposeScheduleView() {
                       </Label>
                     </div>
                   )}
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label>Template Management</Label>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() =>
-                          router.push(
-                            `/projects/el-crm/${projectUUID}/communications/templates/create`,
-                          )
-                        }
-                        className="w-full"
-                      >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Create New Template
-                      </Button>
-                    </div>
-                  </div>
                 </div>
               </div>
 
-              {/* Template Selection */}
-              <div className="space-y-2">
-                <Label htmlFor="template">Select Template</Label>
-                <Controller
-                  name="selectedTemplate"
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choose existing template" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {templates?.data?.map((template: any) => (
-                          <SelectItem
-                            key={template.cuid}
-                            value={template?.externalId}
-                          >
-                            {template.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-
               {/* Custom Message */}
-              <div className="space-y-2">
-                <Label htmlFor="custom-message">Message Content</Label>
-                <Textarea
-                  id="custom-message"
-                  placeholder="Type your message here..."
-                  {...register('customMessage')}
-                  rows={4}
-                />
-                {errors.customMessage && (
-                  <p className="text-sm text-red-500">
-                    {errors.customMessage.message}
-                  </p>
-                )}
-              </div>
+              {selectedChannelName !== CHANNELS.WHATSAPP && (
+                <div className="space-y-2">
+                  <Label htmlFor="custom-message">Message Content</Label>
+                  <Textarea
+                    id="custom-message"
+                    placeholder="Type your message here..."
+                    {...register('customMessage')}
+                    rows={4}
+                  />
+                  {errors.customMessage && (
+                    <p className="text-sm text-red-500">
+                      {errors.customMessage.message}
+                    </p>
+                  )}
+                </div>
+              )}
+              {selectedChannelName === CHANNELS.WHATSAPP && (
+                <div className="space-y-4">
+                  <Label>Template Option</Label>
 
+                  <div className="flex gap-6">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        checked={templateMode === 'existing'}
+                        onChange={() => setTemplateMode('existing')}
+                      />
+                      Use Existing Template
+                    </label>
+
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        checked={templateMode === 'new'}
+                        onChange={() => setTemplateMode('new')}
+                      />
+                      Create New Template
+                    </label>
+                  </div>
+
+                  {/* EXISTING TEMPLATE */}
+                  {templateMode === 'existing' && (
+                    <Controller
+                      name="selectedTemplate"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choose existing template" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {templates?.data?.map((template: any) => (
+                              <SelectItem
+                                key={template.cuid}
+                                value={template.externalId}
+                              >
+                                {template.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                  )}
+
+                  {/* CREATE NEW TEMPLATE */}
+                  {templateMode === 'new' && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() =>
+                        router.push(
+                          `/projects/el-crm/${projectUUID}/communications/templates/create`,
+                        )
+                      }
+                      className="w-full"
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Go To Create Template Page
+                    </Button>
+                  )}
+                </div>
+              )}
               {/* Schedule Button */}
               <div className="flex justify-end gap-3">
                 <Link href="/communication/schedule">

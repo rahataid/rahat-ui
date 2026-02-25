@@ -42,33 +42,17 @@ import BeneficiariesGroupTable from './beneficiariesGroupTable';
 import useBeneficiariesGroupTableColumn from './useBeneficiariesGroupTablecolumn';
 import { PaymentDialog } from './payment.dialog';
 import { PayoutSkeleton } from './pauoutSkeleton';
-import { AlertCircle, Check, ChevronDown } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { paymentSchema } from './schemas/payout.validation';
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from 'libs/shadcn/src/components/ui/popover';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from 'libs/shadcn/src/components/ui/command';
-import { cn } from '@rahat-ui/shadcn/src';
-import Loader from 'apps/community-tool-ui/src/components/Loader';
 import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
 
 export interface PaymentState {
@@ -361,7 +345,7 @@ export default function PaymentInitiation() {
                 <PaymentDialog
                   formState={formState}
                   handleSubmit={handleSubmit}
-                  handleDialogOpen={trigger}
+                  shouldTriggerDialog={trigger}
                 />
               </div>
 

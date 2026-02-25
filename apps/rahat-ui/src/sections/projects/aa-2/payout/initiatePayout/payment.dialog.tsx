@@ -15,21 +15,19 @@ import { PaymentState } from './payment';
 export type PaymentDialogProps = {
   handleSubmit: () => void;
   formState: PaymentState;
-  handleDialogOpen: () => Promise<boolean>;
+  shouldTriggerDialog: () => Promise<boolean>;
 };
 export function PaymentDialog({
   formState,
   handleSubmit,
-  handleDialogOpen,
+  shouldTriggerDialog,
 }: PaymentDialogProps) {
+  // State goes here
   const [open, setOpen] = useState(false);
-  // console.log(formState?.group?.groupedBeneficiaries.length === 0);
 
   // Handlers goes here
   const handleDialogBox = async () => {
-    const isValid = await handleDialogOpen();
-
-    console.debug('isValid', isValid);
+    const isValid = await shouldTriggerDialog();
 
     if (!isValid) {
       return;

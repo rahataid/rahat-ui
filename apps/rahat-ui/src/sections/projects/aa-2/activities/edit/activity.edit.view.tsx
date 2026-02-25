@@ -185,7 +185,7 @@ export default function EditActivity() {
   );
 
   // Ref goes here
-  const addCommunicationBtnRef = useRef<HTMLButtonElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // Router goes here
   const router = useRouter();
@@ -394,15 +394,26 @@ export default function EditActivity() {
     if (isActivityLoading) return;
 
     if (window.location.hash === '#comm') {
+      // Wait till the component is fully rendered before opening the form and scrolling
       setTimeout(() => {
-        if (!addCommunicationBtnRef.current) return;
-
-        addCommunicationBtnRef.current.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
         setOpen(true);
-      }, 300);
+      }, 100);
+
+      setTimeout(() => {
+        if (!scrollAreaRef.current) return;
+
+        // Needed as scroll viewport is defined and scrollAreaRef is inside the viewport
+        const viewport = scrollAreaRef.current.closest(
+          '[data-radix-scroll-area-viewport]',
+        );
+
+        if (viewport) {
+          viewport.scrollTo({
+            top: scrollAreaRef.current.offsetTop,
+            behavior: 'smooth',
+          });
+        }
+      }, 500);
     }
   }, [isActivityLoading]);
 
@@ -826,7 +837,6 @@ export default function EditActivity() {
               </div>
 
               <Button
-                ref={addCommunicationBtnRef}
                 type="button"
                 variant="outline"
                 className="border-dashed border-primary text-primary text-md w-full mt-4"
@@ -842,15 +852,17 @@ export default function EditActivity() {
                 )}
               </Button>
 
-              {open && (
-                <AddCommunicationForm
-                  form={communicationForm}
-                  setOpen={setOpen}
-                  onSave={handleSave}
-                  setLoading={setAudioUploading}
-                  appTransports={appTransports}
-                />
-              )}
+              <div ref={scrollAreaRef}>
+                {open && (
+                  <AddCommunicationForm
+                    form={communicationForm}
+                    setOpen={setOpen}
+                    onSave={handleSave}
+                    setLoading={setAudioUploading}
+                    appTransports={appTransports}
+                  />
+                )}
+              </div>
 
               <CommunicationDataCard
                 form={communicationForm}

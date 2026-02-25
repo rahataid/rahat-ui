@@ -14,6 +14,7 @@ import {
   ChangeEvent,
   useMemo,
   useCallback,
+  RefObject,
 } from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -74,7 +75,7 @@ export default function AddCommunicationForm({
   setLoading,
   appTransports,
   onSave,
-  setOpen,
+  setOpen
 }: AddCommunicationFormProps) {
   const { id: projectId } = useParams();
   const [contentType, setContentType] = useState<ValidationContent | ''>('');

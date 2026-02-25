@@ -135,6 +135,11 @@ const updateBeneficiaryGroup = async (payload: any) => {
   return response?.data;
 };
 
+const beneficiariesGroupByUuids = async (uuids: string[]) => {
+  const response = await api.post(`/beneficiaries/groupDetails`, uuids);
+  return response?.data?.data;
+};
+
 export const useUpdateBeneficiaryGroup = () => {
   const qc = useQueryClient();
   const alert = useSwal();
@@ -737,4 +742,18 @@ export const useExportBeneficiariesFailedBankAccount = (
     },
     queryClient,
   );
+};
+
+export const getBeneficiariesGroupByUuids = (
+  uuids: string[],
+  queryValidation: boolean,
+) => {
+  const query = useQuery({
+    queryKey: ['beneficiariesGroupDetailsByUuids', uuids],
+    queryFn: () => beneficiariesGroupByUuids(uuids),
+    enabled: queryValidation,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  return query;
 };

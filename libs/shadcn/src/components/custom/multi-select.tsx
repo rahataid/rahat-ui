@@ -534,7 +534,7 @@ const MultipleSelector = ({
               <div
                 key={option.value}
                 className={cn(
-                  'animate-fadeIn bg-background text-secondary-foreground hover:bg-background relative inline-flex h-7 cursor-default items-center rounded-md border pr-7 pl-2 text-xs font-medium transition-all disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 data-fixed:pr-2',
+                  'animate-fadeIn bg-background rounded text-secondary-foreground hover:bg-background relative inline-flex h-7 cursor-default items-center border pr-7 pl-2 text-xs font-medium transition-all disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 data-fixed:pr-2',
                   badgeClassName,
                 )}
                 data-fixed={option.fixed}
@@ -647,7 +647,9 @@ const MultipleSelector = ({
               }}
             >
               {isLoading || loading ? (
-                <div className="flex items-center justify-center p-6">{loadingIndicator ||<p>{loadingMessage}</p>}</div>
+                <div className="flex items-center justify-center p-6">
+                  {loadingIndicator || <p>{loadingMessage}</p>}
+                </div>
               ) : (
                 <>
                   {EmptyItem()}

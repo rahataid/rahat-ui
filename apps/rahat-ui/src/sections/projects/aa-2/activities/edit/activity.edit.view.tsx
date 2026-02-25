@@ -496,7 +496,7 @@ export default function EditActivity() {
                 </div>
               </div>
             </div>
-            <ScrollArea className=" h-[calc(100vh-230px)]">
+            <ScrollArea className=" h-[calc(100vh-200px)]">
               <div className="rounded-xl border p-4">
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
@@ -821,6 +821,7 @@ export default function EditActivity() {
                   onSave={handleSave}
                   setLoading={setAudioUploading}
                   appTransports={appTransports}
+                  isEdit={true}
                 />
               )}
 

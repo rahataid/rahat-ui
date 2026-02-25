@@ -65,24 +65,25 @@ import { buildCommunicationPayloads } from 'apps/rahat-ui/src/utils/buildCommuni
 import ViewTemplate from 'apps/rahat-ui/src/sections/projects/aa-2/activities/components/viewTemplate';
 import { Template } from 'apps/rahat-ui/src/types/activities';
 import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
-
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 export const DurationData = [
   { value: 'hours', label: 'Hours' },
   { value: 'days', label: 'Days' },
 ];
 
 export default function AddActivities() {
-  const [open, setOpen] = useState(false);
-  const [isTemplateComfirmOpen, setIsTemplateConfirmOpen] = useState(false);
-  const [pendingTemplateValue, setPendingTemplateValue] = useState(false);
-  const [audioUploading, setAudioUploading] = useState<boolean>(false);
+  const addCommunicationOpen = useBoolean(false);
+  const templateConfirmDialog = useBoolean(false);
+  const pendingTemplateValue = useBoolean(false);
+  const audioUploading = useBoolean(false);
+  const viewTemplateOpen = useBoolean(false);
   const [communicationData, setCommunicationData] = useState<
     CommunicationData[]
   >([]);
+
   const [uploadingFileName, setUploadingFileName] = useState<string | null>(
     null,
   );
-
   const createActivity = useCreateActivities();
   const uploadFile = useUploadFile();
   const { id: projectID } = useParams();
@@ -90,7 +91,6 @@ export default function AddActivities() {
   const phaseId = searchParams.get('phaseId');
   const navPae = searchParams.get('nav');
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
 
   const { data: users } = useUserList({
     page: 1,
@@ -186,7 +186,6 @@ export default function AddActivities() {
           setUploadingFileName(null);
         }
       }
-
       // Reset the input value to allow selecting the same files again
       event.target.value = '';
     }
@@ -288,8 +287,8 @@ export default function AddActivities() {
 
   const handleTemplateToggle = (nextValue: boolean) => {
     if (nextValue) {
-      setPendingTemplateValue(true);
-      setIsTemplateConfirmOpen(true);
+      pendingTemplateValue.onTrue();
+      templateConfirmDialog.onTrue();
       return;
     }
 
@@ -300,25 +299,25 @@ export default function AddActivities() {
   };
 
   const confirmTemplateToggle = () => {
-    if (pendingTemplateValue) {
+    if (pendingTemplateValue.value) {
       form.setValue('isTemplate', true, {
         shouldDirty: true,
         shouldValidate: true,
       });
     }
-    setPendingTemplateValue(false);
-    setIsTemplateConfirmOpen(false);
+    pendingTemplateValue.onFalse();
+    templateConfirmDialog.onFalse();
   };
 
   const cancelTemplateToggle = () => {
-    setPendingTemplateValue(false);
-    setIsTemplateConfirmOpen(false);
+    pendingTemplateValue.onFalse();
+    templateConfirmDialog.onFalse();
   };
 
   const resetForm = () => {
     form.reset();
     communicationForm.reset();
-    setOpen(false);
+    addCommunicationOpen.onFalse();
     setCommunicationData([]);
   };
 
@@ -432,15 +431,15 @@ export default function AddActivities() {
                   <Button
                     className="gap-2"
                     type="button"
-                    onClick={() => setIsOpen(true)}
+                    onClick={viewTemplateOpen.onTrue}
                   >
                     <Filter className="w-4 h-4" />
                     View Templates
                   </Button>
-                  {isOpen && (
+                  {viewTemplateOpen.value && (
                     <ViewTemplate
-                      open={isOpen}
-                      setOpen={setIsOpen}
+                      open={viewTemplateOpen.value}
+                      setOpen={viewTemplateOpen.setValue}
                       onSelectTemplate={handleSelectTemplate}
                     />
                   )}
@@ -450,8 +449,8 @@ export default function AddActivities() {
                     disabled={
                       createActivity?.isPending ||
                       uploadFile?.isPending ||
-                      audioUploading ||
-                      open ||
+                      audioUploading.value ||
+                      addCommunicationOpen.value ||
                       !!form.formState.errors.responsibility
                     }
                   >
@@ -811,22 +810,22 @@ export default function AddActivities() {
               variant="outline"
               className="border-dashed border-primary text-primary text-md w-full mt-4"
               onClick={() => {
-                setOpen(!open);
+                addCommunicationOpen.onToggle();
               }}
             >
               Add Communication
-              {!open ? (
+              {!addCommunicationOpen.value ? (
                 <Plus className="ml-2" size={16} strokeWidth={3} />
               ) : (
                 <Minus className="ml-2" size={16} strokeWidth={3} />
               )}
             </Button>
-            {open && (
+            {addCommunicationOpen.value && (
               <AddCommunicationForm
                 form={communicationForm}
-                setOpen={setOpen}
+                setOpen={addCommunicationOpen.setValue}
                 onSave={handleSave}
-                setLoading={setAudioUploading}
+                setLoading={audioUploading.setValue}
                 appTransports={appTransports}
               />
             )}
@@ -836,14 +835,14 @@ export default function AddActivities() {
               communicationData={communicationData}
               appTransports={appTransports}
               onRemove={handleRemove}
-              setOpen={setOpen}
-              open={open}
+              setOpen={addCommunicationOpen.setValue}
+              open={addCommunicationOpen.value}
             />
           </ScrollArea>
         </div>
       </form>
       <ConfirmationDialog
-        isConfirmationDialogOpen={isTemplateComfirmOpen}
+        isConfirmationDialogOpen={templateConfirmDialog.value}
         onCancel={cancelTemplateToggle}
         onConfirm={confirmTemplateToggle}
         dialogTitle="Confirm Template"

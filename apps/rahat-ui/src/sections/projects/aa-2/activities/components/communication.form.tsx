@@ -369,7 +369,6 @@ export default function AddCommunicationForm({
     if (!result) return;
 
     if (!result.valid) {
-      console.log(result.invalidGroups, 'invalid groups');
       form.clearErrors('groupId');
       // error are not display for second time if selected groupId is same so implemented this solution. if there is better solution we have to update code.
       setTimeout(() => {

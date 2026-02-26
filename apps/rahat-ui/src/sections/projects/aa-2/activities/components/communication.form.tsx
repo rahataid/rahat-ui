@@ -514,7 +514,8 @@ export default function AddCommunicationForm({
                     inputProps={{
                       className: 'outline-none',
                     }}
-                    groupClassName="h-36 rounded"
+                    className="max-h-20 overflow-y-auto"
+                    dropdownClassName="max-h-36 overflow-auto w-80"
                     onChange={(options: Option[]) => {
                       field.onChange(options.map((opt: Option) => opt.value));
                     }}

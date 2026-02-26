@@ -94,7 +94,7 @@ const CommunicationDataCard = ({
                     <h3 className="text-sm font-medium">
                       {t?.communicationTitle}
                     </h3>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
                       <span>
                         {
                           appTransports?.find((g) => g.cuid === t.transportId)
@@ -103,33 +103,29 @@ const CommunicationDataCard = ({
                       </span>
                       <span>•</span>
                       <span>
-                        {' '}
                         {t?.groupType.charAt(0).toUpperCase() +
                           t?.groupType.slice(1).toLowerCase()}
                       </span>
-                      {t?.groupId.map((uuid) => {
-                        const groupName =
-                          stakeholdersGroups?.find((g: any) => g.uuid === uuid)
-                            ?.name ||
-                          beneficiaryGroups?.find((g: any) => g.uuid === uuid)
-                            ?.name ||
-                          'Unknown Group';
-                        return (
-                          <div key={uuid} className="flex items-center gap-2">
-                            <span>•</span>
-                            <TruncatedCell text={groupName} maxLength={8} />
-                          </div>
-                        );
-                      })}
-                      <span>
-                        {' '}
-                        {stakeholdersGroups?.find(
-                          (g: any) => g.uuid === t.groupId,
-                        )?.name ||
-                          beneficiaryGroups?.find(
-                            (g: any) => g.uuid === t.groupId,
-                          )?.name}
-                      </span>
+
+                      {/* Group names container */}
+                      <div className="flex flex-wrap gap-2 w-auto">
+                        {t?.groupId.map((uuid) => {
+                          const groupName =
+                            stakeholdersGroups?.find(
+                              (g: any) => g.uuid === uuid,
+                            )?.name ||
+                            beneficiaryGroups?.find((g: any) => g.uuid === uuid)
+                              ?.name ||
+                            'Unknown Group';
+
+                          return (
+                            <div key={uuid} className="flex items-center gap-2">
+                              <span>•</span>
+                              <TruncatedCell text={groupName} maxLength={8} />
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                   {t?.subject && (

@@ -72,6 +72,9 @@ interface MultipleSelectorProps {
   hidePlaceholderWhenSelected?: boolean;
   disabled?: boolean;
 
+  /** Custom className for Command component */
+  dropdownClassName?: string;
+
   /** Group the options base on provided key. */
   groupBy?: string;
   className?: string;
@@ -215,6 +218,7 @@ const MultipleSelector = ({
   groupBy,
   className,
   badgeClassName,
+  dropdownClassName,
   groupClassName,
   selectFirstItem = true,
   creatable = false,
@@ -621,9 +625,10 @@ const MultipleSelector = ({
       <div className="relative">
         <div
           className={cn(
-            'border-input absolute z-10 w-full overflow-hidden rounded-md border',
+            'border-input absolute z-10 overflow-hidden rounded-md border',
             'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
             !open && 'hidden',
+            dropdownClassName,
           )}
           data-state={open ? 'open' : 'closed'}
           style={{

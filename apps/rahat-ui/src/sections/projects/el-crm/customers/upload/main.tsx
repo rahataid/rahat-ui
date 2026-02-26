@@ -22,12 +22,13 @@ import {
   Download,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useUploadCustomers } from '@rahat-ui/query';
 
 export default function CustomersUploadPage() {
   const { id: projectUUID } = useParams() as { id: UUID };
+  const router = useRouter();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -85,6 +86,8 @@ export default function CustomersUploadPage() {
       doctype,
     });
 
+    router.push(`/projects/el-crm/${projectUUID}/customers`);
+
     // Simulate upload
     // setTimeout(() => {
     //   setUploadStatus('success');
@@ -127,28 +130,18 @@ export default function CustomersUploadPage() {
             </p>
           </div>
         </div>
-        <div className="flex items-center">
-          <a href="/files/sample_customers.xlsx" download>
-            <Button className="mr-2" variant="outline">
-              <Download className="mr-2 h-4 w-4" />
-              Download Sample
-            </Button>
-          </a>
-          <Link href={`/projects/el-crm/${projectUUID}/customers/upload/retry`}>
-            <Button>Failed Batches</Button>
-          </Link>
-        </div>
+        <Link href={`/projects/el-crm/${projectUUID}/customers/upload/retry`}>
+          <Button>Failed Batches</Button>
+        </Link>
       </div>
 
-      <div className="flex-1 p-6">
-        <div className="max-w-2xl mx-auto">
+      <div className="p-6">
+        <div className="max-w-3xl mx-auto">
           <Card>
             <CardHeader>
               <CardTitle>Upload File</CardTitle>
               <CardDescription>
-                Upload a CSV or Excel file containing customer data. The file
-                should include columns for customer name, email, phone number,
-                and other relevant information.
+                Upload a Excel file containing customer data.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -169,7 +162,7 @@ export default function CustomersUploadPage() {
                     ref={fileInputRef}
                     id="file-upload"
                     type="file"
-                    accept=".csv,.xlsx,.xls"
+                    accept=".xlsx,.xls"
                     onChange={handleFileSelect}
                     className="hidden"
                   />
@@ -191,7 +184,7 @@ export default function CustomersUploadPage() {
                           </button>
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Supports CSV, XLSX, XLS files up to 10MB
+                          Supports XLSX, XLS files
                         </p>
                       </div>
                     </div>
@@ -235,6 +228,12 @@ export default function CustomersUploadPage() {
 
               {/* Actions */}
               <div className="flex gap-3">
+                <a href="/files/sample_customers.xlsx" download>
+                  <Button className="mr-2 w-48" variant="outline">
+                    <Download className="mr-2 h-4 w-4" />
+                    Download Sample
+                  </Button>
+                </a>
                 <Button
                   onClick={handleUpload}
                   disabled={!selectedFile || uploadStatus === 'uploading'}
@@ -253,12 +252,14 @@ export default function CustomersUploadPage() {
                   )}
                 </Button>
                 <Link href={`/projects/el-crm/${projectUUID}/customers`}>
-                  <Button variant="outline">Cancel</Button>
+                  <Button className="w-48" variant="outline">
+                    Cancel
+                  </Button>
                 </Link>
               </div>
 
               {/* File Format Guidelines */}
-              <div className="border-t pt-6">
+              {/* <div className="border-t pt-6">
                 <h4 className="text-sm font-medium mb-3">
                   File Format Guidelines
                 </h4>
@@ -272,7 +273,7 @@ export default function CustomersUploadPage() {
                   </li>
                   <li>- Date format: YYYY-MM-DD</li>
                 </ul>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
         </div>

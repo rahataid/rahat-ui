@@ -198,6 +198,7 @@ export default function EditActivity() {
   const { id: projectID, activityID } = useParams();
   const redirectTo = searchParams.get('from');
 
+  const isAddComm = window.location.hash === '#comm';
   // Query goes here
   const { data: users } = useUserList({
     page: 1,
@@ -392,7 +393,7 @@ export default function EditActivity() {
     if (typeof window === 'undefined') return;
     if (isActivityLoading) return;
 
-    if (window.location.hash === '#comm') {
+    if (isAddComm) {
       // Wait till the component is fully rendered before opening the form and scrolling
       setTimeout(() => {
         setOpen(true);
@@ -414,7 +415,7 @@ export default function EditActivity() {
         }
       }, 500);
     }
-  }, [isActivityLoading]);
+  }, [isActivityLoading, isAddComm]);
 
   // this will set default values when activity detail is loaded
   useEffect(() => {
@@ -859,7 +860,7 @@ export default function EditActivity() {
                     onSave={handleSave}
                     setLoading={setAudioUploading}
                     appTransports={appTransports}
-                    isEdit={true}
+                    isMultiSelect={isAddComm}
                   />
                 )}
               </div>

@@ -75,7 +75,7 @@ interface AddCommunicationFormProps {
   appTransports: Transport[] | undefined;
   onSave: VoidFunction;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  isEdit?: boolean;
+  isMultiSelect?: boolean;
 }
 
 export default function AddCommunicationForm({
@@ -84,7 +84,7 @@ export default function AddCommunicationForm({
   appTransports,
   onSave,
   setOpen,
-  isEdit = false,
+  isMultiSelect = false,
 }: AddCommunicationFormProps) {
   const { id: projectId } = useParams();
   const [contentType, setContentType] = useState<ValidationContent | ''>('');
@@ -461,47 +461,7 @@ export default function AddCommunicationForm({
           )}
         />
 
-        {isEdit ? (
-          <FormField
-            control={form.control}
-            name="groupId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Groups</FormLabel>
-                <Select
-                  disabled={!groupType || isLoading}
-                  onValueChange={(value) => {
-                    // Set groupId as an array with the selected value
-                    field.onChange([value]);
-                  }}
-                  value={field.value?.[0] || ''}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={
-                          groupType
-                            ? 'Select groups'
-                            : 'Select group type first'
-                        }
-                      />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectGroup>
-                      {renderGroups(groupOptions, isLoading)}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                {form.formState.errors.groupId && (
-                  <FormMessage>
-                    {form.formState.errors.groupId.message}
-                  </FormMessage>
-                )}
-              </FormItem>
-            )}
-          />
-        ) : (
+        {isMultiSelect ? (
           <FormField
             control={form.control}
             name="groupId"
@@ -537,6 +497,46 @@ export default function AddCommunicationForm({
                     disabled={isLoading || !groupType}
                   />
                 </FormControl>
+                {form.formState.errors.groupId && (
+                  <FormMessage>
+                    {form.formState.errors.groupId.message}
+                  </FormMessage>
+                )}
+              </FormItem>
+            )}
+          />
+        ) : (
+          <FormField
+            control={form.control}
+            name="groupId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Groups</FormLabel>
+                <Select
+                  disabled={!groupType || isLoading}
+                  onValueChange={(value) => {
+                    // Set groupId as an array with the selected value
+                    field.onChange([value]);
+                  }}
+                  value={field.value?.[0] || ''}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={
+                          groupType
+                            ? 'Select groups'
+                            : 'Select group type first'
+                        }
+                      />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup>
+                      {renderGroups(groupOptions, isLoading)}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
                 {form.formState.errors.groupId && (
                   <FormMessage>
                     {form.formState.errors.groupId.message}

@@ -241,7 +241,7 @@ export default function GroupDetailView() {
                 onClick={handleEditGroupNameClick}
               >
                 <Pencil className="w-4 h-4" />
-                Edit Group Name
+                Edit
               </Button>
             )}
             <Button

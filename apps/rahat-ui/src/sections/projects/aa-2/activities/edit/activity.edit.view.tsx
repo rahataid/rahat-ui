@@ -308,12 +308,49 @@ export default function EditActivity() {
   const selectedPhaseId = form.watch('phaseId');
   const selectedPhase = phases.find((d) => d.uuid === selectedPhaseId);
 
+  useEffect(() => {
+    if (selectedPhase?.name === 'PREPAREDNESS') {
+      form.setValue('isAutomated', false);
+    }
+  }, [selectedPhase, form]);
+
+  const handleUpdateActivity = async (data: z.infer<typeof FormSchema>) => {
+    let payload;
+
+    if (communicationData?.length) {
+      const activityCommunicationPayload = buildCommunicationPayloads(
+        communicationData,
+        appTransports,
+      );
+
+      payload = {
+        uuid: activityID,
+        ...data,
+        activityCommunication: activityCommunicationPayload,
+      };
+    } else {
+      payload = {
+        uuid: activityID,
+        ...data,
+      };
+    }
+    try {
+      await updateActivity.mutateAsync({
+        projectUUID: projectID as UUID,
+        activityUpdatePayload: payload,
+      });
+      router.push(redirectUpdatePath);
+    } catch (e) {
+      console.error('Error::', e);
+    }
+  };
+
   const handleSave = () => {
     const communicationFormData = communicationForm.getValues();
     const newCommunication: CommunicationData = {
       communicationTitle: communicationFormData?.communicationTitle || '',
       groupType: (communicationFormData?.groupType || '') as GroupType,
-      groupId: communicationFormData?.groupId || '',
+      groupId: communicationFormData?.groupId || [],
       transportId: communicationFormData?.transportId || '',
       message: communicationFormData?.message || '',
       subject: communicationFormData?.subject || '',
@@ -534,7 +571,7 @@ export default function EditActivity() {
                 </div>
               </div>
             </div>
-            <ScrollArea className=" h-[calc(100vh-230px)]">
+            <ScrollArea className=" h-[calc(100vh-200px)]">
               <div className="rounded-xl border p-4">
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
@@ -860,6 +897,7 @@ export default function EditActivity() {
                     onSave={handleSave}
                     setLoading={setAudioUploading}
                     appTransports={appTransports}
+                    isEdit={true}
                   />
                 )}
               </div>

@@ -1,4 +1,3 @@
-
 export type GroupType = 'STAKEHOLDERS' | 'BENEFICIARY';
 
 export type TransportName = 'EMAIL' | 'SMS' | 'VOICE' | 'IVR';
@@ -11,18 +10,19 @@ export interface AudioFile {
 export interface CommunicationData {
   communicationTitle?: string;
   groupType: GroupType;
-  groupId: string;
+  groupId: string[];
   transportId: string;
-  message?: string;
+  message?: string | AudioFile;
   subject?: string;
-  audioURL?: AudioFile;
+  audioURL?: AudioFile | string;
   sessionId?: string;
   communicationId?: string;
 }
 
 export interface CommunicationFetchData
-  extends Omit<CommunicationData, 'message'> {
+  extends Omit<CommunicationData, 'message' | 'groupId'> {
   message?: string | AudioFile;
+  groupId?: string;
 }
 
 export interface DocumentFile {

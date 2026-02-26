@@ -1,3 +1,4 @@
+import { cn } from '@rahat-ui/shadcn/src';
 import {
   Tooltip,
   TooltipContent,
@@ -30,11 +31,11 @@ export function TruncatedCell({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className={`cursor-pointer truncate ${className}`}>
+          <span className={cn('cursor-pointer truncate', className)}>
             {displayText}
           </span>
         </TooltipTrigger>
-        <TooltipContent className="rounded-sm">
+        <TooltipContent className={cn('rounded-sm', className)}>
           <p className=" break-words ">{text}</p>
         </TooltipContent>
       </Tooltip>

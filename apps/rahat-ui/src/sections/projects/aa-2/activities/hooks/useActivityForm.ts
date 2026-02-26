@@ -25,7 +25,7 @@ export const useActivityForm = (
     defaultValues: {
       communicationTitle: '',
       groupType: '',
-      groupId: '',
+      groupId: [],
       transportId: '',
       message: '',
       subject: '',
@@ -50,6 +50,7 @@ export const useActivityForm = (
       leadTime: '',
       description: '',
       activityDocuments: [],
+      isTemplate: false,
       isAutomated: false,
     },
   });

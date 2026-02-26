@@ -1,7 +1,7 @@
 import {
+  getBeneficiariesGroupByUuids,
   useBeneficiariesGroupStore,
-  useSingleBeneficiaryGroup,
-  useSingleStakeholdersGroup,
+  useStakeholdersGroupByUuids,
   useStakeholdersGroupsStore,
   useUploadFile,
 } from '@rahat-ui/query';
@@ -33,6 +33,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import MultipleSelector, {
+  type Option,
+} from '@rahat-ui/shadcn/src/components/custom/multi-select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { Transport, ValidationContent } from '@rumsan/connect/src/types';
 import { UUID } from 'crypto';
@@ -52,11 +55,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { validateGroupEmails } from 'apps/rahat-ui/src/utils/validateGroupEmails';
-import { renderGroups } from './renderGroup';
+import {
+  validateStakeholderGroupFields,
+  validateBeneficiaryGroupFields,
+} from 'apps/rahat-ui/src/utils/validateGroupEmails';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { createCommunicationFormSchema } from '../schemas/activity.schemas';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { renderGroups } from './renderGroup';
 
 type CommunicationFormData = z.infer<
   ReturnType<typeof createCommunicationFormSchema>
@@ -68,6 +75,7 @@ interface AddCommunicationFormProps {
   appTransports: Transport[] | undefined;
   onSave: VoidFunction;
   setOpen: Dispatch<SetStateAction<boolean>>;
+  isEdit?: boolean;
 }
 
 export default function AddCommunicationForm({
@@ -75,7 +83,8 @@ export default function AddCommunicationForm({
   setLoading,
   appTransports,
   onSave,
-  setOpen
+  setOpen,
+  isEdit = false,
 }: AddCommunicationFormProps) {
   const { id: projectId } = useParams();
   const [contentType, setContentType] = useState<ValidationContent | ''>('');
@@ -116,16 +125,51 @@ export default function AddCommunicationForm({
   const groupType = form.watch('groupType');
   const groupId = form.watch('groupId');
 
-  const stakeholderId =
-    groupType === 'STAKEHOLDERS' && groupId ? (groupId as UUID) : ('' as UUID);
-  const beneficiaryId =
-    groupType === 'BENEFICIARY' && groupId ? (groupId as UUID) : ('' as UUID);
+  // Convert groups to Option[] format
+  const groupOptions = useMemo<Option[]>(() => {
+    if (groupType === 'STAKEHOLDERS') {
+      const stakeholdersGroupsList = stakeholdersGroups.filter(
+        (a: any) => a?._count?.stakeholders > 0,
+      );
+      return stakeholdersGroupsList.map((group: any) => ({
+        label: group?.name || '',
+        value: group.uuid,
+      }));
+    }
+
+    if (groupType === 'BENEFICIARY') {
+      const beneficiaryGroupsList = beneficiaryGroups.filter(
+        (a: any) => a?._count?.groupedBeneficiaries > 0,
+      );
+      return beneficiaryGroupsList.map((group: any) => ({
+        label: group?.name || '',
+        value: group.uuid,
+      }));
+    }
+
+    return [];
+  }, [groupType, stakeholdersGroups, beneficiaryGroups]);
+
+  // Get actual selected options with labels
+  const selectedGroups = useMemo(() => {
+    if (!groupId) return [];
+    return groupId
+      .map((id: string) => groupOptions.find((opt: Option) => opt.value === id))
+      .filter(Boolean) as Option[];
+  }, [groupId, groupOptions]);
 
   const { data: stakeholdersGroup, isLoading: stakeholdersGroupLoading } =
-    useSingleStakeholdersGroup(projectId as UUID, stakeholderId);
+    useStakeholdersGroupByUuids(
+      projectId as UUID,
+      groupId,
+      groupType === 'STAKEHOLDERS' && groupId.length > 0,
+    );
 
   const { data: beneficiaryGroup, isLoading: beneficiaryGroupLoading } =
-    useSingleBeneficiaryGroup(projectId as UUID, beneficiaryId);
+    getBeneficiariesGroupByUuids(
+      groupId,
+      groupType === 'BENEFICIARY' && groupId.length > 0,
+    );
 
   const handleAudioFileChange = async (
     fileOrEvent: File | ChangeEvent<HTMLInputElement>,
@@ -289,6 +333,11 @@ export default function AddCommunicationForm({
     [stakeholdersGroupLoading, beneficiaryGroupLoading],
   );
 
+  const handleGroupTypeChange = (value: string) => {
+    form.setValue('groupType', value);
+    form.setValue('groupId', []); // reset group selection on type change
+  };
+
   const transportData = useMemo(() => {
     if (!transportId || !appTransports?.length) {
       return;
@@ -298,30 +347,45 @@ export default function AddCommunicationForm({
 
   // Validate emails whenever group or transport changes
   useEffect(() => {
-    if (transportData?.name !== 'EMAIL') {
+    if (!transportData) return;
+
+    if (transportData?.name === 'VOICE') {
       // Clear any previous errors if transport doesn't require email
       form.clearErrors('groupId');
+      setIsEmailValidated(true);
       return;
     }
 
-    let isEmailValidated = false;
-    if (groupType === 'STAKEHOLDERS') {
-      isEmailValidated = validateGroupEmails({
-        group: stakeholdersGroup?.stakeholders,
-        type: 'stakeholders',
-        extractEmail: (s) => s?.email,
-        form,
-      });
-    } else if (groupType === 'BENEFICIARY') {
-      isEmailValidated = validateGroupEmails({
-        group: beneficiaryGroup?.groupedBeneficiaries,
-        type: 'beneficiaries',
-        extractEmail: (s) => s?.Beneficiary?.pii?.email,
-        form,
-      });
+    const fieldName = transportData.name === 'EMAIL' ? 'email' : 'phone';
+    let result;
+
+    if (groupType === 'STAKEHOLDERS' && stakeholdersGroup) {
+      result = validateStakeholderGroupFields(stakeholdersGroup, fieldName);
     }
-    setIsEmailValidated(isEmailValidated);
-  }, [stakeholdersGroup, beneficiaryGroup, transportData]);
+
+    if (groupType === 'BENEFICIARY' && beneficiaryGroup) {
+      result = validateBeneficiaryGroupFields(beneficiaryGroup, fieldName);
+    }
+
+    if (!result) return;
+
+    if (!result.valid) {
+      form.clearErrors('groupId');
+      // error are not display for second time if selected groupId is same so implemented this solution. if there is better solution we have to update code.
+      setTimeout(() => {
+        form.setError('groupId', {
+          type: 'manual',
+          message: `${fieldName} is missing for some beneficiaries in: ${result.invalidGroups.join(
+            ', ',
+          )}`,
+        });
+      }, 0);
+    } else {
+      form.clearErrors('groupId');
+    }
+
+    setIsEmailValidated(result.valid);
+  }, [stakeholdersGroup, beneficiaryGroup, transportData, groupType]);
 
   // When transport type changes, reset relevant fields
   useEffect(() => {
@@ -347,7 +411,7 @@ export default function AddCommunicationForm({
 
   return (
     <div className="border border-dashed rounded p-4 my-8">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-2">
         <h1 className="text-lg font-semibold">Add : Communication</h1>
       </div>
       <div className="grid grid-cols-2 gap-4">
@@ -374,7 +438,10 @@ export default function AddCommunicationForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Group Type</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value || ''}>
+              <Select
+                onValueChange={handleGroupTypeChange}
+                value={field.value || ''}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select group type" />
@@ -394,37 +461,91 @@ export default function AddCommunicationForm({
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="groupId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Group</FormLabel>
-              <Select value={field.value} onValueChange={field.onChange}>
+        {isEdit ? (
+          <FormField
+            control={form.control}
+            name="groupId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Groups</FormLabel>
+                <Select
+                  disabled={!groupType || isLoading}
+                  onValueChange={(value) => {
+                    // Set groupId as an array with the selected value
+                    field.onChange([value]);
+                  }}
+                  value={field.value?.[0] || ''}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={
+                          groupType
+                            ? 'Select groups'
+                            : 'Select group type first'
+                        }
+                      />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup>
+                      {renderGroups(groupOptions, isLoading)}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                {form.formState.errors.groupId && (
+                  <FormMessage>
+                    {form.formState.errors.groupId.message}
+                  </FormMessage>
+                )}
+              </FormItem>
+            )}
+          />
+        ) : (
+          <FormField
+            control={form.control}
+            name="groupId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Groups</FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={'Select group'} />
-                  </SelectTrigger>
+                  <MultipleSelector
+                    options={groupOptions}
+                    value={selectedGroups}
+                    inputProps={{
+                      className: 'outline-none',
+                    }}
+                    className="max-h-20 overflow-y-auto"
+                    dropdownClassName="max-h-36 overflow-auto w-80"
+                    onChange={(options: Option[]) => {
+                      field.onChange(options.map((opt: Option) => opt.value));
+                    }}
+                    placeholder={
+                      groupType ? 'Select groups' : 'Select group type first'
+                    }
+                    loading={isLoading}
+                    loadingIndicator={
+                      <div className="flex items-center justify-center p-6">
+                        <Loader />
+                      </div>
+                    }
+                    emptyIndicator={
+                      <p className="text-sm text-muted-foreground">
+                        No groups found
+                      </p>
+                    }
+                    disabled={isLoading || !groupType}
+                  />
                 </FormControl>
-                <SelectContent>
-                  <SelectGroup>
-                    {renderGroups(
-                      form,
-                      stakeholdersGroups,
-                      beneficiaryGroups,
-                      isLoading,
-                    )}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              {form.formState.errors.groupId && (
-                <FormMessage>
-                  {form.formState.errors.groupId.message}
-                </FormMessage>
-              )}
-            </FormItem>
-          )}
-        />
+                {form.formState.errors.groupId && (
+                  <FormMessage>
+                    {form.formState.errors.groupId.message}
+                  </FormMessage>
+                )}
+              </FormItem>
+            )}
+          />
+        )}
 
         <FormField
           control={form.control}

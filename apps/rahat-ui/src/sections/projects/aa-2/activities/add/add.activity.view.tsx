@@ -11,6 +11,7 @@ import {
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import {
   Form,
   FormControl,
@@ -34,15 +35,29 @@ import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 import { UUID } from 'crypto';
 import {
+  TooltipContent,
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+} from 'libs/shadcn/src/components/ui/tooltip';
+import {
   CloudUpload,
   FileCheck,
+  Filter,
+  Info,
   LoaderCircle,
   Minus,
   Plus,
   X,
 } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import React, { useMemo, useEffect, useState, ChangeEvent } from 'react';
+import React, {
+  useMemo,
+  useEffect,
+  useState,
+  ChangeEvent,
+  useCallback,
+} from 'react';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 import AddCommunicationForm from '../components/communication.form';
@@ -53,22 +68,28 @@ import {
 } from 'apps/rahat-ui/src/types/communication';
 import { useActivityForm } from '../hooks/useActivityForm';
 import { buildCommunicationPayloads } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
-
+import ViewTemplate from 'apps/rahat-ui/src/sections/projects/aa-2/activities/components/viewTemplate';
+import { Template } from 'apps/rahat-ui/src/types/activities';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 export const DurationData = [
   { value: 'hours', label: 'Hours' },
   { value: 'days', label: 'Days' },
 ];
 
 export default function AddActivities() {
-  const [open, setOpen] = useState(false);
-  const [audioUploading, setAudioUploading] = useState<boolean>(false);
+  const addCommunicationOpen = useBoolean(false);
+  const templateConfirmDialog = useBoolean(false);
+  const pendingTemplateValue = useBoolean(false);
+  const audioUploading = useBoolean(false);
+  const viewTemplateOpen = useBoolean(false);
   const [communicationData, setCommunicationData] = useState<
     CommunicationData[]
   >([]);
+
   const [uploadingFileName, setUploadingFileName] = useState<string | null>(
     null,
   );
-
   const createActivity = useCreateActivities();
   const uploadFile = useUploadFile();
   const { id: projectID } = useParams();
@@ -171,7 +192,6 @@ export default function AddActivities() {
           setUploadingFileName(null);
         }
       }
-
       // Reset the input value to allow selecting the same files again
       event.target.value = '';
     }
@@ -208,7 +228,7 @@ export default function AddActivities() {
     const newCommunication: CommunicationData = {
       communicationTitle: communicationFormData?.communicationTitle || '',
       groupType: (communicationFormData?.groupType || '') as GroupType,
-      groupId: communicationFormData?.groupId || '',
+      groupId: communicationFormData?.groupId || [],
       transportId: communicationFormData?.transportId || '',
       message: communicationFormData?.message || '',
       subject: communicationFormData?.subject || '',
@@ -245,13 +265,11 @@ export default function AddActivities() {
       ...rest,
     };
     let payload;
-
     if (communicationData?.length) {
       const activityCommunicationPayload = buildCommunicationPayloads(
         communicationData,
         appTransports,
       );
-
       payload = {
         ...payloadData,
         activityCommunication: activityCommunicationPayload,
@@ -273,10 +291,39 @@ export default function AddActivities() {
     }
   };
 
+  const handleTemplateToggle = (nextValue: boolean) => {
+    if (nextValue) {
+      pendingTemplateValue.onTrue();
+      templateConfirmDialog.onTrue();
+      return;
+    }
+
+    form.setValue('isTemplate', false, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  };
+
+  const confirmTemplateToggle = () => {
+    if (pendingTemplateValue.value) {
+      form.setValue('isTemplate', true, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+    pendingTemplateValue.onFalse();
+    templateConfirmDialog.onFalse();
+  };
+
+  const cancelTemplateToggle = () => {
+    pendingTemplateValue.onFalse();
+    templateConfirmDialog.onFalse();
+  };
+
   const resetForm = () => {
     form.reset();
     communicationForm.reset();
-    setOpen(false);
+    addCommunicationOpen.onFalse();
     setCommunicationData([]);
   };
 
@@ -295,6 +342,88 @@ export default function AddActivities() {
     }
   }, [responsibility, users, form]);
 
+  const setBasicFields = (payload: Template) => {
+    const fieldMappings = {
+      title: payload.title,
+      description: payload.description,
+      responsibility: payload.managerId,
+      source: payload.source,
+      leadTime: payload.leadTime,
+      isAutomated: payload.isAutomated,
+      activityDocuments: payload.activityDocuments,
+    } as const;
+
+    Object.entries(fieldMappings).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        form.setValue(key as keyof typeof fieldMappings, value);
+      }
+    });
+  };
+  const setPhase = (payload: Template) => {
+    if (!payload.phase?.name) return;
+
+    const phaseId = phases.find(
+      (p) => p.name.toLowerCase() === payload.phase!.name.toLowerCase(),
+    )?.uuid;
+
+    if (phaseId) {
+      form.setValue('phaseId', phaseId);
+    }
+  };
+  const setCategory = (payload: Template) => {
+    if (!payload.category?.name) return;
+
+    const categoryUuid = categories.find(
+      (c) => c.name.toLowerCase() === payload.category!.name.toLowerCase(),
+    )?.uuid;
+
+    if (categoryUuid) {
+      form.setValue('categoryId', categoryUuid);
+    }
+  };
+  const setCommunications = (payload: Template) => {
+    if (
+      !payload.activityCommunication ||
+      !Array.isArray(payload.activityCommunication) ||
+      payload.activityCommunication.length === 0
+    ) {
+      return;
+    }
+
+    const mappedCommunications: CommunicationData[] =
+      payload.activityCommunication.map(mapCommunication);
+
+    setCommunicationData(mappedCommunications);
+  };
+
+  const mapCommunication = (comm: CommunicationData): CommunicationData => {
+    const isAudioMessage =
+      typeof comm.message === 'object' && comm.message !== null;
+
+    return {
+      communicationTitle: comm.communicationTitle || '',
+      groupType: comm.groupType || '',
+      groupId: comm.groupId || '',
+      transportId: comm.transportId || '',
+      message: isAudioMessage ? '' : comm.message || '',
+      subject: comm.subject || '',
+      audioURL: isAudioMessage
+        ? comm.message
+        : comm.audioURL || { mediaURL: '', fileName: '' },
+      sessionId: comm.sessionId || '',
+      communicationId: comm.communicationId || '',
+    };
+  };
+  const handleSelectTemplate = useCallback(
+    (payload: Template) => {
+      form.clearErrors();
+      setBasicFields(payload);
+      setPhase(payload);
+      setCategory(payload);
+      setCommunications(payload);
+    },
+    [form, phases, categories],
+  );
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
@@ -320,14 +449,30 @@ export default function AddActivities() {
                   >
                     Clear
                   </Button>
+
+                  <Button
+                    className="gap-2"
+                    type="button"
+                    onClick={viewTemplateOpen.onTrue}
+                  >
+                    <Filter className="w-4 h-4" />
+                    View Templates
+                  </Button>
+                  {viewTemplateOpen.value && (
+                    <ViewTemplate
+                      open={viewTemplateOpen.value}
+                      setOpen={viewTemplateOpen.setValue}
+                      onSelectTemplate={handleSelectTemplate}
+                    />
+                  )}
                   <Button
                     className="w-36"
                     type="submit"
                     disabled={
                       createActivity?.isPending ||
                       uploadFile?.isPending ||
-                      audioUploading ||
-                      open ||
+                      audioUploading.value ||
+                      addCommunicationOpen.value ||
                       !!form.formState.errors.responsibility
                     }
                   >
@@ -468,7 +613,44 @@ export default function AddActivities() {
                     </FormItem>
                   )}
                 />
-
+                <div className="flex items-center gap-8">
+                  <FormField
+                    control={form.control}
+                    name="isTemplate"
+                    render={({ field }) => {
+                      return (
+                        <FormItem className=" w-[200px]">
+                          <div className="flex items-center justify-between w-full">
+                            <FormLabel>Save as Template</FormLabel>{' '}
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild className="-ml-4">
+                                  <Info
+                                    size={18}
+                                    className="text-muted-foreground cursor-help hover:text-primary transition-colors"
+                                  />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>
+                                    This will save the activity as a template
+                                    for future use. If disabled, this will not
+                                    be saved as template
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={handleTemplateToggle}
+                              />
+                            </FormControl>
+                          </div>
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </div>
                 {selectedPhase && selectedPhase?.name !== 'PREPAREDNESS' && (
                   <FormField
                     control={form.control}
@@ -557,11 +739,12 @@ export default function AddActivities() {
                   name="description"
                   render={({ field }) => {
                     return (
-                      <FormItem className="col-span-2">
+                      <FormItem className="col-span-2 ">
                         <FormLabel>Description</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Enter description"
+                            placeholder="Enter description "
+                            className=" rounded"
                             {...field}
                           />
                         </FormControl>
@@ -649,22 +832,22 @@ export default function AddActivities() {
               variant="outline"
               className="border-dashed border-primary text-primary text-md w-full mt-4"
               onClick={() => {
-                setOpen(!open);
+                addCommunicationOpen.onToggle();
               }}
             >
               Add Communication
-              {!open ? (
+              {!addCommunicationOpen.value ? (
                 <Plus className="ml-2" size={16} strokeWidth={3} />
               ) : (
                 <Minus className="ml-2" size={16} strokeWidth={3} />
               )}
             </Button>
-            {open && (
+            {addCommunicationOpen.value && (
               <AddCommunicationForm
                 form={communicationForm}
-                setOpen={setOpen}
+                setOpen={addCommunicationOpen.setValue}
                 onSave={handleSave}
-                setLoading={setAudioUploading}
+                setLoading={audioUploading.setValue}
                 appTransports={appTransports}
               />
             )}
@@ -674,12 +857,19 @@ export default function AddActivities() {
               communicationData={communicationData}
               appTransports={appTransports}
               onRemove={handleRemove}
-              setOpen={setOpen}
-              open={open}
+              setOpen={addCommunicationOpen.setValue}
+              open={addCommunicationOpen.value}
             />
           </ScrollArea>
         </div>
       </form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={templateConfirmDialog.value}
+        onCancel={cancelTemplateToggle}
+        onConfirm={confirmTemplateToggle}
+        dialogTitle="Confirm Template"
+        dialogMessage="Are you sure you want to save this activity as a template?"
+      />
     </Form>
   );
 }

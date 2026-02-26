@@ -19,6 +19,7 @@ const baseActivityFormSchema = z.object({
     .refine((val) => !val || val.length > 4, {
       message: 'Must be at least 5 characters',
     }),
+  isTemplate: z.boolean().optional(),
   isAutomated: z.boolean().optional(),
   activityDocuments: z.array(activityDocumentSchema).optional(),
 });
@@ -59,8 +60,10 @@ const baseCommunicationFormSchema = z.object({
     .min(2, {
       message: 'Communication title must be at least 2 characters',
     }),
-  groupType: z.string().min(1, { message: 'Please select group type' }),
-  groupId: z.string().min(1, { message: 'Please select group' }),
+  groupType: z.string().min(1, { message: 'Please select group at least one' }),
+  groupId: z
+    .array(z.string())
+    .min(1, { message: 'Please select group at least one' }),
   transportId: z
     .string()
     .min(1, { message: 'Please select communication type' }),

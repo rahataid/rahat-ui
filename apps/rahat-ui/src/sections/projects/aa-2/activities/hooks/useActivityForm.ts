@@ -50,6 +50,7 @@ export const useActivityForm = (
       leadTime: '',
       description: '',
       activityDocuments: [],
+      isTemplate: false,
       isAutomated: false,
     },
   });

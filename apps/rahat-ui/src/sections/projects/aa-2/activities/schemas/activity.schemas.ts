@@ -19,6 +19,7 @@ const baseActivityFormSchema = z.object({
     .refine((val) => !val || val.length > 4, {
       message: 'Must be at least 5 characters',
     }),
+  isTemplate: z.boolean().optional(),
   isAutomated: z.boolean().optional(),
   activityDocuments: z.array(activityDocumentSchema).optional(),
 });

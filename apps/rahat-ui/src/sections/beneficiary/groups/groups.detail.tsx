@@ -6,6 +6,9 @@ import {
   UsersRound,
   Phone,
   FolderDot,
+  Edit,
+  PenIcon,
+  Pencil,
 } from 'lucide-react';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import MembersTable from './members.table';
@@ -195,7 +198,7 @@ export default function GroupDetailView() {
             <Heading
               title={group?.data?.name}
               description={
-                'Here is a detailed view of the selected beneficiary group'
+                'Here is a detailed view of the selected beneficiary group test'
               }
               status={capitalizeFirstLetter(groupPurposeName || '')}
             />
@@ -227,6 +230,13 @@ export default function GroupDetailView() {
                   )}
                 </Badge>
               )}
+            <Button
+              variant={'outline'}
+              className="gap-2 text-gray-700 rounded-sm"
+            >
+              <Pencil className="w-4 h-4" />
+              Edit Group Name
+            </Button>
             <Button
               variant={'outline'}
               className={`gap-2 text-gray-700 rounded-sm ${

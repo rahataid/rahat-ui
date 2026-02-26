@@ -6,8 +6,6 @@ import {
   UsersRound,
   Phone,
   FolderDot,
-  Edit,
-  PenIcon,
   Pencil,
 } from 'lucide-react';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';

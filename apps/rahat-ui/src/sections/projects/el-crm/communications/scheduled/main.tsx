@@ -35,16 +35,27 @@ import {
   usePagination,
 } from '@rahat-ui/query';
 import FiltersTags from '../../../components/filtersTags';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export default function ScheduledView() {
   const { id: projectUUID } = useParams() as { id: UUID };
 
   const [filterDate, setFilterDate] = useState('all');
 
-  const { pagination, filters, setFilters } = usePagination();
-  const { data } = useListElCrmCampaign(projectUUID, {
+  const {
+    pagination,
+    filters,
+    setFilters,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    selectedListItems,
+    setSelectedListItems,
+    resetSelectedListItems,
+  } = usePagination();
+  const { data, meta } = useListElCrmCampaign(projectUUID, {
     page: pagination.page,
-    perPage: 1000,
+    perPage: pagination.perPage,
     isScheduled: true,
     ...filters,
   });
@@ -206,6 +217,15 @@ export default function ScheduledView() {
 
               {/* Table */}
               <DemoTable table={table} />
+              <CustomPagination
+                meta={meta || { total: 0, currentPage: 0 }}
+                handleNextPage={setNextPage}
+                handlePrevPage={setPrevPage}
+                handlePageSizeChange={setPerPage}
+                currentPage={pagination.page}
+                perPage={pagination.perPage}
+                total={meta?.total}
+              />
             </CardContent>
           </Card>
         )}

@@ -13,11 +13,19 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
+import {
+  IconLabelBtn,
+  NoResult,
+  SpinnerLoader,
+} from 'apps/rahat-ui/src/common';
 import { CommunicationCard } from '../components/communicationCard';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { useMemo } from 'react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { RoleAuth } from 'libs/auth/src/lib/roleAuth';
+import { AARoles } from 'libs/auth/src/enums/aaRoles';
+import { PlusIcon } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 
 type CommunicationData = {
   groupId: string;
@@ -38,6 +46,10 @@ export default function CommunicationList({
   activityCommunication,
   loading,
 }: CommunicationList) {
+  // Router goes here
+  const router = useRouter();
+  const pathname = usePathname();
+
   const defaultTab = useMemo(() => {
     const active = activityCommunication?.some(
       (d) => d.sessionStatus === 'NEW' || d.sessionStatus === 'PENDING',
@@ -60,23 +72,31 @@ export default function CommunicationList({
   const { activeTab, setActiveTab } = useActiveTab(defaultTab);
   return (
     <div className="border px-4 pt-2 rounded-xl ">
-      <div className="mb-4 flex items-center justify-between ">
-        <div>
-          <h1 className="text-xl font-semibold text-gray-900">
-            Communication List
-          </h1>{' '}
-          <p className="text-sm text-gray-500">
-            List of communications in this activity
-          </p>
+      <div className="mb-4 flex items-center justify-between">
+        <div className=" w-full flex flex-row self-center justify-between">
+          <div>
+            <h1 className="text-xl font-semibold text-gray-900">
+              Communication List
+            </h1>{' '}
+            <p className="text-sm text-gray-500">
+              List of communications in this activity
+            </p>
+          </div>
+          <div>
+            {' '}
+            <RoleAuth
+              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+              hasContent={false}
+            >
+              <IconLabelBtn
+                Icon={PlusIcon}
+                handleClick={() => router.push(`${pathname}/edit#comm`)}
+                name="Add Communication"
+                className="rounded-sm w-full "
+              />
+            </RoleAuth>
+          </div>
         </div>
-        {/* <div className="flex mt-5">
-          <IconLabelBtn
-            Icon={Plus}
-            handleClick={() => console.log('add')}
-            name="Add Commuication"
-            className="h-7  text-sm"
-          />
-        </div> */}
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>

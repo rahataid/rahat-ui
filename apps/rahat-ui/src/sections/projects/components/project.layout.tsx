@@ -85,9 +85,9 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
             items={item.children}
           />
         ))}
-        <div className="w-full flex-1 flex flex-col h-screen overflow-y-auto">
+        <div className="w-full ">
           <ProjectNav component={headerNav} />
-          <div className="flex-1">{children}</div>
+          <div>{children}</div>
         </div>
       </SidebarProvider>
     </>

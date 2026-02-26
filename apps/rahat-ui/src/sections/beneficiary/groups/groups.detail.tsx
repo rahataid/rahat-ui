@@ -39,7 +39,7 @@ const AssignBeneficiaryToProjectModal = React.lazy(
 const GroupNameEditModal = React.lazy(() => import('./groupNameEditModal'));
 
 import * as XLSX from 'xlsx';
-import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
+import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';

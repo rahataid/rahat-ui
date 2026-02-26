@@ -44,7 +44,6 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
 import LoaderRahat from 'apps/rahat-ui/src/components/LoaderRahat';
-import BeneficiaryGroupDetail from './beneficiaryGroupDetail';
 
 type BenProjectType = {
   Project: {

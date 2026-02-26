@@ -166,6 +166,8 @@ export default function GroupDetailView() {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
   }, []);
 
+  console.log(group?.data?.groupedBeneficiaries?.length, 'is assigned or not');
+
   return isLoading ? (
     <LoaderRahat />
   ) : (
@@ -230,13 +232,23 @@ export default function GroupDetailView() {
                   )}
                 </Badge>
               )}
-            <Button
+            {group?.data?.groupedBeneficiaries?.length === 0 && (
+              <Button
+                variant={'outline'}
+                className="gap-2 text-gray-700 rounded-sm"
+              >
+                <Pencil className="w-4 h-4" />
+                Edit Group Name
+              </Button>
+            )}
+            {/* <Button
               variant={'outline'}
               className="gap-2 text-gray-700 rounded-sm"
             >
               <Pencil className="w-4 h-4" />
               Edit Group Name
-            </Button>
+            </Button> */}
+
             <Button
               variant={'outline'}
               className={`gap-2 text-gray-700 rounded-sm ${

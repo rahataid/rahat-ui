@@ -40,7 +40,11 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 
-export default function AssignFundsForm() {
+export default function AssignFundsForm({
+  handleStepChange,
+}: {
+  handleStepChange: (step: number) => void;
+}) {
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
@@ -114,12 +118,30 @@ export default function AssignFundsForm() {
 
   const projectBalance = useProjectBalance(projectId);
 
-  const { setAssignedFundData } = useFundAssignmentStore((state) => ({
-    setAssignedFundData: state.setAssignedFundData,
-  }));
+  const { setAssignedFundData, assignedFundData } = useFundAssignmentStore(
+    (state) => ({
+      setAssignedFundData: state.setAssignedFundData,
+      assignedFundData: state.assignedFundData,
+    }),
+  );
 
   const tokenPerBenef = form.watch('tokenAmountPerBenef');
   const selectedGroupId = form.watch('beneficiaryGroup');
+
+  // Pre-fill from store when coming back from step 2
+  useEffect(() => {
+    const payload = assignedFundData?.reserveTokenPayload;
+    if (!payload) return;
+    if (payload.title) form.setValue('title', payload.title);
+    if (payload.beneficiaryGroupId)
+      form.setValue('beneficiaryGroup', payload.beneficiaryGroupId);
+    if (payload.beneficiaryName)
+      form.setValue('beneficiaryName', payload.beneficiaryName);
+    if (payload.tokenAmountPerBenef)
+      form.setValue('tokenAmountPerBenef', String(payload.tokenAmountPerBenef));
+    if (payload.numberOfTokens)
+      form.setValue('totalTokenAmount', String(payload.numberOfTokens));
+  }, []);
 
   const handleAssignFunds = async (data: z.infer<typeof FormSchema>) => {
     if (projectBalance! < Number(data.totalTokenAmount)) {
@@ -141,7 +163,7 @@ export default function AssignFundsForm() {
 
     setAssignedFundData(fundData);
 
-    router.push(`/projects/aa/${projectId}/fund-management/confirm`);
+    handleStepChange(1);
   };
 
   useEffect(() => {

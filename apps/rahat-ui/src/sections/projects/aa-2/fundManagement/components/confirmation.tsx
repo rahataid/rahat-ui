@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from 'libs/shadcn/src/components/ui/button';
-import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { UserRound } from 'lucide-react';
 import { HeaderWithBack, NoResult } from 'apps/rahat-ui/src/common';
 import {
@@ -12,11 +11,16 @@ import { useRouter } from 'next/navigation';
 import { truncatedText } from 'apps/community-tool-ui/src/utils';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import dynamic from 'next/dynamic';
+import type { PayoutFormData } from './assign.payout.form';
 const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
 
-export default function Confirmation() {
+export default function Confirmation({
+  payoutData,
+}: {
+  payoutData: PayoutFormData | null;
+}) {
   const errorModule = useBoolean();
-  const [errorData, setErrorData] = React.useState(null);
+  const [errorData, setErrorData] = useState(null);
   const router = useRouter();
   const { assignedFundData } = useFundAssignmentStore((state) => ({
     assignedFundData: state.assignedFundData,
@@ -74,48 +78,94 @@ export default function Confirmation() {
     }
   };
   return (
-    <div className="p-4">
+    <div className="p-2">
       <ErrorInfoPopupModel validateModal={errorModule} errorData={errorData} />
-      <HeaderWithBack
-        path={``}
-        title="Confirmation"
-        subtitle="Check the details below and confirm to proceed"
-      />
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div className="p-4 rounded-md bg-gray-50">
-          <div className="flex flex-col space-y-4">
+      <div className="flex gap-3 mb-3">
+        {/* Fund assignment + payout summary — 60% */}
+        <div className="w-[60%] p-3 rounded-md bg-gray-50">
+          <p className="font-semibold text-sm mb-2">Fund Assignment</p>
+          <div className="flex flex-col space-y-2">
             {cardData.map((i) => (
               <div key={i.label}>
-                <p className="text-sm font-medium">{i.label}</p>
+                <p className="text-sm text-muted-foreground">{i.label}</p>
                 <p className="text-lg font-semibold text-primary">{i.value}</p>
               </div>
             ))}
           </div>
-        </div>
-        <div className="p-4 rounded-md bg-gray-50">
-          <p className="font-semibold text-lg mb-4">Beneficiaries List</p>
-          <ScrollArea className="h-[calc(300px)] pr-4">
-            <div className="flex flex-col space-y-4">
-              {benefData?.length > 0 ? (
-                benefData?.map((i) => (
-                  <div
-                    key={i.label}
-                    className="flex justify-between items-center space-x-4"
-                  >
-                    <div className="font-medium text-sm/6 flex space-x-2 items-center">
-                      <UserRound />
-                      <p>{i.label}</p>
-                    </div>
-                    <p>+ {i.value}</p>
+          {payoutData && (
+            <div className="mt-3 pt-3 border-t">
+              <p className="font-semibold text-sm mb-2">Payout Details</p>
+              <div className="flex flex-col space-y-2">
+                <div>
+                  <p className="text-sm text-muted-foreground">Method</p>
+                  <p className="text-base font-semibold text-primary">
+                    {payoutData.method}
+                  </p>
+                </div>
+                {payoutData.method != 'FSP' && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Mode</p>
+                    <p className="text-base font-semibold text-primary">
+                      {payoutData.mode}
+                    </p>
                   </div>
-                ))
-              ) : (
-                <NoResult message="No Beneficiary found" />
-              )}
+                )}
+                {payoutData.vendor?.name && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Vendor</p>
+                    <p className="text-base font-semibold text-primary">
+                      {payoutData.vendor.name}
+                    </p>
+                  </div>
+                )}
+                {payoutData.paymentProvider?.name && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      Payment Provider
+                    </p>
+                    <p className="text-base font-semibold text-primary">
+                      {payoutData.paymentProvider.name}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
-          </ScrollArea>
+          )}
+        </div>
+
+        {/* Beneficiaries list — 40% */}
+        <div className="w-[40%] p-3 rounded-md bg-gray-50">
+          <p className="font-semibold text-sm mb-2">
+            Beneficiaries List
+            {benefData?.length ? (
+              <span className="text-muted-foreground font-normal ml-1">
+                ({benefData.length})
+              </span>
+            ) : null}
+          </p>
+          <div className="flex flex-col divide-y">
+            {benefData?.length > 0 ? (
+              benefData?.map((i: any) => (
+                <div
+                  key={i.label}
+                  className="flex justify-between items-center py-1.5"
+                >
+                  <div className="font-medium text-sm flex space-x-2 items-center">
+                    <UserRound className="h-4 w-4" />
+                    <p>{i.label}</p>
+                  </div>
+                  <p className="text-sm font-semibold text-primary">
+                    + {i.value}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <NoResult message="No Beneficiary found" />
+            )}
+          </div>
         </div>
       </div>
+
       <div className="flex justify-end items-center">
         <div className="flex space-x-2">
           <Button

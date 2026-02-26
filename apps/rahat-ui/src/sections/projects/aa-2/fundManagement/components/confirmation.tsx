@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from 'libs/shadcn/src/components/ui/button';
 import { UserRound } from 'lucide-react';
-import { HeaderWithBack, NoResult } from 'apps/rahat-ui/src/common';
+import { NoResult } from 'apps/rahat-ui/src/common';
 import {
   useFundAssignmentStore,
   useGetBeneficiaryGroup,
@@ -19,51 +19,69 @@ export default function Confirmation({
 }: {
   payoutData: PayoutFormData | null;
 }) {
+  // State goes here
   const errorModule = useBoolean();
   const [errorData, setErrorData] = useState(null);
+
+  // Router goes here
   const router = useRouter();
+
+  // Store goes here
   const { assignedFundData } = useFundAssignmentStore((state) => ({
     assignedFundData: state.assignedFundData,
   }));
 
   const { projectUUID, reserveTokenPayload } = assignedFundData;
 
+  // Query goes here
   const { data: group } = useGetBeneficiaryGroup(
     reserveTokenPayload.beneficiaryGroupId,
   );
 
   const reserveTokenForGroups = useReserveTokenForGroups();
-  const cardData = [
-    { label: 'Title', value: reserveTokenPayload.title },
-    {
-      label: 'Beneficiary Group Name',
-      value: reserveTokenPayload.beneficiaryName,
-    },
-    {
-      label: 'Total Beneficiaries',
-      value: group?.data?.groupedBeneficiaries.length,
-    },
-    {
-      label: 'Token Assigned Per Beneficiary',
-      value: reserveTokenPayload.tokenAmountPerBenef,
-    },
-    {
-      label: 'Total Token Amount',
-      value: reserveTokenPayload.numberOfTokens,
-    },
-  ];
 
-  const benefData = group?.data?.groupedBeneficiaries.map((i: any) => ({
-    label: truncatedText(i.Beneficiary.walletAddress, 10),
-    value: reserveTokenPayload.tokenAmountPerBenef,
-  }));
+  // Handlers goes here
+  const cardData = useMemo(
+    () => [
+      { label: 'Title', value: reserveTokenPayload.title },
+      {
+        label: 'Beneficiary Group Name',
+        value: reserveTokenPayload.beneficiaryName,
+      },
+      {
+        label: 'Total Beneficiaries',
+        value: group?.data?.groupedBeneficiaries.length,
+      },
+      {
+        label: 'Token Assigned Per Beneficiary',
+        value: reserveTokenPayload.tokenAmountPerBenef,
+      },
+      {
+        label: 'Total Token Amount',
+        value: reserveTokenPayload.numberOfTokens,
+      },
+    ],
+    [group, reserveTokenPayload],
+  );
+
+  const benefData = useMemo(
+    () =>
+      group?.data?.groupedBeneficiaries.map((i: any) => ({
+        label: truncatedText(i.Beneficiary.walletAddress, 10),
+        value: reserveTokenPayload.tokenAmountPerBenef,
+      })),
+    [group, reserveTokenPayload.tokenAmountPerBenef],
+  );
 
   const handleSubmit = async () => {
-    reserveTokenPayload.totalTokensReserved = cardData[4].value;
+    const payload = {
+      ...reserveTokenPayload,
+      totalTokensReserved: reserveTokenPayload.numberOfTokens,
+    };
     try {
       const data = await reserveTokenForGroups.mutateAsync({
         projectUUID,
-        reserveTokenPayload,
+        reserveTokenPayload: payload,
       });
       if (data?.status === 'error') {
         errorModule.onTrue();
@@ -77,11 +95,11 @@ export default function Confirmation({
       console.error('Creating reserve token::', e);
     }
   };
+
   return (
     <div className="p-2">
       <ErrorInfoPopupModel validateModal={errorModule} errorData={errorData} />
       <div className="flex gap-3 mb-3">
-        {/* Fund assignment + payout summary — 60% */}
         <div className="w-[60%] p-3 rounded-md bg-gray-50">
           <p className="font-semibold text-sm mb-2">Fund Assignment</p>
           <div className="flex flex-col space-y-2">
@@ -92,7 +110,7 @@ export default function Confirmation({
               </div>
             ))}
           </div>
-          {payoutData && (
+          {payoutData && payoutData.method && (
             <div className="mt-3 pt-3 border-t">
               <p className="font-semibold text-sm mb-2">Payout Details</p>
               <div className="flex flex-col space-y-2">
@@ -133,7 +151,6 @@ export default function Confirmation({
           )}
         </div>
 
-        {/* Beneficiaries list — 40% */}
         <div className="w-[40%] p-3 rounded-md bg-gray-50">
           <p className="font-semibold text-sm mb-2">
             Beneficiaries List
@@ -175,8 +192,12 @@ export default function Confirmation({
           >
             Cancel
           </Button>
-          <Button className="px-10" onClick={handleSubmit}>
-            Confirm
+          <Button
+            className="px-10"
+            onClick={handleSubmit}
+            disabled={reserveTokenForGroups.isPending}
+          >
+            {reserveTokenForGroups.isPending ? 'Confirming...' : 'Confirm'}
           </Button>
         </div>
       </div>

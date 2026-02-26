@@ -1,12 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  PROJECT_SETTINGS_KEYS,
-  useBeneficiaryGroups,
-  useFundAssignmentStore,
-  useProjectSettingsStore,
-  useReservationStats,
-} from '@rahat-ui/query';
-import { useReadAaProjectTokenBudget } from 'apps/rahat-ui/src/hooks/aa/contracts/aaProject';
+import { useBeneficiaryGroups, useFundAssignmentStore } from '@rahat-ui/query';
 import { useProjectBalance } from 'apps/rahat-ui/src/hooks/aa/utils';
 import { UUID } from 'crypto';
 import { cn } from 'libs/shadcn/src';
@@ -34,63 +27,64 @@ import {
   PopoverTrigger,
 } from 'libs/shadcn/src/components/ui/popover';
 import { Check, ChevronDown } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
+
+const FormSchema = z.object({
+  title: z.string().min(4, { message: 'Title must be at least 4 characters' }),
+  beneficiaryGroup: z
+    .string()
+    .min(1, { message: 'Select a beneficiary group' }),
+  beneficiaryName: z.string().min(1, { message: 'Select a beneficiary group' }),
+  tokenAmountPerBenef: z
+    .string()
+    .min(1, { message: 'Enter valid amount' })
+    .refine((val) => /^\d+$/.test(val), {
+      message: 'Amount must be a positive integer',
+    })
+    .refine((val) => Number(val) > 0, {
+      message: 'Amount must be greater than 0',
+    }),
+  totalTokenAmount: z
+    .string()
+    .min(1, { message: 'Enter valid amount' })
+    .refine((val) => /^\d+$/.test(val), {
+      message: 'Amount must be a positive integer',
+    }),
+  totalTokensReserved: z.number(),
+});
+
+type FormValues = z.infer<typeof FormSchema>;
+
+// Keys blocked from numeric-only inputs
+const BLOCKED_KEYS = [
+  ' ',
+  'e',
+  'E',
+  '+',
+  '-',
+  '.',
+  ',',
+  '/',
+  '*',
+  '@',
+  '#',
+  ...Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i)), // A–Z
+  ...Array.from({ length: 26 }, (_, i) => String.fromCharCode(97 + i)), // a–z
+];
 
 export default function AssignFundsForm({
   handleStepChange,
 }: {
   handleStepChange: (step: number) => void;
 }) {
-  const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
 
-  const { data: reservationStats, isLoading: isLoadingReservationStats } =
-    useReservationStats(projectId);
-  const FormSchema = z.object({
-    title: z.string().min(4, { message: 'Title must be at least 4 character' }),
-    beneficiaryGroup: z
-      .string()
-      .min(1, { message: 'Select a beneficiary group' }),
-    beneficiaryName: z
-      .string()
-      .min(1, { message: 'Select a beneficiary group' }),
-    tokenAmountPerBenef: z
-      .string()
-      .min(1, { message: 'Enter valid amount' })
-      .refine((val) => /^\d+$/.test(val), {
-        message: 'Amount must be a positive integer',
-      })
-      .refine((val) => Number(val) > 0, {
-        message: 'Amount must be greater than 0',
-      }),
-    totalTokenAmount: z
-      .string()
-      .min(1, { message: 'Enter valid amount' })
-      .refine((val) => /^\d+$/.test(val), {
-        message: 'Amount must be a positive integer',
-      }),
-    totalTokensReserved: z.number(),
-  });
-
-  const contractSettings = useProjectSettingsStore(
-    (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
-  );
-
-  const { data: projectBudget } = useReadAaProjectTokenBudget({
-    address: contractSettings?.aaproject?.address,
-    args: [contractSettings?.rahattoken?.address],
-  });
-
-  const parsedProjectBudget = Number(projectBudget);
-  const totalReservedTokens =
-    reservationStats?.data?.totalReservedTokens?._sum?.benTokens || 0;
-  const availableBudget = parsedProjectBudget - totalReservedTokens;
-  const form = useForm<z.infer<typeof FormSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: '',
@@ -107,14 +101,8 @@ export default function AssignFundsForm({
   const benGroups = useBeneficiaryGroups(projectId, {
     page: 1,
     perPage: 100,
-    // sort: 'updatedAt',
-    // order: 'desc',
     tokenAssigned: false,
   });
-  // const { beneficiariesGroups } = useBeneficiariesGroupStore((state) => ({
-  //   beneficiariesGroups: state.beneficiariesGroups,
-  //   beneficiariesGroupsMeta: state.beneficiariesGroupsMeta,
-  // }));
 
   const projectBalance = useProjectBalance(projectId);
 
@@ -128,22 +116,22 @@ export default function AssignFundsForm({
   const tokenPerBenef = form.watch('tokenAmountPerBenef');
   const selectedGroupId = form.watch('beneficiaryGroup');
 
-  // Pre-fill from store when coming back from step 2
+  // Pre-fill form when returning from a later step
   useEffect(() => {
     const payload = assignedFundData?.reserveTokenPayload;
     if (!payload) return;
-    if (payload.title) form.setValue('title', payload.title);
-    if (payload.beneficiaryGroupId)
-      form.setValue('beneficiaryGroup', payload.beneficiaryGroupId);
-    if (payload.beneficiaryName)
-      form.setValue('beneficiaryName', payload.beneficiaryName);
-    if (payload.tokenAmountPerBenef)
-      form.setValue('tokenAmountPerBenef', String(payload.tokenAmountPerBenef));
-    if (payload.numberOfTokens)
-      form.setValue('totalTokenAmount', String(payload.numberOfTokens));
+    form.reset({
+      title: payload.title ?? '',
+      beneficiaryGroup: payload.beneficiaryGroupId ?? '',
+      beneficiaryName: payload.beneficiaryName ?? '',
+      tokenAmountPerBenef: String(payload.tokenAmountPerBenef ?? ''),
+      totalTokenAmount: String(payload.numberOfTokens ?? '0'),
+      totalTokensReserved: payload.numberOfTokens ?? 0,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleAssignFunds = async (data: z.infer<typeof FormSchema>) => {
+  const handleAssignFunds = async (data: FormValues) => {
     if (projectBalance! < Number(data.totalTokenAmount)) {
       toast.error('Insufficient project balance to assign funds');
       return;
@@ -166,10 +154,11 @@ export default function AssignFundsForm({
     handleStepChange(1);
   };
 
+  // Recompute total token amount whenever per-beneficiary amount or selected group changes
   useEffect(() => {
     const perBenef = Number(tokenPerBenef || '0');
     const selectedGroup = benGroups.data?.data.find(
-      (group) => group.uuid === selectedGroupId,
+      (group: any) => group.uuid === selectedGroupId,
     );
     const count = selectedGroup?._count?.groupedBeneficiaries || 0;
     const total = perBenef * count;
@@ -178,7 +167,10 @@ export default function AssignFundsForm({
       form.setValue('totalTokenAmount', total.toString());
       form.setValue('totalTokensReserved', total);
     }
-  }, [tokenPerBenef, selectedGroupId, benGroups.data, form]);
+    // `form` is a stable ref from useForm — intentionally excluded
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tokenPerBenef, selectedGroupId, benGroups.data]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleAssignFunds)}>
@@ -222,7 +214,7 @@ export default function AssignFundsForm({
                         >
                           {field.value
                             ? benGroups.data?.data.find(
-                                (group) => group.uuid === field.value,
+                                (group: any) => group.uuid === field.value,
                               )?.name
                             : 'Select Beneficiary Group'}
                           <ChevronDown className="opacity-50" />
@@ -238,7 +230,7 @@ export default function AssignFundsForm({
                         <CommandList>
                           <CommandEmpty>No group found.</CommandEmpty>
                           <CommandGroup>
-                            {benGroups?.data?.data.map((group) => (
+                            {benGroups?.data?.data.map((group: any) => (
                               <CommandItem
                                 value={group?.uuid}
                                 key={group?.uuid}
@@ -291,28 +283,7 @@ export default function AssignFundsForm({
                         placeholder="Write token amount"
                         {...field}
                         onKeyDown={(e) => {
-                          const blockedKeys = [
-                            ' ',
-                            'e',
-                            'E',
-                            '+',
-                            '-',
-                            '.',
-                            ',',
-                            '/',
-                            '*',
-                            '@',
-                            '#',
-                            ...Array.from({ length: 26 }, (_, i) =>
-                              String.fromCharCode(65 + i),
-                            ), // A–Z
-                            ...Array.from({ length: 26 }, (_, i) =>
-                              String.fromCharCode(97 + i),
-                            ), // a–z
-                          ];
-                          if (blockedKeys.includes(e.key)) {
-                            e.preventDefault();
-                          }
+                          if (BLOCKED_KEYS.includes(e.key)) e.preventDefault();
                         }}
                         onChange={(e) => {
                           field.onChange(e);
@@ -329,52 +300,21 @@ export default function AssignFundsForm({
             <FormField
               control={form.control}
               name="totalTokenAmount"
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Total Token Amount</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        className="bg-gray-500 text-white"
-                        placeholder="Write token amount"
-                        {...field}
-                        onKeyDown={(e) => {
-                          const blockedKeys = [
-                            ' ',
-                            'e',
-                            'E',
-                            '+',
-                            '-',
-                            '.',
-                            ',',
-                            '/',
-                            '*',
-                            '@',
-                            '#',
-                            ...Array.from({ length: 26 }, (_, i) =>
-                              String.fromCharCode(65 + i),
-                            ), // A–Z
-                            ...Array.from({ length: 26 }, (_, i) =>
-                              String.fromCharCode(97 + i),
-                            ), // a–z
-                          ];
-                          if (blockedKeys.includes(e.key)) {
-                            e.preventDefault();
-                          }
-                        }}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          form.trigger('totalTokenAmount');
-                        }}
-                        readOnly
-                        disabled
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Total Token Amount</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      className="bg-gray-500 text-white"
+                      {...field}
+                      readOnly
+                      disabled
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </div>
           <div className="flex justify-end items-center">

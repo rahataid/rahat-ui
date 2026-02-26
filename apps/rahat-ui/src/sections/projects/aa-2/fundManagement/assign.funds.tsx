@@ -1,24 +1,28 @@
 'use client';
+
 import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ChevronLeft, CheckCircle2, Info } from 'lucide-react';
 import FundManagementForm from './components/fund.management.form';
 import { FUND_MANAGEMENT_TABS } from './consts/conts';
 import type { PayoutFormData } from './components/assign.payout.form';
 
 export default function AssignFundsView() {
+  // Router goes here
   const id = useParams().id;
   const router = useRouter();
+
+  // State goes here
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [payoutData, setPayoutData] = useState<PayoutFormData | null>(null);
 
-  const handleStepChange = (step: number) => {
+  // Handlers goes here
+  const handleStepChange = useCallback((step: number) => {
     setCurrentStep(step);
-  };
+  }, []);
 
   return (
     <div>
-      {/* Title + Back */}
       <div className="flex items-center space-x-2 mb-1 px-4 pt-4">
         <button
           onClick={() =>
@@ -41,7 +45,6 @@ export default function AssignFundsView() {
 
           return (
             <div key={tab.id} className="flex-1 flex items-start relative">
-              {/* Left connector line — starts at left edge, ends at icon left edge */}
               {!isFirst && (
                 <div
                   className={`absolute top-[18px] left-0 h-0.5 transition-colors ${
@@ -50,7 +53,6 @@ export default function AssignFundsView() {
                   style={{ right: 'calc(50% + 18px)' }}
                 />
               )}
-              {/* Right connector line — starts at icon right edge, ends at right */}
               {!isLast && (
                 <div
                   className={`absolute top-[18px] right-0 h-0.5 transition-colors ${

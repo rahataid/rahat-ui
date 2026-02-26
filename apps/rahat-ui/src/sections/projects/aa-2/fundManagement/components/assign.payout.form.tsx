@@ -47,6 +47,7 @@ import {
   paymentSchema,
   PaymentSchema,
 } from '../../payout/initiatePayout/schemas/payout.validation';
+import { PayoutSkeleton } from '../../payout/initiatePayout/pauoutSkeleton';
 
 export type { PaymentSchema as PayoutFormData };
 
@@ -69,13 +70,17 @@ export default function PayoutFundManagementForm({
   onPayoutData,
   payoutData,
 }: PayoutFundManagementFormProps) {
+  // Router goes here
   const params = useParams();
   const projectID = params.id as UUID;
+
+  // State goes here
   // If returning from confirmation with existing payout data, go straight to form
   const [wantsPayout, setWantsPayout] = useState<boolean | null>(
     payoutData ? true : null,
   );
 
+  // Store goes here
   const { assignedFundData } = useFundAssignmentStore((s) => ({
     assignedFundData: s.assignedFundData,
   }));
@@ -84,7 +89,8 @@ export default function PayoutFundManagementForm({
   const groupId =
     assignedFundData?.reserveTokenPayload?.beneficiaryGroupId ?? '';
 
-  const { data: payoutTypes } = useTabConfiguration(
+  // Query goes here
+  const { data: payoutTypes, isLoading: isPayoutLoading } = useTabConfiguration(
     projectID,
     PROJECT_SETTINGS_KEYS.PAYOUT_TYPE_CONFIG,
   );
@@ -98,6 +104,7 @@ export default function PayoutFundManagementForm({
     sort: 'createdAt',
   });
 
+  // React Form goes here
   const form = useForm<PaymentSchema>({
     defaultValues: initialFormState,
     resolver: zodResolver(paymentSchema),
@@ -110,6 +117,7 @@ export default function PayoutFundManagementForm({
 
   const { data: groupDetails } = useGetBeneficiaryGroup(groupId);
 
+  // Derived state goes here
   const tableData = useMemo(() => {
     const beneficiaries = groupDetails?.data?.groupedBeneficiaries ?? [];
     const totalTokens =
@@ -133,6 +141,7 @@ export default function PayoutFundManagementForm({
     state: { columnFilters },
   });
 
+  // Effect goes here
   useEffect(() => {
     if (payoutData) {
       // Returning from confirmation — restore previously entered values
@@ -160,7 +169,6 @@ export default function PayoutFundManagementForm({
     handleStepChange(2);
   };
 
-  // Step: ask first
   if (wantsPayout === null) {
     return (
       <div className="border rounded-sm p-10 bg-white flex flex-col items-center space-y-6">
@@ -187,6 +195,10 @@ export default function PayoutFundManagementForm({
     );
   }
 
+  if (isPayoutLoading) {
+    return <PayoutSkeleton />;
+  }
+
   // No payout types configured
   if (!payoutTypes?.value?.types?.length) {
     return (
@@ -206,12 +218,10 @@ export default function PayoutFundManagementForm({
     );
   }
 
-  // Payment form
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)}>
         <div className="border rounded-sm p-4 space-y-4 bg-white w-full">
-          {/* Method + Mode */}
           <div className="flex justify-between">
             <RadioGroup
               value={formState.method}
@@ -267,9 +277,7 @@ export default function PayoutFundManagementForm({
               )}
           </div>
 
-          {/* Fields */}
           <div className="grid grid-cols-2 gap-4">
-            {/* Read-only group display */}
             <div className="flex flex-col space-y-2">
               <Label className="text-sm font-medium">Beneficiary Group</Label>
               <div className="flex items-center h-10 px-3 rounded-md border bg-muted/50 text-sm text-muted-foreground">
@@ -357,7 +365,6 @@ export default function PayoutFundManagementForm({
             </div>
           </div>
 
-          {/* Beneficiary table */}
           {tableData.length > 0 && (
             <div className="mt-2">
               <div className="w-full flex flex-col gap-2 mb-2">

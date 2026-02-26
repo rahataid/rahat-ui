@@ -1,6 +1,7 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
@@ -78,11 +79,11 @@ export default function useCommsActivitiesTableColumns() {
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={20}
-              strokeWidth={1.5}
-              onClick={() =>
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() =>
                 router.push(
                   `/projects/aa/${id}/communication-logs/details/${row.original.id}`,
                 )

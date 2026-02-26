@@ -7,6 +7,7 @@ import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagina
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
 // function getStatusBg(status: string) {
 //   if (status === 'NOT_STARTED') {
@@ -129,21 +130,23 @@ export default function useActivitiesTableColumn() {
               loading={false}
               iconStyle="w-4 h-4"
             /> */}
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={20}
-              strokeWidth={1.5}
-              onClick={() => handleEyeClick(row.original.id)}
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() => handleEyeClick(row.original.id)}
             />
             <RoleAuth
               roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
               hasContent={false}
             >
-              <RefreshCcw
-                className="hover:text-primary cursor-pointer"
-                size={20}
-                strokeWidth={1.5}
-                onClick={() => handleUpdateStatusIconClick(row.original.id)}
+              <TooltipComponent
+                Icon={RefreshCcw}
+                tip="Update"
+                iconStyle="hover:text-primary cursor-pointer"
+                handleOnClick={() =>
+                  handleUpdateStatusIconClick(row.original.id)
+                }
               />
             </RoleAuth>
           </div>

@@ -91,7 +91,7 @@ export default function GroupNameEditModal({
         }}
       >
         <DialogHeader>
-          <DialogTitle>Edit Group Name</DialogTitle>
+          <DialogTitle>Edit Beneficiary Group Name</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -104,11 +104,11 @@ export default function GroupNameEditModal({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <Label htmlFor="group-name">Group Name</Label>
+                  <Label htmlFor="group-name">Beneficiary Group Name</Label>
                   <FormControl>
                     <Input
                       id="group-name"
-                      placeholder="Enter group name"
+                      placeholder="Enter beneficiary group name"
                       {...field}
                     />
                   </FormControl>

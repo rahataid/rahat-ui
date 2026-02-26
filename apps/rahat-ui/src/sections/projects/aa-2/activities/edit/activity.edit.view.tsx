@@ -388,44 +388,6 @@ export default function EditActivity() {
     }
   };
 
-  // Effect goes here
-  useEffect(() => {
-    if (selectedPhase?.name === 'PREPAREDNESS') {
-      form.setValue('isAutomated', false);
-    }
-  }, [selectedPhase, form]);
-
-  const handleUpdateActivity = async (data: z.infer<typeof FormSchema>) => {
-    let payload;
-
-    if (communicationData?.length) {
-      const activityCommunicationPayload = buildCommunicationPayloads(
-        communicationData,
-        appTransports,
-      );
-
-      payload = {
-        uuid: activityID,
-        ...data,
-        activityCommunication: activityCommunicationPayload,
-      };
-    } else {
-      payload = {
-        uuid: activityID,
-        ...data,
-      };
-    }
-    try {
-      await updateActivity.mutateAsync({
-        projectUUID: projectID as UUID,
-        activityUpdatePayload: payload,
-      });
-      router.push(redirectUpdatePath);
-    } catch (e) {
-      console.error('Error::', e);
-    }
-  };
-
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (isActivityLoading) return;

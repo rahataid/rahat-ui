@@ -69,8 +69,7 @@ export default function EditActivity() {
 
   useStakeholdersGroups(projectID as UUID, {});
   useBeneficiariesGroups(projectID as UUID, {});
-  const appTransports = useListAllTransports()
-
+  const appTransports = useListAllTransports();
 
   const activityDetailPath = `/projects/aa/${projectID}/activities/${activityID}`;
 
@@ -120,7 +119,7 @@ export default function EditActivity() {
             z.object({
               mediaURL: z.string().optional(),
               fileName: z.string().optional(),
-            })
+            }),
           )
           .optional(),
         sessionId: z.string().optional(),
@@ -211,7 +210,9 @@ export default function EditActivity() {
     const activityCommunicationPayload = [];
     if (data?.activityCommunication?.length) {
       for (const comms of data.activityCommunication) {
-        const selectedTransport = appTransports?.find((t) => t.cuid === comms.transportId)
+        const selectedTransport = appTransports?.find(
+          (t) => t.cuid === comms.transportId,
+        );
         if (selectedTransport?.validationContent === ValidationContent.URL) {
           activityCommunicationPayload.push({
             groupType: comms.groupType,
@@ -219,7 +220,9 @@ export default function EditActivity() {
             transportId: comms.transportId,
             message: comms.audioURL,
             ...(comms.sessionId && { sessionId: comms.sessionId }),
-            ...(comms.communicationId && { communicationId: comms.communicationId })
+            ...(comms.communicationId && {
+              communicationId: comms.communicationId,
+            }),
           });
           delete comms.audioURL;
         } else {
@@ -229,7 +232,9 @@ export default function EditActivity() {
             transportId: comms.transportId,
             message: comms.message,
             ...(comms.sessionId && { sessionId: comms.sessionId }),
-            ...(comms.communicationId && { communicationId: comms.communicationId })
+            ...(comms.communicationId && {
+              communicationId: comms.communicationId,
+            }),
           });
         }
       }
@@ -473,7 +478,7 @@ export default function EditActivity() {
                         >
                           <p className="text-sm flex gap-2 items-center">
                             {uploadFile.isPending &&
-                              documents?.[documents?.length - 1].name ===
+                            documents?.[documents?.length - 1].name ===
                               file.name ? (
                               <LoaderCircle
                                 size={16}
@@ -550,7 +555,9 @@ export default function EditActivity() {
                   <Button
                     type="submit"
                     disabled={
-                      updateActivity?.isPending || uploadFile?.isPending || audioUploading
+                      updateActivity?.isPending ||
+                      uploadFile?.isPending ||
+                      audioUploading
                     }
                   >
                     Update Activity

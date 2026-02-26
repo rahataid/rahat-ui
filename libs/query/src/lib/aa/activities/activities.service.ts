@@ -12,6 +12,16 @@ import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
+type ActivityTemplateFilters = {
+  page?: number;
+  perPage?: number;
+  phase?: string;
+  hasCommunication?: string;
+  category?: string;
+  title?: string;
+  isAutomated?: string;
+  appId?: string;
+};
 export const useActivitiesCategories = (uuid: UUID) => {
   const q = useProjectAction();
   const { setCategories } = useActivitiesStore((state) => ({
@@ -224,11 +234,13 @@ export const useCreateActivities = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['activities'] });
       toast.fire({
-        title: 'Activity added successfully',
+        title: data?.data?.isTemplate
+          ? 'Activity and its template added successfully'
+          : 'Activity created successfully',
         icon: 'success',
       });
     },
@@ -439,4 +451,28 @@ export const useUpdateActivityStatus = () => {
       });
     },
   });
+};
+
+export const useActivityTemplates = (
+  uuid: UUID,
+  filters: ActivityTemplateFilters,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['activityTemplates', uuid, filters],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.library.getActivityTemplates',
+          payload: {
+            ...filters,
+          },
+        },
+      });
+      return mutate.response;
+    },
+  });
+  return query;
 };

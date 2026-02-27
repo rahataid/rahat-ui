@@ -2,6 +2,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
@@ -136,11 +137,11 @@ export default function usePayoutTransactionLogTableColumn() {
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={20}
-              strokeWidth={1.5}
-              onClick={() => handleEyeClick(row?.original?.uuid)}
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() => handleEyeClick(row?.original?.uuid)}
             />
           </div>
         );

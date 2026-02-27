@@ -7,6 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
 export const useProjectBeneficiaryTableColumns = () => {
   const router = useRouter();
@@ -38,11 +39,11 @@ export const useProjectBeneficiaryTableColumns = () => {
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() =>
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() =>
                 router.push(
                   `/projects/aa/${id}/beneficiary/${row.original.uuid}`,
                 )
@@ -85,11 +86,11 @@ export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
 
         return (
           <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() =>
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() =>
                 router.push(
                   `/projects/aa/${id}/beneficiary/${row?.original?.benefId}?groupId=${groupId}`,
                 )

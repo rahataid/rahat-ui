@@ -4,6 +4,7 @@ import { Eye } from 'lucide-react';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
 type DailyMonitoringRow = {
   dataEntryBy?: string;
@@ -61,11 +62,11 @@ export default function useDailyMonitoringTableColumn() {
       cell: ({ row }) => {
         return (
           <div className="flex gap-4 items-center">
-            <Eye
-              className="cursor-pointer hover:text-primary"
-              size={20}
-              strokeWidth={1.5}
-              onClick={() => handleEyeClick(row.original.groupKey)}
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="cursor-pointer hover:text-primary"
+              handleOnClick={() => handleEyeClick(row.original.groupKey)}
             />
           </div>
         );

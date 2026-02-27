@@ -11,6 +11,7 @@ import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagina
 import { formatTokenAmount } from 'apps/rahat-ui/src/utils/stellar';
 import { PayoutMode } from 'libs/query/src/lib/aa';
 import { Eye } from 'lucide-react';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
@@ -187,11 +188,11 @@ export const useVendorsBeneficiaryTableColumns = (
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() => handleViewClick(row.original.uuid)}
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() => handleViewClick(row.original.uuid)}
             />
           </div>
         );

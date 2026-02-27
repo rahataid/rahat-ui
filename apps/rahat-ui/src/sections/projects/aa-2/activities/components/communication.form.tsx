@@ -158,18 +158,21 @@ export default function AddCommunicationForm({
       .filter(Boolean) as Option[];
   }, [groupId, groupOptions]);
 
+  // Query enable validation goes here
+  const enableStakeholdersGroupQuery =
+    groupType === 'STAKEHOLDERS' && groupId.length > 0;
+  const enableBeneficiaryGroupQuery =
+    groupType === 'BENEFICIARY' && groupId.length > 0;
+
   const { data: stakeholdersGroup, isLoading: stakeholdersGroupLoading } =
     useStakeholdersGroupByUuids(
       projectId as UUID,
       groupId,
-      groupType === 'STAKEHOLDERS' && groupId.length > 0,
+      enableStakeholdersGroupQuery,
     );
 
   const { data: beneficiaryGroup, isLoading: beneficiaryGroupLoading } =
-    getBeneficiariesGroupByUuids(
-      groupId,
-      groupType === 'BENEFICIARY' && groupId.length > 0,
-    );
+    getBeneficiariesGroupByUuids(groupId, enableBeneficiaryGroupQuery);
 
   const handleAudioFileChange = async (
     fileOrEvent: File | ChangeEvent<HTMLInputElement>,

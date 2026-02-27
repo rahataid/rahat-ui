@@ -3,6 +3,7 @@ import { Button } from 'libs/shadcn/src/components/ui/button';
 import { UserRound } from 'lucide-react';
 import { NoResult } from 'apps/rahat-ui/src/common';
 import {
+  PayoutType,
   useFundAssignmentStore,
   useGetBeneficiaryGroup,
   useReserveTokenForGroups,
@@ -12,6 +13,7 @@ import { truncatedText } from 'apps/community-tool-ui/src/utils';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import dynamic from 'next/dynamic';
 import type { PayoutFormData } from './assign.payout.form';
+import { handleBuildPayoutPayload } from '../utils/utils';
 const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
 
 export default function Confirmation({
@@ -39,6 +41,12 @@ export default function Confirmation({
   );
 
   const reserveTokenForGroups = useReserveTokenForGroups();
+
+  const hasPayoutData =
+    payoutData &&
+    payoutData.method &&
+    payoutData.mode &&
+    Object.keys(payoutData.group || {}).length > 0;
 
   // Handlers goes here
   const cardData = useMemo(
@@ -73,21 +81,30 @@ export default function Confirmation({
     [group, reserveTokenPayload.tokenAmountPerBenef],
   );
 
+  const payoutPayload = useMemo(
+    () => handleBuildPayoutPayload(payoutData),
+    [payoutData],
+  );
+
   const handleSubmit = async () => {
     const payload = {
       ...reserveTokenPayload,
       totalTokensReserved: reserveTokenPayload.numberOfTokens,
+      ...(payoutPayload && { params: payoutPayload }),
     };
+
     try {
       const data = await reserveTokenForGroups.mutateAsync({
         projectUUID,
         reserveTokenPayload: payload,
       });
+
       if (data?.status === 'error') {
         errorModule.onTrue();
         setErrorData(data);
         return;
       }
+
       router.push(
         `/projects/aa/${projectUUID}/fund-management?tab=fundManagementList`,
       );

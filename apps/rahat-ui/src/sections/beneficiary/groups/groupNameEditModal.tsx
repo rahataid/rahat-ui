@@ -8,7 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@rahat-ui/shadcn/components/dialog';
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
@@ -29,23 +29,19 @@ const FormSchema = z.object({
   name: z.string().min(1, 'Group name is required').max(100),
 });
 
-type EditModalType = {
-  value: boolean;
-  onToggle: () => void;
-  onFalse: () => void;
-};
-
-type IProps = {
+type EditDialogProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   beneficiaryGroupDetail: ListBeneficiaryGroup & {
     groupedBeneficiaries?: { Beneficiary: { uuid: string } }[];
   };
-  editModal: EditModalType;
 };
 
 export default function GroupNameEditModal({
-  editModal,
+  open,
+  onOpenChange,
   beneficiaryGroupDetail,
-}: IProps) {
+}: EditDialogProps) {
   const updateBeneficiaryGroup = useUpdateBeneficiaryGroup();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -55,27 +51,16 @@ export default function GroupNameEditModal({
     },
   });
 
-  // React.useEffect(() => {
-  //   if (beneficiaryGroupDetail?.name) {
-  //     form.reset({ name: beneficiaryGroupDetail.name });
-  //   }
-  // }, [beneficiaryGroupDetail?.name]);
-
   const handleUpdateBeneficiaryGroup = async (
     data: z.infer<typeof FormSchema>,
   ) => {
-    // const members =
-    //   beneficiaryGroupDetail?.groupedBeneficiaries?.map((item) => ({
-    //     uuid: item?.Beneficiary?.uuid,
-    //   })) ?? [];
     const payload = {
       uuid: beneficiaryGroupDetail.uuid,
       ...data,
-      // beneficiaries: members,
     };
     await updateBeneficiaryGroup.mutateAsync(payload, {
       onSuccess: () => {
-        editModal.onFalse();
+        onOpenChange(false);
       },
       onError: (e) => {
         console.error('Error while updating beneficiary group::', e);
@@ -84,7 +69,7 @@ export default function GroupNameEditModal({
   };
 
   return (
-    <Dialog open={editModal.value} onOpenChange={editModal.onToggle}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         onInteractOutside={(e) => {
           e.preventDefault();
@@ -93,7 +78,6 @@ export default function GroupNameEditModal({
         <DialogHeader>
           <DialogTitle>Edit Beneficiary Group Name</DialogTitle>
         </DialogHeader>
-
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleUpdateBeneficiaryGroup)}

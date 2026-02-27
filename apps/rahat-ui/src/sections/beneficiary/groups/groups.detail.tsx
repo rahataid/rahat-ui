@@ -59,7 +59,7 @@ export default function GroupDetailView() {
   const removeModal = useBoolean();
   const groupProposeModal = useBoolean();
   const projectModal = useBoolean();
-  const editGroupNameModal = useBoolean();
+  const editGroupNameModal = useBoolean(false);
 
   const handleAssignModalClick = () => {
     validateModal.onTrue();
@@ -75,10 +75,6 @@ export default function GroupDetailView() {
 
   const handleProjectAssignModalClick = () => {
     projectModal.onTrue();
-  };
-
-  const handleEditGroupNameClick = () => {
-    editGroupNameModal.onTrue();
   };
 
   const { selectedListItems, setSelectedListItems, setPagination } =
@@ -192,8 +188,9 @@ export default function GroupDetailView() {
         assignedGroupId={assignedGroupId}
       />
       <GroupNameEditModal
+        open={editGroupNameModal.value}
+        onOpenChange={editGroupNameModal.setValue}
         beneficiaryGroupDetail={group?.data}
-        editModal={editGroupNameModal}
       />
       <div className="p-4">
         <div className="flex justify-between items-center">
@@ -238,7 +235,7 @@ export default function GroupDetailView() {
               <Button
                 variant={'outline'}
                 className="gap-2 text-gray-700 rounded-sm"
-                onClick={handleEditGroupNameClick}
+                onClick={() => editGroupNameModal.onTrue()}
               >
                 <Pencil className="w-4 h-4" />
                 Edit

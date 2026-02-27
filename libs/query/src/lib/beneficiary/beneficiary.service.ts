@@ -146,12 +146,12 @@ export const useUpdateBeneficiaryGroup = () => {
   });
   return useMutation({
     mutationFn: (payload: any) => updateBeneficiaryGroup(payload),
-    onSuccess: (data) => {
+    onSuccess: (payload) => {
       qc.invalidateQueries({
         queryKey: [TAGS.GET_BENEFICIARIES_GROUPS],
       });
       qc.invalidateQueries({
-        queryKey: data?.uuid,
+        queryKey: payload?.name,
       });
 
       toast.fire({

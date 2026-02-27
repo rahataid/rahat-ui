@@ -5,10 +5,14 @@ export function handleBuildPayoutPayload(payoutData: PayoutFormData | null) {
   if (!payoutData?.method || !payoutData.mode) return undefined;
   if (!Object.keys(payoutData.group ?? {}).length) return undefined;
 
+  console.debug('Building payout payload with data:', payoutData);
+  console.debug('Group data:', payoutData.group);
+  console.debug('Group id:', payoutData.group?.id);
+
   const base: Record<string, any> = {
     type: payoutData.method === 'CVA' ? PayoutType.VENDOR : payoutData.method,
     mode: payoutData.mode,
-    groupId: payoutData.group?.tokensReserved?.uuid,
+    groupId: payoutData.group?.id,
   };
 
   if (payoutData.paymentProvider?.id) {

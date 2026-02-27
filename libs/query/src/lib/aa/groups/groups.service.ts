@@ -284,6 +284,33 @@ export const useSingleStakeholdersGroup = (
   return query;
 };
 
+export const useStakeholdersGroupByUuids = (
+  uuid: UUID,
+  stakeholdersGroupUuids: string[],
+  queryValidation: boolean,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['stakeholdersGroupDetailsByUuids', uuid, stakeholdersGroupUuids],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.stakeholders.getGroupDetailsByUuids',
+          payload: {
+            uuids: stakeholdersGroupUuids,
+          },
+        },
+      });
+      return mutate.data;
+    },
+    enabled: queryValidation,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+  return query;
+};
+
 export const useSingleBeneficiaryGroup = (
   uuid: UUID,
   beneficiariesGroupID: UUID,

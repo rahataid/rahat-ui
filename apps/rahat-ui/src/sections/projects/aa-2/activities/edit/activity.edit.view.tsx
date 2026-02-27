@@ -1,5 +1,5 @@
 'use client';
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { z } from 'zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -174,6 +174,7 @@ import Loader from 'apps/community-tool-ui/src/components/Loader';
 // };
 
 export default function EditActivity() {
+  // State goes here
   const [open, setOpen] = useState(false);
   const [audioUploading, setAudioUploading] = useState<boolean>(false);
   const [communicationData, setCommunicationData] = useState<
@@ -183,14 +184,22 @@ export default function EditActivity() {
     null,
   );
 
+  // Ref goes here
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  // Router goes here
   const router = useRouter();
   const searchParams = useSearchParams();
   const backFrom = searchParams.get('backFrom');
+
+  // Hooks goes here
   const uploadFile = useUploadFile();
   const updateActivity = useUpdateActivities();
   const { id: projectID, activityID } = useParams();
   const redirectTo = searchParams.get('from');
 
+  const isAddComm = window.location.hash === '#comm';
+  // Query goes here
   const { data: users } = useUserList({
     page: 1,
     perPage: 9999,
@@ -234,6 +243,7 @@ export default function EditActivity() {
     appTransports,
   );
 
+  // Handlers goes here
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
@@ -341,7 +351,7 @@ export default function EditActivity() {
     const newCommunication: CommunicationData = {
       communicationTitle: communicationFormData?.communicationTitle || '',
       groupType: (communicationFormData?.groupType || '') as GroupType,
-      groupId: communicationFormData?.groupId || '',
+      groupId: communicationFormData?.groupId || [],
       transportId: communicationFormData?.transportId || '',
       message: communicationFormData?.message || '',
       subject: communicationFormData?.subject || '',
@@ -378,6 +388,34 @@ export default function EditActivity() {
       setCommunicationData(transformedData);
     }
   };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (isActivityLoading) return;
+
+    if (isAddComm) {
+      // Wait till the component is fully rendered before opening the form and scrolling
+      setTimeout(() => {
+        setOpen(true);
+      }, 100);
+
+      setTimeout(() => {
+        if (!scrollAreaRef.current) return;
+
+        // Needed as scroll viewport is defined and scrollAreaRef is inside the viewport
+        const viewport = scrollAreaRef.current.closest(
+          '[data-radix-scroll-area-viewport]',
+        );
+
+        if (viewport) {
+          viewport.scrollTo({
+            top: scrollAreaRef.current.offsetTop,
+            behavior: 'smooth',
+          });
+        }
+      }, 500);
+    }
+  }, [isActivityLoading, isAddComm]);
 
   // this will set default values when activity detail is loaded
   useEffect(() => {
@@ -496,7 +534,7 @@ export default function EditActivity() {
                 </div>
               </div>
             </div>
-            <ScrollArea className=" h-[calc(100vh-230px)]">
+            <ScrollArea className=" h-[calc(100vh-200px)]">
               <div className="rounded-xl border p-4">
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
@@ -814,15 +852,18 @@ export default function EditActivity() {
                 )}
               </Button>
 
-              {open && (
-                <AddCommunicationForm
-                  form={communicationForm}
-                  setOpen={setOpen}
-                  onSave={handleSave}
-                  setLoading={setAudioUploading}
-                  appTransports={appTransports}
-                />
-              )}
+              <div ref={scrollAreaRef}>
+                {open && (
+                  <AddCommunicationForm
+                    form={communicationForm}
+                    setOpen={setOpen}
+                    onSave={handleSave}
+                    setLoading={setAudioUploading}
+                    appTransports={appTransports}
+                    isMultiSelect={isAddComm}
+                  />
+                )}
+              </div>
 
               <CommunicationDataCard
                 form={communicationForm}

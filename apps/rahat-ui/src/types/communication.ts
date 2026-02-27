@@ -10,7 +10,7 @@ export interface AudioFile {
 export interface CommunicationData {
   communicationTitle?: string;
   groupType: GroupType;
-  groupId: string;
+  groupId: string[];
   transportId: string;
   message?: string | AudioFile;
   subject?: string;
@@ -20,8 +20,9 @@ export interface CommunicationData {
 }
 
 export interface CommunicationFetchData
-  extends Omit<CommunicationData, 'message'> {
+  extends Omit<CommunicationData, 'message' | 'groupId'> {
   message?: string | AudioFile;
+  groupId?: string;
 }
 
 export interface DocumentFile {

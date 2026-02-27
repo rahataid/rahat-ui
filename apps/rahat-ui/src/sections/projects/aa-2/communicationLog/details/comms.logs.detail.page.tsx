@@ -9,7 +9,6 @@ import {
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { BroadcastStatus } from '@rumsan/connect/src/types';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 // import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import {
@@ -45,28 +44,11 @@ import {
 import { useParams, useSearchParams } from 'next/navigation';
 import React, { useMemo, useState } from 'react';
 
-import * as XLSX from 'xlsx';
+import { exportAllLogs, exportFailedLogs } from './comms.logs.export.utils';
 import CommsLogsTable from '../table/comms.logs.table';
 import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
 import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
-
-type SessionLog = {
-  address: string;
-  status: string;
-  disposition?: {
-    duration?: string | number;
-    answerTime?: string;
-    endTime?: string;
-    disposition?: string;
-  };
-  message?: string;
-  error?: string;
-  attempts: number;
-  maxAttempts: number;
-  createdAt: string;
-  updatedAt: string;
-};
 
 export default function CommsLogsDetailPage() {
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
@@ -167,118 +149,17 @@ export default function CommsLogsDetailPage() {
   };
 
   const onFailedExports = () => {
-    const logs = sessionLogs?.httpReponse?.data?.data?.filter(
-      (log: SessionLog) => log?.status === BroadcastStatus.FAIL,
-    );
-
-    if (!logs?.length) return;
-
-    const rowsToDownload = logs || [];
-    const workbook = XLSX.utils.book_new();
-    const worksheetData = rowsToDownload?.map((log: SessionLog) => ({
-      Address: log.address,
-      Status: log.status,
-    }));
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');
-
-    XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
-  };
-
-  const getLogRowMapper = (communicationType: string, messageText: string) => {
-    const commonFields = (log: SessionLog) => ({
-      'Group Name': logs?.groupName || 'N/A',
-      'Group Type': logs?.communicationDetail?.groupType || 'N/A',
-      'Communication Type': logs?.sessionDetails?.Transport?.name || 'N/A',
-      'Communication Title':
-        logs?.communicationDetail?.communicationTitle || 'N/A',
-    });
-
-    const typeSpecificFields: Record<
-      string,
-      (log: SessionLog) => Record<string, any>
-    > = {
-      EMAIL: (log) => ({
-        Subject: logs?.communicationDetail?.subject || 'N/A',
-        Message: messageText,
-        'Audience Email': log.address || 'N/A',
-        Status: log.status || 'N/A',
-      }),
-      VOICE: (log) => ({
-        'Audience Number': log.address || 'N/A',
-        Status: log.status || 'N/A',
-        Duration:
-          log.status === 'FAIL'
-            ? log.disposition?.disposition || log.message || log.error || 'N/A'
-            : log.disposition?.duration !== null &&
-              log.disposition?.duration !== undefined
-            ? log.disposition.duration
-            : 'N/A',
-        Attempts: log.attempts || 0,
-        'Max Attempts': log.maxAttempts || 0,
-      }),
-      SMS: (log) => ({
-        Message: messageText,
-        'Audience Number': log.address || 'N/A',
-        Status: log.status || 'N/A',
-      }),
-    };
-
-    const dateFields = (log: SessionLog) => ({
-      'Triggered Date': logs?.sessionDetails?.createdAt
-        ? dateFormat(logs?.sessionDetails?.createdAt)
-        : 'N/A',
-      'Created Date': log.createdAt ? dateFormat(log.createdAt) : 'N/A',
-      'Updated Date': log.updatedAt ? dateFormat(log.updatedAt) : 'N/A',
-    });
-
-    const getFields =
-      typeSpecificFields[communicationType] || typeSpecificFields.SMS;
-
-    return (log: SessionLog) => ({
-      ...commonFields(log),
-      ...getFields(log),
-      ...dateFields(log),
-    });
+    exportFailedLogs(sessionLogs?.httpReponse?.data?.data ?? []);
   };
 
   const onExportAll = () => {
-    const logsData = sessionLogs?.httpReponse?.data?.data;
-    if (!logsData || logsData.length === 0) return;
-
-    const communicationType =
-      logs?.sessionDetails?.Transport?.name || 'Communication';
-    const fileName = `${communicationType} Logs.xlsx`;
-
-    const message = logs?.communicationDetail?.message;
-    const messageText =
-      typeof message === 'string'
-        ? message
-        : message?.fileName
-        ? `${message.fileName}`
-        : 'N/A';
-
-    const workbook = XLSX.utils.book_new();
-
-    const rowMapper = getLogRowMapper(communicationType, messageText);
-    const communicationLogsData = logsData.map(rowMapper);
-    const logsWorksheet = XLSX.utils.json_to_sheet(communicationLogsData);
-    XLSX.utils.book_append_sheet(workbook, logsWorksheet, 'Communication Logs');
-
-    const detailsData = [
-      {
-        'Activity Title': activityDetail?.title || 'N/A',
-        'Activity Description': activityDetail?.description || 'N/A',
-        Phase: activityDetail?.phase?.name || 'N/A',
-        'Activity Status': activityDetail?.status || 'N/A',
-        'Total Audience Count': logsMeta?.total || 0,
-        'Successfully Delivered': count?.data?.data?.SUCCESS ?? 0,
-        'Failed Delivered': count?.data?.data?.FAIL ?? 0,
-      },
-    ];
-    const detailsWorksheet = XLSX.utils.json_to_sheet(detailsData);
-    XLSX.utils.book_append_sheet(workbook, detailsWorksheet, 'Details');
-    XLSX.writeFile(workbook, fileName);
+    exportAllLogs(
+      sessionLogs?.httpReponse?.data?.data ?? [],
+      logs,
+      activityDetail,
+      count?.data?.data ?? {},
+      logsMeta?.total ?? 0,
+    );
   };
 
   const handleSearch = React.useCallback(

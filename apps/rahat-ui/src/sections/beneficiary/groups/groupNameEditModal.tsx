@@ -64,14 +64,14 @@ export default function GroupNameEditModal({
   const handleUpdateBeneficiaryGroup = async (
     data: z.infer<typeof FormSchema>,
   ) => {
-    const members =
-      beneficiaryGroupDetail?.groupedBeneficiaries?.map((item) => ({
-        uuid: item?.Beneficiary?.uuid,
-      })) ?? [];
+    // const members =
+    //   beneficiaryGroupDetail?.groupedBeneficiaries?.map((item) => ({
+    //     uuid: item?.Beneficiary?.uuid,
+    //   })) ?? [];
     const payload = {
       uuid: beneficiaryGroupDetail.uuid,
       ...data,
-      beneficiaries: members,
+      // beneficiaries: members,
     };
     await updateBeneficiaryGroup.mutateAsync(payload, {
       onSuccess: () => {

@@ -135,7 +135,9 @@ const updateBeneficiaryGroup = async (payload: any) => {
   return response?.data;
 };
 
-export const useUpdateBeneficiaryGroup = () => {
+export const useUpdateBeneficiaryGroup = (callbacks?: {
+  onSuccess?: () => void;
+}) => {
   const qc = useQueryClient();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -158,6 +160,7 @@ export const useUpdateBeneficiaryGroup = () => {
         title: 'Beneficiary Group updated successfully.',
         icon: 'success',
       });
+      callbacks?.onSuccess?.();
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';

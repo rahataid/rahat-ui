@@ -42,7 +42,9 @@ export default function GroupNameEditModal({
   onOpenChange,
   beneficiaryGroupDetail,
 }: EditDialogProps) {
-  const updateBeneficiaryGroup = useUpdateBeneficiaryGroup();
+  const updateBeneficiaryGroup = useUpdateBeneficiaryGroup({
+    onSuccess: () => onOpenChange(false),
+  });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -58,14 +60,7 @@ export default function GroupNameEditModal({
       uuid: beneficiaryGroupDetail.uuid,
       ...data,
     };
-    await updateBeneficiaryGroup.mutateAsync(payload, {
-      onSuccess: () => {
-        onOpenChange(false);
-      },
-      onError: (e) => {
-        console.error('Error while updating beneficiary group::', e);
-      },
-    });
+    await updateBeneficiaryGroup.mutateAsync(payload);
   };
 
   return (

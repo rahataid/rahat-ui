@@ -14,6 +14,7 @@ import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagina
 import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
 import { UUID } from 'crypto';
 import { Eye } from 'lucide-react';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
 import { IProjectVendor } from './types';
 import { toast } from 'react-toastify';
@@ -65,11 +66,11 @@ export const useProjectVendorTableColumns = (pagination: Pagination) => {
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() => handleViewClick(row.original.uuid)}
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() => handleViewClick(row.original.uuid)}
             />
           </div>
         );

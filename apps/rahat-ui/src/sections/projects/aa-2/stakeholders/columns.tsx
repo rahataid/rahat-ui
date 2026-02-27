@@ -11,6 +11,7 @@ import { RoleAuth, AARoles } from '@rahat-ui/auth';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
 export const useProjectStakeholdersTableColumns = () => {
   const router = useRouter();
@@ -102,6 +103,7 @@ export const useProjectStakeholdersTableColumns = () => {
                 confirmButtonText="Edit"
                 dialogDescription="Are you sure you want to edit?"
                 dialogTitle="Edit"
+                tip="Edit"
                 handleClick={() =>
                   setTimeout(() => {
                     router.push(
@@ -117,17 +119,18 @@ export const useProjectStakeholdersTableColumns = () => {
                 confirmButtonText="Delete"
                 dialogDescription="Are you sure you want to delete?"
                 dialogTitle="Delete"
+                tip="Delete"
                 handleClick={() => {
                   handleDelete(row.original.uuid);
                 }}
                 variant="destructive"
                 color="red"
               />
-              <Eye
-                className="hover:text-primary cursor-pointer"
-                size={16}
-                strokeWidth={1.5}
-                onClick={() =>
+              <TooltipComponent
+                Icon={Eye}
+                tip="View Details"
+                iconStyle="hover:text-primary cursor-pointer"
+                handleOnClick={() =>
                   router.push(
                     `/projects/aa/${id}/stakeholders/${row.original.uuid}`,
                   )
@@ -215,11 +218,11 @@ export const useProjectStakeholdersGroupTableColumns = () => {
             hasContent={false}
           >
             <div className="flex items-center gap-2">
-              <Eye
-                className="hover:text-primary cursor-pointer"
-                size={16}
-                strokeWidth={1.5}
-                onClick={() =>
+              <TooltipComponent
+                Icon={Eye}
+                tip="View Details"
+                iconStyle="hover:text-primary cursor-pointer"
+                handleOnClick={() =>
                   router.push(
                     `/projects/aa/${id}/stakeholders/${row.original.uuid}?groupId=${groupId}`,
                   )

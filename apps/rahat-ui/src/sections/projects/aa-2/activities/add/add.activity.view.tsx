@@ -849,6 +849,7 @@ export default function AddActivities() {
                 onSave={handleSave}
                 setLoading={audioUploading.setValue}
                 appTransports={appTransports}
+                isMultiSelect={true}
               />
             )}
 

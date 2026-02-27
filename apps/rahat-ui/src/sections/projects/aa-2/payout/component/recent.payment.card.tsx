@@ -1,5 +1,6 @@
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { Eye, ArrowLeftRight, Dot } from 'lucide-react';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import {
   TooltipContent,
   Tooltip,
@@ -90,9 +91,12 @@ export default function RecentPaymentCard({
         {dateFormat(dateTime)}
       </div>
       {/* View Icon */}
-      <button onClick={onView}>
-        <Eye className="w-5 h-5 text-muted-foreground" />
-      </button>
+      <TooltipComponent
+        Icon={Eye}
+        tip="View Details"
+        iconStyle="w-5 h-5 text-muted-foreground"
+        handleOnClick={onView}
+      />
     </div>
   );
 }

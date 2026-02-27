@@ -75,7 +75,7 @@ interface AddCommunicationFormProps {
   appTransports: Transport[] | undefined;
   onSave: VoidFunction;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  isEdit?: boolean;
+  isMultiSelect?: boolean;
 }
 
 export default function AddCommunicationForm({
@@ -84,7 +84,7 @@ export default function AddCommunicationForm({
   appTransports,
   onSave,
   setOpen,
-  isEdit = false,
+  isMultiSelect = false,
 }: AddCommunicationFormProps) {
   const { id: projectId } = useParams();
   const [contentType, setContentType] = useState<ValidationContent | ''>('');
@@ -124,6 +124,7 @@ export default function AddCommunicationForm({
 
   const groupType = form.watch('groupType');
   const groupId = form.watch('groupId');
+  const { errors } = form.formState;
 
   // Convert groups to Option[] format
   const groupOptions = useMemo<Option[]>(() => {
@@ -158,18 +159,21 @@ export default function AddCommunicationForm({
       .filter(Boolean) as Option[];
   }, [groupId, groupOptions]);
 
+  // Query enable validation goes here
+  const enableStakeholdersGroupQuery =
+    groupType === 'STAKEHOLDERS' && groupId.length > 0;
+  const enableBeneficiaryGroupQuery =
+    groupType === 'BENEFICIARY' && groupId.length > 0;
+
   const { data: stakeholdersGroup, isLoading: stakeholdersGroupLoading } =
     useStakeholdersGroupByUuids(
       projectId as UUID,
       groupId,
-      groupType === 'STAKEHOLDERS' && groupId.length > 0,
+      enableStakeholdersGroupQuery,
     );
 
   const { data: beneficiaryGroup, isLoading: beneficiaryGroupLoading } =
-    getBeneficiariesGroupByUuids(
-      groupId,
-      groupType === 'BENEFICIARY' && groupId.length > 0,
-    );
+    getBeneficiariesGroupByUuids(groupId, enableBeneficiaryGroupQuery);
 
   const handleAudioFileChange = async (
     fileOrEvent: File | ChangeEvent<HTMLInputElement>,
@@ -424,10 +428,8 @@ export default function AddCommunicationForm({
               <FormControl>
                 <Input placeholder="Write Communication title" {...field} />
               </FormControl>
-              {form.formState.errors.communicationTitle && (
-                <FormMessage>
-                  {form.formState.errors.communicationTitle.message}
-                </FormMessage>
+              {errors.communicationTitle && (
+                <FormMessage>{errors.communicationTitle.message}</FormMessage>
               )}
             </FormItem>
           )}
@@ -452,56 +454,14 @@ export default function AddCommunicationForm({
                   <SelectItem value="BENEFICIARY">Beneficiary</SelectItem>
                 </SelectContent>
               </Select>
-              {form.formState.errors.groupType && (
-                <FormMessage>
-                  {form.formState.errors.groupType.message}
-                </FormMessage>
+              {errors.groupType && (
+                <FormMessage>{errors.groupType.message}</FormMessage>
               )}
             </FormItem>
           )}
         />
 
-        {isEdit ? (
-          <FormField
-            control={form.control}
-            name="groupId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Groups</FormLabel>
-                <Select
-                  disabled={!groupType || isLoading}
-                  onValueChange={(value) => {
-                    // Set groupId as an array with the selected value
-                    field.onChange([value]);
-                  }}
-                  value={field.value?.[0] || ''}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={
-                          groupType
-                            ? 'Select groups'
-                            : 'Select group type first'
-                        }
-                      />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectGroup>
-                      {renderGroups(groupOptions, isLoading)}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                {form.formState.errors.groupId && (
-                  <FormMessage>
-                    {form.formState.errors.groupId.message}
-                  </FormMessage>
-                )}
-              </FormItem>
-            )}
-          />
-        ) : (
+        {isMultiSelect ? (
           <FormField
             control={form.control}
             name="groupId"
@@ -537,10 +497,46 @@ export default function AddCommunicationForm({
                     disabled={isLoading || !groupType}
                   />
                 </FormControl>
-                {form.formState.errors.groupId && (
-                  <FormMessage>
-                    {form.formState.errors.groupId.message}
-                  </FormMessage>
+                {errors.groupId && (
+                  <FormMessage>{errors.groupId.message}</FormMessage>
+                )}
+              </FormItem>
+            )}
+          />
+        ) : (
+          <FormField
+            control={form.control}
+            name="groupId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Groups</FormLabel>
+                <Select
+                  disabled={!groupType || isLoading}
+                  onValueChange={(value) => {
+                    // Set groupId as an array with the selected value
+                    field.onChange([value]);
+                  }}
+                  value={field.value?.[0] || ''}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={
+                          groupType
+                            ? 'Select groups'
+                            : 'Select group type first'
+                        }
+                      />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup>
+                      {renderGroups(groupOptions, isLoading)}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                {errors.groupId && (
+                  <FormMessage>{errors.groupId.message}</FormMessage>
                 )}
               </FormItem>
             )}
@@ -572,10 +568,8 @@ export default function AddCommunicationForm({
                   })}
                 </SelectContent>
               </Select>
-              {form.formState.errors.transportId && (
-                <FormMessage>
-                  {form.formState.errors.transportId.message}
-                </FormMessage>
+              {errors.transportId && (
+                <FormMessage>{errors.transportId.message}</FormMessage>
               )}
             </FormItem>
           )}
@@ -681,10 +675,8 @@ export default function AddCommunicationForm({
                 />
               </TabsContent>
             </Tabs>
-            {form.formState.errors.audioURL && (
-              <FormMessage>
-                {form.formState.errors.audioURL.message}
-              </FormMessage>
+            {errors.audioURL && (
+              <FormMessage>{errors.audioURL.message}</FormMessage>
             )}
           </div>
         )}
@@ -721,10 +713,8 @@ export default function AddCommunicationForm({
                 <FormControl>
                   <Input placeholder="Enter subject" {...field} />
                 </FormControl>
-                {form.formState.errors.subject && (
-                  <FormMessage>
-                    {form.formState.errors.subject.message}
-                  </FormMessage>
+                {errors.subject && (
+                  <FormMessage>{errors.subject.message}</FormMessage>
                 )}
               </FormItem>
             )}
@@ -766,10 +756,8 @@ export default function AddCommunicationForm({
                     />
                   </FormControl>
                   <div className="flex justify-between items-center">
-                    {form.formState.errors.message && (
-                      <FormMessage>
-                        {form.formState.errors.message.message}
-                      </FormMessage>
+                    {errors.message && (
+                      <FormMessage>{errors.message.message}</FormMessage>
                     )}
                     <p className="ml-auto text-xs text-muted-foreground">
                       {field.value?.length || 0} / {maxLen} characters

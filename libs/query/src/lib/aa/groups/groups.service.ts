@@ -137,7 +137,7 @@ export const useCreateBenficiariesGroups = () => {
       const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
-        title: 'Error while adding stakeholders group.',
+        title: 'Error while adding beneficiaries group.',
         icon: 'error',
         text: errorMessage,
       });
@@ -146,7 +146,6 @@ export const useCreateBenficiariesGroups = () => {
 };
 
 export const useReserveTokenForGroups = () => {
-  console.log('reached here');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({

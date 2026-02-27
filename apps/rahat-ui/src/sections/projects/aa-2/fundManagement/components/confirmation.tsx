@@ -42,12 +42,6 @@ export default function Confirmation({
 
   const reserveTokenForGroups = useReserveTokenForGroups();
 
-  const hasPayoutData =
-    payoutData &&
-    payoutData.method &&
-    payoutData.mode &&
-    Object.keys(payoutData.group || {}).length > 0;
-
   // Handlers goes here
   const cardData = useMemo(
     () => [

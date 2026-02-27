@@ -8,6 +8,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { CheckIcon, Eye, RotateCcwIcon, TriangleAlertIcon } from 'lucide-react';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
@@ -342,21 +343,22 @@ export default function useBeneficiaryGroupDetailsLogColumns(
                   roles={[AARoles.ADMIN, AARoles.Municipality]}
                   hasContent={false}
                 >
-                  <RotateCcwIcon
-                    className="w-6 h-6 xl:w-4 xl:h-4 text-blue-400 cursor-pointer"
-                    strokeWidth={2.5}
-                    onClick={() =>
+                  <TooltipComponent
+                    Icon={RotateCcwIcon}
+                    tip="Update"
+                    iconStyle="w-6 h-6 xl:w-4 xl:h-4 text-blue-400 cursor-pointer"
+                    handleOnClick={() =>
                       handleTriggerSinglePayoutFailed(row.original.uuid)
                     }
                   />
                 </RoleAuth>
               ))}
 
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={20}
-              strokeWidth={1.5}
-              onClick={() => handleEyeClick(row?.original?.uuid)}
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() => handleEyeClick(row?.original?.uuid)}
             />
           </div>
         );

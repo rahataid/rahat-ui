@@ -7,7 +7,7 @@ import {
 import { LucideIcon } from 'lucide-react';
 
 type IProps = {
-  handleOnClick: VoidFunction;
+  handleOnClick?: VoidFunction;
   Icon: LucideIcon;
   tip: string;
   iconStyle?: string;
@@ -25,7 +25,7 @@ export default function TooltipComponent({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger onClick={handleOnClick} disabled={disable}>
-          <Icon className={iconStyle} size={20} strokeWidth={2.5} />
+          <Icon className={iconStyle} size={20} strokeWidth={1.5} />
         </TooltipTrigger>
         <TooltipContent className="bg-secondary ">
           <p className="text-xs font-medium">{tip}</p>

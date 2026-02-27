@@ -26,6 +26,13 @@ import { useGetSeriesByDataSource } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 
+const SOURCE_MAPPING = {
+  'dhm:waterlevel': 'water_level_m',
+  'dhm:rainfall': 'rainfall_mm',
+  glofas: 'prob_flood',
+  gfh: 'discharge_m3s',
+} as const;
+
 const operatorOptions = [
   { label: 'Greater than (>)', value: '>' },
   { label: 'Less than (<)', value: '<' },
@@ -70,7 +77,22 @@ export default function AddAutomatedTriggerForm({
 }: IProps) {
   const source = form.watch('source');
   const triggerSource = form.watch('triggerStatement.source');
-  const triggerSourceSubType = form.watch('triggerStatement.sourceSubType');
+
+  const GLOFAS_SUBTYPE_MAPPING: Record<string, string> = {
+    two_years_max_prob: 'two_years_return_period',
+    five_years_max_prob: 'five_years_return_period',
+    twenty_years_max_prob: 'twenty_years_return_period',
+  };
+  const GLOFAS_REVERSE_MAPPING = Object.fromEntries(
+    Object.entries(GLOFAS_SUBTYPE_MAPPING).map(([k, v]) => [v, k]),
+  );
+
+  const rawSourceSubType = form.watch('triggerStatement.sourceSubType');
+  const selectDisplayValue =
+    source === 'glofas'
+      ? GLOFAS_SUBTYPE_MAPPING[rawSourceSubType] || rawSourceSubType
+      : rawSourceSubType;
+  const triggerSourceSubType = rawSourceSubType;
   const triggerOperator = form.watch('triggerStatement.operator');
   const triggerValue = form.watch('triggerStatement.value');
   const [selectedSource, setSelectedSource] = React.useState<{
@@ -87,33 +109,35 @@ export default function AddAutomatedTriggerForm({
   );
 
   React.useEffect(() => {
-    if (source) {
-      // Reset source-related fields when source changes
-      form.setValue('triggerStatement.sourceSubType', '');
-      form.setValue('triggerStatement.stationId', '');
-      form.setValue('triggerStatement.stationName', '');
-      form.setValue('triggerStatement.operator', undefined);
-      form.setValue('triggerStatement.value', undefined);
-      form.setValue('triggerStatement.expression', '');
-
-      switch (source) {
-        case 'dhm:waterlevel':
-          form.setValue('triggerStatement.source', 'water_level_m');
-          break;
-        case 'dhm:rainfall':
-          form.setValue('triggerStatement.source', 'rainfall_mm');
-          break;
-        case 'glofas':
-          form.setValue('triggerStatement.source', 'prob_flood');
-          break;
-        case 'gfh':
-          form.setValue('triggerStatement.source', 'discharge_m3s');
-          break;
-        default:
-          break;
+    if (source && source in SOURCE_MAPPING) {
+      if (!isEditing) {
+        form.setValue(
+          'triggerStatement.source',
+          SOURCE_MAPPING[source as keyof typeof SOURCE_MAPPING],
+        );
+        form.setValue('triggerStatement.sourceSubType', '');
+        form.setValue('triggerStatement.stationId', '');
+        form.setValue('triggerStatement.stationName', '');
+        form.setValue('triggerStatement.operator', undefined);
+        form.setValue('triggerStatement.value', undefined);
+        form.setValue('triggerStatement.expression', '');
       }
     }
-  }, [source, form]);
+  }, [source, form, isEditing]);
+
+  React.useEffect(() => {
+    if (
+      source &&
+      isEditing &&
+      (!selectedSource.dataSource || !selectedSource.type)
+    ) {
+      const [dataSource, type] = source.includes(':')
+        ? source.split(':')
+        : [source, null];
+      const mappedType = type === 'waterlevel' ? 'water_level' : type;
+      setSelectedSource({ dataSource, type: mappedType });
+    }
+  }, [source, isEditing, selectedSource.dataSource, selectedSource.type]);
 
   React.useEffect(() => {
     if (triggerSourceSubType && triggerOperator && triggerValue) {
@@ -218,13 +242,10 @@ export default function AddAutomatedTriggerForm({
                       }}
                       value={field.value}
                       key={field.value}
-                      disabled={isEditing}
                     >
                       <FormLabel>Source</FormLabel>
                       <FormControl>
-                        <SelectTrigger
-                          className={isEditing ? 'bg-gray-300' : ''}
-                        >
+                        <SelectTrigger>
                           <SelectValue placeholder="Select Source" />
                         </SelectTrigger>
                       </FormControl>
@@ -248,7 +269,7 @@ export default function AddAutomatedTriggerForm({
               }}
             />
 
-            {!isEditing && source && (
+            {source && (
               <div className="col-span-2 bg-[#fcfcfd] gap-4">
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <FormField
@@ -258,9 +279,18 @@ export default function AddAutomatedTriggerForm({
                       return (
                         <FormItem>
                           <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                            key={field.value}
+                            onValueChange={(val) => {
+                              if (
+                                source === 'glofas' &&
+                                GLOFAS_REVERSE_MAPPING[val]
+                              ) {
+                                field.onChange(GLOFAS_REVERSE_MAPPING[val]);
+                              } else {
+                                field.onChange(val);
+                              }
+                            }}
+                            value={selectDisplayValue}
+                            key={selectDisplayValue}
                           >
                             {triggerSource === 'water_level_m' && (
                               <SourceSubTypeField label="Level Type" />
@@ -300,13 +330,11 @@ export default function AddAutomatedTriggerForm({
                               }}
                               value={field.value}
                               key={field.value}
-                              disabled={isEditing}
+                              disabled={false}
                             >
                               <FormLabel>Station</FormLabel>
                               <FormControl>
-                                <SelectTrigger
-                                  className={isEditing ? 'bg-gray-300' : ''}
-                                >
+                                <SelectTrigger>
                                   <SelectValue placeholder="Select Station" />
                                 </SelectTrigger>
                               </FormControl>

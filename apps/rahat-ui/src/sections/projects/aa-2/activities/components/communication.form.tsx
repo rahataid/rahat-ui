@@ -124,6 +124,7 @@ export default function AddCommunicationForm({
 
   const groupType = form.watch('groupType');
   const groupId = form.watch('groupId');
+  const { errors } = form.formState;
 
   // Convert groups to Option[] format
   const groupOptions = useMemo<Option[]>(() => {
@@ -427,10 +428,8 @@ export default function AddCommunicationForm({
               <FormControl>
                 <Input placeholder="Write Communication title" {...field} />
               </FormControl>
-              {form.formState.errors.communicationTitle && (
-                <FormMessage>
-                  {form.formState.errors.communicationTitle.message}
-                </FormMessage>
+              {errors.communicationTitle && (
+                <FormMessage>{errors.communicationTitle.message}</FormMessage>
               )}
             </FormItem>
           )}
@@ -455,10 +454,8 @@ export default function AddCommunicationForm({
                   <SelectItem value="BENEFICIARY">Beneficiary</SelectItem>
                 </SelectContent>
               </Select>
-              {form.formState.errors.groupType && (
-                <FormMessage>
-                  {form.formState.errors.groupType.message}
-                </FormMessage>
+              {errors.groupType && (
+                <FormMessage>{errors.groupType.message}</FormMessage>
               )}
             </FormItem>
           )}
@@ -500,10 +497,8 @@ export default function AddCommunicationForm({
                     disabled={isLoading || !groupType}
                   />
                 </FormControl>
-                {form.formState.errors.groupId && (
-                  <FormMessage>
-                    {form.formState.errors.groupId.message}
-                  </FormMessage>
+                {errors.groupId && (
+                  <FormMessage>{errors.groupId.message}</FormMessage>
                 )}
               </FormItem>
             )}
@@ -540,10 +535,8 @@ export default function AddCommunicationForm({
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                {form.formState.errors.groupId && (
-                  <FormMessage>
-                    {form.formState.errors.groupId.message}
-                  </FormMessage>
+                {errors.groupId && (
+                  <FormMessage>{errors.groupId.message}</FormMessage>
                 )}
               </FormItem>
             )}
@@ -575,10 +568,8 @@ export default function AddCommunicationForm({
                   })}
                 </SelectContent>
               </Select>
-              {form.formState.errors.transportId && (
-                <FormMessage>
-                  {form.formState.errors.transportId.message}
-                </FormMessage>
+              {errors.transportId && (
+                <FormMessage>{errors.transportId.message}</FormMessage>
               )}
             </FormItem>
           )}
@@ -684,10 +675,8 @@ export default function AddCommunicationForm({
                 />
               </TabsContent>
             </Tabs>
-            {form.formState.errors.audioURL && (
-              <FormMessage>
-                {form.formState.errors.audioURL.message}
-              </FormMessage>
+            {errors.audioURL && (
+              <FormMessage>{errors.audioURL.message}</FormMessage>
             )}
           </div>
         )}
@@ -724,10 +713,8 @@ export default function AddCommunicationForm({
                 <FormControl>
                   <Input placeholder="Enter subject" {...field} />
                 </FormControl>
-                {form.formState.errors.subject && (
-                  <FormMessage>
-                    {form.formState.errors.subject.message}
-                  </FormMessage>
+                {errors.subject && (
+                  <FormMessage>{errors.subject.message}</FormMessage>
                 )}
               </FormItem>
             )}
@@ -769,10 +756,8 @@ export default function AddCommunicationForm({
                     />
                   </FormControl>
                   <div className="flex justify-between items-center">
-                    {form.formState.errors.message && (
-                      <FormMessage>
-                        {form.formState.errors.message.message}
-                      </FormMessage>
+                    {errors.message && (
+                      <FormMessage>{errors.message.message}</FormMessage>
                     )}
                     <p className="ml-auto text-xs text-muted-foreground">
                       {field.value?.length || 0} / {maxLen} characters

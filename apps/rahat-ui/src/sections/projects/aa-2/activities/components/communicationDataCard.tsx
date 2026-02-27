@@ -12,6 +12,7 @@ import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { createCommunicationFormSchema } from '../schemas/activity.schemas';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import { BeneficiariesGroup, StakeholdersGroup } from '@rahat-ui/types';
 
 type CommunicationFormData = z.infer<
   ReturnType<typeof createCommunicationFormSchema>
@@ -112,10 +113,11 @@ const CommunicationDataCard = ({
                         {t?.groupId.map((uuid) => {
                           const groupName =
                             stakeholdersGroups?.find(
-                              (g: any) => g.uuid === uuid,
+                              (g: StakeholdersGroup) => g.uuid === uuid,
                             )?.name ||
-                            beneficiaryGroups?.find((g: any) => g.uuid === uuid)
-                              ?.name ||
+                            beneficiaryGroups?.find(
+                              (g: BeneficiariesGroup) => g.uuid === uuid,
+                            )?.name ||
                             'Unknown Group';
 
                           return (

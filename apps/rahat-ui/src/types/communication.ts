@@ -22,7 +22,7 @@ export interface CommunicationData {
 export interface CommunicationFetchData
   extends Omit<CommunicationData, 'message' | 'groupId'> {
   message?: string | AudioFile;
-  groupId?: string;
+  groupId?: string[];
 }
 
 export interface DocumentFile {

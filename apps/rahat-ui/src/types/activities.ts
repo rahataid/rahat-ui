@@ -1,6 +1,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
 
 import { UUID } from 'crypto';
+import { GroupType } from './communication';
 
 // If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 export interface IActivitiesItem {
@@ -29,7 +30,17 @@ export interface IActivitiesItem {
     communicationTitle: string;
   }[];
 }
-
+export interface MapTemplate {
+  message: string | { mediaURL: string; fileName: string };
+  communicationTitle?: string;
+  groupType: GroupType;
+  groupId?: string;
+  transportId?: string;
+  subject?: string;
+  audioURL?: { mediaURL: string; fileName: string };
+  sessionId?: string;
+  communicationId?: string;
+}
 export interface Template {
   uuid: UUID;
   title: string;
@@ -56,7 +67,14 @@ export interface Template {
   status: string;
   leadTime: string;
   activityDocuments: any;
-  activityCommunication: any;
+  activityCommunication: {
+    groupId: string;
+    message: string;
+    groupType: string;
+    transportId: string;
+    communicationId: string;
+    communicationTitle: string;
+  }[];
   isAutomated: boolean;
   completedBy: string;
   hasCommunication: boolean;

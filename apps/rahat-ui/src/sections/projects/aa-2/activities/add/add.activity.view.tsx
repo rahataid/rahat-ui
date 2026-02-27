@@ -69,7 +69,7 @@ import {
 import { useActivityForm } from '../hooks/useActivityForm';
 import { buildCommunicationPayloads } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
 import ViewTemplate from 'apps/rahat-ui/src/sections/projects/aa-2/activities/components/viewTemplate';
-import { Template } from 'apps/rahat-ui/src/types/activities';
+import { MapTemplate, Template } from 'apps/rahat-ui/src/types/activities';
 import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 export const DurationData = [
@@ -391,19 +391,20 @@ export default function AddActivities() {
     }
 
     const mappedCommunications: CommunicationData[] =
-      payload.activityCommunication.map(mapCommunication);
-
+      payload.activityCommunication.map((comm) =>
+        mapCommunication(comm as MapTemplate),
+      );
     setCommunicationData(mappedCommunications);
   };
 
-  const mapCommunication = (comm: CommunicationData): CommunicationData => {
+  const mapCommunication = (comm: MapTemplate): CommunicationData => {
     const isAudioMessage =
       typeof comm.message === 'object' && comm.message !== null;
 
     return {
       communicationTitle: comm.communicationTitle || '',
       groupType: comm.groupType || '',
-      groupId: comm.groupId || '',
+      groupId: comm.groupId ? [comm.groupId] : [],
       transportId: comm.transportId || '',
       message: isAudioMessage ? '' : comm.message || '',
       subject: comm.subject || '',

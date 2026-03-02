@@ -6,6 +6,7 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { Pencil, RefreshCcw, Trash } from 'lucide-react';
+import TooltipChildren from 'apps/rahat-ui/src/components/tooltip.children';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { DocumentList } from '../components/documentCard';
 import CommunicationList from './activity.communication.list.card';
@@ -96,52 +97,58 @@ export default function ActivitiesDetailView() {
                 roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
                 hasContent={false}
               >
-                <DialogComponent
-                  buttonIcon={Trash}
-                  buttonText="Delete"
-                  dialogTitle="Delete Activity"
-                  dialogDescription="Are you sure you want to delete this activity?"
-                  confirmButtonText="Remove"
-                  handleClick={() => removeActivity()}
-                  buttonClassName="rounded-sm w-full text-red-500 border-red-500 sm"
-                  confirmButtonClassName="rounded-sm w-full bg-red-500"
-                  variant="outline"
-                />
+                <TooltipChildren tip="Delete Activity">
+                  <DialogComponent
+                    buttonIcon={Trash}
+                    buttonText="Delete"
+                    dialogTitle="Delete Activity"
+                    dialogDescription="Are you sure you want to delete this activity?"
+                    confirmButtonText="Remove"
+                    handleClick={() => removeActivity()}
+                    buttonClassName="rounded-sm w-full text-red-500 border-red-500 sm"
+                    confirmButtonClassName="rounded-sm w-full bg-red-500"
+                    variant="outline"
+                  />
+                </TooltipChildren>
               </RoleAuth>
 
               <RoleAuth
                 roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
                 hasContent={false}
               >
-                <DialogComponent
-                  buttonIcon={Pencil}
-                  buttonText="Edit"
-                  dialogTitle="Edit Activity"
-                  dialogDescription="Are you sure you want to edit this activity?"
-                  confirmButtonText="Edit"
-                  handleClick={() => router.push(redirectUpdatePath)}
-                  buttonClassName="rounded-sm w-full"
-                  confirmButtonClassName="rounded-sm w-full bg-primary"
-                  variant="outline"
-                />
+                <TooltipChildren tip="Edit Activity">
+                  <DialogComponent
+                    buttonIcon={Pencil}
+                    buttonText="Edit"
+                    dialogTitle="Edit Activity"
+                    dialogDescription="Are you sure you want to edit this activity?"
+                    confirmButtonText="Edit"
+                    handleClick={() => router.push(redirectUpdatePath)}
+                    buttonClassName="rounded-sm w-full"
+                    confirmButtonClassName="rounded-sm w-full bg-primary"
+                    variant="outline"
+                  />
+                </TooltipChildren>
               </RoleAuth>
             </div>
             <RoleAuth
               roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
               hasContent={false}
             >
-              <IconLabelBtn
-                Icon={RefreshCcw}
-                handleClick={() =>
-                  router.push(
-                    `/projects/aa/${projectId}/activities/${activityId}/update-status?from=detailPage${
-                      redirectTo ? `&backFrom=${redirectTo}` : ''
-                    }`,
-                  )
-                }
-                name="Update Status"
-                className="rounded-sm w-full "
-              />
+              <TooltipChildren tip="Update Status">
+                <IconLabelBtn
+                  Icon={RefreshCcw}
+                  handleClick={() =>
+                    router.push(
+                      `/projects/aa/${projectId}/activities/${activityId}/update-status?from=detailPage${
+                        redirectTo ? `&backFrom=${redirectTo}` : ''
+                      }`,
+                    )
+                  }
+                  name="Update Status"
+                  className="rounded-sm w-full "
+                />
+              </TooltipChildren>
             </RoleAuth>
           </div>
         )}

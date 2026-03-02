@@ -197,10 +197,17 @@ export default function CommsLogsDetailPage() {
                 variant="outline"
                 className=" gap-2 h-7"
                 onClick={onExportAll}
-                disabled={!sessionLogs?.httpReponse?.data?.data?.length}
+                disabled={
+                  isLoading ||
+                  isLoadingActivity ||
+                  isLoadingSessionLogs ||
+                  !sessionLogs?.httpReponse?.data?.data?.length
+                }
               >
                 <CloudDownload className="h-3.5 w-3.5" />
-                Export All Logs
+                {isLoading || isLoadingActivity || isLoadingSessionLogs
+                  ? 'Loading...'
+                  : 'Export All Logs'}
               </Button>
               <Button
                 variant="outline"

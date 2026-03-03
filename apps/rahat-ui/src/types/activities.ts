@@ -30,7 +30,7 @@ export interface IActivitiesItem {
     communicationTitle: string;
   }[];
 }
-export interface MapTemplate {
+export interface CommunicationDetails {
   message: string | { mediaURL: string; fileName: string };
   communicationTitle?: string;
   groupType: GroupType;
@@ -67,14 +67,7 @@ export interface Template {
   status: string;
   leadTime: string;
   activityDocuments: any;
-  activityCommunication: {
-    groupId: string;
-    message: string;
-    groupType: string;
-    transportId: string;
-    communicationId: string;
-    communicationTitle: string;
-  }[];
+  activityCommunication: CommunicationDetails[];
   isAutomated: boolean;
   completedBy: string;
   hasCommunication: boolean;

@@ -110,7 +110,7 @@ const CommunicationDataCard = ({
 
                       {/* Group names container */}
                       <div className="flex flex-wrap gap-2 w-auto">
-                        {t?.groupId.map((uuid) => {
+                        {t?.groupId?.map((uuid) => {
                           const groupName =
                             stakeholdersGroups?.find(
                               (g: StakeholdersGroup) => g.uuid === uuid,

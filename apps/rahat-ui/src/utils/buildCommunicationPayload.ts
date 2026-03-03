@@ -19,7 +19,7 @@ export interface CommunicationPayload {
 export const buildCommunicationPayload = (
   communication: CommunicationData,
   transports: Transport[] | undefined,
-) => {
+): CommunicationPayload[] => {
   const selectedTransport = transports?.find(
     (t) => t.cuid === communication.transportId,
   );
@@ -28,57 +28,59 @@ export const buildCommunicationPayload = (
     return [];
   }
 
-  // Base payload with required fields
-  const basePayload: CommunicationPayload = {
-    communicationTitle: communication.communicationTitle,
-    groupType: communication.groupType,
-    groupId: communication.groupId,
-    transportId: communication.transportId,
-  };
-
-  // Add optional fields if they exist
-  if (communication.sessionId) {
-    basePayload.sessionId = communication.sessionId;
+  // If no group IDs, return empty array
+  if (!communication.groupId || communication.groupId.length === 0) {
+    return [];
   }
 
-  if (communication.communicationId) {
-    basePayload.communicationId = communication.communicationId;
-  }
-
-  // Build payload based on transport type
+  // Build message payload based on transport type
+  const messagePayload: Partial<CommunicationPayload> = {};
+  
   if (selectedTransport.validationContent === ValidationContent.URL) {
     // For URL-based transports (e.g., VOICE), use audioURL as message
-    return {
-      ...basePayload,
-      message: communication.audioURL,
-    };
-  }
-
-  if (selectedTransport.validationAddress === ValidationAddress.EMAIL) {
+    messagePayload.message = communication.audioURL;
+  } else if (selectedTransport.validationAddress === ValidationAddress.EMAIL) {
     // For EMAIL transports, include subject and message
-    return {
-      ...basePayload,
-      subject: communication.subject,
-      message: communication.message,
-    };
+    messagePayload.subject = communication.subject;
+    messagePayload.message = communication.message;
+  } else {
+    // For other transports (e.g., SMS), just use message
+    messagePayload.message = communication.message;
   }
 
-  // For other transports (e.g., SMS), just use message
-  return {
-    ...basePayload,
-    message: communication.message,
-  };
+  // Create one payload per group ID
+  return communication.groupId.map((groupId) => {
+    const payload: CommunicationPayload = {
+      communicationTitle: communication.communicationTitle,
+      groupType: communication.groupType,
+      transportId: communication.transportId,
+      groupId: groupId, // Each payload has a single group ID as a string
+      ...messagePayload,
+    };
+
+    // Add optional fields if they exist
+    if (communication.sessionId) {
+      payload.sessionId = communication.sessionId;
+    }
+
+    if (communication.communicationId) {
+      payload.communicationId = communication.communicationId;
+    }
+
+    return payload;
+  });
 };
 
 export const buildCommunicationPayloads = (
   communications: CommunicationData[],
   transports: Transport[] | undefined,
-) => {
+): CommunicationPayload[] => {
   if (!communications || communications.length === 0) {
     return [];
   }
 
-  return communications.map((communication) =>
+  // Flatten the array since buildCommunicationPayload now returns an array
+  return communications.flatMap((communication) =>
     buildCommunicationPayload(communication, transports),
   );
 };

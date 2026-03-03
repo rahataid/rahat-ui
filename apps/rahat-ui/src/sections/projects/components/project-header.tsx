@@ -54,7 +54,7 @@ export function ProjectNav({
   };
 
   return (
-    <div className="h-14 flex justify-between pl-2 pr-6 py-2 z-50 bg-card border-b">
+    <div className="sticky top-0 z-50 h-14 w-full flex justify-between pl-2 pr-6 py-2 bg-card border-b">
       <div className="flex items-center space-x-4">
         <SidebarTrigger />
         {component}

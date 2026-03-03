@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useForm } from 'react-hook-form';
@@ -141,23 +141,23 @@ export default function PayoutFundManagementForm({
     state: { columnFilters },
   });
 
-  // Effect goes here
+  // Tracks whether the form has been initialized so the effect never fires again
+  // after submit (payoutTypes re-rendering would otherwise call reset() and wipe the form)
+  const hasInitialized = useRef(false);
+
   useEffect(() => {
+    if (hasInitialized.current) return;
+    if (!payoutTypes?.value?.types?.length) return;
+
+    hasInitialized.current = true;
+
     if (payoutData) {
-      // Returning from confirmation — restore previously entered values
-      reset({
-        ...payoutData,
-        group: { name: groupName, id: groupId },
-      });
+      reset({ ...payoutData });
     } else {
-      if (payoutTypes?.value?.types?.length) {
-        setValue('method', payoutTypes.value.types[0].key);
-      }
-      if (groupId) {
-        setValue('group', { name: groupName, id: groupId });
-      }
+      setValue('method', payoutTypes.value.types[0].key);
+      setValue('group', { name: groupName, id: groupId });
     }
-  }, [payoutTypes, groupId]);
+  }, [payoutTypes]);
 
   const handleSkip = () => {
     onPayoutData(null);

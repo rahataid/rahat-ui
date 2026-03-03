@@ -59,6 +59,17 @@ const FormSchema = z.object({
 
 type FormValues = z.infer<typeof FormSchema>;
 
+// Explicit empty defaults — used by both useForm and the Clear button
+// so form.reset() always returns to a truly blank state
+const DEFAULT_VALUES: FormValues = {
+  title: '',
+  beneficiaryGroup: '',
+  beneficiaryName: '',
+  tokenAmountPerBenef: '',
+  totalTokenAmount: '0',
+  totalTokensReserved: 0,
+};
+
 // Keys blocked from numeric-only inputs
 const BLOCKED_KEYS = [
   ' ',
@@ -86,14 +97,7 @@ export default function AssignFundsForm({
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      title: '',
-      beneficiaryGroup: '',
-      beneficiaryName: '',
-      tokenAmountPerBenef: '',
-      totalTokenAmount: '0',
-      totalTokensReserved: 0,
-    },
+    defaultValues: DEFAULT_VALUES,
     mode: 'onSubmit',
     reValidateMode: 'onChange',
   });
@@ -132,14 +136,14 @@ export default function AssignFundsForm({
   }, []);
 
   const handleAssignFunds = async (data: FormValues) => {
-    if (
-      projectBalance === undefined ||
-      projectBalance < 0 ||
-      isNaN(projectBalance)
-    ) {
-      toast.error('Insufficient project balance');
-      return;
-    }
+    // if (
+    //   projectBalance === undefined ||
+    //   projectBalance < 0 ||
+    //   isNaN(projectBalance)
+    // ) {
+    //   toast.error('Insufficient project balance');
+    //   return;
+    // }
 
     if (projectBalance! < Number(data.totalTokenAmount)) {
       toast.error('Insufficient project balance to assign funds');
@@ -331,7 +335,7 @@ export default function AssignFundsForm({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => form.reset()}
+                onClick={() => form.reset(DEFAULT_VALUES)}
                 className="px-10 rounded-sm w-40"
               >
                 Clear

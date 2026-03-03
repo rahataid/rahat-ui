@@ -27,7 +27,9 @@ const FundManagementForm = (props: FundManagementFormProps) => {
       );
 
     case 2:
-      return <Confirmation payoutData={payoutData} />;
+      return (
+        <Confirmation payoutData={payoutData} onPayoutData={onPayoutData} />
+      );
 
     default:
       return <></>;

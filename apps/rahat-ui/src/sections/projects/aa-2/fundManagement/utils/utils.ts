@@ -8,7 +8,6 @@ export function handleBuildPayoutPayload(payoutData: PayoutFormData | null) {
   const base: Record<string, any> = {
     type: payoutData.method === 'CVA' ? PayoutType.VENDOR : payoutData.method,
     mode: payoutData.mode,
-    groupId: payoutData.group?.id,
   };
 
   if (payoutData.paymentProvider?.id) {

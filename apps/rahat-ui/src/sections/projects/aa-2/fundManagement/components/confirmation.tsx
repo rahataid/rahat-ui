@@ -18,8 +18,10 @@ const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
 
 export default function Confirmation({
   payoutData,
+  onPayoutData,
 }: {
   payoutData: PayoutFormData | null;
+  onPayoutData: (data: PayoutFormData | null) => void;
 }) {
   // State goes here
   const errorModule = useBoolean();
@@ -84,6 +86,7 @@ export default function Confirmation({
     const payload = {
       ...reserveTokenPayload,
       totalTokensReserved: reserveTokenPayload.numberOfTokens,
+      isPayoutIntegrated: !!payoutData?.method && !!payoutData?.mode,
       ...(payoutPayload && { params: payoutPayload }),
     };
 
@@ -99,6 +102,8 @@ export default function Confirmation({
         return;
       }
 
+      // Reset payout state in parent before navigating away
+      onPayoutData(null);
       router.push(
         `/projects/aa/${projectUUID}/fund-management?tab=fundManagementList`,
       );

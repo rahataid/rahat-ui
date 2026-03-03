@@ -6,6 +6,7 @@ import { ChevronLeft, CheckCircle2, Info } from 'lucide-react';
 import FundManagementForm from './components/fund.management.form';
 import { FUND_MANAGEMENT_TABS } from './consts/conts';
 import type { PayoutFormData } from './components/assign.payout.form';
+import { useFundAssignmentStore } from '@rahat-ui/query';
 
 export default function AssignFundsView() {
   // Router goes here
@@ -16,20 +17,30 @@ export default function AssignFundsView() {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [payoutData, setPayoutData] = useState<PayoutFormData | null>(null);
 
-  // Handlers goes here
+  const { setAssignedFundData } = useFundAssignmentStore((s) => ({
+    setAssignedFundData: s.setAssignedFundData,
+  }));
+
   const handleStepChange = useCallback((step: number) => {
     setCurrentStep(step);
   }, []);
+
+  // Clears all flow state and navigates back to the fund management list
+  const handleBack = useCallback(() => {
+    if (currentStep > 0) {
+      setCurrentStep((prev) => prev - 1);
+    } else {
+      setAssignedFundData({});
+      setPayoutData(null);
+      router.push(`/projects/aa/${id}/fund-management`);
+    }
+  }, [currentStep, id, router, setAssignedFundData]);
 
   return (
     <div>
       <div className="flex items-center space-x-2 mb-1 px-4 pt-4">
         <button
-          onClick={() =>
-            currentStep > 0
-              ? setCurrentStep((prev) => prev - 1)
-              : router.push(`/projects/aa/${id}/fund-management`)
-          }
+          onClick={handleBack}
           className="flex items-center gap-0 text-muted-foreground hover:text-foreground transition-colors"
         >
           <ChevronLeft className="h-5 w-5" />

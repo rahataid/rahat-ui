@@ -165,6 +165,13 @@ export const useReserveTokenForGroups = () => {
         numberOfTokens: number;
         totalTokensReserved: number;
         title: string;
+        isPayoutIntegrated?: boolean;
+        params?: {
+          type: string;
+          mode: string;
+          payoutProcessorId?: string;
+          extras?: Record<string, string | undefined>;
+        };
       };
     }) => {
       const response = await q.mutateAsync({

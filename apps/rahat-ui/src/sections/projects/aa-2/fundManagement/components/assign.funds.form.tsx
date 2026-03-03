@@ -136,14 +136,14 @@ export default function AssignFundsForm({
   }, []);
 
   const handleAssignFunds = async (data: FormValues) => {
-    // if (
-    //   projectBalance === undefined ||
-    //   projectBalance < 0 ||
-    //   isNaN(projectBalance)
-    // ) {
-    //   toast.error('Insufficient project balance');
-    //   return;
-    // }
+    if (
+      projectBalance === undefined ||
+      projectBalance < 0 ||
+      isNaN(projectBalance)
+    ) {
+      toast.error('Insufficient project balance');
+      return;
+    }
 
     if (projectBalance! < Number(data.totalTokenAmount)) {
       toast.error('Insufficient project balance to assign funds');

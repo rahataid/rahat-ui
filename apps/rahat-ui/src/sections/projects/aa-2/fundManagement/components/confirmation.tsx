@@ -102,7 +102,7 @@ export default function Confirmation({
         return;
       }
 
-      // Reset payout state in parent before navigating away
+      // Clear payout state and navigate — store is cleared when AssignFundsView unmounts
       onPayoutData(null);
       router.push(
         `/projects/aa/${projectUUID}/fund-management?tab=fundManagementList`,

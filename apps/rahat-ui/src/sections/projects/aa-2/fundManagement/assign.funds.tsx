@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ChevronLeft, CheckCircle2, Info } from 'lucide-react';
 import FundManagementForm from './components/fund.management.form';
 import { FUND_MANAGEMENT_TABS } from './consts/conts';
@@ -20,6 +20,13 @@ export default function AssignFundsView() {
   const { setAssignedFundData } = useFundAssignmentStore((s) => ({
     setAssignedFundData: s.setAssignedFundData,
   }));
+
+  // Clear the store when the user leaves this flow entirely
+  useEffect(() => {
+    return () => {
+      setAssignedFundData({});
+    };
+  }, [setAssignedFundData]);
 
   const handleStepChange = useCallback((step: number) => {
     setCurrentStep(step);

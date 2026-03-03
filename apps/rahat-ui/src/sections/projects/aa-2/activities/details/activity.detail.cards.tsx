@@ -2,14 +2,9 @@
 import { SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { CheckCircle, Clock, NotepadText, UserCircle } from 'lucide-react';
 import * as React from 'react';
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/components/tooltip';
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 type ActivityDetailCardsProps = {
   activityDetail?: any;
   loading?: boolean;
@@ -31,106 +26,125 @@ export default function ActivityDetailCards({
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-2 mb-1">
-            <span className="bg-green-100 text-green-700 text-xs font-normal px-2 py-1 rounded-sm">
-              {activityDetail?.phase?.name}
-            </span>
-            <span className="bg-gray-100 text-gray-700 text-xs font-normal px-2 py-1 rounded-sm">
-              {activityDetail?.isAutomated ? 'Automated' : 'Manual'}
-            </span>
-            <span className="bg-gray-100 text-gray-700 text-xs font-normal px-2 py-1 rounded-sm">
-              {activityDetail?.category?.name}
-            </span>
-            {/* getStatusBg(status) */}
-            <span
-              className={`ml-auto ${getStatusBg(
-                activityDetail?.status,
-              )} text-xs font-normal px-2 py-1 rounded-sm`}
-            >
-              {activityDetail?.status
-                ?.toLowerCase()
-                ?.split('_')
-                ?.map((word) => word?.charAt(0)?.toUpperCase() + word?.slice(1))
-                ?.join(' ')}
-            </span>
-          </div>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild className="hover:cursor-pointer py-0">
-                <h3 className="text-lg font-semibold text-gray-900 leading-tight truncate w-[420px]">
-                  {activityDetail?.title}
-                </h3>
-              </TooltipTrigger>
-              <TooltipContent
-                side="bottom"
-                className="w-80 rounded-sm text-justify "
-              >
-                <p>{activityDetail?.title}</p>
-              </TooltipContent>
-            </Tooltip>
+            <TooltipWrapper tip={`Phase: ${activityDetail?.phase?.name}`}>
+              <span className="bg-green-100 text-green-700 text-xs font-normal px-2 py-1 rounded-sm cursor-pointer">
+                {activityDetail?.phase?.name}
+              </span>
+            </TooltipWrapper>
 
-            {activityDetail?.description && (
-              <Tooltip>
-                <TooltipTrigger asChild className="hover:cursor-pointer">
-                  <p className="text-gray-600 text-sm mt-1  leading-tight">
-                    {activityDetail?.description?.substring(0, 100)}...
-                  </p>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="bottom"
-                  className="w-80 rounded-sm text-justify"
+            <TooltipWrapper
+              tip={`Activity Type: ${
+                activityDetail?.isAutomated ? 'Automated' : 'Manual'
+              }`}
+            >
+              <span className="bg-gray-100 text-gray-700 text-xs font-normal px-2 py-1 rounded-sm cursor-pointer">
+                {activityDetail?.isAutomated ? 'Automated' : 'Manual'}
+              </span>
+            </TooltipWrapper>
+
+            <TooltipWrapper tip={`Category: ${activityDetail?.category?.name}`}>
+              <span className="bg-gray-100 text-gray-700 text-xs font-normal px-2 py-1 rounded-sm cursor-pointer">
+                {activityDetail?.category?.name}
+              </span>
+            </TooltipWrapper>
+
+            {/* getStatusBg(status) */}
+            <div className="ml-auto">
+              <TooltipWrapper
+                tip={`Activity Status: ${activityDetail?.status
+                  ?.toLowerCase()
+                  ?.split('_')
+                  ?.map(
+                    (word) => word?.charAt(0)?.toUpperCase() + word?.slice(1),
+                  )
+                  ?.join(' ')}`}
+              >
+                <span
+                  className={`${getStatusBg(
+                    activityDetail?.status,
+                  )} text-xs font-normal px-2 py-1 rounded-sm cursor-pointer`}
                 >
-                  <p>{activityDetail?.description}</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
-          </TooltipProvider>
+                  {activityDetail?.status
+                    ?.toLowerCase()
+                    ?.split('_')
+                    ?.map(
+                      (word) => word?.charAt(0)?.toUpperCase() + word?.slice(1),
+                    )
+                    ?.join(' ')}
+                </span>
+              </TooltipWrapper>
+            </div>
+          </div>
+          <TooltipWrapper tip={`Activity Title: ${activityDetail?.title}`}>
+            <h3 className="text-lg font-semibold text-gray-900 leading-tight truncate w-[420px] cursor-pointer">
+              {activityDetail?.title}
+            </h3>
+          </TooltipWrapper>
+
+          {activityDetail?.description && (
+            <TooltipWrapper tip={`Description: ${activityDetail?.description}`}>
+              <p className="text-gray-600 text-sm mt-1 leading-tight cursor-pointer">
+                {activityDetail?.description?.substring(0, 100)}...
+              </p>
+            </TooltipWrapper>
+          )}
           <div className="text-gray-500 text-sm mt-2 flex flex-wrap gap-2">
-            <span>{activityDetail?.phase?.riverBasin}</span>
+            <TooltipWrapper
+              tip={`Responsible Station: ${activityDetail?.phase?.riverBasin}`}
+            >
+              <span className="cursor-pointer">
+                {activityDetail?.phase?.riverBasin}
+              </span>
+            </TooltipWrapper>
             <span>&bull;</span>
-            <span>{activityDetail?.leadTime}</span>
+            <TooltipWrapper tip={`Lead Time: ${activityDetail?.leadTime}`}>
+              <span className="cursor-pointer">{activityDetail?.leadTime}</span>
+            </TooltipWrapper>
           </div>
           <div className="flex items-center text-gray-500 text-sm mt-1">
             <UserCircle className="w-4 h-4 mr-2 ml-1" />
-            <span>Assigned to: {activityDetail?.manager?.name}</span>
+            <TooltipWrapper
+              tip={`Responsibility: ${activityDetail?.manager?.name}`}
+            >
+              <span className="cursor-pointer">
+                Assigned to: {activityDetail?.manager?.name}
+              </span>
+            </TooltipWrapper>
           </div>
           {activityDetail?.completedBy && (
             <div className="flex items-center text-green-700 text-xs mt-2">
-              <>
-                <CheckCircle className="w-4 h-4 mr-2 ml-1" />
-                <span>{activityDetail?.completedBy}</span>
-              </>
+              <CheckCircle className="w-4 h-4 mr-2 ml-1" />
+              <TooltipWrapper
+                tip={`Completed by: ${activityDetail?.completedBy}`}
+              >
+                <span className="cursor-pointer">
+                  {activityDetail?.completedBy}
+                </span>
+              </TooltipWrapper>
             </div>
           )}
           {activityDetail?.completedAt && (
             <div className="flex items-center text-green-700 text-xs mt-2">
-              <>
-                <Clock className="w-4 h-4 mr-2 ml-1" />
-                <span>
+              <Clock className="w-4 h-4 mr-2 ml-1" />
+              <TooltipWrapper
+                tip={`Completed at: ${dateFormat(activityDetail?.completedAt)}`}
+              >
+                <span className="cursor-pointer">
                   Completed at: {dateFormat(activityDetail?.completedAt)}
                 </span>
-              </>
+              </TooltipWrapper>
             </div>
           )}
-          {activityDetail?.notes?.trim() ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild className="hover:cursor-pointer py-0">
-                  <div className="flex items-start text-xs mt-1 space-x-2">
-                    <NotepadText className="w-4 h-3.5 flex-shrink-0 mt-0.5" />
-                    <span className="break-words text-justify truncate w-[620px]">
-                      {activityDetail.notes}
-                    </span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent
-                  side="right"
-                  className="w-80 rounded-sm text-justify "
-                >
-                  <p>{activityDetail.notes}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : null}
+          {activityDetail?.notes?.trim() && (
+            <TooltipWrapper tip={activityDetail.notes}>
+              <div className="flex items-start text-xs mt-1 space-x-2 cursor-pointer">
+                <NotepadText className="w-4 h-3.5 flex-shrink-0 mt-0.5" />
+                <span className="break-words text-justify truncate w-[620px]">
+                  {activityDetail.notes}
+                </span>
+              </div>
+            </TooltipWrapper>
+          )}
         </>
       )}
     </div>

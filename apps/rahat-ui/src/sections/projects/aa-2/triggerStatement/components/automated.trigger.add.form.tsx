@@ -77,22 +77,7 @@ export default function AddAutomatedTriggerForm({
 }: IProps) {
   const source = form.watch('source');
   const triggerSource = form.watch('triggerStatement.source');
-
-  const GLOFAS_SUBTYPE_MAPPING: Record<string, string> = {
-    two_years_max_prob: 'two_years_return_period',
-    five_years_max_prob: 'five_years_return_period',
-    twenty_years_max_prob: 'twenty_years_return_period',
-  };
-  const GLOFAS_REVERSE_MAPPING = Object.fromEntries(
-    Object.entries(GLOFAS_SUBTYPE_MAPPING).map(([k, v]) => [v, k]),
-  );
-
-  const rawSourceSubType = form.watch('triggerStatement.sourceSubType');
-  const selectDisplayValue =
-    source === 'glofas'
-      ? GLOFAS_SUBTYPE_MAPPING[rawSourceSubType] || rawSourceSubType
-      : rawSourceSubType;
-  const triggerSourceSubType = rawSourceSubType;
+  const triggerSourceSubType = form.watch('triggerStatement.sourceSubType');
   const triggerOperator = form.watch('triggerStatement.operator');
   const triggerValue = form.watch('triggerStatement.value');
   const [selectedSource, setSelectedSource] = React.useState<{
@@ -110,11 +95,13 @@ export default function AddAutomatedTriggerForm({
 
   React.useEffect(() => {
     if (source && source in SOURCE_MAPPING) {
+      // Always update triggerStatement.source to match the selected source
+      form.setValue(
+        'triggerStatement.source',
+        SOURCE_MAPPING[source as keyof typeof SOURCE_MAPPING],
+      );
+
       if (!isEditing) {
-        form.setValue(
-          'triggerStatement.source',
-          SOURCE_MAPPING[source as keyof typeof SOURCE_MAPPING],
-        );
         form.setValue('triggerStatement.sourceSubType', '');
         form.setValue('triggerStatement.stationId', '');
         form.setValue('triggerStatement.stationName', '');
@@ -279,18 +266,9 @@ export default function AddAutomatedTriggerForm({
                       return (
                         <FormItem>
                           <Select
-                            onValueChange={(val) => {
-                              if (
-                                source === 'glofas' &&
-                                GLOFAS_REVERSE_MAPPING[val]
-                              ) {
-                                field.onChange(GLOFAS_REVERSE_MAPPING[val]);
-                              } else {
-                                field.onChange(val);
-                              }
-                            }}
-                            value={selectDisplayValue}
-                            key={selectDisplayValue}
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            key={field.value}
                           >
                             {triggerSource === 'water_level_m' && (
                               <SourceSubTypeField label="Level Type" />

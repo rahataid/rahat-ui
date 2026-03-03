@@ -317,6 +317,19 @@ export default function EditTrigger() {
         trigger?.source?.toLowerCase() ||
         '';
 
+      const GLOFAS_LEGACY_MAPPING: Record<string, string> = {
+        two_years_max_prob: 'two_years_return_period',
+        five_years_max_prob: 'five_years_return_period',
+        twenty_years_max_prob: 'twenty_years_return_period',
+      };
+
+      const rawSourceSubType = trigger?.triggerStatement?.sourceSubType || '';
+      const correctedSourceSubType =
+        triggerSource === 'prob_flood' &&
+        rawSourceSubType in GLOFAS_LEGACY_MAPPING
+          ? GLOFAS_LEGACY_MAPPING[rawSourceSubType]
+          : rawSourceSubType;
+
       automatedForm.reset({
         title: trigger?.title,
         source: formSource,
@@ -324,7 +337,7 @@ export default function EditTrigger() {
         description: trigger?.description || '',
         triggerStatement: {
           source: trigger?.triggerStatement?.source || '',
-          sourceSubType: trigger?.triggerStatement?.sourceSubType || '',
+          sourceSubType: correctedSourceSubType,
           stationId: trigger?.triggerStatement?.stationId?.toString() || '',
           stationName: trigger?.triggerStatement?.stationName || '',
           operator: trigger?.triggerStatement?.operator || undefined,

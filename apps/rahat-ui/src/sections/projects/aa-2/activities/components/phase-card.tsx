@@ -11,7 +11,7 @@ import {
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { RefreshCw, User } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import TooltipChildren from 'apps/rahat-ui/src/components/tooltip.children';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 interface PhaseCardProps {
   id: string;
@@ -63,7 +63,7 @@ export default function PhaseCard({
     >
       <CardContent className="space-y-2 p-2">
         <div className="flex items-center justify-between ">
-          <TooltipChildren
+          <TooltipWrapper
             tip={`Activity Status: ${status
               .toLowerCase()
               .split('_')
@@ -77,12 +77,12 @@ export default function PhaseCard({
                 .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(' ')}
             </Badge>
-          </TooltipChildren>
+          </TooltipWrapper>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
             hasContent={false}
           >
-            <TooltipChildren tip="Update Activity Status">
+            <TooltipWrapper tip="Update Activity Status">
               <div
                 className="flex items-center gap-2 text-blue-500 text-xs hover:cursor-pointer hover:rounded-sm hover:bg-gray-50 hover:p-1 hover:text-sm "
                 onClick={(e) => {
@@ -92,33 +92,33 @@ export default function PhaseCard({
               >
                 Update Status <RefreshCw className="w-4 h-4" />
               </div>
-            </TooltipChildren>
+            </TooltipWrapper>
           </RoleAuth>
         </div>
-        <TooltipChildren tip={`Activity Title: ${title}`}>
+        <TooltipWrapper tip={`Activity Title: ${title}`}>
           <h3 className="text-sm font-medium text-gray-900 truncate w-[320px]">
             {title}
           </h3>
-        </TooltipChildren>
+        </TooltipWrapper>
         <div className="flex items-center gap-1 text-sm text-gray-500">
-          <TooltipChildren tip={`Responsible Station: ${location ?? ''}`}>
+          <TooltipWrapper tip={`Responsible Station: ${location ?? ''}`}>
             <span>{location ?? ''}</span>
-          </TooltipChildren>
+          </TooltipWrapper>
           <span>•</span>
-          <TooltipChildren tip={`Lead Time: ${leadTime}`}>
+          <TooltipWrapper tip={`Lead Time: ${leadTime}`}>
             <span>{leadTime}</span>
-          </TooltipChildren>
+          </TooltipWrapper>
         </div>
       </CardContent>
       <CardFooter className="p-2 pt-0">
-        <TooltipChildren tip={`Responsibility: ${responsibility ?? ''}`}>
+        <TooltipWrapper tip={`Responsibility: ${responsibility ?? ''}`}>
           <div className="flex items-center gap-2 p-0">
             <User className="w-4 h-4 text-gray-500" />
             <span className="text-sm text-gray-500">
               {responsibility ?? ''}
             </span>
           </div>
-        </TooltipChildren>
+        </TooltipWrapper>
       </CardFooter>
     </Card>
   );

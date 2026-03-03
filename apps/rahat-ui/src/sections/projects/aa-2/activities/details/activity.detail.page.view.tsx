@@ -6,7 +6,7 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { Pencil, RefreshCcw, Trash } from 'lucide-react';
-import TooltipChildren from 'apps/rahat-ui/src/components/tooltip.children';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { DocumentList } from '../components/documentCard';
 import CommunicationList from './activity.communication.list.card';
@@ -97,7 +97,7 @@ export default function ActivitiesDetailView() {
                 roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
                 hasContent={false}
               >
-                <TooltipChildren tip="Delete Activity">
+                <TooltipWrapper tip="Delete Activity">
                   <DialogComponent
                     buttonIcon={Trash}
                     buttonText="Delete"
@@ -109,14 +109,14 @@ export default function ActivitiesDetailView() {
                     confirmButtonClassName="rounded-sm w-full bg-red-500"
                     variant="outline"
                   />
-                </TooltipChildren>
+                </TooltipWrapper>
               </RoleAuth>
 
               <RoleAuth
                 roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
                 hasContent={false}
               >
-                <TooltipChildren tip="Edit Activity">
+                <TooltipWrapper tip="Edit Activity">
                   <DialogComponent
                     buttonIcon={Pencil}
                     buttonText="Edit"
@@ -128,14 +128,14 @@ export default function ActivitiesDetailView() {
                     confirmButtonClassName="rounded-sm w-full bg-primary"
                     variant="outline"
                   />
-                </TooltipChildren>
+                </TooltipWrapper>
               </RoleAuth>
             </div>
             <RoleAuth
               roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
               hasContent={false}
             >
-              <TooltipChildren tip="Update Status">
+              <TooltipWrapper tip="Update Status">
                 <IconLabelBtn
                   Icon={RefreshCcw}
                   handleClick={() =>
@@ -148,7 +148,7 @@ export default function ActivitiesDetailView() {
                   name="Update Status"
                   className="rounded-sm w-full "
                 />
-              </TooltipChildren>
+              </TooltipWrapper>
             </RoleAuth>
           </div>
         )}

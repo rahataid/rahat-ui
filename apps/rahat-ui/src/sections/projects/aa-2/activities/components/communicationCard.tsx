@@ -20,7 +20,7 @@ import MessageWithToggle from './messageWithToggle';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
-import TooltipChildren from 'apps/rahat-ui/src/components/tooltip.children';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useRouter } from 'next/navigation';
 
 interface BaseCommunication {
@@ -134,7 +134,7 @@ export function CommunicationCard({
                     ]}
                     hasContent={false}
                   >
-                    <TooltipChildren tip="Send Communication">
+                    <TooltipWrapper tip="Send Communication">
                       <Button
                         className="items-center justify-center"
                         variant="ghost"
@@ -154,7 +154,7 @@ export function CommunicationCard({
                           <SendHorizonal size={18} strokeWidth={1.5} />
                         )}
                       </Button>
-                    </TooltipChildren>
+                    </TooltipWrapper>
                   </RoleAuth>
                 )}
               </div>

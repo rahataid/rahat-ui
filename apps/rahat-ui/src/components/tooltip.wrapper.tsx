@@ -6,17 +6,17 @@ import {
 } from '@rahat-ui/shadcn/components/tooltip';
 import { ReactNode } from 'react';
 
-interface TooltipChildrenProps {
+interface TooltipWrapperProps {
   tip: string;
   children: ReactNode;
   disable?: boolean;
 }
 
-export default function TooltipChildren({
+export default function TooltipWrapper({
   tip,
   children,
   disable = false,
-}: TooltipChildrenProps) {
+}: TooltipWrapperProps) {
   return (
     <TooltipProvider delayDuration={200}>
       <Tooltip>

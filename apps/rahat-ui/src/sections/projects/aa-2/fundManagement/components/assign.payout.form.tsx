@@ -178,17 +178,17 @@ export default function PayoutFundManagementForm({
         </p>
         <div className="flex gap-4">
           <Button
-            className="w-32 rounded-sm"
-            onClick={() => setWantsPayout(true)}
-          >
-            Yes
-          </Button>
-          <Button
             variant="outline"
             className="w-32 rounded-sm"
             onClick={handleSkip}
           >
             Skip for now
+          </Button>
+          <Button
+            className="w-32 rounded-sm"
+            onClick={() => setWantsPayout(true)}
+          >
+            Yes
           </Button>
         </div>
       </div>

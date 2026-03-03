@@ -43,6 +43,7 @@ import {
 
 import { useParams, useSearchParams } from 'next/navigation';
 import React, { useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
 
 import { exportAllLogs, exportFailedLogs } from './comms.logs.export.utils';
 import CommsLogsTable from '../table/comms.logs.table';
@@ -153,13 +154,28 @@ export default function CommsLogsDetailPage() {
   };
 
   const onExportAll = () => {
-    exportAllLogs(
-      sessionLogs?.httpReponse?.data?.data ?? [],
-      logs,
-      activityDetail,
-      count?.data?.data ?? {},
-      logsMeta?.total ?? 0,
-    );
+    try {
+      if (!logs || !activityDetail || !sessionLogs) {
+        return toast.error(
+          'Failed to load communication data. Please refresh and try again.',
+        );
+      }
+      if (!count?.data?.data) {
+        return toast.error(
+          'Communication statistics not available. Please try again.',
+        );
+      }
+      const logsData = sessionLogs?.httpReponse?.data?.data;
+      const total = logsMeta?.total ?? 0;
+
+      exportAllLogs(logsData, logs, activityDetail, count.data.data, total);
+      toast.success('Communication logs exported successfully!');
+    } catch (error) {
+      console.error('Error exporting all logs:', error);
+      toast.error(
+        'Failed to export logs. Please try again or contact support.',
+      );
+    }
   };
 
   const handleSearch = React.useCallback(

@@ -3,7 +3,10 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 
 import {
+  PROJECT_SETTINGS_KEYS,
   useDeleteTriggerStatement,
+  useProjectSettingsStore,
+  useProjectStore,
   useSingleTriggerStatement,
 } from '@rahat-ui/query';
 
@@ -22,6 +25,10 @@ import {
   DocumentsSection,
   ForecastDataSection,
 } from './components';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
+import { AlertCircleIcon } from 'lucide-react';
 
 export default function TriggerStatementDetail() {
   const router = useRouter();
@@ -32,19 +39,26 @@ export default function TriggerStatementDetail() {
   const searchparams = useSearchParams();
   const type = searchparams?.get('type');
   const version = searchparams.get('version') === 'true' ? true : false;
-  const triggerRepeatKey = version
+  const triggerIdKey = version
     ? triggerID
     : window.location.href.split('/').slice(-1)[0];
 
-  const { data: trigger, isLoading } = useSingleTriggerStatement(
-    id,
-    triggerRepeatKey,
-    version,
-  );
-
+  const {
+    data: trigger,
+    isLoading,
+    error,
+  } = useSingleTriggerStatement(id, triggerIdKey, version);
+  const project = useProjectStore((p) => p.singleProject);
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
   const phase = trigger?.phase?.name;
   const source = trigger?.source;
-
+  const txnUrl = getExplorerUrl({
+    chainSettings: settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+    target: 'tx',
+    value: trigger?.transactionHash,
+  });
   const removeTrigger = useDeleteTriggerStatement();
 
   const versionType = type as string | undefined;
@@ -52,15 +66,32 @@ export default function TriggerStatementDetail() {
   const handleDelete = async () => {
     await removeTrigger.mutateAsync({
       projectUUID: id,
-      triggerStatementPayload: { repeatKey: triggerRepeatKey as string },
+      triggerStatementPayload: { uuid: triggerIdKey as string },
     });
     router.push(
       `/projects/aa/${id}/trigger-statements/phase/${trigger?.phaseId}`,
     );
   };
-  return isLoading ? (
-    <TableLoader />
-  ) : (
+
+  if (isLoading) {
+    return <TableLoader />;
+  }
+
+  if (error || !trigger) {
+    return (
+      <div className="p-4 w-full h-full">
+        <Back path={`/projects/aa/${id}/trigger-statements`} />
+        <div className="text-gray-400 flex justify-center items-center h-full w-full flex-col gap-3">
+          <AlertCircleIcon size={70} />
+          <p className="text-xl">
+            Trigger Details not available at the moment. Please try again later.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
     <div className="p-4">
       <Back />
       <div className="flex justify-between items-center mb-4">
@@ -81,37 +112,52 @@ export default function TriggerStatementDetail() {
           } text-xs`}
         />
         <div className="flex space-x-2">
-          <DeleteButton
-            className={`rounded flex gap-1 items-center text-sm font-medium ${
-              version && 'hidden'
-            }`}
-            name="trigger"
-            label="Delete"
-            handleContinueClick={handleDelete}
-            disabled={trigger?.isTriggered || trigger?.phase?.isActive}
-          />
-          <EditButton
-            className={`rounded flex gap-1 items-center text-sm font-medium ${
-              version && 'hidden'
-            }`}
-            label="Edit"
-            onFallback={() =>
-              router.push(
-                `/projects/aa/${id}/trigger-statements/${triggerRepeatKey}/edit`,
-              )
-            }
-            disabled={trigger?.phase?.isActive || trigger?.isTriggered}
-          />
-          {source === 'MANUAL' &&
-            !trigger?.phase?.isActive &&
-            !trigger?.isTriggered && (
-              <ActivateTriggerDialog
-                projectId={id}
-                repeatKey={triggerRepeatKey as string}
-                version={version}
-                notes={trigger?.notes}
-              />
-            )}
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
+            <DeleteButton
+              className={`rounded flex gap-1 items-center text-sm font-medium ${
+                version && 'hidden'
+              }`}
+              name="trigger"
+              label="Delete"
+              handleContinueClick={handleDelete}
+              disabled={trigger?.isTriggered || trigger?.phase?.isActive}
+            />
+          </RoleAuth>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
+            <EditButton
+              className={`rounded flex gap-1 items-center text-sm font-medium ${
+                version && 'hidden'
+              }`}
+              label="Edit"
+              onFallback={() =>
+                router.push(
+                  `/projects/aa/${id}/trigger-statements/${triggerIdKey}/edit`,
+                )
+              }
+              disabled={trigger?.phase?.isActive || trigger?.isTriggered}
+            />
+          </RoleAuth>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
+            {source === 'MANUAL' &&
+              !trigger?.phase?.isActive &&
+              !trigger?.isTriggered && (
+                <ActivateTriggerDialog
+                  projectId={id}
+                  triggerId={triggerIdKey as string}
+                  version={version}
+                  notes={trigger?.notes}
+                />
+              )}
+          </RoleAuth>
         </div>
       </div>
       <div
@@ -123,7 +169,7 @@ export default function TriggerStatementDetail() {
           <Heading
             title={trigger?.title}
             titleStyle="text-lg/7"
-            description=""
+            description={trigger?.description}
           />
           <div
             className={`grid ${
@@ -159,7 +205,7 @@ export default function TriggerStatementDetail() {
               <p className="mb-1">TxHash</p>
               {trigger?.transactionHash ? (
                 <Link
-                  href={`https://stellar.expert/explorer/testnet/tx/${trigger.transactionHash}`}
+                  href={txnUrl || '#'}
                   target="_blank"
                   className="block overflow-hidden text-ellipsis whitespace-nowrap text-blue-500 hover:underline"
                 >
@@ -178,7 +224,7 @@ export default function TriggerStatementDetail() {
             {trigger?.isTriggered && (
               <div>
                 <p className="mb-1">Triggered At</p>
-                <p>{new Date(trigger?.triggeredAt).toLocaleString()}</p>
+                <p>{dateFormat(trigger?.triggeredAt)}</p>
               </div>
             )}
             {trigger?.triggeredBy && (
@@ -189,13 +235,14 @@ export default function TriggerStatementDetail() {
             )}
           </div>
         </div>
-        {source !== 'MANUAL' && (
-          <ForecastDataSection
-            phase={phase}
-            source={source}
-            triggerStatement={trigger?.triggerStatement}
-          />
-        )}
+        {source !== 'MANUAL' &&
+          Object.keys(trigger?.triggerStatement || {})?.length && (
+            <ForecastDataSection
+              phase={phase}
+              source={source}
+              triggerStatement={trigger?.triggerStatement}
+            />
+          )}
       </div>
 
       <div className="grid grid-cols-2 gap-4 mt-4">
@@ -216,7 +263,7 @@ export default function TriggerStatementDetail() {
             <div className="bg-gray-100 rounded-sm p-4">
               <p className="text-sm/4 mb-1">{trigger?.notes}</p>
               <p className="text-gray-500 text-sm/4">
-                {new Date(trigger?.updatedAt).toLocaleString()}
+                {dateFormat(trigger?.updatedAt)}
               </p>
             </div>
           </div>

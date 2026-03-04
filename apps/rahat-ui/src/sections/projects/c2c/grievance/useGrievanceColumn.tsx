@@ -72,7 +72,7 @@ export const useGrievanceTableColumns = ({
     {
       accessorKey: 'createdBy',
       header: 'Created By',
-      cell: ({ row }) => <div> {row.original?.reporterUser?.name}</div>,
+      cell: ({ row }) => <div> {row.original?.createdBy?.name}</div>,
     },
     {
       accessorKey: 'createdOn',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { Dispatch, useCallback, useState } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -9,7 +9,7 @@ export interface UseBooleanReturnType {
   onTrue: () => void;
   onFalse: () => void;
   onToggle: () => void;
-  setValue: React.Dispatch<React.SetStateAction<boolean>>;
+  setValue: Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function useBoolean(defaultValue?: boolean): UseBooleanReturnType {

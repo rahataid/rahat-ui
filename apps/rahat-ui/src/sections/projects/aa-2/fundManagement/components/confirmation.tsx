@@ -10,8 +10,13 @@ import {
 } from '@rahat-ui/query';
 import { useRouter } from 'next/navigation';
 import { truncatedText } from 'apps/community-tool-ui/src/utils';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import dynamic from 'next/dynamic';
+const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
 
 export default function Confirmation() {
+  const errorModule = useBoolean();
+  const [errorData, setErrorData] = React.useState(null);
   const router = useRouter();
   const { assignedFundData } = useFundAssignmentStore((state) => ({
     assignedFundData: state.assignedFundData,
@@ -36,35 +41,41 @@ export default function Confirmation() {
     },
     {
       label: 'Token Assigned Per Beneficiary',
-      value: reserveTokenPayload.numberOfTokens,
+      value: reserveTokenPayload.tokenAmountPerBenef,
     },
     {
       label: 'Total Token Amount',
-      value:
-        group?.data?.groupedBeneficiaries.length *
-        reserveTokenPayload.numberOfTokens,
+      value: reserveTokenPayload.numberOfTokens,
     },
   ];
 
   const benefData = group?.data?.groupedBeneficiaries.map((i: any) => ({
     label: truncatedText(i.Beneficiary.walletAddress, 10),
-    value: reserveTokenPayload.numberOfTokens,
+    value: reserveTokenPayload.tokenAmountPerBenef,
   }));
 
   const handleSubmit = async () => {
     reserveTokenPayload.totalTokensReserved = cardData[4].value;
     try {
-      await reserveTokenForGroups.mutateAsync({
+      const data = await reserveTokenForGroups.mutateAsync({
         projectUUID,
         reserveTokenPayload,
       });
-      router.push(`/projects/aa/${projectUUID}/fund-management`);
+      if (data?.status === 'error') {
+        errorModule.onTrue();
+        setErrorData(data);
+        return;
+      }
+      router.push(
+        `/projects/aa/${projectUUID}/fund-management?tab=fundManagementList`,
+      );
     } catch (e) {
       console.error('Creating reserve token::', e);
     }
   };
   return (
     <div className="p-4">
+      <ErrorInfoPopupModel validateModal={errorModule} errorData={errorData} />
       <HeaderWithBack
         path={``}
         title="Confirmation"

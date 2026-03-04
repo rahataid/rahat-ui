@@ -1,10 +1,13 @@
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Heading } from 'apps/rahat-ui/src/common';
 import { TriangleAlert } from 'lucide-react';
+import { SOURCE_CONFIG } from '../trigger.statement.schema';
+import { toLabel, TriggerStatement } from '../utils';
 
 type IProps = {
   source: string;
   phase: string;
-  triggerStatement: any;
+  triggerStatement: TriggerStatement;
 };
 
 export function ForecastDataSection({
@@ -12,14 +15,62 @@ export function ForecastDataSection({
   phase,
   triggerStatement,
 }: IProps) {
+  const {
+    value,
+    source: triggerSource,
+    operator,
+    expression,
+    sourceSubType,
+  } = triggerStatement;
+  const sourceSubTypeLabel =
+    SOURCE_CONFIG[triggerSource as keyof typeof SOURCE_CONFIG]?.sourceSubType;
+  const unit = sourceSubTypeLabel?.match(/\((.*?)\)/)?.[1] || '';
+  const formattedSourceSubType = toLabel(sourceSubType);
+
+  const setIconLabel = (source: string, triggerSourceSubType: string) => {
+    switch (source) {
+      case 'DHM':
+        return triggerSourceSubType === 'warning_level'
+          ? 'Warning Level'
+          : triggerSourceSubType === 'danger_level'
+          ? 'Danger Level'
+          : 'Rainfall Level';
+
+      case 'GFH':
+        return triggerSourceSubType === 'warning_discharge'
+          ? 'Warning Discharge'
+          : 'Danger Discharge';
+
+      case 'GLOFAS':
+        return 'Flood Probability';
+
+      default:
+        return '';
+    }
+  };
+
   return (
     <div className="p-4 border rounded-sm shadow">
       <Heading
         title="Forecast Data"
         titleStyle="text-lg/7"
-        description={`Source: ${source}`}
+        description={`Source: ${source} - ${sourceSubTypeLabel}`}
       />
-      {source === 'GLOFAS' && (
+      {Object.keys(triggerStatement).length ? (
+        <div className="p-3 text-center border rounded">
+          <p className="font-semibold text-3xl/10 text-primary">
+            {value} {unit || '%'}
+          </p>
+          <p className="font-medium text-sm/6 flex justify-center items-center gap-2">
+            <TriangleAlert size={16} strokeWidth={2.5} color="red" />
+            {setIconLabel(source, sourceSubType)}
+          </p>
+          <Badge className="font-normal">
+            ({formattedSourceSubType} {operator} {value} {unit || '%'})
+          </Badge>
+        </div>
+      ) : null}
+      {/* {source === 'GLOFAS' && (
         <div className="grid grid-cols-3 gap-4">
           <div className="p-3 text-center border rounded">
             <p className="font-semibold text-3xl/10 text-primary">
@@ -89,7 +140,7 @@ export function ForecastDataSection({
             <p className="font-medium text-sm/6">Forecast Status</p>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

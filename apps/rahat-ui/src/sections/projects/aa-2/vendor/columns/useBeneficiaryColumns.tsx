@@ -1,26 +1,185 @@
-import React from 'react';
-import { ColumnDef } from '@tanstack/react-table';
-import { Badge } from 'libs/shadcn/src/components/ui/badge';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Pagination } from '@rumsan/sdk/types';
+import { ColumnDef, Row } from '@tanstack/react-table';
+import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
+import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
+import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
+import { formatTokenAmount } from 'apps/rahat-ui/src/utils/stellar';
+import { PayoutMode } from 'libs/query/src/lib/aa';
 import { Eye } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
-export const useVendorsBeneficiaryTableColumns = () => {
-  const { id } = useParams();
+import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
+
+type VendorBeneficiaryRow = {
+  walletAddress: string;
+  benTokens?: string;
+  txHash?: string;
+  amountDisbursed?: string;
+  syncStatus?: string;
+  status?: string;
+  uuid: string;
+};
+
+export const useVendorsBeneficiaryTableColumns = (
+  mode: PayoutMode,
+  pagination: Pagination,
+) => {
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
+  const { id, vendorId }: { id: string; vendorId: string } = useParams();
   const router = useRouter();
 
-  const handleViewClick = (vendorId: string) => {
-    router.push(`/projects/aa/${id}/vendors/${vendorId}`);
+  const params = useSearchParams();
+  const tab = params.get('tab') as string;
+  const subTab = params.get('subTab') as string;
+
+  const handleViewClick = (beneficiaryId: string) => {
+    setPaginationToLocalStorage(
+      mode === PayoutMode.ONLINE
+        ? PaginationTableName.VENDOR_ONLINE_BENEFICIARY_LIST
+        : PaginationTableName.VENDOR_OFFLINE_BENEFICIARY_LIST,
+    );
+    router.push(
+      `/projects/aa/${id}/beneficiary/${beneficiaryId}?vendorId=${vendorId}&tab=${tab}&subTab=${subTab}#pagination=${encodeURIComponent(
+        JSON.stringify(pagination),
+      )}`,
+    );
   };
-  const columns: ColumnDef<any>[] = [
+
+  const columns: ColumnDef<VendorBeneficiaryRow>[] = [
     {
-      accessorKey: 'name',
-      header: 'Beneficiary Name',
-      cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
+      accessorKey: 'walletAddress',
+      header: 'Wallet Address',
+      cell: ({ row }) => {
+        if (!row.original?.walletAddress) {
+          return <div>N/A</div>;
+        }
+        return (
+          <div className="flex flex-row">
+            <TruncatedCell
+              text={row.original?.walletAddress}
+              maxLength={10}
+              className="w-20 text-400 text-[#475263] text-[14px] leading-[16px] font-normal"
+            />
+            <CopyTooltip
+              value={row.original?.walletAddress}
+              uniqueKey={row.original?.uuid}
+            />
+          </div>
+        );
+      },
     },
     {
-      accessorKey: 'tokenStatus',
+      accessorKey: 'benTokens',
+      header: 'Token Amount',
+      cell: ({ row }) => {
+        return row.getValue('benTokens') ? (
+          <TruncatedCell
+            text={`${formatTokenAmount(
+              row.getValue('benTokens'),
+              settings,
+              id,
+            )}`}
+          />
+        ) : (
+          'N/A'
+        );
+      },
+    },
+    {
+      accessorKey: 'txHash',
+      header: 'TxHash',
+      cell: ({ row }) => {
+        const txHash = row?.original?.txHash as string;
+
+        if (!txHash) return <div>N/A</div>;
+        const txnUrl = getExplorerUrl({
+          chainSettings: settings?.[id]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+          target: 'tx',
+          value: txHash,
+        });
+        return (
+          <div className="flex flex-row">
+            <div className="w-20 truncate">
+              <a
+                href={txnUrl || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline cursor-pointer  text-[14px] leading-[16px] font-normal !text-[#297AD6]"
+              >
+                <TruncatedCell text={row.getValue('txHash')} maxLength={10} />
+              </a>
+            </div>
+            <CopyTooltip
+              value={row.getValue('txHash')}
+              uniqueKey={row.original?.uuid}
+            />
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'amountDisbursed',
+      header: 'Amount Disbursed',
+      cell: ({ row }) => {
+        const status = row.original?.status;
+        return status === 'COMPLETED' ? (
+          row.getValue('benTokens') ? (
+            <TruncatedCell text={`Rs. ${row.getValue('benTokens')}`} />
+          ) : (
+            'N/A'
+          )
+        ) : (
+          'Rs. 0'
+        );
+      },
+    },
+    ...(mode === PayoutMode.OFFLINE
+      ? [
+          {
+            accessorKey: 'syncStatus',
+            header: 'Sync Status',
+            cell: ({ row }: { row: Row<VendorBeneficiaryRow> }) => {
+              const status = row.original?.status;
+              return (
+                <Badge
+                  className="text-xs font-normal"
+                  style={{
+                    backgroundColor:
+                      status === 'PENDING' ? '#F2F4F7' : '#ECFDF3',
+                    color: status === 'PENDING' ? '#344054' : '#027A48',
+                  }}
+                >
+                  {status === 'PENDING' ? 'Pending' : 'Synced'}
+                </Badge>
+              );
+            },
+          },
+        ]
+      : []),
+    {
+      accessorKey: 'status',
       header: 'Token Status',
-      cell: ({ row }) => <Badge>{row.getValue('tokenStatus') || 'N/A'}</Badge>,
+      cell: ({ row }) => (
+        <Badge
+          className="text-xs font-normal"
+          style={{
+            backgroundColor:
+              row.original?.status === 'COMPLETED' ? '#ECFDF3' : '#F2F4F7',
+            color: row.original?.status === 'COMPLETED' ? '#027A48' : '#344054',
+          }}
+        >
+          {row.original?.status === 'COMPLETED' ? 'Redeemed' : 'Pending'}
+        </Badge>
+      ),
     },
     {
       id: 'actions',
@@ -29,11 +188,11 @@ export const useVendorsBeneficiaryTableColumns = () => {
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() => handleViewClick(row.original.uuid)}
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() => handleViewClick(row.original.uuid)}
             />
           </div>
         );

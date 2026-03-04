@@ -1,16 +1,13 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 function getStatusBg(status: string) {
   if (status === 'Not Started') {
-    return 'bg-red-200 text-red-600';
+    return 'bg-gray-200 text-black';
   }
 
   if (status === 'Work in Progress') {
@@ -21,7 +18,7 @@ function getStatusBg(status: string) {
     return 'bg-green-200 text-green-500';
   }
 
-  return 'bg-gray-200 text-black';
+  return 'bg-red-200 text-red-600';
 }
 
 function getPhaseColor(phase: string) {
@@ -44,30 +41,17 @@ export default function useCommsActivitiesTableColumns() {
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: ({ row }) => (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="truncate w-48 hover:cursor-pointer">
-                {row.getValue('title')}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent
-              side="bottom"
-              className="w-80 rounded-sm text-justify "
-            >
-              <p>{row.getValue('title')}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ),
+      cell: ({ row }) => <TruncatedCell text={row.getValue('title')} />,
     },
     {
-      accessorKey: 'createdAt',
+      accessorKey: 'updatedAt',
       header: 'Date',
       cell: ({ row }) => (
         <div className="capitalize min-w-32">
-          {new Date(row.getValue('createdAt')).toLocaleString()}
+          <TruncatedCell
+            text={dateFormat(row.original?.updatedAt)}
+            maxLength={30}
+          />
         </div>
       ),
     },
@@ -95,11 +79,11 @@ export default function useCommsActivitiesTableColumns() {
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={20}
-              strokeWidth={1.5}
-              onClick={() =>
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() =>
                 router.push(
                   `/projects/aa/${id}/communication-logs/details/${row.original.id}`,
                 )

@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS } from '../../../config';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
@@ -6,6 +6,8 @@ import { Pagination } from '@rumsan/sdk/types';
 import { Beneficiary } from '@rahataid/sdk';
 import Swal from 'sweetalert2';
 import { formatEther } from 'viem';
+import { useSwal } from 'libs/query/src/swal';
+import axios from 'axios';
 
 export const useGetTreasurySourcesSettings = (uuid: UUID) => {
   const projectActions = useProjectAction([
@@ -63,6 +65,10 @@ export const useGetTreasurySourcesSettings = (uuid: UUID) => {
 
 type DisbursementListHookParams = {
   projectUUID: UUID;
+  status: string;
+  disbursementType: string;
+  fromDate: string;
+  toDate: string;
 } & Pagination;
 
 export const useGetDisbursements = (params: DisbursementListHookParams) => {
@@ -70,7 +76,7 @@ export const useGetDisbursements = (params: DisbursementListHookParams) => {
   const { projectUUID, ...restParams } = params;
 
   const query = useQuery({
-    queryKey: ['get-disbursements'],
+    queryKey: ['get-disbursements', params],
     queryFn: async () => {
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
@@ -78,6 +84,26 @@ export const useGetDisbursements = (params: DisbursementListHookParams) => {
           // TODO: use dynamically from MS_ACTIONS
           action: 'c2cProject.disbursements.get',
           payload: restParams,
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
+export const usePendingDisbursements = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-pending-disbursements', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.disbursements.pending.get',
+          payload: {},
         },
       });
       return response.data;
@@ -103,6 +129,66 @@ export const useGetDisbursement = (
           payload: {
             disbursementUUID: disbursementUUID,
           },
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
+export const useGetProjectReporting = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-project-reporting', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'c2cProject.reporting.list',
+          payload: {},
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
+export const useGetDisbursementSafeChart = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-disbursement-safe-chart', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getDisbursementSafeChart',
+          payload: {},
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
+export const useGetOfframpStatusChart = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-offramp-status-chart', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getOffRampStatus',
+          payload: {},
         },
       });
       return response.data;
@@ -143,6 +229,131 @@ export const useGetDisbursementTransactions = (
   return query;
 };
 
+export const useGetBeneficiariesReport = () => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      fromDate,
+      toDate,
+    }: {
+      projectUUID: UUID;
+      fromDate: string;
+      toDate: string;
+    }) => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getBenReportingLogs',
+          payload: {
+            fromDate,
+            toDate,
+          },
+        },
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data.length === 0) {
+        toast.fire({
+          title: 'No Beneficiary record found.',
+          text: 'Please try selecting a different date range.',
+          icon: 'error',
+        });
+      }
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message || 'An error occured!';
+      toast.fire({
+        title: 'Error while getting report.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useGetBenefDisbursementDetails = (
+  projectUUID: UUID,
+  userUuid: string,
+) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-benf-disbursement-details', projectUUID, userUuid],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getBenDisbursementDetails',
+          payload: {
+            beneficiaryId: userUuid,
+          },
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
+export const useGetOfframpDetails = (
+  projectUUID: UUID,
+  beneficiaryPhone: string,
+) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-getOfframpDetails', projectUUID, beneficiaryPhone],
+    enabled: !!beneficiaryPhone,
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getOfframpDetails',
+          payload: {
+            beneficiaryPhone,
+            limit: 100,
+          },
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
+export const useGetSafePending = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-getSafePending', projectUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'c2cProject.getSafePending',
+          payload: {},
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
 type DisbursementApprovalsHookParams = {
   projectUUID: UUID;
   disbursementUUID: UUID;
@@ -156,23 +367,42 @@ export const useGetDisbursementApprovals = (
     'c2c',
     'disbursements-actions-approvals',
   ]);
-  const { projectUUID, disbursementUUID, ...restParams } = params;
+  const { projectUUID, disbursementUUID, transactionHash, ...restParams } =
+    params;
+
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
 
   const query = useQuery({
     queryKey: ['get-disbursement-approvals', disbursementUUID],
     queryFn: async () => {
-      const response = await projectActions.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: 'c2cProject.getSafeTransaction',
-          payload: {
-            projectUUID: projectUUID,
-            ...restParams,
+      try {
+        const response = await projectActions.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: 'c2cProject.getSafeTransaction',
+            payload: {
+              projectUUID: projectUUID,
+              transactionHash,
+              ...restParams,
+            },
           },
-        },
-      });
-      return response.data;
+        });
+        return response.data;
+      } catch (error) {
+        toast.fire({
+          title: 'Error',
+          icon: 'error',
+          text: 'Error to get safe transaction data',
+        });
+      }
     },
+    enabled: !!transactionHash,
   });
 
   return query;
@@ -219,19 +449,24 @@ export enum DisbursementStatus {
   REJECTED = 'REJECTED',
 }
 
+export enum DisbursementSelectionType {
+  INDIVIDUAL = 'INDIVIDUAL',
+  GROUP = 'GROUP',
+}
+
 export const useAddDisbursement = () => {
   const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
 
   return useMutation({
     mutationKey: ['add-disbursement'],
-    onSuccess(data, variables, context) {
-      Swal.fire({
-        title: 'Disbursement Created',
-        icon: 'success',
-        showConfirmButton: false,
-        timer: 1500,
-      });
-    },
+    // onSuccess(data, variables, context) {
+    //   Swal.fire({
+    //     title: 'Disbursement Created',
+    //     icon: 'success',
+    //     showConfirmButton: false,
+    //     timer: 1500,
+    //   });
+    // },
     onError(error, variables, context) {
       Swal.fire({
         title: 'Error',
@@ -244,26 +479,38 @@ export const useAddDisbursement = () => {
     mutationFn: async (data: {
       projectUUID: UUID;
       type: DisbursementType;
+      disbursementType: DisbursementSelectionType;
       amount: string;
-      beneficiaries: any;
+      beneficiaries?: any;
+      beneficiaryGroup?: UUID;
       transactionHash: string;
       from: string;
       timestamp: string;
       status?: DisbursementStatus;
+      details?: string;
     }) => {
-      const { projectUUID, ...restData } = data;
+      const { projectUUID, beneficiaries, beneficiaryGroup, ...restData } =
+        data;
+      const payload = {
+        ...restData,
+        ...(restData.disbursementType ===
+          DisbursementSelectionType.INDIVIDUAL && {
+          beneficiaries: beneficiaries.map((ben: any) => ({
+            walletAddress: ben,
+            from: restData.from,
+            transactionHash: restData.transactionHash,
+            amount: restData.amount,
+          })),
+        }),
+        ...(restData.disbursementType === DisbursementSelectionType.GROUP && {
+          beneficiaryGroup,
+        }),
+      };
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'c2cProject.disbursement.create',
-          payload: {
-            ...restData,
-            beneficiaries: restData.beneficiaries.map((ben: any) => ({
-              address: ben,
-              amount: restData.amount,
-              walletAddress: ben,
-            })),
-          },
+          payload,
         },
       });
       return response.data;
@@ -305,17 +552,19 @@ export const useDisburseTokenUsingMultisig = () => {
     mutationFn: async ({
       amount,
       projectUUID,
+      disbursementType,
       beneficiaryAddresses,
-      disburseMethod,
-      rahatTokenAddress,
-      c2cProjectAddress,
+      beneficiaryGroup,
+      totalAmount,
+      details,
     }: {
       amount: string;
       projectUUID: UUID;
-      beneficiaryAddresses: `0x${string}`[];
-      disburseMethod: string;
-      rahatTokenAddress: string;
-      c2cProjectAddress: string;
+      disbursementType: DisbursementSelectionType;
+      beneficiaryAddresses?: `0x${string}`[];
+      beneficiaryGroup?: UUID;
+      totalAmount?: string;
+      details?: string;
     }) => {
       // Step 1: Create Safe Transaction
       const response = await projectActions.mutateAsync({
@@ -323,22 +572,27 @@ export const useDisburseTokenUsingMultisig = () => {
         data: {
           action: 'c2cProject.createSafeTransaction',
           payload: {
-            amount,
+            amount: totalAmount,
           },
         },
       });
 
       const safeTxHash = response.data.safeTxHash;
+      const safeAddress = response.data.safeAddress;
 
       // Step 2: Add Disbursement
       const disbursementResult = await addDisbursement.mutateAsync({
-        amount: String(+amount / beneficiaryAddresses.length),
+        // amount: String(+amount / beneficiaryAddresses.length),
+        amount,
         projectUUID,
         type: DisbursementType.MULTISIG,
+        disbursementType,
         beneficiaries: beneficiaryAddresses,
+        beneficiaryGroup,
         transactionHash: safeTxHash,
-        from: c2cProjectAddress,
+        from: safeAddress,
         timestamp: String(Math.floor(Date.now() / 1000)), // Convert to seconds timestamp
+        details,
       });
 
       return disbursementResult;
@@ -456,6 +710,85 @@ export const useFindAllC2cStats = (projectUUID: UUID) => {
         },
       });
       return res.data;
+    },
+  });
+};
+
+export const useGetSafeOwners = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  return useQuery({
+    queryKey: ['safeOwners', projectUUID],
+    queryFn: async () => {
+      const res = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aidlink.getSafeOwner',
+          payload: {},
+        },
+      });
+      return res.data;
+    },
+  });
+};
+
+export const useMutateGraphCall = (projectUUID: UUID) => {
+  const { url } = useProjectSettingsStore(
+    (state) =>
+      state.settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH] || null,
+  );
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  const isEmptyResponse = (apiData: any) => {
+    if (!apiData) return true;
+    return Object.values(apiData).every(
+      (value) => Array.isArray(value) && value.length === 0,
+    );
+  };
+
+  return useMutation({
+    mutationFn: async ({
+      query,
+      variables,
+    }: {
+      query: string;
+      variables?: any;
+    }) => {
+      const res = await axios.post(
+        url,
+        JSON.stringify({
+          query,
+          variables,
+        }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+      return res.data;
+    },
+    onSuccess: (data) => {
+      if (isEmptyResponse(data?.data)) {
+        toast.fire({
+          title: 'No data found.',
+          icon: 'error',
+        });
+      }
+    },
+
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message || 'An error occured!';
+      toast.fire({
+        title: 'Error.',
+        icon: 'error',
+        text: errorMessage,
+      });
     },
   });
 };

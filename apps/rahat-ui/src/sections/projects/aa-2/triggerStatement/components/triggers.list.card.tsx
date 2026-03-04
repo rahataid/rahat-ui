@@ -22,14 +22,16 @@ export default function TriggersListCard({ projectId, triggers }: IProps) {
               <TriggerCard
                 key={projectId}
                 projectId={projectId}
-                triggerId={t?.repeatKey}
+                triggerId={t?.uuid}
                 phase={t?.phase?.name || 'N/A'}
                 type={t?.source === 'MANUAL' ? 'Manual' : 'Automated'}
                 isTriggered={t?.isTriggered}
                 title={t?.title || 'N/A'}
                 dataSource={t?.source === 'MANUAL' ? '' : t?.source}
                 riverBasin={t?.phase?.source?.riverBasin || 'N/A'}
-                time={new Date(t?.createdAt)?.toLocaleString()}
+                createdAt={t?.createdAt}
+                triggeredAt={t?.triggeredAt}
+                triggerStatement={t?.triggerStatement}
               />
             ))
           ) : (

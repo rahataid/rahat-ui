@@ -4,6 +4,52 @@ import { useSwal } from 'libs/query/src/swal';
 import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
+export type HealthStatus = 'HEALTHY' | 'UNHEALTHY' | 'DEGRADED';
+
+export type SourceValidity = 'VALID' | 'STALE' | 'EXPIRED';
+
+export type ExecutionStage = 'fetch' | 'aggregate' | 'transform';
+
+export interface ItemStatistics {
+  successCount: number;
+  failureCount: number;
+  lastError?: ItemError;
+}
+
+export interface ItemError {
+  itemId: string;
+  itemName?: string;
+  stage: ExecutionStage;
+  code: string;
+  message: string;
+  timestamp: string;
+}
+
+export interface SourceHealthData {
+  adapterId: string;
+  name: string;
+  sourceUrl: string;
+  currentStatus: HealthStatus;
+  lastSuccessAt: Date | null;
+  lastFailureAt: Date | null;
+  last_checked: Date | null;
+  fetch_frequency_minutes: number;
+  response_time_ms: number;
+  validity: SourceValidity;
+  successCount: number;
+  failureCount: number;
+  partialSuccessCount: number;
+  averageDuration: number;
+  errors: ItemError[];
+  itemStatistics: Record<string, ItemStatistics>;
+}
+
+export interface HealthCacheData {
+  overall_status: HealthStatus;
+  last_updated: string;
+  sources?: SourceHealthData[];
+}
+
 export const useCreateDailyMonitoring = () => {
   const q = useProjectAction();
   const alert = useSwal();
@@ -76,6 +122,49 @@ export const useDailyMonitoring = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
+  });
+  return query;
+};
+
+export const useGaugeReading = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['gaugeReading', uuid, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.dailyMonitoring.getGaugeReading',
+          payload: {},
+        },
+      });
+      return mutate.response;
+    },
+    staleTime: 60 * 60 * 1000, // 1 hour
+  });
+  return query;
+};
+
+export const useGaugeForecast = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['gaugeForecast', uuid, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.dailyMonitoring.getGaugeForecast',
+          payload: {
+            ...payload,
+          },
+        },
+      });
+      return mutate.response;
+    },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
   return query;
 };
@@ -220,4 +309,26 @@ export const useRemoveMonitoringWhileUpdating = () => {
       });
     },
   });
+};
+
+export const useTabConfiguration = (uuid: UUID, name: string) => {
+  const q = useProjectAction([name]);
+  const query = useQuery({
+    queryKey: [name, uuid],
+    staleTime: Infinity,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: name,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
 };

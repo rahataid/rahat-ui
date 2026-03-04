@@ -2,18 +2,22 @@ import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
-function getTransactionStatusColor(status: string) {
-  switch (status.toLowerCase()) {
-    case 'completed':
-      return 'bg-green-200 text-green-800';
-    case 'pending':
-      return 'bg-blue-200 text-blue-800';
-    case 'rejected':
-      return 'bg-red-200 text-red-800';
-    default:
-      return 'bg-gray-200 text-gray-800';
-  }
+import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+interface PayoutTransactionLogRow {
+  groupName: string;
+  totalBeneficiaries: number;
+  totalTokenAssigned: number;
+  totalSuccessAmount: number;
+  payoutType: string;
+  payoutMode: string;
+  status: string;
+  timeStamp: string;
+  uuid: string;
 }
 
 export default function usePayoutTransactionLogTableColumn() {
@@ -26,34 +30,73 @@ export default function usePayoutTransactionLogTableColumn() {
     );
   };
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<PayoutTransactionLogRow>[] = [
     {
       accessorKey: 'groupName',
       header: 'Group Name',
       cell: ({ row }) => (
-        <div className="w-80">{row.getValue('groupName')}</div>
+        <TruncatedCell text={row.getValue('groupName')} maxLength={15} />
       ),
     },
     {
       accessorKey: 'totalBeneficiaries',
       header: 'Total Beneficiaries',
-      cell: ({ row }) => <div>{row.getValue('totalBeneficiaries')}</div>,
+      cell: ({ row }) => (
+        <div className="w-5">
+          <TruncatedCell
+            text={row.getValue('totalBeneficiaries')}
+            maxLength={10}
+          />
+        </div>
+      ),
     },
 
     {
       accessorKey: 'totalTokenAssigned',
-      header: 'Total Token Assigned',
-      cell: ({ row }) => <div>{row.getValue('totalTokenAssigned')}</div>,
+      header: 'Total Amount Disbursed',
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={`Rs. ${row.original.totalSuccessAmount}`}
+          maxLength={10}
+        />
+      ),
+    },
+    {
+      accessorKey: 'amountperBenef',
+      header: 'Amount per beneficiary',
+      cell: ({ row }) => {
+        const amountPerBeneficiary =
+          (row.original.totalTokenAssigned * 1) /
+          row.original.totalBeneficiaries;
+        return (
+          <TruncatedCell text={`Rs. ${amountPerBeneficiary}`} maxLength={10} />
+        );
+      },
     },
     {
       accessorKey: 'payoutType',
       header: 'Payout Type',
-      cell: ({ row }) => <div>{row.getValue('payoutType')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={
+            row.getValue('payoutType') === 'VENDOR'
+              ? 'CVA'
+              : row.getValue('payoutType')
+          }
+          maxLength={10}
+        />
+      ),
     },
     {
       accessorKey: 'payoutMode',
-      header: 'Payout Mode',
-      cell: ({ row }) => <div>{row.getValue('payoutMode')}</div>,
+      header: 'Payout Method',
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={row.getValue('payoutMode')}
+          maxLength={30}
+          className="break-words line-clamp-2"
+        />
+      ),
     },
     {
       accessorKey: 'status',
@@ -62,11 +105,14 @@ export default function usePayoutTransactionLogTableColumn() {
         const status = row?.original?.status;
         return (
           <Badge
-            className={`rounded-xl capitalize ${getTransactionStatusColor(
+            className={`rounded-xl text-[10px] capitalize ${isCompleteBgStatus(
               status,
             )}`}
           >
-            {status}
+            {status
+              .toLowerCase()
+              .replace(/_/g, ' ')
+              .replace(/^./, (char) => char.toUpperCase())}
           </Badge>
         );
       },
@@ -77,7 +123,9 @@ export default function usePayoutTransactionLogTableColumn() {
       cell: ({ row }) => {
         const time = row.getValue('timeStamp') as string;
         return (
-          <div className="flex gap-1">{new Date(time).toLocaleString()}</div>
+          <div className="flex gap-1 text-[10px]">
+            <TruncatedCell text={dateFormat(time)} maxLength={15} />
+          </div>
         );
       },
     },
@@ -89,11 +137,11 @@ export default function usePayoutTransactionLogTableColumn() {
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={20}
-              strokeWidth={1.5}
-              onClick={() => handleEyeClick(row?.original?.uuid)}
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() => handleEyeClick(row?.original?.uuid)}
             />
           </div>
         );

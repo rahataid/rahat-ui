@@ -1,8 +1,8 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, TriangleAlert } from 'lucide-react';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
-import { IFundManagement } from '../types';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
   Tooltip,
@@ -10,6 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
 export enum FundStatus {
   NOT_DISBURSED = 'NOT_DISBURSED',
@@ -46,39 +47,45 @@ export const useFundManagementTableColumns = () => {
       accessorFn: (row) => row?.title,
       header: 'Title',
       cell: ({ row }) => (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="truncate w-48 hover:cursor-pointer">
-                {row?.original?.title || 'N/A'}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent
-              side="bottom"
-              className="w-80 rounded-sm text-justify "
-            >
-              <p>{row?.original?.title || 'N/A'}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <TruncatedCell text={row?.original?.title || 'N/A'} maxLength={10} />
       ),
     },
     {
       accessorKey: 'beneficiaryGroup',
       header: 'Beneficiary Group',
       cell: ({ row }) => {
-        return <div>{row.original?.group?.name || 'N/A'}</div>;
+        return (
+          <TruncatedCell
+            text={row.original?.group?.name || 'N/A'}
+            maxLength={15}
+          />
+        );
       },
     },
     {
       accessorKey: 'tokens',
-      header: 'Tokens',
+      header: 'Total Tokens',
       cell: ({ row }) => <div>{row?.original?.numberOfTokens}</div>,
+    },
+    {
+      accessorKey: 'tokensperBenef',
+      header: 'Token Per Beneficiary',
+      cell: ({ row }) => (
+        <div>
+          {row?.original?.numberOfTokens /
+            row.original.group.groupedBeneficiaries.length}
+        </div>
+      ),
     },
     {
       accessorKey: 'createdBy',
       header: 'Created By',
-      cell: ({ row }) => <div>{row.getValue('createdBy') || 'N/A'}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={row.getValue('createdBy') || 'N/A'}
+          maxLength={15}
+        />
+      ),
     },
     {
       accessorKey: 'status',
@@ -87,7 +94,9 @@ export const useFundManagementTableColumns = () => {
         const status = row.getValue('status') as FundStatus;
 
         return (
-          <Badge className={renderBadgeStyle(status)}>{status || 'N/A'}</Badge>
+          <Badge className={renderBadgeStyle(status)}>
+            {status.replace(/_/g, ' ') || 'N/A'}
+          </Badge>
         );
       },
     },
@@ -99,11 +108,11 @@ export const useFundManagementTableColumns = () => {
         const status = row.getValue('status') as FundStatus;
         return (
           <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() => handleViewClick(row.original.uuid)}
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() => handleViewClick(row.original.uuid)}
             />
             {(status === FundStatus.FAILED || status === FundStatus.ERROR) && (
               <TooltipProvider delayDuration={200}>

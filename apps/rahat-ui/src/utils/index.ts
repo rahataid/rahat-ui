@@ -2,6 +2,8 @@
 // If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { format, isValid, parse } from 'date-fns';
+
 export function truncateEthereumAddress(address: string) {
   if (address.length <= 42) {
     return address;
@@ -145,4 +147,107 @@ export const intlFormatDate = (dateStr?: string) => {
     hour: 'numeric',
     minute: 'numeric',
   }).format(date);
+};
+
+export const intlDateFormat = (dateStr?: string) => {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return '-';
+
+  const day = new Intl.DateTimeFormat('en-US', { day: '2-digit' }).format(date);
+  const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(
+    date,
+  );
+  const year = new Intl.DateTimeFormat('en-US', { year: 'numeric' }).format(
+    date,
+  );
+  const time = new Intl.DateTimeFormat('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
+  }).format(date);
+
+  return `${day} ${month}, ${year}, ${time}`;
+};
+
+export function excelDateToJSDate(serial: number): Date {
+  const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+  return new Date(excelEpoch.getTime() + serial * 86400000);
+}
+
+export function normalizeCell(cell: any) {
+  if (typeof cell === 'number' && cell > 20000 && cell < 60000) {
+    return format(excelDateToJSDate(cell), 'dd/MM/yyyy');
+  }
+
+  // If it's a string that looks like a date
+  if (typeof cell === 'string') {
+    const parsed =
+      parse(cell, 'dd/MM/yyyy', new Date()) ||
+      parse(cell, 'dd/MM/yy', new Date());
+
+    if (isValid(parsed)) {
+      return format(parsed, 'dd/MM/yyyy');
+    }
+  }
+
+  // If it's already a JS Date object
+  if (cell instanceof Date) {
+    return format(cell, 'dd/MM/yyyy');
+  }
+
+  return cell;
+}
+
+export type ExplorerTarget = 'asset' | 'tx' | 'address';
+
+export type ChainSettings =
+  | {
+      type: 'evm';
+      explorerurl: string;
+    }
+  | {
+      type: 'stellar';
+      network: 'mainnet' | 'testnet';
+    };
+
+export const getExplorerUrl = ({
+  chainSettings,
+  target,
+  value,
+}: {
+  chainSettings?: ChainSettings;
+  target: ExplorerTarget;
+  value?: string;
+}): string | null => {
+  if (!chainSettings || !value) return null;
+
+  if (chainSettings.type === 'evm') {
+    const evmPathMap: Record<ExplorerTarget, string> = {
+      asset: 'token',
+      address: 'address',
+      tx: 'tx',
+    };
+
+    // Remove trailing slash and any existing path segments (like /tx/, /address/, etc.)
+    let baseUrl = chainSettings.explorerurl.replace(/\/$/, '');
+    baseUrl = baseUrl.replace(/\/(tx|token|address)$/, '');
+
+    return `${baseUrl}/${evmPathMap[target]}/${value}`;
+  }
+
+  if (chainSettings.type === 'stellar') {
+    const network = chainSettings.network === 'mainnet' ? 'public' : 'testnet';
+
+    const stellarPathMap: Record<ExplorerTarget, string> = {
+      asset: 'asset',
+      address: 'account',
+      tx: 'tx',
+    };
+
+    return `https://stellar.expert/explorer/${network}/${stellarPathMap[target]}/${value}`;
+  }
+
+  return null;
 };

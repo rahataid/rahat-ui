@@ -3,40 +3,14 @@ import {
   useListSessionLogs,
   usePagination,
   useRetryFailedBroadcast,
+  useSessionBroadCastCount,
+  useSessionRetryFailed,
   useSingleActivity,
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { BroadcastStatus } from '@rumsan/connect/src/types';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 // import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import Loader from 'apps/rahat-ui/src/components/table.loader';
-import { UUID } from 'crypto';
-import {
-  AudioLines,
-  CloudDownload,
-  Component,
-  Download,
-  Hash,
-  LucideIcon,
-  Mail,
-  MessageSquareMore,
-  MessageSquareWarning,
-  RefreshCcw,
-  Text,
-  Timer,
-  UsersRound,
-} from 'lucide-react';
-import { useParams } from 'next/navigation';
-import React, { useMemo } from 'react';
-import { Player } from 'react-simple-player';
-import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
-import {
-  Back,
-  CustomPagination,
-  Heading,
-  SearchInput,
-} from 'apps/rahat-ui/src/common';
 import {
   Card,
   CardContent,
@@ -44,24 +18,53 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import SelectComponent from 'apps/rahat-ui/src/common/select.component';
-import CommsLogsTable from '../table/comms.logs.table';
-import CardSkeleton from 'apps/rahat-ui/src/common/cardSkeleton';
-import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
-import * as XLSX from 'xlsx';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import {
+  Back,
+  CustomPagination,
+  DataCard,
+  Heading,
+  SearchInput,
+} from 'apps/rahat-ui/src/common';
+import CardSkeleton from 'apps/rahat-ui/src/common/cardSkeleton';
+import SelectComponent from 'apps/rahat-ui/src/common/select.component';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
-type IHeadCardProps = {
-  title: string;
-  icon: LucideIcon;
-  content: string;
-};
+import { UUID } from 'crypto';
+import {
+  CloudDownload,
+  LucideIcon,
+  Mail,
+  RefreshCcw,
+  Mic,
+  Text,
+} from 'lucide-react';
+
+import { useParams, useSearchParams } from 'next/navigation';
+import React, { useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
+
+import { exportAllLogs, exportFailedLogs } from './comms.logs.export.utils';
+import CommsLogsTable from '../table/comms.logs.table';
+import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
+import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 export default function CommsLogsDetailPage() {
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
+
   const [communicationId, activityId, sessionId] = (
     commsIdXactivityIdXsessionId as string
   ).split('%40');
+
+  const searchParams = useSearchParams();
+  const from = searchParams.get('from');
+
+  const backFrom = searchParams.get('backFrom');
+  const tab = searchParams.get('tab');
+
+  const subTab = searchParams.get('subTab');
 
   const {
     pagination,
@@ -73,13 +76,13 @@ export default function CommsLogsDetailPage() {
     setFilters,
   } = usePagination();
 
-  // logs?.sessionLogs
   const debounceSearch = useDebounce(filters, 500);
   const { data: logs, isLoading } = useGetCommunicationLogs(
     projectID as UUID,
     communicationId,
     activityId,
   );
+
   const columns = useCommsLogsTableColumns(
     logs?.sessionDetails?.Transport?.name,
   );
@@ -90,28 +93,26 @@ export default function CommsLogsDetailPage() {
   );
   const { data: activityDetail, isLoading: isLoadingActivity } =
     useSingleActivity(projectID as UUID, activityId);
+
+  const communicationTitle = logs?.communicationDetail?.communicationTitle;
   const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
     useListSessionLogs(sessionId, { ...pagination, ...cleanFilters });
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
 
-  const mutateRetry = useRetryFailedBroadcast(
-    projectID as UUID,
-    communicationId,
-    activityId,
-  );
+  const count = useSessionBroadCastCount([sessionId]);
+  const mutateRetry = useSessionRetryFailed();
 
   const retryFailed = async () => {
-    mutateRetry.mutateAsync();
+    try {
+      const res = await mutateRetry.mutateAsync({
+        cuid: sessionId,
+        includeFailed: true,
+      });
+    } catch (error) {
+      console.error('Retry failed:', error);
+    }
   };
-
-  const failedCount = useMemo(() => {
-    return (
-      sessionLogs?.httpReponse?.data?.data?.filter(
-        (log: any) => log?.status === BroadcastStatus.FAIL,
-      ) ?? []
-    );
-  }, [sessionLogs]);
 
   const logsGroupName = useMemo(() => {
     if (logs?.groupName.length > 20) {
@@ -149,22 +150,32 @@ export default function CommsLogsDetailPage() {
   };
 
   const onFailedExports = () => {
-    const logs = sessionLogs?.httpReponse?.data?.data?.filter(
-      (log: any) => log?.status === BroadcastStatus.FAIL,
-    );
+    exportFailedLogs(sessionLogs?.httpReponse?.data?.data ?? []);
+  };
 
-    if (!logs?.length) return;
+  const onExportAll = () => {
+    try {
+      if (!logs || !activityDetail || !sessionLogs) {
+        return toast.error(
+          'Failed to load communication data. Please refresh and try again.',
+        );
+      }
+      if (!count?.data?.data) {
+        return toast.error(
+          'Communication statistics not available. Please try again.',
+        );
+      }
+      const logsData = sessionLogs?.httpReponse?.data?.data;
+      const total = logsMeta?.total ?? 0;
 
-    const rowsToDownload = logs || [];
-    const workbook = XLSX.utils.book_new();
-    const worksheetData = rowsToDownload?.map((log: any) => ({
-      Address: log.address,
-      Status: log.status,
-    }));
-    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'FailedLogs');
-
-    XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
+      exportAllLogs(logsData, logs, activityDetail, count.data.data, total);
+      toast.success('Communication logs exported successfully!');
+    } catch (error) {
+      console.error('Error exporting all logs:', error);
+      toast.error(
+        'Failed to export logs. Please try again or contact support.',
+      );
+    }
   };
 
   const handleSearch = React.useCallback(
@@ -174,12 +185,22 @@ export default function CommsLogsDetailPage() {
     },
     [filters],
   );
+  const path = useMemo(() => {
+    if (tab && subTab) {
+      return `/projects/aa/${projectID}/communication-logs?tab=${tab}&subTab=${subTab}`;
+    }
+
+    return from === 'activities'
+      ? `/projects/aa/${projectID}/activities/${activityId}${
+          backFrom ? `?from=${backFrom}` : ''
+        }`
+      : `/projects/aa/${projectID}/communication-logs/details/${activityId}`;
+  }, [from, projectID, activityId, tab, subTab, backFrom]);
+
   return (
     <div className="p-4">
       <div className="flex flex-col space-y-0">
-        <Back
-          path={`/projects/aa/${projectID}/communication-logs/details/${activityId}`}
-        />
+        <Back path={path} />
 
         <div className="mt-1 flex flex-col pb-1 gap-2">
           <div className="flex justify-between">
@@ -187,54 +208,124 @@ export default function CommsLogsDetailPage() {
               title={`Communication Details`}
               description="Here is the detailed view of selected communication"
             />
-
-            <Button
-              variant="outline"
-              className=" gap-2"
-              onClick={onFailedExports}
-              disabled={failedCount.length === 0}
-            >
-              Failed Exports
-              <CloudDownload className="h-4 w-4" />
-            </Button>
+            <div className="flex gap-2 flex-col md:flex-row">
+              <Button
+                variant="outline"
+                className=" gap-2 h-7"
+                onClick={onExportAll}
+                disabled={
+                  isLoading ||
+                  isLoadingActivity ||
+                  isLoadingSessionLogs ||
+                  !sessionLogs?.httpReponse?.data?.data?.length
+                }
+              >
+                <CloudDownload className="h-3.5 w-3.5" />
+                {isLoading || isLoadingActivity || isLoadingSessionLogs
+                  ? 'Loading...'
+                  : 'Export All Logs'}
+              </Button>
+              <Button
+                variant="outline"
+                className=" gap-2 h-7"
+                onClick={onFailedExports}
+                disabled={count?.data?.data?.FAIL === 0}
+              >
+                <CloudDownload className="h-3.5 w-3.5" />
+                Failed Exports Attempts
+              </Button>
+              {count?.data?.data &&
+                count?.data?.data?.FAIL > 0 &&
+                logs?.sessionDetails?.Transport?.name === 'VOICE' && (
+                  <RoleAuth
+                    roles={[
+                      AARoles.ADMIN,
+                      AARoles.MANAGER,
+                      AARoles.Municipality,
+                    ]}
+                    hasContent={false}
+                  >
+                    <Button
+                      type="button"
+                      onClick={retryFailed}
+                      disabled={
+                        mutateRetry.isPending
+                        // logs?.sessionDetails?.maxAttempts === 3
+                      }
+                      className=" gap-2 h-7"
+                    >
+                      <RefreshCcw className="h-3.5 w-3.5" />
+                      Retry Failed Requests
+                    </Button>
+                  </RoleAuth>
+                )}
+            </div>
           </div>
           {isLoadingActivity ? (
             <CardSkeleton />
           ) : (
-            <Card className="p-4 rounded-sm bg-white">
-              <CardTitle className="flex gap-2 pb-2">
-                <Badge>{activityDetail?.phase?.name}</Badge>
-                <Badge
-                  className={`rounded-xl capitalize text-xs font-normal ${getStatusBg(
-                    activityDetail?.status,
-                  )}`}
-                >
-                  {activityDetail?.status
-                    .toLowerCase()
-                    .split('_')
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                    .join(' ')}
-                </Badge>
-              </CardTitle>
-              <CardContent className="pl-1 pb-1  font-semibold flex flex-col gap-1">
-                <Label className="text-muted-foreground text-xs">
-                  Activity Title:
-                </Label>
-                <Label className="text-base space-y-1 font-semibold">
-                  {activityDetail?.title}
-                </Label>
-              </CardContent>
-              <CardFooter className="pl-1 pb-2 text-sm text-muted-foreground">
-                {activityDetail?.description}
-              </CardFooter>
-            </Card>
+            <div className="flex flex-col lg:flex-row gap-4 w-full">
+              {/* Left Section (Activity Card) — 1/3 on large screens */}
+              <div className="flex-[2]">
+                <Card className="p-4 rounded-sm bg-white h-full">
+                  <CardTitle className="flex gap-2 pb-2">
+                    <Badge
+                      className={`${getPhaseColor(
+                        activityDetail?.phase?.name,
+                      )}`}
+                    >
+                      {activityDetail?.phase?.name}
+                    </Badge>
+                    <Badge
+                      className={`rounded-xl capitalize text-xs font-normal ${getStatusBg(
+                        activityDetail?.status,
+                      )}`}
+                    >
+                      {activityDetail?.status
+                        .toLowerCase()
+                        .split('_')
+                        .map(
+                          (word) =>
+                            word.charAt(0).toUpperCase() + word.slice(1),
+                        )
+                        .join(' ')}
+                    </Badge>
+                  </CardTitle>
+                  <CardContent className="pl-1 pb-1  font-semibold flex flex-col gap-1">
+                    <Label className="text-muted-foreground text-xs">
+                      Activity Title:
+                    </Label>
+                    <Label className="text-base space-y-1 font-semibold">
+                      {activityDetail?.title}
+                    </Label>
+                  </CardContent>
+                  <CardFooter className="pl-1 pb-2 text-sm text-muted-foreground">
+                    {activityDetail?.description}
+                  </CardFooter>
+                </Card>
+              </div>
+
+              {/* Right Section (Data Cards) — 2/3 on large screens */}
+              <div className=" flex-1 flex flex-wrap gap-4">
+                <DataCard
+                  title="Successfully Delivered"
+                  smallNumber={(count?.data?.data?.SUCCESS ?? 0).toString()}
+                  className="rounded-sm w-full h-20 pt-10 pb-8"
+                />
+                <DataCard
+                  title="Failed Delivered"
+                  smallNumber={(count?.data?.data?.FAIL ?? 0).toString()}
+                  className="rounded-sm w-full h-20 pt-10 pb-8"
+                />
+              </div>
+            </div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 ">
             <Card className="w-full col-span-1 bg-white rounded-sm">
               <CardContent className="p-6 space-y-6">
                 {/* Beneficiary Group */}
-                <div className="space-y-1">
+                <div>
                   <p className="text-sm text-gray-500">
                     {logs?.communicationDetail?.groupType
                       ? logs?.communicationDetail?.groupType + ' ' + 'GROUP'
@@ -244,25 +335,34 @@ export default function CommsLogsDetailPage() {
                 </div>
 
                 {/* Triggered Date */}
-                <div className="space-y-1">
+                <div>
                   <p className="text-sm text-gray-500">Triggered Date</p>
                   <p className="font-medium">
-                    {renderDateTime(logs?.sessionDetails?.createdAt)}
+                    {dateFormat(logs?.sessionDetails?.createdAt)}
                   </p>
                 </div>
 
                 {/* Total Audience */}
-                <div className="space-y-1">
+                <div>
                   <p className="text-sm text-gray-500">Total Audience</p>
                   <p className="font-medium">{logsMeta?.total}</p>
                 </div>
+
+                {logs?.sessionDetails?.status === 'COMPLETED' && (
+                  <div>
+                    <p className="text-sm text-gray-500">Completed At</p>
+                    <p className="font-medium">
+                      {dateFormat(logs?.sessionDetails?.updatedAt)}
+                    </p>
+                  </div>
+                )}
 
                 {/* VOICE Status */}
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 flex items-center justify-center">
                       {logs?.sessionDetails?.Transport?.name === 'VOICE' ? (
-                        <AudioLines />
+                        <Mic />
                       ) : logs?.sessionDetails?.Transport?.name === 'EMAIL' ? (
                         <Mail />
                       ) : (
@@ -289,7 +389,7 @@ export default function CommsLogsDetailPage() {
 
                 {/* Communication */}
                 <div className="space-y-3">
-                  <p className="text-sm text-gray-500">Communication</p>
+                  <p className="text-sm text-gray-500">{communicationTitle}</p>
                   {renderMessage(logs?.communicationDetail?.message)}
                 </div>
               </CardContent>
@@ -347,16 +447,6 @@ export default function CommsLogsDetailPage() {
   );
 }
 
-function renderDateTime(dateTime: string) {
-  if (dateTime) {
-    const d = new Date(dateTime);
-    const localeDate = d.toLocaleDateString();
-    const localeTime = d.toLocaleTimeString();
-    return `${localeDate} ${localeTime}`;
-  }
-  return 'N/A';
-}
-
 function renderMessage(message: any) {
   if (typeof message === 'string') {
     return message;
@@ -365,7 +455,7 @@ function renderMessage(message: any) {
     <div className="bg-gray-50 p-3 rounded-sm">
       <p className="text-center mb-2">{message?.fileName} </p>
 
-      <audio src={message?.audioURL} controls className="w-full h-10 " />
+      <audio src={message?.mediaURL} controls className="w-full h-10 " />
     </div>
   );
 }

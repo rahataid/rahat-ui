@@ -1,6 +1,7 @@
 'use client';
 import { ColumnDef } from '@tanstack/react-table';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
 import {
   Tooltip,
@@ -8,33 +9,84 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { formatDate } from 'apps/community-tool-ui/src/utils';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { StatusChip, PriorityChip, TypeChip } from '../components';
-
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
+import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import { UUID } from 'crypto';
+interface GrievanceTableRow {
+  id: string;
+  uuid: string;
+  title: string;
+  reportedBy: string;
+  type: string;
+  createdByUser: {
+    name: string;
+  };
+  createdAt: string;
+  priority: string;
+  status: string;
+}
 export const useGrievancesTableColumns = () => {
   const router = useRouter();
-  const { id } = useParams();
+  const { id: projectId } = useParams() as { id: UUID };
+  const searchParams = useSearchParams();
+  const redirectToHomeTab = searchParams.get('tab') || 'list';
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<GrievanceTableRow>[] = [
+    {
+      accessorKey: 'id',
+      header: 'ID',
+      cell: ({ row }) => <div> {row.getValue('id')}</div>,
+    },
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: ({ row }) => <div> {row.getValue('title')}</div>,
+      cell: ({ row }) => <TruncatedCell text={row.getValue('title')} />,
     },
     {
       accessorKey: 'reportedBy',
-      header: 'Reporter',
-      cell: ({ row }) => <div> {row.getValue('reportedBy')}</div>,
+      header: 'Reported By',
+      cell: ({ row }) => <TruncatedCell text={row.getValue('reportedBy')} />,
     },
     {
       accessorKey: 'type',
-      header: 'Type',
+      header: 'Grievance Type',
       cell: ({ row }) => (
         <div>
           <TypeChip type={row.getValue('type')} showIcon={false} />
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'createdBy',
+      header: 'Created By',
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={row.original?.createdByUser?.name}
+          maxLength={30}
+        />
+      ),
+    },
+    {
+      accessorKey: 'createdAt',
+      header: 'Created On',
+      cell: ({ row }) => (
+        <TruncatedCell text={formatDateFull(row.getValue('createdAt'))} />
+      ),
+    },
+    {
+      accessorKey: 'priority',
+      header: 'Priority',
+      cell: ({ row }) => (
+        <div>
+          <PriorityChip
+            priority={row.getValue('priority')}
+            showIcon={false}
+            className="text-[10px]"
+          />
         </div>
       ),
     },
@@ -43,23 +95,13 @@ export const useGrievancesTableColumns = () => {
       header: 'Status',
       cell: ({ row }) => (
         <div>
-          <StatusChip status={row.getValue('status')} showIcon={false} />
+          <StatusChip
+            status={row.getValue('status')}
+            showIcon={false}
+            className="text-[10px]"
+          />
         </div>
       ),
-    },
-    {
-      accessorKey: 'priority',
-      header: 'Priority',
-      cell: ({ row }) => (
-        <div>
-          <PriorityChip priority={row.getValue('priority')} showIcon={false} />
-        </div>
-      ),
-    },
-    {
-      accessorKey: 'createdAt',
-      header: 'Created At',
-      cell: ({ row }) => <div> {formatDate(row.getValue('createdAt'))}</div>,
     },
     {
       id: 'action',
@@ -68,13 +110,13 @@ export const useGrievancesTableColumns = () => {
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() =>
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() =>
                 router.push(
-                  `/projects/aa/${id}/grievances/${row.original.uuid}`,
+                  `/projects/aa/${projectId}/grievances/${row.original.uuid}?tab=${redirectToHomeTab}`,
                 )
               }
             />
@@ -132,11 +174,11 @@ export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() =>
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() =>
                 router.push(
                   `/projects/aa/${id}/beneficiary/${row?.original?.benefId}?groupId=${groupId}`,
                 )

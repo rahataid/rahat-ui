@@ -1,13 +1,15 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { Copy, CopyCheck, Eye } from 'lucide-react';
+import { Eye } from 'lucide-react';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
-import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 
 export const useFMDetailTableColumns = () => {
   const { id, fundId } = useParams();
   const router = useRouter();
-  const { clickToCopy, copyAction } = useCopy();
   const handleViewClick = (fmId: string) => {
     console.log('benefwallet', fmId);
     router.push(`/projects/aa/${id}/beneficiary/${fmId}?fundId=${fundId}`);
@@ -18,27 +20,15 @@ export const useFMDetailTableColumns = () => {
       header: 'Wallet Address',
       accessorFn: (row) => row.Beneficiary?.walletAddress ?? 'N/A',
       cell: ({ row }) => (
-        <div
-          onClick={() =>
-            clickToCopy(
-              row.original?.Beneficiary?.walletAddress,
-              row?.original?.uuid,
-            )
-          }
-          className="flex items-center gap-2"
-        >
-          <p className="truncate w-20 ">
-            {row.original?.Beneficiary?.walletAddress || 'N/A'}
-          </p>
-          {copyAction === row?.original?.uuid ? (
-            <CopyCheck size={15} strokeWidth={1.5} />
-          ) : (
-            <Copy
-              className="text-slate-500 cursor-pointer"
-              size={15}
-              strokeWidth={1.5}
-            />
-          )}
+        <div className="flex items-center gap-2">
+          <TruncatedCell
+            text={row.original?.Beneficiary?.walletAddress}
+            maxLength={15}
+          />
+          <CopyTooltip
+            value={row.original?.Beneficiary?.walletAddress}
+            uniqueKey={row.original?.uuid}
+          />
         </div>
       ),
     },
@@ -54,11 +44,11 @@ export const useFMDetailTableColumns = () => {
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() => handleViewClick(row.original.beneficiaryId)}
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() => handleViewClick(row.original.beneficiaryId)}
             />
           </div>
         );

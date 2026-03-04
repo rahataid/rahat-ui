@@ -7,6 +7,7 @@ import * as React from 'react';
 import {
   useRemoveMonitoringWhileUpdating,
   useSingleMonitoring,
+  useSources,
   useUpdateMonitoring,
 } from '@rahat-ui/query';
 
@@ -31,7 +32,17 @@ export default function EditDailyMonitoring() {
 
   const route = useRouter();
 
-  const { riverBasins } = useSelectItems();
+  const { data: sources } = useSources(projectId, {});
+
+  const riverBasins = React.useMemo(
+    () =>
+      sources?.map((source: any) => ({
+        label: source.riverBasin,
+        value: source.riverBasin,
+      })),
+    [sources],
+  );
+
   const { data, isLoading } = useSingleMonitoring(projectId, monitoringId);
   const details = React.useMemo(() => {
     return data?.data;
@@ -136,6 +147,7 @@ export default function EditDailyMonitoring() {
               gaugeReading: item.gaugeReading || '',
               station: item.station,
               id: item.id,
+              gaugeForecast: item?.gaugeForecast,
             };
           default:
             return {
@@ -193,7 +205,7 @@ export default function EditDailyMonitoring() {
             .optional(),
           //Flash Flood Risk Monitoring
           status: z.string().optional(),
-
+          gaugeForecast: z.string().optional(),
           //gauge Reading
           gaugeReading: z.string().optional(),
 
@@ -323,7 +335,7 @@ export default function EditDailyMonitoring() {
               break;
 
             case 'Gauge Reading':
-              validateFields(['gaugeReading', 'station']);
+              validateFields(['gaugeReading', 'station', 'gaugeForecast']);
               if (
                 data.gaugeReading === undefined ||
                 data.gaugeReading === null ||
@@ -334,7 +346,7 @@ export default function EditDailyMonitoring() {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   path: ['gaugeReading'],
-                  message: 'Gauage Reading  must be a positive number.',
+                  message: 'Gauge Reading  must be a positive number.',
                 });
               } else if (!/^\d+(\.\d+)?$/.test(String(data.gaugeReading))) {
                 ctx.addIssue({
@@ -467,6 +479,7 @@ export default function EditDailyMonitoring() {
             gaugeReading: item?.gaugeReading,
             station: item?.station,
             id: item?.id,
+            gaugeForecast: item?.gaugeForecast,
           });
           break;
         default:
@@ -524,12 +537,12 @@ export default function EditDailyMonitoring() {
         <form onSubmit={form.handleSubmit(handleEditDailyMonitoring)}>
           <ScrollArea className="h-[calc(100vh-240px)]">
             <div className="grid grid-cols-2 gap-4">
-              <InputFormField
+              {/* <InputFormField
                 form={form}
                 name="dataEntryBy"
                 label="Created By"
                 placeholder="Enter Data Entry Personnel"
-              />
+              /> */}
               <SelectFormField
                 key={form.watch('riverBasin')}
                 form={form}
@@ -537,6 +550,7 @@ export default function EditDailyMonitoring() {
                 label="River Basin"
                 placeholder="Select river basin"
                 selectItems={riverBasins}
+                className="mx-2"
               />
             </div>
             {/* {anotherDataSourceFields.map((k, index) => (

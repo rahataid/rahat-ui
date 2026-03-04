@@ -1,6 +1,12 @@
-import { Back, Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
+import {
+  Back,
+  Heading,
+  IconLabelBtn,
+  NoResult,
+} from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
-import { Edit, Pencil, RefreshCcw, Trash } from 'lucide-react';
+import { Pencil, RefreshCcw, Trash } from 'lucide-react';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { DocumentList } from '../components/documentCard';
 import CommunicationList from './activity.communication.list.card';
@@ -8,6 +14,8 @@ import ActivityDetailCards from './activity.detail.cards';
 import { useDeleteActivities, useSingleActivity } from '@rahat-ui/query';
 import React from 'react';
 import { DialogComponent } from './dialog.reuse';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
 
 export default function ActivitiesDetailView() {
   const router = useRouter();
@@ -17,28 +25,59 @@ export default function ActivitiesDetailView() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('from');
 
-  const { data: activityDetail, isLoading = false } = useSingleActivity(
-    projectId,
-    activityId,
-  );
+  const {
+    data: activityDetail,
+    isLoading,
+    error,
+  } = useSingleActivity(projectId, activityId);
   const activitiesListPath = redirectTo
-    ? `/projects/aa/${projectId}/activities`
-    : `/projects/aa/${projectId}/activities/list/${activityDetail?.phase?.name.toLowerCase()}`;
+    ? `/projects/aa/${projectId}/activities/list/${redirectTo}`
+    : `/projects/aa/${projectId}/activities`;
+
+  const redirectUpdatePath = redirectTo
+    ? `/projects/aa/${projectId}/activities/${activityId}/edit?${
+        redirectTo ? `&backFrom=${redirectTo}` : ''
+      }`
+    : `/projects/aa/${projectId}/activities/${activityId}/edit`;
 
   const deleteActivity = useDeleteActivities();
 
-  const removeActivity = () => {
-    deleteActivity.mutateAsync({
-      projectUUID: projectId,
-      activityPayload: {
-        uuid: activityId,
-      },
-    });
+  const removeActivity = async () => {
+    try {
+      await deleteActivity.mutateAsync({
+        projectUUID: projectId,
+        activityPayload: {
+          uuid: activityId,
+        },
+      });
+      router.push(activitiesListPath);
+    } catch (error) {
+      console.error('Error::', error);
+    }
   };
 
-  React.useEffect(() => {
-    deleteActivity.isSuccess && router.push(activitiesListPath);
-  }, [deleteActivity.isSuccess]);
+  if (isLoading) {
+    return (
+      <div className="h-full p-4">
+        <Back path={activitiesListPath} />
+        <div className="h-full flex justify-center items-center">
+          <Loader />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="h-full p-4">
+        <Back path={activitiesListPath} />
+        <NoResult
+          className="h-full flex justify-center items-center"
+          message="Error while loading activity details"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="h-[calc(100vh-65px)] p-4">
@@ -51,65 +90,89 @@ export default function ActivitiesDetailView() {
             titleStyle="text-xl sm:text-4xl "
           />
         </div>
-        <div className="flex flex-col gap-2 lg:flex-row items-center justify-center">
-          <div className="flex space-x-2">
-            <DialogComponent
-              buttonIcon={Trash}
-              buttonText="Delete"
-              dialogTitle="Delete Activity"
-              dialogDescription="Are you sure you want to delete this activity?"
-              confirmButtonText="Remove"
-              handleClick={() => removeActivity()}
-              buttonClassName="rounded-sm w-full text-red-500 border-red-500 sm"
-              confirmButtonClassName="rounded-sm w-full bg-red-500"
-              variant="outline"
-            />
+        {activityDetail && (
+          <div className="flex flex-col gap-2 lg:flex-row items-center justify-center">
+            <div className="flex space-x-2">
+              <RoleAuth
+                roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+                hasContent={false}
+              >
+                <TooltipWrapper tip="Delete Activity">
+                  <DialogComponent
+                    buttonIcon={Trash}
+                    buttonText="Delete"
+                    dialogTitle="Delete Activity"
+                    dialogDescription="Are you sure you want to delete this activity?"
+                    confirmButtonText="Remove"
+                    handleClick={() => removeActivity()}
+                    buttonClassName="rounded-sm w-full text-red-500 border-red-500 sm"
+                    confirmButtonClassName="rounded-sm w-full bg-red-500"
+                    variant="outline"
+                  />
+                </TooltipWrapper>
+              </RoleAuth>
 
-            <DialogComponent
-              buttonIcon={Pencil}
-              buttonText="Edit"
-              dialogTitle="Edit Activity"
-              dialogDescription="Are you sure you want to edit this activity?"
-              confirmButtonText="Edit"
-              handleClick={() =>
-                router.push(
-                  `/projects/aa/${projectId}/activities/${activityId}/edit`,
-                )
-              }
-              buttonClassName="rounded-sm w-full"
-              confirmButtonClassName="rounded-sm w-full bg-primary"
-              variant="outline"
+              <RoleAuth
+                roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+                hasContent={false}
+              >
+                <TooltipWrapper tip="Edit Activity">
+                  <DialogComponent
+                    buttonIcon={Pencil}
+                    buttonText="Edit"
+                    dialogTitle="Edit Activity"
+                    dialogDescription="Are you sure you want to edit this activity?"
+                    confirmButtonText="Edit"
+                    handleClick={() => router.push(redirectUpdatePath)}
+                    buttonClassName="rounded-sm w-full"
+                    confirmButtonClassName="rounded-sm w-full bg-primary"
+                    variant="outline"
+                  />
+                </TooltipWrapper>
+              </RoleAuth>
+            </div>
+            <RoleAuth
+              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+              hasContent={false}
+            >
+              <TooltipWrapper tip="Update Status">
+                <IconLabelBtn
+                  Icon={RefreshCcw}
+                  handleClick={() =>
+                    router.push(
+                      `/projects/aa/${projectId}/activities/${activityId}/update-status?from=detailPage${
+                        redirectTo ? `&backFrom=${redirectTo}` : ''
+                      }`,
+                    )
+                  }
+                  name="Update Status"
+                  className="rounded-sm w-full "
+                />
+              </TooltipWrapper>
+            </RoleAuth>
+          </div>
+        )}
+      </div>
+      {activityDetail ? (
+        <div className="grid lg:grid-cols-2 gap-3 w-full">
+          <div className="flex flex-col gap-2 w-full">
+            <ActivityDetailCards
+              activityDetail={activityDetail}
+              loading={isLoading}
+            />
+            <DocumentList
+              documents={activityDetail?.activityDocuments}
+              loading={isLoading}
             />
           </div>
-
-          <IconLabelBtn
-            Icon={RefreshCcw}
-            handleClick={() =>
-              router.push(
-                `/projects/aa/${projectId}/activities/${activityId}/update-status?from=detailPage`,
-              )
-            }
-            name="Update Status"
-            className="rounded-sm w-full "
-          />
-        </div>
-      </div>
-      <div className="grid lg:grid-cols-2 gap-3 w-full">
-        <div className="flex flex-col gap-2 w-full">
-          <ActivityDetailCards
-            activityDetail={activityDetail}
-            loading={isLoading}
-          />
-          <DocumentList
-            documents={activityDetail?.activityDocuments}
+          <CommunicationList
+            activityCommunication={activityDetail?.activityCommunication}
             loading={isLoading}
           />
         </div>
-        <CommunicationList
-          activityCommunication={activityDetail?.activityCommunication}
-          loading={isLoading}
-        />
-      </div>
+      ) : (
+        <NoResult />
+      )}
     </div>
   );
 }

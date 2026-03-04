@@ -1,36 +1,38 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Mail,
   MessageSquare,
   Mic,
-  ChevronDown,
-  ChevronUp,
-  Edit,
-  Send,
-  Play,
-  Pause,
   SendHorizonal,
   LoaderCircle,
+  ArrowUpRightSquare,
 } from 'lucide-react';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import { IconLabelBtn, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useTriggerCommunication } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { SessionStatus } from '@rumsan/connect/src/types';
 import MessageWithToggle from './messageWithToggle';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { useRouter } from 'next/navigation';
 
 interface BaseCommunication {
+  communicationTitle?: string;
   groupId: string;
   groupType: string;
   transportId: string;
   communicationId: string;
   groupName: string;
   sessionStatus: string;
+  sessionId: string;
+  completedAt: string;
   onSend?: () => void;
   onEdit?: () => void;
 }
@@ -54,6 +56,7 @@ export function CommunicationCard({
   activityCommunication,
 }: CommunicationCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const router = useRouter();
 
   const getIcon = () => {
     switch (activityCommunication?.transportName) {
@@ -68,12 +71,22 @@ export function CommunicationCard({
     }
   };
   const { id: projectId, activityID } = useParams();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('from');
   const [loadingButtons, setLoadingButtons] = React.useState<string[]>([]);
   const trigger = useTriggerCommunication();
   const activityId = activityID as string;
 
-  const [showFull, setShowFull] = useState(false);
-  const maxLength = 150;
+  const redirectLink = useMemo(
+    () =>
+      `/projects/aa/${projectId}/communication-logs/commsdetails/${
+        activityCommunication?.communicationId
+      }@${activityId}@${activityCommunication?.sessionId}?from=activities${
+        redirectTo ? `&backFrom=${redirectTo}` : ''
+      }`,
+    [activityCommunication, redirectTo, activityId, projectId],
+  );
+
   const triggerCommunication = async (
     activityId: string,
     communicationId: string,
@@ -91,37 +104,58 @@ export function CommunicationCard({
 
   return (
     <Card className="mb-4 rounded-sm">
-      <CardContent className="pt-2 px-2 pb-2">
-        <div className="flex items-start gap-4">
+      <CardContent className="pt-2 px-3 pb-2">
+        <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
             {getIcon()}
           </div>
           <div className="flex-1">
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-gray-900">
-                {activityCommunication?.groupName}
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="font-medium text-gray-900">
+                  {activityCommunication?.groupName}
+                </h3>
+                {activityCommunication?.sessionStatus !== SessionStatus.NEW && (
+                  <TooltipComponent
+                    Icon={ArrowUpRightSquare}
+                    tip="View Communication Log"
+                    handleOnClick={() => router.push(redirectLink)}
+                    iconStyle="text-primary"
+                  />
+                )}
+              </div>
               <div className="flex gap-2">
                 {activityCommunication?.sessionStatus === SessionStatus.NEW && (
-                  <Button
-                    className="items-center justify-center"
-                    variant="ghost"
-                    onClick={() =>
-                      triggerCommunication(
-                        activityId,
-                        activityCommunication?.communicationId,
-                      )
-                    }
-                    type="button"
+                  <RoleAuth
+                    roles={[
+                      AARoles.ADMIN,
+                      AARoles.MANAGER,
+                      AARoles.Municipality,
+                    ]}
+                    hasContent={false}
                   >
-                    {loadingButtons.includes(
-                      activityCommunication?.communicationId,
-                    ) ? (
-                      <LoaderCircle size={20} className={`animate-spin `} />
-                    ) : (
-                      <SendHorizonal size={18} strokeWidth={1.5} />
-                    )}
-                  </Button>
+                    <TooltipWrapper tip="Send Communication">
+                      <Button
+                        className="items-center justify-center"
+                        variant="ghost"
+                        onClick={() =>
+                          triggerCommunication(
+                            activityId,
+                            activityCommunication?.communicationId,
+                          )
+                        }
+                        type="button"
+                      >
+                        {loadingButtons.includes(
+                          activityCommunication?.communicationId,
+                        ) ? (
+                          <LoaderCircle size={20} className={`animate-spin `} />
+                        ) : (
+                          <SendHorizonal size={18} strokeWidth={1.5} />
+                        )}
+                      </Button>
+                    </TooltipWrapper>
+                  </RoleAuth>
                 )}
               </div>
             </div>
@@ -143,35 +177,41 @@ export function CommunicationCard({
                   activityCommunication?.sessionStatus.slice(1).toLowerCase()}
               </Badge>
             </div>
-
-            {(activityCommunication?.transportName === 'EMAIL' ||
-              activityCommunication?.transportName === 'SMS') && (
-              <div className="mt-3">
-                <MessageWithToggle
-                  message={activityCommunication?.message ?? ''}
-                />
-              </div>
+            {activityCommunication?.sessionStatus === 'COMPLETED' && (
+              <p className="mt-1 text-sm text-gray-500">
+                Completed at: {dateFormat(activityCommunication.completedAt)}
+              </p>
             )}
-
-            {activityCommunication?.transportName === 'VOICE' &&
-              Object.keys(activityCommunication?.message).length !== 0 && (
-                <div className="mt-3">
-                  <div className="pt-2">
-                    <h3 className="text-sm font-medium mb-2">
-                      {activityCommunication?.message?.fileName}
-                    </h3>
-                    <audio
-                      src={activityCommunication?.message?.mediaURL}
-                      controls
-                      className="w-full h-10 "
-                      onPlay={() => setIsPlaying(true)}
-                      onPause={() => setIsPlaying(false)}
-                    />
-                  </div>
-                </div>
-              )}
           </div>
         </div>
+
+        <h4 className="font-normal mb-0 space-y-0 text-muted-foreground">
+          {activityCommunication?.communicationTitle}
+        </h4>
+        {(activityCommunication?.transportName === 'EMAIL' ||
+          activityCommunication?.transportName === 'SMS') && (
+          <div className="mt-1">
+            <MessageWithToggle message={activityCommunication?.message ?? ''} />
+          </div>
+        )}
+
+        {activityCommunication?.transportName === 'VOICE' &&
+          Object.keys(activityCommunication?.message).length !== 0 && (
+            <div className="mt-1">
+              <div className="pt-2">
+                <h3 className="text-sm font-medium mb-2">
+                  {activityCommunication?.message?.fileName}
+                </h3>
+                <audio
+                  src={activityCommunication?.message?.mediaURL}
+                  controls
+                  className="w-full h-10 "
+                  onPlay={() => setIsPlaying(true)}
+                  onPause={() => setIsPlaying(false)}
+                />
+              </div>
+            </div>
+          )}
       </CardContent>
     </Card>
   );

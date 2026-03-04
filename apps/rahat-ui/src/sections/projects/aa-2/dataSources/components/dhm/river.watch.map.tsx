@@ -97,17 +97,6 @@ function RiverWatchMap({ coordinates }: any) {
             ))}
         </Map>
       </StyledMapWrapper>
-      <div className="mt-4">
-        <p className="font-medium text-sm/6">Data Sources:</p>
-        <div className="flex space-x-2 items-center">
-          <Link2 color="gray" size={16} strokeWidth={2.5} />
-          <span className="text-primary text-sm/4">www.dhm.com</span>
-        </div>
-        <div className="flex space-x-2 items-center">
-          <Link2 color="gray" size={16} strokeWidth={2.5} />
-          <span className="text-primary text-sm/4">www.hydrology.com</span>
-        </div>
-      </div>
     </div>
   );
 }

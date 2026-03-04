@@ -1,5 +1,8 @@
+import { useProjectSettingsStore, useProjectStore } from '@rahat-ui/query';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { getStellarTxUrl } from 'apps/rahat-ui/src/utils/stellar';
 import { Copy, CopyCheckIcon } from 'lucide-react';
+import { useParams } from 'next/navigation';
 
 export default function InfoItem({
   label,
@@ -8,6 +11,7 @@ export default function InfoItem({
   link = false,
   copyable = false, // ⬅️ New prop to control copyability
   isLoading,
+  failed = false,
 }: {
   label: string;
   value?: string;
@@ -15,8 +19,15 @@ export default function InfoItem({
   link?: boolean;
   copyable?: boolean;
   isLoading?: boolean;
+  failed?: boolean;
 }) {
+  const { id } = useParams();
+  const projectId = id as string;
   const { clickToCopy, copyAction } = useCopy();
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
+  const project = useProjectStore((p) => p.singleProject);
 
   return (
     <div className="space-y-1 break-words">
@@ -26,7 +37,7 @@ export default function InfoItem({
           <>
             {link ? (
               <a
-                href={`https://stellar.expert/explorer/testnet/tx/${value}`}
+                href={`https://sepolia.basescan.org/tx/${value}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer truncate w-24"
@@ -34,7 +45,11 @@ export default function InfoItem({
                 {value}
               </a>
             ) : (
-              <span className={`text-base ${copyable ? 'truncate w-24' : ''}`}>
+              <span
+                className={`text-base ${failed && 'text-red-400'} ${
+                  copyable ? 'truncate w-24' : ''
+                }`}
+              >
                 {value}
               </span>
             )}

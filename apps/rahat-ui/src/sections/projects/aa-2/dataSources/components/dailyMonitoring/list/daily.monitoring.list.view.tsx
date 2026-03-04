@@ -18,6 +18,7 @@ import {
 } from '@tanstack/react-table';
 import {
   ClientSidePagination,
+  DemoTable,
   IconLabelBtn,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
@@ -25,23 +26,21 @@ import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { UUID } from 'crypto';
 
 import { format } from 'date-fns';
-import { CalendarIcon, Plus } from 'lucide-react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { CalendarIcon, Plus, Trash2 } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import useDailyMonitoringTableColumn from '../useDailyMonitoringTableColumn';
-import DailyMonitoringTable from './daily.monitoring.table';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
+// TODO: This component will be removed if not used anywhere
+// import DailyMonitoringTable from './daily.monitoring.table';
 
 export default function DailyMonitoringListView() {
   const params = useParams();
   const projectId = params.id as UUID;
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [userSearchText, setUserSearchText] = React.useState<string>('');
-  const [locationFilterItem, setLocationFilterItem] =
-    React.useState<string>('');
-  const [dateFilterItem, setDateFilterItem] = React.useState<string>('');
+
   const [date, setDate] = React.useState<Date | null>(null);
-  const { filters, setFilters } = usePagination();
+  const { filters } = usePagination();
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -126,29 +125,35 @@ export default function DailyMonitoringListView() {
 
         {date && (
           <Button
-            variant="secondary"
+            variant="outline"
+            className="text-red-500 border-red-300 hover:bg-red-50 hover:border-red-400"
             onClick={() => {
               setDate(null);
               table.getColumn('createdAt')?.setFilterValue(undefined);
             }}
           >
-            Clear date
+            <Trash2 className="w-4 h-4 mr-2" />
+            Clear Date
           </Button>
         )}
-
-        <IconLabelBtn
-          handleClick={() =>
-            router.push(
-              `/projects/aa/${projectId}/data-sources/daily-monitoring/add`,
-            )
-          }
-          name="Add"
-          Icon={Plus}
-        />
+        <RoleAuth
+          roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+          hasContent={false}
+        >
+          <IconLabelBtn
+            handleClick={() =>
+              router.push(
+                `/projects/aa/${projectId}/data-sources/daily-monitoring/add`,
+              )
+            }
+            name="Add"
+            Icon={Plus}
+          />
+        </RoleAuth>
       </div>
       <div className="border bg-card rounded">
-        <DailyMonitoringTable table={table} loading={isLoading} />
-
+        {/* <DailyMonitoringTable table={table} loading={isLoading} /> */}
+        <DemoTable table={table} loading={isLoading} />
         <ClientSidePagination table={table} />
       </div>
     </div>

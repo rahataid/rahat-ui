@@ -1,10 +1,17 @@
-import React from 'react';
-import { ArrowLeftRight, Copy, CopyCheck } from 'lucide-react';
-import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
-import { Heading } from 'apps/rahat-ui/src/common';
-import { format } from 'date-fns';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import { Heading } from 'apps/rahat-ui/src/common';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
+import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
+import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
+import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
+import { UUID } from 'crypto';
+import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
+import { ArrowLeftRight, Copy, CopyCheck, Info } from 'lucide-react';
+import { useParams } from 'next/navigation';
 
 type Txn = {
   title?: string;
@@ -19,20 +26,36 @@ type Props = {
   transaction: Txn[];
 };
 
-const Transaction = ({ amount, date, hash }: Txn) => {
+const Transaction = ({ amount, date, hash, title }: Txn) => {
+  const { id } = useParams();
+  const projectId = id as string;
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
   const { clickToCopy, copyAction } = useCopy();
+  const txnUrl = getExplorerUrl({
+    chainSettings:
+      settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+    target: 'tx',
+    value: hash,
+  });
   return (
     <div className="flex justify-between space-x-4 items-center">
       <div className="flex space-x-4 items-center">
         <div className="p-2 rounded-full bg-muted">
-          <ArrowLeftRight size={16} />
+          <ArrowLeftRight size={22} />
         </div>
         <div>
+          <div>
+            <p className="font-normal text-[14px] leading-[16px] text-[#37404C]">
+              {title ? formatEnumString(title) : 'N/A'}
+            </p>
+          </div>
           <div className="flex gap-1">
             <a
               target="_blank"
-              href={`https://stellar.expert/explorer/testnet/tx/${hash}`}
-              className="cursor-pointer"
+              href={txnUrl || '#'}
+              className="cursor-pointer text-[14px] font-normal text-[#297AD6] leading-[16px]"
             >
               <p className="text-sm font-medium truncate w-24">{hash}</p>
             </a>
@@ -43,7 +66,7 @@ const Transaction = ({ amount, date, hash }: Txn) => {
               {copyAction === 1 ? <CopyCheck size={16} /> : <Copy size={16} />}
             </span>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-[14px] font-normal text-[#64748B] leading-[16px]">
             {date
               ? Intl.DateTimeFormat('en-US', {
                   year: 'numeric',
@@ -52,13 +75,16 @@ const Transaction = ({ amount, date, hash }: Txn) => {
                   hour12: true,
                   hour: 'numeric',
                   minute: 'numeric',
+                  second: 'numeric',
                 }).format(new Date(date))
               : 'N/A'}
           </p>
         </div>
       </div>
       <div>
-        <p className="text-red-500 text-sm">{amount} </p>
+        <p className="font-semibold text-[14px] leading-[24px]">
+          {amount} {getAssetCode(settings, projectId)}
+        </p>
       </div>
     </div>
   );
@@ -93,19 +119,28 @@ export default function TransactionCard({ transaction, loading }: Props) {
             </div>
           ))}
         </div>
-      ) : (
+      ) : transaction?.length ? (
         <ScrollArea className=" h-[calc(350px)]">
           {transaction?.map((txn) => {
             return (
-              <Transaction
-                key={txn.hash}
-                amount={txn.amount}
-                date={txn.date}
-                hash={txn.hash}
-              />
+              <div className="mb-4" key={txn.hash}>
+                <Transaction
+                  amount={txn.amount}
+                  date={txn.date}
+                  hash={txn.hash}
+                  title={txn.title}
+                />
+              </div>
             );
           })}
         </ScrollArea>
+      ) : (
+        <div className="h-full grid place-items-center">
+          <div className="flex flex-col items-center text-muted-foreground">
+            <Info />
+            <p className="text-sm">No transactions made</p>
+          </div>
+        </div>
       )}
     </div>
   );

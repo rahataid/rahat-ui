@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import { Coins, User } from 'lucide-react';
 import {
@@ -23,9 +23,7 @@ import {
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 
-type Props = {};
-
-const BeneficiaryGroupsDetails = (props: Props) => {
+const BeneficiaryGroupsDetails = () => {
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
@@ -39,8 +37,8 @@ const BeneficiaryGroupsDetails = (props: Props) => {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  console.log(groupDetails?.groupedBeneficiaries);
-  const tableData = React.useMemo(() => {
+
+  const tableData = useMemo(() => {
     if (groupDetails) {
       return groupDetails?.groupedBeneficiaries?.map((d: any) => ({
         walletAddress: d?.Beneficiary?.walletAddress,
@@ -66,9 +64,16 @@ const BeneficiaryGroupsDetails = (props: Props) => {
     },
   });
 
-  const handleSearch = (e) => {
-    console.log(e.target.value);
-  };
+  const totalTokensAssigned = React.useMemo(() => {
+    if (groupDetails?.benfGroupTokensStatus === 'NOT_DISBURSED') return 0;
+    return (
+      groupDetails?.groupedBeneficiaries?.reduce(
+        (sum, item) => sum + (item.tokensReserved ?? 0),
+        0,
+      ) || 0
+    );
+  }, [groupDetails]);
+
   return (
     <div className="p-4 ">
       <div className="flex justify-between items-center">
@@ -91,12 +96,7 @@ const BeneficiaryGroupsDetails = (props: Props) => {
           iconStyle="bg-white text-secondary-muted"
           title="Total Token Assigned"
           Icon={Coins}
-          number={
-            groupDetails?.groupedBeneficiaries?.reduce(
-              (sum, item) => sum + item.tokensReserved,
-              0,
-            ) || 0
-          }
+          number={totalTokensAssigned}
         />
       </div>
       <div className="p-4 rounded-sm border">

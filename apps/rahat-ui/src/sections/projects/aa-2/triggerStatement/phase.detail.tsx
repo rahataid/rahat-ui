@@ -5,7 +5,13 @@ import {
   IconLabelBtn,
   TableLoader,
 } from 'apps/rahat-ui/src/common';
-import { AlertTriangle, Plus, Settings, Undo2 } from 'lucide-react';
+import {
+  AlertCircleIcon,
+  AlertTriangle,
+  Plus,
+  Settings,
+  Undo2,
+} from 'lucide-react';
 import { TriggersListTabs, TriggersPhaseCard } from './components';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -15,7 +21,8 @@ import {
   AlertDescription,
   AlertTitle,
 } from '@rahat-ui/shadcn/src/components/ui/alert';
-import { format } from 'date-fns';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 export default function PhaseDetail() {
   const router = useRouter();
@@ -23,11 +30,7 @@ export default function PhaseDetail() {
   const projectId = params.id as UUID;
   const phaseId = params.phaseId as UUID;
 
-  const { data: phase, isLoading } = useSinglePhase(projectId, phaseId);
-
-  const date = phase?.activatedAt
-    ? format(new Date(phase?.activatedAt), 'MMMM d, yyyy')
-    : '';
+  const { data: phase, isLoading, error } = useSinglePhase(projectId, phaseId);
 
   const revertPhase = useRevertPhase();
 
@@ -44,47 +47,80 @@ export default function PhaseDetail() {
       payload: { phaseUuid: phaseId },
     });
   };
-  return isLoading ? (
-    <TableLoader />
-  ) : (
+
+  if (isLoading) {
+    return <TableLoader />;
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 w-full h-full">
+        <Back path={`/projects/aa/${projectId}/trigger-statements`} />
+        <div className="text-gray-400 flex justify-center items-center h-full w-full flex-col gap-3">
+          <AlertCircleIcon size={70} />
+          <p className="text-xl">
+            Data not available at the moment. Please try again later.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
     <div className="p-4">
-      <Back />
+      <Back path={`/projects/aa/${projectId}/trigger-statements`} />
       <div className="flex justify-between items-center">
         <Heading
           title={phase?.name || 'N/A'}
           description={`Detailed view of the ${phase?.name?.toLowerCase()} phase`}
         />
         <div className="flex space-x-2">
-          <IconLabelBtn
-            variant="outline"
-            Icon={Settings}
-            name="Manage Threshold"
-            handleClick={() => {
-              router.push(
-                `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}/config-threshold`,
-              );
-            }}
-          />
-
-          <IconLabelBtn
-            variant="outline"
-            className="text-primary border-primary"
-            Icon={Plus}
-            disabled={phase?.isActive}
-            name="Add Trigger"
-            handleClick={handleAddTriggerClick}
-          />
-
-          {isDisabled ? (
-            <IconLabelBtn Icon={Undo2} name="Revert" disabled />
-          ) : (
-            <CustomAlertDialog
-              dialogTrigger={<IconLabelBtn Icon={Undo2} name="Revert" />}
-              title="Revert Phase"
-              description="Are you sure you want to revert this phase?"
-              handleContinueClick={handleRevertPhase}
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
+            <IconLabelBtn
+              variant="outline"
+              Icon={Settings}
+              name="Manage Threshold"
+              handleClick={() => {
+                router.push(
+                  `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}/config-threshold`,
+                );
+              }}
             />
-          )}
+          </RoleAuth>
+
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
+            <IconLabelBtn
+              variant="outline"
+              className="text-primary border-primary"
+              Icon={Plus}
+              disabled={phase?.isActive}
+              name="Add Trigger"
+              handleClick={handleAddTriggerClick}
+            />
+          </RoleAuth>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
+            <>
+              {isDisabled ? (
+                <IconLabelBtn Icon={Undo2} name="Revert" disabled />
+              ) : (
+                <CustomAlertDialog
+                  dialogTrigger={<IconLabelBtn Icon={Undo2} name="Revert" />}
+                  title="Revert Phase"
+                  description="Are you sure you want to revert this phase?"
+                  handleContinueClick={handleRevertPhase}
+                />
+              )}
+            </>
+          </RoleAuth>
         </div>
       </div>
       {phase?.isActive && (
@@ -101,7 +137,7 @@ export default function PhaseDetail() {
                 This phase has been triggered
               </AlertTitle>
               <AlertDescription className="text-xs text-gray-700">
-                <p>{date}</p>
+                <p>{dateFormat(phase?.activatedAt)}</p>
               </AlertDescription>
             </div>
           </Alert>
@@ -118,6 +154,8 @@ export default function PhaseDetail() {
               phase?.totalMandatoryTriggers,
               phase?.totalOptionalTriggers,
             ]}
+            requiredMandatoryTriggers={phase?.requiredMandatoryTriggers}
+            requiredOptionalTriggers={phase?.requiredOptionalTriggers}
             mandatoryTriggers={phase?.totalMandatoryTriggers}
             optionalTriggers={phase?.totalOptionalTriggers}
             triggeredMandatoryTriggers={phase?.totalMandatoryTriggersTriggered}

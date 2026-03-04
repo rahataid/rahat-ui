@@ -13,10 +13,19 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { NoResult, SpinnerLoader } from 'apps/rahat-ui/src/common';
+import {
+  IconLabelBtn,
+  NoResult,
+  SpinnerLoader,
+} from 'apps/rahat-ui/src/common';
 import { CommunicationCard } from '../components/communicationCard';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import { useMemo } from 'react';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { RoleAuth } from 'libs/auth/src/lib/roleAuth';
+import { AARoles } from 'libs/auth/src/enums/aaRoles';
+import { PlusIcon } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 
 type CommunicationData = {
   groupId: string;
@@ -37,6 +46,10 @@ export default function CommunicationList({
   activityCommunication,
   loading,
 }: CommunicationList) {
+  // Router goes here
+  const router = useRouter();
+  const pathname = usePathname();
+
   const defaultTab = useMemo(() => {
     const active = activityCommunication?.some(
       (d) => d.sessionStatus === 'NEW' || d.sessionStatus === 'PENDING',
@@ -44,50 +57,88 @@ export default function CommunicationList({
     return active ? 'communications' : 'history';
   }, [activityCommunication]);
 
+  const pendingCommunications = useMemo(() => {
+    return activityCommunication?.filter(
+      (d) => d?.sessionStatus === 'NEW' || d?.sessionStatus === 'PENDING',
+    );
+  }, [activityCommunication]);
+
+  const completedCommunications = useMemo(() => {
+    return activityCommunication?.filter(
+      (d) => d?.sessionStatus === 'COMPLETED',
+    );
+  }, [activityCommunication]);
+
   const { activeTab, setActiveTab } = useActiveTab(defaultTab);
   return (
     <div className="border px-4 pt-2 rounded-xl ">
-      <div className="mb-4 flex items-center justify-between ">
-        <div>
-          <h1 className="text-xl font-semibold text-gray-900">
-            Communication List
-          </h1>{' '}
-          <p className="text-sm text-gray-500">
-            List of communications in this activity
-          </p>
+      <div className="mb-4 flex items-center justify-between">
+        <div className=" w-full flex flex-row self-center justify-between">
+          <div>
+            <h1 className="text-xl font-semibold text-gray-900">
+              Communication List
+            </h1>{' '}
+            <p className="text-sm text-gray-500">
+              List of communications in this activity
+            </p>
+          </div>
+          <div>
+            {' '}
+            <RoleAuth
+              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+              hasContent={false}
+            >
+              <IconLabelBtn
+                Icon={PlusIcon}
+                handleClick={() => router.push(`${pathname}/edit#comm`)}
+                name="Add Communication"
+                className="rounded-sm w-full "
+              />
+            </RoleAuth>
+          </div>
         </div>
-        {/* <div className="flex mt-5">
-          <IconLabelBtn
-            Icon={Plus}
-            handleClick={() => console.log('add')}
-            name="Add Commuication"
-            className="h-7  text-sm"
-          />
-        </div> */}
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="communications">Communications</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
+        <TabsList className="bg-gray-100 rounded-sm">
+          <TabsTrigger
+            value="communications"
+            className="data-[state=active]:bg-white flex items-center gap-2"
+          >
+            Communications
+            <Badge
+              className={`h-5 w-5 justify-center text-white px-2 py-0 ${
+                activeTab === 'communications' ? 'bg-blue-500 ' : 'bg-gray-500'
+              }`}
+            >
+              {pendingCommunications?.length}
+            </Badge>
+          </TabsTrigger>
+
+          <TabsTrigger
+            value="history"
+            className="data-[state=active]:bg-white flex items-center gap-2"
+          >
+            History
+            <Badge
+              className={`h-5 w-5 justify-center text-white px-2 py-0 ${
+                activeTab === 'history' ? 'bg-blue-500 ' : 'bg-gray-500'
+              }`}
+            >
+              {completedCommunications?.length}
+            </Badge>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="communications">
           {loading && <SpinnerLoader />}
           <div className="overflow-y-auto  scrollbar-hidden xl:h-[calc(100vh-320px)] h-[calc(100vh-200px)]   ">
-            {activityCommunication?.filter(
-              (d) => d.sessionStatus === 'NEW' || d.sessionStatus === 'PENDING',
-            ).length === 0 && !loading ? (
+            {pendingCommunications?.length === 0 && !loading ? (
               <NoResult message="No Communication Available" />
             ) : (
-              activityCommunication
-                ?.filter(
-                  (d) =>
-                    d.sessionStatus === 'NEW' || d.sessionStatus === 'PENDING',
-                )
-                .map((comm, index) => (
-                  <CommunicationCard key={index} activityCommunication={comm} />
-                ))
+              pendingCommunications?.map((comm, index) => (
+                <CommunicationCard key={index} activityCommunication={comm} />
+              ))
             )}
           </div>
         </TabsContent>
@@ -95,16 +146,12 @@ export default function CommunicationList({
         <TabsContent value="history">
           {loading && <SpinnerLoader />}
           <div className="overflow-y-auto  scrollbar-hidden xl:h-[calc(100vh-320px)]  h-[calc(100vh-200px)]  ">
-            {activityCommunication?.filter(
-              (d) => d.sessionStatus === 'COMPLETED',
-            ).length === 0 && !loading ? (
+            {completedCommunications?.length === 0 && !loading ? (
               <NoResult message="No History Available" />
             ) : (
-              activityCommunication
-                ?.filter((d) => d.sessionStatus === 'COMPLETED')
-                .map((comm, index) => (
-                  <CommunicationCard key={index} activityCommunication={comm} />
-                ))
+              completedCommunications?.map((comm, index) => (
+                <CommunicationCard key={index} activityCommunication={comm} />
+              ))
             )}
           </div>
         </TabsContent>

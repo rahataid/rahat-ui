@@ -1,10 +1,9 @@
 export const mergeTransactions = async (transactionsObj: any) => {
-  console.log({ transactionsObj });
-  const { tokenReceiveds, transferProcesseds } = transactionsObj;
+  const { transfers, transferProcesseds } = transactionsObj;
 
   // Combine the arrays
   const mergedTransactions: any = [
-    ...tokenReceiveds.map((transaction: any) => ({
+    ...transfers.map((transaction: any) => ({
       ...transaction,
       topic: 'Received',
       date: new Date(
@@ -19,11 +18,7 @@ export const mergeTransactions = async (transactionsObj: any) => {
       amount: transaction._amount,
       token: transaction._tokenAddress,
       topic: 'Disbursed',
-      date: new Date(
-        parseInt(transaction.blockTimestamp) * 1000,
-      ).toLocaleDateString('en-US', {
-        timeZone: 'UTC',
-      }),
+      date: new Date(transaction.blockTimestamp * 1000).toISOString(),
     })),
   ];
 

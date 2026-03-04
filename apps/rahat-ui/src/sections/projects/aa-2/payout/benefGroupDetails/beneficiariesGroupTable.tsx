@@ -57,7 +57,11 @@ export default function BeneficiariesGroupTable({ table, loading }: IProps) {
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                {loading ? <SpinnerLoader /> : <NoResult />}
+                {loading ? (
+                  <SpinnerLoader />
+                ) : (
+                  <NoResult message="No Logs Found" />
+                )}
               </TableCell>
             </TableRow>
           )}

@@ -24,23 +24,31 @@ import {
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { useListSessionLogs, usePagination } from '@rahat-ui/query';
+import {
+  useListSessionLogs,
+  usePagination,
+  useSessionBroadCastCount,
+} from '@rahat-ui/query';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import * as XLSX from 'xlsx';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 interface BaseCommunication {
   groupId: string;
   groupType: string;
   transportId: string;
   communicationId: string;
+  communicationTitle: string;
   groupName: string;
   sessionStatus: string;
   sessionId: string;
+  completedAt: string;
 }
 
 interface EmailCommunication extends BaseCommunication {
   transportName: 'EMAIL' | 'SMS';
   message: string;
+  subject?: string;
 }
 
 interface IVRCommunication extends BaseCommunication {
@@ -75,6 +83,7 @@ export function CommunicationDetailCard({
       ...filters,
     });
   const router = useRouter();
+  const count = useSessionBroadCastCount([activityCommunication?.sessionId]);
 
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -97,13 +106,13 @@ export function CommunicationDetailCard({
     );
   };
 
-  const failedCount = useMemo(() => {
-    return (
-      sessionLogs?.httpReponse?.data?.data?.filter(
-        (log: any) => log?.status === BroadcastStatus.FAIL,
-      ) ?? []
-    );
-  }, [sessionLogs]);
+  // const failedCount = useMemo(() => {
+  //   return (
+  //     sessionLogs?.httpReponse?.data?.data?.filter(
+  //       (log: any) => log?.status === BroadcastStatus.FAIL,
+  //     ) ?? []
+  //   );
+  // }, [sessionLogs]);
   const onFailedExports = () => {
     const logs = sessionLogs?.httpReponse?.data?.data?.filter(
       (log: any) => log?.status === BroadcastStatus.FAIL,
@@ -147,21 +156,36 @@ export function CommunicationDetailCard({
                     ? 'text-red-400 bg-yellow-100'
                     : activityCommunication?.sessionStatus === 'COMPLETED'
                     ? 'text-green-700 bg-green-200'
-                    : 'text-red-700 bg-red-200'
+                    : activityCommunication.sessionStatus === 'FAILED'
+                    ? 'text-red-700 bg-red-200'
+                    : 'bg-gray-200'
                 }`}
               >
                 {activityCommunication?.sessionStatus.charAt(0).toUpperCase() +
                   activityCommunication?.sessionStatus.slice(1).toLowerCase()}
               </Badge>
             </div>
+            {activityCommunication?.sessionStatus === 'COMPLETED' && (
+              <p className="mt-1 text-sm text-gray-500">
+                Completed at: {dateFormat(activityCommunication.completedAt)}
+              </p>
+            )}
           </div>
         </div>
       </CardHeader>
       <CardContent className="pb-4 min-h-[60px] flex-grow">
+        <p className="text-sm text-gray-500">
+          {activityCommunication?.communicationTitle}
+        </p>
         {(activityCommunication?.transportName === 'EMAIL' ||
           activityCommunication?.transportName === 'SMS') && (
-          <div className="mt-3">
-            <p className="text-sm text-gray-700 py-2.5">
+          <div className="flex flex-col gap-0">
+            {activityCommunication?.transportName === 'EMAIL' && (
+              <p className="text-sm text-gray-700">
+                {activityCommunication?.subject}
+              </p>
+            )}
+            <p className="text-sm text-gray-700 py-1.5">
               {activityCommunication?.message}
             </p>
           </div>
@@ -186,7 +210,7 @@ export function CommunicationDetailCard({
             variant="outline"
             className=" gap-2"
             onClick={onFailedExports}
-            disabled={failedCount.length === 0}
+            disabled={count?.data?.data?.FAIL === 0}
           >
             Failed Exports
             <CloudDownload className="h-4 w-4" />
@@ -195,6 +219,7 @@ export function CommunicationDetailCard({
             variant="outline"
             className="flex-1 gap-2 text-blue-600 border-blue-200"
             onClick={onViewDetails}
+            disabled={activityCommunication?.sessionStatus === 'NEW'}
           >
             View Details
             <ArrowRight className="h-4 w-4" />

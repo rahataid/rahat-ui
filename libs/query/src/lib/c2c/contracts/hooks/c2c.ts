@@ -6,12 +6,14 @@ import {
 } from '../generated-hooks/c2c';
 import { useRSQuery } from '@rumsan/react-query';
 import {
+  DisbursementSelectionType,
   DisbursementStatus,
   DisbursementType,
   useAddDisbursement,
 } from '../../project-actions';
 import { UUID } from 'crypto';
 import { useProjectAction } from '../../../projects';
+import { toast } from 'react-toastify';
 
 //Temporary solution, should be changed when crypto is implemented
 export const useDepositTokenToProject = () => {
@@ -33,7 +35,7 @@ export const useMultiSigDisburseToken = ({
 
   return useMutation({
     onError: (error) => {
-      console.error(error);
+      toast.error(error?.message);
     },
     async onSuccess(data, variables, context) {
       await projectAction.mutateAsync({
@@ -61,14 +63,7 @@ export const useMultiSigDisburseToken = ({
       safeAddress: `0x{string}`;
       c2cProjectAddress: `0x{string}`;
     }) => {
-      console.log('beneficiaryAddresses', {
-        amount,
-        beneficiaryAddresses,
-        rahatTokenAddress,
-        safeAddress,
-        c2cProjectAddress,
-      });
-      // console.log("amount", amount, BigInt(parseEther(amount.toString())))
+      
       const encodedForDisburse = beneficiaryAddresses.map((beneficiary) => {
         return encodeFunctionData({
           abi: c2CProjectAbi,
@@ -121,6 +116,7 @@ export const useDisburseTokenToBeneficiaries = () => {
           beneficiaries: beneficiaryAddresses,
           from: c2cProjectAddress,
           transactionHash: d,
+          disbursementType: DisbursementSelectionType.INDIVIDUAL, //this code is added to resolve the build error
           type: disburseMethod as DisbursementType,
           timestamp: new Date().toISOString(),
           status: DisbursementStatus.COMPLETED,

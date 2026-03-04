@@ -1,68 +1,79 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Heading } from 'apps/rahat-ui/src/common';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import {
+  renderCardColor,
+  renderStatusColor,
+} from 'apps/rahat-ui/src/utils/getColorCard';
 import { Globe, MapPin, RadioTower, TrendingUp } from 'lucide-react';
 import React from 'react';
+interface InfoProp {
+  riverWatch: {
+    stationIndex: number;
+    latitude: number;
+    longitude: number;
+    description: string;
+    elevation: number;
+    district: string;
+    name: string;
+    steady: string;
+    status: string;
+    waterLevel: { value: number; datetime: string };
+  };
+  updatedAt: string;
+}
 
-export function Info({ riverWatch }: any) {
+export function Info({ riverWatch, updatedAt }: InfoProp) {
   const cardData = React.useMemo(
     () => [
       {
         icon: RadioTower,
         label: 'Station Index',
-        value: riverWatch?.info?.stationIndex,
+        value: riverWatch?.stationIndex,
       },
       {
         icon: Globe,
         label: 'Latitude',
-        value: riverWatch?.info?.latitude,
+        value: riverWatch?.latitude,
       },
       {
         icon: Globe,
         label: 'Longitude',
-        value: riverWatch?.info?.longitude,
+        value: riverWatch?.longitude,
       },
       {
         icon: TrendingUp,
         label: 'Elevation',
-        value: riverWatch?.info?.elevation,
+        value: riverWatch?.elevation,
       },
       {
         icon: MapPin,
         label: 'District',
-        value: riverWatch?.info?.district,
+        value: riverWatch?.district,
       },
     ],
     [riverWatch],
   );
-
-  const renderCardColor = (status: string) => {
-    const statusColorMap: Record<string, string> = {
-      'BELOW WARNING LEVEL': 'bg-green-100 border-green-500',
-      DANGER_LEVEL: 'bg-red-100 border-red-500',
-      WARNING_LEVEL: 'bg-yellow-100 border-yellow-500',
-    };
-
-    return statusColorMap[status] || '';
-  };
 
   return (
     <div className="flex justify-between space-x-4">
       <div className="p-4 rounded-sm border shadow w-full">
         <div className="flex justify-between gap-4">
           <Heading
-            title={riverWatch?.info?.name}
+            title={riverWatch?.name}
             titleStyle="text-xl/6 font-semibold"
-            description={riverWatch?.info?.description}
+            description={riverWatch?.description}
+            updatedAt={updatedAt}
           />
           <div>
-            <Badge>{riverWatch?.info?.steady}</Badge>
+            <Badge>{riverWatch?.steady}</Badge>
           </div>
         </div>
         <div className="grid grid-cols-5 gap-2">
           {cardData?.map((d) => {
             const Icon = d.icon;
             return (
-              <div className="flex space-x-3 items-center">
+              <div className="flex space-x-3 items-center" key={d.label}>
                 <div>
                   <Icon className="text-gray-500" size={20} />
                 </div>
@@ -77,17 +88,22 @@ export function Info({ riverWatch }: any) {
       </div>
       <div
         className={`p-4 rounded-sm border shadow text-center w-64 ${renderCardColor(
-          riverWatch?.info?.status,
+          riverWatch?.status,
         )}`}
       >
         <p className="text-primary font-semibold text-3xl/10">
-          {riverWatch?.info?.waterLevel?.value}
+          {riverWatch?.waterLevel?.value}
         </p>
         <p className="text-sm/6 font-medium">Water Level</p>
         <p className="text-gray-500 text-sm/6">
-          {new Date(riverWatch?.info?.waterLevel?.datetime).toLocaleString()}
+          {dateFormat(
+            riverWatch?.waterLevel?.datetime,
+            'eee, MMM d yyyy, hh:mm:ss a',
+          )}
         </p>
-        <Badge>{riverWatch?.info?.status}</Badge>
+        <Badge className={`${renderStatusColor(riverWatch?.status)}`}>
+          {riverWatch?.status}
+        </Badge>
       </div>
     </div>
   );

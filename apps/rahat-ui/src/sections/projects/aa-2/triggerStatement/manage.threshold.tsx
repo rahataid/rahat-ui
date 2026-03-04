@@ -80,7 +80,9 @@ export default function ManageThreshold() {
   useEffect(() => {
     if (isSuccess) {
       setOpen(false);
-      router.push(`/projects/aa/${id}/phase/${phaseId as string}`);
+      router.push(
+        `/projects/aa/${id}/trigger-statements/phase/${phaseId as string}`,
+      );
     }
   }, [isSuccess]);
 

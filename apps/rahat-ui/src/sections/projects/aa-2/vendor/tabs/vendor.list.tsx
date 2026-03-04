@@ -11,11 +11,13 @@ import {
   DemoTable,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
+import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
+import { getPaginationFromLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
-import React from 'react';
-import { useProjectVendorTableColumns } from '../table.columns';
 import { UUID } from 'crypto';
 import { useSearchParams } from 'next/navigation';
+import React from 'react';
+import { useProjectVendorTableColumns } from '../table.columns';
 
 export const VendorList = ({ id }: { id: UUID }) => {
   const [columnVisibility, setColumnVisibility] =
@@ -32,7 +34,7 @@ export const VendorList = ({ id }: { id: UUID }) => {
   } = usePagination();
 
   const debouncedSearch = useDebounce(filters, 500);
-  const columns = useProjectVendorTableColumns();
+  const columns = useProjectVendorTableColumns(pagination);
   const { data: vendors, isLoading } = useAAVendorsList({
     projectUUID: id,
     page: pagination.page,
@@ -67,6 +69,20 @@ export const VendorList = ({ id }: { id: UUID }) => {
       setFilters({});
     }
   }, [searchParams]);
+
+  const [isPaginationReady, setIsPaginationReady] = React.useState(false);
+
+  React.useEffect(() => {
+    const isBackFromDetail =
+      searchParams.get('isBackFromVendorDetail') === 'true';
+    const prevPagination = getPaginationFromLocalStorage(
+      `${PaginationTableName.VENDOR_LIST}`,
+      isBackFromDetail,
+    );
+    setPagination(prevPagination);
+    setIsPaginationReady(true);
+  }, [searchParams, setPagination]);
+
   return (
     <div className="rounded border bg-card p-4">
       <div className="flex justify-between space-x-2 mb-2">
@@ -83,21 +99,23 @@ export const VendorList = ({ id }: { id: UUID }) => {
         loading={isLoading}
         message="No Vendors Available"
       />
-      <CustomPagination
-        currentPage={pagination.page}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        setPagination={setPagination}
-        meta={
-          (vendors?.response?.meta as any) || {
-            total: 0,
-            currentPage: 0,
+      {isPaginationReady && (
+        <CustomPagination
+          currentPage={pagination.page}
+          handleNextPage={setNextPage}
+          handlePrevPage={setPrevPage}
+          handlePageSizeChange={setPerPage}
+          setPagination={setPagination}
+          meta={
+            (vendors?.response?.meta as any) || {
+              total: 0,
+              currentPage: 0,
+            }
           }
-        }
-        perPage={pagination?.perPage}
-        total={vendors?.response?.meta?.total || 0}
-      />
+          perPage={pagination?.perPage}
+          total={vendors?.response?.meta?.total || 0}
+        />
+      )}
     </div>
   );
 };

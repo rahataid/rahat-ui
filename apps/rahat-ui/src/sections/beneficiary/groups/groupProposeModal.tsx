@@ -1,6 +1,6 @@
 'use client';
 
-import { useQueryClient, useUpdateGroupPropose } from '@rahat-ui/query';
+import { useUpdateGroupPropose } from '@rahat-ui/query';
 import {
   Dialog,
   DialogClose,
@@ -62,7 +62,6 @@ export default function UpdateGroupProposeModal({
   const [error, setError] = React.useState<string | null>(null);
 
   const updateGroupPropose = useUpdateGroupPropose();
-  const queryClient = useQueryClient();
 
   const handleUpdateGroupPuropse = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,9 +78,6 @@ export default function UpdateGroupProposeModal({
     };
     try {
       await updateGroupPropose.mutateAsync(payload);
-      queryClient.invalidateQueries({
-        queryKey: ['GET_BENEFICIARY_GROUP', beneficiaryGroupDetail.uuid],
-      });
       validateModal.onFalse();
     } catch (err) {
       console.log('Error', err);

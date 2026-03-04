@@ -99,7 +99,6 @@ export default function BeneficiaryDetail({
   const isAssignedToProject = searchParams.get('isAssignedToProject');
   const isGroupValidForAA = searchParams.get('isGroupValidForAA');
 
-  console.log(beneficiaryDetail);
   return (
     <>
       <AssignToProjectModal
@@ -423,6 +422,7 @@ export default function BeneficiaryDetail({
                   {Object.entries(beneficiaryDetail.extras)
                     .filter(([key]) => {
                       const cleanKey = key.trim().toLowerCase();
+                      console.log(cleanKey);
                       return ![
                         'error',
                         'bankedstatus',
@@ -437,7 +437,19 @@ export default function BeneficiaryDetail({
                       >
                         <p>{humanizeString(key)}</p>
                         <p className="text-muted-foreground text-base">
-                          {String(value) || '-'}
+                          {typeof value === 'string' &&
+                          value.startsWith('http') ? (
+                            <a
+                              href={value}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 no-underline"
+                            >
+                              View Link
+                            </a>
+                          ) : (
+                            String(value) || '-'
+                          )}
                         </p>
                       </div>
                     ))}

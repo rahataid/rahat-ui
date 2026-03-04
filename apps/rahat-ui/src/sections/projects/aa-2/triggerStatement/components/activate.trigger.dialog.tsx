@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,30 +22,24 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { X, CloudUpload, LoaderCircle, FileCheck } from 'lucide-react';
-import {
-  useUploadFile,
-  useActivateTrigger,
-  useQueryClient,
-} from '@rahat-ui/query';
+import { useUploadFile, useActivateTrigger } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { toast } from 'react-toastify';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 
 type IProps = {
   projectId: UUID;
-  repeatKey: string;
+  triggerId: string;
   version?: boolean;
   notes?: string;
 };
 
 export default function ActivateTriggerDialog({
   projectId,
-  repeatKey,
+  triggerId,
   version,
   notes,
 }: IProps) {
-  const router = useRouter();
-  const queryClient = useQueryClient();
   const uploadFile = useUploadFile();
   const activateTrigger = useActivateTrigger();
   const [showModal, setShowModal] = React.useState<boolean>(false);
@@ -78,7 +71,7 @@ export default function ActivateTriggerDialog({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      notes: notes,
+      notes: notes || '',
       triggerDocuments: [],
     },
   });
@@ -86,22 +79,38 @@ export default function ActivateTriggerDialog({
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
-      if (isDuplicateFile) {
-        return toast.error('Cannot upload duplicate files.');
-      }
-      if (!validateFile(file)) {
-        return;
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const filesArray = Array.from(files);
+
+      for (const file of filesArray) {
+        const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
+        if (isDuplicateFile) {
+          toast.error(`Cannot upload duplicate file: ${file.name}`);
+          continue;
+        }
+
+        if (!validateFile(file)) {
+          continue;
+        }
+
+        const newId = nextId.current++;
+        setDocuments((prev) => [...prev, { id: newId, name: file.name }]);
+
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          const { data: afterUpload } = await uploadFile.mutateAsync(formData);
+          setAllFiles((prev) => [...prev, afterUpload]);
+        } catch (error) {
+          // Remove the document from the list if upload fails
+          setDocuments((prev) => prev.filter((doc) => doc.name !== file.name));
+          toast.error(`Failed to upload ${file.name}`);
+        }
       }
 
-      const newId = nextId.current++;
-      setDocuments((prev) => [...prev, { id: newId, name: file.name }]);
-      const formData = new FormData();
-      formData.append('file', file);
-      const { data: afterUpload } = await uploadFile.mutateAsync(formData);
-      setAllFiles((prev) => [...prev, afterUpload]);
+      // Reset the input value to allow selecting the same files again
+      event.target.value = '';
     }
   };
 
@@ -113,22 +122,8 @@ export default function ActivateTriggerDialog({
     try {
       await activateTrigger.mutateAsync({
         projectUUID: projectId,
-        activatePayload: { repeatKey: repeatKey, ...data },
+        activatePayload: { uuid: triggerId, ...data },
       });
-
-      // Build payload exactly as used in useSingleTriggerStatement hook
-      const payload = version
-        ? {
-            id: repeatKey,
-          }
-        : {
-            repeatKey: repeatKey,
-          };
-
-      queryClient.invalidateQueries({
-        queryKey: ['triggerStatement', projectId, payload],
-      });
-      // router.push(`/projects/aa/${projectID}/trigger-statements`);
     } catch (e) {
       console.error('Activate Trigger Error::', e);
     } finally {
@@ -199,6 +194,7 @@ export default function ActivateTriggerDialog({
                           <Input
                             className="opacity-0 cursor-pointer"
                             type="file"
+                            multiple
                             onChange={handleFileChange}
                           />
                         </div>

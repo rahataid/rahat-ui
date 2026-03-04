@@ -17,7 +17,7 @@ type IProps = {
   form: UseFormReturn<{
     title: string;
     isMandatory?: boolean;
-    notes?: string;
+    description?: string;
   }>;
   phase: any;
 };
@@ -73,14 +73,14 @@ export default function AddManualTriggerForm({ form, phase }: IProps) {
             />
             <FormField
               control={form.control}
-              name="notes"
+              name="description"
               render={({ field }) => {
                 return (
                   <FormItem className="col-span-2">
-                    <FormLabel>Trigger Notes</FormLabel>
+                    <FormLabel>Trigger Description</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Write trigger notes here"
+                        placeholder="Write trigger description here"
                         {...field}
                       />
                     </FormControl>

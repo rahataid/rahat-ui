@@ -5,6 +5,11 @@ import {
 } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Heading, NoResult, TableLoader } from 'apps/rahat-ui/src/common';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import {
+  renderCardColor,
+  renderStatusColor,
+} from 'apps/rahat-ui/src/utils/getColorCard';
 import { UUID } from 'crypto';
 import { format } from 'date-fns';
 import { MapPin, RadioTower, Skull, TriangleAlert } from 'lucide-react';
@@ -30,47 +35,44 @@ export default function RiverWatchView() {
     to: formattedDate,
   });
 
+  const updatedAt = riverWatch?.updatedAt;
+
+  const riverWatchInfoList = riverWatch?.info ?? [];
+
+  // modification required to handle multiple rivers
+  const primaryRiverWatchInfo = riverWatchInfoList[0] ?? null;
+
   const cardData = React.useMemo(
     () => [
       {
         icon: RadioTower,
         label: 'Station Index',
-        value: riverWatch?.info?.stationIndex,
+        value: primaryRiverWatchInfo?.stationIndex,
       },
       {
         icon: MapPin,
         label: 'District',
-        value: riverWatch?.info?.district,
+        value: primaryRiverWatchInfo?.district,
       },
       {
         icon: TriangleAlert,
         label: 'Warning Level',
-        value: riverWatch?.info?.warning_level,
+        value: primaryRiverWatchInfo?.warning_level,
       },
       {
         icon: Skull,
         label: 'Danger Level',
-        value: riverWatch?.info?.danger_level,
+        value: primaryRiverWatchInfo?.danger_level,
       },
     ],
     [riverWatch],
   );
 
-  const renderCardColor = (status: string) => {
-    const statusColorMap: Record<string, string> = {
-      'BELOW WARNING LEVEL': 'bg-green-100 border-green-500',
-      DANGER_LEVEL: 'bg-red-100 border-red-500',
-      WARNING_LEVEL: 'bg-yellow-100 border-yellow-500',
-    };
-
-    return statusColorMap[status] || '';
-  };
-
   if (isLoading) {
     return <TableLoader />;
   }
 
-  if (!riverWatch || !riverWatch.info) {
+  if (!riverWatch || !primaryRiverWatchInfo) {
     return (
       <div className="p-4">
         <NoResult message="No River Watch Data" />
@@ -83,19 +85,20 @@ export default function RiverWatchView() {
         className="p-4 rounded-sm border shadow flex justify-between space-x-4 cursor-pointer hover:shadow-md"
         onClick={() =>
           router.push(
-            `/projects/aa/${projectId}/data-sources/dhm/river-watch/${riverWatch?.id}`,
+            `/projects/aa/${projectId}/data-sources/dhm/river-watch/${primaryRiverWatchInfo?.series_id}`,
           )
         }
       >
         <div className="w-full">
           <div className="flex justify-between gap-4">
             <Heading
-              title={riverWatch?.info?.name}
+              title={primaryRiverWatchInfo?.name}
               titleStyle="text-xl/6 font-semibold"
-              description={riverWatch?.info?.description}
+              description={primaryRiverWatchInfo?.basin}
+              updatedAt={updatedAt}
             />
             <div>
-              <Badge>{riverWatch?.info?.steady}</Badge>
+              <Badge>{primaryRiverWatchInfo?.steady}</Badge>
             </div>
           </div>
           <div className="grid grid-cols-4 gap-4">
@@ -117,17 +120,24 @@ export default function RiverWatchView() {
         </div>
         <div
           className={`p-4 rounded-sm border shadow text-center w-64 ${renderCardColor(
-            riverWatch?.info?.status,
+            primaryRiverWatchInfo?.status,
           )}`}
         >
           <p className="text-primary font-semibold text-3xl/10">
-            {riverWatch?.info?.waterLevel?.value}
+            {primaryRiverWatchInfo?.waterLevel?.value}
           </p>
           <p className="text-sm/6 font-medium">Water Level</p>
           <p className="text-gray-500 text-sm/6">
-            {new Date(riverWatch?.info?.waterLevel?.datetime).toLocaleString()}
+            {dateFormat(
+              primaryRiverWatchInfo?.waterLevel?.datetime,
+              'eee, MMM d yyyy, hh:mm:ss a',
+            )}
           </p>
-          <Badge>{riverWatch?.info?.status}</Badge>
+          <Badge
+            className={`${renderStatusColor(primaryRiverWatchInfo?.status)}`}
+          >
+            {primaryRiverWatchInfo?.status}
+          </Badge>
         </div>
       </div>
     </div>

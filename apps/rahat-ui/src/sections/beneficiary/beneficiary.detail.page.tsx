@@ -1,9 +1,9 @@
 'use client';
-import { useBeneficiaryStore } from '@rahat-ui/query';
+import { useBeneficiaryStore, useSingleBeneficiary } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { UUID } from 'crypto';
 import { Copy, CopyCheck, FolderPlus, Pencil, Trash2 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import CoreBtnComponent from '../../components/core.btn';
 import HeaderWithBack from '../projects/components/header.with.back';
 import { humanizeString } from '../../utils';
@@ -12,22 +12,34 @@ import React from 'react';
 export default function BeneficiaryDetail() {
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+
+  const projectId = searchParams.get('projectId');
+  const groupId = searchParams.get('groupId');
+  const txnDetailsId = searchParams.get('txnDetailsId');
+
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<string>();
-
+  useSingleBeneficiary(id as UUID);
   const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
 
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(walletAddress);
   };
+
+  const routePath =
+    projectId && txnDetailsId && groupId
+      ? `/projects/aa/${projectId}/payout/transaction-details/${txnDetailsId}?groupId=${groupId}`
+      : `/beneficiary`;
   return (
     <div className="p-4">
       <div className="flex justify-between items-center">
         <HeaderWithBack
           title="Beneficiary Details"
           subtitle="Here is a detailed view of the selected beneficiary"
-          path="/beneficiary"
+          path={routePath}
         />
         <div className="flex space-x-2">
           {/* <CoreBtnComponent

@@ -1,33 +1,63 @@
-import React from 'react';
-import { ColumnDef } from '@tanstack/react-table';
+import {
+  TOKEN_TO_AMOUNT_MULTIPLIER,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
+import { useApproveVendorTokenRedemption } from '@rahat-ui/query/lib/aa';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useUserStore } from '@rumsan/react-query';
+import { Pagination } from '@rumsan/sdk/types';
+import { ColumnDef, Row } from '@tanstack/react-table';
+import { DialogComponent } from 'apps/rahat-ui/src/components/dialog';
+import { PaginationTableName } from 'apps/rahat-ui/src/constants/pagination.table.name';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage.dynamic';
+import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
+import { UUID } from 'crypto';
 import { Eye } from 'lucide-react';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { useParams, useRouter } from 'next/navigation';
 import { IProjectVendor } from './types';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { toast } from 'react-toastify';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
+// import { DialogComponent } from '../activities/details/dialog.reuse';
 
-export const useProjectVendorTableColumns = () => {
+interface ITableColumnProps {
+  redemptionStatus: string;
+  approvedAt: string;
+  uuid: string;
+  vendor: {
+    name: string;
+  };
+  tokenAmount: number;
+  transactionHash: string;
+}
+export const useProjectVendorTableColumns = (pagination: Pagination) => {
   const { id } = useParams();
   const router = useRouter();
 
   const handleViewClick = (vendorId: string) => {
-    router.push(`/projects/aa/${id}/vendors/${vendorId}`);
+    setPaginationToLocalStorage(`${PaginationTableName.VENDOR_LIST}`);
+    router.push(
+      `/projects/aa/${id}/vendors/${vendorId}#pagination=${encodeURIComponent(
+        JSON.stringify(pagination),
+      )}`,
+    );
   };
+
   const columns: ColumnDef<IProjectVendor>[] = [
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('name')} maxLength={30} />
+      ),
     },
     {
       accessorKey: 'phone',
       header: 'Phone Number',
       cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
-    },
-    {
-      accessorKey: 'location',
-      header: 'Location',
-      cell: ({ row }) => <div>{row.getValue('location')}</div>,
     },
     {
       id: 'actions',
@@ -36,11 +66,11 @@ export const useProjectVendorTableColumns = () => {
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() => handleViewClick(row.original.uuid)}
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() => handleViewClick(row.original.uuid)}
             />
           </div>
         );
@@ -51,55 +81,197 @@ export const useProjectVendorTableColumns = () => {
 };
 
 export const useProjectVendorRedemptionTableColumns = () => {
-  function renderBadgeStyle(status: string) {
-    if (status === 'Approved') {
-      return 'bg-green-100 text-green-500';
-    }
+  const { id }: { id: UUID } = useParams();
+  const { user } = useUserStore((s) => ({ user: s.user }));
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
+  const approveVendorTokenRedemption = useApproveVendorTokenRedemption();
 
-    return 'bg-blue-100 text-blue-500';
-  }
-  const columns: ColumnDef<any>[] = [
+  const handleApproveClick = async (row: Row<ITableColumnProps>) => {
+    try {
+      if (row?.original?.redemptionStatus === 'APPROVED') {
+        throw new Error('Status is already Approved');
+      }
+
+      approveVendorTokenRedemption.mutateAsync({
+        projectUUID: id,
+        payload: {
+          redemptionStatus: 'APPROVED',
+          uuid: row.original?.uuid,
+        },
+      });
+    } catch (e: unknown) {
+      console.error(e);
+      const errorMessage =
+        e instanceof Error ? e.message : 'Failed to approve redemption request';
+      return toast.error(errorMessage);
+    }
+  };
+
+  const columns: ColumnDef<ITableColumnProps>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      header: 'Vendor Name',
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={row.original?.vendor?.name || 'N/A'}
+          maxLength={30}
+        />
+      ),
     },
     {
-      accessorKey: 'tokenAmout',
-      header: 'Token Amount',
-      cell: ({ row }) => <div>{row.getValue('tokenAmount') || 'N/A'}</div>,
+      accessorKey: 'tokenAmount',
+      header: 'Total Token',
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={
+            row.getValue('tokenAmount')
+              ? `${Number(row.getValue('tokenAmount'))} ${getAssetCode(
+                  settings,
+                  id,
+                )}`
+              : 'N/A'
+          }
+          maxLength={15}
+        />
+      ),
     },
     {
-      accessorKey: 'status',
+      accessorKey: 'amount',
+      header: 'Total Amount',
+      cell: ({ row }) => {
+        const totalAmount = row.getValue('tokenAmount')
+          ? Number(row.getValue('tokenAmount')) * TOKEN_TO_AMOUNT_MULTIPLIER
+          : 0;
+        return (
+          <TruncatedCell
+            text={row.getValue('tokenAmount') ? `Rs. ${totalAmount}` : 'N/A'}
+            maxLength={15}
+          />
+        );
+      },
+    },
+
+    {
+      accessorKey: 'transactionHash',
+      header: 'TxHash',
+      cell: ({ row }) => {
+        if (!row.original?.transactionHash) {
+          return <div>N/A</div>;
+        }
+        return (
+          <div className="flex flex-row">
+            <div className="w-20 truncate">
+              <a
+                href={`https://sepolia.basescan.org/tx/${row.getValue(
+                  'transactionHash',
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-base text-blue-500 hover:underline cursor-pointer "
+              >
+                <TruncatedCell
+                  text={row.getValue('transactionHash')}
+                  maxLength={10}
+                />
+              </a>
+            </div>
+            <CopyTooltip
+              value={row.getValue('transactionHash')}
+              uniqueKey={row.getValue('transactionHash')}
+            />
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'redemptionStatus',
       header: 'Status',
       cell: ({ row }) => (
-        <Badge className={renderBadgeStyle(row.original.status)}>
-          {row.original.status || 'N/A'}
+        <Badge
+          className="text-xs font-normal"
+          style={{
+            backgroundColor:
+              row.original?.redemptionStatus === 'APPROVED'
+                ? '#ECFDF3'
+                : '#EFF8FF',
+            color:
+              row.original?.redemptionStatus === 'APPROVED'
+                ? '#027A48'
+                : '#175CD3',
+          }}
+        >
+          <TruncatedCell
+            text={
+              row.original?.redemptionStatus === 'APPROVED'
+                ? 'Approved'
+                : row.original?.redemptionStatus === 'STELLAR_VERIFIED'
+                ? 'Requested ✓'
+                : 'Requested'
+            }
+            maxLength={15}
+          />
         </Badge>
       ),
     },
     {
       accessorKey: 'approvedBy',
       header: 'Approved By',
-      cell: ({ row }) => <div>{row.getValue('approvedBy') || 'N/A'}</div>,
-    },
-    {
-      accessorKey: 'updatedAt',
-      header: 'Approved Date',
-      cell: ({ row }) => <div>{row.getValue('updatedAt') || 'N/A'}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={
+            row.original?.redemptionStatus === 'APPROVED'
+              ? user?.data?.name || 'N/A'
+              : 'N/A'
+          }
+          maxLength={15}
+        />
+      ),
     },
     {
       id: 'actions',
       header: 'Actions',
       enableHiding: false,
       cell: ({ row }) => {
+        const status = row.original?.redemptionStatus?.toLowerCase();
         return (
-          <div className="flex items-center gap-2">
-            <Button variant="ghost">Approve</Button>
-          </div>
+          <>
+            <div className="flex items-center justify-start">
+              {status === 'approved' ? (
+                <div className="font-inter font-normal text-[12px] leading-[20px] tracking-[0] text-[#475263]">
+                  <div>Approved on:</div>
+                  <TruncatedCell
+                    text={
+                      row.original?.redemptionStatus === 'APPROVED' &&
+                      row.original?.approvedAt
+                        ? dateFormat(row.original?.approvedAt)
+                        : 'N/A'
+                    }
+                    maxLength={30}
+                  />
+                </div>
+              ) : (
+                <RoleAuth roles={[AARoles.ADMIN, AARoles.Municipality]}>
+                  <DialogComponent
+                    onSubmit={() => handleApproveClick(row)}
+                    onCancel={() => null}
+                    title="Approve Redemption Request"
+                    subtitle="Are you sure you want to approve this redemption request?"
+                    trigger={
+                      <div className="cursor-pointer select-none text-[#297AD6]">
+                        Approve
+                      </div>
+                    }
+                  />
+                </RoleAuth>
+              )}
+            </div>
+          </>
         );
       },
     },
   ];
+
   return columns;
 };

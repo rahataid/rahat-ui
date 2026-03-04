@@ -1,6 +1,6 @@
 'use client';
-import { useQuery, useRSQuery } from '@rumsan/react-query';
-import { useMutation } from '@tanstack/react-query';
+import { useRSQuery } from '@rumsan/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useProjectAction } from '../projects';
 import { GetGrievanceList, GrievanceFormData } from './types/grievance';
@@ -13,6 +13,8 @@ const MS_ACTIONS = {
     ADD: 'aa.grievances.create',
     GET: 'aa.grievances.get',
     UPDATE: 'aa.grievances.update',
+    UPDATE_STATUS: 'aa.grievances.updateStatus',
+    GET_OVERVIEW_STATS: 'aa.grievances.getOverviewStats',
   },
 };
 
@@ -125,6 +127,16 @@ export const useGrievanceAdd = () => {
         queryClient.invalidateQueries({
           queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT],
         });
+        queryClient.invalidateQueries({
+          queryKey: [MS_ACTIONS.GRIEVANCES.GET_OVERVIEW_STATS],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT, 'download'],
+        });
+        queryClient.refetchQueries({
+          queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT, 'download'],
+        });
+        console.log('Download cache invalidated and refetched after add');
         toast.fire({
           title: 'Grievance added successfully.',
           icon: 'success',
@@ -207,6 +219,15 @@ export const useGrievanceEdit = () => {
         queryClient.invalidateQueries({
           queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT],
         });
+        queryClient.invalidateQueries({
+          queryKey: [MS_ACTIONS.GRIEVANCES.GET_OVERVIEW_STATS],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT, 'download'],
+        });
+        queryClient.refetchQueries({
+          queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT, 'download'],
+        });
         toast.fire({
           title: 'Grievance updated successfully.',
           icon: 'success',
@@ -224,6 +245,182 @@ export const useGrievanceEdit = () => {
     },
     queryClient,
   );
+
+  return query;
+};
+
+export const useGrievanceEditStatus = () => {
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  const q = useProjectAction<{ uuid: string; status: string }>();
+  const { queryClient } = useRSQuery();
+
+  const query = useMutation(
+    {
+      mutationFn: async ({
+        projectUUID,
+        grievancePayload,
+      }: {
+        projectUUID: UUID;
+        grievancePayload: { uuid: string; status: string };
+      }) => {
+        return q.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: MS_ACTIONS.GRIEVANCES.UPDATE_STATUS,
+            payload: grievancePayload,
+          },
+        });
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [MS_ACTIONS.GRIEVANCES.GET_OVERVIEW_STATS],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT, 'download'],
+        });
+        queryClient.refetchQueries({
+          queryKey: [MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT, 'download'],
+        });
+        toast.fire({
+          title: 'Grievance status updated successfully.',
+          icon: 'success',
+        });
+      },
+      onError: (error: any) => {
+        console.log('error', error);
+        const errorMessage = error?.response?.data?.message || 'Error';
+        toast.fire({
+          title: 'Error while updating grievance status.',
+          icon: 'error',
+          text: errorMessage,
+        });
+      },
+    },
+    queryClient,
+  );
+
+  return query;
+};
+
+export const useGrievanceListForDownload = (projectUUID: UUID) => {
+  const q = useProjectAction<any[]>();
+  const { queryClient } = useRSQuery();
+
+  const query = useQuery(
+    {
+      queryKey: [
+        MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT,
+        'download',
+        projectUUID,
+      ],
+      queryFn: async () => {
+        return q.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: MS_ACTIONS.GRIEVANCES.LIST_BY_PROJECT,
+            payload: {
+              page: 1,
+              perPage: 10000, // Fetch all data at once
+              order: 'desc',
+              sort: 'createdAt',
+            },
+          },
+        });
+      },
+      enabled: !!projectUUID,
+      staleTime: 10 * 60 * 1000, // Consider data fresh for 10 minutes
+      gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
+      refetchOnMount: false, // Don't refetch on mount if data is fresh
+      refetchOnWindowFocus: false, // Don't refetch on window focus
+    },
+    queryClient,
+  );
+
+  return {
+    ...query,
+    data: useMemo(() => {
+      return {
+        ...query.data,
+        data: query.data?.data?.length
+          ? query.data.data.map((row: any) => ({
+              ...row,
+              uuid: row?.uuid?.toString(),
+              walletAddress: row?.walletAddress?.toString(),
+              voucherClaimStatus: row?.claimStatus,
+              name: row?.piiData?.name || '',
+              email: row?.piiData?.email || '',
+              gender: row?.projectData?.gender?.toString() || '',
+              phone: row?.piiData?.phone || 'N/A',
+              type: row?.type?.toString() || 'N/A',
+              phoneStatus: row?.projectData?.phoneStatus || '',
+              bankedStatus: row?.projectData?.bankedStatus || '',
+              internetStatus: row?.projectData?.internetStatus || '',
+              benTokens: row?.benTokens || 'N/A',
+            }))
+          : [],
+      };
+    }, [query.data]),
+  };
+};
+
+export const useGetOverviewStats = (projectUUID: UUID) => {
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  const q = useProjectAction<{
+    totalGrievances: number;
+    grievanceType: {
+      TECHNICAL: number;
+      NON_TECHNICAL: number;
+      OTHER: number;
+    };
+    grievanceStatus: {
+      NEW: number;
+      UNDER_REVIEW: number;
+      RESOLVED: number;
+      CLOSED: number;
+    };
+    averageResolveTime: number;
+  }>();
+
+  const query = useQuery({
+    queryKey: [MS_ACTIONS.GRIEVANCES.GET_OVERVIEW_STATS, projectUUID],
+    queryFn: async () => {
+      try {
+        return await q.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: MS_ACTIONS.GRIEVANCES.GET_OVERVIEW_STATS,
+            payload: {},
+          },
+        });
+      } catch (error: any) {
+        console.log('error', error);
+        const errorMessage = error?.response?.data?.message || 'Error';
+        toast.fire({
+          title: 'Error while fetching overview stats.',
+          icon: 'error',
+          text: errorMessage,
+        });
+        throw error;
+      }
+    },
+    enabled: !!projectUUID, // Only run query if projectUUID exists
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+  });
 
   return query;
 };

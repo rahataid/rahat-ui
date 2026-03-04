@@ -83,6 +83,7 @@ export const useBeneficiaryGroupsList = (payload: any): any => {
     {
       queryKey: [TAGS.GET_BENEFICIARIES_GROUPS, payload],
       queryFn: () => listBeneficiaryGroups(payload),
+      staleTime: 10 * 60 * 1000, // 10 minutes
     },
     queryClient,
   );
@@ -134,6 +135,11 @@ const updateBeneficiaryGroup = async (payload: any) => {
   return response?.data;
 };
 
+const beneficiariesGroupByUuids = async (uuids: string[]) => {
+  const response = await api.post(`/beneficiaries/groupDetails`, uuids);
+  return response?.data?.data;
+};
+
 export const useUpdateBeneficiaryGroup = () => {
   const qc = useQueryClient();
   const alert = useSwal();
@@ -176,6 +182,7 @@ export const useBeneficiaryList = (payload: any): any => {
     {
       queryKey: [TAGS.GET_BENEFICIARIES, payload],
       queryFn: () => benClient.list(payload),
+      staleTime: 10 * 60 * 1000, // 10 minutes
       placeholderData: keepPreviousData,
     },
     queryClient,
@@ -336,8 +343,13 @@ export const useUpdateGroupPropose = () => {
   return useMutation({
     mutationFn: (payload: any) =>
       updateGroupPropose(payload.uuid, payload.selectedPurpose),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [GET_BENEFICIARY_GROUP] });
+    onSuccess: async (_data, variables) => {
+      if (variables?.uuid) {
+        await qc.invalidateQueries({
+          queryKey: ['GET_BENEFICIARY_GROUP', variables.uuid],
+          exact: false,
+        });
+      }
       toast.fire({
         title: 'Group propose updated successfully',
         icon: 'success',
@@ -468,8 +480,30 @@ export const useUploadBeneficiary = () => {
           rumsanService.client,
           projectId,
         ),
-      onSuccess: () => {
+      onSuccess: (data) => {
+        if (data?.data?.success === false) {
+          toast.fire({
+            icon: 'error',
+            title: 'Something went wrong',
+            text: data?.data?.message || '',
+          });
+          return;
+        }
+        if (data?.data?.discardedBeneficiaries?.length > 0) {
+          const phoneNumber = data?.data?.discardedBeneficiaries?.map(
+            (d: any) => {
+              return d?.phoneNumber;
+            },
+          );
+          toast.fire({
+            icon: 'success',
+            title: `Some beneficiaries were discarded due to error in Xcapit Wallet Creation.${phoneNumber}`,
+            timer: 5000,
+          });
+          return;
+        }
         qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+
         toast.fire({
           icon: 'success',
           title: 'Beneficiary uploaded successfully',
@@ -708,4 +742,18 @@ export const useExportBeneficiariesFailedBankAccount = (
     },
     queryClient,
   );
+};
+
+export const getBeneficiariesGroupByUuids = (
+  uuids: string[],
+  queryValidation: boolean,
+) => {
+  const query = useQuery({
+    queryKey: ['beneficiariesGroupDetailsByUuids', uuids],
+    queryFn: () => beneficiariesGroupByUuids(uuids),
+    enabled: queryValidation,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  return query;
 };

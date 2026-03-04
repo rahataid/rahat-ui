@@ -1,8 +1,8 @@
 'use client';
 
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { cn } from '@rahat-ui/shadcn/src';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Card,
   CardContent,
@@ -11,6 +11,7 @@ import {
 import { getStatusBg } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { RefreshCw, User } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 interface PhaseCardProps {
   id: string;
@@ -58,43 +59,66 @@ export default function PhaseCard({
   return (
     <Card
       className={(cn(' border-gray-300 shadow-sm p-4 rounded-xl '), className)}
-      onClick={() =>
-        router.push(
-          `/projects/aa/${ProjectId}/activities/${id}?from="mainPage"`,
-        )
-      }
+      onClick={() => router.push(`/projects/aa/${ProjectId}/activities/${id}`)}
     >
       <CardContent className="space-y-2 p-2">
         <div className="flex items-center justify-between ">
-          <Badge className={getStatusBg(status)}>
-            {status
+          <TooltipWrapper
+            tip={`Activity Status: ${status
               .toLowerCase()
               .split('_')
               .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ')}
-          </Badge>
-          <div
-            className="flex items-center gap-2 text-blue-500 text-xs hover:cursor-pointer hover:rounded-sm hover:bg-gray-50 hover:p-1 hover:text-sm "
-            onClick={(e) => {
-              e.stopPropagation();
-              onUpdateStatus();
-            }}
+              .join(' ')}`}
           >
-            Update Status <RefreshCw className="w-4 h-4" />
-          </div>
+            <Badge className={getStatusBg(status)}>
+              {status
+                .toLowerCase()
+                .split('_')
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ')}
+            </Badge>
+          </TooltipWrapper>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
+            <TooltipWrapper tip="Update Activity Status">
+              <div
+                className="flex items-center gap-2 text-blue-500 text-xs hover:cursor-pointer hover:rounded-sm hover:bg-gray-50 hover:p-1 hover:text-sm "
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onUpdateStatus();
+                }}
+              >
+                Update Status <RefreshCw className="w-4 h-4" />
+              </div>
+            </TooltipWrapper>
+          </RoleAuth>
         </div>
-        <p className="text-sm font-medium text-gray-900 truncate  w-52  xxl:w-96">
-          {title}
-        </p>
-        <p className="text-sm text-gray-500">
-          {location ?? ''} • {leadTime}
-        </p>
+        <TooltipWrapper tip={`Activity Title: ${title}`}>
+          <h3 className="text-sm font-medium text-gray-900 truncate w-[320px]">
+            {title}
+          </h3>
+        </TooltipWrapper>
+        <div className="flex items-center gap-1 text-sm text-gray-500">
+          <TooltipWrapper tip={`Responsible Station: ${location ?? ''}`}>
+            <span>{location ?? ''}</span>
+          </TooltipWrapper>
+          <span>•</span>
+          <TooltipWrapper tip={`Lead Time: ${leadTime}`}>
+            <span>{leadTime}</span>
+          </TooltipWrapper>
+        </div>
       </CardContent>
       <CardFooter className="p-2 pt-0">
-        <div className="flex items-center gap-2 p-0">
-          <User className="w-4 h-4 text-gray-500" />
-          <span className="text-sm text-gray-500">{responsibility ?? ''}</span>
-        </div>
+        <TooltipWrapper tip={`Responsibility: ${responsibility ?? ''}`}>
+          <div className="flex items-center gap-2 p-0">
+            <User className="w-4 h-4 text-gray-500" />
+            <span className="text-sm text-gray-500">
+              {responsibility ?? ''}
+            </span>
+          </div>
+        </TooltipWrapper>
       </CardFooter>
     </Card>
   );

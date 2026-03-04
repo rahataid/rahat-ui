@@ -1,16 +1,16 @@
 import { UUID } from 'crypto';
-import axios from 'axios';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useSwal } from 'libs/query/src/swal';
-import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
-import { useProjectAction, useProjectSettingsStore } from '../../projects';
-import { Pagination } from '@rumsan/sdk/types';
+import { TAGS } from 'libs/query/src/config';
+import { useProjectAction } from '../../projects';
+import { useRSQuery } from '@rumsan/react-query';
 
 export enum PayoutType {
   FSP = 'FSP',
   VENDOR = 'VENDOR',
+  CVA = 'CVA',
 }
 
 export enum PayoutMode {
@@ -23,7 +23,7 @@ interface Payout {
   perPage?: number;
   type?: PayoutType;
   mode?: PayoutMode;
-  status?: string;
+  payoutType?: string;
   groupName?: string;
   payoutProcessorId?: string;
 }
@@ -94,12 +94,32 @@ export const usePayouts = (projectUUID: UUID, payload: Payout) => {
           payload: payload,
         },
       });
-      return mutate.data;
+      return mutate;
     },
+    staleTime: 5 * 60 * 60 * 1000, // 5 hrs
   });
   return query;
 };
 
+export const usePayoutStats = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['payout-stats', projectUUID],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.jobs.payout.getPayoutStats',
+          payload: {},
+        },
+      });
+      return mutate.data;
+    },
+    staleTime: 1 * 60 * 60 * 1000, // 1 hrs
+  });
+  return query;
+};
 export const useSinglePayout = (projectUUID: UUID, payload: { uuid: UUID }) => {
   const q = useProjectAction();
 
@@ -115,6 +135,7 @@ export const useSinglePayout = (projectUUID: UUID, payload: { uuid: UUID }) => {
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hr
   });
   return query;
 };
@@ -134,6 +155,7 @@ export const useGetPayoutLogs = (projectUUID: UUID, payload: any) => {
       });
       return mutate;
     },
+    staleTime: 60 * 60 * 1000, // 1 hr
   });
   return query;
 };
@@ -153,9 +175,11 @@ export const useGetPayoutLog = (projectUUID: UUID, payload: any) => {
       });
       return mutate;
     },
+    staleTime: 60 * 60 * 1000, // 1 hr
   });
   return query;
 };
+
 export const useUpdatePayout = () => {
   const qc = useQueryClient();
   const q = useProjectAction();
@@ -186,6 +210,7 @@ export const useUpdatePayout = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
+      qc.invalidateQueries({ queryKey: ['payout-stats'] });
       toast.fire({
         title: 'Payout updated successfully',
         icon: 'success',
@@ -235,6 +260,7 @@ export const useTriggerForPayoutFailed = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
+      qc.invalidateQueries({ queryKey: ['payout-stats'] });
       toast.fire({
         title: 'Payout Triggerd successfully',
         icon: 'success',
@@ -284,6 +310,7 @@ export const useTriggerForOnePayoutFailed = () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['payouts'] });
       qc.invalidateQueries({ queryKey: ['payout'] });
+      qc.invalidateQueries({ queryKey: ['payout-stats'] });
       toast.fire({
         title: 'Payout updated successfully',
         icon: 'success',
@@ -368,5 +395,94 @@ export const usePaymentProviders = ({ projectUUID }: { projectUUID: UUID }) => {
     enabled: !!projectUUID,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
+  });
+};
+
+export const usePayoutExportLogs = ({
+  projectUUID,
+  payoutUUID,
+}: {
+  projectUUID: UUID;
+  payoutUUID: string;
+}) => {
+  const q = useProjectAction();
+
+  return useQuery({
+    queryKey: ['aa.jobs.payout.exportPayoutLogs', payoutUUID],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.jobs.payout.exportPayoutLogs',
+          payload: {
+            payoutUUID,
+          },
+        },
+      });
+      return mutate.data;
+    },
+    enabled: !!projectUUID,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+};
+
+export const useVerifyManualPayout = () => {
+  const queryClient = useQueryClient();
+  const { rumsanService } = useRSQuery();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-right',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async ({
+      selectedFile,
+      doctype,
+      projectId,
+      payload,
+    }: {
+      selectedFile: File;
+      doctype: string;
+      projectId?: UUID;
+      payload?: {
+        payoutUUID: string;
+      };
+    }) => {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('doctype', doctype);
+      formData.append('action', 'aa.payout.verifyManualPayout');
+      if (payload) {
+        formData.append('payload', JSON.stringify(payload));
+      }
+
+      const response = await rumsanService.client.post(
+        `/projects/${projectId}/upload`,
+        formData,
+      );
+      return response?.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [TAGS.VERFIY_MANUAL_PAYOUT] });
+      toast.fire({
+        icon: 'success',
+        title: 'Manual payout verified',
+      });
+    },
+    onError: (error: any) => {
+      console.error('Upload error', error);
+      const message: string =
+        error?.response?.data?.message || error?.message || '';
+
+      toast.fire({
+        icon: 'error',
+        title: 'Verification Failed',
+        text: message,
+      });
+    },
   });
 };

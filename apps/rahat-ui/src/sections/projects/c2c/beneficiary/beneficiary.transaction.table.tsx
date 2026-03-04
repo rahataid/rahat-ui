@@ -35,10 +35,13 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useBeneficiaryTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { useQuery } from 'urql';
-import { BeneficiaryTransaction } from '@rahat-ui/query';
-import { formatEther } from 'viem';
+import { BeneficiaryTransaction, PROJECT_SETTINGS_KEYS, useProjectSettingsStore } from '@rahat-ui/query';
+import { formatEther, formatUnits } from 'viem';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import { useReadRahatTokenDecimals } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatToken';
 
 export type Transaction = {
   beneficiary: any;
@@ -51,6 +54,17 @@ export type Transaction = {
   voucherId: any;
   id: any;
 };
+
+const { id: projectUUID } = useParams() as {
+    id: UUID;
+  };
+
+ const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+
+    const {data:tokenNumber} = useReadRahatTokenDecimals({address:contractSettings?.rahattoken?.address})
+  
 
 export const columns: ColumnDef<Transaction>[] = [
   {
@@ -93,7 +107,7 @@ export const columns: ColumnDef<Transaction>[] = [
     accessorKey: 'amount',
     header: 'Amount',
     cell: ({ row }) => {
-      const amount = parseFloat(formatEther(BigInt(row.getValue('amount'))));
+      const amount = parseFloat(formatUnits(BigInt(row.getValue('amount')),Number(tokenNumber)));
 
       // Format the amount as a dollar amount
       const formatted = new Intl.NumberFormat('en-US', {

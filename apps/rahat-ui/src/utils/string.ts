@@ -11,3 +11,39 @@ export function formatUnderScoredString(str: string): string {
 
   return newStr;
 }
+export const truncateAddress = (address?: string | null): string => {
+  if (typeof address !== 'string' || address.length <= 8) return '';
+  return `${address.slice(0, 4)}...${address.slice(-4)}`;
+};
+
+export function trimDecimalZeros(value: string | number): string {
+  return parseFloat(value?.toString())?.toString();
+}
+
+export function formatEnumString(value: string): string {
+  return value
+    .toLowerCase()
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+export function toTitleCase(text: string): string {
+  return text
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+export const formatNumber = (
+  num: number,
+  style?: 'indian' | 'international',
+) => {
+  const locales = {
+    indian: 'en-IN',
+    international: 'en-US',
+  };
+
+  return new Intl.NumberFormat(locales[style || 'indian']).format(num);
+};

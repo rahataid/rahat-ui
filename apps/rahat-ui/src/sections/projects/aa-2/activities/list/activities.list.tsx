@@ -10,7 +10,6 @@ import {
   usePhasesStore,
 } from '@rahat-ui/query';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
-import ActivitiesTable from './activities.table';
 
 import { UUID } from 'crypto';
 import ActivitiesTableFilters from './activities.table.filters';
@@ -29,6 +28,10 @@ import {
 import { CloudDownloadIcon, Plus } from 'lucide-react';
 
 import FiltersTags from 'apps/rahat-ui/src/common/filtersTags';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
+
+// TODO:Remove this table if used nowhere
+// import ActivitiesTable from './activities.table';
 
 export default function ActivitiesList() {
   const { id: projectID, title } = useParams();
@@ -59,8 +62,6 @@ export default function ActivitiesList() {
     setPagination,
     setFilters,
     filters,
-    setBackwardPage,
-    setForwardPage,
   } = usePagination();
   React.useEffect(() => {
     const titleStr = Array.isArray(title) ? title[0] : title;
@@ -183,26 +184,37 @@ export default function ActivitiesList() {
           />
         </div>
         <div className="flex flex-col gap-2 lg:flex-row items-center justify-center">
-          <IconLabelBtn
-            Icon={CloudDownloadIcon}
-            handleClick={handleDownloadReport}
-            name="Download"
-            variant="outline"
-            className="rounded w-full"
-          />
-          <IconLabelBtn
-            Icon={Plus}
-            handleClick={() =>
-              router.push(
-                `/projects/aa/${projectID}/activities/add?phaseId=${
-                  phases.find((p) => p.name === (title as string).toUpperCase())
-                    ?.uuid
-                }`,
-              )
-            }
-            name="Add Activity"
-            className="rounded w-full"
-          />
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
+            <IconLabelBtn
+              Icon={CloudDownloadIcon}
+              handleClick={handleDownloadReport}
+              name="Download"
+              variant="outline"
+              className="rounded w-full"
+            />
+          </RoleAuth>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
+            <IconLabelBtn
+              Icon={Plus}
+              handleClick={() =>
+                router.push(
+                  `/projects/aa/${projectID}/activities/add?phaseId=${
+                    phases.find(
+                      (p) => p.name === (title as string).toUpperCase(),
+                    )?.uuid
+                  }`,
+                )
+              }
+              name="Add Activity"
+              className="rounded w-full"
+            />
+          </RoleAuth>
         </div>
       </div>
       <ActivitiesTableFilters
@@ -224,11 +236,11 @@ export default function ActivitiesList() {
           total={table.getRowModel().rows?.length}
         />
       )}
-
       <div className=" border-gray-100 overflow-hidden rounded-lg border ">
-        <ActivitiesTable
+        <DemoTable
           table={table}
-          tableheight={
+          loading={isLoading}
+          tableHeight={
             Object.keys(filters).length === 1
               ? 'h-[calc(100vh-320px)]'
               : 'h-[calc(100vh-380px)]'

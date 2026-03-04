@@ -3,4 +3,6 @@ export enum AARoles {
   MANAGER = 'Manager',
   VENDOR = 'Vendor',
   USER = 'User',
+  UNICEFNepalCO = 'UNICEFNepalCO',
+  Municipality = 'Municipality',
 }

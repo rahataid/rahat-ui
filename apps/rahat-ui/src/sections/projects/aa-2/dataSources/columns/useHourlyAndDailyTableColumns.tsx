@@ -1,5 +1,6 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
+import { convertToLocalTimeOrMillisecond } from 'apps/rahat-ui/src/utils/dateFormate';
 
 export const useHourlyAndDailyTableColumns = () => {
   const columns: ColumnDef<any>[] = [
@@ -7,19 +8,13 @@ export const useHourlyAndDailyTableColumns = () => {
       accessorKey: 'datetime',
       header: 'Date',
       cell: ({ row }) => {
-        const dateTime = new Date(row.getValue('datetime'));
-        const formatedDate = new Intl.DateTimeFormat('en-NP', {
-          timeZone: 'Asia/Kathmandu',
-          weekday: 'short',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: 'numeric',
-          hour12: true,
-        }).format(dateTime);
+        const getDateAndTime = row.getValue('datetime') as string;
+        const { formatted } = convertToLocalTimeOrMillisecond(
+          getDateAndTime,
+          'MMMM d, yyyy, h:mm:ss a',
+        ) as { formatted: string; timestamp: number };
 
-        return <div>{formatedDate}</div>;
+        return <div>{formatted}</div>;
       },
     },
     {

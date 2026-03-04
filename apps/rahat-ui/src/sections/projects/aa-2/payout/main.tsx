@@ -1,5 +1,4 @@
 'use client';
-import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import { DataCard, Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -8,9 +7,12 @@ import {
   useFetchTokenStatsStellar,
   useFundAssignmentStore,
   usePayouts,
+  usePayoutStats,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useMemo } from 'react';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import DynamicPieChart from '../../components/dynamicPieChart';
 
 export default function PayoutView() {
   const params = useParams();
@@ -20,93 +22,111 @@ export default function PayoutView() {
     page: 1,
     perPage: 999,
   });
-
+  const { data: statsPayout, isLoading } = usePayoutStats(projectID);
   useFetchTokenStatsStellar({
     projectUUID: projectID,
   });
 
-  const { stellarTokenStats } = useFundAssignmentStore((state) => ({
-    stellarTokenStats: state.stellarTokenStats,
-  }));
-
   const payoutStats = useMemo(() => {
-    const getAmountByName = (name: string) =>
-      stellarTokenStats.find((item: any) => item.name === name)?.amount ??
-      'N/A';
-
     return [
       {
-        label: 'Project Balance',
-        value: getAmountByName('Disbursement Balance'),
+        label: 'No. of Beneficiaries Recieving Cash',
+        // subtitle: '',
+        value: statsPayout?.payoutStats?.beneficiaries || 'N/A',
+        infoIcon: true,
+        infoTooltip: 'Total number of beneficiaries recieving cash',
       },
       {
-        label: 'Tokens Distributed',
-        value: getAmountByName('Disbursed Balance'),
-      },
-      {
-        label: 'Tokens Disbursed',
-        value: getAmountByName('Remaining Balance'),
-      },
-      {
-        label: '1 Token Value',
-        value: getAmountByName('Token Price'),
+        label: 'Total Cash Distribution',
+        // subtitle: ' ',
+        value:
+          `Rs. ${statsPayout?.payoutStats?.totalCashDistribution}` || 'N/A',
+        infoIcon: true,
+        infoTooltip: 'Total amount of cash distributed to the beneficiaries',
       },
     ];
-  }, [stellarTokenStats]);
+  }, [statsPayout]);
 
   return (
     <div className="p-4 ">
       <div className="flex justify-between items-center space-x-4">
         <Heading
           title="Payout"
-          description="Worem ipsum dolor sit amet, consectetur adipiscing elit"
+          description="Track all the payout reports here"
         />
         <div className="flex flex-end gap-2">
-          <IconLabelBtn
-            Icon={Plus}
-            handleClick={() => {
-              route.push(`/projects/aa/${projectID}/payout/initiate-payout`);
-            }}
-            name="Initiate Payment"
-            variant="default"
-          />
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
+            <IconLabelBtn
+              Icon={Plus}
+              handleClick={() => {
+                route.push(`/projects/aa/${projectID}/payout/initiate-payout`);
+              }}
+              name="Create Payout"
+              variant="default"
+              payout-main-bug-refactor
+            />
+          </RoleAuth>
         </div>
       </div>
-      <div className="grid grid-cols-4 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-4">
         {payoutStats.map((stat) => {
           return (
             <DataCard
               key={stat.label}
               title={stat.label}
               number={stat.value as string}
-              className="rounded-sm"
+              className="rounded-sm h-32"
+              infoIcon={stat.infoIcon}
+              infoTooltip={stat.infoTooltip}
             />
           );
         })}
       </div>
-      <div className="flex mt-4 gap-4">
-        <div className=" border rounded-sm p-4 h-[calc(50vh)]">
-          <h1 className="text-lg font-medium">Token Status</h1>
-          <PieChart
-            chart={{
-              series: [
+      <div className="flex flex-wrap mt-4 gap-4">
+        <div className="flex-1 border rounded-sm p-4">
+          <h1 className="text-lg font-medium mb-4">Payout Type</h1>
+          <div className="w-full aspect-square">
+            <DynamicPieChart
+              pieData={[
                 {
-                  label: 'Project Balance',
-                  value: 23000,
+                  label: 'FSP',
+                  value: statsPayout?.payoutOverview?.payoutTypes?.FSP || 0,
                 },
                 {
-                  label: 'Tokens Distributed',
-                  value: 10000,
+                  label: 'CVA',
+                  value: statsPayout?.payoutOverview?.payoutTypes?.VENDOR || 0,
                 },
-              ],
-              colors: ['#F4A462', '#2A9D90'],
-            }}
-            custom={true}
-            projectAA={true}
-          />
+              ]}
+              colors={['#F4A462', '#2A9D90']}
+            />
+          </div>
         </div>
+
+        <div className="flex-1 border rounded-sm p-4">
+          <h1 className="text-lg font-medium mb-4">Payout Status</h1>
+          <div className="w-full aspect-square">
+            <DynamicPieChart
+              pieData={[
+                {
+                  label: 'Success',
+                  value:
+                    statsPayout?.payoutOverview?.payoutStatus?.SUCCESS || 0,
+                },
+                {
+                  label: 'Failed',
+                  value: statsPayout?.payoutOverview?.payoutStatus?.FAILED || 0,
+                },
+              ]}
+              colors={['#2A9D90', '#DC3545']}
+            />
+          </div>
+        </div>
+
         <div className="flex-[2] border rounded-sm p-4">
-          <RecentPayout payouts={payouts} />
+          <RecentPayout payouts={payouts?.data} />
         </div>
       </div>
     </div>

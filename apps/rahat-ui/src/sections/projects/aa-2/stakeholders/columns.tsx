@@ -4,58 +4,75 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Edit2, Eye, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
-import { useState } from 'react';
 import { IconDialogComponent } from './component/iconDialog';
 import { useDeleteStakeholders } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { RoleAuth, AARoles } from '@rahat-ui/auth';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+
 export const useProjectStakeholdersTableColumns = () => {
   const router = useRouter();
-  const { id, stakeholderId } = useParams();
+  const { id } = useParams();
   const removeStakeholder = useDeleteStakeholders();
 
-  const handleDelete = async (uuid) => {
+  const handleDelete = async (uuid: string) => {
     await removeStakeholder.mutateAsync({
       projectUUID: id as UUID,
       stakeholderPayload: { uuid },
     });
   };
-  const handleEdit = (uuid) => {};
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <div> {row.getValue('name')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={row.getValue('name')}
+          maxLength={10}
+          className="font-medium"
+        />
+      ),
     },
     {
       accessorKey: 'phone',
       header: 'Phone number',
-      cell: ({ row }) => <div> {row.getValue('phone')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('phone')} maxLength={14} />
+      ),
     },
     {
       accessorKey: 'email',
       header: 'Email',
-      cell: ({ row }) => <div> {row.getValue('email')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('email')} maxLength={10} />
+      ),
     },
     {
       accessorKey: 'designation',
       header: 'Designation',
-      cell: ({ row }) => <div> {row.getValue('designation')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('designation')} maxLength={10} />
+      ),
     },
 
     {
       accessorKey: 'organization',
       header: 'Organization',
-      cell: ({ row }) => <div> {row.getValue('organization')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('organization')} maxLength={10} />
+      ),
     },
     {
       accessorKey: 'supportArea',
       header: 'Support Area',
       cell: ({ row }) =>
         row?.original?.supportArea.length > 0 ? (
-          <Badge className="w-auto">{row.original.supportArea[0]}</Badge>
+          <Badge className="w-auto">
+            <TruncatedCell text={row.original.supportArea[0]} maxLength={10} />
+          </Badge>
         ) : (
           []
         ),
@@ -64,7 +81,9 @@ export const useProjectStakeholdersTableColumns = () => {
     {
       accessorKey: 'municipality',
       header: 'Municipality',
-      cell: ({ row }) => <div> {row.getValue('municipality')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('municipality')} maxLength={10} />
+      ),
     },
 
     {
@@ -73,7 +92,10 @@ export const useProjectStakeholdersTableColumns = () => {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
             <div className="flex items-center gap-2">
               <IconDialogComponent
                 Icon={Edit2}
@@ -81,6 +103,7 @@ export const useProjectStakeholdersTableColumns = () => {
                 confirmButtonText="Edit"
                 dialogDescription="Are you sure you want to edit?"
                 dialogTitle="Edit"
+                tip="Edit"
                 handleClick={() =>
                   setTimeout(() => {
                     router.push(
@@ -96,17 +119,18 @@ export const useProjectStakeholdersTableColumns = () => {
                 confirmButtonText="Delete"
                 dialogDescription="Are you sure you want to delete?"
                 dialogTitle="Delete"
+                tip="Delete"
                 handleClick={() => {
                   handleDelete(row.original.uuid);
                 }}
                 variant="destructive"
                 color="red"
               />
-              <Eye
-                className="hover:text-primary cursor-pointer"
-                size={16}
-                strokeWidth={1.5}
-                onClick={() =>
+              <TooltipComponent
+                Icon={Eye}
+                tip="View Details"
+                iconStyle="hover:text-primary cursor-pointer"
+                handleOnClick={() =>
                   router.push(
                     `/projects/aa/${id}/stakeholders/${row.original.uuid}`,
                   )
@@ -130,35 +154,47 @@ export const useProjectStakeholdersGroupTableColumns = () => {
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <div> {row.getValue('name')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('name')} maxLength={10} />
+      ),
     },
     {
       accessorKey: 'phone',
       header: 'Phone number',
-      cell: ({ row }) => <div> {row.getValue('phone')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('phone')} maxLength={14} />
+      ),
     },
     {
       accessorKey: 'email',
       header: 'Email',
-      cell: ({ row }) => <div> {row.getValue('email')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('email')} maxLength={10} />
+      ),
     },
     {
       accessorKey: 'designation',
       header: 'Designation',
-      cell: ({ row }) => <div> {row.getValue('designation')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('designation')} maxLength={14} />
+      ),
     },
 
     {
       accessorKey: 'organization',
       header: 'Organization',
-      cell: ({ row }) => <div> {row.getValue('organization')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('organization')} maxLength={10} />
+      ),
     },
     {
       accessorKey: 'supportArea',
       header: 'Support Area',
       cell: ({ row }) =>
         row?.original?.supportArea.length > 0 ? (
-          <Badge className="w-auto">{row.original.supportArea[0]}</Badge>
+          <Badge className="w-auto">
+            <TruncatedCell text={row.original.supportArea[0]} maxLength={14} />
+          </Badge>
         ) : (
           []
         ),
@@ -166,7 +202,9 @@ export const useProjectStakeholdersGroupTableColumns = () => {
     {
       accessorKey: 'municipality',
       header: 'Municipality',
-      cell: ({ row }) => <div> {row.getValue('municipality')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('municipality')} maxLength={10} />
+      ),
     },
 
     {
@@ -175,13 +213,16 @@ export const useProjectStakeholdersGroupTableColumns = () => {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <RoleAuth roles={[AARoles.ADMIN, AARoles.MANAGER]} hasContent={false}>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
             <div className="flex items-center gap-2">
-              <Eye
-                className="hover:text-primary cursor-pointer"
-                size={16}
-                strokeWidth={1.5}
-                onClick={() =>
+              <TooltipComponent
+                Icon={Eye}
+                tip="View Details"
+                iconStyle="hover:text-primary cursor-pointer"
+                handleOnClick={() =>
                   router.push(
                     `/projects/aa/${id}/stakeholders/${row.original.uuid}?groupId=${groupId}`,
                   )
@@ -228,35 +269,47 @@ export const useProjectSelectStakeholdersTableColumns = () => {
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <div> {row.getValue('name')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('name')} maxLength={10} />
+      ),
     },
     {
       accessorKey: 'phone',
       header: 'Phone number',
-      cell: ({ row }) => <div> {row.getValue('phone')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('phone')} maxLength={14} />
+      ),
     },
     {
       accessorKey: 'email',
       header: 'Email',
-      cell: ({ row }) => <div> {row.getValue('email')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('email')} maxLength={14} />
+      ),
     },
     {
       accessorKey: 'designation',
       header: 'Designation',
-      cell: ({ row }) => <div> {row.getValue('designation')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('designation')} maxLength={10} />
+      ),
     },
 
     {
       accessorKey: 'organization',
       header: 'Organization',
-      cell: ({ row }) => <div> {row.getValue('organization')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('organization')} maxLength={10} />
+      ),
     },
     {
       accessorKey: 'supportArea',
       header: 'Support Area',
       cell: ({ row }) =>
         row?.original?.supportArea.length > 0 ? (
-          <Badge className="w-auto">{row.original.supportArea[0]}</Badge>
+          <Badge className="w-auto">
+            <TruncatedCell text={row.original.supportArea[0]} maxLength={14} />
+          </Badge>
         ) : (
           []
         ),
@@ -265,7 +318,9 @@ export const useProjectSelectStakeholdersTableColumns = () => {
     {
       accessorKey: 'municipality',
       header: 'Municipality',
-      cell: ({ row }) => <div> {row.getValue('municipality')}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('municipality')} maxLength={14} />
+      ),
     },
   ];
 

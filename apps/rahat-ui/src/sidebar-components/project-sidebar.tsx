@@ -14,9 +14,11 @@ import { NavMain } from './nav-main';
 import Image from 'next/image';
 import { NavItem } from '../sections/projects/components';
 import { useRouter } from 'next/navigation';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 
 type ProjectNavViewProps = {
   title: string;
+  isLoading?: boolean;
   items?: NavItem[];
 };
 
@@ -35,7 +37,15 @@ export function ProjectSidebar(menuItems: ProjectNavViewProps) {
         />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={menuItems?.items} />
+        {menuItems?.isLoading ? (
+          <div className="flex flex-col gap-4 p-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-6 w-full rounded-sm" />
+            ))}
+          </div>
+        ) : (
+          <NavMain items={menuItems?.items} />
+        )}
       </SidebarContent>
       <SidebarFooter>
         <LogOut

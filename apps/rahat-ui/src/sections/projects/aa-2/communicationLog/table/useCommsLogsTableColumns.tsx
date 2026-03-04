@@ -8,6 +8,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { TriangleAlertIcon } from 'lucide-react';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 export default function useCommsLogsTableColumns(transportName: string) {
   const columns: ColumnDef<any>[] = [
     {
@@ -33,20 +34,27 @@ export default function useCommsLogsTableColumns(transportName: string) {
         return <div className="ml-8">{row?.original?.attempts}</div>;
       },
     },
-    {
-      accessorKey: 'duration',
-      header: 'Duration',
-      cell: ({ row }) => (
-        <div>{row?.original?.disposition?.cdr?.billableseconds || 'N/A'}</div>
-      ),
-    },
+    // hide duration column for EMAIL and SMS transports
+    ...(transportName !== 'EMAIL' && transportName !== 'SMS'
+      ? [
+          {
+            accessorKey: 'duration',
+            header: 'Duration',
+            cell: ({ row }) => (
+              <div>
+                {row?.original?.disposition?.cdr?.billableseconds || 'N/A'}
+              </div>
+            ),
+          },
+        ]
+      : []),
     {
       accessorKey: 'timeStamp',
       header: 'Timestamp',
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2 gap-2">
-            {renderDateTime(row?.original?.createdAt)}
+            {dateFormat(row?.original?.createdAt)}
             {transportName === 'VOICE' && row?.original?.status === 'FAIL' && (
               <TooltipProvider>
                 <Tooltip>

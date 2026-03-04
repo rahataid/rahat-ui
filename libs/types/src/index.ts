@@ -5,3 +5,5 @@ export * from './lib/users.types';
 export * from './lib/role.types';
 export * from './lib/communication.types';
 export * from './lib/beneficiaries.types';
+export * from './lib/notification.types';
+export * from './lib/groups.types';

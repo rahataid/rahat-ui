@@ -7,11 +7,11 @@ import usePayoutTransactionLogTableColumn from './usePayoutTransactionLogTableCo
 import {
   Back,
   CustomPagination,
+  DemoTable,
   Heading,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 
-import PayoutTable from './payoutTable';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { UUID } from 'crypto';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
@@ -32,7 +32,7 @@ export default function PayoutTransactionList() {
   const { data: payouts, isLoading } = usePayouts(projectID as UUID, {
     page: pagination.page,
     perPage: pagination.perPage,
-    status: debounceSearch.status,
+    payoutType: debounceSearch.payoutType,
     groupName: debounceSearch.groupName,
   });
 
@@ -40,21 +40,26 @@ export default function PayoutTransactionList() {
 
   const tableData = React.useMemo(
     () =>
-      payouts?.length
-        ? payouts?.map((d: any) => ({
+      payouts?.data?.length
+        ? payouts?.data?.map((d: any) => ({
             uuid: d?.uuid,
             groupName: d?.beneficiaryGroupToken?.beneficiaryGroup?.name,
             totalBeneficiaries:
               d?.beneficiaryGroupToken?.beneficiaryGroup?._count?.beneficiaries,
             totalTokenAssigned: d?.beneficiaryGroupToken?.numberOfTokens,
             payoutType: d?.type,
-            payoutMode: d?.mode,
+            payoutMode:
+              d?.type === 'FSP'
+                ? d?.extras?.paymentProviderName || '-'
+                : d?.mode,
             status: d?.status ?? 'N/A',
             timeStamp: d?.updatedAt,
+            totalSuccessAmount: d?.totalSuccessAmount,
           }))
         : [],
     [payouts],
   );
+
   const table = useReactTable({
     manualPagination: true,
     data: tableData,
@@ -65,7 +70,9 @@ export default function PayoutTransactionList() {
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
-      const filterValue = value === 'ALL' ? '' : value;
+      const filterValue =
+        value === 'ALL' ? '' : value === 'CVA' ? 'VENDOR' : value;
+
       table.getColumn(name)?.setFilterValue(filterValue);
       setFilters({
         ...filters,
@@ -92,8 +99,8 @@ export default function PayoutTransactionList() {
         <div className="mt-4 flex justify-between items-center">
           <div>
             <Heading
-              title={`Transaction Logs`}
-              description="List of all the payout transaction logs"
+              title={`Payout List`}
+              description="List of all the payouts available"
             />
           </div>
         </div>
@@ -108,33 +115,36 @@ export default function PayoutTransactionList() {
             value={filters?.groupName || ''}
           />
           <SelectComponent
-            name="Status"
-            options={['ALL', 'COMPLETED', 'PENDING', 'REJECTED']}
+            name="Payout Type"
+            options={['ALL', 'FSP', 'CVA']}
             onChange={(value) =>
               handleFilterChange({
-                target: { name: 'status', value },
+                target: { name: 'payoutType', value },
               })
             }
-            value={filters?.status || ''}
+            value={
+              filters?.payoutType === 'VENDOR'
+                ? 'CVA'
+                : filters?.payoutType || ''
+            }
             className="flex-[1]"
           />
         </div>
-        <PayoutTable table={table} loading={isLoading} />
+        <DemoTable table={table} loading={isLoading} />
         <CustomPagination
-          meta={{
-            total: 0,
-            currentPage: 0,
-            lastPage: 0,
-            perPage: 0,
-            next: null,
-            prev: null,
-          }}
+          currentPage={pagination.page}
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}
-          currentPage={pagination.page}
-          perPage={pagination.perPage}
-          total={0}
+          setPagination={setPagination}
+          meta={
+            (payouts?.response?.meta as any) || {
+              total: 0,
+              currentPage: 0,
+            }
+          }
+          perPage={pagination?.perPage}
+          total={payouts?.response?.meta?.total || 0}
         />
       </div>
     </div>

@@ -33,15 +33,17 @@ export default function DynamicTriggersList({
               id={t?.id}
               key={t?.uuid}
               projectId={projectId}
-              triggerId={t?.repeatKey}
+              triggerId={t?.uuid}
               type={t?.source === 'MANUAL' ? 'Manual' : 'Automated'}
               isTriggered={t?.isTriggered}
               title={t?.title || 'N/A'}
               dataSource={t?.source === 'MANUAL' ? '' : t?.source}
               riverBasin={riverBasin || t?.phase.riverBasin}
-              time={new Date(t?.createdAt)?.toLocaleString()}
+              createdAt={t?.createdAt}
+              triggeredAt={t?.triggeredAt}
               triggerType={t?.isMandatory ? 'Mandatory' : 'Optional'}
               version={t?.version}
+              triggerStatement={t?.triggerStatement}
             />
           ))
         ) : (

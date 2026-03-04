@@ -23,6 +23,7 @@ export const usePhasesStats = (uuid: UUID) => {
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   useEffect(() => {
@@ -48,6 +49,7 @@ export const useAllStats = (uuid: UUID) => {
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   return query;
@@ -68,6 +70,7 @@ export const useCommsStats = (uuid: UUID) => {
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   return query;
@@ -88,6 +91,7 @@ export const useSingleStat = (uuid: UUID, name: string) => {
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   return query;
@@ -106,6 +110,58 @@ export const useCommuicationStatsforBeneficiaryandStakeHolders = (
         data: {
           action: 'ms.triggers.getTransportSessionStatsByGroup',
           payload: {},
+        },
+      });
+      return mutate.data;
+    },
+    staleTime: 60 * 60 * 1000, // 1 hour
+  });
+
+  return query;
+};
+
+export const useProjectDashboardReporting = (uuid: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['projectDashboard', uuid],
+    staleTime: 1000 * 60 * 60 * 4,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.stats.getAll',
+          payload: {
+            appId: uuid,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};
+
+export const useProjectDashboardBeneficiaryMapLocation = (
+  uuid: UUID,
+  payload: any,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['projectDashboardBenefMap', payload, uuid],
+    staleTime: 1000 * 60 * 60 * 4,
+    queryFn: async () => {
+      console.log('payload', payload);
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.stats.getMapLocation',
+          payload: {
+            appId: uuid,
+            ...payload,
+          },
         },
       });
       return mutate.data;

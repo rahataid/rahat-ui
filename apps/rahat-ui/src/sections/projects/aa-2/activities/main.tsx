@@ -4,27 +4,30 @@ import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { generateExcel } from 'apps/rahat-ui/src/utils';
 import { UUID } from 'crypto';
 import { CloudDownloadIcon, Plus } from 'lucide-react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import PhaseContent from './components/phase-content';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { useMemo } from 'react';
 
 export default function ActivitiesView() {
   const { id: projectID } = useParams();
-  const searchParams = useSearchParams();
 
   const router = useRouter();
-  const { data, activitiesData, activitiesMeta, isLoading } = useActivities(
-    projectID as UUID,
-    { perPage: 9999 },
-  );
-  const preparednessData =
-    activitiesData?.filter((d) => d.phase === 'PREPAREDNESS') || [];
+  const { data, activitiesData, isLoading } = useActivities(projectID as UUID, {
+    perPage: 9999,
+  });
+  const preparednessData = useMemo(() => {
+    return activitiesData?.filter((d) => d.phase === 'PREPAREDNESS') || [];
+  }, [activitiesData]);
 
-  const readinesssData =
-    activitiesData?.filter((d) => d.phase === 'READINESS') || [];
+  const readinesssData = useMemo(() => {
+    return activitiesData?.filter((d) => d.phase === 'READINESS') || [];
+  }, [activitiesData]);
 
-  const activationData =
-    activitiesData?.filter((d) => d.phase === 'ACTIVATION') || [];
+  const activationData = useMemo(() => {
+    return activitiesData?.filter((d) => d.phase === 'ACTIVATION') || [];
+  }, [activitiesData]);
 
   const handleDownloadReport = () => {
     if (activitiesData.length < 1) return toast.error('No data to download.');
@@ -61,23 +64,32 @@ export default function ActivitiesView() {
           description="Track all the activities reports here"
         />
         <div className="flex flex-end gap-2">
-          <IconLabelBtn
-            Icon={CloudDownloadIcon}
-            handleClick={handleDownloadReport}
-            name="Download Report"
-            variant="outline"
-          />
-
-          <IconLabelBtn
-            Icon={Plus}
-            handleClick={() =>
-              router.push(
-                `/projects/aa/${projectID}/activities/add?nav=mainPage`,
-              )
-            }
-            name="Add Activity"
-            variant="default"
-          />
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
+            <IconLabelBtn
+              Icon={CloudDownloadIcon}
+              handleClick={handleDownloadReport}
+              name="Download Report"
+              variant="outline"
+            />
+          </RoleAuth>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+            hasContent={false}
+          >
+            <IconLabelBtn
+              Icon={Plus}
+              handleClick={() =>
+                router.push(
+                  `/projects/aa/${projectID}/activities/add?nav=mainPage`,
+                )
+              }
+              name="Add Activity"
+              variant="default"
+            />
+          </RoleAuth>
         </div>
       </div>
       <div className="grid  lg:grid-cols-1 xl:grid-cols-3  gap-4">

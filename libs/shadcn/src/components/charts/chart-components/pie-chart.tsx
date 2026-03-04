@@ -49,9 +49,30 @@ interface Props {
   };
   communityTool?: boolean;
   donutSize?: string;
-  width?: number;
-  height?: number;
+
+  width?: number | string | undefined;
+  height?: number | string | undefined;
+
   projectAA?: boolean;
+  showPercentage?: boolean;
+  type?:
+    | 'line'
+    | 'area'
+    | 'bar'
+    | 'pie'
+    | 'donut'
+    | 'radialBar'
+    | 'scatter'
+    | 'bubble'
+    | 'heatmap'
+    | 'candlestick'
+    | 'boxPlot'
+    | 'radar'
+    | 'polarArea'
+    | 'rangeBar'
+    | 'rangeArea'
+    | 'treemap'
+    | undefined;
 }
 
 export default function PieChart({
@@ -64,6 +85,8 @@ export default function PieChart({
   width = 400,
   height = 320,
   projectAA = false,
+  type = 'pie',
+  showPercentage,
 }: Props) {
   const {
     colors = ['#00b67a', '#8BC34A', '#FFA726', '#007bb6', '#7a00b6'],
@@ -90,7 +113,9 @@ export default function PieChart({
     tooltip: {
       fillSeriesColor: true,
       y: {
-        formatter: (value: number) => fNumber(value),
+        // formatter: (value: number) => fNumber(value),
+        formatter: (value: number) =>
+          showPercentage ? `${value.toFixed(2)}%` : fNumber(value),
         title: {
           formatter: (seriesName: string) => `${seriesName}`,
         },
@@ -125,7 +150,7 @@ export default function PieChart({
   return custom ? (
     <Chart
       dir="ltr"
-      type="pie"
+      type={type}
       series={chartSeries}
       options={chartOptions}
       height={height}

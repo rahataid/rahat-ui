@@ -1,8 +1,10 @@
 import React from 'react';
 import { Table, flexRender } from '@tanstack/react-table';
-import { TableLoader } from './table.loader';
 import { NoResult } from './noResults';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {
+  ScrollArea,
+  ScrollBar,
+} from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Table as TableComponent,
   TableBody,
@@ -18,13 +20,22 @@ type IProps = {
   tableHeight?: string;
   loading?: boolean;
   message?: string;
+  height?: string;
 };
 
-export function DemoTable({ table, tableHeight, loading, message }: IProps) {
+export function DemoTable({
+  table,
+  tableHeight,
+  loading,
+  message,
+  height = '340px',
+}: IProps) {
+  const hasRows = table.getRowModel().rows?.length > 0;
+
   return (
-    <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
-      <TableComponent>
-        <TableHeader className="sticky top-0 bg-gray-100">
+    <ScrollArea className={tableHeight ?? `h-[calc(100vh-${height})]`}>
+      <TableComponent className="min-w-full">
+        <TableHeader className="sticky top-0 bg-gray-100 z-10">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -43,7 +54,16 @@ export function DemoTable({ table, tableHeight, loading, message }: IProps) {
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
+          {loading ? (
+            <TableRow>
+              <TableCell
+                colSpan={table.getAllColumns().length}
+                className="h-24 text-center"
+              >
+                <SpinnerLoader />
+              </TableCell>
+            </TableRow>
+          ) : hasRows ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
@@ -62,12 +82,13 @@ export function DemoTable({ table, tableHeight, loading, message }: IProps) {
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                {loading ? <SpinnerLoader /> : <NoResult message={message} />}
+                <NoResult message={message} />
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </TableComponent>
+      <ScrollBar orientation="horizontal" />
     </ScrollArea>
   );
 }

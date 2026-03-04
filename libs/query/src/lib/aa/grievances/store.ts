@@ -1,4 +1,5 @@
 import { localStore, zustandStore } from '@rumsan/react-query';
+import { StoreApi, UseBoundStore } from 'zustand';
 
 const initialStore = {
   grievances: [],
@@ -17,17 +18,18 @@ type AAGrievancesStateAction = {
 
 type AAGrievancesStore = AAGrievancesState & AAGrievancesStateAction;
 
-export const useAAGrievancesStore = zustandStore<AAGrievancesStore>(
-  (set) => ({
-    ...initialStore,
-    setGrievances: (grievances: any) => set({ grievances }),
-    setGrievanceDetails: (grievanceDetails: any) => set({ grievanceDetails }),
-  }),
-  {
-    devtoolsEnabled: true,
-    persistOptions: {
-      name: 'aaGrievancesStore',
-      storage: localStore,
+export const useAAGrievancesStore: UseBoundStore<StoreApi<AAGrievancesStore>> =
+  zustandStore<AAGrievancesStore>(
+    (set) => ({
+      ...initialStore,
+      setGrievances: (grievances: any) => set({ grievances }),
+      setGrievanceDetails: (grievanceDetails: any) => set({ grievanceDetails }),
+    }),
+    {
+      devtoolsEnabled: true,
+      persistOptions: {
+        name: 'aaGrievancesStore',
+        storage: localStore,
+      },
     },
-  },
-);
+  );

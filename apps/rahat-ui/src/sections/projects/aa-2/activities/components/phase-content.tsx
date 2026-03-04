@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import TaskCard from './phase-card';
 import { NoResult, SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
 import { Expand } from 'lucide-react';
 import {
@@ -10,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import PhaseCard from './phase-card';
 import { useParams, useRouter } from 'next/navigation';
 
@@ -61,7 +59,7 @@ export default function PhaseContent({
               className="w-5 h-5 cursor-pointer hover:shadow-md active:scale-95 focus:ring-2 focus:ring-blue-500 transition-transform"
               onClick={() => {
                 router.push(
-                  `/projects/aa/${projectID}/activities/list/${lowerTitle}?from=${lowerTitle}`,
+                  `/projects/aa/${projectID}/activities/list/${lowerTitle}`,
                 );
               }}
             />

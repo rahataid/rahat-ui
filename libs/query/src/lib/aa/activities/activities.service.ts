@@ -12,6 +12,16 @@ import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
+type ActivityTemplateFilters = {
+  page?: number;
+  perPage?: number;
+  phase?: string;
+  hasCommunication?: string;
+  category?: string;
+  title?: string;
+  isAutomated?: string;
+  appId?: string;
+};
 export const useActivitiesCategories = (uuid: UUID) => {
   const q = useProjectAction();
   const { setCategories } = useActivitiesStore((state) => ({
@@ -72,6 +82,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
+    staleTime: 30 * 60 * 1000, // 30 minutes
     placeholderData: keepPreviousData,
   });
 
@@ -135,11 +146,13 @@ export const useActivitiesHavingComms = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
+    staleTime: 30 * 60 * 1000, // 30 minutes
   });
   const activitiesData = query?.data?.data?.map((d: any) => ({
     id: d?.uuid,
     title: d?.title,
     createdAt: d?.createdAt,
+    updatedAt: d?.updatedAt,
     phase: d?.phase?.name,
     status: d?.status,
     activityCommunication: d?.activityCommunication,
@@ -157,27 +170,47 @@ export const useSingleActivity = (
   activityId: string | string[],
 ) => {
   const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
 
   const query = useQuery({
     queryKey: ['activity', uuid, activityId],
     queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: 'ms.activities.getOne',
-          payload: {
-            uuid: activityId,
+      try {
+        const mutate = await q.mutateAsync({
+          uuid,
+          data: {
+            action: 'ms.activities.getOne',
+            payload: {
+              uuid: activityId,
+            },
           },
-        },
-      });
-      return mutate.data;
+        });
+        return mutate.data;
+      } catch (error: any) {
+        const errorMessage =
+          error?.response?.data?.message || 'Failed to fetch activity';
+        toast.fire({
+          title: 'Error loading activity',
+          text: errorMessage,
+          icon: 'error',
+        });
+        throw error;
+      }
     },
+    staleTime: 30 * 60 * 1000, // 30 minutes
   });
   return query;
 };
 
 export const useCreateActivities = () => {
   const q = useProjectAction();
+  const qc = useQueryClient();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -201,10 +234,13 @@ export const useCreateActivities = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       q.reset();
+      qc.invalidateQueries({ queryKey: ['activities'] });
       toast.fire({
-        title: 'Activity added successfully',
+        title: data?.data?.isTemplate
+          ? 'Activity and its template added successfully'
+          : 'Activity created successfully',
         icon: 'success',
       });
     },
@@ -415,4 +451,28 @@ export const useUpdateActivityStatus = () => {
       });
     },
   });
+};
+
+export const useActivityTemplates = (
+  uuid: UUID,
+  filters: ActivityTemplateFilters,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['activityTemplates', uuid, filters],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.library.getActivityTemplates',
+          payload: {
+            ...filters,
+          },
+        },
+      });
+      return mutate.response;
+    },
+  });
+  return query;
 };

@@ -26,6 +26,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
   navFooter,
 }) => {
   const { navItems: menuItems } = useProjectNavItems(projectType);
+
   const { headerNav } = useProjectHeaderItems(projectType);
 
   // --- Previous Project Layout---
@@ -80,12 +81,13 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
           <ProjectSidebar
             key={item.title}
             title={item.title}
+            isLoading={item.isLoading}
             items={item.children}
           />
         ))}
-        <div className="w-full">
+        <div className="w-full ">
           <ProjectNav component={headerNav} />
-          {children}
+          <div>{children}</div>
         </div>
       </SidebarProvider>
     </>

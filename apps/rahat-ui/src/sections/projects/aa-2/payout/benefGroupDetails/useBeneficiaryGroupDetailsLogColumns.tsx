@@ -1,3 +1,4 @@
+'use client';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
@@ -6,23 +7,25 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { CheckIcon, Eye, RotateCcwIcon, TriangleAlertIcon } from 'lucide-react';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import {
-  Copy,
-  CopyCheck,
-  Eye,
-  RotateCcwIcon,
-  TriangleAlertIcon,
-} from 'lucide-react';
-import {
-  usePaymentProviders,
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
   useTriggerForOnePayoutFailed,
 } from '@rahat-ui/query';
-import { useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useCallback, useState } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { transactionBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
-import { intlFormatDate } from 'apps/rahat-ui/src/utils';
+import {
+  PayoutTransactionStatus,
+  transactionBgStatus,
+} from 'apps/rahat-ui/src/utils/get-status-bg';
+import { getExplorerUrl, intlFormatDate } from 'apps/rahat-ui/src/utils';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { ONE_TOKEN_VALUE } from 'apps/rahat-ui/src/constants/aa.constants';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 function getTransactionStatusColor(status: string) {
   switch (status.toLowerCase()) {
     case 'completed':
@@ -36,54 +39,84 @@ function getTransactionStatusColor(status: string) {
   }
 }
 
-export default function useBeneficiaryGroupDetailsLogColumns() {
+const editableStatuses: PayoutTransactionStatus[] = [
+  PayoutTransactionStatus.FIAT_TRANSACTION_INITIATED,
+  PayoutTransactionStatus.PENDING,
+  PayoutTransactionStatus.TOKEN_TRANSACTION_INITIATED,
+];
+
+type BeneficiaryGroupDetailsLogRow = {
+  id: string;
+  beneficiaryWalletAddress: string;
+  uuid: UUID;
+  txHash?: string;
+  amount?: number;
+  status: PayoutTransactionStatus;
+  transactionType?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  payout?: {
+    type?: string;
+  };
+  info?: {
+    offrampWalletAddress?: string;
+    error?: string;
+  };
+  isCompleted?: boolean;
+};
+
+export default function useBeneficiaryGroupDetailsLogColumns(
+  payoutType: string,
+) {
   const { id, detailID } = useParams();
   const router = useRouter();
   const triggerForPayoutFailed = useTriggerForOnePayoutFailed();
-  const fspName = usePaymentProviders({ projectUUID: id as UUID });
-  const { clickToCopy, copyAction } = useCopy();
+  const [pendingUuid, setPendingUuid] = useState<UUID | null>(null);
+  const searchParams = useSearchParams();
+  const navigation = searchParams.get('from');
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
   const handleTriggerSinglePayoutFailed = useCallback(
-    async (uuid: string) => {
-      triggerForPayoutFailed.mutateAsync({
-        projectUUID: id as UUID,
-        payload: {
-          beneficiaryRedeemUuid: uuid,
-        },
-      });
+    async (uuid: UUID) => {
+      setPendingUuid(uuid); // Start tracking this row
+      try {
+        await triggerForPayoutFailed.mutateAsync({
+          projectUUID: id as UUID,
+          payload: {
+            beneficiaryRedeemUuid: uuid,
+          },
+        });
+        setPendingUuid(null); // Clear after it's done
+      } catch (error) {
+        console.error(error);
+      }
     },
-    [triggerForPayoutFailed],
+    [triggerForPayoutFailed, id],
   );
-  const handleEyeClick = (uuid: any) => {
+
+  const handleEyeClick = (uuid: UUID) => {
     router.push(
-      `/projects/aa/${id}/payout/transaction-details/${uuid}?groupId=${detailID}`,
+      `/projects/aa/${id}/payout/transaction-details/${uuid}?groupId=${detailID}&${
+        navigation ? `from=${navigation}` : ''
+      }`,
     );
   };
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<BeneficiaryGroupDetailsLogRow>[] = [
     {
       accessorKey: 'beneficiaryWalletAddress',
       header: 'Beneficiary Wallet Address',
       cell: ({ row }) => (
-        <div
-          onClick={() =>
-            clickToCopy(
-              row?.original?.beneficiaryWalletAddress,
-              row?.original?.id,
-            )
-          }
-          className="flex items-center gap-2"
-        >
-          <p className="truncate w-20 ">
-            {row?.original?.beneficiaryWalletAddress || 'N/A'}
-          </p>
-          {copyAction === row?.original?.id ? (
-            <CopyCheck size={15} strokeWidth={1.5} />
-          ) : (
-            <Copy
-              className="text-slate-500 cursor-pointer"
-              size={15}
-              strokeWidth={1.5}
-            />
-          )}
+        <div className="flex items-center gap-2">
+          <TruncatedCell
+            text={row?.original?.beneficiaryWalletAddress || 'N/A'}
+            maxLength={10}
+          />
+
+          <CopyTooltip
+            value={row?.original?.beneficiaryWalletAddress || ''}
+            uniqueKey={row?.original?.id}
+          />
         </div>
       ),
     },
@@ -92,27 +125,15 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
       header: 'Transaction Wallet ID',
       cell: ({ row }) => {
         return (
-          <div
-            onClick={() =>
-              clickToCopy(
-                row?.original?.info?.offrampWalletAddress,
-                row?.original?.uuid,
-              )
-            }
-            className="flex items-center gap-2"
-          >
-            <p className="truncate w-20 ">
-              {row?.original?.info?.offrampWalletAddress || 'N/A'}
-            </p>
-            {copyAction === row?.original?.uuid ? (
-              <CopyCheck size={15} strokeWidth={1.5} />
-            ) : (
-              <Copy
-                className="text-slate-500 cursor-pointer"
-                size={15}
-                strokeWidth={1.5}
-              />
-            )}
+          <div className="flex items-center gap-2">
+            <TruncatedCell
+              text={row?.original?.info?.offrampWalletAddress || 'N/A'}
+              maxLength={10}
+            />
+            <CopyTooltip
+              value={row?.original?.info?.offrampWalletAddress || ''}
+              uniqueKey={row?.original?.uuid}
+            />
           </div>
         );
       },
@@ -121,16 +142,22 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
       accessorKey: 'txHash',
       header: 'Transaction Hash',
       cell: ({ row }) => {
+        const txUrl = getExplorerUrl({
+          chainSettings:
+            settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+          target: 'tx',
+          value: row?.original?.txHash || '',
+        });
         return (
           <div>
             {row?.original?.txHash ? (
               <a
-                href={`https://stellar.expert/explorer/testnet/tx/${row?.original?.txHash}`}
+                href={txUrl ? txUrl : '#'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base text-blue-500 hover:underline cursor-pointer"
               >
-                <p className="truncate w-20">{row?.original?.txHash}</p>
+                <TruncatedCell text={row?.original?.txHash} maxLength={10} />
               </a>
             ) : (
               'N/A'
@@ -139,68 +166,128 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
         );
       },
     },
+    {
+      accessorKey: 'amount',
+      header: 'Amount Disbursed',
+      cell: ({ row }) => {
+        const amount =
+          row?.original?.status === 'FIAT_TRANSACTION_COMPLETED' ||
+          row.original?.status === 'COMPLETED'
+            ? row.original?.amount! * ONE_TOKEN_VALUE
+            : 0;
 
+        if (payoutType === 'FSP')
+          return (
+            <div>
+              <TruncatedCell text={`Rs. ${amount}`} maxLength={15} />
+            </div>
+          );
+        else {
+          const status = row.original?.status;
+          const amount = row.original?.amount! * ONE_TOKEN_VALUE;
+
+          return status === 'COMPLETED' ? (
+            row.original?.amount ? (
+              <TruncatedCell text={`Rs. ${amount}`} maxLength={15} />
+            ) : (
+              'Rs. 0'
+            )
+          ) : (
+            'Rs. 0'
+          );
+        }
+      },
+    },
     {
       accessorKey: 'transactionType',
       header: 'Transaction Type',
       cell: ({ row }) => {
-        const type = row?.original?.transactionType;
+        const type = row?.original?.transactionType ?? 'unknown';
         return (
           <Badge
             className={`rounded-xl capitalize ${getTransactionStatusColor(
               type,
             )}`}
           >
-            {type
-              .toLowerCase()
-              .split('_')
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ')}
+            <TruncatedCell
+              text={type
+                .toLowerCase()
+                .split('_')
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ')}
+              maxLength={15}
+            />
           </Badge>
         );
       },
     },
     {
-      accessorKey: 'tokensAssigned',
-      header: 'Tokens Assigned',
-      cell: ({ row }) => <div>{row.original?.amount}</div>,
-    },
-    {
-      accessorKey: 'fspId',
-      header: 'FSP',
-      cell: ({ row }) => (
-        <div>
-          {fspName.data?.find((a) => a.id === row.original.fspId)?.name}
-        </div>
-      ),
-    },
-    {
       accessorKey: 'status',
-      header: 'Status',
+      header: 'Payout Status',
       cell: ({ row }) => {
         const status = row?.original?.status;
         return (
           <Badge className={`rounded-xl w-auto ${transactionBgStatus(status)}`}>
-            {status
-              .toLowerCase()
-              .split('_')
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(' ')}
+            <TruncatedCell
+              text={status
+                .toLowerCase()
+                .split('_')
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ')}
+              className="text-[10px]"
+            />
           </Badge>
         );
       },
     },
     {
-      accessorKey: 'createdAt',
+      accessorKey: 'updatedAt',
       header: 'Timestamp',
-      cell: ({ row }) => (
-        <div className="flex items-center gap-4">
-          {/* {new Date(row.getValue('createdAt')).toLocaleString()}{' '} */}
-          {intlFormatDate(row?.original?.createdAt)}
-        </div>
-      ),
-    },
+      cell: ({ row }) => {
+        const { createdAt, updatedAt, payout, status } = row?.original || {};
 
+        if (payout?.type === 'FSP') {
+          return (
+            <div className="flex flex-col text-[10px]">
+              <span>
+                <TruncatedCell
+                  text={intlFormatDate(createdAt)}
+                  maxLength={25}
+                />
+              </span>
+              {status?.includes('COMPLETED') && (
+                <span>
+                  <TruncatedCell
+                    text={intlFormatDate(updatedAt)}
+                    maxLength={25}
+                  />
+                </span>
+              )}
+            </div>
+          );
+        } else {
+          return (
+            <div className="flex flex-col text-[10px]">
+              {status === 'COMPLETED' ? (
+                <span>
+                  <TruncatedCell
+                    text={intlFormatDate(updatedAt)}
+                    maxLength={25}
+                  />
+                </span>
+              ) : (
+                <span>
+                  <TruncatedCell
+                    text={intlFormatDate(createdAt)}
+                    maxLength={25}
+                  />
+                </span>
+              )}
+            </div>
+          );
+        }
+      },
+    },
     {
       id: 'actions',
       header: 'Actions',
@@ -208,50 +295,70 @@ export default function useBeneficiaryGroupDetailsLogColumns() {
       cell: ({ row }) => {
         return (
           <div className="flex items-center space-x-2">
-            {row.original?.isCompleted === false && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild className="hover:cursor-pointer py-0">
-                    <TriangleAlertIcon
-                      className="w-6 h-6 xl:w-4 xl:h-4  text-red-500"
-                      strokeWidth={2.5}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="left"
-                    className="w-96 rounded-sm p-4 max-h-60 overflow-auto"
-                  >
-                    <div className="flex space-x-2 items-center">
+            {row.original?.isCompleted === false &&
+              !editableStatuses.includes(row.original.status) && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger
+                      asChild
+                      className="hover:cursor-pointer py-0"
+                    >
                       <TriangleAlertIcon
-                        size={16}
-                        strokeWidth={1.5}
-                        color="red"
+                        className="w-6 h-6 xl:w-4 xl:h-4  text-red-500"
+                        strokeWidth={2.5}
                       />
-                      <span className="font-semibold text-sm/6">
-                        Transaction Failed
-                      </span>
-                    </div>
-                    <p className="text-gray-500 text-sm mt-1 break-words">
-                      {row.original?.info?.error ?? 'Something went wrong!!'}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-            {row.original?.isCompleted === false && (
-              <RotateCcwIcon
-                className="w-6 h-6 xl:w-4 xl:h-4  text-blue-400 cursor-pointer"
-                strokeWidth={2.5}
-                onClick={() =>
-                  handleTriggerSinglePayoutFailed(row.original.uuid)
-                }
-              />
-            )}
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={20}
-              strokeWidth={1.5}
-              onClick={() => handleEyeClick(row?.original?.uuid)}
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="left"
+                      className="w-96 rounded-sm p-4 max-h-60 overflow-auto"
+                    >
+                      <div className="flex space-x-2 items-center">
+                        <TriangleAlertIcon
+                          size={16}
+                          strokeWidth={1.5}
+                          color="red"
+                        />
+                        <span className="font-semibold text-sm/6">
+                          Transaction Failed
+                        </span>
+                      </div>
+                      <p className="text-gray-500 text-sm mt-1 break-words">
+                        {row.original?.info?.error ?? 'Something went wrong!!'}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+
+            {row.original?.isCompleted === false &&
+              payoutType === 'FSP' &&
+              !editableStatuses.includes(row.original.status) &&
+              (pendingUuid === row.original.uuid ? (
+                <CheckIcon
+                  className="w-6 h-6 xl:w-4 xl:h-4 text-green-500"
+                  strokeWidth={2.5}
+                />
+              ) : (
+                <RoleAuth
+                  roles={[AARoles.ADMIN, AARoles.Municipality]}
+                  hasContent={false}
+                >
+                  <TooltipComponent
+                    Icon={RotateCcwIcon}
+                    tip="Update"
+                    iconStyle="w-6 h-6 xl:w-4 xl:h-4 text-blue-400 cursor-pointer"
+                    handleOnClick={() =>
+                      handleTriggerSinglePayoutFailed(row.original.uuid)
+                    }
+                  />
+                </RoleAuth>
+              ))}
+
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() => handleEyeClick(row?.original?.uuid)}
             />
           </div>
         );

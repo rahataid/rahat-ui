@@ -18,11 +18,11 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { useUserStore } from '@rumsan/react-query';
 import { useAuthStore } from '@rumsan/react-query/auth';
-import ThemeSwitch from 'apps/rahat-ui/src/components/themeToggleSwitch';
-import ConnectWallet from 'apps/rahat-ui/src/components/wallet/connect-wallet';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { toast } from 'react-toastify';
 import { SidebarTrigger } from '@rahat-ui/shadcn/src/components/ui/sidebar';
+import { NotificationButton } from 'apps/rahat-ui/src/components/notification-button';
+import ConnectWallet from 'apps/rahat-ui/src/components/wallet/connect-wallet';
 
 export function ProjectNav({
   //   data = [],
@@ -38,6 +38,8 @@ export function ProjectNav({
   component?: React.ReactNode;
 }) {
   const currentPath = usePathname();
+  const showNotification = currentPath.split('/').includes('aa');
+
   const { user, clearUser } = useUserStore((state) => ({
     user: state.user,
     clearUser: state.clearUser,
@@ -47,18 +49,19 @@ export function ProjectNav({
     clearUser();
     clearAuth();
     toast.success('Logged out successfully.');
-    setTimeout(() => window.location.reload(), 1000);
+    // setTimeout(() => window.location.reload(), 1000);
+    setTimeout(() => window.location.replace('/auth/login'), 1000);
   };
 
   return (
-    <div className="h-14 flex justify-between pl-2 pr-6 py-2 z-50 bg-card border-b">
+    <div className="sticky top-0 z-50 h-14 w-full flex justify-between pl-2 pr-6 py-2 bg-card border-b">
       <div className="flex items-center space-x-4">
         <SidebarTrigger />
         {component}
       </div>
       <div className="flex gap-4 items-center">
         <ConnectWallet />
-
+        {showNotification && <NotificationButton unreadCount={0} />}
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Avatar className="h-10 w-10">

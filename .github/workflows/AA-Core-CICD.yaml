@@ -64,10 +64,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Python setuptools (fixes distutils)
+      - name: Install build dependencies
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y python3-setuptools
+          sudo apt-get install -y \
+            python3-setuptools \
+            build-essential \
+            make \
+            g++ \
+            gcc
 
       # -----------------------------
       # Node + PNPM Setup

@@ -32,7 +32,7 @@ env:
 jobs:
   setup:
     name: Setup Build Matrix
-    runs-on: ubuntu-latest
+    runs-on: k8s-runner-set-rahataid
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -49,7 +49,7 @@ jobs:
 
   build:
     name: Build & Push - ${{ matrix.app }}
-    runs-on: ubuntu-latest
+    runs-on: k8s-runner-set-rahataid
     needs: setup
 
     strategy:

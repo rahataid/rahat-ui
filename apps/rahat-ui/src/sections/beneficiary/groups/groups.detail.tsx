@@ -199,7 +199,7 @@ export default function GroupDetailView() {
             <Heading
               title={group?.data?.name}
               description={
-                'Here is a detailed view of the selected beneficiary group test'
+                'Here is a detailed view of the selected beneficiary group'
               }
               status={capitalizeFirstLetter(groupPurposeName || '')}
             />

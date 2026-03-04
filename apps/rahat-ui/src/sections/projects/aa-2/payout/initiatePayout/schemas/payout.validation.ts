@@ -43,6 +43,7 @@ export const paymentSchema = z
 
 export type PaymentSchema = z.infer<typeof paymentSchema>;
 
+// This is for the integrated payout form as group would be passed directly from the backend
 export const paymentFundSchema = z
   .object({
     method: z.string(),

@@ -23,6 +23,7 @@ concurrency:
   group: aa-core-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+
 env:
   CI: false
   REGISTRY: docker.io

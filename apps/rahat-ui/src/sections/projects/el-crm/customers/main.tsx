@@ -188,7 +188,7 @@ export default function CustomersPage() {
         {/* Customers List */}
         <Card>
           <CardContent className="mt-6">
-            <div className="flex flex-wrap items-center gap-4 mb-1">
+            <div className="flex flex-wrap items-center gap-4 mb-2">
               {/* Search */}
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -257,7 +257,7 @@ export default function CustomersPage() {
             <div>
               <DemoTable
                 table={table}
-                tableHeight="h-[calc(100vh-470px)]"
+                tableHeight="h-[calc(100vh-474px)]"
                 loading={isLoading}
               />
               <CustomPagination

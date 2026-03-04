@@ -138,12 +138,9 @@ export default function ConsumersView() {
           </Card>
         </div>
 
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="text-lg">Filters</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-4">
+        <Card>
+          <CardContent className="mt-6">
+            <div className="flex flex-wrap gap-4 mb-2">
               {/* Search */}
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -155,21 +152,7 @@ export default function ConsumersView() {
                 />
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Consumers Table */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Consumer List</CardTitle>
-              <div className="text-sm text-muted-foreground">
-                Showing {filteredConsumers.length} of {consumers.length}{' '}
-                consumers
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
+            {/* Consumers Table */}
             <DemoTable table={table} tableHeight="h-[calc(100vh-595px)]" />
           </CardContent>
         </Card>

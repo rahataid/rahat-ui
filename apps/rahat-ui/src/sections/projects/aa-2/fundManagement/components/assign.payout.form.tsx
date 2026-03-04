@@ -57,6 +57,8 @@ interface PayoutFundManagementFormProps {
   handleStepChange: (step: number) => void;
   onPayoutData: (data: PaymentFundSchema | null) => void;
   payoutData?: PaymentFundSchema | null;
+  wantsPayout: boolean | null;
+  onWantsPayoutChange: (value: boolean | null) => void;
 }
 
 const initialFormState: PaymentFundSchema = {
@@ -70,16 +72,17 @@ export default function PayoutFundManagementForm({
   handleStepChange,
   onPayoutData,
   payoutData,
+  wantsPayout,
+  onWantsPayoutChange,
 }: PayoutFundManagementFormProps) {
   // Router goes here
   const params = useParams();
   const projectID = params.id as UUID;
 
   // State goes here
-  // If returning from confirmation with existing payout data, go straight to form
-  const [wantsPayout, setWantsPayout] = useState<boolean | null>(
-    payoutData ? true : null,
-  );
+  // Always show the "do you want a payout?" question on mount.
+  // If payoutData exists (returning from confirmation), the form will be
+  // pre-filled once the user clicks "Yes" again.
 
   // Store goes here
   const { assignedFundData } = useFundAssignmentStore((s) => ({
@@ -210,7 +213,7 @@ export default function PayoutFundManagementForm({
           </Button>
           <Button
             className="w-32 rounded-sm"
-            onClick={() => setWantsPayout(true)}
+            onClick={() => onWantsPayoutChange(true)}
           >
             Yes
           </Button>
@@ -235,7 +238,7 @@ export default function PayoutFundManagementForm({
           No payout type configured. Please configure payout types in Settings
           before creating a payout.
         </p>
-        <Button variant="outline" onClick={() => setWantsPayout(null)}>
+        <Button variant="outline" onClick={() => onWantsPayoutChange(null)}>
           Go back
         </Button>
       </div>

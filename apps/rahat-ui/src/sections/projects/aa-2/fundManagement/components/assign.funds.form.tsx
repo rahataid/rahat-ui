@@ -93,19 +93,19 @@ export default function AssignFundsForm({
   }, []);
 
   const handleAssignFunds = async (data: FundAssignmentFormValues) => {
-    if (
-      projectBalance === undefined ||
-      projectBalance < 0 ||
-      isNaN(projectBalance)
-    ) {
-      toast.error('Insufficient project balance');
-      return;
-    }
+    // if (
+    //   projectBalance === undefined ||
+    //   projectBalance < 0 ||
+    //   isNaN(projectBalance)
+    // ) {
+    //   toast.error('Insufficient project balance');
+    //   return;
+    // }
 
-    if (projectBalance < data.totalTokenAmount) {
-      toast.error('Insufficient project balance to assign funds');
-      return;
-    }
+    // if (projectBalance < data.totalTokenAmount) {
+    //   toast.error('Insufficient project balance to assign funds');
+    //   return;
+    // }
 
     const selectedGroup = benGroups.data.find(
       (group) => group.uuid === data.beneficiaryGroupId,

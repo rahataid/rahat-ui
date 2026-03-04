@@ -1,3 +1,4 @@
+import { PaymentFundSchema } from '../../payout/initiatePayout/schemas/payout.validation';
 import AssignFundsForm from './assign.funds.form';
 import PayoutFundManagementForm, { PayoutFormData } from './assign.payout.form';
 import Confirmation from './confirmation';
@@ -5,13 +6,22 @@ import Confirmation from './confirmation';
 interface FundManagementFormProps {
   currentStep: number;
   handleStepChange: (step: number) => void;
-  payoutData: PayoutFormData | null;
-  onPayoutData: (data: PayoutFormData | null) => void;
+  payoutData: PaymentFundSchema | null;
+  onPayoutData: (data: PaymentFundSchema | null) => void;
+  wantsPayout: boolean | null;
+  onWantsPayoutChange: (value: boolean | null) => void;
 }
 
 const FundManagementForm = (props: FundManagementFormProps) => {
   // Props goes here
-  const { currentStep, handleStepChange, payoutData, onPayoutData } = props;
+  const {
+    currentStep,
+    handleStepChange,
+    payoutData,
+    onPayoutData,
+    wantsPayout,
+    onWantsPayoutChange,
+  } = props;
 
   switch (currentStep) {
     case 0:
@@ -23,6 +33,8 @@ const FundManagementForm = (props: FundManagementFormProps) => {
           handleStepChange={handleStepChange}
           onPayoutData={onPayoutData}
           payoutData={payoutData}
+          wantsPayout={wantsPayout}
+          onWantsPayoutChange={onWantsPayoutChange}
         />
       );
 

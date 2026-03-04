@@ -16,6 +16,9 @@ export default function AssignFundsView() {
   // State goes here
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [payoutData, setPayoutData] = useState<PayoutFormData | null>(null);
+  // Tracks the payout sub-step: null = prompt, true = form
+  // Lifted here so the Back button can reset it without decrementing the step
+  const [wantsPayout, setWantsPayout] = useState<boolean | null>(null);
 
   const { setAssignedFundData } = useFundAssignmentStore((s) => ({
     setAssignedFundData: s.setAssignedFundData,
@@ -29,6 +32,12 @@ export default function AssignFundsView() {
   }, [setAssignedFundData]);
 
   const handleBack = useCallback(() => {
+    // On the payout step, if the user is in the form (wantsPayout=true),
+    // go back to the prompt instead of decrementing the step
+    if (currentStep === 1 && wantsPayout === true) {
+      setWantsPayout(null);
+      return;
+    }
     if (currentStep > 0) {
       setCurrentStep((prev) => prev - 1);
     } else {
@@ -36,7 +45,7 @@ export default function AssignFundsView() {
       setPayoutData(null);
       router.push(`/projects/aa/${id}/fund-management`);
     }
-  }, [currentStep, id, router, setAssignedFundData]);
+  }, [currentStep, wantsPayout, id, router, setAssignedFundData]);
 
   return (
     <div>
@@ -118,6 +127,8 @@ export default function AssignFundsView() {
           handleStepChange={setCurrentStep}
           payoutData={payoutData}
           onPayoutData={setPayoutData}
+          wantsPayout={wantsPayout}
+          onWantsPayoutChange={setWantsPayout}
         />
       </div>
     </div>

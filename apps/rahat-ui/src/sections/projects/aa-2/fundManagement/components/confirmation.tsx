@@ -3,7 +3,6 @@ import { Button } from 'libs/shadcn/src/components/ui/button';
 import { UserRound } from 'lucide-react';
 import { NoResult } from 'apps/rahat-ui/src/common';
 import {
-  PayoutType,
   useFundAssignmentStore,
   useGetBeneficiaryGroup,
   useReserveTokenForGroups,
@@ -12,16 +11,17 @@ import { useRouter } from 'next/navigation';
 import { truncatedText } from 'apps/community-tool-ui/src/utils';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import dynamic from 'next/dynamic';
-import type { PayoutFormData } from './assign.payout.form';
-import { handleBuildPayoutPayload } from '../utils/utils';
+import { PaymentFundSchema } from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/schemas/payout.validation';
+import { handleBuildPayoutPayload } from 'apps/rahat-ui/src/sections/projects/aa-2/fundManagement/utils/utils';
+
 const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
 
 export default function Confirmation({
   payoutData,
   onPayoutData,
 }: {
-  payoutData: PayoutFormData | null;
-  onPayoutData: (data: PayoutFormData | null) => void;
+  payoutData: PaymentFundSchema | null;
+  onPayoutData: (data: PaymentFundSchema | null) => void;
 }) {
   // State goes here
   const errorModule = useBoolean();

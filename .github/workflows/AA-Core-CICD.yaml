@@ -64,6 +64,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install Python setuptools (fixes distutils)
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y python3-setuptools
+
       # -----------------------------
       # Node + PNPM Setup
       # -----------------------------

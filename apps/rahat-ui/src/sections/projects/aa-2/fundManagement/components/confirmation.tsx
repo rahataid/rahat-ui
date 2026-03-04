@@ -77,12 +77,9 @@ export default function Confirmation({
     [group, reserveTokenPayload.tokenAmountPerBenef],
   );
 
-  const payoutPayload = useMemo(
-    () => handleBuildPayoutPayload(payoutData),
-    [payoutData],
-  );
-
   const handleSubmit = async () => {
+    // Created a helper to build the payload on submit
+    const payoutPayload = handleBuildPayoutPayload(payoutData);
     const payload = {
       ...reserveTokenPayload,
       totalTokensReserved: reserveTokenPayload.numberOfTokens,
@@ -102,7 +99,7 @@ export default function Confirmation({
         return;
       }
 
-      // Clear payout state and navigate — store is cleared when AssignFundsView unmounts
+      // Clear payout state and navigate, store is cleared when AssignFundsView unmounts
       onPayoutData(null);
       router.push(
         `/projects/aa/${projectUUID}/fund-management?tab=fundManagementList`,

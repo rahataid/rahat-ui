@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useBeneficiaryGroups, useFundAssignmentStore } from '@rahat-ui/query';
+import { BeneficiaryGroupListItem } from '@rahat-ui/types';
 import { useProjectBalance } from 'apps/rahat-ui/src/hooks/aa/utils';
 import { UUID } from 'crypto';
 import { cn } from 'libs/shadcn/src';
@@ -31,61 +32,19 @@ import { useParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import { z } from 'zod';
-
-const FormSchema = z.object({
-  title: z.string().min(4, { message: 'Title must be at least 4 characters' }),
-  beneficiaryGroup: z
-    .string()
-    .min(1, { message: 'Select a beneficiary group' }),
-  beneficiaryName: z.string().min(1, { message: 'Select a beneficiary group' }),
-  tokenAmountPerBenef: z
-    .string()
-    .min(1, { message: 'Enter valid amount' })
-    .refine((val) => /^\d+$/.test(val), {
-      message: 'Amount must be a positive integer',
-    })
-    .refine((val) => Number(val) > 0, {
-      message: 'Amount must be greater than 0',
-    }),
-  totalTokenAmount: z
-    .string()
-    .min(1, { message: 'Enter valid amount' })
-    .refine((val) => /^\d+$/.test(val), {
-      message: 'Amount must be a positive integer',
-    }),
-  totalTokensReserved: z.number(),
-});
-
-type FormValues = z.infer<typeof FormSchema>;
+import {
+  FundAssignmentFormSchema,
+  FundAssignmentFormValues,
+} from './schemas/funds.validation';
 
 // Explicit empty defaults — used by both useForm and the Clear button
 // so form.reset() always returns to a truly blank state
-const DEFAULT_VALUES: FormValues = {
+const DEFAULT_VALUES: FundAssignmentFormValues = {
   title: '',
-  beneficiaryGroup: '',
-  beneficiaryName: '',
-  tokenAmountPerBenef: '',
-  totalTokenAmount: '0',
-  totalTokensReserved: 0,
+  beneficiaryGroupId: '',
+  tokenAmountPerBenef: 0,
+  totalTokenAmount: 0,
 };
-
-// Keys blocked from numeric-only inputs
-const BLOCKED_KEYS = [
-  ' ',
-  'e',
-  'E',
-  '+',
-  '-',
-  '.',
-  ',',
-  '/',
-  '*',
-  '@',
-  '#',
-  ...Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i)), // A–Z
-  ...Array.from({ length: 26 }, (_, i) => String.fromCharCode(97 + i)), // a–z
-];
 
 export default function AssignFundsForm({
   handleStepChange,
@@ -95,8 +54,8 @@ export default function AssignFundsForm({
   const params = useParams();
   const projectId = params.id as UUID;
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<FundAssignmentFormValues>({
+    resolver: zodResolver(FundAssignmentFormSchema),
     defaultValues: DEFAULT_VALUES,
     mode: 'onSubmit',
     reValidateMode: 'onChange',
@@ -118,7 +77,7 @@ export default function AssignFundsForm({
   );
 
   const tokenPerBenef = form.watch('tokenAmountPerBenef');
-  const selectedGroupId = form.watch('beneficiaryGroup');
+  const selectedGroupId = form.watch('beneficiaryGroupId');
 
   // Pre-fill form when returning from a later step
   useEffect(() => {
@@ -126,16 +85,14 @@ export default function AssignFundsForm({
     if (!payload) return;
     form.reset({
       title: payload.title ?? '',
-      beneficiaryGroup: payload.beneficiaryGroupId ?? '',
-      beneficiaryName: payload.beneficiaryName ?? '',
-      tokenAmountPerBenef: String(payload.tokenAmountPerBenef ?? ''),
-      totalTokenAmount: String(payload.numberOfTokens ?? '0'),
-      totalTokensReserved: payload.numberOfTokens ?? 0,
+      beneficiaryGroupId: payload.beneficiaryGroupId ?? '',
+      tokenAmountPerBenef: payload.tokenAmountPerBenef ?? 0,
+      totalTokenAmount: payload.numberOfTokens ?? 0,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleAssignFunds = async (data: FormValues) => {
+  const handleAssignFunds = async (data: FundAssignmentFormValues) => {
     if (
       projectBalance === undefined ||
       projectBalance < 0 ||
@@ -145,40 +102,37 @@ export default function AssignFundsForm({
       return;
     }
 
-    if (projectBalance! < Number(data.totalTokenAmount)) {
+    if (projectBalance < data.totalTokenAmount) {
       toast.error('Insufficient project balance to assign funds');
       return;
     }
+
+    const selectedGroup = benGroups.data.find(
+      (group) => group.uuid === data.beneficiaryGroupId,
+    );
+
     const reserveTokenPayload = {
-      beneficiaryGroupId: data.beneficiaryGroup,
-      numberOfTokens: Number(data.totalTokenAmount),
+      beneficiaryGroupId: data.beneficiaryGroupId,
+      numberOfTokens: data.totalTokenAmount,
       title: data.title,
-      totalTokensReserved: data.totalTokenAmount,
-      beneficiaryName: data.beneficiaryName,
+      beneficiaryName: selectedGroup?.name ?? '',
       tokenAmountPerBenef: data.tokenAmountPerBenef,
     };
-    const fundData = {
-      projectUUID: projectId,
-      reserveTokenPayload,
-    };
 
-    setAssignedFundData(fundData);
-
+    setAssignedFundData({ projectUUID: projectId, reserveTokenPayload });
     handleStepChange(1);
   };
 
   // Recompute total token amount whenever per-beneficiary amount or selected group changes
   useEffect(() => {
-    const perBenef = Number(tokenPerBenef || '0');
-    const selectedGroup = benGroups.data?.data.find(
-      (group: any) => group.uuid === selectedGroupId,
+    const selectedGroup = benGroups.data.find(
+      (group) => group.uuid === selectedGroupId,
     );
-    const count = selectedGroup?._count?.groupedBeneficiaries || 0;
-    const total = perBenef * count;
+    const count = selectedGroup?._count?.groupedBeneficiaries ?? 0;
+    const total = tokenPerBenef * count;
 
     if (!isNaN(total)) {
-      form.setValue('totalTokenAmount', total.toString());
-      form.setValue('totalTokensReserved', total);
+      form.setValue('totalTokenAmount', total);
     }
     // `form` is a stable ref from useForm — intentionally excluded
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -210,7 +164,7 @@ export default function AssignFundsForm({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="beneficiaryGroup"
+              name="beneficiaryGroupId"
               render={({ field }) => (
                 <FormItem className="flex flex-col space-y-3 w-full">
                   <FormLabel className="mt-1">Beneficiary Group</FormLabel>
@@ -226,8 +180,8 @@ export default function AssignFundsForm({
                           )}
                         >
                           {field.value
-                            ? benGroups.data?.data.find(
-                                (group: any) => group.uuid === field.value,
+                            ? benGroups.data.find(
+                                (group) => group.uuid === field.value,
                               )?.name
                             : 'Select Beneficiary Group'}
                           <ChevronDown className="opacity-50" />
@@ -243,37 +197,34 @@ export default function AssignFundsForm({
                         <CommandList>
                           <CommandEmpty>No group found.</CommandEmpty>
                           <CommandGroup>
-                            {benGroups?.data?.data.map((group: any) => (
-                              <CommandItem
-                                value={group?.uuid}
-                                key={group?.uuid}
-                                onSelect={() => {
-                                  form.setValue(
-                                    'beneficiaryGroup',
-                                    group?.uuid,
-                                    { shouldValidate: true, shouldTouch: true },
-                                  );
-                                  form.setValue(
-                                    'beneficiaryName',
-                                    group?.name,
-                                    {
-                                      shouldValidate: true,
-                                      shouldTouch: true,
-                                    },
-                                  );
-                                }}
-                              >
-                                {group?.name}
-                                <Check
-                                  className={cn(
-                                    'ml-auto',
-                                    group?.uuid === field.value
-                                      ? 'opacity-100'
-                                      : 'opacity-0',
-                                  )}
-                                />
-                              </CommandItem>
-                            ))}
+                            {benGroups.data.map(
+                              (group: BeneficiaryGroupListItem) => (
+                                <CommandItem
+                                  value={group?.uuid}
+                                  key={group?.uuid}
+                                  onSelect={() => {
+                                    form.setValue(
+                                      'beneficiaryGroupId',
+                                      group?.uuid,
+                                      {
+                                        shouldValidate: true,
+                                        shouldTouch: true,
+                                      },
+                                    );
+                                  }}
+                                >
+                                  {group?.name}
+                                  <Check
+                                    className={cn(
+                                      'ml-auto',
+                                      group?.uuid === field.value
+                                        ? 'opacity-100'
+                                        : 'opacity-0',
+                                    )}
+                                  />
+                                </CommandItem>
+                              ),
+                            )}
                           </CommandGroup>
                         </CommandList>
                       </Command>
@@ -286,28 +237,23 @@ export default function AssignFundsForm({
             <FormField
               control={form.control}
               name="tokenAmountPerBenef"
-              render={({ field }) => {
-                return (
-                  <FormItem className="w-full">
-                    <FormLabel>Token Amount Per Beneficiary</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="Write token amount"
-                        {...field}
-                        onKeyDown={(e) => {
-                          if (BLOCKED_KEYS.includes(e.key)) e.preventDefault();
-                        }}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          form.trigger('tokenAmountPerBenef');
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Token Amount Per Beneficiary</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Write token amount"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e.target.valueAsNumber);
+                        form.trigger('tokenAmountPerBenef');
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
 
             <FormField
@@ -318,7 +264,7 @@ export default function AssignFundsForm({
                   <FormLabel>Total Token Amount</FormLabel>
                   <FormControl>
                     <Input
-                      type="text"
+                      type="number"
                       className="bg-gray-500 text-white"
                       {...field}
                       readOnly

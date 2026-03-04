@@ -16,6 +16,7 @@ import {
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { useBeneficiaryGroupsStore } from '../../beneficiary/beneficiary-groups.store';
+import { BeneficiaryGroupListItem } from '@rahat-ui/types';
 
 type StakeholderGroupArgs = {
   projectUUID: UUID;
@@ -262,7 +263,10 @@ export const useBeneficiaryGroups = (uuid: UUID, payload: any) => {
     }
   }, [query.data]);
 
-  return { ...query, stakeholdersGroupsMeta: query?.data?.meta };
+  const groups: BeneficiaryGroupListItem[] = query.data?.data ?? [];
+  const meta = query.data?.meta;
+
+  return { ...query, data: groups, meta };
 };
 
 export const useSingleStakeholdersGroup = (

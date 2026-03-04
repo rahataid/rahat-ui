@@ -93,3 +93,20 @@ export interface BeneficiariesGroup {
   deletedAt: string | null;
   groupedBeneficiaries: GroupedBeneficiary[];
 }
+
+/**
+ * Lightweight beneficiary group as returned by list endpoints —
+ * includes a Prisma _count instead of the full groupedBeneficiaries array.
+ */
+export interface BeneficiaryGroupListItem {
+  id: number;
+  uuid: string;
+  name: string;
+  groupPurpose?: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  _count: {
+    groupedBeneficiaries: number;
+  };
+}

@@ -3,7 +3,6 @@ import { PayoutFormData } from '../components/assign.payout.form';
 
 export function handleBuildPayoutPayload(payoutData: PayoutFormData | null) {
   if (!payoutData?.method || !payoutData.mode) return undefined;
-  if (!Object.keys(payoutData.group ?? {}).length) return undefined;
 
   const base: Record<string, any> = {
     type: payoutData.method === 'CVA' ? PayoutType.VENDOR : payoutData.method,

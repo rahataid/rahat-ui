@@ -28,11 +28,6 @@ export default function AssignFundsView() {
     };
   }, [setAssignedFundData]);
 
-  const handleStepChange = useCallback((step: number) => {
-    setCurrentStep(step);
-  }, []);
-
-  // Clears all flow state and navigates back to the fund management list
   const handleBack = useCallback(() => {
     if (currentStep > 0) {
       setCurrentStep((prev) => prev - 1);
@@ -120,7 +115,7 @@ export default function AssignFundsView() {
       <div className="px-4 pb-4">
         <FundManagementForm
           currentStep={currentStep}
-          handleStepChange={handleStepChange}
+          handleStepChange={setCurrentStep}
           payoutData={payoutData}
           onPayoutData={setPayoutData}
         />

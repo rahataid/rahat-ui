@@ -30,6 +30,7 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import {
   Form,
@@ -41,26 +42,26 @@ import {
 
 import DropdownSearch from 'apps/rahat-ui/src/common/search.dropdown';
 import { ClientSidePagination, SearchInput } from 'apps/rahat-ui/src/common';
-import BeneficiariesGroupTable from '../../payout/initiatePayout/beneficiariesGroupTable';
-import useBeneficiariesGroupTableColumn from '../../payout/initiatePayout/useBeneficiariesGroupTablecolumn';
+import BeneficiariesGroupTable from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/beneficiariesGroupTable';
+import { PayoutSkeleton } from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/pauoutSkeleton';
 import {
-  paymentSchema,
   PaymentSchema,
-} from '../../payout/initiatePayout/schemas/payout.validation';
-import { PayoutSkeleton } from '../../payout/initiatePayout/pauoutSkeleton';
+  paymentFundSchema,
+  PaymentFundSchema,
+} from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/schemas/payout.validation';
+import useBeneficiariesGroupTableColumn from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/useBeneficiariesGroupTablecolumn';
 
 export type { PaymentSchema as PayoutFormData };
 
 interface PayoutFundManagementFormProps {
   handleStepChange: (step: number) => void;
-  onPayoutData: (data: PaymentSchema | null) => void;
-  payoutData?: PaymentSchema | null;
+  onPayoutData: (data: PaymentFundSchema | null) => void;
+  payoutData?: PaymentFundSchema | null;
 }
 
-const initialFormState: PaymentSchema = {
+const initialFormState: PaymentFundSchema = {
   method: '',
   mode: PayoutMode.ONLINE,
-  group: {},
   vendor: {},
   paymentProvider: {},
 };
@@ -105,9 +106,9 @@ export default function PayoutFundManagementForm({
   });
 
   // React Form goes here
-  const form = useForm<PaymentSchema>({
+  const form = useForm<PaymentFundSchema>({
     defaultValues: initialFormState,
-    resolver: zodResolver(paymentSchema),
+    resolver: zodResolver(paymentFundSchema),
   });
   const { setValue, reset, watch, control } = form;
   const formState = watch();
@@ -115,9 +116,33 @@ export default function PayoutFundManagementForm({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const columns = useBeneficiariesGroupTableColumn();
 
-  const { data: groupDetails } = useGetBeneficiaryGroup(groupId);
+  const {
+    data: groupDetails,
+    isLoading: isGroupLoading,
+    isError: isGroupError,
+  } = useGetBeneficiaryGroup(groupId as UUID);
 
   // Derived state goes here
+  const vendorOptions = useMemo(
+    () =>
+      vendors?.data?.map((v: any) => ({
+        label: v.name,
+        value: v.uuid,
+        data: v,
+      })) ?? [],
+    [vendors],
+  );
+
+  const paymentProviderOptions = useMemo(
+    () =>
+      paymentProviders?.map((p: any) => ({
+        label: p.name,
+        value: p.id,
+        data: p,
+      })) ?? [],
+    [paymentProviders],
+  );
+
   const tableData = useMemo(() => {
     const beneficiaries = groupDetails?.data?.groupedBeneficiaries ?? [];
     const totalTokens =
@@ -155,7 +180,6 @@ export default function PayoutFundManagementForm({
       reset({ ...payoutData });
     } else {
       setValue('method', payoutTypes.value.types[0].key);
-      setValue('group', { name: groupName, id: groupId });
     }
   }, [payoutTypes]);
 
@@ -164,7 +188,7 @@ export default function PayoutFundManagementForm({
     handleStepChange(2);
   };
 
-  const handleFormSubmit = (data: PaymentSchema) => {
+  const handleFormSubmit = (data: PaymentFundSchema) => {
     onPayoutData(data);
     handleStepChange(2);
   };
@@ -225,13 +249,9 @@ export default function PayoutFundManagementForm({
           <div className="flex justify-between">
             <RadioGroup
               value={formState.method}
-              onValueChange={(value) =>
-                reset({
-                  ...initialFormState,
-                  method: value,
-                  group: { name: groupName, id: groupId },
-                })
-              }
+              onValueChange={(value) => {
+                reset({ ...initialFormState, method: value });
+              }}
               className="flex items-center space-x-6 mb-2"
             >
               {payoutTypes.value.types.map((type: any) => (
@@ -258,14 +278,14 @@ export default function PayoutFundManagementForm({
                 <div className="flex items-center space-x-3">
                   <Switch
                     checked={formState.mode === PayoutMode.ONLINE}
-                    onCheckedChange={(checked) =>
-                      reset({
-                        ...initialFormState,
-                        method: formState.method,
-                        group: { name: groupName, id: groupId },
-                        mode: checked ? PayoutMode.ONLINE : PayoutMode.OFFLINE,
-                      })
-                    }
+                    onCheckedChange={(checked) => {
+                      setValue(
+                        'mode',
+                        checked ? PayoutMode.ONLINE : PayoutMode.OFFLINE,
+                      );
+                      setValue('vendor', {});
+                      setValue('paymentProvider', {});
+                    }}
                     id="mode-switch"
                   />
                   <Label htmlFor="mode-switch">
@@ -298,13 +318,7 @@ export default function PayoutFundManagementForm({
                       searchPlaceholder="Search vendor..."
                       emptyMessage="No vendor found."
                       isLoading={isVendorsLoading}
-                      options={
-                        vendors?.data?.map((v: any) => ({
-                          label: v.name,
-                          value: v.uuid,
-                          data: v,
-                        })) || []
-                      }
+                      options={vendorOptions}
                       onSelect={field.onChange}
                     />
                     <FormMessage />
@@ -329,13 +343,7 @@ export default function PayoutFundManagementForm({
                         searchPlaceholder="Search provider..."
                         emptyMessage="No provider found."
                         isLoading={isPaymentProvidersLoading}
-                        options={
-                          paymentProviders?.map((p: any) => ({
-                            label: p.name,
-                            value: p.id,
-                            data: p,
-                          })) || []
-                        }
+                        options={paymentProviderOptions}
                         onSelect={field.onChange}
                       />
                       <FormMessage />
@@ -350,12 +358,7 @@ export default function PayoutFundManagementForm({
                 type="button"
                 variant="outline"
                 className="rounded-sm w-32"
-                onClick={() =>
-                  reset({
-                    ...initialFormState,
-                    group: { name: groupName, id: groupId },
-                  })
-                }
+                onClick={() => reset(initialFormState)}
               >
                 Clear
               </Button>
@@ -365,7 +368,21 @@ export default function PayoutFundManagementForm({
             </div>
           </div>
 
-          {tableData.length > 0 && (
+          {/* Dummy skeleton loading */}
+          {isGroupLoading && (
+            <div className="space-y-3 mt-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-10 w-full rounded-md" />
+              <Skeleton className="h-10 w-full rounded-md" />
+              <Skeleton className="h-10 w-full rounded-md" />
+            </div>
+          )}
+          {isGroupError && (
+            <p className="text-sm text-destructive">
+              Failed to load beneficiaries.
+            </p>
+          )}
+          {!isGroupLoading && !isGroupError && tableData.length > 0 && (
             <div className="mt-2">
               <div className="w-full flex flex-col gap-2 mb-2">
                 <div>

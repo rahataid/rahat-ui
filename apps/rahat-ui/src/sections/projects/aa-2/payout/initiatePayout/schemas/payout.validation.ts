@@ -4,9 +4,9 @@ export const paymentSchema = z
   .object({
     method: z.string(),
     mode: z.enum(['ONLINE', 'OFFLINE']),
-    groupId: z.record(z.any()),
+    group: z.record(z.any()),
     paymentProvider: z.record(z.any()).optional(),
-    vendorId: z.record(z.any()).optional(),
+    vendor: z.record(z.any()).optional(),
   })
   .superRefine((data, ctx) => {
     if (!data.group || Object.keys(data.group).length === 0) {

@@ -1,8 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useBeneficiaryGroups, useFundAssignmentStore } from '@rahat-ui/query';
+import {
+  useBeneficiaryGroups,
+  useFundAssignmentStore,
+  useValidateTokenAssignment,
+} from '@rahat-ui/query';
 import { BeneficiaryGroupListItem } from '@rahat-ui/types';
 import { useProjectBalance } from 'apps/rahat-ui/src/hooks/aa/utils';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { UUID } from 'crypto';
+import dynamic from 'next/dynamic';
 import { cn } from 'libs/shadcn/src';
 import { Button } from 'libs/shadcn/src/components/ui/button';
 import {
@@ -29,13 +35,15 @@ import {
 } from 'libs/shadcn/src/components/ui/popover';
 import { Check, ChevronDown } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import {
   FundAssignmentFormSchema,
   FundAssignmentFormValues,
 } from './schemas/funds.validation';
+
+const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
 
 // Explicit empty defaults — used by both useForm and the Clear button
 // so form.reset() always returns to a truly blank state
@@ -53,6 +61,11 @@ export default function AssignFundsForm({
 }) {
   const params = useParams();
   const projectId = params.id as UUID;
+
+  const errorModule = useBoolean();
+  const [errorData, setErrorData] = useState<any>(null);
+
+  const validateTokenAction = useValidateTokenAssignment();
 
   const form = useForm<FundAssignmentFormValues>({
     resolver: zodResolver(FundAssignmentFormSchema),
@@ -106,6 +119,17 @@ export default function AssignFundsForm({
     //   toast.error('Insufficient project balance to assign funds');
     //   return;
     // }
+
+    const validationResult = (await validateTokenAction.mutateAsync({
+      projectUUID: projectId,
+      groupId: data.beneficiaryGroupId,
+    })) as any;
+
+    if (validationResult?.status === 'error') {
+      setErrorData(validationResult);
+      errorModule.onTrue();
+      return;
+    }
 
     const selectedGroup = benGroups.data.find(
       (group) => group.uuid === data.beneficiaryGroupId,
@@ -287,13 +311,18 @@ export default function AssignFundsForm({
                 Clear
               </Button>
 
-              <Button type="submit" className="px-10 rounded-sm w-40">
-                Confirm
+              <Button
+                type="submit"
+                className="px-10 rounded-sm w-40"
+                disabled={validateTokenAction.isPending}
+              >
+                {validateTokenAction.isPending ? 'Validating...' : 'Confirm'}
               </Button>
             </div>
           </div>
         </div>
       </form>
+      <ErrorInfoPopupModel validateModal={errorModule} errorData={errorData} />
     </Form>
   );
 }

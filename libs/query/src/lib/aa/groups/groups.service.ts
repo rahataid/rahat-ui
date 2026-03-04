@@ -18,7 +18,6 @@ import { useSwal } from 'libs/query/src/swal';
 import { useBeneficiaryGroupsStore } from '../../beneficiary/beneficiary-groups.store';
 import { BeneficiaryGroupListItem } from '@rahat-ui/types';
 
-
 type StakeholderGroupArgs = {
   projectUUID: UUID;
   stakeholdersGroupPayload: {
@@ -201,6 +200,34 @@ export const useReserveTokenForGroups = () => {
         icon: 'error',
         text: errorMessage,
       });
+    },
+  });
+};
+
+export const useValidateTokenAssignment = () => {
+  const q = useProjectAction();
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      groupId,
+    }: {
+      projectUUID: UUID;
+      groupId: string;
+    }) => {
+      const response = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.beneficiary.validate_token_assignment',
+          payload: { groupId },
+        },
+      });
+      return response?.data;
+    },
+    onSuccess: () => {
+      q.reset();
+    },
+    onError: (error: any) => {
+      q.reset();
     },
   });
 };

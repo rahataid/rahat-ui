@@ -30,12 +30,29 @@ export const useCustomersBatchTableColumn = () => {
     {
       accessorKey: 'failedVendors',
       header: 'Failed Vendors',
-      cell: ({ row }) => <div>{row.getValue('failedVendors')}</div>,
+      cell: ({ row }) => {
+        const vendors = row.getValue('failedVendors');
+        return <div>{Array.isArray(vendors) ? vendors.join(', ') : ''}</div>;
+      },
     },
     {
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => <Badge>{row.getValue('status')}</Badge>,
+    },
+    {
+      accessorKey: 'retryCount',
+      header: 'Retry Count',
+      cell: ({ row }) => <div>{row.getValue('retryCount')}</div>,
+    },
+    {
+      accessorKey: 'lastRetryAt',
+      header: 'Last Retry At',
+      cell: ({ row }) => {
+        const value = row.getValue('lastRetryAt');
+        if (!value) return <div>-</div>;
+        return <div>{new Date(value as string).toLocaleDateString()}</div>;
+      },
     },
     {
       id: 'actions',

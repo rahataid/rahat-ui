@@ -18,7 +18,7 @@ on:
         required: true
       VAULT_TOKEN:
         required: true
- 
+  
 concurrency:
   group: aa-core-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true

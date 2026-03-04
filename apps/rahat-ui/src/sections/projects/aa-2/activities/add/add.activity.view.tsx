@@ -82,6 +82,7 @@ export const DurationData = [
 
 export default function AddActivities() {
   const addCommunicationOpen = useBoolean(false);
+  const editCommunicationOpen = useBoolean();
   const templateConfirmDialog = useBoolean(false);
   const pendingTemplateValue = useBoolean(false);
   const audioUploading = useBoolean(false);
@@ -846,7 +847,7 @@ export default function AddActivities() {
                 <Minus className="ml-2" size={16} strokeWidth={3} />
               )}
             </Button>
-            {addCommunicationOpen.value && (
+            {(addCommunicationOpen.value || editCommunicationOpen.value) && (
               <AddCommunicationForm
                 form={communicationForm}
                 setOpen={addCommunicationOpen.setValue}
@@ -854,6 +855,7 @@ export default function AddActivities() {
                 setLoading={audioUploading.setValue}
                 appTransports={appTransports}
                 isMultiSelect={true}
+                editMode={editCommunicationOpen}
               />
             )}
 
@@ -862,8 +864,8 @@ export default function AddActivities() {
               communicationData={communicationData}
               appTransports={appTransports}
               onRemove={handleRemove}
-              setOpen={addCommunicationOpen.setValue}
-              open={addCommunicationOpen.value}
+              setOpen={editCommunicationOpen.setValue}
+              open={editCommunicationOpen.value}
             />
           </ScrollArea>
         </div>

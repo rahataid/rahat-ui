@@ -134,10 +134,8 @@ export default function AddActivities() {
   });
   const appTransports = useListAllTransports();
 
-  const { FormSchema, form, communicationForm } = useActivityForm(
-    phases,
-    appTransports,
-  );
+  const { FormSchema, form, communicationForm, defaultCommunicationValues } =
+    useActivityForm(phases, appTransports);
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -243,6 +241,8 @@ export default function AddActivities() {
       communicationId: communicationFormData?.communicationId || '',
     };
     setCommunicationData([...communicationData, newCommunication]);
+
+    communicationForm.reset(defaultCommunicationValues);
   };
   // Handle to remove the communication data from the array stored in a local state
   const handleRemove = (index: number) => {

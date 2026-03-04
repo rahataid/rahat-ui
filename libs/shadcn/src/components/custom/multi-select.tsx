@@ -625,7 +625,7 @@ const MultipleSelector = ({
       <div className="relative">
         <div
           className={cn(
-            'border-input absolute z-10 overflow-hidden rounded-md border',
+            'border-input max-h-52 overflow-auto absolute z-10 rounded border',
             'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
             !open && 'hidden',
             dropdownClassName,
@@ -640,7 +640,7 @@ const MultipleSelector = ({
         >
           {open && (
             <CommandList
-              className="bg-popover text-popover-foreground shadow-lg outline-hidden"
+              className="bg-popover text-popover-foreground shadow-lg outline-hidden max-h-none overflow-visible"
               onMouseLeave={() => {
                 setOnScrollbar(false);
               }}
@@ -666,7 +666,7 @@ const MultipleSelector = ({
                     <CommandGroup
                       key={key}
                       heading={key}
-                      className={cn('h-full overflow-auto', groupClassName)}
+                      className={cn('h-full overflow-hidden', groupClassName)}
                     >
                       {dropdowns.map((option) => {
                         return (

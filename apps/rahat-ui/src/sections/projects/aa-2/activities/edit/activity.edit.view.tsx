@@ -58,6 +58,7 @@ import { useActivityForm } from '../hooks/useActivityForm';
 import { buildCommunicationPayloads } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
 import { transformCommunicationData } from 'apps/rahat-ui/src/utils/transformCommunicationData';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
 // TODO: check pdf is not uploaded in the activity documents
 
@@ -197,6 +198,7 @@ export default function EditActivity() {
   const updateActivity = useUpdateActivities();
   const { id: projectID, activityID } = useParams();
   const redirectTo = searchParams.get('from');
+  const editCommunicationForm = useBoolean();
 
   const isAddComm = window.location.hash === '#comm';
   // Query goes here
@@ -238,10 +240,8 @@ export default function EditActivity() {
         backFrom ? `?from=${backFrom}` : ''
       }`;
 
-  const { FormSchema, form, communicationForm } = useActivityForm(
-    phases,
-    appTransports,
-  );
+  const { FormSchema, form, communicationForm, defaultCommunicationValues } =
+    useActivityForm(phases, appTransports);
 
   // Handlers goes here
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -363,6 +363,8 @@ export default function EditActivity() {
       communicationId: communicationFormData?.communicationId || '',
     };
     setCommunicationData([...communicationData, newCommunication]);
+
+    communicationForm.reset(defaultCommunicationValues);
   };
 
   const handleRemove = (index: number) => {
@@ -374,8 +376,9 @@ export default function EditActivity() {
 
   const handleReset = () => {
     form.reset();
-    communicationForm.reset();
+    communicationForm.reset(defaultCommunicationValues);
     setOpen(false);
+    editCommunicationForm.onFalse();
 
     if (
       activityDetail?.activityCommunication &&
@@ -853,7 +856,7 @@ export default function EditActivity() {
               </Button>
 
               <div ref={scrollAreaRef}>
-                {open && (
+                {(open || editCommunicationForm.value) && (
                   <AddCommunicationForm
                     form={communicationForm}
                     setOpen={setOpen}
@@ -861,6 +864,7 @@ export default function EditActivity() {
                     setLoading={setAudioUploading}
                     appTransports={appTransports}
                     isMultiSelect={isAddComm}
+                    editMode={editCommunicationForm}
                   />
                 )}
               </div>
@@ -870,8 +874,8 @@ export default function EditActivity() {
                 communicationData={communicationData}
                 appTransports={appTransports}
                 onRemove={handleRemove}
-                setOpen={setOpen}
-                open={open}
+                setOpen={editCommunicationForm.setValue}
+                open={editCommunicationForm.value}
               />
             </ScrollArea>
           </>

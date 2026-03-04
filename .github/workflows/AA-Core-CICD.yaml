@@ -1,4 +1,4 @@
-name: AA CORE CI/CD 
+name: AA CORE CI/CD  
 
 on:
   workflow_call:

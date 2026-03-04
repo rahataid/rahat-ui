@@ -1,4 +1,4 @@
-import { PaymentFundSchema } from '../../payout/initiatePayout/schemas/payout.validation';
+import { FundWithPayoutSchema } from '../../payout/initiatePayout/schemas/payout.validation';
 import AssignFundsForm from './assign.funds.form';
 import PayoutFundManagementForm, { PayoutFormData } from './assign.payout.form';
 import Confirmation from './confirmation';
@@ -6,8 +6,8 @@ import Confirmation from './confirmation';
 interface FundManagementFormProps {
   currentStep: number;
   handleStepChange: (step: number) => void;
-  payoutData: PaymentFundSchema | null;
-  onPayoutData: (data: PaymentFundSchema | null) => void;
+  payoutData: FundWithPayoutSchema | null;
+  onPayoutData: (data: FundWithPayoutSchema | null) => void;
   wantsPayout: boolean | null;
   onWantsPayoutChange: (value: boolean | null) => void;
 }

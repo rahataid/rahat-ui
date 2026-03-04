@@ -1,7 +1,9 @@
 import { PayoutType } from '@rahat-ui/query';
-import { PayoutFormData } from '../components/assign.payout.form';
+import { FundWithPayoutSchema } from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/schemas/payout.validation';
 
-export function handleBuildPayoutPayload(payoutData: PayoutFormData | null) {
+export function handleBuildPayoutPayload(
+  payoutData: FundWithPayoutSchema | null,
+) {
   if (!payoutData?.method || !payoutData.mode) return undefined;
 
   const base: Record<string, any> = {

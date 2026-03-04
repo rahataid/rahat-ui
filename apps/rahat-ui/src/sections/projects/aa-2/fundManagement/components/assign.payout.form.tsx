@@ -46,8 +46,8 @@ import BeneficiariesGroupTable from 'apps/rahat-ui/src/sections/projects/aa-2/pa
 import { PayoutSkeleton } from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/pauoutSkeleton';
 import {
   PaymentSchema,
-  paymentFundSchema,
-  PaymentFundSchema,
+  payoutFundSchema,
+  FundWithPayoutSchema,
 } from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/schemas/payout.validation';
 import useBeneficiariesGroupTableColumn from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/useBeneficiariesGroupTablecolumn';
 
@@ -55,13 +55,13 @@ export type { PaymentSchema as PayoutFormData };
 
 interface PayoutFundManagementFormProps {
   handleStepChange: (step: number) => void;
-  onPayoutData: (data: PaymentFundSchema | null) => void;
-  payoutData?: PaymentFundSchema | null;
+  onPayoutData: (data: FundWithPayoutSchema | null) => void;
+  payoutData?: FundWithPayoutSchema | null;
   wantsPayout: boolean | null;
   onWantsPayoutChange: (value: boolean | null) => void;
 }
 
-const initialFormState: PaymentFundSchema = {
+const initialFormState: FundWithPayoutSchema = {
   method: '',
   mode: PayoutMode.ONLINE,
   vendor: {},
@@ -109,9 +109,9 @@ export default function PayoutFundManagementForm({
   });
 
   // React Form goes here
-  const form = useForm<PaymentFundSchema>({
+  const form = useForm<FundWithPayoutSchema>({
     defaultValues: initialFormState,
-    resolver: zodResolver(paymentFundSchema),
+    resolver: zodResolver(payoutFundSchema),
   });
   const { setValue, reset, watch, control } = form;
   const formState = watch();
@@ -191,7 +191,7 @@ export default function PayoutFundManagementForm({
     handleStepChange(2);
   };
 
-  const handleFormSubmit = (data: PaymentFundSchema) => {
+  const handleFormSubmit = (data: FundWithPayoutSchema) => {
     onPayoutData(data);
     handleStepChange(2);
   };

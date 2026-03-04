@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { truncatedText } from 'apps/community-tool-ui/src/utils';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import dynamic from 'next/dynamic';
-import { PaymentFundSchema } from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/schemas/payout.validation';
+import { FundWithPayoutSchema } from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/schemas/payout.validation';
 import { handleBuildPayoutPayload } from 'apps/rahat-ui/src/sections/projects/aa-2/fundManagement/utils/utils';
 
 const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
@@ -20,8 +20,8 @@ export default function Confirmation({
   payoutData,
   onPayoutData,
 }: {
-  payoutData: PaymentFundSchema | null;
-  onPayoutData: (data: PaymentFundSchema | null) => void;
+  payoutData: FundWithPayoutSchema | null;
+  onPayoutData: (data: FundWithPayoutSchema | null) => void;
 }) {
   // State goes here
   const errorModule = useBoolean();

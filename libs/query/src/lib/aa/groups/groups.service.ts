@@ -18,6 +18,7 @@ import { useSwal } from 'libs/query/src/swal';
 import { useBeneficiaryGroupsStore } from '../../beneficiary/beneficiary-groups.store';
 import { BeneficiaryGroupListItem } from '@rahat-ui/types';
 
+
 type StakeholderGroupArgs = {
   projectUUID: UUID;
   stakeholdersGroupPayload: {

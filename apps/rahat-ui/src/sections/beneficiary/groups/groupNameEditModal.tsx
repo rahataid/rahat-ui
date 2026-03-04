@@ -32,9 +32,7 @@ const FormSchema = z.object({
 type EditDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  beneficiaryGroupDetail: ListBeneficiaryGroup & {
-    groupedBeneficiaries?: { Beneficiary: { uuid: string } }[];
-  };
+  beneficiaryGroupDetail: ListBeneficiaryGroup;
 };
 
 export default function GroupNameEditModal({

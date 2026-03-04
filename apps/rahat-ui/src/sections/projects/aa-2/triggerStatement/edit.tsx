@@ -15,6 +15,7 @@ import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import LoaderRahat from 'apps/rahat-ui/src/components/LoaderRahat';
 import { buildSourceOptions, buildSubtypeOptions, SourceConfig } from './utils';
+import { triggerStatementSchema } from './trigger.statement.schema';
 
 export default function EditTrigger() {
   const router = useRouter();
@@ -62,17 +63,7 @@ export default function EditTrigger() {
       description: z.string().optional(),
       source: z.string().min(1, { message: 'Please select data source' }),
       isMandatory: z.boolean().optional(),
-      triggerStatement: z
-        .object({
-          source: z.string().optional(),
-          sourceSubType: z.string().optional(),
-          stationId: z.string().optional(),
-          stationName: z.string().optional(),
-          operator: z.string().optional(),
-          value: z.coerce.number().optional(),
-          expression: z.string().optional(),
-        })
-        .optional(),
+      triggerStatement: triggerStatementSchema,
       minLeadTimeDays: z.string().optional(),
       maxLeadTimeDays: z.string().optional(),
       probability: z.string().optional(),
@@ -237,7 +228,7 @@ export default function EditTrigger() {
       source: '',
       isMandatory: false,
       triggerStatement: {
-        source: '',
+        source: undefined,
         sourceSubType: '',
         stationId: '',
         stationName: '',
@@ -282,7 +273,7 @@ export default function EditTrigger() {
       projectUUID: projectId,
       triggerUpdatePayload: payload,
     });
-    router.push(triggerDetailPage);
+    router.back(); 
   };
 
   const handleEditTriggers = () => {

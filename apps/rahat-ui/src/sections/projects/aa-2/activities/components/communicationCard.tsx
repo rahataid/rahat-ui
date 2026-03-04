@@ -20,6 +20,7 @@ import MessageWithToggle from './messageWithToggle';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useRouter } from 'next/navigation';
 
 interface BaseCommunication {
@@ -133,25 +134,27 @@ export function CommunicationCard({
                     ]}
                     hasContent={false}
                   >
-                    <Button
-                      className="items-center justify-center"
-                      variant="ghost"
-                      onClick={() =>
-                        triggerCommunication(
-                          activityId,
+                    <TooltipWrapper tip="Send Communication">
+                      <Button
+                        className="items-center justify-center"
+                        variant="ghost"
+                        onClick={() =>
+                          triggerCommunication(
+                            activityId,
+                            activityCommunication?.communicationId,
+                          )
+                        }
+                        type="button"
+                      >
+                        {loadingButtons.includes(
                           activityCommunication?.communicationId,
-                        )
-                      }
-                      type="button"
-                    >
-                      {loadingButtons.includes(
-                        activityCommunication?.communicationId,
-                      ) ? (
-                        <LoaderCircle size={20} className={`animate-spin `} />
-                      ) : (
-                        <SendHorizonal size={18} strokeWidth={1.5} />
-                      )}
-                    </Button>
+                        ) ? (
+                          <LoaderCircle size={20} className={`animate-spin `} />
+                        ) : (
+                          <SendHorizonal size={18} strokeWidth={1.5} />
+                        )}
+                      </Button>
+                    </TooltipWrapper>
                   </RoleAuth>
                 )}
               </div>

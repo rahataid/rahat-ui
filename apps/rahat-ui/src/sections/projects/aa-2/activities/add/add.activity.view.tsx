@@ -69,7 +69,10 @@ import {
 import { useActivityForm } from '../hooks/useActivityForm';
 import { buildCommunicationPayloads } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
 import ViewTemplate from 'apps/rahat-ui/src/sections/projects/aa-2/activities/components/viewTemplate';
-import { Template } from 'apps/rahat-ui/src/types/activities';
+import {
+  CommunicationDetails,
+  Template,
+} from 'apps/rahat-ui/src/types/activities';
 import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 export const DurationData = [
@@ -228,7 +231,7 @@ export default function AddActivities() {
     const newCommunication: CommunicationData = {
       communicationTitle: communicationFormData?.communicationTitle || '',
       groupType: (communicationFormData?.groupType || '') as GroupType,
-      groupId: communicationFormData?.groupId || '',
+      groupId: communicationFormData?.groupId || [],
       transportId: communicationFormData?.transportId || '',
       message: communicationFormData?.message || '',
       subject: communicationFormData?.subject || '',
@@ -391,19 +394,20 @@ export default function AddActivities() {
     }
 
     const mappedCommunications: CommunicationData[] =
-      payload.activityCommunication.map(mapCommunication);
-
+      payload.activityCommunication.map((comm) =>
+        mapCommunication(comm as CommunicationDetails),
+      );
     setCommunicationData(mappedCommunications);
   };
 
-  const mapCommunication = (comm: CommunicationData): CommunicationData => {
+  const mapCommunication = (comm: CommunicationDetails): CommunicationData => {
     const isAudioMessage =
       typeof comm.message === 'object' && comm.message !== null;
 
     return {
       communicationTitle: comm.communicationTitle || '',
       groupType: comm.groupType || '',
-      groupId: comm.groupId || '',
+      groupId: comm.groupId ? [comm.groupId] : [],
       transportId: comm.transportId || '',
       message: isAudioMessage ? '' : comm.message || '',
       subject: comm.subject || '',
@@ -849,6 +853,7 @@ export default function AddActivities() {
                 onSave={handleSave}
                 setLoading={audioUploading.setValue}
                 appTransports={appTransports}
+                isMultiSelect={true}
               />
             )}
 

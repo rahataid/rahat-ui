@@ -4,7 +4,7 @@ on:
 
 env:
   CI: false
-  env_release: ${{ secrets.ENV_EL_RELEASE_SMS_VOUCHER_BANGLADESH }}
+  env_release: ${{ secrets.ENV_EL_RELEASE_SMS_VOUCHER_INDONESIA_EXTENSION_2026 }}
 
 jobs:
   rahat-ui:

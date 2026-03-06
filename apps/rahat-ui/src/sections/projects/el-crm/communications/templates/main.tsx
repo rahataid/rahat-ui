@@ -10,7 +10,13 @@ import {
 } from '@rahat-ui/shadcn/components/card';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
-import { Plus, Trash2, MessageSquare, RefreshCcw } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  MessageSquare,
+  RefreshCcw,
+  TriangleAlert,
+} from 'lucide-react';
 import Link from 'next/link';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
@@ -30,6 +36,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export default function TemplatesView() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -143,12 +154,20 @@ export default function TemplatesView() {
                         {new Date(template.createdAt).toLocaleDateString()}
                       </CardDescription>
                     </div>
-                    <Badge
-                      className={getChannelColor(template.channel)}
-                      variant="secondary"
-                    >
-                      {template.Transport.name}
-                    </Badge>
+                    <div>
+                      <Badge
+                        className={getChannelColor(template.channel)}
+                        variant="secondary"
+                      >
+                        {template.Transport.name}
+                      </Badge>
+                      <p className="text-xs mt-1">
+                        Approval Check{' '}
+                        {new Date(
+                          template.lastApprovalCheck,
+                        ).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col">
@@ -156,12 +175,33 @@ export default function TemplatesView() {
                     {template.body}
                   </p>
                   <div className="flex gap-2">
-                    <Badge
-                      className={getStatusColor(template.status)}
-                      variant="secondary"
-                    >
-                      {template.status}
-                    </Badge>
+                    {template.status === 'REJECTED' ? (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex items-center gap-2 cursor-pointer">
+                            <Badge
+                              className={getStatusColor(template.status)}
+                              variant="secondary"
+                            >
+                              {template.status}
+                            </Badge>
+                            <TriangleAlert className="h-4 w-4 text-red-500" />
+                          </div>
+                        </TooltipTrigger>
+
+                        <TooltipContent className="max-w-xs break-words">
+                          <p className="text-sm">{template?.info}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      <Badge
+                        className={getStatusColor(template.status)}
+                        variant="secondary"
+                      >
+                        {template.status}
+                      </Badge>
+                    )}
+
                     <AlertDialog>
                       <AlertDialogTrigger>
                         <Button

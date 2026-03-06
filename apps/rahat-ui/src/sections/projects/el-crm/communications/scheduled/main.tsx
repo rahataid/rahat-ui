@@ -1,11 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from '@rahat-ui/shadcn/components/card';
+import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Label } from '@rahat-ui/shadcn/components/label';
 
@@ -16,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/components/select';
-import { format } from 'date-fns';
 import { Plus, Clock, X } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -57,6 +52,7 @@ export default function ScheduledView() {
     page: pagination.page,
     perPage: pagination.perPage,
     isScheduled: true,
+    order: 'desc',
     ...filters,
   });
   const { data: templates } = useListElCrmTemplate(projectUUID);

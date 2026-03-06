@@ -89,7 +89,9 @@ export default function ComposeMessageView() {
   const messagingChannel = watch('messagingChannel');
 
   const transport = useListElCrmTransport(projectUUID);
-  const templates = useListElCrmTemplate(projectUUID);
+  const templates = useListElCrmTemplate(projectUUID, {
+    status: 'APPROVED',
+  });
   const createCampaign = useCreateElCrmCampaign(projectUUID);
 
   console.log('Templates:', templates.data);
@@ -362,7 +364,9 @@ export default function ComposeMessageView() {
 
               {/* Send Button */}
               <div className="flex justify-end gap-3">
-                <Link href="/communication">
+                <Link
+                  href={`/projects/el-crm/${projectUUID}/communications/messages/compose`}
+                >
                   <Button type="button" variant="outline">
                     Cancel
                   </Button>

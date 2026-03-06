@@ -83,7 +83,13 @@ export default function ComposeScheduleView() {
   });
 
   const transport = useListElCrmTransport(projectUUID);
-  const templates = useListElCrmTemplate(projectUUID);
+  const templates = useListElCrmTemplate(
+    projectUUID,
+
+    {
+      status: 'APPROVED',
+    },
+  );
   const createCampaign = useCreateElCrmCampaign(projectUUID);
   const trigger = useTriggerElCrmCampaign(projectUUID);
 
@@ -327,6 +333,7 @@ export default function ComposeScheduleView() {
                       <Input
                         id="schedule-datetime"
                         type="datetime-local"
+                        min={new Date().toISOString().slice(0, 16)}
                         {...register('scheduleDateTime')}
                       />
                     </div>
@@ -489,7 +496,9 @@ export default function ComposeScheduleView() {
               )}
               {/* Schedule Button */}
               <div className="flex justify-end gap-3">
-                <Link href="/communication/schedule">
+                <Link
+                  href={`/projects/el-crm/${projectUUID}/communications/scheduled/compose`}
+                >
                   <Button type="button" variant="outline">
                     Cancel
                   </Button>

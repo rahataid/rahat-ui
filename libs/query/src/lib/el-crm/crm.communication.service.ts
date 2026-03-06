@@ -324,7 +324,7 @@ export const useSyncTemplate = (projectUUID: UUID) => {
   });
 };
 
-export const useListElCrmTemplate = (projectUUID: UUID) => {
+export const useListElCrmTemplate = (projectUUID: UUID, payload: any) => {
   const action = useProjectAction();
 
   return useQuery({
@@ -334,7 +334,7 @@ export const useListElCrmTemplate = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: GET_TEMPLATE,
-          payload: {},
+          payload,
         },
       });
       return res.data;

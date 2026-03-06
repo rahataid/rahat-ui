@@ -32,6 +32,7 @@ export default function MessagesView() {
   const { data, meta } = useListElCrmCampaign(projectUUID, {
     page: pagination.page,
     perPage: pagination.perPage,
+    order: 'desc',
   });
 
   const table = useReactTable({

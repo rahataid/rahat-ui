@@ -45,7 +45,7 @@ import {
 export default function TemplatesView() {
   const { id: projectUUID } = useParams() as { id: UUID };
 
-  const { data: templateList } = useListElCrmTemplate(projectUUID);
+  const { data: templateList } = useListElCrmTemplate(projectUUID, {});
   const sync = useSyncTemplate(projectUUID);
   const deleteTemplate = useDeleteTemplate(projectUUID);
 

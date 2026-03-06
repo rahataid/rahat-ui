@@ -8,17 +8,19 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   useSingleTriggerStatement,
   useUpdateTriggerStatement,
+  useGetDataSourceTypes,
 } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import LoaderRahat from 'apps/rahat-ui/src/components/LoaderRahat';
+import { buildSourceOptions, buildSubtypeOptions, SourceConfig } from './utils';
+import { triggerStatementSchema } from './trigger.statement.schema';
 
 export default function EditTrigger() {
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
-  // const triggerRepeatKey = window.location.href.split('/').slice(-2, -1)[0];
   const pathSegments = new URL(window.location.href).pathname.split('/');
   const triggerIndex = pathSegments.indexOf('trigger-statements');
   const triggerRepeatKey = pathSegments[triggerIndex + 1];
@@ -28,6 +30,13 @@ export default function EditTrigger() {
     projectId,
     triggerRepeatKey,
   );
+
+  const { data: dataSourceTypes, isLoading: isLoadingDataSourceTypes } =
+    useGetDataSourceTypes(projectId);
+  const SOURCES =
+    dataSourceTypes?.value || ({} as Record<string, SourceConfig>);
+  const sourceOptions = buildSourceOptions(SOURCES);
+  const subTypeOptions = buildSubtypeOptions(SOURCES);
 
   const triggerType = trigger?.source === 'MANUAL' ? 'manual' : 'automated';
 
@@ -54,6 +63,7 @@ export default function EditTrigger() {
       description: z.string().optional(),
       source: z.string().min(1, { message: 'Please select data source' }),
       isMandatory: z.boolean().optional(),
+      triggerStatement: triggerStatementSchema,
       minLeadTimeDays: z.string().optional(),
       maxLeadTimeDays: z.string().optional(),
       probability: z.string().optional(),
@@ -216,10 +226,19 @@ export default function EditTrigger() {
       title: '',
       description: '',
       source: '',
+      isMandatory: false,
+      triggerStatement: {
+        source: undefined,
+        sourceSubType: '',
+        stationId: '',
+        stationName: '',
+        operator: undefined,
+        value: undefined,
+        expression: '',
+      },
       maxLeadTimeDays: '',
       minLeadTimeDays: '',
       probability: '',
-      isMandatory: false,
       warningLevel: '',
       dangerLevel: '',
       forecast: '',
@@ -241,29 +260,20 @@ export default function EditTrigger() {
   };
 
   const handleUpdate = async (data: any) => {
-    const { isMandatory, description, title, source, ...rest } = data;
-    // Only include non-empty fields in triggerStatement
-    const triggerStatement = Object.fromEntries(
-      Object.entries(rest).filter(
-        ([, value]) => value !== undefined && value !== null && value !== '',
-      ),
-    );
-
     const payload = {
-      title,
-      source,
-      description: description,
-      triggerStatement,
+      title: data.title,
+      source: data?.source.split(':')[0].toUpperCase(),
+      description: data.description,
+      triggerStatement: data.triggerStatement,
       phaseId: trigger?.phaseId,
       uuid: trigger?.uuid,
       isMandatory: !data?.isMandatory,
     };
-
     await updateTrigger.mutateAsync({
       projectUUID: projectId,
       triggerUpdatePayload: payload,
     });
-    router.push(triggerDetailPage);
+    router.back(); 
   };
 
   const handleEditTriggers = () => {
@@ -286,13 +296,47 @@ export default function EditTrigger() {
         isMandatory: !trigger?.isMandatory,
       });
     } else if (triggerType === 'automated') {
+      const triggerSource = trigger?.triggerStatement?.source;
+      const REVERSE_SOURCE_MAPPING: Record<string, string> = {
+        water_level_m: 'dhm:waterlevel',
+        rainfall_mm: 'dhm:rainfall',
+        prob_flood: 'glofas',
+        discharge_m3s: 'gfh',
+      };
+      const formSource =
+        REVERSE_SOURCE_MAPPING[triggerSource] ||
+        trigger?.source?.toLowerCase() ||
+        '';
+
+      const GLOFAS_LEGACY_MAPPING: Record<string, string> = {
+        two_years_max_prob: 'two_years_return_period',
+        five_years_max_prob: 'five_years_return_period',
+        twenty_years_max_prob: 'twenty_years_return_period',
+      };
+
+      const rawSourceSubType = trigger?.triggerStatement?.sourceSubType || '';
+      const correctedSourceSubType =
+        triggerSource === 'prob_flood' &&
+        rawSourceSubType in GLOFAS_LEGACY_MAPPING
+          ? GLOFAS_LEGACY_MAPPING[rawSourceSubType]
+          : rawSourceSubType;
+
       automatedForm.reset({
         title: trigger?.title,
-        source: trigger?.source,
+        source: formSource,
         isMandatory: !trigger?.isMandatory,
+        description: trigger?.description || '',
+        triggerStatement: {
+          source: trigger?.triggerStatement?.source || '',
+          sourceSubType: correctedSourceSubType,
+          stationId: trigger?.triggerStatement?.stationId?.toString() || '',
+          stationName: trigger?.triggerStatement?.stationName || '',
+          operator: trigger?.triggerStatement?.operator || undefined,
+          value: trigger?.triggerStatement?.value || undefined,
+          expression: trigger?.triggerStatement?.expression || '',
+        },
         maxLeadTimeDays: trigger?.triggerStatement?.maxLeadTimeDays,
         minLeadTimeDays: trigger?.triggerStatement?.minLeadTimeDays,
-        description: trigger?.description || '',
         probability: trigger?.triggerStatement?.probability,
         warningLevel: trigger?.triggerStatement?.warningLevel,
         dangerLevel: trigger?.triggerStatement?.dangerLevel,
@@ -303,7 +347,7 @@ export default function EditTrigger() {
     }
   }, [trigger, triggerType, manualForm, automatedForm]);
 
-  if (isLoading) {
+  if (isLoading || isLoadingDataSourceTypes) {
     return <LoaderRahat />;
   }
 
@@ -324,6 +368,8 @@ export default function EditTrigger() {
                 riverBasin: trigger?.phase?.source?.riverBasin,
               }}
               isEditing={true}
+              sourceOptions={sourceOptions}
+              subTypeOptions={subTypeOptions}
             />
           ) : (
             <ManualTriggerAddForm

@@ -31,6 +31,7 @@ import {
 } from '@rahat-ui/query';
 import FiltersTags from '../../../components/filtersTags';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { DatePicker } from 'apps/rahat-ui/src/components/datePicker';
 
 export default function ScheduledView() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -73,6 +74,20 @@ export default function ScheduledView() {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
+
+  const handleDateChange = (date: Date, type: string) => {
+    if (type === 'start') {
+      setFilters({
+        ...filters,
+        startDate: date,
+      });
+    } else {
+      setFilters({
+        ...filters,
+        endDate: date,
+      });
+    }
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -189,19 +204,18 @@ export default function ScheduledView() {
                   <Label htmlFor="date-filter" className="text-sm">
                     Date
                   </Label>
-                  <Select value={filterDate} onValueChange={setFilterDate}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="All Dates" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Dates</SelectItem>
-                      {/* {uniqueDates.map((date) => (
-                        <SelectItem key={date} value={date}>
-                          {format(new Date(date), 'MMM dd, yyyy')}
-                        </SelectItem>
-                      ))} */}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex">
+                    <DatePicker
+                      placeholder="Pick Start Date"
+                      handleDateChange={handleDateChange}
+                      type="start"
+                    />
+                    <DatePicker
+                      placeholder="Pick End Date"
+                      handleDateChange={handleDateChange}
+                      type="end"
+                    />
+                  </div>
                 </div>
               </div>
 

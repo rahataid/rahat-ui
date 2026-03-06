@@ -25,6 +25,9 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useListElCrmCampaign, usePagination } from '@rahat-ui/query';
+import { useMsgTableColumn } from '../messages/useMsgTableColumns';
 
 const messageLogs = [
   {
@@ -65,10 +68,24 @@ const messageLogs = [
 export default function SummaryView() {
   const { id: projectUUID } = useParams() as { id: UUID };
 
-  const columns = useCommsTableColumn();
+  const {
+    pagination,
+    selectedListItems,
+    setSelectedListItems,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+  } = usePagination();
+  const columns = useMsgTableColumn();
+  const { data, meta } = useListElCrmCampaign(projectUUID, {
+    page: pagination.page,
+    perPage: pagination.perPage,
+    order: 'desc',
+  });
 
   const table = useReactTable({
-    data: messageLogs,
+    manualPagination: true,
+    data: data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -232,7 +249,16 @@ export default function SummaryView() {
             <CardTitle>Message Logs</CardTitle>
           </CardHeader>
           <CardContent>
-            <DemoTable table={table} tableHeight="h-[calc(100vh-610px)]" />
+            <DemoTable table={table} />
+            <CustomPagination
+              meta={meta || { total: 0, currentPage: 0 }}
+              handleNextPage={setNextPage}
+              handlePrevPage={setPrevPage}
+              handlePageSizeChange={setPerPage}
+              currentPage={pagination.page}
+              perPage={pagination.perPage}
+              total={meta?.total}
+            />
           </CardContent>
         </Card>
       </div>

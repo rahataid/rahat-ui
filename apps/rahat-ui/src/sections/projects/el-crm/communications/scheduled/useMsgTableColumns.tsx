@@ -66,17 +66,22 @@ export const useScheduledTableColumn = () => {
       },
     },
     {
-      accessorKey: 'sessionId',
+      id: 'status',
       header: 'Status',
-      cell: ({ row }) => (
-        <Badge
-          className={getStatusColor(
-            row.getValue('sessionId') ? 'Sent' : 'Draft',
-          )}
-        >
-          {row.getValue('sessionId') ? 'Sent' : 'Draft'}
-        </Badge>
-      ),
+      cell: ({ row }) => {
+        const scheduledTime = row.original?.options?.scheduledTimestamp;
+        const sessionId = row.original?.sessionId;
+
+        let status = 'Draft';
+
+        if (scheduledTime && new Date(scheduledTime) > new Date()) {
+          status = 'Scheduled';
+        } else if (sessionId) {
+          status = 'Sent';
+        }
+
+        return <Badge className={getStatusColor(status)}>{status}</Badge>;
+      },
     },
     {
       id: 'actions',

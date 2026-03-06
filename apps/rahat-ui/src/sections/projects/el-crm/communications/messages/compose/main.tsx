@@ -108,7 +108,9 @@ export default function ComposeMessageView() {
     <div className="flex flex-col h-full">
       <div className="border-b border-border bg-card/50 px-6 py-4">
         <div className="flex items-center gap-4">
-          <Link href={`/projects/el-crm/${projectUUID}/communications`}>
+          <Link
+            href={`/projects/el-crm/${projectUUID}/communications/messages`}
+          >
             <Button variant="outline" size="sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
               {/* Back to Communications */}
@@ -357,7 +359,7 @@ export default function ComposeMessageView() {
               {/* Send Button */}
               <div className="flex justify-end gap-3">
                 <Link
-                  href={`/projects/el-crm/${projectUUID}/communications/messages/compose`}
+                  href={`/projects/el-crm/${projectUUID}/communications/messages`}
                 >
                   <Button type="button" variant="outline">
                     Cancel

@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle2, X } from 'lucide-react';
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -199,24 +199,48 @@ export default function PayoutFundManagementForm({
   if (wantsPayout === null) {
     return (
       <div className="border rounded-sm p-10 bg-white flex flex-col items-center space-y-6">
-        <p className="text-xl font-semibold text-center">
+        <p className="text-2xl font-bold text-center">
           Do you want to create a payout for the group{' '}
           <span className="text-primary">{groupName}</span> now?
         </p>
-        <div className="flex gap-4">
-          <Button
-            variant="outline"
-            className="w-32 rounded-sm"
-            onClick={handleSkip}
-          >
-            Skip for now
-          </Button>
-          <Button
-            className="w-32 rounded-sm"
+
+        <div className="w-full max-w-xl flex flex-col gap-4 mt-2">
+          <button
+            type="button"
             onClick={() => onWantsPayoutChange(true)}
+            style={{ borderRadius: '0.5rem' }}
+            className="flex items-start gap-4 w-full border p-5 text-left hover:border-primary hover:bg-primary/5 transition-colors"
           >
-            Yes
-          </Button>
+            <div className="flex-shrink-0 flex items-center justify-center w-14 h-14 rounded-lg bg-primary/10">
+              <CheckCircle2 className="w-7 h-7 text-primary" />
+            </div>
+            <div>
+              <p className="font-bold text-base">Create Payout</p>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Proceed to configure payout details, review beneficiary
+                information, and set up fund distribution.
+              </p>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSkip}
+            style={{ borderRadius: '0.5rem' }}
+            className="flex items-start gap-4 w-full border p-5 text-left hover:border-primary hover:bg-primary/5 transition-colors"
+          >
+            <div className="flex-shrink-0 flex items-center justify-center w-14 h-14 rounded-lg bg-primary/10">
+              <X className="w-7 h-7 text-primary" />
+            </div>
+            <div>
+              <p className="font-bold text-base">Skip for Now</p>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                You can create a payout later from the{' '}
+                <span className="text-primary font-bold">Payout</span> section
+                anytime.
+              </p>
+            </div>
+          </button>
         </div>
       </div>
     );

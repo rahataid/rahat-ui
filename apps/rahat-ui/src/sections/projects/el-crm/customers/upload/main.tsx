@@ -228,7 +228,7 @@ export default function CustomersUploadPage() {
 
               {/* Actions */}
               <div className="flex gap-3">
-                <a href="/files/sample_customers.xlsx" download>
+                <a href="/files/sample_customer.xlsx" download>
                   <Button className="mr-2 w-48" variant="outline">
                     <Download className="mr-2 h-4 w-4" />
                     Download Sample

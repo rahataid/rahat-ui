@@ -102,3 +102,15 @@
     display: none;
   }
 }
+
+@media (max-width: 999px) {
+  .compact-form label {
+    font-size: 0.75rem; /* text-xs */
+    line-height: 1rem;
+  }
+  .compact-form input,
+  .compact-form button {
+    height: 2rem; /* h-8 */
+    font-size: 0.75rem;
+  }
+}

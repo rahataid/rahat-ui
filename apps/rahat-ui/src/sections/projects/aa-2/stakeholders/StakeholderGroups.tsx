@@ -47,10 +47,13 @@ const StakeGoldersGroups = () => {
   }, [searchParams]);
   return (
     <>
-      <div className="p-4 rounded-sm border">
-        <div className="flex justify-between space-x-2 items-center mb-4">
+      <div
+        className="p-4 compact:p-2 rounded-sm border flex flex-col"
+        style={{ height: 'calc(100vh - 220px)' }}
+      >
+        <div className="flex justify-between space-x-2 items-center mb-4 compact:mb-2 shrink-0">
           <SearchInput
-            className="w-full"
+            className="w-full compact:[&_input]:h-7 compact:[&_input]:text-xs"
             name="stakeholders group"
             onSearch={(e) => handleSearch(e, 'search')}
             value={filters?.search || ''}
@@ -63,34 +66,48 @@ const StakeGoldersGroups = () => {
             <AddButton
               path={`/projects/aa/${id}/stakeholders/groups/add`}
               name="Stakeholder Group"
+              className="shrink-0 compact:h-7 compact:text-xs compact:px-2"
             />
           </RoleAuth>
         </div>
-        <ScrollArea className="h-[calc(100vh-360px)] mb-2">
+        <ScrollArea className="flex-1 min-h-0">
           {isLoading ? (
             <SpinnerLoader />
           ) : stakeholdersGroups.length > 0 ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 compact:grid-cols-4 gap-4 compact:gap-2 pb-2">
               {stakeholdersGroups?.map((i: any, index: number) => {
                 return (
-                  <div key={index} className="rounded-sm border shadow p-4">
-                    <div className="flex flex-col space-y-2">
+                  <div
+                    key={index}
+                    className="rounded-sm border shadow p-4 compact:p-2"
+                  >
+                    <div className="flex flex-col space-y-2 compact:space-y-1">
                       <div
-                        className="cursor-pointer rounded-sm bg-secondary grid place-items-center h-28"
+                        className="cursor-pointer rounded-sm bg-secondary grid place-items-center h-28 compact:h-16"
                         onClick={() => {
                           router.push(
                             `/projects/aa/${id}/stakeholders/groups/${i.uuid}`,
                           );
                         }}
                       >
-                        <div className="bg-[#667085] text-white p-2 rounded-full">
-                          <Users size={20} strokeWidth={2.5} />
+                        <div className="bg-[#667085] text-white p-2 compact:p-1.5 rounded-full">
+                          <Users
+                            size={20}
+                            strokeWidth={2.5}
+                            className="compact:w-4 compact:h-4"
+                          />
                         </div>
                       </div>
 
-                      <p className="text-base mb-1">{i?.name ?? 'N/A'}</p>
-                      <div className="flex gap-2 items-center">
-                        <Users size={18} strokeWidth={2} />
+                      <p className="text-base compact:text-xs mb-1">
+                        {i?.name ?? 'N/A'}
+                      </p>
+                      <div className="flex gap-2 items-center compact:text-xs">
+                        <Users
+                          size={18}
+                          strokeWidth={2}
+                          className="compact:w-3.5 compact:h-3.5"
+                        />
                         {i?._count?.stakeholders || 0}
                       </div>
                     </div>

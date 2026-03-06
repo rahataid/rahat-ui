@@ -14,11 +14,10 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import {
+  Back,
   ClientSidePagination,
-  DataCard,
   DeleteButton,
   DemoTable,
-  HeaderWithBack,
   SearchInput,
 } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
@@ -85,7 +84,10 @@ const StakeholdersGroupsDetails = () => {
   };
 
   return (
-    <div className="p-4 ">
+    <div
+      className="p-4 compact:p-2 flex flex-col"
+      style={{ height: 'calc(100vh - 80px)' }}
+    >
       {isDeleting && (
         <div className="absolute inset-0 bg-gray-900 bg-opacity-30 flex items-center justify-center z-50">
           <Loader />
@@ -98,13 +100,40 @@ const StakeholdersGroupsDetails = () => {
         groupName={groupDetails?.name || 'Stakeholder Group'}
       />
 
-      <div className="flex justify-between items-center">
-        <HeaderWithBack
-          title={groupDetails?.name}
-          subtitle="Detailed view of the selected stakeholders group"
-          path={`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`}
-        />
-        <div className="flex gap-2">
+      {/* Header row */}
+      <div className="flex justify-between items-start mb-2 compact:mb-1 shrink-0">
+        <div className="mb-2 compact:mb-0">
+          {/* Large screens: Back on top, title + subtitle below */}
+          <div className="compact:hidden">
+            <Back
+              path={`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`}
+            />
+            <div>
+              <h1 className="font-semibold text-[28px]">
+                {groupDetails?.name}
+              </h1>
+              <p className="ml-1 text-muted-foreground text-base">
+                Detailed view of the selected stakeholders group
+              </p>
+            </div>
+          </div>
+          {/* Compact screens: Back + title inline */}
+          <div className="hidden compact:flex items-center gap-2 [&>div]:mb-0">
+            <Back
+              path={`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`}
+              className="border border-gray-300 text-gray-500 rounded px-2 py-0.5 mb-0 w-auto"
+            />
+            <div>
+              <h1 className="font-semibold text-base leading-tight">
+                {groupDetails?.name}
+              </h1>
+              <p className="text-muted-foreground text-xs">
+                Detailed view of the selected stakeholders group
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-2 shrink-0 mt-2 compact:mt-0">
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
             hasContent={false}
@@ -112,26 +141,39 @@ const StakeholdersGroupsDetails = () => {
             <DeleteButton
               name="stakeholders group"
               handleContinueClick={handleDeleteClick}
-              className="rounded-sm w-full flex gap-1 items-center p-1"
+              className="rounded-sm w-full flex gap-1 items-center p-1 compact:text-xs compact:px-2 compact:h-7"
               label="Delete Group"
               disabled={isDeleting}
             />
           </RoleAuth>
         </div>
       </div>
-      <div className="flex gap-6 mb-3">
-        <DataCard
-          className="border-solid w-1/4  h-1/4 rounded-sm"
-          iconStyle="bg-white text-secondary-muted"
-          title="Total Stakeholders"
-          Icon={User}
-          number={groupDetails?.stakeholders?.length}
-        />
+
+      {/* Minimal stats card */}
+      <div className="flex gap-4 mb-3 compact:mb-2 shrink-0">
+        <div className="flex items-center gap-3 border rounded-sm px-4 py-2 compact:px-3 compact:py-1.5 bg-card">
+          <div className="bg-secondary rounded-full p-1.5 compact:p-1">
+            <User
+              size={16}
+              className="compact:w-3.5 compact:h-3.5 text-muted-foreground"
+            />
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground leading-tight">
+              Total Stakeholders
+            </p>
+            <p className="text-xl font-bold text-primary compact:text-base leading-tight">
+              {groupDetails?.stakeholders?.length ?? 0}
+            </p>
+          </div>
+        </div>
       </div>
-      <div className="p-4 rounded-sm border">
-        <div className="flex justify-between space-x-2 items-center mb-3 ">
+
+      {/* Table card - flex-1 so it fills remaining vertical space */}
+      <div className="p-4 compact:p-2 rounded-sm border flex flex-col flex-1 min-h-0">
+        <div className="flex justify-between space-x-2 items-center mb-3 compact:mb-2 shrink-0">
           <SearchInput
-            className="w-full"
+            className="w-full compact:[&_input]:h-7 compact:[&_input]:text-xs"
             name="stakeholders name"
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -139,7 +181,7 @@ const StakeholdersGroupsDetails = () => {
             }
           />
           <SearchInput
-            className="w-full"
+            className="w-full compact:[&_input]:h-7 compact:[&_input]:text-xs"
             name="organization"
             value={
               (table.getColumn('organization')?.getFilterValue() as string) ??
@@ -152,7 +194,7 @@ const StakeholdersGroupsDetails = () => {
             }
           />
           <SearchInput
-            className="w-full"
+            className="w-full compact:[&_input]:h-7 compact:[&_input]:text-xs"
             name="municipality"
             value={
               (table.getColumn('municipality')?.getFilterValue() as string) ??
@@ -164,9 +206,8 @@ const StakeholdersGroupsDetails = () => {
                 ?.setFilterValue(event.target.value)
             }
           />
-
           <SearchInput
-            className="w-full"
+            className="w-full compact:[&_input]:h-7 compact:[&_input]:text-xs"
             name="supportArea"
             value={
               (table.getColumn('supportArea')?.getFilterValue() as string) ?? ''
@@ -175,7 +216,6 @@ const StakeholdersGroupsDetails = () => {
               table.getColumn('supportArea')?.setFilterValue(event.target.value)
             }
           />
-
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
             hasContent={false}
@@ -188,18 +228,20 @@ const StakeholdersGroupsDetails = () => {
                   `/projects/aa/${projectId}/stakeholders/groups/edit/${groupId}`,
                 )
               }
-              className=""
+              className="shrink-0 compact:h-7 compact:text-xs compact:px-2"
             >
-              <RefreshCw size={18} className="mr-1" /> Update StakeHolder Group
+              <RefreshCw
+                size={18}
+                className="mr-1 compact:w-3.5 compact:h-3.5"
+              />{' '}
+              Update StakeHolder Group
             </Button>
           </RoleAuth>
         </div>
 
-        <DemoTable
-          table={table}
-          tableHeight="h-[calc(100vh-500px)]"
-          loading={isLoading}
-        />
+        <div className="flex-1 min-h-0 compact:[&_th]:h-8 compact:[&_th]:px-2 compact:[&_th]:text-xs compact:[&_td]:px-2 compact:[&_td]:py-1 compact:[&_td]:text-xs">
+          <DemoTable table={table} tableHeight="h-full" loading={isLoading} />
+        </div>
 
         <ClientSidePagination table={table} />
       </div>

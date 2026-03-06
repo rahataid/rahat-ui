@@ -11,7 +11,7 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
-import { HeaderWithBack } from 'apps/rahat-ui/src/common';
+import { Back } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { Tag, TagInput } from 'emblor';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -119,18 +119,27 @@ export default function AddStakeholders() {
   };
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center">
-        <HeaderWithBack
-          title={'Create Stakeholder'}
-          subtitle="Fill the form below  to create a new stakeholder"
-          path={`/projects/aa/${id}/stakeholders`}
-        />
+    <div className="p-4 compact:p-2">
+      <div className="mb-3">
+        <div className="compact:flex compact:items-center compact:gap-3 compact:mb-1">
+          <Back
+            path={`/projects/aa/${id}/stakeholders`}
+            className="compact:border compact:border-gray-300 compact:text-gray-500 compact:rounded compact:px-2 compact:py-0.5 compact:mb-0 compact:w-auto"
+          />
+          <div>
+            <h1 className="font-semibold text-[28px] compact:text-base compact:leading-tight">
+              Create Stakeholder
+            </h1>
+            <p className="ml-1 text-muted-foreground text-base compact:text-xs compact:ml-0">
+              Fill the form below to create a new stakeholder
+            </p>
+          </div>
+        </div>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleCreateStakeholders)}>
-          <div className=" p-4 rounded-sm border bg-card gap-3">
-            <div className="grid grid-cols-2 gap-4 mb-4 mt-5">
+          <div className="compact-form p-4 compact:p-3 rounded-sm border bg-card gap-3">
+            <div className="grid grid-cols-2 gap-4 compact:gap-2 mb-4 mt-5 compact:mb-2 compact:mt-2">
               <FormField
                 control={form.control}
                 name="name"
@@ -208,7 +217,7 @@ export default function AddStakeholders() {
                 }}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4 mb-4 mt-5">
+            <div className="grid grid-cols-2 gap-4 compact:gap-2 mb-4 mt-5 compact:mb-2 compact:mt-2">
               <FormField
                 control={form.control}
                 name="phone"
@@ -330,7 +339,7 @@ export default function AddStakeholders() {
               <Button
                 type="button"
                 variant="secondary"
-                className=" px-8 "
+                className="px-8 text-sm h-10 compact:px-4"
                 onClick={() => {
                   form.reset();
                   setVariationTags([]);
@@ -340,7 +349,7 @@ export default function AddStakeholders() {
                 Clear
               </Button>
               <Button
-                className="w-32"
+                className="w-32 text-sm h-10 compact:w-24"
                 disabled={
                   form.formState.isSubmitting ||
                   unsavedSupportAreaInput.trim() !== ''

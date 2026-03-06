@@ -181,7 +181,7 @@ export default function CreateTemplateView() {
                 </Link>
                 <Button type="submit">
                   <Save className="mr-2 h-4 w-4" />
-                  Save Template
+                  Create Template
                 </Button>
               </div>
             </form>

@@ -496,7 +496,9 @@ export default function ComposeScheduleView() {
               )}
               {/* Schedule Button */}
               <div className="flex justify-end gap-3">
-                <Link href="/communication/schedule">
+                <Link
+                  href={`/projects/el-crm/${projectUUID}/communications/scheduled/compose`}
+                >
                   <Button type="button" variant="outline">
                     Cancel
                   </Button>

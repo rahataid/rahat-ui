@@ -364,7 +364,9 @@ export default function ComposeMessageView() {
 
               {/* Send Button */}
               <div className="flex justify-end gap-3">
-                <Link href={`/projects/el-crm/${projectUUID}/communications`}>
+                <Link
+                  href={`/projects/el-crm/${projectUUID}/communications/messages/compose`}
+                >
                   <Button type="button" variant="outline">
                     Cancel
                   </Button>

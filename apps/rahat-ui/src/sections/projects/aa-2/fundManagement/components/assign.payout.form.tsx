@@ -205,11 +205,10 @@ export default function PayoutFundManagementForm({
         </p>
 
         <div className="w-full max-w-xl flex flex-col gap-4 mt-2">
-          <button
-            type="button"
-            onClick={() => onWantsPayoutChange(true)}
+          {/* Info card — Create Payout */}
+          <div
             style={{ borderRadius: '0.5rem' }}
-            className="flex items-start gap-4 w-full border p-5 text-left hover:border-primary hover:bg-primary/5 transition-colors"
+            className="flex items-start gap-4 w-full border p-5"
           >
             <div className="flex-shrink-0 flex items-center justify-center w-14 h-14 rounded-lg bg-primary/10">
               <CheckCircle2 className="w-7 h-7 text-primary" />
@@ -221,13 +220,12 @@ export default function PayoutFundManagementForm({
                 information, and set up fund distribution.
               </p>
             </div>
-          </button>
+          </div>
 
-          <button
-            type="button"
-            onClick={handleSkip}
+          {/* Info card — Skip for Now */}
+          <div
             style={{ borderRadius: '0.5rem' }}
-            className="flex items-start gap-4 w-full border p-5 text-left hover:border-primary hover:bg-primary/5 transition-colors"
+            className="flex items-start gap-4 w-full border p-5"
           >
             <div className="flex-shrink-0 flex items-center justify-center w-14 h-14 rounded-lg bg-primary/10">
               <X className="w-7 h-7 text-primary" />
@@ -236,11 +234,30 @@ export default function PayoutFundManagementForm({
               <p className="font-bold text-base">Skip for Now</p>
               <p className="text-sm text-muted-foreground mt-0.5">
                 You can create a payout later from the{' '}
-                <span className="text-primary font-bold">Payout</span> section
-                anytime.
+                <span className="text-primary font-semibold">Payout</span>{' '}
+                section anytime.
               </p>
             </div>
-          </button>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex gap-3 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1 rounded-sm py-2"
+              onClick={handleSkip}
+            >
+              Skip for Now
+            </Button>
+            <Button
+              type="button"
+              className="flex-1 rounded-sm py-2"
+              onClick={() => onWantsPayoutChange(true)}
+            >
+              Create Payout
+            </Button>
+          </div>
         </div>
       </div>
     );

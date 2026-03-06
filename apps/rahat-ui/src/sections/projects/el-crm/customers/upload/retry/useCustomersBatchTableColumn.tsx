@@ -3,10 +3,13 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ColumnDef } from '@tanstack/react-table';
 import { UUID } from 'crypto';
+import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
 export const useCustomersBatchTableColumn = () => {
-  const { id: projectUUID } = useParams() as { id: UUID };
+  const { id: projectUUID } = useParams() as {
+    id: UUID;
+  };
   const router = useRouter();
 
   const retryImport = useRetryCustomerImport();
@@ -60,13 +63,26 @@ export const useCustomersBatchTableColumn = () => {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleRetryImport(row.original.uuid)}
-          >
-            Retry
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() =>
+                router.push(
+                  `/projects/el-crm/${projectUUID}/customers/upload/retry/${row.original.uuid}`,
+                )
+              }
+            >
+              <Eye />
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleRetryImport(row.original.uuid)}
+            >
+              Retry
+            </Button>
+          </div>
         );
       },
     },

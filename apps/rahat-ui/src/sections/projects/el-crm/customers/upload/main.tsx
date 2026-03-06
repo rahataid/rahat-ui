@@ -32,16 +32,12 @@ export default function CustomersUploadPage() {
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [uploadStatus, setUploadStatus] = useState<
-    'idle' | 'uploading' | 'success' | 'error'
-  >('idle');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
-      setUploadStatus('idle');
     }
   };
 
@@ -61,7 +57,6 @@ export default function CustomersUploadPage() {
     const file = e.dataTransfer.files?.[0];
     if (file) {
       setSelectedFile(file);
-      setUploadStatus('idle');
     }
   };
 
@@ -74,8 +69,6 @@ export default function CustomersUploadPage() {
   const handleUpload = async () => {
     if (!selectedFile) return;
 
-    setUploadStatus('uploading');
-
     // Determine doctype based on file extension
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
     const doctype = extension ? allowedExtensions[extension] : '';
@@ -87,16 +80,10 @@ export default function CustomersUploadPage() {
     });
 
     router.push(`/projects/el-crm/${projectUUID}/customers`);
-
-    // Simulate upload
-    // setTimeout(() => {
-    //   setUploadStatus('success');
-    // }, 2000);
   };
 
   const handleRemoveFile = () => {
     setSelectedFile(null);
-    setUploadStatus('idle');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -207,7 +194,7 @@ export default function CustomersUploadPage() {
                         variant="ghost"
                         size="sm"
                         onClick={handleRemoveFile}
-                        disabled={uploadStatus === 'uploading'}
+                        disabled={uploadCustomers.isPending}
                       >
                         <X className="h-4 w-4" />
                       </Button>
@@ -217,7 +204,7 @@ export default function CustomersUploadPage() {
               </div>
 
               {/* Upload Status */}
-              {uploadStatus === 'success' && (
+              {uploadCustomers.isSuccess && (
                 <div className="flex items-center gap-2 p-4 bg-green-50 text-green-700 rounded-lg">
                   <CheckCircle className="h-5 w-5" />
                   <span className="text-sm font-medium">
@@ -236,7 +223,7 @@ export default function CustomersUploadPage() {
                 </a>
                 <Button
                   onClick={handleUpload}
-                  disabled={!selectedFile || uploadStatus === 'uploading'}
+                  disabled={!selectedFile || uploadCustomers.isPending}
                   className="flex-1"
                 >
                   {uploadCustomers.isPending ? (

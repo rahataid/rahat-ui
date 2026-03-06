@@ -50,15 +50,17 @@ const CommunicationDataCard = ({
     onRemove(i);
     setOpen(true);
 
-    form.setValue('communicationTitle', itemData.communicationTitle || '');
-    form.setValue('sessionId', itemData.sessionId);
-    form.setValue('communicationId', itemData.communicationId);
-    form.setValue('groupId', itemData.groupId);
-    form.setValue('groupType', itemData.groupType);
-    form.setValue('message', itemData.message);
-    form.setValue('subject', itemData.subject);
-    form.setValue('transportId', itemData.transportId);
-    form.setValue('audioURL', itemData.audioURL);
+    form.reset({
+      communicationTitle: itemData.communicationTitle || '',
+      sessionId: itemData.sessionId,
+      communicationId: itemData.communicationId,
+      groupId: itemData.groupId,
+      groupType: itemData.groupType,
+      message: itemData.message,
+      subject: itemData.subject,
+      transportId: itemData.transportId,
+      audioURL: itemData.audioURL,
+    });
   };
 
   const handleRemoveclick = (index: number) => {

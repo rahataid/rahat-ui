@@ -16,6 +16,7 @@ import {
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { useBeneficiaryGroupsStore } from '../../beneficiary/beneficiary-groups.store';
+import { BeneficiaryGroupListItem } from '@rahat-ui/types';
 
 type StakeholderGroupArgs = {
   projectUUID: UUID;
@@ -137,7 +138,7 @@ export const useCreateBenficiariesGroups = () => {
       const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
-        title: 'Error while adding stakeholders group.',
+        title: 'Error while adding beneficiaries group.',
         icon: 'error',
         text: errorMessage,
       });
@@ -146,7 +147,6 @@ export const useCreateBenficiariesGroups = () => {
 };
 
 export const useReserveTokenForGroups = () => {
-  console.log('reached here');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -166,6 +166,13 @@ export const useReserveTokenForGroups = () => {
         numberOfTokens: number;
         totalTokensReserved: number;
         title: string;
+        isPayoutIntegrated?: boolean;
+        params?: {
+          type: string;
+          mode: string;
+          payoutProcessorId?: string;
+          extras?: Record<string, string | undefined>;
+        };
       };
     }) => {
       const response = await q.mutateAsync({
@@ -193,6 +200,34 @@ export const useReserveTokenForGroups = () => {
         icon: 'error',
         text: errorMessage,
       });
+    },
+  });
+};
+
+export const useValidateTokenAssignment = () => {
+  const q = useProjectAction();
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      groupId,
+    }: {
+      projectUUID: UUID;
+      groupId: string;
+    }) => {
+      const response = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.beneficiary.validate_token_assignment',
+          payload: { groupId },
+        },
+      });
+      return response?.data;
+    },
+    onSuccess: () => {
+      q.reset();
+    },
+    onError: (error: any) => {
+      q.reset();
     },
   });
 };
@@ -256,7 +291,10 @@ export const useBeneficiaryGroups = (uuid: UUID, payload: any) => {
     }
   }, [query.data]);
 
-  return { ...query, stakeholdersGroupsMeta: query?.data?.meta };
+  const groups: BeneficiaryGroupListItem[] = query.data?.data ?? [];
+  const meta = query.data?.meta;
+
+  return { ...query, data: groups, meta };
 };
 
 export const useSingleStakeholdersGroup = (

@@ -1,8 +1,7 @@
-import React from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from 'libs/shadcn/src/components/ui/button';
-import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { UserRound } from 'lucide-react';
-import { HeaderWithBack, NoResult } from 'apps/rahat-ui/src/common';
+import { NoResult } from 'apps/rahat-ui/src/common';
 import {
   useFundAssignmentStore,
   useGetBeneficiaryGroup,
@@ -12,60 +11,96 @@ import { useRouter } from 'next/navigation';
 import { truncatedText } from 'apps/community-tool-ui/src/utils';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import dynamic from 'next/dynamic';
+import { FundWithPayoutSchema } from 'apps/rahat-ui/src/sections/projects/aa-2/payout/initiatePayout/schemas/payout.validation';
+import { handleBuildPayoutPayload } from 'apps/rahat-ui/src/sections/projects/aa-2/fundManagement/utils/utils';
+
 const ErrorInfoPopupModel = dynamic(() => import('./errorInfoPopupModel'));
 
-export default function Confirmation() {
+export default function Confirmation({
+  payoutData,
+  onPayoutData,
+}: {
+  payoutData: FundWithPayoutSchema | null;
+  onPayoutData: (data: FundWithPayoutSchema | null) => void;
+}) {
+  // State goes here
   const errorModule = useBoolean();
-  const [errorData, setErrorData] = React.useState(null);
+  const [errorData, setErrorData] = useState(null);
+
+  // Router goes here
   const router = useRouter();
+
+  // Store goes here
   const { assignedFundData } = useFundAssignmentStore((state) => ({
     assignedFundData: state.assignedFundData,
   }));
 
   const { projectUUID, reserveTokenPayload } = assignedFundData;
 
+  // Query goes here
   const { data: group } = useGetBeneficiaryGroup(
     reserveTokenPayload.beneficiaryGroupId,
   );
 
   const reserveTokenForGroups = useReserveTokenForGroups();
-  const cardData = [
-    { label: 'Title', value: reserveTokenPayload.title },
-    {
-      label: 'Beneficiary Group Name',
-      value: reserveTokenPayload.beneficiaryName,
-    },
-    {
-      label: 'Total Beneficiaries',
-      value: group?.data?.groupedBeneficiaries.length,
-    },
-    {
-      label: 'Token Assigned Per Beneficiary',
-      value: reserveTokenPayload.tokenAmountPerBenef,
-    },
-    {
-      label: 'Total Token Amount',
-      value: reserveTokenPayload.numberOfTokens,
-    },
-  ];
 
-  const benefData = group?.data?.groupedBeneficiaries.map((i: any) => ({
-    label: truncatedText(i.Beneficiary.walletAddress, 10),
-    value: reserveTokenPayload.tokenAmountPerBenef,
-  }));
+  // Handlers goes here
+  const cardData = useMemo(
+    () => [
+      { label: 'Title', value: reserveTokenPayload.title },
+      {
+        label: 'Beneficiary Group Name',
+        value: reserveTokenPayload.beneficiaryName,
+      },
+      {
+        label: 'Total Beneficiaries',
+        value: group?.data?.groupedBeneficiaries.length,
+      },
+      {
+        label: 'Token Assigned Per Beneficiary',
+        value: reserveTokenPayload.tokenAmountPerBenef,
+      },
+      {
+        label: 'Total Token Amount',
+        value: reserveTokenPayload.numberOfTokens,
+      },
+    ],
+    [group, reserveTokenPayload],
+  );
+
+  const benefData = useMemo(
+    () =>
+      group?.data?.groupedBeneficiaries.map((i: any) => ({
+        label: truncatedText(i.Beneficiary.walletAddress, 10),
+        value: reserveTokenPayload.tokenAmountPerBenef,
+      })),
+    [group, reserveTokenPayload.tokenAmountPerBenef],
+  );
 
   const handleSubmit = async () => {
-    reserveTokenPayload.totalTokensReserved = cardData[4].value;
+    // Created a helper to build the payload on submit
+    const payoutPayload = handleBuildPayoutPayload(payoutData);
+    const payload = {
+      ...reserveTokenPayload,
+      totalTokensReserved: reserveTokenPayload.numberOfTokens,
+      isPayoutIntegrated: !!payoutData?.method && !!payoutData?.mode,
+      ...(payoutPayload && { params: payoutPayload }),
+    };
+
     try {
       const data = await reserveTokenForGroups.mutateAsync({
         projectUUID,
-        reserveTokenPayload,
+        reserveTokenPayload: payload,
       });
+
       if (data?.status === 'error') {
         errorModule.onTrue();
         setErrorData(data);
         return;
       }
+
+      // Clear payout state and navigate, store is cleared when AssignFundsView unmounts
+      onPayoutData(null);
       router.push(
         `/projects/aa/${projectUUID}/fund-management?tab=fundManagementList`,
       );
@@ -73,49 +108,94 @@ export default function Confirmation() {
       console.error('Creating reserve token::', e);
     }
   };
+
   return (
-    <div className="p-4">
+    <div className="p-2">
       <ErrorInfoPopupModel validateModal={errorModule} errorData={errorData} />
-      <HeaderWithBack
-        path={``}
-        title="Confirmation"
-        subtitle="Check the details below and confirm to proceed"
-      />
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div className="p-4 rounded-md bg-gray-50">
-          <div className="flex flex-col space-y-4">
+      <div className="flex gap-3 mb-3">
+        <div className="w-[60%] p-3 rounded-md bg-gray-50">
+          <p className="font-semibold text-sm mb-2">Fund Assignment</p>
+          <div className="flex flex-col space-y-2">
             {cardData.map((i) => (
               <div key={i.label}>
-                <p className="text-sm font-medium">{i.label}</p>
+                <p className="text-sm text-muted-foreground">{i.label}</p>
                 <p className="text-lg font-semibold text-primary">{i.value}</p>
               </div>
             ))}
           </div>
-        </div>
-        <div className="p-4 rounded-md bg-gray-50">
-          <p className="font-semibold text-lg mb-4">Beneficiaries List</p>
-          <ScrollArea className="h-[calc(300px)] pr-4">
-            <div className="flex flex-col space-y-4">
-              {benefData?.length > 0 ? (
-                benefData?.map((i) => (
-                  <div
-                    key={i.label}
-                    className="flex justify-between items-center space-x-4"
-                  >
-                    <div className="font-medium text-sm/6 flex space-x-2 items-center">
-                      <UserRound />
-                      <p>{i.label}</p>
-                    </div>
-                    <p>+ {i.value}</p>
+          {payoutData && payoutData.method && (
+            <div className="mt-3 pt-3 border-t">
+              <p className="font-semibold text-sm mb-2">Payout Details</p>
+              <div className="flex flex-col space-y-2">
+                <div>
+                  <p className="text-sm text-muted-foreground">Method</p>
+                  <p className="text-base font-semibold text-primary">
+                    {payoutData.method}
+                  </p>
+                </div>
+                {payoutData.method != 'FSP' && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Mode</p>
+                    <p className="text-base font-semibold text-primary">
+                      {payoutData.mode}
+                    </p>
                   </div>
-                ))
-              ) : (
-                <NoResult message="No Beneficiary found" />
-              )}
+                )}
+                {payoutData.vendor?.name && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Vendor</p>
+                    <p className="text-base font-semibold text-primary">
+                      {payoutData.vendor.name}
+                    </p>
+                  </div>
+                )}
+                {payoutData.paymentProvider?.name && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      Payment Provider
+                    </p>
+                    <p className="text-base font-semibold text-primary">
+                      {payoutData.paymentProvider.name}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
-          </ScrollArea>
+          )}
+        </div>
+
+        <div className="w-[40%] p-3 rounded-md bg-gray-50">
+          <p className="font-semibold text-sm mb-2">
+            Beneficiaries List
+            {benefData?.length ? (
+              <span className="text-muted-foreground font-normal ml-1">
+                ({benefData.length})
+              </span>
+            ) : null}
+          </p>
+          <div className="flex flex-col divide-y">
+            {benefData?.length > 0 ? (
+              benefData?.map((i: any) => (
+                <div
+                  key={i.label}
+                  className="flex justify-between items-center py-1.5"
+                >
+                  <div className="font-medium text-sm flex space-x-2 items-center">
+                    <UserRound className="h-4 w-4" />
+                    <p>{i.label}</p>
+                  </div>
+                  <p className="text-sm font-semibold text-primary">
+                    + {i.value}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <NoResult message="No Beneficiary found" />
+            )}
+          </div>
         </div>
       </div>
+
       <div className="flex justify-end items-center">
         <div className="flex space-x-2">
           <Button
@@ -125,8 +205,12 @@ export default function Confirmation() {
           >
             Cancel
           </Button>
-          <Button className="px-10" onClick={handleSubmit}>
-            Confirm
+          <Button
+            className="px-10"
+            onClick={handleSubmit}
+            disabled={reserveTokenForGroups.isPending}
+          >
+            {reserveTokenForGroups.isPending ? 'Confirming...' : 'Confirm'}
           </Button>
         </div>
       </div>

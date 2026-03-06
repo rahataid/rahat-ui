@@ -245,14 +245,14 @@ export default function PayoutFundManagementForm({
             <Button
               type="button"
               variant="outline"
-              className="flex-1 rounded-sm py-2"
+              className="flex-1 rounded-sm"
               onClick={handleSkip}
             >
               Skip for Now
             </Button>
             <Button
               type="button"
-              className="flex-1 rounded-sm py-2"
+              className="flex-1 rounded-sm"
               onClick={() => onWantsPayoutChange(true)}
             >
               Create Payout

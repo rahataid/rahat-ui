@@ -16,16 +16,16 @@ export const useCustomersTableColumn = () => {
   const { id } = useParams();
   const router = useRouter();
 
-  const getCategoryVariant = (category: string) => {
+  const getCategoryBgColor = (category: string) => {
     switch (category) {
-      case 'Active':
-        return 'default';
-      case 'Inactive':
-        return 'secondary';
-      case 'Newly Inactive':
-        return 'destructive';
+      case CustomerCategory.ACTIVE:
+        return 'blue';
+      case CustomerCategory.INACTIVE:
+        return 'gray';
+      case CustomerCategory.NEWLY_INACTIVE:
+        return 'red';
       default:
-        return 'secondary';
+        return 'gray';
     }
   };
 
@@ -59,11 +59,15 @@ export const useCustomersTableColumn = () => {
     {
       accessorKey: 'category',
       header: 'Category',
-      cell: ({ row }) => (
-        <Badge variant={getCategoryVariant(row.getValue('category'))}>
-          {row.getValue('category')}
-        </Badge>
-      ),
+      cell: ({ row }) => {
+        const category = row.getValue('category') as string;
+        const color = getCategoryBgColor(category);
+        return (
+          <Badge className={`bg-${color}-200`}>
+            {category?.split('_').join(' ')}
+          </Badge>
+        );
+      },
     },
     {
       accessorKey: 'source',

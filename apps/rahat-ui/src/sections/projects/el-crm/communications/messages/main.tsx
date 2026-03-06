@@ -15,6 +15,7 @@ import {
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { useListElCrmCampaign, usePagination } from '@rahat-ui/query';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export default function MessagesView() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -28,9 +29,10 @@ export default function MessagesView() {
     setPerPage,
   } = usePagination();
   const columns = useMsgTableColumn();
-  const { data } = useListElCrmCampaign(projectUUID, {
+  const { data, meta } = useListElCrmCampaign(projectUUID, {
     page: pagination.page,
-    perPage: 1000,
+    perPage: pagination.perPage,
+    order: 'desc',
   });
 
   const table = useReactTable({
@@ -85,6 +87,15 @@ export default function MessagesView() {
           <Card>
             <CardContent>
               <DemoTable table={table} />
+              <CustomPagination
+                meta={meta || { total: 0, currentPage: 0 }}
+                handleNextPage={setNextPage}
+                handlePrevPage={setPrevPage}
+                handlePageSizeChange={setPerPage}
+                currentPage={pagination.page}
+                perPage={pagination.perPage}
+                total={meta?.total}
+              />
             </CardContent>
           </Card>
         )}

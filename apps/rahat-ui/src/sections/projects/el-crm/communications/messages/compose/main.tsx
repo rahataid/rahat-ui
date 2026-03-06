@@ -39,6 +39,7 @@ import {
 } from '@rahat-ui/query';
 import { options } from 'numeral';
 import { stat } from 'fs';
+import { CHANNELS } from '../../const';
 
 // Validation schema
 const composeMessageSchema = z.object({
@@ -58,6 +59,12 @@ type ComposeMessageForm = z.infer<typeof composeMessageSchema>;
 export default function ComposeMessageView() {
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
+  const [selectedChannelName, setSelectedChannelName] = useState<string | null>(
+    null,
+  );
+  const [templateMode, setTemplateMode] = useState<'existing' | 'new'>(
+    'existing',
+  );
 
   const {
     control,
@@ -79,9 +86,12 @@ export default function ComposeMessageView() {
   });
 
   const groupSelection = watch('targetType');
+  const messagingChannel = watch('messagingChannel');
 
   const transport = useListElCrmTransport(projectUUID);
-  const templates = useListElCrmTemplate(projectUUID);
+  const templates = useListElCrmTemplate(projectUUID, {
+    status: 'APPROVED',
+  });
   const createCampaign = useCreateElCrmCampaign(projectUUID);
 
   console.log('Templates:', templates.data);
@@ -215,22 +225,6 @@ export default function ComposeMessageView() {
 
                 {/* Right Column */}
                 <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Template Management</Label>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() =>
-                        router.push(
-                          `/projects/el-crm/${projectUUID}/communications/templates/create`,
-                        )
-                      }
-                      className="w-full"
-                    >
-                      <Plus className="mr-2 h-4 w-4" />
-                      Create New Template
-                    </Button>
-                  </div>
                   {/* Messaging Channel */}
                   <div className="space-y-2">
                     <Label htmlFor="messaging-channel">Messaging Channel</Label>
@@ -241,7 +235,16 @@ export default function ComposeMessageView() {
                         <>
                           <Select
                             value={field.value}
-                            onValueChange={field.onChange}
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                              const selectedChannel = transport.data?.find(
+                                (channel: any) =>
+                                  channel.cuid.toString() === value,
+                              );
+                              setSelectedChannelName(
+                                selectedChannel?.name || null,
+                              );
+                            }}
                           >
                             <SelectTrigger>
                               <SelectValue placeholder="Select channel" />
@@ -269,58 +272,108 @@ export default function ComposeMessageView() {
                 </div>
               </div>
 
-              {/* Template Selection */}
-              <div className="space-y-2">
-                <Label htmlFor="template">Select Template</Label>
-                <Controller
-                  name="selectedTemplate"
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choose existing template" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {templates?.data?.map((template: any) => (
-                          <SelectItem
-                            key={template.cuid}
-                            value={template?.externalId}
-                          >
-                            {template.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-
               {/* Custom Message */}
-              <div className="space-y-2">
-                <Label htmlFor="custom-message">OR Write Custom Message</Label>
-                <Textarea
-                  id="custom-message"
-                  placeholder="Type your custom message here..."
-                  {...register('customMessage')}
-                  rows={4}
-                />
-                {errors.customMessage && (
-                  <p className="text-sm text-red-500">
-                    {errors.customMessage.message}
-                  </p>
-                )}
-              </div>
+              {selectedChannelName !== CHANNELS.WHATSAPP && (
+                <div className="space-y-2">
+                  <Label htmlFor="custom-message">
+                    OR Write Custom Message
+                  </Label>
+                  <Textarea
+                    id="custom-message"
+                    placeholder="Type your custom message here..."
+                    {...register('customMessage')}
+                    rows={4}
+                  />
+                  {errors.customMessage && (
+                    <p className="text-sm text-red-500">
+                      {errors.customMessage.message}
+                    </p>
+                  )}
+                </div>
+              )}
+              {selectedChannelName === CHANNELS.WHATSAPP && (
+                <div className="space-y-4">
+                  <Label>Template Option</Label>
+
+                  <div className="flex gap-6">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        checked={templateMode === 'existing'}
+                        onChange={() => setTemplateMode('existing')}
+                      />
+                      Use Existing Template
+                    </label>
+
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        checked={templateMode === 'new'}
+                        onChange={() => setTemplateMode('new')}
+                      />
+                      Create New Template
+                    </label>
+                  </div>
+
+                  {/* EXISTING TEMPLATE */}
+                  {templateMode === 'existing' && (
+                    <Controller
+                      name="selectedTemplate"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choose existing template" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {templates?.data?.map((template: any) => (
+                              <SelectItem
+                                key={template.cuid}
+                                value={template.externalId}
+                              >
+                                {template.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                  )}
+
+                  {/* CREATE NEW TEMPLATE */}
+                  {templateMode === 'new' && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() =>
+                        router.push(
+                          `/projects/el-crm/${projectUUID}/communications/templates/create`,
+                        )
+                      }
+                      className="w-full"
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Go To Create Template Page
+                    </Button>
+                  )}
+                </div>
+              )}
 
               {/* Send Button */}
               <div className="flex justify-end gap-3">
-                <Link href="/communication">
+                <Link
+                  href={`/projects/el-crm/${projectUUID}/communications/messages/compose`}
+                >
                   <Button type="button" variant="outline">
                     Cancel
                   </Button>
                 </Link>
                 <Button type="submit" className="min-w-[120px]">
                   <Send className="mr-2 h-4 w-4" />
-                  Send Message
+                  Create Message
                 </Button>
               </div>
             </form>

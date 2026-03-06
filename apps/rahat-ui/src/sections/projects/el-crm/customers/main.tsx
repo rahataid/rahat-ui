@@ -33,9 +33,22 @@ import {
   CustomerSource,
   useCustomers,
   usePagination,
+  useCustomerStats,
 } from '@rahat-ui/query';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+
+interface Stat {
+  name:
+    | 'TOTAL_CUSTOMER'
+    | 'ACTIVE_CUSTOMER'
+    | 'INACTIVE_CUSTOMER'
+    | 'NEWLY_INACTIVE_CUSTOMER';
+  data: number;
+  group: 'VENDOR';
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export default function CustomersPage() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -75,17 +88,17 @@ export default function CustomersPage() {
     [filters],
   );
 
-  const totalCustomers = customers?.length || 0;
+  const { data: stats } = useCustomerStats(projectUUID);
+
+  const totalCustomers =
+    stats?.find((stat: Stat) => stat.name === 'TOTAL_CUSTOMER')?.data || 0;
   const activeCustomers =
-    customers?.filter((c: Customer) => c.category === CustomerCategory.ACTIVE)
-      .length || 0;
+    stats?.find((stat: Stat) => stat.name === 'ACTIVE_CUSTOMER')?.data || 0;
   const inactiveCustomers =
-    customers?.filter((c: Customer) => c.category === CustomerCategory.INACTIVE)
-      .length || 0;
+    stats?.find((stat: Stat) => stat.name === 'INACTIVE_CUSTOMER')?.data || 0;
   const newlyInactiveCustomers =
-    customers?.filter(
-      (c: Customer) => c.category === CustomerCategory.NEWLY_INACTIVE,
-    ).length || 0;
+    stats?.find((stat: Stat) => stat.name === 'NEWLY_INACTIVE_CUSTOMER')
+      ?.data || 0;
 
   const columns = useCustomersTableColumn();
 
@@ -108,18 +121,12 @@ export default function CustomersPage() {
     <div className="flex flex-col h-full">
       <div className="border-b border-border bg-card/50 px-6 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex-1">
+          <div>
             <h1 className="text-2xl font-bold text-foreground">Customers</h1>
             <p className="text-muted-foreground">
               Manage customer relationships and data
             </p>
           </div>
-          <a href="/files/sample_customers.xlsx" download>
-            <Button className="mr-2" variant="outline">
-              <Download className="mr-2 h-4 w-4" />
-              Download Sample
-            </Button>
-          </a>
           <Link href={`/projects/el-crm/${projectUUID}/customers/upload`}>
             <Button>
               <Upload className="mr-2 h-4 w-4" />
@@ -178,13 +185,10 @@ export default function CustomersPage() {
           </Card>
         </div>
 
-        {/* Filters Section */}
+        {/* Customers List */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Filters</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-4">
+          <CardContent className="mt-6">
+            <div className="flex flex-wrap items-center gap-4 mb-2">
               {/* Search */}
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -250,34 +254,22 @@ export default function CustomersPage() {
                 </Button>
               )}
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Customers Table */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Customer List</CardTitle>
-              {/* <div className="text-sm text-muted-foreground">
-                Showing {totalCustomers} of {totalCustomers} customers
-              </div> */}
+            <div>
+              <DemoTable
+                table={table}
+                tableHeight="h-[calc(100vh-474px)]"
+                loading={isLoading}
+              />
+              <CustomPagination
+                meta={meta}
+                handleNextPage={setNextPage}
+                handlePrevPage={setPrevPage}
+                handlePageSizeChange={setPerPage}
+                currentPage={pagination.page}
+                perPage={pagination.perPage}
+                total={meta.total}
+              />
             </div>
-          </CardHeader>
-          <CardContent>
-            <DemoTable
-              table={table}
-              tableHeight="h-[calc(100vh-640px)]"
-              loading={isLoading}
-            />
-            <CustomPagination
-              meta={meta}
-              handleNextPage={setNextPage}
-              handlePrevPage={setPrevPage}
-              handlePageSizeChange={setPerPage}
-              currentPage={pagination.page}
-              perPage={pagination.perPage}
-              total={meta.total}
-            />
           </CardContent>
         </Card>
       </div>

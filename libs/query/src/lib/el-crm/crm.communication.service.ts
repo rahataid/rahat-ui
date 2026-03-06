@@ -334,7 +334,7 @@ export const useListElCrmTemplate = (projectUUID: UUID, payload?: any) => {
         uuid: projectUUID,
         data: {
           action: GET_TEMPLATE,
-          payload: {},
+          payload,
         },
       });
       return res.data;

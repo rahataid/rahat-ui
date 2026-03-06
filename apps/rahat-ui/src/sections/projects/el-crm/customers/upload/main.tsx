@@ -19,27 +19,25 @@ import {
   FileSpreadsheet,
   X,
   CheckCircle,
+  Download,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useUploadCustomers } from '@rahat-ui/query';
 
 export default function CustomersUploadPage() {
   const { id: projectUUID } = useParams() as { id: UUID };
+  const router = useRouter();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [uploadStatus, setUploadStatus] = useState<
-    'idle' | 'uploading' | 'success' | 'error'
-  >('idle');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
-      setUploadStatus('idle');
     }
   };
 
@@ -59,7 +57,6 @@ export default function CustomersUploadPage() {
     const file = e.dataTransfer.files?.[0];
     if (file) {
       setSelectedFile(file);
-      setUploadStatus('idle');
     }
   };
 
@@ -72,8 +69,6 @@ export default function CustomersUploadPage() {
   const handleUpload = async () => {
     if (!selectedFile) return;
 
-    setUploadStatus('uploading');
-
     // Determine doctype based on file extension
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
     const doctype = extension ? allowedExtensions[extension] : '';
@@ -84,15 +79,11 @@ export default function CustomersUploadPage() {
       doctype,
     });
 
-    // Simulate upload
-    // setTimeout(() => {
-    //   setUploadStatus('success');
-    // }, 2000);
+    router.push(`/projects/el-crm/${projectUUID}/customers`);
   };
 
   const handleRemoveFile = () => {
     setSelectedFile(null);
-    setUploadStatus('idle');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -110,12 +101,11 @@ export default function CustomersUploadPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="border-b border-border bg-card/50 px-6 py-4">
+      <div className="flex justify-between items-center border-b border-border bg-card/50 px-6 py-4">
         <div className="flex items-center gap-4">
           <Link href={`/projects/el-crm/${projectUUID}/customers`}>
             <Button variant="outline" size="sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              {/* Back to Customers */}
             </Button>
           </Link>
           <div>
@@ -127,17 +117,18 @@ export default function CustomersUploadPage() {
             </p>
           </div>
         </div>
+        <Link href={`/projects/el-crm/${projectUUID}/customers/upload/retry`}>
+          <Button variant="outline">Failed Batches</Button>
+        </Link>
       </div>
 
-      <div className="flex-1 p-6">
-        <div className="max-w-2xl mx-auto">
+      <div className="p-6">
+        <div className="max-w-3xl mx-auto">
           <Card>
             <CardHeader>
               <CardTitle>Upload File</CardTitle>
               <CardDescription>
-                Upload a CSV or Excel file containing customer data. The file
-                should include columns for customer name, email, phone number,
-                and other relevant information.
+                Upload a Excel file containing customer data.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -158,7 +149,7 @@ export default function CustomersUploadPage() {
                     ref={fileInputRef}
                     id="file-upload"
                     type="file"
-                    accept=".csv,.xlsx,.xls"
+                    accept=".xlsx,.xls"
                     onChange={handleFileSelect}
                     className="hidden"
                   />
@@ -180,7 +171,7 @@ export default function CustomersUploadPage() {
                           </button>
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Supports CSV, XLSX, XLS files up to 10MB
+                          Supports XLSX, XLS files
                         </p>
                       </div>
                     </div>
@@ -203,7 +194,7 @@ export default function CustomersUploadPage() {
                         variant="ghost"
                         size="sm"
                         onClick={handleRemoveFile}
-                        disabled={uploadStatus === 'uploading'}
+                        disabled={uploadCustomers.isPending}
                       >
                         <X className="h-4 w-4" />
                       </Button>
@@ -213,7 +204,7 @@ export default function CustomersUploadPage() {
               </div>
 
               {/* Upload Status */}
-              {uploadStatus === 'success' && (
+              {uploadCustomers.isSuccess && (
                 <div className="flex items-center gap-2 p-4 bg-green-50 text-green-700 rounded-lg">
                   <CheckCircle className="h-5 w-5" />
                   <span className="text-sm font-medium">
@@ -224,9 +215,15 @@ export default function CustomersUploadPage() {
 
               {/* Actions */}
               <div className="flex gap-3">
+                <a href="/files/sample_customer.xlsx" download>
+                  <Button className="mr-2 w-48" variant="outline">
+                    <Download className="mr-2 h-4 w-4" />
+                    Download Sample
+                  </Button>
+                </a>
                 <Button
                   onClick={handleUpload}
-                  disabled={!selectedFile || uploadStatus === 'uploading'}
+                  disabled={!selectedFile || uploadCustomers.isPending}
                   className="flex-1"
                 >
                   {uploadCustomers.isPending ? (
@@ -242,12 +239,14 @@ export default function CustomersUploadPage() {
                   )}
                 </Button>
                 <Link href={`/projects/el-crm/${projectUUID}/customers`}>
-                  <Button variant="outline">Cancel</Button>
+                  <Button className="w-48" variant="outline">
+                    Cancel
+                  </Button>
                 </Link>
               </div>
 
               {/* File Format Guidelines */}
-              <div className="border-t pt-6">
+              {/* <div className="border-t pt-6">
                 <h4 className="text-sm font-medium mb-3">
                   File Format Guidelines
                 </h4>
@@ -261,7 +260,7 @@ export default function CustomersUploadPage() {
                   </li>
                   <li>- Date format: YYYY-MM-DD</li>
                 </ul>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
         </div>

@@ -21,13 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/components/select';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@rahat-ui/shadcn/components/popover';
-import { Calendar } from '@rahat-ui/shadcn/components/calendar';
-import { format } from 'date-fns';
+
 import { CalendarIcon, Send, Plus, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -37,8 +31,6 @@ import {
   useListElCrmTemplate,
   useListElCrmTransport,
 } from '@rahat-ui/query';
-import { options } from 'numeral';
-import { stat } from 'fs';
 import { CHANNELS } from '../../const';
 
 // Validation schema
@@ -211,7 +203,7 @@ export default function ComposeMessageView() {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="active">Active</SelectItem>
-                              <SelectItem value="newly-inactive">
+                              <SelectItem value="newly_inactive">
                                 Newly Inactive
                               </SelectItem>
                               <SelectItem value="inactive">Inactive</SelectItem>

@@ -140,7 +140,9 @@ const beneficiariesGroupByUuids = async (uuids: string[]) => {
   return response?.data?.data;
 };
 
-export const useUpdateBeneficiaryGroup = () => {
+export const useUpdateBeneficiaryGroup = (callbacks?: {
+  onSuccess?: () => void;
+}) => {
   const qc = useQueryClient();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -151,12 +153,19 @@ export const useUpdateBeneficiaryGroup = () => {
   });
   return useMutation({
     mutationFn: (payload: any) => updateBeneficiaryGroup(payload),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_GROUPS] });
+    onSuccess: (payload) => {
+      qc.invalidateQueries({
+        queryKey: [TAGS.GET_BENEFICIARIES_GROUPS],
+      });
+      qc.invalidateQueries({
+        queryKey: payload?.name,
+      });
+
       toast.fire({
         title: 'Beneficiary Group updated successfully.',
         icon: 'success',
       });
+      callbacks?.onSuccess?.();
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';
@@ -313,8 +322,9 @@ export const useValidateBeneficaryBankAccount = () => {
   });
   return useMutation({
     mutationFn: (payload: any) => validateBeneficiaryBankAccount(payload),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [TAGS.VALIDATE_BENEFICIARIES] });
+    onSuccess: async () => {
+      window.location.reload();
+      await qc.invalidateQueries({ queryKey: [TAGS.VALIDATE_BENEFICIARIES] });
       toast.fire({
         title: 'Accounts check in progress. Data will be listed soon',
         icon: 'success',
@@ -344,12 +354,14 @@ export const useUpdateGroupPropose = () => {
     mutationFn: (payload: any) =>
       updateGroupPropose(payload.uuid, payload.selectedPurpose),
     onSuccess: async (_data, variables) => {
-      if (variables?.uuid) {
-        await qc.invalidateQueries({
-          queryKey: ['GET_BENEFICIARY_GROUP', variables.uuid],
-          exact: false,
-        });
-      }
+      await qc.invalidateQueries({
+        queryKey: ['GET_BENEFICIARY_GROUP', variables?.uuid],
+        exact: false,
+      });
+      await qc.invalidateQueries({
+        queryKey: variables?.uuid,
+      });
+
       toast.fire({
         title: 'Group propose updated successfully',
         icon: 'success',

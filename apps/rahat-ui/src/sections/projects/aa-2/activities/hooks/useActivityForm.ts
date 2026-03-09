@@ -19,23 +19,25 @@ export const useActivityForm = (
     [appTransports],
   );
 
+  const defaultCommunicationValues = {
+    communicationTitle: '',
+    groupType: '',
+    groupId: [],
+    transportId: '',
+    message: '',
+    subject: '',
+    audioURL: {
+      mediaURL: '',
+      fileName: '',
+    },
+    sessionId: '',
+    communicationId: '',
+  };
+
   const communicationForm = useForm<z.infer<typeof CommunicationFormSchema>>({
     resolver: zodResolver(CommunicationFormSchema),
     mode: 'onChange',
-    defaultValues: {
-      communicationTitle: '',
-      groupType: '',
-      groupId: [],
-      transportId: '',
-      message: '',
-      subject: '',
-      audioURL: {
-        mediaURL: '',
-        fileName: '',
-      },
-      sessionId: '',
-      communicationId: '',
-    },
+    defaultValues: defaultCommunicationValues,
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -60,5 +62,6 @@ export const useActivityForm = (
     CommunicationFormSchema,
     form,
     communicationForm,
+    defaultCommunicationValues,
   };
 };

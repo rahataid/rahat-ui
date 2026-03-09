@@ -1,10 +1,6 @@
 'use client';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  Back,
-  DeleteButton,
-  EditButton,
-} from 'apps/rahat-ui/src/common';
+import { Back, DeleteButton, EditButton } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
 import { Edit2, Trash2 } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -31,7 +27,10 @@ const StakeholdersDetail = () => {
     router.push(routeNav);
   };
   return (
-    <div className="p-4 compact:p-2 flex flex-col" style={{ height: 'calc(100vh - 80px)' }}>
+    <div
+      className="p-4 compact:p-2 flex flex-col"
+      style={{ height: 'calc(100vh - 80px)' }}
+    >
       {/* Header */}
       <div className="shrink-0 mb-2 compact:mb-1">
         {/* Large screens: stacked */}
@@ -49,8 +48,12 @@ const StakeholdersDetail = () => {
             className="border border-gray-300 text-gray-500 rounded px-2 py-0.5 mb-0 w-auto"
           />
           <div>
-            <h1 className="font-semibold text-base leading-tight">Stakeholders Details</h1>
-            <p className="text-muted-foreground text-xs">Detailed view of the selected stakeholder</p>
+            <h1 className="font-semibold text-base leading-tight">
+              Stakeholders Details
+            </h1>
+            <p className="text-muted-foreground text-xs">
+              Detailed view of the selected stakeholder
+            </p>
           </div>
         </div>
       </div>

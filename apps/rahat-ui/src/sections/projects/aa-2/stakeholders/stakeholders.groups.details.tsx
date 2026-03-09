@@ -100,10 +100,8 @@ const StakeholdersGroupsDetails = () => {
         groupName={groupDetails?.name || 'Stakeholder Group'}
       />
 
-      {/* Header row */}
       <div className="flex justify-between items-start mb-2 compact:mb-1 shrink-0">
         <div className="mb-2 compact:mb-0">
-          {/* Large screens: Back on top, title + subtitle below */}
           <div className="compact:hidden">
             <Back
               path={`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`}
@@ -117,7 +115,6 @@ const StakeholdersGroupsDetails = () => {
               </p>
             </div>
           </div>
-          {/* Compact screens: Back + title inline */}
           <div className="hidden compact:flex items-center gap-2 [&>div]:mb-0">
             <Back
               path={`/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`}

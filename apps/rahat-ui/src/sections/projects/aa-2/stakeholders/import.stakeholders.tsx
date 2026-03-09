@@ -524,8 +524,10 @@ export default function ImportStakeholder() {
 
   return (
     <>
-      <div className="p-4 compact:p-2 flex flex-col" style={{ height: 'calc(100vh - 80px)' }}>
-
+      <div
+        className="p-4 compact:p-2 flex flex-col"
+        style={{ height: 'calc(100vh - 80px)' }}
+      >
         {/* Header */}
         <div className="shrink-0 mb-2 compact:mb-1">
           {/* Large screens: stacked */}
@@ -543,7 +545,9 @@ export default function ImportStakeholder() {
                 path={`/projects/aa/${id}/stakeholders`}
                 className="border border-gray-300 text-gray-500 rounded px-2 py-0.5 mb-0 w-auto"
               />
-              <h1 className="font-semibold text-base leading-tight">Import Stakeholders</h1>
+              <h1 className="font-semibold text-base leading-tight">
+                Import Stakeholders
+              </h1>
             </div>
             <Button
               onClick={handleSampleDownload}
@@ -559,7 +563,11 @@ export default function ImportStakeholder() {
 
         {/* Download Sample — large screens only */}
         <div className="compact:hidden flex justify-end mb-2 shrink-0">
-          <Button onClick={handleSampleDownload} type="button" variant="outline">
+          <Button
+            onClick={handleSampleDownload}
+            type="button"
+            variant="outline"
+          >
             <CloudDownload size={22} className="mr-1" />
             Download Sample
           </Button>
@@ -581,12 +589,18 @@ export default function ImportStakeholder() {
               >
                 <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-4 py-2 compact:px-2 compact:py-1 compact:text-xs font-semibold text-sm hover:bg-gray-200 transition-colors space-x-3">
                   {selectedFile ? (
-                    <><Repeat2 size={18} className="px-0.5" /> Replace</>
+                    <>
+                      <Repeat2 size={18} className="px-0.5" /> Replace
+                    </>
                   ) : (
-                    <><Share size={18} className="px-0.5" /> Choose File</>
+                    <>
+                      <Share size={18} className="px-0.5" /> Choose File
+                    </>
                   )}
                 </span>
-                <span className="px-4 py-2 compact:px-2 compact:py-1 compact:text-xs flex-grow truncate">{fileName}</span>
+                <span className="px-4 py-2 compact:px-2 compact:py-1 compact:text-xs flex-grow truncate">
+                  {fileName}
+                </span>
               </div>
             </div>
           </div>
@@ -606,7 +620,12 @@ export default function ImportStakeholder() {
                             key={header.id}
                             className="truncate max-w-[150px] sticky top-0 bg-card compact:h-8 compact:px-2 compact:text-xs"
                           >
-                            {flexRender(header.column.columnDef.header, header.getContext()) as React.ReactNode}
+                            {
+                              flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              ) as React.ReactNode
+                            }
                           </TableHead>
                         ))}
                       </TableRow>
@@ -614,10 +633,18 @@ export default function ImportStakeholder() {
                   </TableHeader>
                   <TableBody>
                     {table.getRowModel().rows.map((row) => (
-                      <TableRow key={row.id} className="compact:[&_td]:px-2 compact:[&_td]:py-1 compact:[&_td]:text-xs">
+                      <TableRow
+                        key={row.id}
+                        className="compact:[&_td]:px-2 compact:[&_td]:py-1 compact:[&_td]:text-xs"
+                      >
                         {row.getVisibleCells().map((cell) => (
                           <React.Fragment key={cell.id}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext()) as React.ReactNode}
+                            {
+                              flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              ) as React.ReactNode
+                            }
                           </React.Fragment>
                         ))}
                       </TableRow>

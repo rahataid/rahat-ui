@@ -106,19 +106,19 @@ export default function AssignFundsForm({
   }, []);
 
   const handleAssignFunds = async (data: FundAssignmentFormValues) => {
-    if (
-      projectBalance === undefined ||
-      projectBalance < 0 ||
-      isNaN(projectBalance)
-    ) {
-      toast.error('Insufficient project balance');
-      return;
-    }
+    // if (
+    //   projectBalance === undefined ||
+    //   projectBalance < 0 ||
+    //   isNaN(projectBalance)
+    // ) {
+    //   toast.error('Insufficient project balance');
+    //   return;
+    // }
 
-    if (projectBalance < data.totalTokenAmount) {
-      toast.error('Insufficient project balance to assign funds');
-      return;
-    }
+    // if (projectBalance < data.totalTokenAmount) {
+    //   toast.error('Insufficient project balance to assign funds');
+    //   return;
+    // }
 
     const validationResult = (await validateTokenAction.mutateAsync({
       projectUUID: projectId,
@@ -269,6 +269,7 @@ export default function AssignFundsForm({
                       type="number"
                       placeholder="Write token amount"
                       {...field}
+                      value={field.value === 0 ? '' : field.value}
                       onChange={(e) => {
                         field.onChange(e.target.valueAsNumber);
                         form.trigger('tokenAmountPerBenef');

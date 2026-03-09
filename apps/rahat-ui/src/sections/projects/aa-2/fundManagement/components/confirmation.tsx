@@ -196,23 +196,17 @@ export default function Confirmation({
         </div>
       </div>
 
-      <div className="flex justify-end items-center">
-        <div className="flex space-x-2">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => router.back()}
-          >
-            Cancel
-          </Button>
-          <Button
-            className="px-10"
-            onClick={handleSubmit}
-            disabled={reserveTokenForGroups.isPending}
-          >
-            {reserveTokenForGroups.isPending ? 'Confirming...' : 'Confirm'}
-          </Button>
-        </div>
+      <div className="fixed bottom-6 right-6 z-50 flex space-x-2 rounded-lg p-3">
+        <Button type="button" variant="secondary" onClick={() => router.back()}>
+          Cancel
+        </Button>
+        <Button
+          className="px-10"
+          onClick={handleSubmit}
+          disabled={reserveTokenForGroups.isPending}
+        >
+          {reserveTokenForGroups.isPending ? 'Confirming...' : 'Confirm'}
+        </Button>
       </div>
     </div>
   );

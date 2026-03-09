@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, CheckCircle2, X } from 'lucide-react';
+import { AlertCircle, CheckCircle2, ChevronDown, X } from 'lucide-react';
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -342,12 +342,18 @@ export default function PayoutFundManagementForm({
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col space-y-2">
-              <Label className="text-sm font-medium">Beneficiary Group</Label>
-              <div className="flex items-center h-10 px-3 rounded-md border bg-muted/50 text-sm text-muted-foreground">
+            <FormItem className="flex flex-col space-y-3 w-full">
+              <FormLabel className="mt-1">Beneficiary Group</FormLabel>
+              <Button
+                type="button"
+                variant="outline"
+                disabled
+                className="w-full justify-between font-normal text-muted-foreground bg-gray-200 cursor-not-allowed opacity-100"
+              >
                 {groupName}
-              </div>
-            </div>
+                <ChevronDown className="opacity-50" />
+              </Button>
+            </FormItem>
 
             {formState.method && formState.mode === PayoutMode.OFFLINE && (
               <FormField

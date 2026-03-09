@@ -64,6 +64,7 @@ import { z } from 'zod';
 import { createCommunicationFormSchema } from '../schemas/activity.schemas';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { renderGroups } from './renderGroup';
+import { UseBooleanReturnType } from 'apps/rahat-ui/src/hooks/use-boolean';
 
 type CommunicationFormData = z.infer<
   ReturnType<typeof createCommunicationFormSchema>
@@ -76,6 +77,7 @@ interface AddCommunicationFormProps {
   onSave: VoidFunction;
   setOpen: Dispatch<SetStateAction<boolean>>;
   isMultiSelect?: boolean;
+  editMode?: UseBooleanReturnType;
 }
 
 export default function AddCommunicationForm({
@@ -85,6 +87,7 @@ export default function AddCommunicationForm({
   onSave,
   setOpen,
   isMultiSelect = false,
+  editMode,
 }: AddCommunicationFormProps) {
   const { id: projectId } = useParams();
   const [contentType, setContentType] = useState<ValidationContent | ''>('');
@@ -213,10 +216,11 @@ export default function AddCommunicationForm({
     if (!isAllValidated) return;
 
     onSave();
-    form.reset();
+    // form.reset();
     form.setValue('audioURL', { fileName: '', mediaURL: '' });
     fileUpload.reset();
     setOpen(false);
+    editMode?.onFalse();
   };
 
   const clearCommunicationForm = () => {
@@ -353,6 +357,12 @@ export default function AddCommunicationForm({
   useEffect(() => {
     if (!transportData) return;
 
+    if (!groupId.length) {
+      setIsEmailValidated(true);
+      form.clearErrors('groupId');
+      return;
+    }
+
     if (transportData?.name === 'VOICE') {
       // Clear any previous errors if transport doesn't require email
       form.clearErrors('groupId');
@@ -476,7 +486,7 @@ export default function AddCommunicationForm({
                       className: 'outline-none',
                     }}
                     className="max-h-20 overflow-y-auto"
-                    dropdownClassName="max-h-36 overflow-auto w-80"
+                    dropdownClassName="max-h-36 w-80"
                     onChange={(options: Option[]) => {
                       field.onChange(options.map((opt: Option) => opt.value));
                     }}
@@ -776,7 +786,7 @@ export default function AddCommunicationForm({
           onClick={clearCommunicationForm}
           type="button"
         >
-          Remove
+          {editMode?.value ? 'Reset' : 'Clear'}
         </Button>
         <Button
           variant="outline"

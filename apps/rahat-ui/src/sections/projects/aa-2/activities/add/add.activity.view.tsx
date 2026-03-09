@@ -82,6 +82,7 @@ export const DurationData = [
 
 export default function AddActivities() {
   const addCommunicationOpen = useBoolean(false);
+  const editCommunicationOpen = useBoolean();
   const templateConfirmDialog = useBoolean(false);
   const pendingTemplateValue = useBoolean(false);
   const audioUploading = useBoolean(false);
@@ -134,10 +135,8 @@ export default function AddActivities() {
   });
   const appTransports = useListAllTransports();
 
-  const { FormSchema, form, communicationForm } = useActivityForm(
-    phases,
-    appTransports,
-  );
+  const { FormSchema, form, communicationForm, defaultCommunicationValues } =
+    useActivityForm(phases, appTransports);
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -243,6 +242,8 @@ export default function AddActivities() {
       communicationId: communicationFormData?.communicationId || '',
     };
     setCommunicationData([...communicationData, newCommunication]);
+
+    communicationForm.reset(defaultCommunicationValues);
   };
   // Handle to remove the communication data from the array stored in a local state
   const handleRemove = (index: number) => {
@@ -846,7 +847,7 @@ export default function AddActivities() {
                 <Minus className="ml-2" size={16} strokeWidth={3} />
               )}
             </Button>
-            {addCommunicationOpen.value && (
+            {(addCommunicationOpen.value || editCommunicationOpen.value) && (
               <AddCommunicationForm
                 form={communicationForm}
                 setOpen={addCommunicationOpen.setValue}
@@ -854,6 +855,7 @@ export default function AddActivities() {
                 setLoading={audioUploading.setValue}
                 appTransports={appTransports}
                 isMultiSelect={true}
+                editMode={editCommunicationOpen}
               />
             )}
 
@@ -862,8 +864,8 @@ export default function AddActivities() {
               communicationData={communicationData}
               appTransports={appTransports}
               onRemove={handleRemove}
-              setOpen={addCommunicationOpen.setValue}
-              open={addCommunicationOpen.value}
+              setOpen={editCommunicationOpen.setValue}
+              open={editCommunicationOpen.value}
             />
           </ScrollArea>
         </div>

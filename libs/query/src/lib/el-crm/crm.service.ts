@@ -158,3 +158,26 @@ export const useCustomerStats = (uuid: UUID) => {
 
   return query;
 };
+
+export const useSingleFailedBatch = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['single-failed-batch', uuid, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'elProject.crm.getOneFailedBatch',
+          payload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return {
+    ...query,
+    failedBatch: query.data?.data || [],
+  };
+};

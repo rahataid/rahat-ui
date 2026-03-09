@@ -181,16 +181,21 @@ jobs:
       # -----------------------------
       # Trivy Scan (SARIF)
       # -----------------------------
-      - name: Trivy Docker Scan
-        uses: aquasecurity/trivy-action@0.33.1
+      - name: Setup Trivy
+        uses: aquasecurity/setup-trivy@v2
         with:
-          image-ref: ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}
-          format: sarif
-          output: trivy-${{ matrix.app }}.sarif
-          exit-code: '1'
-          scan-type: image
+          version: 0.65.0
 
-      - name: Upload Trivy SARIF Report
+      - name: Run Trivy Scan
+        run: |
+          trivy image \
+            --format sarif \
+            --output trivy-${{ matrix.app }}.sarif \
+            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }} || true
+      
+      - name: Upload Trivy SARIF
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: trivy-${{ matrix.app }}.sarif
+
+

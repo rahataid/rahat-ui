@@ -350,7 +350,7 @@ export default function AddActivities() {
       title: payload.title,
       description: payload.description,
       responsibility: payload.managerId,
-      source: payload.source,
+      responsibleStation: payload.responsibleStation,
       leadTime: payload.leadTime,
       isAutomated: payload.isAutomated,
       activityDocuments: payload.activityDocuments,
@@ -543,7 +543,7 @@ export default function AddActivities() {
 
                 <FormField
                   control={form.control}
-                  name="source"
+                  name="responsibleStation"
                   render={({ field }) => {
                     return (
                       <FormItem>

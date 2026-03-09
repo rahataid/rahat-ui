@@ -77,9 +77,11 @@ export default function useActivitiesTableColumn() {
       cell: ({ row }) => <div>{row.getValue('responsibility')}</div>,
     },
     {
-      accessorKey: 'source',
+      accessorKey: 'responsibleStation',
       header: 'Responsible Station ',
-      cell: ({ row }) => <TruncatedCell text={row.getValue('source')} />,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('responsibleStation') || 'N/A'} />
+      ),
     },
     {
       accessorKey: 'status',

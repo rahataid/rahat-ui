@@ -44,7 +44,7 @@ export const useActivityForm = (
     defaultValues: {
       title: '',
       responsibility: '',
-      source: '',
+      responsibleStation: '',
       phaseId: '',
       categoryId: '',
       leadTime: '',

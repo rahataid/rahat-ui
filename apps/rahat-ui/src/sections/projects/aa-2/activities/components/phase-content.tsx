@@ -14,7 +14,7 @@ import { useParams, useRouter } from 'next/navigation';
 
 interface Phase {
   id: string;
-  source: string;
+  responsibleStation: string;
   status: string;
   leadTime: string;
   phase?: string;
@@ -82,7 +82,7 @@ export default function PhaseContent({
                 key={index}
                 id={phase.id}
                 title={phase?.title}
-                location={phase.source}
+                responsibleStation={phase.responsibleStation}
                 responsibility={phase.responsibility}
                 onUpdateStatus={() => handleUpdateStatus(phase.id)}
                 status={phase.status}

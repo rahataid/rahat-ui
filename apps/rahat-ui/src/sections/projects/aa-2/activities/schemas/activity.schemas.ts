@@ -9,7 +9,9 @@ const activityDocumentSchema = z.object({
 const baseActivityFormSchema = z.object({
   title: z.string().min(2, { message: 'Title must be at least 4 character' }),
   responsibility: z.string().min(2, { message: 'Please enter responsibility' }),
-  source: z.string().min(2, { message: 'Please enter source' }),
+  responsibleStation: z
+    .string()
+    .min(2, { message: 'Please enter responsible station' }),
   phaseId: z.string().min(1, { message: 'Please select phase' }),
   categoryId: z.string().min(1, { message: 'Please select category' }),
   leadTime: z.string().optional(),

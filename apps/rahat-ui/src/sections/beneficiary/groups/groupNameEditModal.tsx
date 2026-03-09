@@ -3,7 +3,6 @@
 import { useUpdateBeneficiaryGroup } from '@rahat-ui/query';
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -95,13 +94,15 @@ export default function GroupNameEditModal({
             />
 
             <DialogFooter className="sm:justify-end">
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  Cancel
-                </Button>
-              </DialogClose>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => form.reset()}
+              >
+                Reset
+              </Button>
               <Button type="submit" disabled={updateBeneficiaryGroup.isPending}>
-                {updateBeneficiaryGroup.isPending ? 'Saving...' : 'Save'}
+                {updateBeneficiaryGroup.isPending ? 'Saving...' : 'Confirm'}
               </Button>
             </DialogFooter>
           </form>

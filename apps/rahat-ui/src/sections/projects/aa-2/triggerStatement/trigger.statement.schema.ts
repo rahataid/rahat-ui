@@ -43,23 +43,24 @@ const fieldLabels: Record<keyof typeof SOURCE_CONFIG, string> = {
 
 const emptyStringToUndefined = (val: unknown) => (val === '' ? undefined : val);
 
+const sourceSchema = z.union([z.enum(sourceValues), z.literal('')]).optional();
+
+const operatorSchema = z
+  .union([z.enum(operatorValues), z.literal('')])
+  .optional();
+
+const valueSchema = z
+  .union([z.coerce.number().finite(), z.literal('')])
+  .optional();
+
 export const triggerStatementSchemaBase = z
   .object({
-    source: z.preprocess(
-      emptyStringToUndefined,
-      z.enum(sourceValues).optional(),
-    ),
+    source: sourceSchema,
     sourceSubType: z.string().optional(),
     stationId: z.string().optional(),
     stationName: z.string().optional(),
-    operator: z.preprocess(
-      emptyStringToUndefined,
-      z.enum(operatorValues).optional(),
-    ),
-    value: z.preprocess(
-      emptyStringToUndefined,
-      z.coerce.number().finite().optional(),
-    ),
+    operator: operatorSchema,
+    value: valueSchema,
     expression: z.string().trim().optional(),
   })
   .superRefine((data, ctx) => {
@@ -98,7 +99,12 @@ export const triggerStatementSchemaBase = z
       });
     }
 
-    if (data.sourceSubType && (data.value === undefined || isNaN(data.value))) {
+    if (
+      data.sourceSubType &&
+      (data.value === undefined ||
+        data.value === '' ||
+        (typeof data.value === 'number' && isNaN(data.value)))
+    ) {
       ctx.addIssue({
         path: ['value'],
         message: 'Value is required',
@@ -106,7 +112,7 @@ export const triggerStatementSchemaBase = z
       });
     }
 
-    if (data.value !== undefined && !isNaN(data.value)) {
+    if (typeof data.value === 'number' && !isNaN(data.value)) {
       if (!Number.isInteger(data.value)) {
         ctx.addIssue({
           path: ['value'],

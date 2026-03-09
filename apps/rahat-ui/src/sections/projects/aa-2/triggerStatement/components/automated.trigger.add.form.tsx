@@ -214,8 +214,8 @@ export default function AddAutomatedTriggerForm({
                         form.setValue('triggerStatement.sourceSubType', '');
                         form.setValue('triggerStatement.stationId', '');
                         form.setValue('triggerStatement.stationName', '');
-                        form.setValue('triggerStatement.operator', undefined);
-                        form.setValue('triggerStatement.value', undefined);
+                        form.setValue('triggerStatement.operator', '');
+                        form.setValue('triggerStatement.value', '');
                         form.setValue('triggerStatement.expression', '');
                         const [dataSource, type] = v.includes(':')
                           ? v.split(':')
@@ -265,14 +265,8 @@ export default function AddAutomatedTriggerForm({
                           <Select
                             onValueChange={(v) => {
                               field.onChange(v);
-                              form.setValue(
-                                'triggerStatement.operator',
-                                undefined,
-                              );
-                              form.setValue(
-                                'triggerStatement.value',
-                                undefined,
-                              );
+                              form.setValue('triggerStatement.operator', '');
+                              form.setValue('triggerStatement.value', '');
                               form.setValue('triggerStatement.expression', '');
                             }}
                             value={field.value}

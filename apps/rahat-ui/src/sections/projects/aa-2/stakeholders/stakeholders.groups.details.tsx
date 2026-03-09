@@ -146,7 +146,6 @@ const StakeholdersGroupsDetails = () => {
         </div>
       </div>
 
-      {/* Minimal stats card */}
       <div className="flex gap-4 mb-3 compact:mb-2 shrink-0">
         <div className="flex items-center gap-3 border rounded-sm px-4 py-2 compact:px-3 compact:py-1.5 bg-card">
           <div className="bg-secondary rounded-full p-1.5 compact:p-1">
@@ -166,7 +165,6 @@ const StakeholdersGroupsDetails = () => {
         </div>
       </div>
 
-      {/* Table card - flex-1 so it fills remaining vertical space */}
       <div className="p-4 compact:p-2 rounded-sm border flex flex-col flex-1 min-h-0">
         <div className="flex justify-between space-x-2 items-center mb-3 compact:mb-2 shrink-0">
           <SearchInput

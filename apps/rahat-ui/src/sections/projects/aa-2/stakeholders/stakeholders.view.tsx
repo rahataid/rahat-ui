@@ -149,8 +149,8 @@ function StakeholdersView() {
       </div>
       <TabsContent value="stakeholders">
         <div className="px-4 compact:px-2">
-          <div className="p-4 compact:p-2 rounded-sm border">
-            <div className="flex items-center mb-2 gap-2 compact:gap-1">
+          <div className="p-4 compact:p-2 rounded-sm border flex flex-col" style={{ height: 'calc(100vh - 220px)' }}>
+            <div className="flex items-center mb-2 gap-2 compact:gap-1 shrink-0">
               <SearchInput
                 className="w-full compact:[&_input]:h-7 compact:[&_input]:text-xs"
                 name="name"
@@ -187,29 +187,31 @@ function StakeholdersView() {
               </RoleAuth>
             </div>
             {/* Compact table cells at <1000px */}
-            <div className="compact:[&_th]:h-8 compact:[&_th]:px-2 compact:[&_th]:text-xs compact:[&_td]:px-2 compact:[&_td]:py-1 compact:[&_td]:text-xs">
+            <div className="flex-1 min-h-0 overflow-auto compact:[&_th]:h-8 compact:[&_th]:px-2 compact:[&_th]:text-xs compact:[&_td]:px-2 compact:[&_td]:py-1 compact:[&_td]:text-xs">
               <DemoTable table={table} message="No Stakeholders Available" />
             </div>
 
-            <CustomPagination
-              meta={
-                stakeholdersMeta || {
-                  total: 0,
-                  currentPage: 0,
-                  lastPage: 0,
-                  perPage: 0,
-                  next: null,
-                  prev: null,
+            <div className="shrink-0">
+              <CustomPagination
+                meta={
+                  stakeholdersMeta || {
+                    total: 0,
+                    currentPage: 0,
+                    lastPage: 0,
+                    perPage: 0,
+                    next: null,
+                    prev: null,
+                  }
                 }
-              }
-              handleNextPage={setNextPage}
-              handlePrevPage={setPrevPage}
-              handlePageSizeChange={setPerPage}
-              currentPage={pagination.page}
-              perPage={pagination.perPage}
-              setPagination={setPagination}
-              total={stakeholdersMeta?.lastPage || 0}
-            />
+                handleNextPage={setNextPage}
+                handlePrevPage={setPrevPage}
+                handlePageSizeChange={setPerPage}
+                currentPage={pagination.page}
+                perPage={pagination.perPage}
+                setPagination={setPagination}
+                total={stakeholdersMeta?.lastPage || 0}
+              />
+            </div>
           </div>
         </div>
       </TabsContent>

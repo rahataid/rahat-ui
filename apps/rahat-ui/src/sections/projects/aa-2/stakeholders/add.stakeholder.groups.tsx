@@ -225,7 +225,6 @@ const UpdateOrAddStakeholdersGroup = () => {
         >
           {/* Header */}
           <div className="shrink-0 mb-3 compact:mb-1">
-            {/* Compact screens: Back + title inline */}
             <div className="hidden compact:flex items-center gap-2 compact:[&>div]:mb-0">
               <Back
                 path={
@@ -264,7 +263,6 @@ const UpdateOrAddStakeholdersGroup = () => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  {/* Large screen: stacked label + input */}
                   <div className="compact:hidden">
                     <Label>Stakeholder Group Name</Label>
                     <FormControl>
@@ -275,7 +273,6 @@ const UpdateOrAddStakeholdersGroup = () => {
                       />
                     </FormControl>
                   </div>
-                  {/* Compact screen: label + input inline */}
                   <div className="hidden compact:flex items-center gap-2">
                     <Label className="text-xs shrink-0 whitespace-nowrap">
                       Group Name
@@ -294,7 +291,6 @@ const UpdateOrAddStakeholdersGroup = () => {
             />
           </div>
 
-          {/* Table card - fills remaining height */}
           <div className="rounded-md border p-4 compact:p-2 flex flex-col flex-1 min-h-0">
             <div className="shrink-0 mb-2 compact:mb-1">
               <Heading

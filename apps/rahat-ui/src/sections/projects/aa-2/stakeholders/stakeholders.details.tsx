@@ -31,9 +31,7 @@ const StakeholdersDetail = () => {
       className="p-4 compact:p-2 flex flex-col"
       style={{ height: 'calc(100vh - 80px)' }}
     >
-      {/* Header */}
       <div className="shrink-0 mb-2 compact:mb-1">
-        {/* Large screens: stacked */}
         <div className="compact:hidden">
           <Back path={routeNav} />
           <h1 className="font-semibold text-[28px]">Stakeholders Details</h1>
@@ -41,7 +39,6 @@ const StakeholdersDetail = () => {
             Detailed view of the selected stakeholder
           </p>
         </div>
-        {/* Compact screens: inline */}
         <div className="hidden compact:flex items-center gap-2 [&>div]:mb-0">
           <Back
             path={routeNav}

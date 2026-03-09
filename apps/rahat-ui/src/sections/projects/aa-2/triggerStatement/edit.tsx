@@ -288,14 +288,15 @@ export default function EditTrigger() {
 
     formHandlers[triggerType as 'manual' | 'automated']?.();
   };
-  React.useEffect(() => {
+
+  const getOriginalFormData = () => {
     if (triggerType === 'manual') {
-      manualForm.reset({
+      return {
         title: trigger?.title,
         description: trigger?.description,
         isMandatory: !trigger?.isMandatory,
-      });
-    } else if (triggerType === 'automated') {
+      };
+    } else {
       const triggerSource = trigger?.triggerStatement?.source;
       const REVERSE_SOURCE_MAPPING: Record<string, string> = {
         water_level_m: 'dhm:waterlevel',
@@ -321,7 +322,7 @@ export default function EditTrigger() {
           ? GLOFAS_LEGACY_MAPPING[rawSourceSubType]
           : rawSourceSubType;
 
-      automatedForm.reset({
+      return {
         title: trigger?.title,
         source: formSource,
         isMandatory: !trigger?.isMandatory,
@@ -343,9 +344,27 @@ export default function EditTrigger() {
         forecast: trigger?.triggerStatement?.forecast,
         daysToConsiderPrior: trigger?.triggerStatement?.daysToConsiderPrior,
         forecastStatus: trigger?.triggerStatement?.forecastStatus,
-      });
+      };
     }
-  }, [trigger, triggerType, manualForm, automatedForm]);
+  };
+
+  const handleReset = () => {
+    const originalData = getOriginalFormData();
+    if (triggerType === 'automated') {
+      automatedForm.reset(originalData);
+    } else {
+      manualForm.reset(originalData);
+    }
+  };
+
+  React.useEffect(() => {
+    const originalData = getOriginalFormData();
+    if (triggerType === 'manual') {
+      manualForm.reset(originalData);
+    } else if (triggerType === 'automated') {
+      automatedForm.reset(originalData);
+    }
+  }, [trigger, triggerType]);
 
   if (isLoading || isLoadingDataSourceTypes) {
     return <LoaderRahat />;
@@ -385,15 +404,7 @@ export default function EditTrigger() {
               type="button"
               variant="outline"
               className="w-40 mr-2"
-              onClick={() => {
-                if (triggerType === 'automated') {
-                  automatedForm.reset();
-                } else {
-                  manualForm.reset();
-                }
-
-                // router.push(triggerDetailPage);
-              }}
+              onClick={handleReset}
             >
               Reset
             </Button>

@@ -103,19 +103,22 @@ export default function AddAutomatedTriggerForm({
     }
   }, [source, form]);
 
+  // Update selectedSource when source changes (handles both initial load and reset)
   React.useEffect(() => {
-    if (
-      source &&
-      isEditing &&
-      (!selectedSource.dataSource || !selectedSource.type)
-    ) {
+    if (source && isEditing) {
       const [dataSource, type] = source.includes(':')
         ? source.split(':')
         : [source, null];
       const mappedType = type === 'waterlevel' ? 'water_level' : type;
-      setSelectedSource({ dataSource, type: mappedType });
+      const currentSourceKey = `${selectedSource.dataSource}:${selectedSource.type}`;
+      const newSourceKey = `${dataSource}:${mappedType}`;
+
+      // Only update if source actually changed to avoid infinite loops
+      if (currentSourceKey !== newSourceKey) {
+        setSelectedSource({ dataSource, type: mappedType });
+      }
     }
-  }, [source, isEditing, selectedSource.dataSource, selectedSource.type]);
+  }, [source, isEditing]);
 
   React.useEffect(() => {
     if (triggerSourceSubType && triggerOperator && triggerValue) {

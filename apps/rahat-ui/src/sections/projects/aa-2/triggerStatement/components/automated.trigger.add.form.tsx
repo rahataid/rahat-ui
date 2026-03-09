@@ -100,17 +100,8 @@ export default function AddAutomatedTriggerForm({
         'triggerStatement.source',
         SOURCE_MAPPING[source as keyof typeof SOURCE_MAPPING],
       );
-
-      if (!isEditing) {
-        form.setValue('triggerStatement.sourceSubType', '');
-        form.setValue('triggerStatement.stationId', '');
-        form.setValue('triggerStatement.stationName', '');
-        form.setValue('triggerStatement.operator', undefined);
-        form.setValue('triggerStatement.value', undefined);
-        form.setValue('triggerStatement.expression', '');
-      }
     }
-  }, [source, form, isEditing]);
+  }, [source, form]);
 
   React.useEffect(() => {
     if (
@@ -220,6 +211,12 @@ export default function AddAutomatedTriggerForm({
                     <Select
                       onValueChange={(v) => {
                         field.onChange(v);
+                        form.setValue('triggerStatement.sourceSubType', '');
+                        form.setValue('triggerStatement.stationId', '');
+                        form.setValue('triggerStatement.stationName', '');
+                        form.setValue('triggerStatement.operator', undefined);
+                        form.setValue('triggerStatement.value', undefined);
+                        form.setValue('triggerStatement.expression', '');
                         const [dataSource, type] = v.includes(':')
                           ? v.split(':')
                           : [v, null];
@@ -266,7 +263,18 @@ export default function AddAutomatedTriggerForm({
                       return (
                         <FormItem>
                           <Select
-                            onValueChange={field.onChange}
+                            onValueChange={(v) => {
+                              field.onChange(v);
+                              form.setValue(
+                                'triggerStatement.operator',
+                                undefined,
+                              );
+                              form.setValue(
+                                'triggerStatement.value',
+                                undefined,
+                              );
+                              form.setValue('triggerStatement.expression', '');
+                            }}
                             value={field.value}
                             key={field.value}
                           >

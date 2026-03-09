@@ -273,7 +273,7 @@ export default function EditTrigger() {
       projectUUID: projectId,
       triggerUpdatePayload: payload,
     });
-    router.back(); 
+    router.back();
   };
 
   const handleEditTriggers = () => {
@@ -327,7 +327,7 @@ export default function EditTrigger() {
         isMandatory: !trigger?.isMandatory,
         description: trigger?.description || '',
         triggerStatement: {
-          source: trigger?.triggerStatement?.source || '',
+          source: trigger?.triggerStatement?.source || undefined,
           sourceSubType: correctedSourceSubType,
           stationId: trigger?.triggerStatement?.stationId?.toString() || '',
           stationName: trigger?.triggerStatement?.stationName || '',

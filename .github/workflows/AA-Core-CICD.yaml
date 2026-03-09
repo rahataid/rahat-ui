@@ -63,6 +63,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
         
       - name: Install build dependencies
         run: |
@@ -73,6 +75,7 @@ jobs:
             make \
             g++ \
             gcc
+    
       # -----------------------------
       # Node + PNPM Setup
       # -----------------------------
@@ -93,10 +96,33 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      # -----------------------------
+      # Sonarqube Setup
+      # -----------------------------
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ matrix.app }}
+            -Dsonar.projectName=${{ matrix.app }}
+            -Dsonar.sources=apps/${{ matrix.app }}
+
+      # -----------------------------
+      # Sonarqube Quality Gate
+      # -----------------------------
+      - name: Sonar Quality Gate
+        uses: sonarsource/sonarqube-quality-gate-action@v1
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          
       - name: Build application
         run: pnpm nx build ${{ matrix.app }}
     
-    # -----------------------------
+      # -----------------------------
       # Import Secrets from Vault
       # -----------------------------
       - name: Import Secrets

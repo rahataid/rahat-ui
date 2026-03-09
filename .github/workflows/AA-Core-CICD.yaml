@@ -106,9 +106,9 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
           args: >
-            -Dsonar.projectKey=${{ matrix.app }}
-            -Dsonar.projectName=${{ matrix.app }}
-            -Dsonar.sources=apps/${{ matrix.app }}
+            -Dsonar.projectKey=rahat-ui
+            -Dsonar.projectName=rahat-ui
+            -Dsonar.sources=apps/rahat-ui,apps/community-tool-ui
             -Dsonar.sourceEncoding=UTF-8
 
       # -----------------------------

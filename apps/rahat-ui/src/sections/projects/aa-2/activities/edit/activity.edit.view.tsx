@@ -425,7 +425,7 @@ export default function EditActivity() {
     form.reset({
       title: activityDetail?.title,
       responsibility: activityDetail?.managerId,
-      source: activityDetail?.phase?.source?.source[0],
+      responsibleStation: activityDetail?.responsibleStation,
       phaseId: activityDetail?.phaseId,
       categoryId: activityDetail?.categoryId,
       leadTime: activityDetail?.leadTime,
@@ -594,7 +594,7 @@ export default function EditActivity() {
 
                   <FormField
                     control={form.control}
-                    name="source"
+                    name="responsibleStation"
                     render={({ field }) => {
                       return (
                         <FormItem>

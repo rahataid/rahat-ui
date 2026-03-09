@@ -25,7 +25,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
 const FormSchema = z.object({
-  name: z.string().min(1, 'Group name is required').max(100),
+  name: z.string().min(1, 'Group name is required').max(100).trim(),
 });
 
 type EditDialogProps = {

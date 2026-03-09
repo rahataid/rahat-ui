@@ -100,7 +100,7 @@ jobs:
       # Sonarqube Setup
       # -----------------------------
       - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@v4
+        uses: sonarsource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -109,6 +109,7 @@ jobs:
             -Dsonar.projectKey=${{ matrix.app }}
             -Dsonar.projectName=${{ matrix.app }}
             -Dsonar.sources=apps/${{ matrix.app }}
+            -Dsonar.sourceEncoding=UTF-8
 
       # -----------------------------
       # Sonarqube Quality Gate

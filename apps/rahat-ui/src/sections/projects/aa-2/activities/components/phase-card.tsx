@@ -104,10 +104,12 @@ export default function PhaseCard({
           <TooltipWrapper
             tip={`Responsible Station: ${responsibleStation ?? 'N/A'}`}
           >
-            <span>{responsibleStation ?? 'N/A'}</span>
+            {responsibleStation && responsibleStation.length > 20
+              ? `${responsibleStation.substring(0, 20)}...`
+              : responsibleStation ?? 'N/A'}
           </TooltipWrapper>
-          <span>•</span>
           <TooltipWrapper tip={`Lead Time: ${leadTime ?? 'N/A'}`}>
+            {leadTime && <span className="text-gray-400">&bull;</span>}
             <span>{leadTime ?? 'N/A'}</span>
           </TooltipWrapper>
         </div>

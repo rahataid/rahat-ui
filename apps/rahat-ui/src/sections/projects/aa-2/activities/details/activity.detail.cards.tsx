@@ -95,15 +95,19 @@ export default function ActivityDetailCards({
               }`}
             >
               <span className="cursor-pointer">
-                {activityDetail?.responsibleStation ?? 'N/A'}
+                {activityDetail?.responsibleStation &&
+                activityDetail.responsibleStation.length > 20
+                  ? `${activityDetail.responsibleStation.substring(0, 20)}...`
+                  : activityDetail?.responsibleStation ?? 'N/A'}
               </span>
             </TooltipWrapper>
-            <span>&bull;</span>
+
             <TooltipWrapper
-              tip={`Lead Time: ${activityDetail?.leadTime || 'N/A'}`}
+              tip={`Lead Time: ${activityDetail?.leadTime ?? 'N/A'}`}
             >
               <span className="cursor-pointer">
-                {activityDetail?.leadTime || 'N/A'}
+                {activityDetail?.leadTime && <span>&bull;</span>}
+                {activityDetail?.leadTime ?? 'N/A'}
               </span>
             </TooltipWrapper>
           </div>

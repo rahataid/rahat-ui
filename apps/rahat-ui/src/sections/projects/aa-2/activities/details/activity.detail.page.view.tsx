@@ -135,7 +135,7 @@ export default function ActivitiesDetailView() {
               roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
               hasContent={false}
             >
-              <TooltipWrapper tip="Update Status">
+              <TooltipWrapper tip="Update Activity Status">
                 <IconLabelBtn
                   Icon={RefreshCcw}
                   handleClick={() =>

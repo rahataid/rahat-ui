@@ -144,7 +144,7 @@ export default function useActivitiesTableColumn() {
             >
               <TooltipComponent
                 Icon={RefreshCcw}
-                tip="Update"
+                tip="Update Activity Status"
                 iconStyle="hover:text-primary cursor-pointer"
                 handleOnClick={() =>
                   handleUpdateStatusIconClick(row.original.id)

@@ -1,8 +1,7 @@
 'use client';
-import { DataCard, Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
+import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import RecentPayout from './component/recent.payout';
 import {
   useFetchTokenStatsStellar,
   usePayouts,
@@ -11,7 +10,6 @@ import {
 import { UUID } from 'crypto';
 import { useMemo } from 'react';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
-import DynamicPieChart from '../../components/dynamicPieChart';
 import {
   Tabs,
   TabsContent,
@@ -20,6 +18,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 import PayoutTransactionList from './table/payoutTransactionList';
+import PayoutOverview from './component/payout-overview';
 
 export default function PayoutView() {
   const params = useParams();
@@ -95,7 +94,7 @@ export default function PayoutView() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="payoutOverview">
-            <div className="mt-4">
+            {/* <div className="mt-4">
               <Heading
                 title={`Payout Overview`}
                 description="Overview of your payouts"
@@ -165,7 +164,12 @@ export default function PayoutView() {
                   <RecentPayout payouts={payouts?.data} />
                 </div>
               </div>
-            </div>
+            </div> */}
+            <PayoutOverview
+              payoutStats={payoutStats}
+              statsPayout={statsPayout}
+              payouts={payouts || { data: [] }}
+            />
           </TabsContent>
           <TabsContent value="payoutList">
             <RoleAuth

@@ -7,8 +7,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  call-core:
-    uses: rahataid/rahat-ui/.github/workflows/AA-Core-CICD.yaml@test-load
+  call-ci:
+    uses: rahataid/rahat-ui/.github/workflows/AA-Core-CI.yaml@test-load
+    with:
+      apps_to_build: rahat-ui,community-tool-ui
+      vault_path: testload
+      tag_suffix: test-load
+    secrets: inherit
+
+  call-cd:
+    needs: call-ci
+    uses: rahataid/rahat-ui/.github/workflows/AA-Core-CD.yaml@test-load
     with:
       apps_to_build: rahat-ui,community-tool-ui
       vault_path: testload

@@ -155,16 +155,17 @@ export const useUpdateBeneficiaryGroup = (callbacks?: {
     mutationFn: (payload: any) => updateBeneficiaryGroup(payload),
     onSuccess: (_data, variables) => {
       window.location.reload();
-      qc.removeQueries({
-        queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
-        exact: true,
-      });
-      qc.invalidateQueries({
-        queryKey: [TAGS.GET_BENEFICIARIES_GROUPS],
-      });
-      qc.invalidateQueries({
-        queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
-      });
+      // TODO: This needs to be fixed
+      // qc.removeQueries({
+      //   queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
+      //   exact: true,
+      // });
+      // qc.invalidateQueries({
+      //   queryKey: [TAGS.GET_BENEFICIARIES_GROUPS],
+      // });
+      // qc.invalidateQueries({
+      //   queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
+      // });
 
       toast.fire({
         title: 'Beneficiary Group updated successfully.',
@@ -360,14 +361,15 @@ export const useUpdateGroupPropose = () => {
       updateGroupPropose(payload.uuid, payload.selectedPurpose),
     onSuccess: async (_data, variables) => {
       window.location.reload();
-      qc.removeQueries({
-        queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
-        exact: true,
-      });
-      await qc.invalidateQueries({
-        queryKey: ['GET_BENEFICIARY_GROUP', variables?.uuid],
-        exact: false,
-      });
+      // TODO: This needs to be fixed
+      // qc.removeQueries({
+      //   queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
+      //   exact: true,
+      // });
+      // await qc.invalidateQueries({
+      //   queryKey: ['GET_BENEFICIARY_GROUP', variables?.uuid],
+      //   exact: false,
+      // });
       toast.fire({
         title: 'Group propose updated successfully',
         icon: 'success',

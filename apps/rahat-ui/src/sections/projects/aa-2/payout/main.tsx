@@ -13,11 +13,20 @@ import { UUID } from 'crypto';
 import { useMemo } from 'react';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import DynamicPieChart from '../../components/dynamicPieChart';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { useActiveTab } from 'apps/rahat-ui/src/utils/useActivetab';
 
 export default function PayoutView() {
   const params = useParams();
   const projectID = params.id as UUID;
   const route = useRouter();
+  const { activeTab, setActiveTab } = useActiveTab('payout');
+
   const { data: payouts } = usePayouts(projectID, {
     page: 1,
     perPage: 999,
@@ -49,11 +58,32 @@ export default function PayoutView() {
 
   return (
     <div className="p-4 ">
+      <Heading title="Payout" description="Track all the payout reports here" />
       <div className="flex justify-between items-center space-x-4">
-        <Heading
-          title="Payout"
-          description="Track all the payout reports here"
-        />
+        <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="border bg-secondary rounded">
+            <TabsTrigger
+              className="w-full data-[state=active]:bg-white"
+              value="vendorList"
+            >
+              Payout
+            </TabsTrigger>
+            <TabsTrigger
+              className="w-full data-[state=active]:bg-white"
+              value="vendorRedemptionList"
+            >
+              Payout List
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="payout">
+            {/* <VendorList id={id} /> */}
+            <h1>Hello from Payout</h1>
+          </TabsContent>
+          <TabsContent value="payoutList">
+            {/* <VendorRedemptionList id={id} /> */}
+            <h1>Hello from Payout List</h1>
+          </TabsContent>
+        </Tabs>
         <div className="flex flex-end gap-2">
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}

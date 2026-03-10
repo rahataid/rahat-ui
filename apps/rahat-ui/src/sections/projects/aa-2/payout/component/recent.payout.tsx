@@ -17,14 +17,14 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
     <>
       <div className="flex justify-between mb-2">
         <h1 className="text-lg font-medium">Recent Payout</h1>
-        <Button
+        {/* <Button
           variant={'link'}
           onClick={() => route.push(`/projects/aa/${id}/payout/list`)}
           disabled={!payouts?.length}
         >
           View all Payout List
           <ArrowRight className="ml-1" size={14} strokeWidth={1.5} />
-        </Button>
+        </Button> */}
       </div>
 
       <div className="h-[calc(100vh-400px)] overflow-y-scroll overflow-x-hidden scrollbar-hidden">

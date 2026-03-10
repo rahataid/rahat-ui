@@ -92,15 +92,16 @@ export default function PayoutTransactionList() {
     [filters],
   );
   return (
-    <div className="p-4">
+    <div className="mt-4">
       <div className="flex flex-col space-y-0">
-        <Back path={`/projects/aa/${projectID}/payout`} />
+        {/* <Back path={`/projects/aa/${projectID}/payout`} /> */}
 
-        <div className="mt-4 flex justify-between items-center">
+        <div className=" flex justify-between items-center">
           <div>
             <Heading
               title={`Payout List`}
-              description="List of all the payouts available"
+              description="List of your payouts"
+              titleStyle="font-medium text-lg"
             />
           </div>
         </div>

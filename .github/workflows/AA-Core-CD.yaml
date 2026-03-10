@@ -141,13 +141,26 @@ jobs:
       # -----------------------------
       # Docker Build & Push
       # -----------------------------
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: amd64,arm64
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+          driver-opts: network=host
+
       - name: Build and Push Docker Image
         timeout-minutes: 30
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile.${{ matrix.app }}
+          platforms: linux/amd64,linux/arm64   # ← multi-arch
           push: true
+          load: false                          # ← must be false for multi-arch
           no-cache: true
           tags: |
             ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}
@@ -165,6 +178,7 @@ jobs:
           severity: CRITICAL,HIGH,MEDIUM
           ignore-unfixed: true
           exit-code: 0
+          image-src: remote        # ← pull from registry, not local daemon
 
       - name: Trivy secret scan
         uses: aquasecurity/trivy-action@master
@@ -174,6 +188,7 @@ jobs:
           format: table
           output: trivy-secret-report.txt
           exit-code: 1
+          image-src: remote        # ← pull from registry, not local daemon
 
       - name: Upload Trivy reports
         uses: actions/upload-artifact@v4

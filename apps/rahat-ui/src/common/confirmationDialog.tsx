@@ -3,6 +3,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -30,18 +31,33 @@ const ConfirmationDialog = ({
         if (!nextOpen) onCancel();
       }}
     >
-      <DialogContent className="sm:max-w-[420px]">
-        <DialogHeader>
+      <DialogContent
+        className="!rounded-sm"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
+        <DialogHeader className="!text-center">
           <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogDescription>{dialogMessage}</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">{dialogMessage}</div>
-        <DialogFooter>
+
+        <DialogFooter className="flex justify-between">
           <DialogClose asChild>
-            <Button type="button" variant="secondary" onClick={onCancel}>
+            <Button
+              type="button"
+              onClick={onCancel}
+              className="w-full rounded-sm"
+              variant="outline"
+            >
               Cancel
             </Button>
           </DialogClose>
-          <Button type="button" onClick={onConfirm}>
+          <Button
+            type="submit"
+            onClick={onConfirm}
+            className="w-full rounded-sm"
+          >
             Confirm
           </Button>
         </DialogFooter>

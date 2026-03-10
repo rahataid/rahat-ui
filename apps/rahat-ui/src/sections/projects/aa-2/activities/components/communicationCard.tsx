@@ -22,6 +22,7 @@ import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useRouter } from 'next/navigation';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 
 interface BaseCommunication {
   communicationTitle?: string;
@@ -56,6 +57,7 @@ export function CommunicationCard({
   activityCommunication,
 }: CommunicationCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const router = useRouter();
 
   const getIcon = () => {
@@ -102,6 +104,14 @@ export function CommunicationCard({
     }
   };
 
+  const handleConfirmSend = async () => {
+    setIsConfirmationOpen(false);
+    await triggerCommunication(
+      activityId,
+      activityCommunication?.communicationId,
+    );
+  };
+
   return (
     <Card className="mb-4 rounded-sm">
       <CardContent className="pt-2 px-3 pb-2">
@@ -138,12 +148,7 @@ export function CommunicationCard({
                       <Button
                         className="items-center justify-center"
                         variant="ghost"
-                        onClick={() =>
-                          triggerCommunication(
-                            activityId,
-                            activityCommunication?.communicationId,
-                          )
-                        }
+                        onClick={() => setIsConfirmationOpen(true)}
                         type="button"
                       >
                         {loadingButtons.includes(
@@ -213,6 +218,14 @@ export function CommunicationCard({
             </div>
           )}
       </CardContent>
+
+      <ConfirmationDialog
+        isConfirmationDialogOpen={isConfirmationOpen}
+        onCancel={() => setIsConfirmationOpen(false)}
+        onConfirm={handleConfirmSend}
+        dialogTitle="Send Communication?"
+        dialogMessage={`Are you sure you want to send ${activityCommunication?.transportName} communication to the ${activityCommunication?.groupName} Group? This action cannot be undone.`}
+      />
     </Card>
   );
 }

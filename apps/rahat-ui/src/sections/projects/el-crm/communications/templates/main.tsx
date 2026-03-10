@@ -46,7 +46,6 @@ export default function TemplatesView() {
   const { id: projectUUID } = useParams() as { id: UUID };
 
   const { data: templateList } = useListElCrmTemplate(projectUUID, {});
-  const sync = useSyncTemplate(projectUUID);
   const deleteTemplate = useDeleteTemplate(projectUUID);
 
   const getChannelColor = (channel: string) => {
@@ -71,16 +70,6 @@ export default function TemplatesView() {
     }
   };
 
-  const handleSync = async () => {
-    try {
-      await sync.mutateAsync({
-        transportId: templateList[0].Transport.cuid,
-      });
-    } catch (error) {
-      console.error('Error syncing templates:', error);
-    }
-  };
-
   const handleDelete = async (cuid: string) => {
     try {
       await deleteTemplate.mutateAsync(cuid);
@@ -100,16 +89,6 @@ export default function TemplatesView() {
             </p>
           </div>
           <div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="mr-2"
-              onClick={handleSync}
-              disabled={sync.isPending || templateList?.length === 0}
-            >
-              <RefreshCcw />
-              {sync.isPending ? 'Syncing...' : 'Sync Template'}
-            </Button>
             <Link
               href={`/projects/el-crm/${projectUUID}/communications/templates/create`}
             >
@@ -154,6 +133,7 @@ export default function TemplatesView() {
                         {new Date(template.createdAt).toLocaleDateString()}
                       </CardDescription>
                     </div>
+
                     <div>
                       <Badge
                         className={getChannelColor(template.channel)}
@@ -161,12 +141,14 @@ export default function TemplatesView() {
                       >
                         {template.Transport.name}
                       </Badge>
-                      <p className="text-xs mt-1">
-                        Approval Check{' '}
-                        {new Date(
-                          template.lastApprovalCheck,
-                        ).toLocaleDateString()}
-                      </p>
+                      {template.lastApprovalCheck && (
+                        <p className="text-xs mt-1">
+                          Approval Check{' '}
+                          {new Date(
+                            template.lastApprovalCheck,
+                          ).toLocaleString()}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </CardHeader>

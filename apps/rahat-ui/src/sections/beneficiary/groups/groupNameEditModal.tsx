@@ -19,7 +19,7 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { ListBeneficiaryGroup } from '@rahat-ui/types';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -49,6 +49,12 @@ export default function GroupNameEditModal({
       name: beneficiaryGroupDetail?.name ?? '',
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      form.reset({ name: beneficiaryGroupDetail?.name ?? '' });
+    }
+  }, [open, beneficiaryGroupDetail?.name]);
 
   const handleUpdateBeneficiaryGroup = async (
     data: z.infer<typeof FormSchema>,

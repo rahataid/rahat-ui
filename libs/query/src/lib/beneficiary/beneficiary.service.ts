@@ -154,6 +154,10 @@ export const useUpdateBeneficiaryGroup = (callbacks?: {
   return useMutation({
     mutationFn: (payload: any) => updateBeneficiaryGroup(payload),
     onSuccess: (_data, variables) => {
+      qc.removeQueries({
+        queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
+        exact: true,
+      });
       qc.invalidateQueries({
         queryKey: [TAGS.GET_BENEFICIARIES_GROUPS],
       });

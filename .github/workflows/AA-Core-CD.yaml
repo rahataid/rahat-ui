@@ -1,4 +1,4 @@
-name: AA CORE CI/CD  
+name: AA CORE CD
 
 on:
   workflow_call:
@@ -18,11 +18,10 @@ on:
         required: true
       VAULT_TOKEN:
         required: true
-  
-concurrency:
-  group: aa-core-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
+concurrency:
+  group: aa-core-cd-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   CI: false
@@ -43,11 +42,10 @@ jobs:
           if [ -z "$APPS" ]; then
             APPS="rahat-ui,community-tool-ui"
           fi
-
           JSON=$(printf '%s\n' "$APPS" | awk -F',' '{printf "["; for(i=1;i<=NF;i++) printf "\"%s\"%s",$i,(i==NF?"":","); printf "]"}')
           echo "matrix={\"app\":$JSON}" >> $GITHUB_OUTPUT
 
-  build:
+  cd:
     name: Build & Push - ${{ matrix.app }}
     runs-on: k8s-runner-set-rahataid
     needs: setup
@@ -66,7 +64,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-        
+
+      # -----------------------------
+      # Build Dependencies
+      # -----------------------------
       - name: Install build dependencies
         run: |
           sudo apt-get update -y
@@ -76,11 +77,10 @@ jobs:
             make \
             g++ \
             gcc
-    
+
       # -----------------------------
       # Node + PNPM Setup
       # -----------------------------
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -97,33 +97,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # -----------------------------
-      # Sonarqube Setup
-      # -----------------------------
-      - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@v6
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        with:
-          args: >
-            -Dsonar.projectKey=rahat-ui
-            -Dsonar.projectName=rahat-ui
-            -Dsonar.sources=apps/rahat-ui,apps/community-tool-ui
-            -Dsonar.sourceEncoding=UTF-8
-
-      # -----------------------------
-      # Sonarqube Quality Gate
-      # -----------------------------
-      - name: Sonar Quality Gate
-        uses: sonarsource/sonarqube-quality-gate-action@v1
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          
       - name: Build application
         run: pnpm nx build ${{ matrix.app }}
-    
+
       # -----------------------------
       # Import Secrets from Vault
       # -----------------------------
@@ -139,8 +115,7 @@ jobs:
             github/data/rahat/rahat-ui/demo/aa/${{ inputs.vault_path }} rahat-ui-test | ENV ;
 
       - name: Create environment file
-        run: |
-          tee .env <<<"$ENV"
+        run: tee .env <<<"$ENV"
 
       # -----------------------------
       # Docker Setup
@@ -167,35 +142,45 @@ jobs:
       # Docker Build & Push
       # -----------------------------
       - name: Build and Push Docker Image
-        timeout-minutes: 30  
+        timeout-minutes: 30
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile.${{ matrix.app }}
-          push: false
-          load: true
-          # Remove or change cache settings
-          no-cache: true 
+          push: true
+          no-cache: true
           tags: |
             ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}
             ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}-${{ steps.meta.outputs.short_sha }}-${{ steps.meta.outputs.run_number }}
 
       # -----------------------------
-      # Trivy Scan (TABLE)
+      # Trivy Security Scan
       # -----------------------------
-      - name: Run Trivy Scan
-        run: |
-          docker run --rm \
-            -v /var/run/docker.sock:/var/run/docker.sock \
-            -v ${{ github.workspace }}:/workspace \
-            -w /workspace \
-            aquasec/trivy:0.65.0 \
-            image \
-            --scanners vuln \
-            --format table \
-            --output trivy-${{ matrix.app }}.txt \
-            ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }} || true
-      
-          echo "Listing workspace files"
-          ls -lah ${{ github.workspace }}
+      - name: Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}
+          format: table
+          output: trivy-vulnerability-report.txt
+          severity: CRITICAL,HIGH,MEDIUM
+          ignore-unfixed: true
+          exit-code: 0
 
+      - name: Trivy secret scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.IMAGE_NAMESPACE }}/${{ matrix.app }}:${{ inputs.tag_suffix }}
+          scanners: secret
+          format: table
+          output: trivy-secret-report.txt
+          exit-code: 1
+
+      - name: Upload Trivy reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-reports-${{ matrix.app }}-${{ github.run_number }}
+          path: |
+            trivy-vulnerability-report.txt
+            trivy-secret-report.txt
+          retention-days: 90

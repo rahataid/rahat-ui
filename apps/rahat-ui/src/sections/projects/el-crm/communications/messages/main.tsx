@@ -33,6 +33,7 @@ export default function MessagesView() {
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
+    isScheduled: false,
   });
 
   const table = useReactTable({

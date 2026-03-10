@@ -52,16 +52,6 @@ export default function MessageDetailPage() {
     },
   );
 
-  const { data: logs } = useListElCrmSessionBroadcast(
-    projectUUID,
-    {
-      session: campaign?.sessionId || '',
-    },
-    {
-      queryKey: ['elCrmBroadCastCount', projectUUID, campaign?.sessionId],
-      enabled: !!campaign?.sessionId,
-    },
-  );
   const columns = useCommsLogsTableColumns();
   const {
     pagination,
@@ -72,9 +62,22 @@ export default function MessageDetailPage() {
     filters,
     setFilters,
   } = usePagination();
+
+  const { data: logs } = useListElCrmSessionBroadcast(
+    projectUUID,
+    {
+      session: campaign?.sessionId || '',
+      ...filters,
+      ...pagination,
+    },
+    {
+      queryKey: ['elCrmBroadCastCount', projectUUID, campaign?.sessionId],
+      enabled: !!campaign?.sessionId,
+    },
+  );
   const table = useReactTable({
     manualPagination: true,
-    data: logs || [],
+    data: logs?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -135,7 +138,7 @@ export default function MessageDetailPage() {
               The message you're looking for doesn't exist.
             </p>
             <Link
-              href={`/projects/el-crm/${projectUUID}/communications/messages`}
+              href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
             >
               <Button>Go Back to Messages</Button>
             </Link>
@@ -148,21 +151,19 @@ export default function MessageDetailPage() {
 
   // logs?.sessionDetails?.Transport?.name,
 
-  const handleFilterChange = (event: any) => {
-    if (event && event.target) {
-      const { name, value } = event.target;
-      const filterValue = value === 'ALL' ? '' : value;
-      table.getColumn(name)?.setFilterValue(filterValue);
-      setFilters({
-        ...filters,
-        [name]: filterValue,
-      });
-    }
-    setPagination({
-      ...pagination,
-      page: 1,
+  const handleFilterChange = (name: string, value: string) => {
+    setFilters((prev: any) => {
+      const updated = { ...prev };
+
+      if (value === 'ALL') delete updated[name];
+      else updated[name] = value;
+
+      return updated;
     });
+
+    setPagination((prev) => ({ ...prev, page: 1 }));
   };
+  const meta = logs?.response.meta || { total: 0, currentPage: 0 };
 
   return (
     <div className="flex flex-col h-full">
@@ -170,7 +171,7 @@ export default function MessageDetailPage() {
         <div className="flex justify-between items-center gap-4">
           <div>
             <Link
-              href={`/projects/el-crm/${projectUUID}/communications/messages`}
+              href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
             >
               <Button variant="outline" size="sm">
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -297,24 +298,25 @@ export default function MessageDetailPage() {
 
                 {/* RIGHT TABLE SECTION */}
                 <Card className="lg:col-span-2 rounded-sm">
-                  <CardHeader className="flex flex-row items-center gap-3 pb-0 pt-2 px-3">
-                    <SearchInput
-                      className="flex-1"
-                      value={filters.address}
-                      name="Audience"
-                      onSearch={(e) => handleSearch(e, 'address')}
-                    />
+                  <CardHeader className="grid grid-cols-4 gap-3 pb-0 pt-2 px-3">
+                    <div className="col-span-3">
+                      <SearchInput
+                        value={filters.address}
+                        name="Audience"
+                        onSearch={(e) => handleSearch(e, 'address')}
+                      />
+                    </div>
 
-                    <SelectComponent
-                      name="Status"
-                      options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
-                      onChange={(value) =>
-                        handleFilterChange({
-                          target: { name: 'status', value },
-                        })
-                      }
-                      value={filters?.status || ''}
-                    />
+                    <div className="col-span-1 !mt-0">
+                      <SelectComponent
+                        name="Status"
+                        options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
+                        onChange={(value) =>
+                          handleFilterChange('status', value)
+                        }
+                        value={filters?.status ?? 'ALL'}
+                      />
+                    </div>
                   </CardHeader>
 
                   <CardContent className="px-3">
@@ -323,20 +325,13 @@ export default function MessageDetailPage() {
 
                   <CardFooter className="justify-end">
                     <CustomPagination
-                      meta={{
-                        total: 0,
-                        currentPage: 0,
-                        lastPage: 0,
-                        perPage: 0,
-                        next: null,
-                        prev: null,
-                      }}
+                      meta={meta}
                       handleNextPage={setNextPage}
                       handlePrevPage={setPrevPage}
                       handlePageSizeChange={setPerPage}
                       currentPage={pagination.page}
                       perPage={pagination.perPage}
-                      total={0}
+                      total={meta?.total}
                     />
                   </CardFooter>
                 </Card>

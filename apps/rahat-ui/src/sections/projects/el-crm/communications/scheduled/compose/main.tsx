@@ -120,6 +120,7 @@ export default function ComposeScheduleView() {
       options: Object.keys(options).length ? options : undefined,
       transportId: data.messagingChannel,
       message: data.selectedTemplate,
+      isScheduled: true,
     };
     const capaign = await createCampaign.mutateAsync(payload);
     console.log('Created campaign:', capaign);

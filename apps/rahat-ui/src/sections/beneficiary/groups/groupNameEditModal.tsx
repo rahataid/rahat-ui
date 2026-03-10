@@ -25,7 +25,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
 const FormSchema = z.object({
-  name: z.string().min(1, 'Group name is required').max(100).trim(),
+  name: z
+    .string()
+    .min(1, 'Group name is required')
+    .max(100, 'Group name must be 100 characters or less')
+    .trim(),
 });
 
 type EditDialogProps = {
@@ -45,6 +49,7 @@ export default function GroupNameEditModal({
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    mode: 'onChange',
     defaultValues: {
       name: beneficiaryGroupDetail?.name ?? '',
     },

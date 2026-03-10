@@ -1,7 +1,6 @@
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import HeaderWithBack from '../../projects/components/header.with.back';
 import { UUID } from 'crypto';
-import { DatePicker } from 'apps/rahat-ui/src/components/datePicker';
 import SearchInput from '../../projects/components/search.input';
 import {
   useBeneficiaryList,
@@ -17,7 +16,6 @@ import {
 import { useBeneficiaryTableColumns } from '../useBeneficiaryColumns';
 import ViewColumns from '../../projects/components/view.columns';
 import DemoTable from 'apps/rahat-ui/src/components/table';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 export default function SelectBeneficiaryView() {
@@ -61,10 +59,6 @@ export default function SelectBeneficiaryView() {
     },
   });
 
-  const searchParams = useSearchParams();
-
-  const name = searchParams.get('name');
-
   const updateBeneficiaryGroup = useUpdateBeneficiaryGroup();
 
   const handleUpdateBeneficiaryGroup = async () => {
@@ -73,10 +67,8 @@ export default function SelectBeneficiaryView() {
       .rows?.map((data) => ({ uuid: data?.original?.uuid }));
     const payload = {
       uuid: Id,
-      name,
       beneficiaries: members,
     };
-    console.log(payload);
     try {
       await updateBeneficiaryGroup.mutateAsync(payload);
     } catch (e) {
@@ -93,7 +85,7 @@ export default function SelectBeneficiaryView() {
       <div className="p-4">
         <HeaderWithBack
           title="Select Beneficiary"
-          subtitle="Select beneficiaries from the list below to them assign to the selected group"
+          subtitle="Select beneficiaries from the list below to them assign to the selected group test"
           path={`/beneficiary/groups/${Id}`}
         />
         <div className="border rounded shadow p-3">

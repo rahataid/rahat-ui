@@ -1,0 +1,106 @@
+name: AA CORE CI
+
+on:
+  workflow_call:
+    inputs:
+      apps_to_build:
+        required: false
+        type: string
+      vault_path:
+        required: true
+        default: "testload"
+        type: string
+      tag_suffix:
+        required: true
+        type: string
+    secrets:
+      VAULT_URL:
+        required: true
+      VAULT_TOKEN:
+        required: true
+
+concurrency:
+  group: aa-core-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: false
+
+jobs:
+  setup:
+    name: Setup Build Matrix
+    runs-on: k8s-runner-set-rahataid
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Generate build matrix
+        id: set-matrix
+        run: |
+          APPS="${{ inputs.apps_to_build }}"
+          if [ -z "$APPS" ]; then
+            APPS="rahat-ui,community-tool-ui"
+          fi
+          JSON=$(printf '%s\n' "$APPS" | awk -F',' '{printf "["; for(i=1;i<=NF;i++) printf "\"%s\"%s",$i,(i==NF?"":","); printf "]"}')
+          echo "matrix={\"app\":$JSON}" >> $GITHUB_OUTPUT
+
+  ci:
+    name: CI - ${{ matrix.app }}
+    runs-on: k8s-runner-set-rahataid
+    needs: setup
+
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y \
+            python3-setuptools \
+            build-essential \
+            make \
+            g++ \
+            gcc
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.10.0
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8.14.1
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.projectKey=rahat-ui
+            -Dsonar.projectName=rahat-ui
+            -Dsonar.sources=apps/rahat-ui,apps/community-tool-ui
+            -Dsonar.sourceEncoding=UTF-8
+
+      - name: Sonar Quality Gate
+        uses: sonarsource/sonarqube-quality-gate-action@v1
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

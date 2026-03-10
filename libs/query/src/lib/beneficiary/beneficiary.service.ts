@@ -140,9 +140,7 @@ const beneficiariesGroupByUuids = async (uuids: string[]) => {
   return response?.data?.data;
 };
 
-export const useUpdateBeneficiaryGroup = (callbacks?: {
-  onSuccess?: () => void;
-}) => {
+export const useUpdateBeneficiaryGroup = () => {
   const qc = useQueryClient();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -154,24 +152,18 @@ export const useUpdateBeneficiaryGroup = (callbacks?: {
   return useMutation({
     mutationFn: (payload: any) => updateBeneficiaryGroup(payload),
     onSuccess: (_data, variables) => {
-      window.location.reload();
       // TODO: This needs to be fixed
-      // qc.removeQueries({
-      //   queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
-      //   exact: true,
-      // });
-      // qc.invalidateQueries({
-      //   queryKey: [TAGS.GET_BENEFICIARIES_GROUPS],
-      // });
-      // qc.invalidateQueries({
-      //   queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
-      // });
+      qc.invalidateQueries({
+        queryKey: [TAGS.GET_BENEFICIARIES_GROUPS],
+      });
+      qc.invalidateQueries({
+        queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
+      });
 
       toast.fire({
         title: 'Beneficiary Group updated successfully.',
         icon: 'success',
       });
-      callbacks?.onSuccess?.();
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';

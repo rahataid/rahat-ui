@@ -358,14 +358,14 @@ export const useUpdateGroupPropose = () => {
     mutationFn: (payload: any) =>
       updateGroupPropose(payload.uuid, payload.selectedPurpose),
     onSuccess: async (_data, variables) => {
+      qc.removeQueries({
+        queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
+        exact: true,
+      });
       await qc.invalidateQueries({
         queryKey: ['GET_BENEFICIARY_GROUP', variables?.uuid],
         exact: false,
       });
-      await qc.invalidateQueries({
-        queryKey: variables?.uuid,
-      });
-
       toast.fire({
         title: 'Group propose updated successfully',
         icon: 'success',

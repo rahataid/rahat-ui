@@ -28,7 +28,7 @@ const FormSchema = z.object({
   name: z
     .string()
     .min(1, 'Group name is required')
-    .max(100, 'Group name must be 100 characters or less')
+    .max(50, 'Group name must be 50 characters or less')
     .trim(),
 });
 
@@ -53,9 +53,11 @@ export default function GroupNameEditModal({
     },
   });
 
+  const { reset, handleSubmit, control } = form;
+
   useEffect(() => {
     if (open) {
-      form.reset({ name: beneficiaryGroupDetail?.name ?? '' });
+      reset({ name: beneficiaryGroupDetail?.name ?? '' });
     }
   }, [open, beneficiaryGroupDetail?.name]);
 
@@ -86,11 +88,11 @@ export default function GroupNameEditModal({
         </DialogHeader>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(handleUpdateBeneficiaryGroup)}
+            onSubmit={handleSubmit(handleUpdateBeneficiaryGroup)}
             className="space-y-4"
           >
             <FormField
-              control={form.control}
+              control={control}
               name="name"
               render={({ field }) => (
                 <FormItem>
@@ -108,11 +110,7 @@ export default function GroupNameEditModal({
             />
 
             <DialogFooter className="sm:justify-end">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => form.reset()}
-              >
+              <Button type="button" variant="outline" onClick={() => reset()}>
                 Reset
               </Button>
               <Button type="submit" disabled={updateBeneficiaryGroup.isPending}>

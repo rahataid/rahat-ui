@@ -85,7 +85,7 @@ export default function SelectBeneficiaryView() {
       <div className="p-4">
         <HeaderWithBack
           title="Select Beneficiary"
-          subtitle="Select beneficiaries from the list below to them assign to the selected group test"
+          subtitle="Select beneficiaries from the list below to them assign to the selected group"
           path={`/beneficiary/groups/${Id}`}
         />
         <div className="border rounded shadow p-3">

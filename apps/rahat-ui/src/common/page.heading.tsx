@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import React from 'react';
 import { RefreshCw } from 'lucide-react';
 import { dateFormat } from '../utils/dateFormate';
-import { TruncatedCell } from '../sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
 interface IProps {
   title: string;
@@ -54,7 +53,7 @@ export function Heading({
             <ChevronLeft />
           </span>
         )}
-        <TruncatedCell text={title} />
+        {title}
         {status && <Badge className={badgeClassName}>{status}</Badge>}
       </div>
       <p className="text-sm/4 text-muted-foreground">{description}</p>

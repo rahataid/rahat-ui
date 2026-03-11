@@ -321,7 +321,6 @@ export const useValidateBeneficaryBankAccount = () => {
   return useMutation({
     mutationFn: (payload: any) => validateBeneficiaryBankAccount(payload),
     onSuccess: async () => {
-      window.location.reload();
       await qc.invalidateQueries({ queryKey: [TAGS.VALIDATE_BENEFICIARIES] });
       toast.fire({
         title: 'Accounts check in progress. Data will be listed soon',
@@ -352,16 +351,15 @@ export const useUpdateGroupPropose = () => {
     mutationFn: (payload: any) =>
       updateGroupPropose(payload.uuid, payload.selectedPurpose),
     onSuccess: async (_data, variables) => {
-      window.location.reload();
       // TODO: This needs to be fixed
-      // qc.removeQueries({
-      //   queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
-      //   exact: true,
-      // });
-      // await qc.invalidateQueries({
-      //   queryKey: ['GET_BENEFICIARY_GROUP', variables?.uuid],
-      //   exact: false,
-      // });
+      qc.removeQueries({
+        queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
+        exact: true,
+      });
+      await qc.invalidateQueries({
+        queryKey: ['GET_BENEFICIARY_GROUP', variables?.uuid],
+        exact: false,
+      });
       toast.fire({
         title: 'Group propose updated successfully',
         icon: 'success',

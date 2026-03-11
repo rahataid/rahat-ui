@@ -8,7 +8,7 @@ import {
   useTriggerPayout,
 } from '@rahat-ui/query';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
 
 import {
@@ -40,6 +40,8 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   const params = useParams();
   const projectId = params.id as UUID;
   const payoutId = params.detailID as UUID;
+  const searchParams = useSearchParams();
+  const navigation = searchParams.get('from');
   const router = useRouter();
   const {
     pagination,
@@ -168,7 +170,13 @@ export default function BeneficiaryGroupTransactionDetailsList() {
   ) : (
     <div className="p-4 pb-0">
       <div className="flex flex-col space-y-0">
-        <Back path={`/projects/aa/${projectId}/payout`} />
+        <Back
+          path={
+            navigation === 'payoutOverview'
+              ? `/projects/aa/${projectId}/payout?tab=payoutOverview`
+              : `/projects/aa/${projectId}/payout?tab=payoutList`
+          }
+        />
 
         <div className="mt-4 flex justify-between items-center">
           <div>

@@ -68,7 +68,9 @@ export default function PayoutView() {
             <IconLabelBtn
               Icon={Plus}
               handleClick={() => {
-                route.push(`/projects/aa/${projectID}/payout/initiate-payout`);
+                route.push(
+                  `/projects/aa/${projectID}/payout/initiate-payout?from=${activeTab}`,
+                );
               }}
               name="Create Payout"
               variant="default"
@@ -78,7 +80,11 @@ export default function PayoutView() {
         </div>
       </div>
       <div className="flex justify-between items-center space-x-4 ">
-        <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+        <Tabs
+          defaultValue={activeTab}
+          onValueChange={setActiveTab}
+          className="w-full"
+        >
           <TabsList className="border bg-secondary rounded">
             <TabsTrigger
               className="w-full data-[state=active]:bg-white"

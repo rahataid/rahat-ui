@@ -50,7 +50,7 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
                 dateTime={item?.updatedAt}
                 onView={() =>
                   route.push(
-                    `/projects/aa/${id}/payout/details/${item?.uuid}?from=main-page`,
+                    `/projects/aa/${id}/payout/details/${item?.uuid}?from=payoutOverview`,
                   )
                 }
               />

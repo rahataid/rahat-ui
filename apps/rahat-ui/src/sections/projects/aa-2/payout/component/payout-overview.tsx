@@ -1,6 +1,7 @@
 import { DataCard, Heading } from 'apps/rahat-ui/src/common';
 import RecentPayout from './recent.payout';
-import DynamicPieChart from '../../../components/dynamicPieChart';
+import DynamicPieChart from 'apps/rahat-ui/src/sections/projects/components/dynamicPieChart';
+
 import { PayoutOverviewProps } from 'apps/rahat-ui/src/types/payout';
 
 export default function PayoutOverview({
@@ -8,6 +9,26 @@ export default function PayoutOverview({
   payouts,
   statsPayout,
 }: PayoutOverviewProps) {
+  const pieDataLabel = [
+    {
+      label: 'FSP',
+      value: statsPayout?.payoutOverview?.payoutTypes?.FSP || 0,
+    },
+    {
+      label: 'CVA',
+      value: statsPayout?.payoutOverview?.payoutTypes?.VENDOR || 0,
+    },
+  ];
+  const pieDataStatus = [
+    {
+      label: 'Success',
+      value: statsPayout?.payoutOverview?.payoutStatus?.SUCCESS || 0,
+    },
+    {
+      label: 'Failed',
+      value: statsPayout?.payoutOverview?.payoutStatus?.FAILED || 0,
+    },
+  ];
   return (
     <div className="mt-4">
       <Heading
@@ -34,16 +55,7 @@ export default function PayoutOverview({
           <h1 className="text-lg font-medium mb-4">Payout Type</h1>
           <div className="w-full aspect-square">
             <DynamicPieChart
-              pieData={[
-                {
-                  label: 'FSP',
-                  value: statsPayout?.payoutOverview?.payoutTypes?.FSP || 0,
-                },
-                {
-                  label: 'CVA',
-                  value: statsPayout?.payoutOverview?.payoutTypes?.VENDOR || 0,
-                },
-              ]}
+              pieData={pieDataLabel}
               colors={['#F4A462', '#2A9D90']}
             />
           </div>
@@ -53,17 +65,7 @@ export default function PayoutOverview({
           <h1 className="text-lg font-medium mb-4">Payout Status</h1>
           <div className="w-full aspect-square">
             <DynamicPieChart
-              pieData={[
-                {
-                  label: 'Success',
-                  value:
-                    statsPayout?.payoutOverview?.payoutStatus?.SUCCESS || 0,
-                },
-                {
-                  label: 'Failed',
-                  value: statsPayout?.payoutOverview?.payoutStatus?.FAILED || 0,
-                },
-              ]}
+              pieData={pieDataStatus}
               colors={['#2A9D90', '#DC3545']}
             />
           </div>

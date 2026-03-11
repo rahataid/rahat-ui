@@ -34,7 +34,16 @@ export const useFailedCustomersTableColumn = () => {
     {
       accessorKey: 'name',
       header: 'Customer Name',
-      cell: ({ row }) => <div>{row.getValue('name') || 'N/A'}</div>,
+      cell: ({ row }) => {
+        const hasError = row.original?.error?.name?.length > 0;
+        return (
+          <div
+            className={hasError ? 'bg-red-100 text-red-700 p-1 rounded' : ''}
+          >
+            {row.getValue('name') || 'N/A'}
+          </div>
+        );
+      },
     },
     {
       accessorKey: 'email',
@@ -49,13 +58,18 @@ export const useFailedCustomersTableColumn = () => {
     {
       accessorKey: 'lastPurchaseDate',
       header: 'Last Purchase Date',
-      cell: ({ row }) => (
-        <div>
-          {row.getValue('lastPurchaseDate')
-            ? new Date(row.getValue('lastPurchaseDate')).toLocaleDateString()
-            : 'N/A'}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const hasError = row.original?.error?.lastPurchaseDate?.length > 0;
+        return (
+          <div
+            className={hasError ? 'bg-red-100 text-red-700 p-1 rounded' : ''}
+          >
+            {row.getValue('lastPurchaseDate')
+              ? new Date(row.getValue('lastPurchaseDate')).toLocaleDateString()
+              : 'N/A'}
+          </div>
+        );
+      },
     },
     {
       accessorKey: 'category',
@@ -91,7 +105,7 @@ export const useFailedCustomersTableColumn = () => {
             {Object.entries(errorObj).map(([field, messages], idx) =>
               (messages as string[]).map((msg, msgIdx) => (
                 <div key={`${idx}-${msgIdx}`} className="text-sm text-red-600">
-                  {msg}
+                  - {msg}
                 </div>
               )),
             )}

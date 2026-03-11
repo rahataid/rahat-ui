@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import {
   Mail,
   MessageSquare,
@@ -57,7 +58,7 @@ export function CommunicationCard({
   activityCommunication,
 }: CommunicationCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const confirmationDialog = useBoolean();
   const router = useRouter();
 
   const getIcon = () => {
@@ -105,7 +106,7 @@ export function CommunicationCard({
   };
 
   const handleConfirmSend = async () => {
-    setIsConfirmationOpen(false);
+    confirmationDialog.onFalse();
     await triggerCommunication(
       activityId,
       activityCommunication?.communicationId,
@@ -148,7 +149,7 @@ export function CommunicationCard({
                       <Button
                         className="items-center justify-center"
                         variant="ghost"
-                        onClick={() => setIsConfirmationOpen(true)}
+                        onClick={confirmationDialog.onTrue}
                         type="button"
                       >
                         {loadingButtons.includes(
@@ -220,11 +221,11 @@ export function CommunicationCard({
       </CardContent>
 
       <ConfirmationDialog
-        isConfirmationDialogOpen={isConfirmationOpen}
-        onCancel={() => setIsConfirmationOpen(false)}
+        isConfirmationDialogOpen={confirmationDialog.value}
+        onCancel={confirmationDialog.onFalse}
         onConfirm={handleConfirmSend}
         dialogTitle="Send Communication?"
-        dialogMessage={
+        descriptionContent={
           <>
             Are you sure you want to send{' '}
             <span className="font-bold">

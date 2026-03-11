@@ -143,6 +143,29 @@ export const useProjectDashboardReporting = (uuid: UUID) => {
   return query;
 };
 
+export const useTransportSessionStats = (uuid: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['transportSessionStats', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.activities.communication.getTransportSessionStats',
+          payload: {
+            projectId: uuid,
+          },
+        },
+      });
+      return mutate.data;
+    },
+    staleTime: 60 * 60 * 1000,
+  });
+
+  return query;
+};
+
 export const useProjectDashboardBeneficiaryMapLocation = (
   uuid: UUID,
   payload: any,

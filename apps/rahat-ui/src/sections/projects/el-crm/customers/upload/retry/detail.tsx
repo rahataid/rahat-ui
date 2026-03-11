@@ -19,15 +19,16 @@ export default function BatchDetailView() {
     batchUUID: batchId,
   });
 
-  console.log({ failedBatch });
-
-  const tableData =
-    failedBatch?.batch?.map((b, index) => ({
+  const tableData = failedBatch?.batch?.map((b) => {
+    const errorEntry = failedBatch?.errorDetails?.error?.find(
+      (v) => v[b.customerCode],
+    );
+    const errors = errorEntry?.[b.customerCode];
+    return {
       ...b,
-      error: failedBatch?.errorDetails?.error[index],
-    })) || [];
-
-  console.log({ tableData });
+      error: errors ?? '',
+    };
+  });
 
   const columns = useFailedCustomersTableColumn();
 

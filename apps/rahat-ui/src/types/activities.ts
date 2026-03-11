@@ -13,6 +13,7 @@ export interface IActivitiesItem {
   phase: string;
   category: string;
   description: string;
+  responsibleStation: string;
   // hazardType: string;
   status: string;
   activityType: string;
@@ -50,7 +51,7 @@ export interface Template {
     uuid: UUID;
     name: string;
   };
-  source: string;
+  responsibleStation: string;
   category?: {
     uuid: UUID;
     name: string;

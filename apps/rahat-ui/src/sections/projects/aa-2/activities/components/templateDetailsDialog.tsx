@@ -105,28 +105,42 @@ export function TemplateDetailsDialog({
 
           <Separator className="my-6" />
 
-          {/* Description */}
-          {template.description && (
-            <Section title="Description">
-              <p className="text-sm text-muted-foreground text-justify">
-                {template.description}
-              </p>
-            </Section>
-          )}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Description */}
+            {template.description && (
+              <Section title="Description">
+                <p className="text-sm text-muted-foreground text-justify">
+                  {template.description}
+                </p>
+              </Section>
+            )}
+            {
+              /* Responsible Station */
+              template.responsibleStation && (
+                <Section title="Responsible Station">
+                  <p className="text-sm text-muted-foreground text-justify">
+                    {template.responsibleStation}
+                  </p>
+                </Section>
+              )
+            }
 
-          {/* Notes */}
-          {template.notes && (
-            <Section title="Notes">
-              <p className="text-sm text-muted-foreground">{template.notes}</p>
-            </Section>
-          )}
+            {/* Notes */}
+            {template.notes && (
+              <Section title="Notes">
+                <p className="text-sm text-muted-foreground">
+                  {template.notes || 'hello notes'}
+                </p>
+              </Section>
+            )}
 
-          {/* Automation */}
-          <Section title="Automation">
-            <Badge variant={template.isAutomated ? 'default' : 'outline'}>
-              {template.isAutomated ? 'Automated' : 'Manual'}
-            </Badge>
-          </Section>
+            {/* Automation */}
+            <Section title="Automation">
+              <Badge variant={template.isAutomated ? 'default' : 'outline'}>
+                {template.isAutomated ? 'Automated' : 'Manual'}
+              </Badge>
+            </Section>
+          </div>
 
           {/* Documents */}
           {template.activityDocuments?.length > 0 && (
@@ -159,7 +173,7 @@ export function TemplateDetailsDialog({
               <div className="space-y-3">
                 {template.activityCommunication.map(
                   (
-                    comm: Partial<Template['activityCommunication']>,
+                    comm: Partial<Template['activityCommunication'][0]>,
                     index: number,
                   ) => {
                     const transportName = appTransports?.find(
@@ -220,7 +234,7 @@ export function TemplateDetailsDialog({
                           </div>
                         ) : (
                           <Link
-                            href={comm.message?.mediaURL}
+                            href={comm.message?.mediaURL!}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-sm text-blue-600 underline"

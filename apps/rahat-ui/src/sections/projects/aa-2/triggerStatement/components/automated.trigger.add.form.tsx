@@ -133,6 +133,27 @@ export default function AddAutomatedTriggerForm({
     }
   }, [triggerSourceSubType, triggerOperator, triggerValue]);
 
+  const handleSourceChange = (value: string) => {
+    form.setValue('triggerStatement.sourceSubType', '');
+    form.setValue('triggerStatement.stationId', '');
+    form.setValue('triggerStatement.stationName', '');
+    form.setValue('triggerStatement.operator', '');
+    form.setValue('triggerStatement.value', '');
+    form.setValue('triggerStatement.expression', '');
+
+    const [dataSource, type] = value.includes(':')
+      ? value.split(':')
+      : [value, null];
+    const mappedType = type === 'waterlevel' ? 'water_level' : type;
+    setSelectedSource({ dataSource, type: mappedType });
+  };
+
+  const handleSourceSubTypeChange = (value: string) => {
+    form.setValue('triggerStatement.operator', '');
+    form.setValue('triggerStatement.value', '');
+    form.setValue('triggerStatement.expression', '');
+  };
+
   const SourceSubTypeField = ({ label }: { label: string }) => {
     return (
       <>
@@ -214,18 +235,7 @@ export default function AddAutomatedTriggerForm({
                     <Select
                       onValueChange={(v) => {
                         field.onChange(v);
-                        form.setValue('triggerStatement.sourceSubType', '');
-                        form.setValue('triggerStatement.stationId', '');
-                        form.setValue('triggerStatement.stationName', '');
-                        form.setValue('triggerStatement.operator', '');
-                        form.setValue('triggerStatement.value', '');
-                        form.setValue('triggerStatement.expression', '');
-                        const [dataSource, type] = v.includes(':')
-                          ? v.split(':')
-                          : [v, null];
-                        const mappedType =
-                          type === 'waterlevel' ? 'water_level' : type;
-                        setSelectedSource({ dataSource, type: mappedType });
+                        handleSourceChange(v);
                       }}
                       value={field.value}
                       key={field.value}
@@ -268,9 +278,7 @@ export default function AddAutomatedTriggerForm({
                           <Select
                             onValueChange={(v) => {
                               field.onChange(v);
-                              form.setValue('triggerStatement.operator', '');
-                              form.setValue('triggerStatement.value', '');
-                              form.setValue('triggerStatement.expression', '');
+                              handleSourceSubTypeChange(v);
                             }}
                             value={field.value}
                             key={field.value}
@@ -313,7 +321,7 @@ export default function AddAutomatedTriggerForm({
                               }}
                               value={field.value}
                               key={field.value}
-                              disabled={false}
+                              // disabled={false}
                             >
                               <FormLabel>Station</FormLabel>
                               <FormControl>

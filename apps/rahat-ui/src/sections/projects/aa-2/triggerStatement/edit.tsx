@@ -14,7 +14,13 @@ import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import LoaderRahat from 'apps/rahat-ui/src/components/LoaderRahat';
-import { buildSourceOptions, buildSubtypeOptions, SourceConfig } from './utils';
+import {
+  buildSourceOptions,
+  buildSubtypeOptions,
+  SourceConfig,
+  REVERSE_SOURCE_MAPPING,
+  GLOFAS_LEGACY_MAPPING,
+} from './utils';
 import { triggerStatementSchema } from './trigger.statement.schema';
 
 export default function EditTrigger() {
@@ -298,22 +304,10 @@ export default function EditTrigger() {
       };
     } else {
       const triggerSource = trigger?.triggerStatement?.source;
-      const REVERSE_SOURCE_MAPPING: Record<string, string> = {
-        water_level_m: 'dhm:waterlevel',
-        rainfall_mm: 'dhm:rainfall',
-        prob_flood: 'glofas',
-        discharge_m3s: 'gfh',
-      };
       const formSource =
         REVERSE_SOURCE_MAPPING[triggerSource] ||
         trigger?.source?.toLowerCase() ||
         '';
-
-      const GLOFAS_LEGACY_MAPPING: Record<string, string> = {
-        two_years_max_prob: 'two_years_return_period',
-        five_years_max_prob: 'five_years_return_period',
-        twenty_years_max_prob: 'twenty_years_return_period',
-      };
 
       const rawSourceSubType = trigger?.triggerStatement?.sourceSubType || '';
       const correctedSourceSubType =

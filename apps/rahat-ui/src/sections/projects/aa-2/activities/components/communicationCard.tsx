@@ -224,7 +224,19 @@ export function CommunicationCard({
         onCancel={() => setIsConfirmationOpen(false)}
         onConfirm={handleConfirmSend}
         dialogTitle="Send Communication?"
-        dialogMessage={`Are you sure you want to send ${activityCommunication?.transportName} communication to the ${activityCommunication?.groupName} Group? This action cannot be undone.`}
+        dialogMessage={
+          <>
+            Are you sure you want to send{' '}
+            <span className="font-bold">
+              {activityCommunication?.transportName}
+            </span>{' '}
+            communication to the{' '}
+            <span className="font-bold">
+              {activityCommunication?.groupName}
+            </span>{' '}
+            Group?
+          </>
+        }
       />
     </Card>
   );

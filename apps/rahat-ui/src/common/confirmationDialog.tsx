@@ -15,7 +15,7 @@ type ConfirmationDialogProps = {
   onCancel: () => void;
   onConfirm: () => void;
   dialogTitle?: string;
-  dialogMessage?: string;
+  dialogMessage?: string | React.ReactNode;
 };
 const ConfirmationDialog = ({
   isConfirmationDialogOpen,

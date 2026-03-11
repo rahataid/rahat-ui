@@ -21,17 +21,10 @@ import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { z } from 'zod';
 import { Info } from 'lucide-react';
 import { AutomatedFormSchema } from '../add.trigger.view';
-import { Option } from '../utils';
+import { Option, SOURCE_MAPPING } from '../utils';
 import { useGetSeriesByDataSource } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-
-const SOURCE_MAPPING = {
-  'dhm:waterlevel': 'water_level_m',
-  'dhm:rainfall': 'rainfall_mm',
-  glofas: 'prob_flood',
-  gfh: 'discharge_m3s',
-} as const;
 
 const operatorOptions = [
   { label: 'Greater than (>)', value: '>' },

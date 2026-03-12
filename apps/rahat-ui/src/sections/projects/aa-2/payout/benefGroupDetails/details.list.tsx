@@ -23,6 +23,12 @@ import {
 
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from 'libs/shadcn/src/components/ui/tooltip';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
@@ -68,6 +74,10 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       order: 'desc',
     },
   );
+
+  if (payout) {
+    console.log('payout', payout);
+  }
   const triggerForPayoutFailed = useTriggerForPayoutFailed();
   const triggerPayout = useTriggerPayout();
   const columns = useBeneficiaryGroupDetailsLogColumns(payout?.type);
@@ -226,18 +236,37 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                     roles={[AARoles.ADMIN, AARoles.Municipality]}
                     hasContent={false}
                   >
-                    <Button
-                      className={`gap-2 text-sm ${
-                        payout?.status === 'COMPLETED' && 'hidden'
-                      } `}
-                      onClick={() =>
-                        router.push(
-                          `/projects/aa/${projectId}/payout/details/${payoutId}/verify`,
-                        )
-                      }
-                    >
-                      Verify Manual Payout
-                    </Button>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="inline-block">
+                            <Button
+                              className={`gap-2 text-sm ${
+                                payout?.status === 'COMPLETED' && 'hidden'
+                              } `}
+                              disabled={
+                                !!payout?.beneficiaryGroupToken?.isDisbursed
+                              }
+                              onClick={() =>
+                                router.push(
+                                  `/projects/aa/${projectId}/payout/details/${payoutId}/verify`,
+                                )
+                              }
+                            >
+                              Verify Manual Payout
+                            </Button>
+                          </span>
+                        </TooltipTrigger>
+                        {!!payout?.beneficiaryGroupToken?.isDisbursed && (
+                          <TooltipContent>
+                            <p>
+                              Payout cannot be verified because funds have not
+                              been disbursed to the beneficiary group.
+                            </p>
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    </TooltipProvider>
                   </RoleAuth>
                 )}
               <Button

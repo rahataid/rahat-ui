@@ -13,7 +13,7 @@ import {
   Zap,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
   Card,
@@ -44,8 +44,11 @@ import { Label } from '@rahat-ui/shadcn/components/label';
 import { cn } from '@rahat-ui/shadcn/src/utils';
 import {
   useCreateElCrmCampaign,
+  useCreateElCrmAutomationRule,
+  useDeleteElCrmAutomationRule,
   useCustomers,
   useListElCrmAutomation,
+  useListElCrmCampaign,
   useListElCrmTemplate,
   useListElCrmTransport,
   useToggleElCrmAutomation,
@@ -115,11 +118,203 @@ const TARGET_LABELS: Record<string, string> = {
   BENEFICIARY: 'Consumers',
 };
 
+const OPERATOR_LABELS: Record<string, string> = {
+  EQ: 'equals',
+  NEQ: 'not equals',
+  GT: 'greater than',
+  GTE: 'greater than or equal',
+  LT: 'less than',
+  LTE: 'less than or equal',
+  IN: 'is one of',
+  NOT_IN: 'is not one of',
+  IS_NULL: 'is empty',
+  IS_NOT_NULL: 'is not empty',
+  DATE_BEFORE_NOW_MINUS_DAYS: 'date is older than N days',
+  DATE_AFTER_NOW_MINUS_DAYS: 'date is within last N days',
+  DATE_DAY_OF_YEAR_EQUALS: 'anniversary (N days ago)',
+  CONTAINS: 'contains',
+  NOT_CONTAINS: 'does not contain',
+};
+
+const VALUE_TYPE_OPTIONS = [
+  { value: 'STRING', label: 'Text' },
+  { value: 'NUMBER', label: 'Number' },
+  { value: 'BOOLEAN', label: 'Boolean' },
+  { value: 'DATE', label: 'Date' },
+  { value: 'STRING_LIST', label: 'Text list (JSON)' },
+  { value: 'NUMBER_LIST', label: 'Number list (JSON)' },
+];
+
+type RuleConditionRow = {
+  id: string;
+  fieldPath: string;
+  operator: string;
+  valueType: string;
+  value: string;
+  groupNo: number;
+};
+
+type RuleTargetType = 'VENDOR' | 'BENEFICIARY';
+
+type TransportOption = {
+  cuid: string;
+  name: string;
+};
+
+type TemplateOption = {
+  cuid: string;
+  externalId?: string | null;
+  name: string;
+};
+
+type CampaignOption = {
+  id: number;
+  name: string;
+  targetType: RuleTargetType;
+};
+
+type AutomationRuleConditionSummary = {
+  uuid?: string;
+  fieldPath: string;
+  operator: string;
+  value?: string | null;
+};
+
+type AutomationRuleSummary = {
+  uuid: string;
+  isEnabled: boolean;
+  isRecurring: boolean;
+  targetType: RuleTargetType;
+  conditionType?: string | null;
+  campaign?: { name?: string | null } | null;
+  conditions?: AutomationRuleConditionSummary[];
+};
+
+type ConditionValueOption = {
+  value: string;
+  label: string;
+};
+
+type ConditionFieldConfig = {
+  value: string;
+  label: string;
+  valueType: string;
+  operators: string[];
+  valueOptions?: ConditionValueOption[];
+  placeholder?: string;
+};
+
+const NULLABLE_OPERATORS = ['IS_NULL', 'IS_NOT_NULL'];
+
+const VENDOR_CONDITION_FIELDS: ConditionFieldConfig[] = [
+  {
+    value: 'category',
+    label: 'Customer Category',
+    valueType: 'STRING',
+    operators: ['EQ', 'NEQ', 'IN', 'NOT_IN'],
+    valueOptions: FILTER_VALUE_OPTIONS.category,
+  },
+  {
+    value: 'source',
+    label: 'Customer Source',
+    valueType: 'STRING',
+    operators: ['EQ', 'NEQ', 'IN', 'NOT_IN'],
+    valueOptions: FILTER_VALUE_OPTIONS.source,
+  },
+  {
+    value: 'location',
+    label: 'Location',
+    valueType: 'STRING',
+    operators: [
+      'EQ',
+      'NEQ',
+      'CONTAINS',
+      'NOT_CONTAINS',
+      'IS_NULL',
+      'IS_NOT_NULL',
+    ],
+    placeholder: 'e.g. Kathmandu',
+  },
+  {
+    value: 'lastPurchaseDate',
+    label: 'Last Purchase Date',
+    valueType: 'NUMBER',
+    operators: [
+      'DATE_BEFORE_NOW_MINUS_DAYS',
+      'DATE_AFTER_NOW_MINUS_DAYS',
+      'IS_NULL',
+      'IS_NOT_NULL',
+    ],
+    placeholder: 'days, e.g. 183',
+  },
+  {
+    value: 'createdAt',
+    label: 'Created Date',
+    valueType: 'NUMBER',
+    operators: ['DATE_BEFORE_NOW_MINUS_DAYS', 'DATE_AFTER_NOW_MINUS_DAYS'],
+    placeholder: 'days, e.g. 30',
+  },
+  {
+    value: 'customerCode',
+    label: 'Customer Code',
+    valueType: 'STRING',
+    operators: ['EQ', 'NEQ', 'CONTAINS', 'NOT_CONTAINS'],
+    placeholder: 'e.g. VEND-001',
+  },
+];
+
+const BENEFICIARY_CONDITION_FIELDS: ConditionFieldConfig[] = [
+  {
+    value: 'isVerified',
+    label: 'Verified Status',
+    valueType: 'BOOLEAN',
+    operators: ['EQ', 'NEQ'],
+    valueOptions: FILTER_VALUE_OPTIONS.isVerified,
+  },
+  {
+    value: 'createdAt',
+    label: 'Created Date',
+    valueType: 'NUMBER',
+    operators: ['DATE_BEFORE_NOW_MINUS_DAYS', 'DATE_AFTER_NOW_MINUS_DAYS'],
+    placeholder: 'days, e.g. 30',
+  },
+  {
+    value: 'extras.lastEyewearPurchaseDate',
+    label: 'Last Eyewear Purchase Date',
+    valueType: 'NUMBER',
+    operators: [
+      'DATE_DAY_OF_YEAR_EQUALS',
+      'DATE_BEFORE_NOW_MINUS_DAYS',
+      'DATE_AFTER_NOW_MINUS_DAYS',
+      'IS_NULL',
+      'IS_NOT_NULL',
+    ],
+    placeholder: 'days, e.g. 365',
+  },
+  {
+    value: 'extras.phone',
+    label: 'Phone in Extras',
+    valueType: 'STRING',
+    operators: ['IS_NULL', 'IS_NOT_NULL', 'CONTAINS', 'NOT_CONTAINS'],
+    placeholder: 'phone fragment',
+  },
+];
+
+const emptyCondition = (): RuleConditionRow => ({
+  id: Math.random().toString(36).slice(2),
+  fieldPath: '',
+  operator: 'EQ',
+  valueType: 'STRING',
+  value: '',
+  groupNo: 0,
+});
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ComposeScheduleView() {
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Progressive wizard state
   const [selectedTransportId, setSelectedTransportId] = useState('');
@@ -131,13 +326,82 @@ export default function ComposeScheduleView() {
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
 
+  // Automation rule creation state
+  const [showRuleBuilder, setShowRuleBuilder] = useState(false);
+  const [ruleTargetType, setRuleTargetType] =
+    useState<RuleTargetType>('VENDOR');
+  const [ruleCampaignId, setRuleCampaignId] = useState('');
+  const [ruleConditions, setRuleConditions] = useState<RuleConditionRow[]>([
+    emptyCondition(),
+  ]);
+  const [ruleIsRecurring, setRuleIsRecurring] = useState(false);
+  const [ruleCooldownDays, setRuleCooldownDays] = useState('');
+  const [ruleMaxSends, setRuleMaxSends] = useState('');
+  const [ruleFireOnce, setRuleFireOnce] = useState(false);
+
   // Data hooks
   const transport = useListElCrmTransport(projectUUID);
   const templates = useListElCrmTemplate(projectUUID, { status: 'APPROVED' });
+  const campaignList = useListElCrmCampaign(projectUUID, {
+    page: 1,
+    perPage: 100,
+  });
   const createCampaign = useCreateElCrmCampaign(projectUUID);
   const trigger = useTriggerElCrmCampaign(projectUUID);
   const automations = useListElCrmAutomation(projectUUID);
   const toggleAutomation = useToggleElCrmAutomation(projectUUID);
+  const createAutomationRule = useCreateElCrmAutomationRule(projectUUID);
+  const deleteAutomationRule = useDeleteElCrmAutomationRule(projectUUID);
+  const canCreateRules = searchParams.get('createRule') === 'true';
+
+  const conditionFieldOptions = useMemo(() => {
+    return ruleTargetType === 'VENDOR'
+      ? VENDOR_CONDITION_FIELDS
+      : BENEFICIARY_CONDITION_FIELDS;
+  }, [ruleTargetType]);
+
+  const availableRuleCampaigns = useMemo(() => {
+    return (campaignList.data ?? []).filter(
+      (campaign: CampaignOption) => campaign.targetType === ruleTargetType,
+    );
+  }, [campaignList.data, ruleTargetType]);
+
+  const automationRules = (automations.data ?? []) as AutomationRuleSummary[];
+
+  const getConditionFieldConfig = (fieldPath: string) =>
+    conditionFieldOptions.find((field) => field.value === fieldPath);
+
+  const updateRuleCondition = (
+    id: string,
+    patch: Partial<RuleConditionRow>,
+  ) => {
+    setRuleConditions((prev) =>
+      prev.map((row) => (row.id === id ? { ...row, ...patch } : row)),
+    );
+  };
+
+  const handleConditionFieldChange = (id: string, fieldPath: string) => {
+    const fieldConfig = conditionFieldOptions.find(
+      (field) => field.value === fieldPath,
+    );
+    if (!fieldConfig) return;
+
+    updateRuleCondition(id, {
+      fieldPath,
+      operator: fieldConfig.operators[0] ?? 'EQ',
+      valueType: fieldConfig.valueType,
+      value: '',
+    });
+  };
+
+  const handleConditionOperatorChange = (id: string, operator: string) => {
+    updateRuleCondition(id, {
+      operator,
+      value: NULLABLE_OPERATORS.includes(operator)
+        ? ''
+        : ruleConditions.find((row) => row.id === id)?.value ?? '',
+    });
+  };
 
   // Build filter payload for estimated recipients count
   const filtersForCount = useMemo(() => {
@@ -218,7 +482,6 @@ export default function ComposeScheduleView() {
 
     router.push(`/projects/el-crm/${projectUUID}/communications/scheduled`);
   };
-  console.log({ errors });
 
   const resetForm = () => {
     setSelectedTransportId('');
@@ -250,8 +513,9 @@ export default function ComposeScheduleView() {
     if (!messageContent) return undefined;
     if (isWhatsApp) {
       return (
-        templates.data?.find((t: any) => t.externalId === messageContent)
-          ?.name ?? messageContent
+        templates.data?.find(
+          (t: TemplateOption) => t.externalId === messageContent,
+        )?.name ?? messageContent
       );
     }
     return 'Custom message';
@@ -319,7 +583,7 @@ export default function ComposeScheduleView() {
                     </p>
                   ) : (
                     <div className="grid grid-cols-3 gap-3 ml-10">
-                      {transport.data?.map((ch: any) => (
+                      {transport.data?.map((ch: TransportOption) => (
                         <button
                           key={ch.cuid}
                           type="button"
@@ -367,7 +631,7 @@ export default function ComposeScheduleView() {
                               <SelectValue placeholder="Choose a template" />
                             </SelectTrigger>
                             <SelectContent>
-                              {templates.data?.map((t: any) => (
+                              {templates.data?.map((t: TemplateOption) => (
                                 <SelectItem
                                   key={t.cuid}
                                   value={t.externalId ?? t.cuid}
@@ -675,10 +939,372 @@ export default function ComposeScheduleView() {
 
               {/* ── AUTOMATIC TAB ── */}
               <TabsContent value="automatic" className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Pre-built automations that trigger based on customer events.
-                  Toggle to activate or deactivate.
-                </p>
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">
+                    Automations that trigger based on data-driven conditions.
+                    Toggle to activate or deactivate.
+                  </p>
+                  {canCreateRules && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1.5"
+                      onClick={() => {
+                        setShowRuleBuilder((v) => !v);
+                        setRuleConditions([emptyCondition()]);
+                      }}
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      {showRuleBuilder ? 'Cancel' : 'Create Rule'}
+                    </Button>
+                  )}
+                </div>
+
+                {/* ── Rule Builder ── */}
+                {canCreateRules && showRuleBuilder && (
+                  <div className="border rounded-lg p-4 space-y-4 bg-muted/30">
+                    <p className="font-medium text-sm">New Automation Rule</p>
+
+                    {/* Campaign selector */}
+                    <div className="space-y-1">
+                      <Label className="text-xs">Linked Campaign</Label>
+                      <Select
+                        value={ruleCampaignId}
+                        onValueChange={setRuleCampaignId}
+                      >
+                        <SelectTrigger className="h-8 text-xs">
+                          <SelectValue placeholder="Select campaign…" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableRuleCampaigns.map((c: CampaignOption) => (
+                            <SelectItem key={c.id} value={String(c.id)}>
+                              {c.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Target type */}
+                    <div className="space-y-1">
+                      <Label className="text-xs">Target Group</Label>
+                      <Select
+                        value={ruleTargetType}
+                        onValueChange={(value) => {
+                          setRuleTargetType(value as RuleTargetType);
+                          setRuleCampaignId('');
+                        }}
+                      >
+                        <SelectTrigger className="h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="VENDOR">
+                            Customers (Vendor)
+                          </SelectItem>
+                          <SelectItem value="BENEFICIARY">
+                            Consumers (Beneficiary)
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Conditions */}
+                    <div className="space-y-2">
+                      <Label className="text-xs">Conditions</Label>
+                      {ruleConditions.map((cond, idx) => (
+                        <div
+                          key={cond.id}
+                          className="grid grid-cols-12 gap-1 items-start"
+                        >
+                          {(() => {
+                            const fieldConfig = getConditionFieldConfig(
+                              cond.fieldPath,
+                            );
+                            const operatorOptions = (
+                              fieldConfig?.operators ?? ['EQ']
+                            ).map((operator) => ({
+                              value: operator,
+                              label: OPERATOR_LABELS[operator] ?? operator,
+                            }));
+                            const hideValueInput = NULLABLE_OPERATORS.includes(
+                              cond.operator,
+                            );
+                            const valueOptions =
+                              fieldConfig?.valueOptions ?? [];
+                            return (
+                              <>
+                                <div className="col-span-3">
+                                  <Select
+                                    value={cond.fieldPath}
+                                    onValueChange={(value) =>
+                                      handleConditionFieldChange(cond.id, value)
+                                    }
+                                  >
+                                    <SelectTrigger className="h-8 text-xs">
+                                      <SelectValue placeholder="Select field" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {conditionFieldOptions.map((field) => (
+                                        <SelectItem
+                                          key={field.value}
+                                          value={field.value}
+                                        >
+                                          {field.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="col-span-3">
+                                  <Select
+                                    value={cond.operator}
+                                    onValueChange={(value) =>
+                                      handleConditionOperatorChange(
+                                        cond.id,
+                                        value,
+                                      )
+                                    }
+                                    disabled={!cond.fieldPath}
+                                  >
+                                    <SelectTrigger className="h-8 text-xs">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {operatorOptions.map((o) => (
+                                        <SelectItem
+                                          key={o.value}
+                                          value={o.value}
+                                        >
+                                          {o.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="col-span-2">
+                                  <Select
+                                    value={cond.valueType}
+                                    onValueChange={(value) =>
+                                      updateRuleCondition(cond.id, {
+                                        valueType: value,
+                                      })
+                                    }
+                                    disabled={!cond.fieldPath || !!fieldConfig}
+                                  >
+                                    <SelectTrigger className="h-8 text-xs">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {VALUE_TYPE_OPTIONS.map((o) => (
+                                        <SelectItem
+                                          key={o.value}
+                                          value={o.value}
+                                        >
+                                          {o.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="col-span-3">
+                                  {hideValueInput ? (
+                                    <div className="h-8 rounded-md border border-dashed px-3 text-xs text-muted-foreground flex items-center">
+                                      No value needed
+                                    </div>
+                                  ) : valueOptions.length ? (
+                                    <Select
+                                      value={cond.value}
+                                      onValueChange={(value) =>
+                                        updateRuleCondition(cond.id, { value })
+                                      }
+                                    >
+                                      <SelectTrigger className="h-8 text-xs">
+                                        <SelectValue placeholder="Select value" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {valueOptions.map((option) => (
+                                          <SelectItem
+                                            key={option.value}
+                                            value={option.value}
+                                          >
+                                            {option.label}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  ) : (
+                                    <Input
+                                      className="h-8 text-xs"
+                                      placeholder={
+                                        fieldConfig?.placeholder ?? 'value'
+                                      }
+                                      value={cond.value}
+                                      onChange={(e) =>
+                                        updateRuleCondition(cond.id, {
+                                          value: e.target.value,
+                                        })
+                                      }
+                                      disabled={!cond.fieldPath}
+                                    />
+                                  )}
+                                </div>
+                                <div className="col-span-1 flex justify-center pt-1">
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setRuleConditions(
+                                        ruleConditions.filter(
+                                          (_, i) => i !== idx,
+                                        ),
+                                      )
+                                    }
+                                    className="text-destructive hover:opacity-70"
+                                    title="Remove condition"
+                                    aria-label="Remove condition"
+                                  >
+                                    <X className="h-3.5 w-3.5" />
+                                  </button>
+                                </div>
+                              </>
+                            );
+                          })()}
+                        </div>
+                      ))}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="gap-1 text-xs"
+                        onClick={() =>
+                          setRuleConditions([
+                            ...ruleConditions,
+                            emptyCondition(),
+                          ])
+                        }
+                      >
+                        <Plus className="h-3 w-3" /> Add Condition
+                      </Button>
+                    </div>
+
+                    {/* Recurrence options */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          id="rule-recurring"
+                          checked={ruleIsRecurring}
+                          onCheckedChange={setRuleIsRecurring}
+                        />
+                        <Label
+                          htmlFor="rule-recurring"
+                          className="text-xs cursor-pointer"
+                        >
+                          Recurring
+                        </Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          id="rule-fire-once"
+                          checked={ruleFireOnce}
+                          onCheckedChange={setRuleFireOnce}
+                        />
+                        <Label
+                          htmlFor="rule-fire-once"
+                          className="text-xs cursor-pointer"
+                        >
+                          Fire once per target
+                        </Label>
+                      </div>
+                      {ruleIsRecurring && (
+                        <div className="space-y-1">
+                          <Label className="text-xs">Cooldown days</Label>
+                          <Input
+                            className="h-8 text-xs"
+                            type="number"
+                            placeholder="e.g. 30"
+                            value={ruleCooldownDays}
+                            onChange={(e) =>
+                              setRuleCooldownDays(e.target.value)
+                            }
+                          />
+                        </div>
+                      )}
+                      <div className="space-y-1">
+                        <Label className="text-xs">Max sends per target</Label>
+                        <Input
+                          className="h-8 text-xs"
+                          type="number"
+                          placeholder="unlimited"
+                          value={ruleMaxSends}
+                          onChange={(e) => setRuleMaxSends(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Submit */}
+                    <div className="flex justify-end gap-2 pt-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setShowRuleBuilder(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        size="sm"
+                        disabled={
+                          !ruleCampaignId ||
+                          ruleConditions.length === 0 ||
+                          ruleConditions.some(
+                            (c) =>
+                              !c.fieldPath ||
+                              (!NULLABLE_OPERATORS.includes(c.operator) &&
+                                !c.value),
+                          ) ||
+                          createAutomationRule.isPending
+                        }
+                        onClick={() => {
+                          createAutomationRule.mutate(
+                            {
+                              campaignId: Number(ruleCampaignId),
+                              targetType: ruleTargetType,
+                              isRecurring: ruleIsRecurring,
+                              fireOnceOnEntry: ruleFireOnce,
+                              ...(ruleCooldownDays
+                                ? {
+                                    recurrenceCooldownDays:
+                                      Number(ruleCooldownDays),
+                                  }
+                                : {}),
+                              ...(ruleMaxSends
+                                ? { maxSendsPerTarget: Number(ruleMaxSends) }
+                                : {}),
+                              conditions: ruleConditions.map((c, idx) => ({
+                                fieldPath: c.fieldPath,
+                                operator: c.operator,
+                                valueType: c.valueType,
+                                value: c.value || undefined,
+                                groupNo: c.groupNo,
+                                sortOrder: idx,
+                              })),
+                            },
+                            {
+                              onSuccess: () => {
+                                setShowRuleBuilder(false);
+                                setRuleConditions([emptyCondition()]);
+                                setRuleCampaignId('');
+                              },
+                            },
+                          );
+                        }}
+                      >
+                        {createAutomationRule.isPending
+                          ? 'Saving…'
+                          : 'Save Rule'}
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
                 {automations.isLoading ? (
                   <p className="text-sm text-muted-foreground py-4">
@@ -689,18 +1315,24 @@ export default function ComposeScheduleView() {
                     <Zap className="h-12 w-12 mx-auto mb-3 opacity-40" />
                     <p className="font-medium">No automation rules found</p>
                     <p className="text-xs mt-1">
-                      Automation rules are configured in the database.
+                      {canCreateRules
+                        ? 'Click Create Rule to define a data-driven automation.'
+                        : 'No automation rules are configured for this project.'}
                     </p>
                   </div>
                 ) : (
-                  automations.data.map((rule: any) => (
+                  automationRules.map((rule) => (
                     <AutomationRuleCard
                       key={rule.uuid}
                       rule={rule}
-                      isPending={toggleAutomation.isPending}
+                      isPending={
+                        toggleAutomation.isPending ||
+                        deleteAutomationRule.isPending
+                      }
                       onToggle={(uuid, isEnabled) =>
                         toggleAutomation.mutate({ uuid, isEnabled })
                       }
+                      onDelete={(uuid) => deleteAutomationRule.mutate(uuid)}
                     />
                   ))
                 )}
@@ -762,62 +1394,110 @@ function AutomationRuleCard({
   rule,
   isPending,
   onToggle,
+  onDelete,
 }: {
-  rule: any;
+  rule: AutomationRuleSummary;
   isPending: boolean;
   onToggle: (uuid: string, isEnabled: boolean) => void;
+  onDelete?: (uuid: string) => void;
 }) {
+  const hasGenericConditions =
+    Array.isArray(rule.conditions) && rule.conditions.length > 0;
   return (
     <div
       className={cn(
-        'flex items-center justify-between rounded-lg border p-4 transition-all',
+        'rounded-lg border p-4 transition-all space-y-3',
         rule.isEnabled ? 'border-primary bg-primary/5' : 'border-border',
       )}
     >
-      <div className="flex items-start gap-4">
-        <div
-          className={cn(
-            'flex h-10 w-10 items-center justify-center rounded-lg shrink-0',
-            rule.isEnabled ? 'bg-primary/10' : 'bg-muted',
-          )}
-        >
-          <Zap className="h-5 w-5" />
-        </div>
-        <div>
-          <h4 className="font-medium">
-            {CONDITION_LABELS[rule.conditionType] ?? rule.conditionType}
-          </h4>
-          <p className="text-sm text-muted-foreground">
-            {rule.campaign?.name ?? '—'}
-          </p>
-          <div className="flex items-center gap-3 mt-2">
-            <Badge variant="outline" className="text-xs">
-              {TARGET_LABELS[rule.targetType] ?? rule.targetType}
-            </Badge>
-            {rule.isRecurring && (
-              <span className="text-xs text-muted-foreground flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                Recurring
-              </span>
+      <div className="flex items-center justify-between">
+        <div className="flex items-start gap-4">
+          <div
+            className={cn(
+              'flex h-10 w-10 items-center justify-center rounded-lg shrink-0',
+              rule.isEnabled ? 'bg-primary/10' : 'bg-muted',
             )}
+          >
+            <Zap className="h-5 w-5" />
+          </div>
+          <div>
+            <h4 className="font-medium">
+              {(rule.conditionType
+                ? CONDITION_LABELS[rule.conditionType]
+                : undefined) ??
+                rule.campaign?.name ??
+                'Automation Rule'}
+            </h4>
+            <p className="text-sm text-muted-foreground">
+              {rule.campaign?.name ?? '—'}
+            </p>
+            <div className="flex items-center gap-3 mt-2">
+              <Badge variant="outline" className="text-xs">
+                {TARGET_LABELS[rule.targetType] ?? rule.targetType}
+              </Badge>
+              {rule.isRecurring && (
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  Recurring
+                </span>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-      <div className="flex items-center gap-3 shrink-0">
-        <span
-          className={cn(
-            'text-xs font-medium',
-            rule.isEnabled ? 'text-primary' : 'text-muted-foreground',
+        <div className="flex items-center gap-3 shrink-0">
+          <span
+            className={cn(
+              'text-xs font-medium',
+              rule.isEnabled ? 'text-primary' : 'text-muted-foreground',
+            )}
+          >
+            {rule.isEnabled ? 'Active' : 'Inactive'}
+          </span>
+          <Switch
+            checked={rule.isEnabled}
+            disabled={isPending}
+            onCheckedChange={(checked) => onToggle(rule.uuid, checked)}
+          />
+          {onDelete && (
+            <button
+              type="button"
+              className="text-destructive hover:opacity-70 ml-1"
+              disabled={isPending}
+              onClick={() => onDelete(rule.uuid)}
+              title="Delete rule"
+            >
+              <X className="h-4 w-4" />
+            </button>
           )}
-        >
-          {rule.isEnabled ? 'Active' : 'Inactive'}
-        </span>
-        <Switch
-          checked={rule.isEnabled}
-          disabled={isPending}
-          onCheckedChange={(checked) => onToggle(rule.uuid, checked)}
-        />
+        </div>
       </div>
+
+      {/* Generic conditions summary */}
+      {hasGenericConditions && (
+        <div className="ml-14 space-y-1">
+          <p className="text-xs font-medium text-muted-foreground">
+            Conditions:
+          </p>
+          {rule.conditions?.map(
+            (c: AutomationRuleConditionSummary, idx: number) => (
+              <div
+                key={c.uuid ?? idx}
+                className="text-xs flex gap-1.5 text-muted-foreground"
+              >
+                <span className="font-mono bg-muted px-1 rounded">
+                  {c.fieldPath}
+                </span>
+                <span>{OPERATOR_LABELS[c.operator] ?? c.operator}</span>
+                {c.value && (
+                  <span className="font-mono bg-muted px-1 rounded">
+                    {c.value}
+                  </span>
+                )}
+              </div>
+            ),
+          )}
+        </div>
+      )}
     </div>
   );
 }

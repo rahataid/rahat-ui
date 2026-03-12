@@ -3,8 +3,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Eye } from 'lucide-react';
 import React from 'react';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import Link from 'next/link';
+import { targetTypeMap } from '../const';
 
 export const useMsgTableColumn = () => {
   const { id } = useParams();
@@ -51,7 +51,11 @@ export const useMsgTableColumn = () => {
     {
       accessorKey: 'targetType',
       header: 'Group',
-      cell: ({ row }) => <div>{row.getValue('targetType') || 'N/A'}</div>,
+      cell: ({ row }) => {
+        const value = row.getValue('targetType') as keyof typeof targetTypeMap;
+
+        return <div>{targetTypeMap[value] || 'N/A'}</div>;
+      },
     },
     {
       accessorKey: 'recipientCount',

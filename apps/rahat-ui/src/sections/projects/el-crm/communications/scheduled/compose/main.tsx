@@ -218,6 +218,7 @@ export default function ComposeScheduleView() {
 
     router.push(`/projects/el-crm/${projectUUID}/communications/scheduled`);
   };
+  console.log({ errors });
 
   const resetForm = () => {
     setSelectedTransportId('');

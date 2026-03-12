@@ -33,21 +33,6 @@ import {
 } from '@rahat-ui/query';
 import { CHANNELS } from '../../const';
 
-// Validation schema
-const composeMessageSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  targetType: z.string().min(1, 'Please select a group'),
-  statusFilter: z.string().optional(),
-  messagingChannel: z.string().min(1, 'Please select a messaging channel'),
-  scheduleDate: z.date().optional(),
-  selectedTemplate: z.string().optional(),
-  customMessage: z.string().optional(),
-  newTemplateName: z.string().optional(),
-  newTemplateContent: z.string().optional(),
-});
-
-type ComposeMessageForm = z.infer<typeof composeMessageSchema>;
-
 export default function ComposeMessageView() {
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
@@ -57,6 +42,31 @@ export default function ComposeMessageView() {
   const [templateMode, setTemplateMode] = useState<'existing' | 'new'>(
     'existing',
   );
+
+  // Validation schema
+  const composeMessageSchema = z
+    .object({
+      name: z.string().min(1, 'Name is required'),
+      targetType: z.string().min(1, 'Please select a group'),
+      statusFilter: z.string().optional(),
+      messagingChannel: z.string().min(1, 'Please select a messaging channel'),
+      scheduleDate: z.date().optional(),
+      selectedTemplate: z.string().optional(),
+      customMessage: z.string().optional(),
+      newTemplateName: z.string().optional(),
+      newTemplateContent: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+      if (selectedChannelName === CHANNELS.WHATSAPP && !data.selectedTemplate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['selectedTemplate'],
+          message: 'Please select a template for Whatsapp messaging channel',
+        });
+      }
+    });
+
+  type ComposeMessageForm = z.infer<typeof composeMessageSchema>;
 
   const {
     control,
@@ -267,24 +277,25 @@ export default function ComposeMessageView() {
               </div>
 
               {/* Custom Message */}
-              {selectedChannelName !== CHANNELS.WHATSAPP && (
-                <div className="space-y-2">
-                  <Label htmlFor="custom-message">
-                    OR Write Custom Message
-                  </Label>
-                  <Textarea
-                    id="custom-message"
-                    placeholder="Type your custom message here..."
-                    {...register('customMessage')}
-                    rows={4}
-                  />
-                  {errors.customMessage && (
-                    <p className="text-sm text-red-500">
-                      {errors.customMessage.message}
-                    </p>
-                  )}
-                </div>
-              )}
+              {selectedChannelName &&
+                selectedChannelName !== CHANNELS.WHATSAPP && (
+                  <div className="space-y-2">
+                    <Label htmlFor="custom-message">
+                      OR Write Custom Message
+                    </Label>
+                    <Textarea
+                      id="custom-message"
+                      placeholder="Type your custom message here..."
+                      {...register('customMessage')}
+                      rows={4}
+                    />
+                    {errors.customMessage && (
+                      <p className="text-sm text-red-500">
+                        {errors.customMessage.message}
+                      </p>
+                    )}
+                  </div>
+                )}
               {selectedChannelName === CHANNELS.WHATSAPP && (
                 <div className="space-y-4">
                   <Label>Template Option</Label>
@@ -311,30 +322,37 @@ export default function ComposeMessageView() {
 
                   {/* EXISTING TEMPLATE */}
                   {templateMode === 'existing' && (
-                    <Controller
-                      name="selectedTemplate"
-                      control={control}
-                      render={({ field }) => (
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Choose existing template" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {templates?.data?.map((template: any) => (
-                              <SelectItem
-                                key={template.cuid}
-                                value={template.externalId}
-                              >
-                                {template.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                    <>
+                      <Controller
+                        name="selectedTemplate"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Choose existing template" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {templates?.data?.map((template: any) => (
+                                <SelectItem
+                                  key={template.cuid}
+                                  value={template.externalId}
+                                >
+                                  {template.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+                      {errors.selectedTemplate && (
+                        <p className="text-sm text-red-500">
+                          {errors.selectedTemplate.message}
+                        </p>
                       )}
-                    />
+                    </>
                   )}
 
                   {/* CREATE NEW TEMPLATE */}

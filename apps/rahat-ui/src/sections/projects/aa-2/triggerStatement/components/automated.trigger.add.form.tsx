@@ -21,7 +21,7 @@ import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { z } from 'zod';
 import { Info } from 'lucide-react';
 import { AutomatedFormSchema } from '../add.trigger.view';
-import { Option } from '../utils';
+import { Option, SOURCE_MAPPING } from '../utils';
 import { useGetSeriesByDataSource } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -87,33 +87,31 @@ export default function AddAutomatedTriggerForm({
   );
 
   React.useEffect(() => {
-    if (source) {
-      // Reset source-related fields when source changes
-      form.setValue('triggerStatement.sourceSubType', '');
-      form.setValue('triggerStatement.stationId', '');
-      form.setValue('triggerStatement.stationName', '');
-      form.setValue('triggerStatement.operator', undefined);
-      form.setValue('triggerStatement.value', undefined);
-      form.setValue('triggerStatement.expression', '');
-
-      switch (source) {
-        case 'dhm:waterlevel':
-          form.setValue('triggerStatement.source', 'water_level_m');
-          break;
-        case 'dhm:rainfall':
-          form.setValue('triggerStatement.source', 'rainfall_mm');
-          break;
-        case 'glofas':
-          form.setValue('triggerStatement.source', 'prob_flood');
-          break;
-        case 'gfh':
-          form.setValue('triggerStatement.source', 'discharge_m3s');
-          break;
-        default:
-          break;
-      }
+    if (source && source in SOURCE_MAPPING) {
+      // Always update triggerStatement.source to match the selected source
+      form.setValue(
+        'triggerStatement.source',
+        SOURCE_MAPPING[source as keyof typeof SOURCE_MAPPING],
+      );
     }
   }, [source, form]);
+
+  // Update selectedSource when source changes (handles both initial load and reset)
+  React.useEffect(() => {
+    if (source && isEditing) {
+      const [dataSource, type] = source.includes(':')
+        ? source.split(':')
+        : [source, null];
+      const mappedType = type === 'waterlevel' ? 'water_level' : type;
+      const currentSourceKey = `${selectedSource.dataSource}:${selectedSource.type}`;
+      const newSourceKey = `${dataSource}:${mappedType}`;
+
+      // Only update if source actually changed to avoid infinite loops
+      if (currentSourceKey !== newSourceKey) {
+        setSelectedSource({ dataSource, type: mappedType });
+      }
+    }
+  }, [source, isEditing]);
 
   React.useEffect(() => {
     if (triggerSourceSubType && triggerOperator && triggerValue) {
@@ -127,6 +125,27 @@ export default function AddAutomatedTriggerForm({
       );
     }
   }, [triggerSourceSubType, triggerOperator, triggerValue]);
+
+  const handleSourceChange = (value: string) => {
+    form.setValue('triggerStatement.sourceSubType', '');
+    form.setValue('triggerStatement.stationId', '');
+    form.setValue('triggerStatement.stationName', '');
+    form.setValue('triggerStatement.operator', '');
+    form.setValue('triggerStatement.value', '');
+    form.setValue('triggerStatement.expression', '');
+
+    const [dataSource, type] = value.includes(':')
+      ? value.split(':')
+      : [value, null];
+    const mappedType = type === 'waterlevel' ? 'water_level' : type;
+    setSelectedSource({ dataSource, type: mappedType });
+  };
+
+  const handleSourceSubTypeChange = (value: string) => {
+    form.setValue('triggerStatement.operator', '');
+    form.setValue('triggerStatement.value', '');
+    form.setValue('triggerStatement.expression', '');
+  };
 
   const SourceSubTypeField = ({ label }: { label: string }) => {
     return (
@@ -209,22 +228,14 @@ export default function AddAutomatedTriggerForm({
                     <Select
                       onValueChange={(v) => {
                         field.onChange(v);
-                        const [dataSource, type] = v.includes(':')
-                          ? v.split(':')
-                          : [v, null];
-                        const mappedType =
-                          type === 'waterlevel' ? 'water_level' : type;
-                        setSelectedSource({ dataSource, type: mappedType });
+                        handleSourceChange(v);
                       }}
                       value={field.value}
                       key={field.value}
-                      disabled={isEditing}
                     >
                       <FormLabel>Source</FormLabel>
                       <FormControl>
-                        <SelectTrigger
-                          className={isEditing ? 'bg-gray-300' : ''}
-                        >
+                        <SelectTrigger>
                           <SelectValue placeholder="Select Source" />
                         </SelectTrigger>
                       </FormControl>
@@ -248,7 +259,7 @@ export default function AddAutomatedTriggerForm({
               }}
             />
 
-            {!isEditing && source && (
+            {source && (
               <div className="col-span-2 bg-[#fcfcfd] gap-4">
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <FormField
@@ -258,7 +269,10 @@ export default function AddAutomatedTriggerForm({
                       return (
                         <FormItem>
                           <Select
-                            onValueChange={field.onChange}
+                            onValueChange={(v) => {
+                              field.onChange(v);
+                              handleSourceSubTypeChange(v);
+                            }}
                             value={field.value}
                             key={field.value}
                           >
@@ -300,13 +314,11 @@ export default function AddAutomatedTriggerForm({
                               }}
                               value={field.value}
                               key={field.value}
-                              disabled={isEditing}
+                              // disabled={false}
                             >
                               <FormLabel>Station</FormLabel>
                               <FormControl>
-                                <SelectTrigger
-                                  className={isEditing ? 'bg-gray-300' : ''}
-                                >
+                                <SelectTrigger>
                                   <SelectValue placeholder="Select Station" />
                                 </SelectTrigger>
                               </FormControl>

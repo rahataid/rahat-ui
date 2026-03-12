@@ -167,15 +167,25 @@ export default function ComposeScheduleView() {
     return 4;
   }, [selectedTransportId, messageContent, selectedGroup]);
 
+  const isScheduleDateTimeValid = useMemo(() => {
+    if (!scheduleDate || !scheduleTime) return true;
+    const scheduled = new Date(`${scheduleDate}T${scheduleTime}`);
+    if (Number.isNaN(scheduled.getTime())) return false;
+    return scheduled.getTime() > Date.now();
+  }, [scheduleDate, scheduleTime]);
+
   const canSubmit =
     !!campaignName &&
     !!scheduleDate &&
     !!scheduleTime &&
+    isScheduleDateTimeValid &&
     !!selectedGroup &&
     !!messageContent &&
     !!selectedTransportId;
 
   const handleSubmit = async () => {
+    if (!isScheduleDateTimeValid) return;
+
     const options: Record<string, string | undefined> = {};
 
     for (const row of filterRows) {
@@ -625,6 +635,12 @@ export default function ComposeScheduleView() {
                             />
                           </div>
                         </div>
+
+                        {!isScheduleDateTimeValid && (
+                          <p className="text-sm text-destructive">
+                            Please choose a future date and time.
+                          </p>
+                        )}
                       </div>
                     </div>
 

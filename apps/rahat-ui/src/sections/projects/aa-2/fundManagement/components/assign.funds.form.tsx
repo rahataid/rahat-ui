@@ -74,6 +74,8 @@ export default function AssignFundsForm({
     reValidateMode: 'onChange',
   });
 
+  const { control, handleSubmit, watch, reset, trigger, setValue } = form;
+
   const benGroups = useBeneficiaryGroups(projectId, {
     page: 1,
     perPage: 100,
@@ -89,14 +91,14 @@ export default function AssignFundsForm({
     }),
   );
 
-  const tokenPerBenef = form.watch('tokenAmountPerBenef');
-  const selectedGroupId = form.watch('beneficiaryGroupId');
+  const tokenPerBenef = watch('tokenAmountPerBenef');
+  const selectedGroupId = watch('beneficiaryGroupId');
 
   // Pre-fill form when returning from a later step
   useEffect(() => {
     const payload = assignedFundData?.reserveTokenPayload;
     if (!payload) return;
-    form.reset({
+    reset({
       title: payload.title ?? '',
       beneficiaryGroupId: payload.beneficiaryGroupId ?? '',
       tokenAmountPerBenef: payload.tokenAmountPerBenef ?? 0,
@@ -156,7 +158,7 @@ export default function AssignFundsForm({
     const total = tokenPerBenef * count;
 
     if (!isNaN(total)) {
-      form.setValue('totalTokenAmount', total);
+      setValue('totalTokenAmount', total);
     }
     // `form` is a stable ref from useForm — intentionally excluded
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -164,10 +166,10 @@ export default function AssignFundsForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleAssignFunds)}>
+      <form onSubmit={handleSubmit(handleAssignFunds)}>
         <div className=" border rounded-sm p-4 flex flex-col space-y-4">
           <FormField
-            control={form.control}
+            control={control}
             name="title"
             render={({ field }) => {
               return (
@@ -187,7 +189,7 @@ export default function AssignFundsForm({
           />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <FormField
-              control={form.control}
+              control={control}
               name="beneficiaryGroupId"
               render={({ field }) => (
                 <FormItem className="flex flex-col space-y-3 w-full">
@@ -227,7 +229,7 @@ export default function AssignFundsForm({
                                   value={group?.uuid}
                                   key={group?.uuid}
                                   onSelect={() => {
-                                    form.setValue(
+                                    setValue(
                                       'beneficiaryGroupId',
                                       group?.uuid,
                                       {
@@ -259,7 +261,7 @@ export default function AssignFundsForm({
               )}
             />
             <FormField
-              control={form.control}
+              control={control}
               name="tokenAmountPerBenef"
               render={({ field }) => (
                 <FormItem className="w-full">
@@ -272,7 +274,7 @@ export default function AssignFundsForm({
                       value={field.value === 0 ? '' : field.value}
                       onChange={(e) => {
                         field.onChange(e.target.valueAsNumber);
-                        form.trigger('tokenAmountPerBenef');
+                        trigger('tokenAmountPerBenef');
                       }}
                     />
                   </FormControl>
@@ -282,7 +284,7 @@ export default function AssignFundsForm({
             />
 
             <FormField
-              control={form.control}
+              control={control}
               name="totalTokenAmount"
               render={({ field }) => (
                 <FormItem className="w-full">
@@ -306,7 +308,7 @@ export default function AssignFundsForm({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => form.reset(DEFAULT_VALUES)}
+                onClick={() => reset(DEFAULT_VALUES)}
                 className="px-10 rounded-sm w-40"
               >
                 Clear

@@ -75,9 +75,6 @@ export default function BeneficiaryGroupTransactionDetailsList() {
     },
   );
 
-  if (payout) {
-    console.log('payout', payout);
-  }
   const triggerForPayoutFailed = useTriggerForPayoutFailed();
   const triggerPayout = useTriggerPayout();
   const columns = useBeneficiaryGroupDetailsLogColumns(payout?.type);

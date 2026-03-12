@@ -11,6 +11,7 @@ import {
   AlertDialogAction,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { PayoutTransaction } from 'apps/rahat-ui/src/types/payout';
 import {
   Tooltip,
   TooltipContent,
@@ -19,7 +20,7 @@ import {
 } from 'libs/shadcn/src/components/ui/tooltip';
 
 type IProps = {
-  payoutData: any;
+  payoutData: PayoutTransaction;
   onConfirm: () => void;
 };
 
@@ -27,7 +28,6 @@ export default function PayoutConfirmationDialog({
   payoutData,
   onConfirm,
 }: IProps) {
-  console.log('payoutData', payoutData);
   return (
     <AlertDialog>
       <RoleAuth

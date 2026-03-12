@@ -107,16 +107,7 @@ export default function PayoutView() {
             />
           </TabsContent>
           <TabsContent value="payoutList">
-            <RoleAuth
-              roles={[
-                AARoles.ADMIN,
-                AARoles.MANAGER,
-                AARoles.Municipality,
-                AARoles.UNICEFNepalCO,
-              ]}
-            >
-              <PayoutTransactionList />
-            </RoleAuth>
+            <PayoutTransactionList />
           </TabsContent>
         </Tabs>
       </div>

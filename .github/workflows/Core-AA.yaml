@@ -1,4 +1,4 @@
-name: AA Test Load CI/CD
+name: AA CORE DEV CI/CD
 on:
   workflow_dispatch:
     inputs:

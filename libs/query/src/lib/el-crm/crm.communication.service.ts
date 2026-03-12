@@ -29,6 +29,8 @@ const GET_TEMPLATE = 'elProject.campaign.list_templates';
 const SYNC_TEMPLATE = 'elProject.campaign.sync_templates';
 const BROADCAST_COUNT = 'elProject.campaign.broadcast_count';
 const SESSION_BROADCAST = 'elProject.campaign.list_session_broadcasts';
+const LIST_AUTOMATION = 'elProject.campaign.automation.list';
+const TOGGLE_AUTOMATION = 'elProject.campaign.automation.toggle';
 
 const queryKeys = {
   //elCrmQueryKeys
@@ -40,6 +42,7 @@ const queryKeys = {
   elCrmListTemplate: 'elCrmListTemplate',
   elCrmBroadcastCount: 'elCrmBroadcastCount',
   elCrmSessionBroadcast: 'elCrmSessionBroadcast',
+  elCrmAutomationList: 'elCrmAutomationList',
 };
 
 // Hooks for create campaign
@@ -428,6 +431,61 @@ export const useRetryFailedSession = (uuid: UUID) => {
         icon: 'error',
         text: errorMessage,
       });
+    },
+  });
+};
+
+export const useListElCrmAutomation = (
+  projectUUID: UUID,
+  payload?: { page?: number; perPage?: number; isEnabled?: boolean },
+) => {
+  const action = useProjectAction();
+
+  return useQuery({
+    queryKey: [queryKeys.elCrmAutomationList, projectUUID, payload],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: LIST_AUTOMATION,
+          payload: payload ?? { page: 1, perPage: 50 },
+        },
+      });
+      return (res.data ?? []) as Record<string, unknown>[];
+    },
+  });
+};
+
+export const useToggleElCrmAutomation = (projectUUID: UUID) => {
+  const action = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async (data: { uuid: string; isEnabled: boolean }) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: TOGGLE_AUTOMATION,
+          payload: data,
+        },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.elCrmAutomationList],
+      });
+      toast.fire({ title: 'Automation updated', icon: 'success' });
+    },
+    onError: () => {
+      toast.fire({ title: 'Failed to update automation', icon: 'error' });
     },
   });
 };

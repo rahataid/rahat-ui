@@ -21,6 +21,9 @@ module.exports = {
       },
     },
     extend: {
+      screens: {
+        compact: { max: '999px' },
+      },
       backgroundImage: {
         login: "url('/bg/rahat-login-bg.png')",
       },

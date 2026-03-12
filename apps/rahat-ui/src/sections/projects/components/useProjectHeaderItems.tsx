@@ -27,10 +27,12 @@ export const useProjectHeaderItems = (projectType: string) => {
   const projectName = project?.name || '';
   const projectHeader = (
     <div className="flex items-center">
-      <Badge className="bg-blue-500 text-white rounded-full px-3 py-1">
+      <Badge className="bg-blue-500 text-white rounded-full px-3 py-1 compact:px-2 compact:py-0.5 compact:text-xs">
         {projectType}
       </Badge>
-      <span className="ml-2 text-gray-700">{projectName}</span>
+      <span className="ml-2 compact:ml-1 text-gray-700 compact:text-xs compact:truncate compact:max-w-[120px]">
+        {projectName}
+      </span>
     </div>
   );
 

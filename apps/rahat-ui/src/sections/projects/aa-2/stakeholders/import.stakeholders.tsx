@@ -29,7 +29,7 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/src/components/ui/table';
 
-import { ClientSidePagination, HeaderWithBack } from 'apps/rahat-ui/src/common';
+import { Back, ClientSidePagination } from 'apps/rahat-ui/src/common';
 import { CloudDownload, Repeat2, Share, Users, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 import {
@@ -524,26 +524,57 @@ export default function ImportStakeholder() {
 
   return (
     <>
-      <div className="p-4  h-[calc(100vh-120px)]">
-        <div className="flex justify-between items-center mb-2">
-          <HeaderWithBack
-            title="Import Stakeholders"
-            subtitle="List of all stakeholders you can import"
-            path={`/projects/aa/${id}/stakeholders`}
-          />
-          <div className="flex mt-4">
+      <div
+        className="p-4 compact:p-2 flex flex-col"
+        style={{ height: 'calc(100vh - 80px)' }}
+      >
+        {/* Header */}
+        <div className="shrink-0 mb-2 compact:mb-1">
+          {/* Large screens: stacked */}
+          <div className="compact:hidden">
+            <Back path={`/projects/aa/${id}/stakeholders`} />
+            <h1 className="font-semibold text-[28px]">Import Stakeholders</h1>
+            <p className="ml-1 text-muted-foreground text-base">
+              List of all stakeholders you can import
+            </p>
+          </div>
+          {/* Compact screens: inline */}
+          <div className="hidden compact:flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 [&>div]:mb-0">
+              <Back
+                path={`/projects/aa/${id}/stakeholders`}
+                className="border border-gray-300 text-gray-500 rounded px-2 py-0.5 mb-0 w-auto"
+              />
+              <h1 className="font-semibold text-base leading-tight">
+                Import Stakeholders
+              </h1>
+            </div>
             <Button
               onClick={handleSampleDownload}
               type="button"
               variant="outline"
+              className="shrink-0 compact:h-7 compact:text-xs compact:px-2"
             >
-              <CloudDownload size={22} className="mr-1" />
+              <CloudDownload size={16} className="mr-1" />
               Download Sample
             </Button>
           </div>
         </div>
 
-        <div className=" p-4 border bg-card rounded-sm">
+        {/* Download Sample — large screens only */}
+        <div className="compact:hidden flex justify-end mb-2 shrink-0">
+          <Button
+            onClick={handleSampleDownload}
+            type="button"
+            variant="outline"
+          >
+            <CloudDownload size={22} className="mr-1" />
+            Download Sample
+          </Button>
+        </div>
+
+        {/* File picker */}
+        <div className="p-4 compact:p-2 border bg-card rounded-sm shrink-0 mb-2 compact:mb-1">
           <div className="flex justify-between space-x-2">
             <div className="relative w-full">
               <Input
@@ -552,88 +583,93 @@ export default function ImportStakeholder() {
                 onChange={handleFileUpload}
                 className="sr-only"
               />
-
               <div
                 className="flex items-center border rounded-sm cursor-pointer w-full"
                 onClick={() => inputRef.current?.click()}
               >
-                <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-4 py-2 font-semibold text-sm hover:bg-gray-200 transition-colors space-x-3">
+                <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-4 py-2 compact:px-2 compact:py-1 compact:text-xs font-semibold text-sm hover:bg-gray-200 transition-colors space-x-3">
                   {selectedFile ? (
                     <>
-                      <Repeat2 size={22} className="px-1" /> Replace
+                      <Repeat2 size={18} className="px-0.5" /> Replace
                     </>
                   ) : (
                     <>
-                      <Share size={22} className="px-1" />
-                      Choose File
+                      <Share size={18} className="px-0.5" /> Choose File
                     </>
                   )}
                 </span>
-                <span className="px-4 py-2 flex-grow truncate">{fileName}</span>
+                <span className="px-4 py-2 compact:px-2 compact:py-1 compact:text-xs flex-grow truncate">
+                  {fileName}
+                </span>
               </div>
             </div>
           </div>
         </div>
 
-        <>
-          {data.length > 1 && (
-            <>
-              <div className="border-2 border-dashed border-black mt-6 mx-auto w-full">
-                <ScrollArea className="h-[calc(100vh-430px)] w-full">
-                  <Table className="table-auto w-full">
-                    <TableHeader>
-                      {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
-                          {headerGroup.headers.map((header) => (
-                            <TableHead
-                              key={header.id}
-                              className="truncate max-w-[150px] sticky top-0 bg-card"
-                            >
-                              {
-                                flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext(),
-                                ) as React.ReactNode
-                              }
-                            </TableHead>
-                          ))}
-                        </TableRow>
-                      ))}
-                    </TableHeader>
-                    <TableBody>
-                      {table.getRowModel().rows.map((row) => (
-                        <TableRow key={row.id}>
-                          {row.getVisibleCells().map((cell) => (
-                            <React.Fragment key={cell.id}>
-                              {
-                                flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext(),
-                                ) as React.ReactNode
-                              }
-                            </React.Fragment>
-                          ))}
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-
-                  <ScrollBar orientation="horizontal" />
-                </ScrollArea>
-              </div>
+        {/* Table — flex-1 to fill remaining space */}
+        {data.length > 1 && (
+          <div className="flex flex-col flex-1 min-h-0">
+            <div className="border-2 border-dashed border-black flex-1 min-h-0">
+              <ScrollArea className="h-full w-full">
+                <Table className="table-auto w-full">
+                  <TableHeader>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <TableRow key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
+                          <TableHead
+                            key={header.id}
+                            className="truncate max-w-[150px] sticky top-0 bg-card compact:h-8 compact:px-2 compact:text-xs"
+                          >
+                            {
+                              flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              ) as React.ReactNode
+                            }
+                          </TableHead>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableHeader>
+                  <TableBody>
+                    {table.getRowModel().rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        className="compact:[&_td]:px-2 compact:[&_td]:py-1 compact:[&_td]:text-xs"
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <React.Fragment key={cell.id}>
+                            {
+                              flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              ) as React.ReactNode
+                            }
+                          </React.Fragment>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </div>
+            <div className="shrink-0 compact:[&_button]:h-6 compact:[&_button]:w-6 compact:[&_button]:p-0 compact:[&_.text-sm]:text-xs compact:[&_[role='combobox']]:h-6 compact:[&_[role='combobox']]:text-xs compact:[&_[role='combobox']]:w-12">
               <ClientSidePagination table={table} />
-            </>
-          )}
-        </>
+            </div>
+          </div>
+        )}
       </div>
-      <div className="flex justify-between items-center py-2 px-4 border-t">
-        <div>
+
+      {/* Footer bar */}
+      <div className="flex justify-between items-center py-2 px-4 compact:py-1 compact:px-2 border-t shrink-0">
+        <div className="compact:text-xs">
           {data?.length ? <p>Total Count: {data?.length - 1 ?? 0}</p> : null}
         </div>
         <div className="flex space-x-2">
           <Button
             type="button"
-            className="w-48"
+            className="w-48 compact:w-auto compact:text-xs compact:h-8 compact:px-3"
             variant="outline"
             onClick={() => {
               setData([]);
@@ -643,7 +679,6 @@ export default function ImportStakeholder() {
               setDuplicateEmails(new Set());
               setDuplicatePhonesFromServer(new Set());
               setInvalidPhoneStrings(new Set());
-
               if (inputRef.current) {
                 inputRef.current.value = '';
               }
@@ -651,9 +686,8 @@ export default function ImportStakeholder() {
           >
             Clear
           </Button>
-
           <Button
-            className="w-48 bg-primary hover:ring-2 ring-primary"
+            className="w-48 compact:w-auto compact:text-xs compact:h-8 compact:px-3 bg-primary hover:ring-2 ring-primary"
             onClick={handleUpload}
             disabled={
               data?.length === 0 ||

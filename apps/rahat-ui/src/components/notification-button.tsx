@@ -25,11 +25,11 @@ export function NotificationButton({ unreadCount = 0 }) {
     <>
       <button
         onClick={handleNotification}
-        className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+        className="relative p-2 compact:p-1 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
       >
-        <Bell className="h-6 w-6" />
+        <Bell className="h-6 w-6 compact:h-4 compact:w-4" />
         {totalNotifications > 0 && (
-          <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+          <span className="absolute -top-1 -right-1 compact:-top-0.5 compact:-right-0.5 bg-blue-500 text-white text-xs compact:text-[10px] rounded-full h-5 w-5 compact:h-4 compact:w-4 flex items-center justify-center font-medium">
             {totalNotifications}
           </span>
         )}

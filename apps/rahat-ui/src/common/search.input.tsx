@@ -33,7 +33,7 @@ export function SearchInput({
       <Search
         size={18}
         strokeWidth={2.5}
-        className="absolute left-2 top-3 text-muted-foreground"
+        className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground"
       />
       <Input
         name={name}
@@ -48,7 +48,7 @@ export function SearchInput({
           size={18}
           strokeWidth={2.5}
           color="black"
-          className="absolute right-2 top-3 text-muted-foreground cursor-pointer border rounded-full "
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer border rounded-full"
           onClick={handleClear}
         />
       )}

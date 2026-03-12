@@ -54,21 +54,25 @@ export function ProjectNav({
   };
 
   return (
-    <div className="sticky top-0 z-50 h-14 w-full flex justify-between pl-2 pr-6 py-2 bg-card border-b">
-      <div className="flex items-center space-x-4">
+    <div className="sticky top-0 z-50 h-14 compact:h-10 w-full flex justify-between pl-2 pr-6 compact:pr-3 py-2 compact:py-1 bg-card border-b">
+      <div className="flex items-center space-x-4 compact:space-x-2">
         <SidebarTrigger />
         {component}
       </div>
-      <div className="flex gap-4 items-center">
-        <ConnectWallet />
+      <div className="flex gap-4 compact:gap-2 items-center">
+        <div className="compact:w-[115px] compact:h-7 compact:flex compact:items-center compact:justify-center compact:overflow-visible compact:shrink-0">
+          <div className="compact:scale-[0.72] compact:origin-center">
+            <ConnectWallet />
+          </div>
+        </div>
         {showNotification && <NotificationButton unreadCount={0} />}
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <Avatar className="h-10 w-10">
+            <Avatar className="h-10 w-10 compact:h-7 compact:w-7">
               <AvatarImage
                 src="https://github.com/shadcn.png"
                 alt="profile-icon"
-                className="rounded-3xl"
+                className="rounded-full"
               />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>

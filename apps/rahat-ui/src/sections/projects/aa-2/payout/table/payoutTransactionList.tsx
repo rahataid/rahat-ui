@@ -6,7 +6,6 @@ import usePayoutTransactionLogTableColumn from './usePayoutTransactionLogTableCo
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 import {
-  Back,
   CustomPagination,
   DemoTable,
   Heading,

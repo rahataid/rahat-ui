@@ -3,6 +3,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -15,6 +16,7 @@ type ConfirmationDialogProps = {
   onConfirm: () => void;
   dialogTitle?: string;
   dialogMessage?: string;
+  children?: React.ReactNode;
 };
 const ConfirmationDialog = ({
   isConfirmationDialogOpen,
@@ -22,6 +24,7 @@ const ConfirmationDialog = ({
   onConfirm,
   dialogTitle = 'Confirm Action',
   dialogMessage = 'This action cannot be undone. Are you sure you want to perform this action?',
+  children,
 }: ConfirmationDialogProps) => {
   return (
     <Dialog
@@ -30,18 +33,33 @@ const ConfirmationDialog = ({
         if (!nextOpen) onCancel();
       }}
     >
-      <DialogContent className="sm:max-w-[420px]">
-        <DialogHeader>
+      <DialogContent
+        className="!rounded-sm"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
+        <DialogHeader className="!text-center">
           <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogDescription>{children || dialogMessage}</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">{dialogMessage}</div>
-        <DialogFooter>
+
+        <DialogFooter className="flex justify-between">
           <DialogClose asChild>
-            <Button type="button" variant="secondary" onClick={onCancel}>
+            <Button
+              type="button"
+              onClick={onCancel}
+              className="w-full rounded-sm"
+              variant="outline"
+            >
               Cancel
             </Button>
           </DialogClose>
-          <Button type="button" onClick={onConfirm}>
+          <Button
+            type="submit"
+            onClick={onConfirm}
+            className="w-full rounded-sm"
+          >
             Confirm
           </Button>
         </DialogFooter>

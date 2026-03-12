@@ -97,6 +97,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
     id: d.uuid,
     title: d.title,
     responsibility: d?.manager?.name,
+    responsibleStation: d.responsibleStation,
     source: d?.phase?.source?.riverBasin,
     hazardType: d.hazardType?.name,
     category: d.category?.name,

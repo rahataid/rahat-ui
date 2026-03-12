@@ -60,6 +60,16 @@ const UpdateOrAddStakeholdersGroup = () => {
   });
 
   const {
+    setValue,
+    trigger,
+    setError,
+    formState,
+    handleSubmit,
+    control,
+    reset,
+  } = form;
+
+  const {
     filters,
     setFilters,
     pagination,
@@ -106,7 +116,7 @@ const UpdateOrAddStakeholdersGroup = () => {
         {},
       ) ?? {};
 
-    form.setValue('name', stakeholdersGroupDetail.name ?? '', {
+    setValue('name', stakeholdersGroupDetail.name ?? '', {
       shouldValidate: true,
     });
     setSelectedListItems(preSelected);
@@ -119,8 +129,8 @@ const UpdateOrAddStakeholdersGroup = () => {
     const selectedIds = Object.keys(selectedListItems).filter(
       (key) => selectedListItems[key],
     );
-    form.setValue('stakeholders', selectedIds);
-    form.trigger('stakeholders');
+    setValue('stakeholders', selectedIds);
+    trigger('stakeholders');
   };
 
   const handleCreateGroup = async (
@@ -135,7 +145,7 @@ const UpdateOrAddStakeholdersGroup = () => {
     });
 
     if (groupExists) {
-      form.setError('name', {
+      setError('name', {
         type: 'manual',
         message: 'A group with this name already exists',
       });
@@ -183,7 +193,7 @@ const UpdateOrAddStakeholdersGroup = () => {
 
   const handleSelectionChange = (updaterOrValue: any) => {
     setSelectedListItems(updaterOrValue);
-    if (form.formState.isSubmitted) {
+    if (formState.isSubmitted) {
       const newSelection =
         typeof updaterOrValue === 'function'
           ? updaterOrValue(selectedListItems)
@@ -191,7 +201,7 @@ const UpdateOrAddStakeholdersGroup = () => {
       const selectedIds = Object.keys(newSelection).filter(
         (key) => newSelection[key],
       );
-      form.setValue('stakeholders', selectedIds, { shouldValidate: true });
+      setValue('stakeholders', selectedIds, { shouldValidate: true });
     }
   };
 
@@ -211,7 +221,7 @@ const UpdateOrAddStakeholdersGroup = () => {
       rowSelection: selectedListItems,
     },
   });
-  const { stakeholders: stakeholdersError } = form.formState.errors;
+  const { stakeholders: stakeholdersError } = formState.errors;
 
   return (
     <div
@@ -347,7 +357,7 @@ const UpdateOrAddStakeholdersGroup = () => {
                 type="button"
                 className="w-48 compact:w-32 compact:text-xs compact:h-8 rounded-md"
                 onClick={() => {
-                  form.reset();
+                  reset();
                   resetSelectedListItems();
                 }}
                 variant="outline"

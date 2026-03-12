@@ -21,11 +21,16 @@ export default function GroupCreateView() {
   const createBeneficiaryGroup = useCreateBeneficiaryGroup();
 
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 4 character' }),
+    name: z
+      .string()
+      .min(2, { message: 'Name must be at least 2 characters' })
+      .max(50, { message: 'Name must be 50 characters or less' })
+      .trim(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    mode: 'onChange',
     defaultValues: {
       name: '',
     },

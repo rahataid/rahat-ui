@@ -172,9 +172,9 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       <div className="flex flex-col space-y-0">
         <Back
           path={
-            navigation
-              ? `/projects/aa/${projectId}/payout`
-              : `/projects/aa/${projectId}/payout/list`
+            navigation === 'payoutOverview'
+              ? `/projects/aa/${projectId}/payout?tab=payoutOverview`
+              : `/projects/aa/${projectId}/payout?tab=payoutList`
           }
         />
 

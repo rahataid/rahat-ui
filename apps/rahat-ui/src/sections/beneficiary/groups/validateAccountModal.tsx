@@ -46,7 +46,11 @@ export default function ValidateBenefBankAccountByGroupUuid({
   const validateBenefGroup = useValidateBeneficaryBankAccount();
   const router = useRouter();
   const handleValidateBankAccount = async () => {
-    await validateBenefGroup.mutateAsync(beneficiaryGroupDetail.uuid as UUID);
+    await validateBenefGroup.mutateAsync(beneficiaryGroupDetail.uuid as UUID, {
+      onSuccess: () => {
+        window.location.reload();
+      },
+    });
   };
 
   React.useEffect(() => {

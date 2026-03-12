@@ -1,6 +1,6 @@
-import { useSingleFailedBatch } from '@rahat-ui/query';
+import { useRetryCustomerImport, useSingleFailedBatch } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useFailedCustomersTableColumn } from './useFailedCustomersTableColumn';
@@ -11,14 +11,17 @@ import { ArrowLeft, RotateCcw } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
 export default function BatchDetailView() {
-  const { id: projectUUID, batchId } = useParams() as {
+  const { id: projectUUID, batchId: batchUUID } = useParams() as {
     id: UUID;
     batchId: UUID;
   };
+  const router = useRouter();
 
   const { failedBatch, isLoading } = useSingleFailedBatch(projectUUID, {
-    batchUUID: batchId,
+    batchUUID,
   });
+
+  const retryImport = useRetryCustomerImport();
 
   const [cellEdits, setCellEdits] = useState<
     Record<number, Record<string, string>>
@@ -76,9 +79,16 @@ export default function BatchDetailView() {
     setResetKey((k) => k + 1);
   };
 
-  const handleRetryWithEdits = () => {
+  const handleRetryWithEdits = async () => {
     console.log('Retrying with edited data:', editedData);
-    // retryImport({ projectUUID, batchId, customers: editedData });
+    await retryImport.mutateAsync({
+      projectUUID,
+      payload: {
+        batchUUID,
+        vendors: editedData,
+      },
+    });
+    router.push(`/projects/el-crm/${projectUUID}/customers`);
   };
 
   return (

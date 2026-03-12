@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import {
   Mail,
   MessageSquare,
@@ -22,6 +23,7 @@ import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useRouter } from 'next/navigation';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 
 interface BaseCommunication {
   communicationTitle?: string;
@@ -56,6 +58,7 @@ export function CommunicationCard({
   activityCommunication,
 }: CommunicationCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const confirmationDialog = useBoolean();
   const router = useRouter();
 
   const getIcon = () => {
@@ -102,6 +105,14 @@ export function CommunicationCard({
     }
   };
 
+  const handleConfirmSend = async () => {
+    confirmationDialog.onFalse();
+    await triggerCommunication(
+      activityId,
+      activityCommunication?.communicationId,
+    );
+  };
+
   return (
     <Card className="mb-4 rounded-sm">
       <CardContent className="pt-2 px-3 pb-2">
@@ -138,12 +149,7 @@ export function CommunicationCard({
                       <Button
                         className="items-center justify-center"
                         variant="ghost"
-                        onClick={() =>
-                          triggerCommunication(
-                            activityId,
-                            activityCommunication?.communicationId,
-                          )
-                        }
+                        onClick={confirmationDialog.onTrue}
                         type="button"
                       >
                         {loadingButtons.includes(
@@ -213,6 +219,25 @@ export function CommunicationCard({
             </div>
           )}
       </CardContent>
+
+      <ConfirmationDialog
+        isConfirmationDialogOpen={confirmationDialog.value}
+        onCancel={confirmationDialog.onFalse}
+        onConfirm={handleConfirmSend}
+        dialogTitle="Send Communication?"
+      >
+        <div>
+          Are you sure you want to send
+          <span className="font-bold mx-1">
+            {activityCommunication?.transportName}
+          </span>
+          communication to the
+          <span className="font-bold mx-1">
+            {activityCommunication?.groupName}
+          </span>
+          Group?
+        </div>
+      </ConfirmationDialog>
     </Card>
   );
 }

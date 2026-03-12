@@ -360,7 +360,7 @@ export const useListElCrmSessionBroadcast = (
           payload,
         },
       });
-      return res.data;
+      return res;
     },
   });
 };

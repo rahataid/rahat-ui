@@ -56,7 +56,9 @@ export default function ScheduledView() {
     order: 'desc',
     ...filters,
   });
-  const { data: templates } = useListElCrmTemplate(projectUUID);
+  const { data: templates } = useListElCrmTemplate(projectUUID, {
+    status: 'APPROVED',
+  });
   const transport = useListElCrmTransport(projectUUID);
 
   const messageIds = new Set(data?.map((d: any) => d.message));
@@ -76,17 +78,10 @@ export default function ScheduledView() {
   });
 
   const handleDateChange = (date: Date, type: string) => {
-    if (type === 'start') {
-      setFilters({
-        ...filters,
-        startDate: date,
-      });
-    } else {
-      setFilters({
-        ...filters,
-        endDate: date,
-      });
-    }
+    setFilters((prev) => ({
+      ...prev,
+      ...(type === 'start' ? { startDate: date } : { endDate: date }),
+    }));
   };
 
   return (
@@ -209,11 +204,19 @@ export default function ScheduledView() {
                       placeholder="Pick Start Date"
                       handleDateChange={handleDateChange}
                       type="start"
+                      value={
+                        filters?.startDate
+                          ? new Date(filters.startDate)
+                          : undefined
+                      }
                     />
                     <DatePicker
                       placeholder="Pick End Date"
                       handleDateChange={handleDateChange}
                       type="end"
+                      value={
+                        filters?.endDate ? new Date(filters.endDate) : undefined
+                      }
                     />
                   </div>
                 </div>

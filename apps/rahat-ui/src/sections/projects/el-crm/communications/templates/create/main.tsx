@@ -174,7 +174,9 @@ export default function CreateTemplateView() {
 
               {/* Action Buttons */}
               <div className="flex justify-end gap-3">
-                <Link href="/communication/templates">
+                <Link
+                  href={`/projects/el-crm/${projectUUID}/communications/templates`}
+                >
                   <Button type="button" variant="outline">
                     Cancel
                   </Button>

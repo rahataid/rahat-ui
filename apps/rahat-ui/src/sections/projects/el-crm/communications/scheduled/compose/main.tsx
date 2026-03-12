@@ -120,6 +120,7 @@ export default function ComposeScheduleView() {
       options: Object.keys(options).length ? options : undefined,
       transportId: data.messagingChannel,
       message: data.selectedTemplate,
+      isScheduled: true,
     };
     const capaign = await createCampaign.mutateAsync(payload);
     console.log('Created campaign:', capaign);
@@ -233,7 +234,7 @@ export default function ComposeScheduleView() {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="active">Active</SelectItem>
-                              <SelectItem value="newly-inactive">
+                              <SelectItem value="newly_inactive">
                                 Newly Inactive
                               </SelectItem>
                               <SelectItem value="inactive">Inactive</SelectItem>
@@ -334,8 +335,21 @@ export default function ComposeScheduleView() {
                         id="schedule-datetime"
                         type="datetime-local"
                         min={new Date().toISOString().slice(0, 16)}
-                        {...register('scheduleDateTime')}
+                        {...register('scheduleDateTime', {
+                          validate: (value) => {
+                            if (!value) return true;
+                            return (
+                              new Date(value) >= new Date() ||
+                              'Past date/time is not allowed'
+                            );
+                          },
+                        })}
                       />
+                      {errors.scheduleDateTime && (
+                        <p className="text-red-500 text-sm">
+                          {errors.scheduleDateTime.message}
+                        </p>
+                      )}
                     </div>
                   )}
 

@@ -225,20 +225,19 @@ export function CommunicationCard({
         onCancel={confirmationDialog.onFalse}
         onConfirm={handleConfirmSend}
         dialogTitle="Send Communication?"
-        descriptionContent={
-          <>
-            Are you sure you want to send{' '}
-            <span className="font-bold">
-              {activityCommunication?.transportName}
-            </span>{' '}
-            communication to the{' '}
-            <span className="font-bold">
-              {activityCommunication?.groupName}
-            </span>{' '}
-            Group?
-          </>
-        }
-      />
+      >
+        <div>
+          Are you sure you want to send
+          <span className="font-bold mx-1">
+            {activityCommunication?.transportName}
+          </span>
+          communication to the
+          <span className="font-bold mx-1">
+            {activityCommunication?.groupName}
+          </span>
+          Group?
+        </div>
+      </ConfirmationDialog>
     </Card>
   );
 }

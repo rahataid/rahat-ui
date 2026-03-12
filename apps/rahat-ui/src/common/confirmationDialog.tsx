@@ -16,7 +16,7 @@ type ConfirmationDialogProps = {
   onConfirm: () => void;
   dialogTitle?: string;
   dialogMessage?: string;
-  descriptionContent?: React.ReactNode;
+  children?: React.ReactNode;
 };
 const ConfirmationDialog = ({
   isConfirmationDialogOpen,
@@ -24,7 +24,7 @@ const ConfirmationDialog = ({
   onConfirm,
   dialogTitle = 'Confirm Action',
   dialogMessage = 'This action cannot be undone. Are you sure you want to perform this action?',
-  descriptionContent,
+  children,
 }: ConfirmationDialogProps) => {
   return (
     <Dialog
@@ -41,9 +41,7 @@ const ConfirmationDialog = ({
       >
         <DialogHeader className="!text-center">
           <DialogTitle>{dialogTitle}</DialogTitle>
-          <DialogDescription>
-            {descriptionContent || dialogMessage}
-          </DialogDescription>
+          <DialogDescription>{children || dialogMessage}</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="flex justify-between">

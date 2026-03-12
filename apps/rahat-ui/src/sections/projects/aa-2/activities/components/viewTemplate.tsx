@@ -29,7 +29,11 @@ import {
   AUTOMATION_TYPE,
   PHASE,
 } from 'apps/rahat-ui/src/constants/aa.constants';
-import { useDebounce, usePagination } from '@rahat-ui/query';
+import {
+  useActivitiesStore,
+  useDebounce,
+  usePagination,
+} from '@rahat-ui/query';
 import { Template } from 'apps/rahat-ui/src/types/activities';
 import {
   Accordion,
@@ -60,14 +64,16 @@ const ViewTemplate = ({
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
     null,
   );
+  const { categories } = useActivitiesStore((state) => ({
+    categories: state.categories,
+  }));
   const debouncedTitleSearch = useDebounce(filters.title || '', 500);
-  const debouncedCategorySearch = useDebounce(filters.category || '', 500);
 
   const { data: templates, isLoading } = useActivityTemplates(id, {
     page: pagination.page,
     perPage: pagination.perPage,
     phase: filters.phase,
-    category: debouncedCategorySearch,
+    category: filters.category,
     title: debouncedTitleSearch,
     isAutomated:
       filters.isAutomated === 'true'
@@ -136,18 +142,33 @@ const ViewTemplate = ({
                     {/* Category */}
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Category</label>
-                      <Input
-                        placeholder="Search category..."
-                        value={filters.category}
-                        onChange={(e) =>
+                      <Select
+                        value={
+                          filters.category === '' ? 'all' : filters.category
+                        }
+                        onValueChange={(value) =>
                           setFilters((prev: Template) => ({
                             ...prev,
-                            category: e.target.value,
+                            category: value === 'all' ? '' : value,
                             page: 1,
                           }))
                         }
-                        className="border-input"
-                      />
+                      >
+                        <SelectTrigger className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring">
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Category</SelectLabel>
+                            <SelectItem value="all">All</SelectItem>
+                            {categories.map((cat) => (
+                              <SelectItem key={cat.uuid} value={cat.name}>
+                                {cat.name}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     {/* Title */}

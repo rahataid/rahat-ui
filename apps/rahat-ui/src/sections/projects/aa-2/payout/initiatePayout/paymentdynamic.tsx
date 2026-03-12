@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 
 import {
@@ -74,6 +74,8 @@ const initialFormState: PaymentState = {
 export default function PaymentInitiation() {
   const params = useParams();
   const projectID = params.id as UUID;
+  const searchParams = useSearchParams();
+  const navigation = searchParams.get('from');
   const router = useRouter();
   const { data: payoutTypes, isLoading } = useTabConfiguration(
     projectID as UUID,
@@ -165,7 +167,7 @@ export default function PaymentInitiation() {
     }
 
     await initiatePayout.mutateAsync({ projectUUID: projectID, payload });
-    router.push(`/projects/aa/${projectID}/payout`);
+    router.push(`/projects/aa/${projectID}/payout?tab=${navigation}`);
   };
 
   useEffect(() => {
@@ -183,7 +185,11 @@ export default function PaymentInitiation() {
       <Form {...form}>
         <form action="POST">
           <div className="flex flex-col space-y-0">
-            <Back path={`/projects/aa/${projectID}/payout`} />
+            <Back
+              path={`/projects/aa/${projectID}/payout?tab=${
+                navigation || 'payoutOverview'
+              }`}
+            />
             <div className="mt-4 flex justify-between items-center">
               <Heading
                 title="Create Payout"

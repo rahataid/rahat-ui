@@ -3,9 +3,9 @@ import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
 import usePayoutTransactionLogTableColumn from './usePayoutTransactionLogTableColumn';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 
 import {
-  Back,
   CustomPagination,
   DemoTable,
   Heading,
@@ -92,61 +92,71 @@ export default function PayoutTransactionList() {
     [filters],
   );
   return (
-    <div className="p-4">
+    <div className="mt-4">
       <div className="flex flex-col space-y-0">
-        <Back path={`/projects/aa/${projectID}/payout`} />
+        {/* <Back path={`/projects/aa/${projectID}/payout`} /> */}
 
-        <div className="mt-4 flex justify-between items-center">
+        <div className=" flex justify-between items-center">
           <div>
             <Heading
               title={`Payout List`}
-              description="List of all the payouts available"
+              description="List of your payouts"
+              titleStyle="font-medium text-lg"
             />
           </div>
         </div>
       </div>
 
-      <div className="rounded-sm border border-gray-100 space-y-2 p-4">
-        <div className="flex gap-2">
-          <SearchInput
-            className="w-full flex-[4]"
-            name="group name"
-            onSearch={(e) => handleSearch(e, 'groupName')}
-            value={filters?.groupName || ''}
-          />
-          <SelectComponent
-            name="Payout Type"
-            options={['ALL', 'FSP', 'CVA']}
-            onChange={(value) =>
-              handleFilterChange({
-                target: { name: 'payoutType', value },
-              })
+      <RoleAuth
+        roles={[
+          AARoles.ADMIN,
+          AARoles.MANAGER,
+          AARoles.Municipality,
+          AARoles.UNICEFNepalCO,
+        ]}
+      >
+        <div className="rounded-sm border border-gray-100 space-y-2 p-4">
+          <div className="flex gap-2">
+            <SearchInput
+              className="w-full flex-[4]"
+              name="group name"
+              onSearch={(e) => handleSearch(e, 'groupName')}
+              value={filters?.groupName || ''}
+            />
+            <SelectComponent
+              name="Payout Type"
+              options={['ALL', 'FSP', 'CVA']}
+              onChange={(value) =>
+                handleFilterChange({
+                  target: { name: 'payoutType', value },
+                })
+              }
+              value={
+                filters?.payoutType === 'VENDOR'
+                  ? 'CVA'
+                  : filters?.payoutType || ''
+              }
+              className="flex-[1]"
+            />
+          </div>
+          <DemoTable table={table} loading={isLoading} />
+          <CustomPagination
+            currentPage={pagination.page}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            setPagination={setPagination}
+            meta={
+              (payouts?.response?.meta as any) || {
+                total: 0,
+                currentPage: 0,
+              }
             }
-            value={
-              filters?.payoutType === 'VENDOR'
-                ? 'CVA'
-                : filters?.payoutType || ''
-            }
-            className="flex-[1]"
+            perPage={pagination?.perPage}
+            total={payouts?.response?.meta?.total || 0}
           />
         </div>
-        <DemoTable table={table} loading={isLoading} />
-        <CustomPagination
-          currentPage={pagination.page}
-          handleNextPage={setNextPage}
-          handlePrevPage={setPrevPage}
-          handlePageSizeChange={setPerPage}
-          setPagination={setPagination}
-          meta={
-            (payouts?.response?.meta as any) || {
-              total: 0,
-              currentPage: 0,
-            }
-          }
-          perPage={pagination?.perPage}
-          total={payouts?.response?.meta?.total || 0}
-        />
-      </div>
+      </RoleAuth>
     </div>
   );
 }

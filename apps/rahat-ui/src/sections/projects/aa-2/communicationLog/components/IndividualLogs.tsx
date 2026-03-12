@@ -16,7 +16,6 @@ import { normalizeTransportName } from 'apps/rahat-ui/src/utils/string';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { DEFAULT_TRANSPORTS } from 'apps/rahat-ui/src/constants/communication.const';
 import { SpinnerLoader } from 'apps/rahat-ui/src/common';
-import { useSwal } from 'libs/query/src/swal';
 
 type SubTabType = 'voice' | 'sms' | 'email';
 
@@ -30,28 +29,9 @@ export function IndividualLogTab() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { id } = useParams() as { id: UUID };
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
 
-  const {
-    data: statsData,
-    isLoading,
-    isError,
-    error,
-  } = useTransportSessionStats(id);
+  const { data: statsData, isLoading } = useTransportSessionStats(id);
   const tab = searchParams.get('tab') || 'individualLog';
-
-  if (isError) {
-    toast.fire({
-      icon: 'error',
-      text: (error as any)?.message || 'Error fetching transport stats',
-    });
-  }
 
   const mergedStats = useMemo(() => {
     if (!statsData || statsData.length === 0) {

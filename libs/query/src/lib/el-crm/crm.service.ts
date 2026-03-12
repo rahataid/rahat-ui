@@ -110,7 +110,7 @@ export const useRetryCustomerImport = () => {
       payload,
     }: {
       projectUUID: UUID;
-      payload: { batchUUID: UUID };
+      payload: { batchUUID: UUID; vendors?: any[] };
     }) => {
       return q.mutateAsync({
         uuid: projectUUID,

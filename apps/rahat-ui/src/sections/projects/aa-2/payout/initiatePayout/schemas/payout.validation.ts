@@ -4,9 +4,9 @@ export const paymentSchema = z
   .object({
     method: z.string(),
     mode: z.enum(['ONLINE', 'OFFLINE']),
-    groupId: z.record(z.any()),
+    group: z.record(z.any()),
     paymentProvider: z.record(z.any()).optional(),
-    vendorId: z.record(z.any()).optional(),
+    vendor: z.record(z.any()).optional(),
   })
   .superRefine((data, ctx) => {
     if (!data.group || Object.keys(data.group).length === 0) {
@@ -42,3 +42,39 @@ export const paymentSchema = z
   });
 
 export type PaymentSchema = z.infer<typeof paymentSchema>;
+
+// This is for the integrated payout form as group would be passed directly from the backend
+export const payoutFundSchema = z
+  .object({
+    method: z.string(),
+    mode: z.enum(['ONLINE', 'OFFLINE']),
+    group: z.record(z.any()).optional(),
+    paymentProvider: z.record(z.any()).optional(),
+    vendor: z.record(z.any()).optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (
+      data.method === 'FSP' &&
+      (!data.paymentProvider || Object.keys(data.paymentProvider).length === 0)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Please select a payment provider',
+        path: ['paymentProvider'],
+      });
+    }
+
+    if (
+      data.method === 'CVA' &&
+      data.mode === 'OFFLINE' &&
+      (!data.vendor || Object.keys(data.vendor).length === 0)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Please select a vendor',
+        path: ['vendor'],
+      });
+    }
+  });
+
+export type FundWithPayoutSchema = z.infer<typeof payoutFundSchema>;

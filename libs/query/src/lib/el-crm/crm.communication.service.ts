@@ -73,9 +73,9 @@ export const useCreateElCrmCampaign = (projectUUID: UUID) => {
         queryKey: [queryKeys.elCrmCampaignList],
       });
     },
-    onError: () => {
+    onError: (error) => {
       toast.fire({
-        title: 'Error while creating campaign.',
+        title: `Error while creating campaign. ${error?.message || ''}`,
         icon: 'error',
       });
     },

@@ -34,22 +34,6 @@ import {
 import { useState } from 'react';
 import { CHANNELS } from '../../const';
 
-// Validation schema
-const scheduleMessageSchema = z.object({
-  name: z.string().min(1, 'Message name is required'),
-  targetType: z.string().min(1, 'Please select a group'),
-  statusFilter: z.string().optional(),
-  messagingChannel: z.string().min(1, 'Please select a messaging channel'),
-  scheduleType: z.string().min(1, 'Please select a schedule type'),
-  scheduleDateTime: z.string().optional(),
-  automaticCondition: z.string().optional(),
-  isRecurring: z.boolean().default(false),
-  customMessage: z.string().optional(),
-  selectedTemplate: z.string().optional(),
-});
-
-type ScheduleMessageForm = z.infer<typeof scheduleMessageSchema>;
-
 export default function ComposeScheduleView() {
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
@@ -59,6 +43,32 @@ export default function ComposeScheduleView() {
   const [templateMode, setTemplateMode] = useState<'existing' | 'new'>(
     'existing',
   );
+
+  // Validation schema
+  const scheduleMessageSchema = z
+    .object({
+      name: z.string().min(1, 'Message name is required'),
+      targetType: z.string().min(1, 'Please select a group'),
+      statusFilter: z.string().optional(),
+      messagingChannel: z.string().min(1, 'Please select a messaging channel'),
+      scheduleType: z.string().min(1, 'Please select a schedule type'),
+      scheduleDateTime: z.string().optional(),
+      automaticCondition: z.string().optional(),
+      isRecurring: z.boolean().default(false),
+      customMessage: z.string().optional(),
+      selectedTemplate: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+      if (selectedChannelName === CHANNELS.WHATSAPP && !data.selectedTemplate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['selectedTemplate'],
+          message: 'Please select a template for Whatsapp messaging channel',
+        });
+      }
+    });
+  type ScheduleMessageForm = z.infer<typeof scheduleMessageSchema>;
+
   const {
     control,
     register,
@@ -132,6 +142,7 @@ export default function ComposeScheduleView() {
     reset();
     router.push(`/projects/el-crm/${projectUUID}/communications/scheduled`);
   };
+  console.log({ errors });
 
   return (
     <div className="flex flex-col h-full">
@@ -422,22 +433,23 @@ export default function ComposeScheduleView() {
               </div>
 
               {/* Custom Message */}
-              {selectedChannelName !== CHANNELS.WHATSAPP && (
-                <div className="space-y-2">
-                  <Label htmlFor="custom-message">Message Content</Label>
-                  <Textarea
-                    id="custom-message"
-                    placeholder="Type your message here..."
-                    {...register('customMessage')}
-                    rows={4}
-                  />
-                  {errors.customMessage && (
-                    <p className="text-sm text-red-500">
-                      {errors.customMessage.message}
-                    </p>
-                  )}
-                </div>
-              )}
+              {selectedChannelName &&
+                selectedChannelName !== CHANNELS.WHATSAPP && (
+                  <div className="space-y-2">
+                    <Label htmlFor="custom-message">Message Content</Label>
+                    <Textarea
+                      id="custom-message"
+                      placeholder="Type your message here..."
+                      {...register('customMessage')}
+                      rows={4}
+                    />
+                    {errors.customMessage && (
+                      <p className="text-sm text-red-500">
+                        {errors.customMessage.message}
+                      </p>
+                    )}
+                  </div>
+                )}
               {selectedChannelName === CHANNELS.WHATSAPP && (
                 <div className="space-y-4">
                   <Label>Template Option</Label>
@@ -464,30 +476,37 @@ export default function ComposeScheduleView() {
 
                   {/* EXISTING TEMPLATE */}
                   {templateMode === 'existing' && (
-                    <Controller
-                      name="selectedTemplate"
-                      control={control}
-                      render={({ field }) => (
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Choose existing template" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {templates?.data?.map((template: any) => (
-                              <SelectItem
-                                key={template.cuid}
-                                value={template.externalId}
-                              >
-                                {template.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                    <>
+                      <Controller
+                        name="selectedTemplate"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Choose existing template" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {templates?.data?.map((template: any) => (
+                                <SelectItem
+                                  key={template.cuid}
+                                  value={template.externalId}
+                                >
+                                  {template.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+                      {errors.selectedTemplate && (
+                        <p className="text-sm text-red-500">
+                          {errors.selectedTemplate.message}
+                        </p>
                       )}
-                    />
+                    </>
                   )}
 
                   {/* CREATE NEW TEMPLATE */}

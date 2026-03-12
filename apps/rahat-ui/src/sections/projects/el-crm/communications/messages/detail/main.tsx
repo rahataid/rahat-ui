@@ -200,12 +200,13 @@ export default function MessageDetailPage() {
           </div>
 
           <div className="flex gap-4">
-            {count && count?.FAIL > 0 && (
-              <Button type="button" onClick={retryFailed} className="gap-2 ">
-                <RefreshCcw className="h-3.5 w-3.5" />
-                Retry Failed Requests
-              </Button>
-            )}
+            {(count && count?.FAIL > 0) ||
+              (count?.SCHEDULED > 0 && (
+                <Button type="button" onClick={retryFailed} className="gap-2 ">
+                  <RefreshCcw className="h-3.5 w-3.5" />
+                  Retry Failed Requests
+                </Button>
+              ))}
             <Button
               disabled={!!campaign.sessionId}
               onClick={handleSendMessage}

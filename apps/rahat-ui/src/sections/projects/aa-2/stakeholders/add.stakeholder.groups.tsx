@@ -230,7 +230,7 @@ const UpdateOrAddStakeholdersGroup = () => {
     >
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(handleCreateGroup)}
+          onSubmit={handleSubmit(handleCreateGroup)}
           className="flex flex-col flex-1 min-h-0"
         >
           {/* Header */}
@@ -269,7 +269,7 @@ const UpdateOrAddStakeholdersGroup = () => {
           {/* Group name input */}
           <div className="shrink-0 mb-2 compact:mb-1">
             <FormField
-              control={form.control}
+              control={control}
               name="name"
               render={({ field }) => (
                 <FormItem>

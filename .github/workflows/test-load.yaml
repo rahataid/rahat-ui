@@ -15,7 +15,7 @@ on:
       vault_secret_path:
         description: "Vault secret path (e.g., github/data/rahat/rahat-ui/demo/aa/redcross)"
         required: true
-        default: "github/data/rahat/rahat-ui/demo/aa/redcross"
+        default: "github/data/rahat/rahat-ui/dev/aa/dev-qa"
         type: string
       vault_secret_key:
         description: "Key within the Vault secret that holds the env (e.g., rahat-ui)"

@@ -23,6 +23,7 @@ import {
 
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import SelectComponent from 'apps/rahat-ui/src/common/select.component';
 import { isCompleteBgStatus } from 'apps/rahat-ui/src/utils/get-status-bg';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
@@ -68,6 +69,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
       order: 'desc',
     },
   );
+
   const triggerForPayoutFailed = useTriggerForPayoutFailed();
   const triggerPayout = useTriggerPayout();
   const columns = useBeneficiaryGroupDetailsLogColumns(payout?.type);
@@ -226,18 +228,24 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                     roles={[AARoles.ADMIN, AARoles.Municipality]}
                     hasContent={false}
                   >
-                    <Button
-                      className={`gap-2 text-sm ${
-                        payout?.status === 'COMPLETED' && 'hidden'
-                      } `}
-                      onClick={() =>
-                        router.push(
-                          `/projects/aa/${projectId}/payout/details/${payoutId}/verify`,
-                        )
-                      }
+                    <TooltipWrapper
+                      tip="Payout cannot be verified because funds have not been disbursed to the beneficiary group."
+                      disable={!payout?.beneficiaryGroupToken?.isDisbursed}
                     >
-                      Verify Manual Payout
-                    </Button>
+                      <Button
+                        className={`gap-2 text-sm ${
+                          payout?.status === 'COMPLETED' && 'hidden'
+                        } `}
+                        disabled={!!payout?.beneficiaryGroupToken?.isDisbursed}
+                        onClick={() =>
+                          router.push(
+                            `/projects/aa/${projectId}/payout/details/${payoutId}/verify`,
+                          )
+                        }
+                      >
+                        Verify Manual Payout
+                      </Button>
+                    </TooltipWrapper>
                   </RoleAuth>
                 )}
               <Button

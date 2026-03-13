@@ -50,6 +50,7 @@ import CommsLogsTable from '../table/comms.logs.table';
 import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
 import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export default function CommsLogsDetailPage() {
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
@@ -269,39 +270,55 @@ export default function CommsLogsDetailPage() {
               <div className="flex-[2]">
                 <Card className="p-4 rounded-sm bg-white h-full">
                   <CardTitle className="flex gap-2 pb-2">
-                    <Badge
-                      className={`${getPhaseColor(
-                        activityDetail?.phase?.name,
-                      )}`}
+                    <TooltipWrapper
+                      tip={`Activity Phase: ${activityDetail?.phase?.name}`}
                     >
-                      {activityDetail?.phase?.name}
-                    </Badge>
-                    <Badge
-                      className={`rounded-xl capitalize text-xs font-normal ${getStatusBg(
-                        activityDetail?.status,
-                      )}`}
+                      <Badge
+                        className={`${getPhaseColor(
+                          activityDetail?.phase?.name,
+                        )}`}
+                      >
+                        {activityDetail?.phase?.name}
+                      </Badge>
+                    </TooltipWrapper>
+                    <TooltipWrapper
+                      tip={`Activity Status: ${activityDetail?.status}`}
                     >
-                      {activityDetail?.status
-                        .toLowerCase()
-                        .split('_')
-                        .map(
-                          (word) =>
-                            word.charAt(0).toUpperCase() + word.slice(1),
-                        )
-                        .join(' ')}
-                    </Badge>
+                      <Badge
+                        className={`rounded-xl capitalize text-xs font-normal ${getStatusBg(
+                          activityDetail?.status,
+                        )}`}
+                      >
+                        {activityDetail?.status
+                          .toLowerCase()
+                          .split('_')
+                          .map(
+                            (word: string) =>
+                              word.charAt(0).toUpperCase() + word.slice(1),
+                          )
+                          .join(' ')}
+                      </Badge>
+                    </TooltipWrapper>
                   </CardTitle>
                   <CardContent className="pl-1 pb-1  font-semibold flex flex-col gap-1">
                     <Label className="text-muted-foreground text-xs">
                       Activity Title:
                     </Label>
-                    <Label className="text-base space-y-1 font-semibold">
-                      {activityDetail?.title}
-                    </Label>
+                    <TooltipWrapper
+                      tip={`Activity Title: ${activityDetail?.title}`}
+                    >
+                      <Label className="text-base space-y-1 font-semibold">
+                        {activityDetail?.title}
+                      </Label>
+                    </TooltipWrapper>
                   </CardContent>
-                  <CardFooter className="pl-1 pb-2 text-sm text-muted-foreground">
-                    {activityDetail?.description}
-                  </CardFooter>
+                  <TooltipWrapper
+                    tip={`Activity Description: ${activityDetail?.description}`}
+                  >
+                    <CardFooter className="pl-1 pb-2 text-sm text-muted-foreground">
+                      {activityDetail?.description}
+                    </CardFooter>
+                  </TooltipWrapper>
                 </Card>
               </div>
 
@@ -389,8 +406,24 @@ export default function CommsLogsDetailPage() {
 
                 {/* Communication */}
                 <div className="space-y-3">
-                  <p className="text-sm text-gray-500">{communicationTitle}</p>
-                  {renderMessage(logs?.communicationDetail?.message)}
+                  <TooltipWrapper
+                    tip={`Communication Title: ${communicationTitle}`}
+                  >
+                    <p className="text-sm text-gray-500">
+                      {communicationTitle}
+                    </p>
+                  </TooltipWrapper>
+                  <TooltipWrapper
+                    tip={`Communication Message: ${
+                      typeof logs?.communicationDetail?.message === 'string'
+                        ? logs?.communicationDetail?.message
+                        : logs?.communicationDetail?.message?.fileName || 'N/A'
+                    }`}
+                  >
+                    <div>
+                      {renderMessage(logs?.communicationDetail?.message)}
+                    </div>
+                  </TooltipWrapper>
                 </div>
               </CardContent>
             </Card>

@@ -31,6 +31,7 @@ interface BaseCommunication {
   groupType: string;
   transportId: string;
   communicationId: string;
+  subject: string;
   groupName: string;
   sessionStatus: string;
   sessionId: string;
@@ -115,109 +116,164 @@ export function CommunicationCard({
 
   return (
     <Card className="mb-4 rounded-sm">
-      <CardContent className="pt-2 px-3 pb-2">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+      <CardContent className="pt-4 px-4 pb-4">
+        <div className="flex gap-3">
+          {/* Icon */}
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 flex-shrink-0">
             {getIcon()}
           </div>
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <h3 className="font-medium text-gray-900">
-                  {activityCommunication?.groupName}
+
+          {/* Title and Meta Information */}
+          <div className="flex-1 min-w-0">
+            {/* Title Row */}
+            <div className="flex items-center gap-2 mb-1">
+              <TooltipWrapper
+                tip={`Communication Title: ${activityCommunication?.communicationTitle}`}
+              >
+                <h3 className="font-medium text-gray-900 truncate">
+                  {activityCommunication?.communicationTitle}
                 </h3>
-                {activityCommunication?.sessionStatus !== SessionStatus.NEW && (
-                  <TooltipComponent
-                    Icon={ArrowUpRightSquare}
-                    tip="View Communication Log"
-                    handleOnClick={() => router.push(redirectLink)}
-                    iconStyle="text-primary"
-                  />
-                )}
-              </div>
-              <div className="flex gap-2">
-                {activityCommunication?.sessionStatus === SessionStatus.NEW && (
-                  <RoleAuth
-                    roles={[
-                      AARoles.ADMIN,
-                      AARoles.MANAGER,
-                      AARoles.Municipality,
-                    ]}
-                    hasContent={false}
-                  >
-                    <TooltipWrapper tip="Send Communication">
-                      <Button
-                        className="items-center justify-center"
-                        variant="ghost"
-                        onClick={confirmationDialog.onTrue}
-                        type="button"
-                      >
-                        {loadingButtons.includes(
-                          activityCommunication?.communicationId,
-                        ) ? (
-                          <LoaderCircle size={20} className={`animate-spin `} />
-                        ) : (
-                          <SendHorizonal size={18} strokeWidth={1.5} />
-                        )}
-                      </Button>
-                    </TooltipWrapper>
-                  </RoleAuth>
-                )}
-              </div>
-            </div>
-            <div className="mt-1 flex items-center gap-2 text-sm text-gray-500">
-              <span>{activityCommunication?.transportName}</span>
-              <span>•</span>
-              <span>{activityCommunication?.groupType}</span>
-              <span>•</span>
-              <Badge
-                className={`ml-1 text-xs font-normal ${
-                  activityCommunication?.sessionStatus === 'PENDING'
-                    ? 'text-red-400 bg-yellow-100'
-                    : activityCommunication?.sessionStatus === 'COMPLETED'
-                    ? 'text-green-700 bg-green-200'
-                    : 'text-red-700 bg-red-200'
+              </TooltipWrapper>
+              {activityCommunication?.sessionStatus !== SessionStatus.NEW && (
+                <TooltipComponent
+                  Icon={ArrowUpRightSquare}
+                  tip="View Communication Log"
+                  handleOnClick={() => router.push(redirectLink)}
+                  iconStyle="text-primary"
+                />
+              )}
+              <TooltipWrapper
+                tip={`Communication Status: ${
+                  activityCommunication?.sessionStatus.charAt(0).toUpperCase() +
+                  activityCommunication?.sessionStatus.slice(1).toLowerCase()
                 }`}
               >
-                {activityCommunication?.sessionStatus.charAt(0).toUpperCase() +
-                  activityCommunication?.sessionStatus.slice(1).toLowerCase()}
-              </Badge>
+                <Badge
+                  className={`text-xs font-normal ${
+                    activityCommunication?.sessionStatus === 'PENDING'
+                      ? 'text-red-400 bg-yellow-100'
+                      : activityCommunication?.sessionStatus === 'COMPLETED'
+                      ? 'text-green-700 bg-green-200'
+                      : 'text-red-700 bg-red-200'
+                  }`}
+                >
+                  {activityCommunication?.sessionStatus
+                    .charAt(0)
+                    .toUpperCase() +
+                    activityCommunication?.sessionStatus.slice(1).toLowerCase()}
+                </Badge>
+              </TooltipWrapper>
             </div>
-            {activityCommunication?.sessionStatus === 'COMPLETED' && (
-              <p className="mt-1 text-sm text-gray-500">
-                Completed at: {dateFormat(activityCommunication.completedAt)}
-              </p>
-            )}
+
+            {/* Meta Information */}
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <TooltipWrapper
+                tip={`Communication Channel: ${activityCommunication?.transportName}`}
+              >
+                <span>{activityCommunication?.transportName}</span>
+              </TooltipWrapper>
+              <span>•</span>
+              <TooltipWrapper
+                tip={`Group Type: ${activityCommunication?.groupType}`}
+              >
+                <span>{activityCommunication?.groupType}</span>
+              </TooltipWrapper>
+              <span>•</span>
+              <TooltipWrapper
+                tip={`Group Name: ${activityCommunication?.groupName}`}
+              >
+                <span>{activityCommunication?.groupName}</span>
+              </TooltipWrapper>
+            </div>
           </div>
+
+          {/* Send Button */}
+          {activityCommunication?.sessionStatus === SessionStatus.NEW && (
+            <RoleAuth
+              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+              hasContent={false}
+            >
+              <TooltipWrapper tip="Send Communication">
+                <Button
+                  className="h-10 w-10 rounded-full p-0 flex-shrink-0"
+                  variant="outline"
+                  onClick={confirmationDialog.onTrue}
+                  type="button"
+                >
+                  {loadingButtons.includes(
+                    activityCommunication?.communicationId,
+                  ) ? (
+                    <LoaderCircle size={20} className="animate-spin" />
+                  ) : (
+                    <SendHorizonal size={18} strokeWidth={1.5} />
+                  )}
+                </Button>
+              </TooltipWrapper>
+            </RoleAuth>
+          )}
         </div>
 
-        <h4 className="font-normal mb-0 space-y-0 text-muted-foreground">
-          {activityCommunication?.communicationTitle}
-        </h4>
-        {(activityCommunication?.transportName === 'EMAIL' ||
-          activityCommunication?.transportName === 'SMS') && (
-          <div className="mt-1">
-            <MessageWithToggle message={activityCommunication?.message ?? ''} />
-          </div>
+        {/* Subject for Email */}
+        {activityCommunication?.subject && (
+          <TooltipWrapper
+            tip={`Communication Subject: ${activityCommunication?.subject}`}
+          >
+            <h4 className="font-medium text-sm mt-3">
+              {activityCommunication?.subject}
+            </h4>
+          </TooltipWrapper>
         )}
 
+        {/* Message Content for Email/SMS */}
+        {(activityCommunication?.transportName === 'EMAIL' ||
+          activityCommunication?.transportName === 'SMS') && (
+          <TooltipWrapper
+            tip={`Communication Message: ${activityCommunication?.message?.substring(
+              0,
+              50,
+            )}${activityCommunication?.message?.length > 50 ? '...' : ''}`}
+          >
+            <div className="mt-2">
+              <MessageWithToggle
+                message={activityCommunication?.message ?? ''}
+              />
+            </div>
+          </TooltipWrapper>
+        )}
+
+        {/* Voice Content */}
         {activityCommunication?.transportName === 'VOICE' &&
           Object.keys(activityCommunication?.message).length !== 0 && (
-            <div className="mt-1">
-              <div className="pt-2">
-                <h3 className="text-sm font-medium mb-2">
+            <TooltipWrapper
+              tip={`Voice File: ${activityCommunication?.message?.fileName}`}
+            >
+              <div className="bg-gray-50 p-3 rounded-sm mt-3">
+                <p className="text-center mb-2 text-sm font-medium">
                   {activityCommunication?.message?.fileName}
-                </h3>
+                </p>
                 <audio
                   src={activityCommunication?.message?.mediaURL}
                   controls
-                  className="w-full h-10 "
+                  className="w-full h-10"
                   onPlay={() => setIsPlaying(true)}
                   onPause={() => setIsPlaying(false)}
                 />
               </div>
-            </div>
+            </TooltipWrapper>
           )}
+
+        {/* Completed At */}
+        {activityCommunication?.sessionStatus === 'COMPLETED' && (
+          <TooltipWrapper
+            tip={`Completed At: ${dateFormat(
+              activityCommunication.completedAt,
+            )}`}
+          >
+            <p className="mt-3 text-sm text-gray-500">
+              Completed at: {dateFormat(activityCommunication.completedAt)}
+            </p>
+          </TooltipWrapper>
+        )}
       </CardContent>
 
       <ConfirmationDialog

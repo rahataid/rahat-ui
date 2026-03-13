@@ -56,7 +56,7 @@ export default function PhaseContent({
     <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full p-0">
       <CardHeader className="flex flex-col justify-between ">
         <div className="flex flex-col space-y-1">
-          <CardTitle className="flex flex-row justify-between items-center">
+          <CardTitle className="flex flex-row justify-between ">
             <p className="text-xl font-medium leading-none">{title}</p>
             <div className="flex items-center gap-2">
               {onTogglePin &&

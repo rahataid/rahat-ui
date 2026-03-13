@@ -116,7 +116,7 @@ export default function ActivitiesView() {
     generateExcel(mappedData, 'Activities_Report', 10);
   };
   return (
-    <div className="p-4 overflow-hidden">
+    <div className="p-4">
       <div className="flex justify-between items-center space-x-4 ">
         <Heading
           title="Activities"
@@ -151,9 +151,9 @@ export default function ActivitiesView() {
           </RoleAuth>
         </div>
       </div>
-      <div className="flex gap-4 overflow-x-auto ">
+      <div className="flex gap-4 overflow-x-auto w-full">
         {sortedPhases.map((phase) => (
-          <div key={phase} className="min-w-[320px] flex-shrink-0">
+          <div key={phase} className="flex-1 min-w-[320px]">
             <PhaseContent
               title={phase.charAt(0) + phase.slice(1).toLowerCase()}
               description={

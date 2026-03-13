@@ -2,8 +2,12 @@ import { useMutation } from '@tanstack/react-query';
 import { api } from '../../utils/api';
 import { useSwal } from 'libs/query/src/swal';
 
-const uploadFile = async (file: any) => {
-  const response = await api.post('/upload/file', file);
+const uploadFile = async (file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await api.post('/upload/file', formData);
+
   return response?.data;
 };
 

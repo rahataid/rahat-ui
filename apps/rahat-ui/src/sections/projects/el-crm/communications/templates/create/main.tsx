@@ -22,10 +22,15 @@ import {
 } from '@rahat-ui/shadcn/components/select';
 import { ArrowLeft, Save } from 'lucide-react';
 import Link from 'next/link';
-import { useListElCrmTransport, useCreateTemplate } from '@rahat-ui/query';
+import {
+  useListElCrmTransport,
+  useCreateTemplate,
+  useUploadFile,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import { form } from 'viem/chains';
+import { useState } from 'react';
 
 // Validation schema
 const createTemplateSchema = z.object({
@@ -39,6 +44,8 @@ const createTemplateSchema = z.object({
     .min(1, 'Template content is required')
     .max(2000, 'Template content must be less than 2000 characters'),
   type: z.string().min(1, 'Please select a template type'),
+
+  media: z.array(z.string().optional()).optional(),
 });
 
 type CreateTemplateForm = z.infer<typeof createTemplateSchema>;
@@ -50,6 +57,7 @@ export default function CreateTemplateView() {
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<CreateTemplateForm>({
     resolver: zodResolver(createTemplateSchema),
     defaultValues: {
@@ -57,13 +65,17 @@ export default function CreateTemplateView() {
       transport: '',
       body: '',
       type: 'TEXT',
+      media: [],
     },
   });
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
-
+  const [isUploading, setIsUploading] = useState(false);
+  const [fileName, setFileName] = useState('');
   const transport = useListElCrmTransport(projectUUID);
   const createTemplate = useCreateTemplate(projectUUID);
+  const uploadFile = useUploadFile();
+
   const onSubmit = async (data: CreateTemplateForm) => {
     console.log('Saving template:', data);
     await createTemplate.mutateAsync(data);
@@ -71,6 +83,26 @@ export default function CreateTemplateView() {
     router.push(`/projects/el-crm/${projectUUID}/communications/templates`);
   };
 
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setFileName(file.name);
+    setIsUploading(true);
+    try {
+      const afterUpload = await uploadFile.mutateAsync(file);
+      setValue('media', [
+        ...(control._formValues.media || []),
+        afterUpload?.data?.mediaURL,
+      ]);
+      console.log(afterUpload?.data);
+    } catch (error) {
+      console.error('File upload failed:', error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
   return (
     <div className="flex flex-col h-full">
       <div className="border-b border-border bg-card/50 px-6 py-4">
@@ -171,6 +203,29 @@ export default function CreateTemplateView() {
                   content like names, dates, etc.
                 </p>
               </div>
+              <div>
+                {isUploading ? (
+                  <>Uploading...</>
+                ) : (
+                  <>
+                    {fileName ? (
+                      <p>Uploaded File: {fileName}</p>
+                    ) : (
+                      <CardContent className="space-y-2">
+                        <div className="grid w-full max-w-sm items-center gap-1.5">
+                          <Label>Media</Label>
+                          <Input
+                            id="file"
+                            accept="image/*,video/*"
+                            onChange={handleFileChange}
+                            type="file"
+                          />
+                        </div>
+                      </CardContent>
+                    )}
+                  </>
+                )}
+              </div>
 
               {/* Action Buttons */}
               <div className="flex justify-end gap-3">
@@ -181,7 +236,7 @@ export default function CreateTemplateView() {
                     Cancel
                   </Button>
                 </Link>
-                <Button type="submit">
+                <Button disabled={isUploading} type="submit">
                   <Save className="mr-2 h-4 w-4" />
                   Create Template
                 </Button>

@@ -12,12 +12,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { PayoutTransaction } from 'apps/rahat-ui/src/types/payout';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from 'libs/shadcn/src/components/ui/tooltip';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 type IProps = {
   payoutData: PayoutTransaction;
@@ -35,34 +30,21 @@ export default function PayoutConfirmationDialog({
         hasContent={false}
       >
         {payoutData?.type === 'FSP' && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="inline-block">
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      className={`bg-blue-600 hover:bg-blue-700 text-white ${
-                        !!payoutData?.isPayoutTriggered && 'hidden'
-                      }`}
-                      disabled={
-                        !!payoutData?.beneficiaryGroupToken?.isDisbursed
-                      }
-                    >
-                      Trigger Payout
-                    </Button>
-                  </AlertDialogTrigger>
-                </span>
-              </TooltipTrigger>
-              {!!payoutData?.beneficiaryGroupToken?.isDisbursed && (
-                <TooltipContent>
-                  <p>
-                    Payout cannot be triggered because funds have not been
-                    disbursed to the beneficiary group.
-                  </p>
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </TooltipProvider>
+          <TooltipWrapper
+            tip="Payout cannot be triggered because funds have not been disbursed to the beneficiary group."
+            disable={!payoutData?.beneficiaryGroupToken?.isDisbursed}
+          >
+            <AlertDialogTrigger asChild>
+              <Button
+                className={`bg-blue-600 hover:bg-blue-700 text-white ${
+                  !!payoutData?.isPayoutTriggered && 'hidden'
+                }`}
+                disabled={!!payoutData?.beneficiaryGroupToken?.isDisbursed}
+              >
+                Trigger Payout
+              </Button>
+            </AlertDialogTrigger>
+          </TooltipWrapper>
         )}
       </RoleAuth>
       <AlertDialogContent className="max-w-lg">

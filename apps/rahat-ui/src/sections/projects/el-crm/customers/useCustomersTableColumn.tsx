@@ -37,7 +37,9 @@ export const useCustomersTableColumn = () => {
     {
       accessorKey: 'bde',
       header: 'BDE/BDM',
-      cell: ({ row }) => <div>{row.getValue('bde') || 'N/A'}</div>,
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('bde') || 'N/A'}</div>
+      ),
     },
     {
       accessorKey: 'customerCode',
@@ -72,7 +74,10 @@ export const useCustomersTableColumn = () => {
     {
       accessorKey: 'source',
       header: 'Source',
-      cell: ({ row }) => <div>{row.getValue('source') || 'N/A'}</div>,
+      cell: ({ row }) => {
+        const source = row.getValue('source') as string;
+        return <Badge>{source}</Badge>;
+      },
     },
     {
       accessorKey: 'lastPurchaseDate',

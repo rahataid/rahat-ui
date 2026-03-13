@@ -109,6 +109,8 @@ export default function CustomersPage() {
     return customers?.map((c: Customer) => ({
       ...c,
       email: c?.extras?.email,
+      channel: c?.extras?.channel,
+      bde: c?.extras?.bde,
     }));
   }, [customers]);
 

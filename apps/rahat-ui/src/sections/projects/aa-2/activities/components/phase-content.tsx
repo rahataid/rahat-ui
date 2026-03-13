@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { NoResult, SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
-import { Expand } from 'lucide-react';
+import { Expand, Pin, PinOff } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -27,6 +27,8 @@ interface PhasecontentProps {
   description: string;
   loading: boolean;
   phases: Phase[];
+  isPinned?: boolean;
+  onTogglePin?: () => void;
 }
 
 export default function PhaseContent({
@@ -34,6 +36,8 @@ export default function PhaseContent({
   description,
   phases,
   loading,
+  isPinned = false,
+  onTogglePin,
 }: PhasecontentProps) {
   const { id: projectID } = useParams();
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,17 +56,35 @@ export default function PhaseContent({
     <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full p-0">
       <CardHeader className="flex flex-col justify-between ">
         <div className="flex flex-col space-y-1">
-          <CardTitle className="flex flex-row justify-between">
+          <CardTitle className="flex flex-row justify-between items-center">
             <p className="text-xl font-medium leading-none">{title}</p>
-            <Expand
-              role="button"
-              className="w-5 h-5 cursor-pointer hover:shadow-md active:scale-95 focus:ring-2 focus:ring-blue-500 transition-transform"
-              onClick={() => {
-                router.push(
-                  `/projects/aa/${projectID}/activities/list/${lowerTitle}`,
-                );
-              }}
-            />
+            <div className="flex items-center gap-2">
+              {onTogglePin &&
+                (isPinned ? (
+                  <PinOff
+                    role="button"
+                    title="Unpin phase"
+                    className="w-4 h-4 cursor-pointer text-blue-500 hover:text-blue-700 active:scale-95 transition-transform"
+                    onClick={onTogglePin}
+                  />
+                ) : (
+                  <Pin
+                    role="button"
+                    title="Pin phase to front"
+                    className="w-4 h-4 cursor-pointer text-gray-400 hover:text-blue-500 active:scale-95 transition-transform"
+                    onClick={onTogglePin}
+                  />
+                ))}
+              <Expand
+                role="button"
+                className="w-5 h-5 cursor-pointer hover:shadow-md active:scale-95 focus:ring-2 focus:ring-blue-500 transition-transform"
+                onClick={() => {
+                  router.push(
+                    `/projects/aa/${projectID}/activities/list/${lowerTitle}`,
+                  );
+                }}
+              />
+            </div>
           </CardTitle>
           <CardDescription>{description}</CardDescription>
         </div>

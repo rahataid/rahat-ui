@@ -8,7 +8,13 @@ import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import PhaseContent from './components/phase-content';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+const PHASE_DESCRIPTIONS: Record<string, string> = {
+  PREPAREDNESS: 'Overview of preparedness phase',
+  READINESS: 'Overview of readiness phase',
+  ACTIVATION: 'Overview of activation phase',
+};
 
 export default function ActivitiesView() {
   const { id: projectID } = useParams();
@@ -17,16 +23,69 @@ export default function ActivitiesView() {
   const { data, activitiesData, isLoading } = useActivities(projectID as UUID, {
     perPage: 9999,
   });
-  const preparednessData = useMemo(() => {
-    return activitiesData?.filter((d) => d.phase === 'PREPAREDNESS') || [];
+
+  const storageKey = projectID ? `aa_pinned_phases_${projectID}` : null;
+
+  const [pinnedPhases, setPinnedPhases] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!storageKey) return;
+    try {
+      const stored = localStorage.getItem(storageKey);
+      if (stored) setPinnedPhases(JSON.parse(stored));
+    } catch {
+      // ignore parse errors
+    }
+  }, [storageKey]);
+
+  const togglePin = useCallback(
+    (phase: string) => {
+      setPinnedPhases((prev) => {
+        const next = prev.includes(phase)
+          ? prev.filter((p) => p !== phase)
+          : [...prev, phase];
+        if (storageKey) {
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(next));
+          } catch {
+            // ignore storage errors
+          }
+        }
+        return next;
+      });
+    },
+    [storageKey],
+  );
+
+  const uniquePhases = useMemo(() => {
+    if (!activitiesData) return [];
+    const seen = new Set<string>();
+    activitiesData.forEach((d: Record<string, any>) => {
+      if (d.phase) seen.add(d.phase);
+    });
+    return Array.from(seen);
   }, [activitiesData]);
 
-  const readinesssData = useMemo(() => {
-    return activitiesData?.filter((d) => d.phase === 'READINESS') || [];
-  }, [activitiesData]);
+  const sortedPhases = useMemo(() => {
+    return [...uniquePhases].sort((a, b) => {
+      const aPinned = pinnedPhases.includes(a);
+      const bPinned = pinnedPhases.includes(b);
+      if (aPinned && !bPinned) return -1;
+      if (!aPinned && bPinned) return 1;
+      return 0;
+    });
+  }, [uniquePhases, pinnedPhases]);
 
-  const activationData = useMemo(() => {
-    return activitiesData?.filter((d) => d.phase === 'ACTIVATION') || [];
+  const phaseDataMap = useMemo(() => {
+    const map: Record<string, any[]> = {};
+    if (!activitiesData) return map;
+    activitiesData.forEach((d: Record<string, any>) => {
+      if (d.phase) {
+        if (!map[d.phase]) map[d.phase] = [];
+        map[d.phase].push(d);
+      }
+    });
+    return map;
   }, [activitiesData]);
 
   const handleDownloadReport = () => {
@@ -57,8 +116,8 @@ export default function ActivitiesView() {
     generateExcel(mappedData, 'Activities_Report', 10);
   };
   return (
-    <div className="p-4 ">
-      <div className="flex justify-between items-center space-x-4">
+    <div className="p-4 overflow-hidden">
+      <div className="flex justify-between items-center space-x-4 ">
         <Heading
           title="Activities"
           description="Track all the activities reports here"
@@ -92,27 +151,22 @@ export default function ActivitiesView() {
           </RoleAuth>
         </div>
       </div>
-      <div className="grid  lg:grid-cols-1 xl:grid-cols-3  gap-4">
-        <PhaseContent
-          title="Preparedness"
-          description="Overview of preparedness phase"
-          phases={preparednessData}
-          loading={isLoading}
-        />
-
-        <PhaseContent
-          title="Readiness"
-          description="Overview of readiness phase"
-          phases={readinesssData}
-          loading={isLoading}
-        />
-
-        <PhaseContent
-          title="Activation"
-          description="Overview of activation phase"
-          phases={activationData}
-          loading={isLoading}
-        />
+      <div className="flex gap-4 overflow-x-auto ">
+        {sortedPhases.map((phase) => (
+          <div key={phase} className="min-w-[320px] flex-shrink-0">
+            <PhaseContent
+              title={phase.charAt(0) + phase.slice(1).toLowerCase()}
+              description={
+                PHASE_DESCRIPTIONS[phase] ??
+                `Overview of ${phase.toLowerCase()} phase`
+              }
+              phases={phaseDataMap[phase] ?? []}
+              loading={isLoading}
+              isPinned={pinnedPhases.includes(phase)}
+              onTogglePin={() => togglePin(phase)}
+            />
+          </div>
+        ))}
       </div>
     </div>
   );

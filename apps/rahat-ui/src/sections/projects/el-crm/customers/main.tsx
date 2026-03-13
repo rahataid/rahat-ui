@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/components/select';
-import { Upload, Search, X, Download } from 'lucide-react';
+import { Upload, Search, X, TriangleAlert } from 'lucide-react';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import {
   getCoreRowModel,
@@ -34,6 +34,7 @@ import {
   useCustomers,
   usePagination,
   useCustomerStats,
+  useFailedBatch,
 } from '@rahat-ui/query';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
@@ -69,6 +70,8 @@ export default function CustomersPage() {
     ...debouncedFilters,
     ...pagination,
   });
+
+  const { failedBatch } = useFailedBatch(projectUUID, {});
 
   const handleFilter = React.useCallback(
     (key: string, value: any) => {
@@ -127,12 +130,28 @@ export default function CustomersPage() {
               Manage customer relationships and data
             </p>
           </div>
-          <Link href={`/projects/el-crm/${projectUUID}/customers/upload`}>
-            <Button>
-              <Upload className="mr-2 h-4 w-4" />
-              Upload File
-            </Button>
-          </Link>
+          <div>
+            {failedBatch?.length > 0 && (
+              <Link
+                href={`/projects/el-crm/${projectUUID}/customers/upload/retry`}
+                className="mr-2"
+              >
+                <Button variant="outline" className="bg-orange-100">
+                  <span className="relative">
+                    <TriangleAlert className="text-orange-500" />
+                    <TriangleAlert className="text-orange-500 absolute top-0 animate-ping" />
+                  </span>
+                  <span>{failedBatch?.length} Failed Batch</span>
+                </Button>
+              </Link>
+            )}
+            <Link href={`/projects/el-crm/${projectUUID}/customers/upload`}>
+              <Button>
+                <Upload className="mr-2 h-4 w-4" />
+                Upload File
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
       <div className="flex-1 p-6 space-y-6">

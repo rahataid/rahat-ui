@@ -33,8 +33,8 @@ export default function ActivitiesView() {
     try {
       const stored = localStorage.getItem(storageKey);
       if (stored) setPinnedPhases(JSON.parse(stored));
-    } catch {
-      // ignore parse errors
+    } catch (error) {
+      console.error('Failed to parse pinned phases from localStorage', error);
     }
   }, [storageKey]);
 
@@ -47,8 +47,8 @@ export default function ActivitiesView() {
         if (storageKey) {
           try {
             localStorage.setItem(storageKey, JSON.stringify(next));
-          } catch {
-            // ignore storage errors
+          } catch (error) {
+            console.error('Failed to save pinned phases', error);
           }
         }
         return next;
@@ -65,16 +65,22 @@ export default function ActivitiesView() {
     });
     return Array.from(seen);
   }, [activitiesData]);
-
-  const sortedPhases = useMemo(() => {
-    return [...uniquePhases].sort((a, b) => {
-      const aPinned = pinnedPhases.includes(a);
-      const bPinned = pinnedPhases.includes(b);
-      if (aPinned && !bPinned) return -1;
-      if (!aPinned && bPinned) return 1;
-      return 0;
-    });
-  }, [uniquePhases, pinnedPhases]);
+  const sortedPhases = [
+    'PREPAREDNESS',
+    'ACTIVATION',
+    'READINESS',
+    'POST-ACTIVATION',
+    'PRE-ACTIVATION',
+  ];
+  // const sortedPhases = useMemo(() => {
+  //   return [...uniquePhases].sort((a, b) => {
+  //     const aPinned = pinnedPhases.includes(a);
+  //     const bPinned = pinnedPhases.includes(b);
+  //     if (aPinned && !bPinned) return -1;
+  //     if (!aPinned && bPinned) return 1;
+  //     return 0;
+  //   });
+  // }, [uniquePhases, pinnedPhases]);
 
   const phaseDataMap = useMemo(() => {
     const map: Record<string, any[]> = {};
@@ -151,9 +157,9 @@ export default function ActivitiesView() {
           </RoleAuth>
         </div>
       </div>
-      <div className="flex gap-4 overflow-x-auto w-full">
+      <div className="flex gap-4 w-[calc(100vw-18rem)] overflow-x-auto py-2">
         {sortedPhases.map((phase) => (
-          <div key={phase} className="flex-1 min-w-[320px]">
+          <div key={phase} className="flex min-w-[320px]">
             <PhaseContent
               title={phase.charAt(0) + phase.slice(1).toLowerCase()}
               description={

@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import PhaseContent from './components/phase-content';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSidebar } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 
 const PHASE_DESCRIPTIONS: Record<string, string> = {
   PREPAREDNESS: 'Overview of preparedness phase',
@@ -18,7 +19,7 @@ const PHASE_DESCRIPTIONS: Record<string, string> = {
 
 export default function ActivitiesView() {
   const { id: projectID } = useParams();
-
+  const { state } = useSidebar();
   const router = useRouter();
   const { data, activitiesData, isLoading } = useActivities(projectID as UUID, {
     perPage: 9999,
@@ -123,7 +124,7 @@ export default function ActivitiesView() {
   };
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center space-x-4 ">
+      <div className="flex justify-between items-center space-x-4 w-full">
         <Heading
           title="Activities"
           description="Track all the activities reports here"
@@ -157,7 +158,14 @@ export default function ActivitiesView() {
           </RoleAuth>
         </div>
       </div>
-      <div className="flex gap-4 w-[calc(100vw-18rem)] overflow-x-auto py-2">
+      <div
+        className={`flex gap-4 ${
+          state === 'expanded'
+            ? 'w-[calc(100vw-18rem)]'
+            : 'w-[calc(100vw-6rem)]'
+        }  border-2 transition-width duration-300 overflow-x-auto  [&::-webkit-scrollbar]:h-1.5  [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300`}
+        style={{ scrollbarGutter: 'stable' }}
+      >
         {sortedPhases.map((phase) => (
           <div key={phase} className="flex min-w-[320px]">
             <PhaseContent

@@ -17,7 +17,7 @@ interface PhaseCardProps {
   id: string;
   status: string;
   title: string;
-  location: string;
+  responsibleStation: string;
   leadTime: string;
   responsibility: string;
   onUpdateStatus: () => void;
@@ -28,7 +28,7 @@ export default function PhaseCard({
   status,
   id,
   title,
-  location,
+  responsibleStation,
   leadTime,
   responsibility,
   onUpdateStatus,
@@ -101,12 +101,16 @@ export default function PhaseCard({
           </h3>
         </TooltipWrapper>
         <div className="flex items-center gap-1 text-sm text-gray-500">
-          <TooltipWrapper tip={`Responsible Station: ${location ?? ''}`}>
-            <span>{location ?? ''}</span>
+          <TooltipWrapper
+            tip={`Responsible Station: ${responsibleStation ?? 'N/A'}`}
+          >
+            {responsibleStation && responsibleStation.length > 20
+              ? `${responsibleStation.substring(0, 20)}...`
+              : responsibleStation ?? 'N/A'}
           </TooltipWrapper>
-          <span>•</span>
-          <TooltipWrapper tip={`Lead Time: ${leadTime}`}>
-            <span>{leadTime}</span>
+          <TooltipWrapper tip={`Lead Time: ${leadTime ?? 'N/A'}`}>
+            {leadTime && <span className="text-gray-400">&bull;</span>}
+            <span>{leadTime ?? 'N/A'}</span>
           </TooltipWrapper>
         </div>
       </CardContent>

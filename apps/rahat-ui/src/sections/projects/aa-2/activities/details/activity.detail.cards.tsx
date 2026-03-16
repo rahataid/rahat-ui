@@ -90,15 +90,25 @@ export default function ActivityDetailCards({
           )}
           <div className="text-gray-500 text-sm mt-2 flex flex-wrap gap-2">
             <TooltipWrapper
-              tip={`Responsible Station: ${activityDetail?.phase?.riverBasin}`}
+              tip={`Responsible Station: ${
+                activityDetail?.responsibleStation ?? 'N/A'
+              }`}
             >
               <span className="cursor-pointer">
-                {activityDetail?.phase?.riverBasin}
+                {activityDetail?.responsibleStation &&
+                activityDetail.responsibleStation.length > 20
+                  ? `${activityDetail.responsibleStation.substring(0, 20)}...`
+                  : activityDetail?.responsibleStation ?? 'N/A'}
               </span>
             </TooltipWrapper>
-            <span>&bull;</span>
-            <TooltipWrapper tip={`Lead Time: ${activityDetail?.leadTime}`}>
-              <span className="cursor-pointer">{activityDetail?.leadTime}</span>
+
+            <TooltipWrapper
+              tip={`Lead Time: ${activityDetail?.leadTime ?? 'N/A'}`}
+            >
+              <span className="cursor-pointer">
+                {activityDetail?.leadTime && <span>&bull;</span>}
+                {activityDetail?.leadTime ?? 'N/A'}
+              </span>
             </TooltipWrapper>
           </div>
           <div className="flex items-center text-gray-500 text-sm mt-1">

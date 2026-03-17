@@ -162,12 +162,13 @@ export default function ActivitiesView() {
         className={`flex gap-4 ${
           state === 'expanded'
             ? 'w-[calc(100vw-18rem)]'
-            : 'w-[calc(100vw-6rem)]'
-        }  border-2 transition-width duration-300 overflow-x-auto  [&::-webkit-scrollbar]:h-1.5  [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300`}
+            : 'w-[calc(100vw-5rem)]'
+        } transition-width duration-300 overflow-x-auto  [&::-webkit-scrollbar]:h-1.5  [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300`}
         style={{ scrollbarGutter: 'stable' }}
       >
+        {/* <div className="grid grid-cols-3 gap-4 overflow-x-auto"> */}
         {sortedPhases.map((phase) => (
-          <div key={phase} className="flex min-w-[320px]">
+          <div key={phase} className="min-w-[320px]  ">
             <PhaseContent
               title={phase.charAt(0) + phase.slice(1).toLowerCase()}
               description={

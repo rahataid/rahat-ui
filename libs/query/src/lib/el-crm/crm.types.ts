@@ -18,3 +18,16 @@ export interface Customer {
     bde?: string;
   };
 }
+
+export interface Stat {
+  name:
+    | 'TOTAL_CUSTOMER'
+    | 'ACTIVE_CUSTOMER'
+    | 'INACTIVE_CUSTOMER'
+    | 'NEWLY_INACTIVE_CUSTOMER'
+    | 'CUSTOMERS_BY_MONTH';
+  data: number;
+  group: 'VENDOR';
+  createdAt: Date;
+  updatedAt: Date;
+}

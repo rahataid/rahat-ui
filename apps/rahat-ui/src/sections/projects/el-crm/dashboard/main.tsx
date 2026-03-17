@@ -23,6 +23,9 @@ import {
 } from 'recharts';
 import { Users, UserCheck, MessageSquare, Download } from 'lucide-react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { CustomerCategory, Stat, useCustomerStats } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 const messagesSentData = [
   { name: 'Consumers', value: 2400, fill: '#60a5fa' }, // Light blue
@@ -53,6 +56,16 @@ const customerCategorizationData = [
 ];
 
 export default function DashboardView() {
+  const { id: projectUUID } = useParams() as { id: UUID };
+
+  const { data: stats } = useCustomerStats(projectUUID);
+
+  const totalCustomers =
+    stats?.find((stat: Stat) => stat.name === 'TOTAL_CUSTOMER')?.data || 0;
+
+  const customersByMonth =
+    stats?.find((stat: Stat) => stat.name === 'CUSTOMERS_BY_MONTH')?.data || [];
+
   return (
     <div className="flex flex-col h-full">
       <div className="border-b border-border bg-card/50 px-6 py-4">
@@ -84,7 +97,7 @@ export default function DashboardView() {
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">2,847</div>
+                <div className="text-2xl font-bold">{totalCustomers}</div>
               </CardContent>
             </Card>
             <Card>
@@ -95,7 +108,7 @@ export default function DashboardView() {
                 <UserCheck className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">1,924</div>
+                <div className="text-2xl font-bold">0</div>
               </CardContent>
             </Card>
             <Card>
@@ -106,7 +119,7 @@ export default function DashboardView() {
                 <MessageSquare className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">24,567</div>
+                <div className="text-2xl font-bold">0</div>
               </CardContent>
             </Card>
           </div>
@@ -226,30 +239,42 @@ export default function DashboardView() {
             <CardContent>
               <ChartContainer
                 config={{
-                  active: {
+                  [CustomerCategory.ACTIVE]: {
                     label: 'Active',
                     color: '#60a5fa', // Light blue
                   },
-                  inactive: {
+                  [CustomerCategory.INACTIVE]: {
                     label: 'Inactive',
                     color: '#fbbf24', // Light amber instead of red
                   },
-                  newlyActive: {
-                    label: 'Newly Active',
+                  [CustomerCategory.NEWLY_INACTIVE]: {
+                    label: 'Newly Inactive',
                     color: '#4ade80', // Light green
                   },
                 }}
                 className="h-[300px]"
               >
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={customerCategorizationData}>
+                  <BarChart data={customersByMonth}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
                     <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="active" stackId="a" fill="#60a5fa" />
-                    <Bar dataKey="inactive" stackId="a" fill="#fbbf24" />
-                    <Bar dataKey="newlyActive" stackId="a" fill="#4ade80" />
+                    <Bar
+                      dataKey={CustomerCategory.ACTIVE}
+                      stackId="a"
+                      fill="#60a5fa"
+                    />
+                    <Bar
+                      dataKey={CustomerCategory.INACTIVE}
+                      stackId="a"
+                      fill="#fbbf24"
+                    />
+                    <Bar
+                      dataKey={CustomerCategory.NEWLY_INACTIVE}
+                      stackId="a"
+                      fill="#4ade80"
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </ChartContainer>

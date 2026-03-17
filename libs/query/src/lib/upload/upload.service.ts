@@ -44,7 +44,8 @@ export const useUploadFile = () => {
     timer: 3000,
   });
   return useMutation({
-    mutationFn: (variables: UploadFileVariables | File) => uploadFile(variables),
+    mutationFn: (variables: UploadFileVariables | File) =>
+      uploadFile(variables),
     // onSuccess: () => {
     //     toast.fire({
     //         title: 'File upload success',

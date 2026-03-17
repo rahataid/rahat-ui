@@ -35,11 +35,7 @@ import {
 import Link from 'next/link';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import {
-  useDeleteTemplate,
-  useListElCrmTemplate,
-  useSyncTemplate,
-} from '@rahat-ui/query';
+import { useDeleteTemplate, useListElCrmTemplate } from '@rahat-ui/query';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -66,7 +62,6 @@ export default function TemplatesView() {
 
   const { data: templateList } = useListElCrmTemplate(projectUUID, {});
   const deleteTemplate = useDeleteTemplate(projectUUID);
-  const syncTemplate = useSyncTemplate(projectUUID);
 
   const templates = templateList || [];
 
@@ -113,7 +108,8 @@ export default function TemplatesView() {
     const query = searchQuery.toLowerCase().trim();
 
     return templates.filter((template: any) => {
-      const templateChannel = template?.Transport?.name || template?.channel || '';
+      const templateChannel =
+        template?.Transport?.name || template?.channel || '';
       const searchableText = [
         template?.name,
         template?.body,
@@ -159,14 +155,6 @@ export default function TemplatesView() {
     }
   };
 
-  const handleSyncTemplates = async () => {
-    try {
-      await syncTemplate.mutateAsync({});
-    } catch (error) {
-      console.error('Error syncing templates:', error);
-    }
-  };
-
   return (
     <div className="flex flex-col h-full">
       <div className="border-b border-border bg-card/50 px-6 py-4">
@@ -179,16 +167,6 @@ export default function TemplatesView() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={handleSyncTemplates}
-              disabled={syncTemplate.isPending}
-            >
-              <RefreshCcw
-                className={`mr-2 h-4 w-4 ${syncTemplate.isPending ? 'animate-spin' : ''}`}
-              />
-              Sync Templates
-            </Button>
             <Link
               href={`/projects/el-crm/${projectUUID}/communications/templates/create`}
             >
@@ -282,7 +260,10 @@ export default function TemplatesView() {
                     </SelectContent>
                   </Select>
 
-                  <Select value={channelFilter} onValueChange={setChannelFilter}>
+                  <Select
+                    value={channelFilter}
+                    onValueChange={setChannelFilter}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Channel" />
                     </SelectTrigger>
@@ -350,19 +331,25 @@ export default function TemplatesView() {
                   const channelName =
                     template?.Transport?.name || template?.channel || 'Unknown';
                   const mediaItems = template?.media || [];
-                  const previewMedia = mediaItems.slice(0, 3);
-                  const hasMoreMedia = mediaItems.length > previewMedia.length;
+                  const primaryMedia = mediaItems[0];
+                  const extraMediaCount = Math.max(mediaItems.length - 1, 0);
 
                   return (
-                    <Card key={template.cuid || template.id} className="flex flex-col border-border/80">
-                      <CardHeader className="space-y-3 pb-3">
+                    <Card
+                      key={template.cuid || template.id}
+                      className="flex flex-col border-border/80 shadow-sm"
+                    >
+                      <CardHeader className="space-y-3 pb-2">
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0 flex-1">
                             <CardTitle className="truncate text-lg">
                               {template.name}
                             </CardTitle>
                             <CardDescription className="mt-1 text-xs">
-                              Created {new Date(template.createdAt).toLocaleDateString()}
+                              Created{' '}
+                              {new Date(
+                                template.createdAt,
+                              ).toLocaleDateString()}
                             </CardDescription>
                           </div>
                           <Badge
@@ -414,71 +401,66 @@ export default function TemplatesView() {
                         </div>
                       </CardHeader>
 
-                      <CardContent className="flex flex-1 flex-col">
-                        <p className="mb-4 line-clamp-4 flex-1 text-sm text-muted-foreground">
+                      <CardContent className="flex flex-1 flex-col gap-4">
+                        <p className="line-clamp-3 text-sm text-muted-foreground">
                           {template.body}
                         </p>
 
-                        {template.lastApprovalCheck && (
-                          <p className="mb-3 inline-flex items-center gap-1 text-xs text-muted-foreground">
-                            <Clock3 className="h-3.5 w-3.5" />
-                            Approval Check{' '}
-                            {new Date(template.lastApprovalCheck).toLocaleString()}
-                          </p>
-                        )}
-
                         {template.type === 'MEDIA' && mediaItems.length > 0 && (
-                          <div className="mb-4 space-y-2">
+                          <div className="space-y-2">
                             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                               Media Preview
                             </p>
-                            <div className="flex flex-wrap gap-2">
-                              {previewMedia.map((url: string) => (
-                                <div
-                                  key={url}
-                                  className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-md border bg-muted"
-                                >
-                                  {isVideoUrl(url) ? (
-                                    <>
-                                      <video
-                                        src={url}
-                                        className="h-full w-full object-cover"
-                                        muted
-                                        playsInline
-                                      />
-                                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                                        <Video className="h-4 w-4 text-white" />
-                                      </div>
-                                    </>
-                                  ) : (
-                                    <img
-                                      src={url}
-                                      alt={template.name}
-                                      className="h-full w-full object-cover"
-                                      onError={(e) => {
-                                        e.currentTarget.style.display = 'none';
-                                        const fallback = e.currentTarget
-                                          .nextElementSibling as HTMLElement | null;
-                                        if (fallback) fallback.style.display = 'flex';
-                                      }}
-                                    />
-                                  )}
-                                  <div
-                                    className="hidden h-full w-full items-center justify-center text-muted-foreground"
-                                    aria-hidden="true"
-                                  >
-                                    <ImageIcon className="h-5 w-5" />
+                            <div className="relative overflow-hidden rounded-lg border bg-muted aspect-video">
+                              {isVideoUrl(primaryMedia) ? (
+                                <>
+                                  <video
+                                    src={primaryMedia}
+                                    className="h-full w-full object-cover"
+                                    muted
+                                    playsInline
+                                  />
+                                  <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                    <Video className="h-7 w-7 text-white" />
                                   </div>
-                                </div>
-                              ))}
-
-                              {hasMoreMedia && (
-                                <div className="flex h-20 w-20 items-center justify-center rounded-md border bg-muted text-sm font-medium text-muted-foreground">
-                                  +{mediaItems.length - previewMedia.length}
-                                </div>
+                                </>
+                              ) : (
+                                <img
+                                  src={primaryMedia}
+                                  alt={template.name}
+                                  className="h-full w-full object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    const fallback = e.currentTarget
+                                      .nextElementSibling as HTMLElement | null;
+                                    if (fallback)
+                                      fallback.style.display = 'flex';
+                                  }}
+                                />
                               )}
+                              <div
+                                className="hidden h-full w-full items-center justify-center text-muted-foreground"
+                                aria-hidden="true"
+                              >
+                                <ImageIcon className="h-8 w-8" />
+                              </div>
                             </div>
+                            {extraMediaCount > 0 && (
+                              <p className="text-xs text-muted-foreground">
+                                +{extraMediaCount} more media
+                              </p>
+                            )}
                           </div>
+                        )}
+
+                        {template.lastApprovalCheck && (
+                          <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                            <Clock3 className="h-3.5 w-3.5" />
+                            Approval Check{' '}
+                            {new Date(
+                              template.lastApprovalCheck,
+                            ).toLocaleString()}
+                          </p>
                         )}
 
                         <div className="mt-auto flex items-center justify-end gap-2 border-t pt-3">
@@ -499,8 +481,9 @@ export default function TemplatesView() {
                                   Are you absolutely sure?
                                 </AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  This action cannot be undone. This will permanently
-                                  delete your template from our servers.
+                                  This action cannot be undone. This will
+                                  permanently delete your template from our
+                                  servers.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>

@@ -2,13 +2,20 @@ import { useRetryCustomerImport, useSingleFailedBatch } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useFailedCustomersTableColumn } from './useFailedCustomersTableColumn';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import Link from 'next/link';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { ArrowLeft, RotateCcw } from 'lucide-react';
+import { ArrowLeft, RotateCcw, AlertCircle, Pencil } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export default function BatchDetailView() {
   const { id: projectUUID, batchId: batchUUID } = useParams() as {
@@ -91,56 +98,133 @@ export default function BatchDetailView() {
     router.push(`/projects/el-crm/${projectUUID}/customers`);
   };
 
+  const editCount = Object.keys(cellEdits).length;
+  const statusText = failedBatch?.status?.split('_').join(' ');
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="border-b border-border bg-card/50 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link
-              href={`/projects/el-crm/${projectUUID}/customers/upload/retry`}
-            >
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">
-                Failed Customers
-              </h1>
-              <p className="text-muted-foreground">List of failed customers</p>
+    <TooltipProvider delayDuration={200}>
+      <div className="flex flex-col h-full">
+        {/* Page Header */}
+        <div className="border-b border-border bg-card px-6 py-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={`/projects/el-crm/${projectUUID}/customers/upload/retry`}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-lg"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>Back to Failed Batches</p>
+                </TooltipContent>
+              </Tooltip>
+              <div>
+                <div className="flex items-center gap-2.5">
+                  <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                    Failed Customers
+                  </h1>
+                  {statusText && (
+                    <Badge variant="destructive" className="text-xs">
+                      {statusText}
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Review and fix validation errors before retrying
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {hasEdits && (
+                <>
+                  <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <Pencil className="h-3.5 w-3.5" />
+                    {editCount} row{editCount !== 1 ? 's' : ''} edited
+                  </span>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
+                        onClick={handleReset}
+                      >
+                        <RotateCcw className="h-3.5 w-3.5" />
+                        Reset
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Discard all edits and restore original values</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </>
+              )}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    className="h-8 gap-1.5"
+                    onClick={handleRetryWithEdits}
+                    disabled={retryImport.isPending}
+                  >
+                    {retryImport.isPending ? (
+                      <>
+                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                        Retrying...
+                      </>
+                    ) : (
+                      <>
+                        <RotateCcw className="h-3.5 w-3.5" />
+                        Retry Import
+                      </>
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    {hasEdits
+                      ? 'Retry import with your corrections applied'
+                      : 'Retry importing this batch as-is'}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
+        </div>
 
-          {hasEdits && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">
-                {Object.keys(cellEdits).length} row(s) edited
-              </span>
-              <Button variant="outline" size="sm" onClick={handleReset}>
-                <RotateCcw className="mr-2 h-4 w-4" />
-                Reset
-              </Button>
-              <Button size="sm" onClick={handleRetryWithEdits}>
-                Retry Import
-              </Button>
-            </div>
-          )}
+        <div className="flex-1 p-6 overflow-auto space-y-4">
+          {/* Edit Instructions */}
+          <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
+            <AlertCircle className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+            <p className="text-sm text-muted-foreground">
+              Fields with errors are highlighted in red and editable. Fix the
+              values directly in the table, then click{' '}
+              <strong className="text-foreground">Retry Import</strong> to
+              re-submit with your corrections.
+            </p>
+          </div>
+
+          {/* Table Card */}
+          <Card className="flex flex-col">
+            <CardContent className="p-0">
+              <DemoTable
+                table={table}
+                tableHeight="h-[calc(100vh-360px)]"
+                loading={isLoading}
+              />
+            </CardContent>
+          </Card>
         </div>
       </div>
-
-      <div className="text-sm p-6 pb-0">
-        <strong>Status:</strong> {failedBatch?.status?.split('_').join(' ')}
-      </div>
-
-      <Card className="m-6">
-        <CardContent className="mt-6">
-          <DemoTable
-            table={table}
-            tableHeight="h-[calc(100vh-360px)]"
-            loading={isLoading}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    </TooltipProvider>
   );
 }

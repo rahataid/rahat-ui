@@ -2,11 +2,28 @@ import { useMutation } from '@tanstack/react-query';
 import { api } from '../../utils/api';
 import { useSwal } from 'libs/query/src/swal';
 
-const uploadFile = async (file: File) => {
+type UploadFileVariables = {
+  file: File;
+  onProgress?: (progress: number) => void;
+};
+
+const uploadFile = async (variables: UploadFileVariables | File) => {
+  const file = variables instanceof File ? variables : variables.file;
+  const onProgress =
+    variables instanceof File ? undefined : variables.onProgress;
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await api.post('/upload/file', formData);
+  const response = await api.post('/upload/file', formData, {
+    onUploadProgress: (progressEvent) => {
+      if (!onProgress || !progressEvent.total) return;
+
+      const progress = Math.round(
+        (progressEvent.loaded / progressEvent.total) * 100,
+      );
+      onProgress(Math.min(100, Math.max(0, progress)));
+    },
+  });
 
   return response?.data;
 };
@@ -20,7 +37,7 @@ export const useUploadFile = () => {
     timer: 3000,
   });
   return useMutation({
-    mutationFn: (file: any) => uploadFile(file),
+    mutationFn: (variables: UploadFileVariables | File) => uploadFile(variables),
     // onSuccess: () => {
     //     toast.fire({
     //         title: 'File upload success',

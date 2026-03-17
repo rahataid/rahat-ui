@@ -16,7 +16,7 @@ import { z } from 'zod';
 import {
   CustomPagination,
   DemoTable,
-  HeaderWithBack,
+  Back,
   Heading,
 } from 'apps/rahat-ui/src/common';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
@@ -224,29 +224,56 @@ const UpdateOrAddStakeholdersGroup = () => {
   const { stakeholders: stakeholdersError } = formState.errors;
 
   return (
-    <div className="p-4">
+    <div
+      className="p-4 compact:p-2 flex flex-col"
+      style={{ height: 'calc(100vh - 80px)' }}
+    >
       <Form {...form}>
-        <form onSubmit={handleSubmit(handleCreateGroup)}>
-          <div className="flex flex-col">
-            <HeaderWithBack
-              title={
-                isEditing
+        <form
+          onSubmit={handleSubmit(handleCreateGroup)}
+          className="flex flex-col flex-1 min-h-0"
+        >
+          {/* Header */}
+          <div className="shrink-0 mb-3 compact:mb-1">
+            <div className="hidden compact:flex items-center gap-2 compact:[&>div]:mb-0">
+              <Back
+                path={
+                  isEditing
+                    ? `/projects/aa/${projectId}/stakeholders/groups/${groupId}`
+                    : `/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`
+                }
+                className="border border-gray-300 text-gray-500 rounded px-2 py-0.5 mb-0 w-auto"
+              />
+              <h1 className="font-semibold compact:text-base compact:leading-tight">
+                {isEditing
                   ? 'Update Stakeholder Group Details'
-                  : 'Create Stakeholder Group'
-              }
-              subtitle={isEditing ? '' : 'Fill the form below to create a new'}
-              path={
-                isEditing
-                  ? `/projects/aa/${projectId}/stakeholders/groups/${groupId}`
-                  : `/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`
-              }
-            />
-            <div className="ml-1 mb-1">
-              <FormField
-                control={control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
+                  : 'Create Stakeholder Group'}
+              </h1>
+            </div>
+            <div className="compact:hidden">
+              <Back
+                path={
+                  isEditing
+                    ? `/projects/aa/${projectId}/stakeholders/groups/${groupId}`
+                    : `/projects/aa/${projectId}/stakeholders?tab=stakeholdersGroup`
+                }
+              />
+              <h1 className="font-semibold text-[28px]">
+                {isEditing
+                  ? 'Update Stakeholder Group Details'
+                  : 'Create Stakeholder Group'}
+              </h1>
+            </div>
+          </div>
+
+          {/* Group name input */}
+          <div className="shrink-0 mb-2 compact:mb-1">
+            <FormField
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="compact:hidden">
                     <Label>Stakeholder Group Name</Label>
                     <FormControl>
                       <Input
@@ -255,62 +282,80 @@ const UpdateOrAddStakeholdersGroup = () => {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                  </div>
+                  <div className="hidden compact:flex items-center gap-2">
+                    <Label className="text-xs shrink-0 whitespace-nowrap">
+                      Group Name
+                    </Label>
+                    <FormControl>
+                      <Input
+                        placeholder="Write stakeholder group name"
+                        className="h-7 text-xs rounded-md flex-1"
+                        {...field}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
-          <div className="rounded-md border p-4 ml-1">
-            <div className="">
+          <div className="rounded-md border p-4 compact:p-2 flex flex-col flex-1 min-h-0">
+            <div className="shrink-0 mb-2 compact:mb-1">
               <Heading
                 title="Select Stakeholders"
                 description={`Select stakeholders from the list below to ${
                   isEditing ? 'update' : 'create'
                 } group`}
-                titleStyle="text-xl"
+                titleStyle="text-xl compact:text-sm"
               />
             </div>
 
-            <StakeholdersTableFilters
-              projectID={projectId}
-              filters={filters}
-              setFilters={setFilters}
-            />
+            <div className="shrink-0 compact:[&_input]:h-7 compact:[&_input]:text-xs">
+              <StakeholdersTableFilters
+                projectID={projectId}
+                filters={filters}
+                setFilters={setFilters}
+              />
+            </div>
 
-            <DemoTable table={table} tableHeight="h-[calc(100vh-520px)]" />
+            <div className="flex-1 min-h-0 compact:[&_th]:h-8 compact:[&_th]:px-2 compact:[&_th]:text-xs compact:[&_td]:px-2 compact:[&_td]:py-1 compact:[&_td]:text-xs">
+              <DemoTable table={table} tableHeight="h-full" />
+            </div>
 
             {stakeholdersError && (
-              <p className="text-sm text-red-500 mt-2">
+              <p className="text-sm text-red-500 mt-2 shrink-0">
                 {stakeholdersError.message}
               </p>
             )}
 
-            <CustomPagination
-              meta={
-                stakeholdersMeta || {
-                  total: 0,
-                  currentPage: 0,
-                  lastPage: 0,
-                  perPage: 0,
-                  next: null,
-                  prev: null,
+            <div className="shrink-0 compact:[&_button]:h-6 compact:[&_button]:w-6 compact:[&_button]:p-0 compact:[&_.text-sm]:text-xs compact:[&_[role='combobox']]:h-6 compact:[&_[role='combobox']]:text-xs compact:[&_[role='combobox']]:w-12">
+              <CustomPagination
+                meta={
+                  stakeholdersMeta || {
+                    total: 0,
+                    currentPage: 0,
+                    lastPage: 0,
+                    perPage: 0,
+                    next: null,
+                    prev: null,
+                  }
                 }
-              }
-              handleNextPage={setNextPage}
-              handlePrevPage={setPrevPage}
-              handlePageSizeChange={setPerPage}
-              currentPage={pagination.page}
-              perPage={pagination.perPage}
-              setPagination={setPagination}
-              total={stakeholdersMeta?.lastPage || 0}
-            />
+                handleNextPage={setNextPage}
+                handlePrevPage={setPrevPage}
+                handlePageSizeChange={setPerPage}
+                currentPage={pagination.page}
+                perPage={pagination.perPage}
+                setPagination={setPagination}
+                total={stakeholdersMeta?.lastPage || 0}
+              />
+            </div>
 
-            <div className="flex justify-end gap-4 mt-4">
+            <div className="flex justify-end gap-4 mt-4 compact:mt-2 shrink-0">
               <Button
                 type="button"
-                className="w-48 rounded-md"
+                className="w-48 compact:w-32 compact:text-xs compact:h-8 rounded-md"
                 onClick={() => {
                   reset();
                   resetSelectedListItems();
@@ -321,7 +366,7 @@ const UpdateOrAddStakeholdersGroup = () => {
               </Button>
               <Button
                 type="submit"
-                className="w-48 rounded-md"
+                className="w-48 compact:w-auto compact:text-xs compact:h-8 rounded-md"
                 onClick={handleButtonClick}
               >
                 {isEditing ? 'Update' : 'Add'}

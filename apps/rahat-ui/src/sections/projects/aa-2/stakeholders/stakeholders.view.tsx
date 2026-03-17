@@ -102,32 +102,31 @@ function StakeholdersView() {
     <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
       <TabsContent value="stakeholders">
         <div>
-          <h1 className="font-bold text-2xl text-label pl-4">Stakeholders</h1>
+          <h1 className="font-bold text-2xl compact:text-lg text-label pl-4">
+            Stakeholders
+          </h1>
         </div>
       </TabsContent>
       <TabsContent value="stakeholdersGroup">
         <div>
-          <h1 className="font-bold text-2xl text-label pl-4">
+          <h1 className="font-bold text-2xl compact:text-lg text-label pl-4">
             Stakeholders Groups
           </h1>
         </div>
       </TabsContent>
-      <p className="text-muted-foreground text-left pl-4 mb-0 pb-0">
-        Track all the stakeholders in the project
-      </p>
 
-      <div className="flex justify-between items-center p-4">
+      <div className="flex justify-between items-center p-4 compact:p-2">
         <TabsList className="border bg-secondary rounded">
           <TabsTrigger
             id="stakeholders"
-            className="w-full data-[state=active]:bg-white"
+            className="w-full data-[state=active]:bg-white compact:text-xs compact:px-2 compact:py-1"
             value="stakeholders"
           >
             Stakeholders
           </TabsTrigger>
           <TabsTrigger
             id="stakeholdersGroup"
-            className="w-full data-[state=active]:bg-white"
+            className="w-full data-[state=active]:bg-white compact:text-xs compact:px-2 compact:py-1"
             value="stakeholdersGroup"
           >
             Stakeholders Groups
@@ -149,29 +148,29 @@ function StakeholdersView() {
         </RoleAuth>
       </div>
       <TabsContent value="stakeholders">
-        <div className="px-4">
-          <div className="p-4 rounded-sm border">
-            <div className="flex mb-2 gap-2">
+        <div className="px-4 compact:px-2">
+          <div className="p-4 compact:p-2 rounded-sm border flex flex-col" style={{ height: 'calc(100vh - 220px)' }}>
+            <div className="flex items-center mb-2 gap-2 compact:gap-1 shrink-0">
               <SearchInput
-                className="w-full"
+                className="w-full compact:[&_input]:h-7 compact:[&_input]:text-xs"
                 name="name"
                 onSearch={(e) => handleSearch(e, 'name')}
                 value={filters?.name || ''}
               />
               <SearchInput
-                className="w-full"
+                className="w-full compact:[&_input]:h-7 compact:[&_input]:text-xs"
                 name="municipality"
                 onSearch={(e) => handleSearch(e, 'municipality')}
                 value={filters?.municipality || ''}
               />
               <SearchInput
-                className="w-full"
+                className="w-full compact:[&_input]:h-7 compact:[&_input]:text-xs"
                 name="organization"
                 onSearch={(e) => handleSearch(e, 'organization')}
                 value={filters?.organization || ''}
               />
               <SearchInput
-                className="w-full"
+                className="w-full compact:[&_input]:h-7 compact:[&_input]:text-xs"
                 name="support area"
                 onSearch={(e) => handleSearch(e, 'supportArea')}
                 value={filters?.supportArea || ''}
@@ -183,35 +182,41 @@ function StakeholdersView() {
                 <AddButton
                   path={`/projects/aa/${projectId}/stakeholders/add`}
                   name="Stakeholder"
+                  className="shrink-0 compact:h-7 compact:text-xs compact:px-2"
                 />
               </RoleAuth>
             </div>
-            <DemoTable table={table} message="No Stakeholders Available" />
+            {/* Compact table cells at <1000px */}
+            <div className="flex-1 min-h-0 overflow-auto compact:[&_th]:h-8 compact:[&_th]:px-2 compact:[&_th]:text-xs compact:[&_td]:px-2 compact:[&_td]:py-1 compact:[&_td]:text-xs">
+              <DemoTable table={table} message="No Stakeholders Available" />
+            </div>
 
-            <CustomPagination
-              meta={
-                stakeholdersMeta || {
-                  total: 0,
-                  currentPage: 0,
-                  lastPage: 0,
-                  perPage: 0,
-                  next: null,
-                  prev: null,
+            <div className="shrink-0">
+              <CustomPagination
+                meta={
+                  stakeholdersMeta || {
+                    total: 0,
+                    currentPage: 0,
+                    lastPage: 0,
+                    perPage: 0,
+                    next: null,
+                    prev: null,
+                  }
                 }
-              }
-              handleNextPage={setNextPage}
-              handlePrevPage={setPrevPage}
-              handlePageSizeChange={setPerPage}
-              currentPage={pagination.page}
-              perPage={pagination.perPage}
-              setPagination={setPagination}
-              total={stakeholdersMeta?.lastPage || 0}
-            />
+                handleNextPage={setNextPage}
+                handlePrevPage={setPrevPage}
+                handlePageSizeChange={setPerPage}
+                currentPage={pagination.page}
+                perPage={pagination.perPage}
+                setPagination={setPagination}
+                total={stakeholdersMeta?.lastPage || 0}
+              />
+            </div>
           </div>
         </div>
       </TabsContent>
       <TabsContent value="stakeholdersGroup">
-        <div className="px-4">
+        <div className="px-4 compact:px-2">
           <StakeGoldersGroups />
         </div>
       </TabsContent>

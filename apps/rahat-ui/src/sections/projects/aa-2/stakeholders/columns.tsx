@@ -44,13 +44,6 @@ export const useProjectStakeholdersTableColumns = () => {
       ),
     },
     {
-      accessorKey: 'email',
-      header: 'Email',
-      cell: ({ row }) => (
-        <TruncatedCell text={row.getValue('email')} maxLength={10} />
-      ),
-    },
-    {
       accessorKey: 'designation',
       header: 'Designation',
       cell: ({ row }) => (

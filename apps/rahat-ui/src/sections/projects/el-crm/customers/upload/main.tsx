@@ -177,8 +177,8 @@ export default function CustomersUploadPage() {
                       isDragging
                         ? 'border-primary bg-primary/5 scale-[1.01]'
                         : selectedFile
-                          ? 'border-primary/30 bg-primary/[0.02]'
-                          : 'border-border hover:border-muted-foreground/40 hover:bg-muted/30'
+                        ? 'border-primary/30 bg-primary/[0.02]'
+                        : 'border-border hover:border-muted-foreground/40 hover:bg-muted/30'
                     }`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
@@ -332,18 +332,18 @@ export default function CustomersUploadPage() {
                         <span className="shrink-0 mt-1.5 h-1 w-1 rounded-full bg-muted-foreground/50" />
                         First row should contain column headers
                       </li>
-                      <li className="flex items-start gap-2">
+                      {/* <li className="flex items-start gap-2">
                         <span className="shrink-0 mt-1.5 h-1 w-1 rounded-full bg-muted-foreground/50" />
                         Required columns: Customer Name, Phone Number
-                      </li>
-                      <li className="flex items-start gap-2">
+                      </li> */}
+                      {/* <li className="flex items-start gap-2">
                         <span className="shrink-0 mt-1.5 h-1 w-1 rounded-full bg-muted-foreground/50" />
                         Optional: Email, BDE/BDM, Channel, Region, Source,
                         Category
-                      </li>
+                      </li> */}
                       <li className="flex items-start gap-2">
                         <span className="shrink-0 mt-1.5 h-1 w-1 rounded-full bg-muted-foreground/50" />
-                        Date format: YYYY-MM-DD
+                        Date format: MM-DD-YYYY
                       </li>
                     </ul>
                   </div>

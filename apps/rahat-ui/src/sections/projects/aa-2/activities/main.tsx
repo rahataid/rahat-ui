@@ -2,6 +2,7 @@
 import { useActivities } from '@rahat-ui/query';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { generateExcel } from 'apps/rahat-ui/src/utils';
+import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import { UUID } from 'crypto';
 import { CloudDownloadIcon, Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -66,7 +67,7 @@ export default function ActivitiesView() {
   const uniquePhases = useMemo(() => {
     if (!activitiesData) return [];
     const seen = new Set<string>();
-    activitiesData.forEach((d: Record<string, any>) => {
+    activitiesData.forEach((d: IActivitiesItem) => {
       if (d.phase) seen.add(d.phase);
     });
     return Array.from(seen);
@@ -90,9 +91,9 @@ export default function ActivitiesView() {
   }, [pinnedPhases, uniquePhases]);
 
   const phaseDataMap = useMemo(() => {
-    const map: Record<string, any[]> = {};
+    const map: Record<string, IActivitiesItem[]> = {};
     if (!activitiesData) return map;
-    activitiesData.forEach((d: Record<string, any>) => {
+    activitiesData.forEach((d: IActivitiesItem) => {
       if (d.phase) {
         if (!map[d.phase]) map[d.phase] = [];
         map[d.phase].push(d);
@@ -103,7 +104,7 @@ export default function ActivitiesView() {
 
   const handleDownloadReport = () => {
     if (activitiesData.length < 1) return toast.error('No data to download.');
-    const mappedData = activitiesData?.map((item: Record<string, any>) => {
+    const mappedData = activitiesData?.map((item: IActivitiesItem) => {
       let timeStamp;
       if (item?.completedAt) {
         const d = new Date(item.completedAt);
@@ -115,7 +116,7 @@ export default function ActivitiesView() {
         Title: item.title || 'N/A',
         'Early Action': item.category || 'N/A',
         Phase: item.phase || 'N/A',
-        Type: item.isAutomated ? 'Automated' : 'Manual' || 'N/A',
+        Type: item.isAutomated ? 'Automated' : 'Manual',
         Responsibility: item.responsibility,
         'Responsible Station': item.source || 'N/A',
         Status: item.status || 'N/A',

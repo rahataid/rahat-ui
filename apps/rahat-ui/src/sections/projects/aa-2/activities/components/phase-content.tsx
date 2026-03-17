@@ -17,7 +17,7 @@ interface Phase {
   id: string;
   responsibleStation: string;
   status: string;
-  leadTime: string;
+  leadTime?: string;
   phase?: string;
   title: string;
   responsibility: string;

@@ -25,7 +25,13 @@ import {
 } from '@rahat-ui/shadcn/components/popover';
 import { Calendar } from '@rahat-ui/shadcn/components/calendar';
 import { format } from 'date-fns';
-import { CalendarIcon, Send, Plus, ArrowLeft } from 'lucide-react';
+import { CalendarIcon, Send, Plus, ArrowLeft, PenLine, Info } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -75,20 +81,25 @@ export default function ComposeMessageView() {
   };
 
   return (
+    <TooltipProvider delayDuration={200}>
     <div className="flex flex-col h-full">
-      <div className="border-b border-border bg-card/50 px-6 py-4">
-        <div className="flex items-center gap-4">
-          <Link href={`/projects/el-crm/${projectUUID}/communications`}>
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              {/* Back to Communications */}
-            </Button>
-          </Link>
+      <div className="border-b border-border bg-card px-6 py-4">
+        <div className="flex items-center gap-3">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link href={`/projects/el-crm/${projectUUID}/communications`}>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>Back to communications</TooltipContent>
+          </Tooltip>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">
               Compose Message
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm text-muted-foreground mt-0.5">
               Create and send a new message to your audience
             </p>
           </div>
@@ -97,8 +108,11 @@ export default function ComposeMessageView() {
 
       <div className="flex-1 p-6">
         <Card>
-          <CardHeader>
-            <CardTitle>Compose Message</CardTitle>
+          <CardHeader className="pb-4">
+            <div className="flex items-center gap-2">
+              <PenLine className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-semibold">Compose Message</CardTitle>
+            </div>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
@@ -106,7 +120,7 @@ export default function ComposeMessageView() {
               <div className="space-y-4">
                 {/* Group Selection */}
                 <div className="space-y-2">
-                  <Label htmlFor="group-selection">Select Group</Label>
+                  <Label htmlFor="group-selection" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Select Group</Label>
                   <Select
                     value={groupSelection}
                     onValueChange={(value) => {
@@ -116,7 +130,7 @@ export default function ComposeMessageView() {
                       }
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-9">
                       <SelectValue placeholder="Select group type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -129,12 +143,20 @@ export default function ComposeMessageView() {
                 {/* Condition Filter - only shows when Customer is selected */}
                 {groupSelection === 'customers' && (
                   <div className="space-y-2">
-                    <Label htmlFor="condition-filter">Condition Filter</Label>
+                    <div className="flex items-center gap-1.5">
+                      <Label htmlFor="condition-filter" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Condition Filter</Label>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent>Filter customers by their activity status</TooltipContent>
+                      </Tooltip>
+                    </div>
                     <Select
                       value={statusFilter}
                       onValueChange={setStatusFilter}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="h-9">
                         <SelectValue placeholder="Select condition" />
                       </SelectTrigger>
                       <SelectContent>
@@ -150,12 +172,12 @@ export default function ComposeMessageView() {
 
                 {/* Messaging Channel */}
                 <div className="space-y-2">
-                  <Label htmlFor="messaging-channel">Messaging Channel</Label>
+                  <Label htmlFor="messaging-channel" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Messaging Channel</Label>
                   <Select
                     value={messagingChannel}
                     onValueChange={setMessagingChannel}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-9">
                       <SelectValue placeholder="Select channel" />
                     </SelectTrigger>
                     <SelectContent>
@@ -176,7 +198,7 @@ export default function ComposeMessageView() {
               <div className="space-y-4">
                 {/* Schedule Message */}
                 <div className="space-y-2">
-                  <Label>Schedule Message</Label>
+                  <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Schedule Message</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -203,11 +225,12 @@ export default function ComposeMessageView() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Template Management</Label>
+                  <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Template Management</Label>
                   <Button
                     variant="outline"
                     onClick={() => setShowTemplateCreator(!showTemplateCreator)}
-                    className="w-full"
+                    className="w-full h-9"
+                    size="sm"
                   >
                     <Plus className="mr-2 h-4 w-4" />
                     Create New Template
@@ -259,12 +282,12 @@ export default function ComposeMessageView() {
 
             {/* Template Selection */}
             <div className="space-y-2">
-              <Label htmlFor="template">Select Template</Label>
+              <Label htmlFor="template" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Select Template</Label>
               <Select
                 value={selectedTemplate}
                 onValueChange={setSelectedTemplate}
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-9">
                   <SelectValue placeholder="Choose existing template" />
                 </SelectTrigger>
                 <SelectContent>
@@ -282,29 +305,36 @@ export default function ComposeMessageView() {
 
             {/* Custom Message */}
             <div className="space-y-2">
-              <Label htmlFor="custom-message">OR Write Custom Message</Label>
+              <Label htmlFor="custom-message" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">OR Write Custom Message</Label>
               <Textarea
                 id="custom-message"
                 placeholder="Type your custom message here..."
                 value={customMessage}
                 onChange={(e) => setCustomMessage(e.target.value)}
                 rows={4}
+                className="resize-none"
               />
             </div>
 
             {/* Send Button */}
-            <div className="flex justify-end gap-3">
-              <Link href="/communication">
-                <Button variant="outline">Cancel</Button>
+            <div className="flex justify-end gap-2 pt-4 border-t">
+              <Link href={`/projects/el-crm/${projectUUID}/communications`}>
+                <Button variant="outline" size="sm">Cancel</Button>
               </Link>
-              <Button onClick={handleSendMessage} className="min-w-[120px]">
-                <Send className="mr-2 h-4 w-4" />
-                Send Message
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button onClick={handleSendMessage} size="sm">
+                    <Send className="mr-2 h-4 w-4" />
+                    Send Message
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Send the composed message</TooltipContent>
+              </Tooltip>
             </div>
           </CardContent>
         </Card>
       </div>
     </div>
+    </TooltipProvider>
   );
 }

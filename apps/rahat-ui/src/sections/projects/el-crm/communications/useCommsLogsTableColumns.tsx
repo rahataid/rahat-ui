@@ -12,12 +12,22 @@ export default function useCommsLogsTableColumns() {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'audience',
-      header: 'Audience',
-      cell: ({ row }) => <div className="">{row?.original?.address}</div>,
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Audience
+        </span>
+      ),
+      cell: ({ row }) => (
+        <span className="font-mono text-sm">{row?.original?.address || '\u2014'}</span>
+      ),
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Status
+        </span>
+      ),
       cell: ({ row }) => {
         const status = row?.original?.status;
         const disposition = row?.original?.disposition;
@@ -29,9 +39,9 @@ export default function useCommsLogsTableColumns() {
           return (
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex items-center gap-2 cursor-pointer">
-                  <Badge className={renderBadgeBg(status)}>{status}</Badge>
-                  <TriangleAlert className="h-4 w-4 text-destructive" />
+                <div className="flex items-center gap-1.5 cursor-pointer">
+                  <Badge variant={getStatusVariant(status)}>{status}</Badge>
+                  <TriangleAlert className="h-3.5 w-3.5 text-destructive" />
                 </div>
               </TooltipTrigger>
               <TooltipContent className="max-w-xs break-words">
@@ -41,44 +51,45 @@ export default function useCommsLogsTableColumns() {
           );
         }
 
-        return <Badge className={renderBadgeBg(status)}>{status}</Badge>;
+        return <Badge variant={getStatusVariant(status)}>{status}</Badge>;
       },
     },
     {
       accessorKey: 'attempts',
-      header: 'Attempts',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Attempts
+        </span>
+      ),
       cell: ({ row }) => {
-        return <div className="ml-8">{row?.original?.attempts}</div>;
+        return <span className="tabular-nums">{row?.original?.attempts ?? '\u2014'}</span>;
       },
     },
     {
       accessorKey: 'timeStamp',
-      header: 'Timestamp',
-      cell: ({ row }) => <div>{renderDateTime(row?.original?.createdAt)}</div>,
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Timestamp
+        </span>
+      ),
+      cell: ({ row }) => {
+        const date = row?.original?.createdAt;
+        return date ? (
+          <span className="tabular-nums text-muted-foreground">
+            {new Date(date).toLocaleString()}
+          </span>
+        ) : (
+          <span className="text-muted-foreground">{'\u2014'}</span>
+        );
+      },
     },
   ];
   return columns;
 }
 
-function renderDateTime(dateTime: string) {
-  if (dateTime) {
-    const d = new Date(dateTime);
-    const localeDate = d.toLocaleDateString();
-    const localeTime = d.toLocaleTimeString();
-    return `${localeDate} ${localeTime}`;
-  }
-  return 'N/A';
-}
-
-function renderBadgeBg(status: string) {
-  if (status === BroadcastStatus.FAIL) {
-    return 'bg-destructive/10 text-destructive';
-  }
-  if (status === BroadcastStatus.SUCCESS) {
-    return 'bg-success/10 text-success';
-  }
-  if (status === BroadcastStatus.PENDING) {
-    return 'bg-warning/10 text-warning';
-  }
-  return 'bg-muted text-muted-foreground';
+function getStatusVariant(status: string): 'destructive' | 'success' | 'warning' | 'secondary' {
+  if (status === BroadcastStatus.FAIL) return 'destructive';
+  if (status === BroadcastStatus.SUCCESS) return 'success';
+  if (status === BroadcastStatus.PENDING) return 'warning';
+  return 'secondary';
 }

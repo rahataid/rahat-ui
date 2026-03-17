@@ -16,6 +16,9 @@ import {
   MessageSquare,
   RefreshCcw,
   TriangleAlert,
+  FileText,
+  CalendarDays,
+  ShieldCheck,
 } from 'lucide-react';
 import Link from 'next/link';
 import { UUID } from 'crypto';
@@ -39,6 +42,7 @@ import {
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
@@ -48,25 +52,16 @@ export default function TemplatesView() {
   const { data: templateList } = useListElCrmTemplate(projectUUID, {});
   const deleteTemplate = useDeleteTemplate(projectUUID);
 
-  const getChannelColor = (channel: string) => {
-    switch (channel) {
-      case 'SMS':
-        return 'bg-primary/10 text-primary';
-      case 'WhatsApp':
-        return 'bg-success/10 text-success';
-      default:
-        return 'bg-muted text-muted-foreground';
-    }
-  };
-
-  const getStatusColor = (channel: string) => {
-    switch (channel) {
-      case 'PENDING':
-        return 'bg-primary/10 text-primary';
+  const getStatusVariant = (status: string): 'success' | 'secondary' | 'destructive' | 'warning' => {
+    switch (status) {
       case 'APPROVED':
-        return 'bg-success/10 text-success';
+        return 'success';
+      case 'PENDING':
+        return 'warning';
+      case 'REJECTED':
+        return 'destructive';
       default:
-        return 'bg-muted text-muted-foreground';
+        return 'secondary';
     }
   };
 
@@ -79,148 +74,173 @@ export default function TemplatesView() {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="border-b border-border bg-card/50 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Templates</h1>
-            <p className="text-muted-foreground">
-              Manage and create message templates
-            </p>
-          </div>
-          <div>
-            <Link
-              href={`/projects/el-crm/${projectUUID}/communications/templates/create`}
-            >
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Template
-              </Button>
-            </Link>
+    <TooltipProvider delayDuration={200}>
+      <div className="flex flex-col h-full">
+        {/* Header */}
+        <div className="border-b border-border bg-card px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-semibold tracking-tight text-foreground">
+                Templates
+              </h1>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Manage and create message templates
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={`/projects/el-crm/${projectUUID}/communications/templates/create`}
+                  >
+                    <Button size="sm">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Template
+                    </Button>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>Create a new message template</TooltipContent>
+              </Tooltip>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex-1 p-6">
-        {templateList?.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-96 text-center">
-            <MessageSquare className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-2">
-              No templates yet
-            </h3>
-            <p className="text-muted-foreground mb-6">
-              Create your first template to get started
-            </p>
-            <Link
-              href={`/projects/el-crm/${projectUUID}/communications/templates/create`}
-            >
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Create Template
-              </Button>
-            </Link>
-          </div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {templateList?.map((template: any) => (
-              <Card key={template.id} className="flex flex-col">
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{template.name}</CardTitle>
-                      <CardDescription className="text-xs mt-1">
-                        Created{' '}
-                        {new Date(template.createdAt).toLocaleDateString()}
-                      </CardDescription>
-                    </div>
+        <div className="flex-1 p-6">
+          {templateList?.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-96 text-center">
+              <div className="rounded-full bg-muted p-4 mb-4">
+                <MessageSquare className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-1">
+                No templates yet
+              </h3>
+              <p className="text-sm text-muted-foreground mb-6 max-w-sm">
+                Create your first message template to start sending communications
+              </p>
+              <Link
+                href={`/projects/el-crm/${projectUUID}/communications/templates/create`}
+              >
+                <Button size="sm">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Template
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <>
+              {/* Template count */}
+              <div className="flex items-center gap-2 mb-4">
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  All Templates
+                </span>
+                <Badge variant="outline" className="tabular-nums">
+                  {templateList?.length ?? 0}
+                </Badge>
+              </div>
 
-                    <div>
-                      <Badge
-                        className={getChannelColor(template.channel)}
-                        variant="secondary"
-                      >
-                        {template.Transport.name}
-                      </Badge>
-                      {template.lastApprovalCheck && (
-                        <p className="text-xs mt-1">
-                          Approval Check{' '}
-                          {new Date(
-                            template.lastApprovalCheck,
-                          ).toLocaleString()}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
-                  <p className="text-sm text-muted-foreground flex-1 mb-4 line-clamp-3">
-                    {template.body}
-                  </p>
-                  <div className="flex gap-2">
-                    {template.status === 'REJECTED' ? (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="flex items-center gap-2 cursor-pointer">
-                            <Badge
-                              className={getStatusColor(template.status)}
-                              variant="secondary"
-                            >
-                              {template.status}
-                            </Badge>
-                            <TriangleAlert className="h-4 w-4 text-destructive" />
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {templateList?.map((template: any) => (
+                  <Card key={template.id} className="flex flex-col group">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-base font-semibold truncate">
+                            {template.name}
+                          </CardTitle>
+                          <div className="flex items-center gap-1.5 mt-1.5 text-muted-foreground">
+                            <CalendarDays className="h-3 w-3 shrink-0" />
+                            <span className="text-xs tabular-nums">
+                              Created{' '}
+                              {new Date(template.createdAt).toLocaleDateString()}
+                            </span>
                           </div>
-                        </TooltipTrigger>
+                        </div>
+                        <Badge variant="outline" className="shrink-0 text-xs">
+                          {template.Transport.name}
+                        </Badge>
+                      </div>
+                      {template.lastApprovalCheck && (
+                        <div className="flex items-center gap-1.5 mt-2 text-muted-foreground">
+                          <ShieldCheck className="h-3 w-3 shrink-0" />
+                          <span className="text-xs tabular-nums">
+                            Approval Check{' '}
+                            {new Date(template.lastApprovalCheck).toLocaleString()}
+                          </span>
+                        </div>
+                      )}
+                    </CardHeader>
+                    <CardContent className="flex-1 flex flex-col pt-0">
+                      <p className="text-sm text-muted-foreground flex-1 mb-4 line-clamp-3 leading-relaxed">
+                        {template.body || '\u2014'}
+                      </p>
+                      <div className="flex items-center gap-2 pt-3 border-t">
+                        {template.status === 'REJECTED' ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center gap-1.5 cursor-pointer">
+                                <Badge variant={getStatusVariant(template.status)}>
+                                  {template.status}
+                                </Badge>
+                                <TriangleAlert className="h-3.5 w-3.5 text-destructive" />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs break-words">
+                              <p className="text-sm">{template?.info}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        ) : (
+                          <Badge variant={getStatusVariant(template.status)}>
+                            {template.status}
+                          </Badge>
+                        )}
 
-                        <TooltipContent className="max-w-xs break-words">
-                          <p className="text-sm">{template?.info}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    ) : (
-                      <Badge
-                        className={getStatusColor(template.status)}
-                        variant="secondary"
-                      >
-                        {template.status}
-                      </Badge>
-                    )}
-
-                    <AlertDialog>
-                      <AlertDialogTrigger>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Are you absolutely sure?
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. This will permanently
-                            delete your template from our servers.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(template.cuid)}
-                          >
-                            Continue
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                        <div className="ml-auto">
+                          <AlertDialog>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                              </TooltipTrigger>
+                              <TooltipContent>Delete template</TooltipContent>
+                            </Tooltip>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Are you absolutely sure?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This action cannot be undone. This will permanently
+                                  delete your template from our servers.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDelete(template.cuid)}
+                                >
+                                  Continue
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }

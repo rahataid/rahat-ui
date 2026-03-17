@@ -11,7 +11,13 @@ import {
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Label } from '@rahat-ui/shadcn/components/label';
-import { ArrowLeft, Send } from 'lucide-react';
+import { ArrowLeft, Send, Info } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { UUID } from 'crypto';
@@ -92,59 +98,66 @@ export default function MessageDetailPage() {
 
   const trigger = useTriggerElCrmCampaign(projectUUID);
 
-  const getChannelColor = (channel: string) => {
+  const getChannelVariant = (channel: string): 'default' | 'secondary' | 'outline' => {
     switch (channel) {
       case 'SMS':
-        return 'bg-primary/10 text-primary';
+        return 'default';
       case 'WhatsApp':
-        return 'bg-success/10 text-success';
+        return 'secondary';
       default:
-        return 'bg-muted text-muted-foreground';
+        return 'outline';
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusVariant = (status: string): 'success' | 'secondary' => {
     switch (status) {
       case 'Sent':
-        return 'bg-success/10 text-success';
+        return 'success';
       default:
-        return 'bg-muted text-muted-foreground';
+        return 'secondary';
     }
   };
 
   if (!campaign) {
     return (
-      <div className="flex flex-col h-full">
-        <div className="border-b border-border bg-card/50 px-6 py-4">
-          <div className="flex items-center gap-4">
-            <Link
-              href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
-            >
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">
+      <TooltipProvider delayDuration={200}>
+        <div className="flex flex-col h-full">
+          <div className="border-b border-border bg-card px-6 py-4">
+            <div className="flex items-center gap-3">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
+                  >
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>Back to scheduled messages</TooltipContent>
+              </Tooltip>
+              <h1 className="text-xl font-semibold tracking-tight text-foreground">
                 Message Not Found
               </h1>
             </div>
           </div>
-        </div>
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-muted-foreground mb-4">
-              The message you're looking for doesn't exist.
-            </p>
-            <Link
-              href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
-            >
-              <Button>Go Back to Messages</Button>
-            </Link>
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <div className="rounded-full bg-muted p-4 mx-auto mb-4 w-fit">
+                <Info className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                The message you&apos;re looking for doesn&apos;t exist.
+              </p>
+              <Link
+                href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
+              >
+                <Button size="sm">Go Back to Messages</Button>
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      </TooltipProvider>
     );
   }
   console.log('Session Logs:', logs);
@@ -166,22 +179,28 @@ export default function MessageDetailPage() {
   const meta = logs?.response.meta || { total: 0, currentPage: 0 };
 
   return (
+    <TooltipProvider delayDuration={200}>
     <div className="flex flex-col h-full">
-      <div className="border-b border-border bg-card/50 px-6 py-4">
+      <div className="border-b border-border bg-card px-6 py-4">
         <div className="flex justify-between items-center gap-4">
-          <div>
-            <Link
-              href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
-            >
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-              </Button>
-            </Link>
+          <div className="flex items-center gap-3">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
+                >
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>Back to scheduled messages</TooltipContent>
+            </Tooltip>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">
+              <h1 className="text-xl font-semibold tracking-tight text-foreground">
                 {campaign.name}
               </h1>
-              <p className="text-muted-foreground">View message details</p>
+              <p className="text-sm text-muted-foreground mt-0.5">View message details</p>
             </div>
           </div>
         </div>
@@ -189,32 +208,33 @@ export default function MessageDetailPage() {
       {isLoading ? (
         <Skeleton />
       ) : (
-        <div className="flex flex-col lg:flex-row gap-4 w-full">
-          {/* Left Section  — 1/3 on large screens */}
+        <div className="flex flex-col lg:flex-row gap-4 w-full p-6">
+          {/* Left Section — status & name */}
           <div className="flex-[2]">
-            <Card className="p-4 rounded-lg bg-card h-full">
-              <CardTitle className="flex gap-2 pb-2">
+            <Card className="h-full">
+              <CardContent className="p-5 flex flex-col gap-3">
                 <Badge
-                  className={getStatusColor(
+                  variant={getStatusVariant(
                     campaign.sessionId ? 'Sent' : 'Draft',
                   )}
+                  className="w-fit"
                 >
                   {campaign.sessionId ? 'Sent' : 'Draft'}
                 </Badge>
-              </CardTitle>
-              <CardContent className="pl-1 pb-1  font-semibold flex flex-col gap-1">
-                <Label className="text-muted-foreground text-xs">
-                  Message Name:
-                </Label>
-                <Label className="text-base space-y-1 font-semibold">
-                  {campaign?.name}
-                </Label>
+                <div>
+                  <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Message Name
+                  </Label>
+                  <p className="text-base font-semibold mt-1">
+                    {campaign?.name || '\u2014'}
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Right Section (Data Cards) — 2/3 on large screens */}
-          <div className=" flex-1 flex flex-wrap gap-4">
+          {/* Right Section — delivery stats */}
+          <div className="flex-1 flex flex-wrap gap-4">
             <DataCard
               title="Successfully Delivered"
               smallNumber={(count?.SUCCESS ?? 0).toString()}
@@ -233,66 +253,68 @@ export default function MessageDetailPage() {
         <div className="grid gap-6">
           {/* Message Details Card */}
           <Card>
-            <CardHeader>
-              <CardTitle>Message Information</CardTitle>
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-2">
+                <Info className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Message Information
+                </CardTitle>
+              </div>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* LEFT DETAILS SECTION */}
-                <div className="lg:col-span-1 space-y-6">
-                  <div className="flex justify-between">
+                <div className="lg:col-span-1 space-y-5">
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label className="text-sm font-medium text-muted-foreground">
+                      <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                         Channel
                       </Label>
-                      <div className="mt-2">
-                        <Badge
-                          className={getChannelColor(campaign.transportName)}
-                          variant="secondary"
-                        >
-                          {campaign.transportName}
+                      <div className="mt-1.5">
+                        <Badge variant={getChannelVariant(campaign.transportName)}>
+                          {campaign.transportName || '\u2014'}
                         </Badge>
                       </div>
                     </div>
 
                     <div>
-                      <Label className="text-sm font-medium text-muted-foreground">
+                      <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                         Group
                       </Label>
-                      <p className="text-sm mt-2">{campaign.targetType}</p>
+                      <p className="text-sm mt-1.5">{campaign.targetType || '\u2014'}</p>
                     </div>
                   </div>
 
-                  <div className="flex justify-between">
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label className="text-sm font-medium text-muted-foreground">
+                      <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                         Recipients
                       </Label>
-                      <p className="text-sm mt-2">{logs?.length || 0}</p>
+                      <p className="text-sm mt-1.5 tabular-nums">
+                        {logs?.length || 0}
+                      </p>
                     </div>
 
                     <div>
-                      <Label className="text-sm font-medium text-muted-foreground">
+                      <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                         Created Date
                       </Label>
-                      <p className="text-sm mt-2">
+                      <p className="text-sm mt-1.5 tabular-nums">
                         {format(new Date(campaign.createdAt), 'MMM dd, yyyy')}
                       </p>
                     </div>
                   </div>
-                  <div className="flex justify-between">
-                    <div>
-                      <Label className="text-sm font-medium text-muted-foreground">
-                        Message Content
-                      </Label>
-                      <Card className="mt-2">
-                        <CardContent className="p-4">
-                          <p className="text-sm whitespace-pre-wrap">
-                            {campaign.body}
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </div>
+                  <div>
+                    <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      Message Content
+                    </Label>
+                    <Card className="mt-1.5 bg-muted/50">
+                      <CardContent className="p-4">
+                        <p className="text-sm whitespace-pre-wrap">
+                          {campaign.body || '\u2014'}
+                        </p>
+                      </CardContent>
+                    </Card>
                   </div>
                 </div>
 
@@ -341,5 +363,6 @@ export default function MessageDetailPage() {
         </div>
       </div>
     </div>
+    </TooltipProvider>
   );
 }

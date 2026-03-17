@@ -1,6 +1,11 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { useParams, useRouter } from 'next/navigation';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { Eye } from 'lucide-react';
 import React from 'react';
 import Link from 'next/link';
@@ -10,93 +15,122 @@ export const useMsgTableColumn = () => {
   const { id } = useParams();
   const router = useRouter();
 
-  const getChannelColor = (channel: string) => {
-    switch (channel) {
-      case 'SMS':
-        return 'bg-primary/10 text-primary';
-      case 'WhatsApp':
-        return 'bg-success/10 text-success';
-      default:
-        return 'bg-muted text-muted-foreground';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Sent':
-        return 'bg-success/10 text-success';
-      default:
-        return 'bg-muted text-muted-foreground';
-    }
+  const getStatusVariant = (sent: boolean): 'success' | 'secondary' => {
+    return sent ? 'success' : 'secondary';
   };
 
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
-    },
-    {
-      accessorKey: 'transportName',
-      header: 'Channel',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Name
+        </span>
+      ),
       cell: ({ row }) => (
-        <Badge
-          className={getChannelColor(row.getValue('transportName'))}
-          variant="secondary"
-        >
-          {row.getValue('transportName')}
-        </Badge>
+        <span className="font-medium">{row.getValue('name') || '\u2014'}</span>
       ),
     },
     {
+      accessorKey: 'transportName',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Channel
+        </span>
+      ),
+      cell: ({ row }) => {
+        const channel = row.getValue('transportName') as string;
+        return channel ? (
+          <Badge variant="outline">{channel}</Badge>
+        ) : (
+          <span className="text-muted-foreground">{'\u2014'}</span>
+        );
+      },
+    },
+    {
       accessorKey: 'targetType',
-      header: 'Group',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Group
+        </span>
+      ),
       cell: ({ row }) => {
         const value = row.getValue('targetType') as keyof typeof targetTypeMap;
-
-        return <div>{targetTypeMap[value] || 'N/A'}</div>;
+        return (
+          <span>{targetTypeMap[value] || '\u2014'}</span>
+        );
       },
     },
     {
       accessorKey: 'recipientCount',
-      header: 'Recipients',
-      cell: ({ row }) => <div>{row.getValue('recipientCount') || 'N/A'}</div>,
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Recipients
+        </span>
+      ),
+      cell: ({ row }) => {
+        const count = row.getValue('recipientCount') as number | null;
+        return count != null ? (
+          <span className="tabular-nums">{count}</span>
+        ) : (
+          <span className="text-muted-foreground">{'\u2014'}</span>
+        );
+      },
     },
     {
       accessorKey: 'createdAt',
-      header: 'Created Date',
-      cell: ({ row }) => (
-        <div>
-          {row.getValue('createdAt')
-            ? new Date(row.getValue('createdAt')).toLocaleString()
-            : 'N/A'}
-        </div>
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Created Date
+        </span>
       ),
+      cell: ({ row }) => {
+        const date = row.getValue('createdAt') as string | null;
+        return date ? (
+          <span className="tabular-nums text-muted-foreground">
+            {new Date(date).toLocaleString()}
+          </span>
+        ) : (
+          <span className="text-muted-foreground">{'\u2014'}</span>
+        );
+      },
     },
     {
       accessorKey: 'sessionId',
-      header: 'Status',
-      cell: ({ row }) => (
-        <Badge
-          className={getStatusColor(
-            row.getValue('sessionId') ? 'Sent' : 'Draft',
-          )}
-        >
-          {row.getValue('sessionId') ? 'Sent' : 'Draft'}
-        </Badge>
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Status
+        </span>
       ),
+      cell: ({ row }) => {
+        const isSent = !!row.getValue('sessionId');
+        return (
+          <Badge variant={getStatusVariant(isSent)}>
+            {isSent ? 'Sent' : 'Draft'}
+          </Badge>
+        );
+      },
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Actions
+        </span>
+      ),
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <Link
-            href={`/projects/el-crm/${id}/communications/messages/${row.original.uuid}`}
-          >
-            <Eye className="h-4 w-4 rounded-full hover:bg-accent" />
-          </Link>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href={`/projects/el-crm/${id}/communications/messages/${row.original.uuid}`}
+              >
+                <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>View message details</TooltipContent>
+          </Tooltip>
         );
       },
     },

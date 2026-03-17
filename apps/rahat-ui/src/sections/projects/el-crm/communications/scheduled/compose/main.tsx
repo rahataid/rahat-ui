@@ -11,7 +11,14 @@ import {
   Users,
   X,
   Zap,
+  Filter,
 } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -522,23 +529,28 @@ export default function ComposeScheduleView() {
   }, [messageContent, isWhatsApp, templates.data]);
 
   return (
+    <TooltipProvider delayDuration={200}>
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="border-b border-border bg-card/50 px-6 py-4">
-        <div className="flex items-center gap-4">
-          <Link
-            href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
-          >
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Button>
-          </Link>
+      <div className="border-b border-border bg-card px-6 py-4">
+        <div className="flex items-center gap-3">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
+              >
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>Back to scheduled messages</TooltipContent>
+          </Tooltip>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">
               Schedule Message
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm text-muted-foreground mt-0.5">
               Create and schedule a new message to your audience
             </p>
           </div>
@@ -547,9 +559,12 @@ export default function ComposeScheduleView() {
 
       <div className="flex-1 p-6">
         <Card>
-          <CardHeader className="border-b">
-            <CardTitle>Schedule Message</CardTitle>
-            <CardDescription>
+          <CardHeader className="border-b pb-4">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-semibold">Schedule Message</CardTitle>
+            </div>
+            <CardDescription className="text-xs">
               Choose how you want to schedule your message
             </CardDescription>
           </CardHeader>
@@ -931,8 +946,10 @@ export default function ComposeScheduleView() {
                 {/* Empty state */}
                 {!selectedTransportId && (
                   <div className="text-center py-8 text-muted-foreground">
-                    <MessageSquare className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                    <p>Start by selecting a messaging channel above</p>
+                    <div className="rounded-full bg-muted p-4 mx-auto mb-3 w-fit">
+                      <MessageSquare className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <p className="text-sm">Start by selecting a messaging channel above</p>
                   </div>
                 )}
               </TabsContent>
@@ -1312,8 +1329,10 @@ export default function ComposeScheduleView() {
                   </p>
                 ) : !automations.data?.length ? (
                   <div className="text-center py-10 text-muted-foreground border border-dashed rounded-lg">
-                    <Zap className="h-12 w-12 mx-auto mb-3 opacity-40" />
-                    <p className="font-medium">No automation rules found</p>
+                    <div className="rounded-full bg-muted p-4 mx-auto mb-3 w-fit">
+                      <Zap className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <p className="font-medium text-sm">No automation rules found</p>
                     <p className="text-xs mt-1">
                       {canCreateRules
                         ? 'Click Create Rule to define a data-driven automation.'
@@ -1342,6 +1361,7 @@ export default function ComposeScheduleView() {
         </Card>
       </div>
     </div>
+    </TooltipProvider>
   );
 }
 

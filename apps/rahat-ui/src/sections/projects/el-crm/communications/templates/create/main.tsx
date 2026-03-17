@@ -212,6 +212,11 @@ export default function CreateTemplateView() {
       try {
         const afterUpload = await uploadFile.mutateAsync({
           file: entry.file,
+          query: {
+            withFileName: true,
+            rootFolderName: 'el-crm',
+            folderName: projectUUID,
+          },
           onProgress: (progress) => {
             setUploadedFiles((prev) =>
               prev.map((file) =>
@@ -246,7 +251,7 @@ export default function CreateTemplateView() {
                   ...file,
                   uploadedUrl: mediaURL,
                   progress: 100,
-                  status: 'uploaded',
+                  status: 'uploaded' as UploadStatus,
                   error: undefined,
                 }
               : file,
@@ -473,7 +478,9 @@ export default function CreateTemplateView() {
                             type="button"
                             variant="ghost"
                             size="sm"
-                            disabled={isUploading || file.status === 'uploading'}
+                            disabled={
+                              isUploading || file.status === 'uploading'
+                            }
                             onClick={() => handleRemoveMedia(file.id)}
                           >
                             Remove

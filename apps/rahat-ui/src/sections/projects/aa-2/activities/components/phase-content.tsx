@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { NoResult, SearchInput, SpinnerLoader } from 'apps/rahat-ui/src/common';
-import { Expand, Pin, PinOff } from 'lucide-react';
+import { Expand } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -11,6 +11,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import PhaseCard from './phase-card';
 import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface Phase {
   id: string;
@@ -61,18 +62,26 @@ export default function PhaseContent({
             <div className="flex items-center gap-2">
               {onTogglePin &&
                 (isPinned ? (
-                  <PinOff
+                  <Image
+                    src="/svg/pin-on.svg"
+                    alt="Unpin phase"
                     role="button"
                     title="Unpin phase"
-                    className="w-4 h-4 cursor-pointer text-blue-500 hover:text-blue-700 active:scale-95 transition-transform"
+                    className="w-5 h-5 cursor-pointer active:scale-95 transition-transform"
                     onClick={onTogglePin}
+                    width={25}
+                    height={25}
                   />
                 ) : (
-                  <Pin
+                  <Image
+                    src="/svg/pin-off.svg"
+                    alt="Pin phase to front"
                     role="button"
                     title="Pin phase to front"
-                    className="w-4 h-4 cursor-pointer text-gray-400 hover:text-blue-500 active:scale-95 transition-transform"
+                    className="w-5 h-5  cursor-pointer active:scale-95 transition-transform"
                     onClick={onTogglePin}
+                    width={25}
+                    height={25}
                   />
                 ))}
               <Expand

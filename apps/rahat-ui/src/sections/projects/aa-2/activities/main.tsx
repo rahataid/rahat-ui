@@ -41,21 +41,26 @@ export default function ActivitiesView() {
 
   const togglePin = useCallback(
     (phase: string) => {
-      setPinnedPhases((prev) => {
-        const next = prev.includes(phase)
-          ? prev.filter((p) => p !== phase)
-          : [...prev, phase];
-        if (storageKey) {
-          try {
-            localStorage.setItem(storageKey, JSON.stringify(next));
-          } catch (error) {
-            console.error('Failed to save pinned phases', error);
-          }
+      const isCurrentlyPinned = pinnedPhases.includes(phase);
+      if (!isCurrentlyPinned && pinnedPhases.length >= 3) {
+        toast.error(
+          'You can only pin up to 3 cards at a time. Please unpin another card before pinning this one.',
+        );
+        return;
+      }
+      const next = isCurrentlyPinned
+        ? pinnedPhases.filter((p) => p !== phase)
+        : [...pinnedPhases, phase];
+      setPinnedPhases(next);
+      if (storageKey) {
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(next));
+        } catch (error) {
+          console.error('Failed to save pinned phases', error);
         }
-        return next;
-      });
+      }
     },
-    [storageKey],
+    [storageKey, pinnedPhases],
   );
 
   const uniquePhases = useMemo(() => {
@@ -66,22 +71,22 @@ export default function ActivitiesView() {
     });
     return Array.from(seen);
   }, [activitiesData]);
-  const sortedPhases = [
+  const allPhases = [
     'PREPAREDNESS',
     'ACTIVATION',
     'READINESS',
     'POST-ACTIVATION',
     'PRE-ACTIVATION',
   ];
-  // const sortedPhases = useMemo(() => {
-  //   return [...uniquePhases].sort((a, b) => {
-  //     const aPinned = pinnedPhases.includes(a);
-  //     const bPinned = pinnedPhases.includes(b);
-  //     if (aPinned && !bPinned) return -1;
-  //     if (!aPinned && bPinned) return 1;
-  //     return 0;
-  //   });
-  // }, [uniquePhases, pinnedPhases]);
+  const sortedPhases = useMemo(() => {
+    return [...allPhases].sort((a, b) => {
+      const aPinned = pinnedPhases.includes(a);
+      const bPinned = pinnedPhases.includes(b);
+      if (aPinned && !bPinned) return -1;
+      if (!aPinned && bPinned) return 1;
+      return 0;
+    });
+  }, [pinnedPhases]);
 
   const phaseDataMap = useMemo(() => {
     const map: Record<string, any[]> = {};

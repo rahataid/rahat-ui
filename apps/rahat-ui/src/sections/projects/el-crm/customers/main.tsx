@@ -35,6 +35,7 @@ import {
   usePagination,
   useCustomerStats,
   useFailedBatch,
+  Stat,
 } from '@rahat-ui/query';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
@@ -42,18 +43,6 @@ import { DateRangePicker } from './dateRangePicker';
 import { DateRange } from 'react-day-picker';
 import { format } from 'date-fns';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-
-interface Stat {
-  name:
-    | 'TOTAL_CUSTOMER'
-    | 'ACTIVE_CUSTOMER'
-    | 'INACTIVE_CUSTOMER'
-    | 'NEWLY_INACTIVE_CUSTOMER';
-  data: number;
-  group: 'VENDOR';
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 export default function CustomersPage() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -330,7 +319,7 @@ export default function CustomersPage() {
             <div>
               <DemoTable
                 table={table}
-                tableHeight="h-[calc(100vh-474px)]"
+                tableHeight="h-[calc(100vh-525px)]"
                 loading={isLoading}
               />
               <CustomPagination

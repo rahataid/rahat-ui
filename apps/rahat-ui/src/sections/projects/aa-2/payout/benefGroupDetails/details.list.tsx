@@ -236,7 +236,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                         className={`gap-2 text-sm ${
                           payout?.status === 'COMPLETED' && 'hidden'
                         } `}
-                        disabled={!!payout?.beneficiaryGroupToken?.isDisbursed}
+                        disabled={!payout?.beneficiaryGroupToken?.isDisbursed}
                         onClick={() =>
                           router.push(
                             `/projects/aa/${projectId}/payout/details/${payoutId}/verify`,

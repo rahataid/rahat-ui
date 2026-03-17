@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/components/select';
-import { Upload, Search, X, TriangleAlert } from 'lucide-react';
+import { Upload, Search, X, TriangleAlert, Download } from 'lucide-react';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import {
   getCoreRowModel,
@@ -27,6 +27,7 @@ import { useCustomersTableColumn } from './useCustomersTableColumn';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import Link from 'next/link';
+import * as XLSX from 'xlsx';
 import {
   Customer,
   CustomerCategory,
@@ -43,6 +44,37 @@ import { DateRangePicker } from './dateRangePicker';
 import { DateRange } from 'react-day-picker';
 import { format } from 'date-fns';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+
+// Export configuration
+const CUSTOMER_EXPORT_CONFIG = {
+  columns: [
+    { label: 'BDE/BDM', key: 'bde', width: 20 },
+    { label: 'Customer Code', key: 'customerCode', width: 20 },
+    { label: 'Customer name', key: 'name', width: 25 },
+    { label: 'Mobile No.', key: 'phone', width: 15 },
+    { label: 'Email', key: 'email', width: 25 },
+    { label: 'Channel', key: 'channel', width: 15 },
+    { label: 'Region', key: 'location', width: 15 },
+    { label: 'Source', key: 'source', width: 15 },
+    { label: 'Last purchase', key: 'lastPurchaseDate', width: 15 },
+    { label: 'Category', key: 'category', width: 15 },
+  ],
+};
+
+const formatCustomerForExport = (customer: any) => {
+  return CUSTOMER_EXPORT_CONFIG.columns.reduce(
+    (acc, col) => ({
+      ...acc,
+      [col.label]:
+        col.key === 'lastPurchaseDate'
+          ? customer[col.key]
+            ? format(new Date(customer[col.key]), 'yyyy-MM-dd')
+            : ''
+          : customer[col.key] ?? '',
+    }),
+    {} as Record<string, string>,
+  );
+};
 
 export default function CustomersPage() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -128,6 +160,30 @@ export default function CustomersPage() {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
+
+  const handleDownloadCustomers = React.useCallback(() => {
+    if (!tableData?.length) {
+      alert('No customers to download');
+      return;
+    }
+
+    // Prepare and export data
+    const data = tableData.map(formatCustomerForExport);
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    
+    // Apply column widths
+    worksheet['!cols'] = CUSTOMER_EXPORT_CONFIG.columns.map((col) => ({
+      wch: col.width,
+    }));
+
+    // Create and write workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Customers');
+    XLSX.writeFile(
+      workbook,
+      `customers-${new Date().toISOString().split('T')[0]}.xlsx`,
+    );
+  }, [tableData]);
 
   return (
     <div className="flex flex-col h-full">
@@ -315,6 +371,17 @@ export default function CustomersPage() {
                   Clear Filters
                 </Button>
               )}
+
+              {/* Download Btn */}
+              <Button
+                size="sm"
+                onClick={handleDownloadCustomers}
+                variant="outline"
+                className="gap-2 mt-6"
+              >
+                <Download className="h-4 w-4" />
+                Download
+              </Button>
             </div>
             <div>
               <DemoTable

@@ -11,6 +11,8 @@ import PhaseContent from './components/phase-content';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSidebar } from '@rahat-ui/shadcn/src/components/ui/sidebar';
+import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 const PHASE_DESCRIPTIONS: Record<string, string> = {
   PREPAREDNESS: 'Overview of preparedness phase',
@@ -51,7 +53,7 @@ export default function ActivitiesView() {
       }
       const next = isCurrentlyPinned
         ? pinnedPhases.filter((p) => p !== phase)
-        : [...pinnedPhases, phase];
+        : [phase, ...pinnedPhases];
       setPinnedPhases(next);
       if (storageKey) {
         try {
@@ -81,13 +83,9 @@ export default function ActivitiesView() {
   //   'PRE-ACTIVATION',
   // ];
   const sortedPhases = useMemo(() => {
-    return [...uniquePhases].sort((a, b) => {
-      const aPinned = pinnedPhases.includes(a);
-      const bPinned = pinnedPhases.includes(b);
-      if (aPinned && !bPinned) return -1;
-      if (!aPinned && bPinned) return 1;
-      return 0;
-    });
+    const pinned = pinnedPhases.filter((p) => uniquePhases.includes(p));
+    const unpinned = uniquePhases.filter((p) => !pinnedPhases.includes(p));
+    return [...pinned, ...unpinned];
   }, [pinnedPhases, uniquePhases]);
 
   const phaseDataMap = useMemo(() => {
@@ -178,7 +176,7 @@ export default function ActivitiesView() {
         >
           {/* <div className="grid grid-cols-3 gap-4 overflow-x-auto"> */}
           {sortedPhases.map((phase) => (
-            <div key={phase} className="min-w-[320px]  ">
+            <div key={phase} className="min-w-[320px] w-full">
               <PhaseContent
                 title={phase.charAt(0) + phase.slice(1).toLowerCase()}
                 description={
@@ -192,6 +190,39 @@ export default function ActivitiesView() {
               />
             </div>
           ))}
+          {sortedPhases.length === 2 && (
+            <div className="min-w-[320px]">
+              <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-gray-300 bg-gray-50">
+                <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100">
+                    <Plus className="w-6 h-6 text-gray-400" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <p className="text-base font-medium text-gray-700">
+                      Add a New Phase
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      Create a new phase to organise and track additional
+                      activities
+                    </p>
+                  </div>
+                  <RoleAuth
+                    roles={[
+                      AARoles.ADMIN,
+                      AARoles.MANAGER,
+                      AARoles.Municipality,
+                    ]}
+                    hasContent={false}
+                  >
+                    <Button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium transition-colors">
+                      <Plus className="w-4 h-4" />
+                      Add Phase
+                    </Button>
+                  </RoleAuth>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </div>
     </>

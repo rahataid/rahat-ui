@@ -39,7 +39,7 @@ export default function PayoutConfirmationDialog({
                 className={`bg-blue-600 hover:bg-blue-700 text-white ${
                   !!payoutData?.isPayoutTriggered && 'hidden'
                 }`}
-                disabled={!!payoutData?.beneficiaryGroupToken?.isDisbursed}
+                disabled={!payoutData?.beneficiaryGroupToken?.isDisbursed}
               >
                 Trigger Payout
               </Button>

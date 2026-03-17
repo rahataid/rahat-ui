@@ -71,22 +71,23 @@ export default function ActivitiesView() {
     });
     return Array.from(seen);
   }, [activitiesData]);
-  const allPhases = [
-    'PREPAREDNESS',
-    'ACTIVATION',
-    'READINESS',
-    'POST-ACTIVATION',
-    'PRE-ACTIVATION',
-  ];
+
+  // const sortedPhases = [
+  //   'PREPAREDNESS',
+  //   'ACTIVATION',
+  //   'READINESS',
+  //   'POST-ACTIVATION',
+  //   'PRE-ACTIVATION',
+  // ];
   const sortedPhases = useMemo(() => {
-    return [...allPhases].sort((a, b) => {
+    return [...uniquePhases].sort((a, b) => {
       const aPinned = pinnedPhases.includes(a);
       const bPinned = pinnedPhases.includes(b);
       if (aPinned && !bPinned) return -1;
       if (!aPinned && bPinned) return 1;
       return 0;
     });
-  }, [pinnedPhases]);
+  }, [pinnedPhases, uniquePhases]);
 
   const phaseDataMap = useMemo(() => {
     const map: Record<string, any[]> = {};
@@ -128,66 +129,70 @@ export default function ActivitiesView() {
     generateExcel(mappedData, 'Activities_Report', 10);
   };
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center space-x-4 w-full">
-        <Heading
-          title="Activities"
-          description="Track all the activities reports here"
-        />
-        <div className="flex flex-end gap-2">
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
-            <IconLabelBtn
-              Icon={CloudDownloadIcon}
-              handleClick={handleDownloadReport}
-              name="Download Report"
-              variant="outline"
-            />
-          </RoleAuth>
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
-            hasContent={false}
-          >
-            <IconLabelBtn
-              Icon={Plus}
-              handleClick={() =>
-                router.push(
-                  `/projects/aa/${projectID}/activities/add?nav=mainPage`,
-                )
-              }
-              name="Add Activity"
-              variant="default"
-            />
-          </RoleAuth>
-        </div>
-      </div>
-      <div
-        className={`flex gap-4 ${
-          state === 'expanded'
-            ? 'w-[calc(100vw-18rem)]'
-            : 'w-[calc(100vw-5rem)]'
-        } transition-width duration-300 overflow-x-auto  [&::-webkit-scrollbar]:h-1.5  [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300`}
-        style={{ scrollbarGutter: 'stable' }}
-      >
-        {/* <div className="grid grid-cols-3 gap-4 overflow-x-auto"> */}
-        {sortedPhases.map((phase) => (
-          <div key={phase} className="min-w-[320px]  ">
-            <PhaseContent
-              title={phase.charAt(0) + phase.slice(1).toLowerCase()}
-              description={
-                PHASE_DESCRIPTIONS[phase] ??
-                `Overview of ${phase.toLowerCase()} phase`
-              }
-              phases={phaseDataMap[phase] ?? []}
-              loading={isLoading}
-              isPinned={pinnedPhases.includes(phase)}
-              onTogglePin={() => togglePin(phase)}
+    <>
+      <div className="p-4">
+        <div className="w-full">
+          <div className="pr-52">
+            <Heading
+              title="Activities"
+              description="Track all the activities reports here"
             />
           </div>
-        ))}
+          <div className="fixed top-[72px] right-6 z-40 flex gap-2">
+            <RoleAuth
+              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+              hasContent={false}
+            >
+              <IconLabelBtn
+                Icon={CloudDownloadIcon}
+                handleClick={handleDownloadReport}
+                name="Download Report"
+                variant="outline"
+              />
+            </RoleAuth>
+            <RoleAuth
+              roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
+              hasContent={false}
+            >
+              <IconLabelBtn
+                Icon={Plus}
+                handleClick={() =>
+                  router.push(
+                    `/projects/aa/${projectID}/activities/add?nav=mainPage`,
+                  )
+                }
+                name="Add Activity"
+                variant="default"
+              />
+            </RoleAuth>
+          </div>
+        </div>
+        <div
+          className={`flex gap-4 ${
+            state === 'expanded'
+              ? 'w-[calc(100vw-18rem)]'
+              : 'w-[calc(100vw-5rem)]'
+          } transition-width duration-300 overflow-x-auto  [&::-webkit-scrollbar]:h-1.5  [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300`}
+          style={{ scrollbarGutter: 'stable' }}
+        >
+          {/* <div className="grid grid-cols-3 gap-4 overflow-x-auto"> */}
+          {sortedPhases.map((phase) => (
+            <div key={phase} className="min-w-[320px]  ">
+              <PhaseContent
+                title={phase.charAt(0) + phase.slice(1).toLowerCase()}
+                description={
+                  PHASE_DESCRIPTIONS[phase] ??
+                  `Overview of ${phase.toLowerCase()} phase`
+                }
+                phases={phaseDataMap[phase] ?? []}
+                loading={isLoading}
+                isPinned={pinnedPhases.includes(phase)}
+                onTogglePin={() => togglePin(phase)}
+              />
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

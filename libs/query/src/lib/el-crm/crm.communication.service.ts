@@ -29,6 +29,12 @@ const GET_TEMPLATE = 'elProject.campaign.list_templates';
 const SYNC_TEMPLATE = 'elProject.campaign.sync_templates';
 const BROADCAST_COUNT = 'elProject.campaign.broadcast_count';
 const SESSION_BROADCAST = 'elProject.campaign.list_session_broadcasts';
+const LIST_AUTOMATION = 'elProject.campaign.automation.list';
+const TOGGLE_AUTOMATION = 'elProject.campaign.automation.toggle';
+const CREATE_AUTOMATION = 'elProject.campaign.automation.create';
+const UPDATE_AUTOMATION = 'elProject.campaign.automation.update';
+const GET_AUTOMATION = 'elProject.campaign.automation.get';
+const DELETE_AUTOMATION = 'elProject.campaign.automation.delete';
 
 const queryKeys = {
   //elCrmQueryKeys
@@ -40,6 +46,8 @@ const queryKeys = {
   elCrmListTemplate: 'elCrmListTemplate',
   elCrmBroadcastCount: 'elCrmBroadcastCount',
   elCrmSessionBroadcast: 'elCrmSessionBroadcast',
+  elCrmAutomationList: 'elCrmAutomationList',
+  elCrmAutomationDetail: 'elCrmAutomationDetail',
 };
 
 // Hooks for create campaign
@@ -129,7 +137,7 @@ export const useTriggerElCrmCampaign = (projectUUID: UUID) => {
 
 export const useListElCrmCampaign = (
   projectUUID: UUID,
-  payload: Pagination & { [key: string]: string | boolean },
+  payload: Pagination & { [key: string]: string | boolean | number },
 ) => {
   const action = useProjectAction();
 
@@ -428,6 +436,175 @@ export const useRetryFailedSession = (uuid: UUID) => {
         icon: 'error',
         text: errorMessage,
       });
+    },
+  });
+};
+
+export const useListElCrmAutomation = (
+  projectUUID: UUID,
+  payload?: { page?: number; perPage?: number; isEnabled?: boolean },
+) => {
+  const action = useProjectAction();
+
+  return useQuery({
+    queryKey: [queryKeys.elCrmAutomationList, projectUUID, payload],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: LIST_AUTOMATION,
+          payload: payload ?? { page: 1, perPage: 50 },
+        },
+      });
+      return (res.data ?? []) as Record<string, unknown>[];
+    },
+  });
+};
+
+export const useToggleElCrmAutomation = (projectUUID: UUID) => {
+  const action = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async (data: { uuid: string; isEnabled: boolean }) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: TOGGLE_AUTOMATION,
+          payload: data,
+        },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.elCrmAutomationList],
+      });
+      toast.fire({ title: 'Automation updated', icon: 'success' });
+    },
+    onError: () => {
+      toast.fire({ title: 'Failed to update automation', icon: 'error' });
+    },
+  });
+};
+
+export const useGetElCrmAutomationRule = (
+  projectUUID: UUID,
+  ruleUUID: string,
+) => {
+  const action = useProjectAction();
+  return useQuery({
+    queryKey: [queryKeys.elCrmAutomationDetail, projectUUID, ruleUUID],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: { action: GET_AUTOMATION, payload: { uuid: ruleUUID } },
+      });
+      return res.data ?? null;
+    },
+    enabled: !!ruleUUID,
+  });
+};
+
+export const useCreateElCrmAutomationRule = (projectUUID: UUID) => {
+  const action = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async (data: Record<string, unknown>) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: { action: CREATE_AUTOMATION, payload: data },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.elCrmAutomationList],
+      });
+      toast.fire({ title: 'Automation rule created', icon: 'success' });
+    },
+    onError: () => {
+      toast.fire({ title: 'Failed to create automation rule', icon: 'error' });
+    },
+  });
+};
+
+export const useUpdateElCrmAutomationRule = (projectUUID: UUID) => {
+  const action = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async (data: { uuid: string } & Record<string, unknown>) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: { action: UPDATE_AUTOMATION, payload: data },
+      });
+      return res.data;
+    },
+    onSuccess: (_data, vars) => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.elCrmAutomationList],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.elCrmAutomationDetail, projectUUID, vars.uuid],
+      });
+      toast.fire({ title: 'Automation rule updated', icon: 'success' });
+    },
+    onError: () => {
+      toast.fire({ title: 'Failed to update automation rule', icon: 'error' });
+    },
+  });
+};
+
+export const useDeleteElCrmAutomationRule = (projectUUID: UUID) => {
+  const action = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async (ruleUUID: string) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: { action: DELETE_AUTOMATION, payload: { uuid: ruleUUID } },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.elCrmAutomationList],
+      });
+      toast.fire({ title: 'Automation rule deleted', icon: 'success' });
+    },
+    onError: () => {
+      toast.fire({ title: 'Failed to delete automation rule', icon: 'error' });
     },
   });
 };

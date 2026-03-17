@@ -4,12 +4,16 @@ import { ColumnDef } from '@tanstack/react-table';
 import { useParams, useRouter } from 'next/navigation';
 
 interface CustomerTableRow {
+  bde: string;
+  customerCode: string;
   name: string;
-  email: string;
   phone: string;
+  email: string;
+  channel: string;
+  location: string;
+  source: CustomerSource;
   lastPurchaseDate: Date;
   category: CustomerCategory;
-  source: CustomerSource;
 }
 
 export const useCustomersTableColumn = () => {
@@ -31,9 +35,26 @@ export const useCustomersTableColumn = () => {
 
   const columns: ColumnDef<CustomerTableRow>[] = [
     {
+      accessorKey: 'bde',
+      header: 'BDE/BDM',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('bde') || 'N/A'}</div>
+      ),
+    },
+    {
+      accessorKey: 'customerCode',
+      header: 'Customer Code',
+      cell: ({ row }) => <div>{row.getValue('customerCode')}</div>,
+    },
+    {
       accessorKey: 'name',
       header: 'Customer Name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
+    },
+    {
+      accessorKey: 'phone',
+      header: 'Phone Number',
+      cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
     },
     {
       accessorKey: 'email',
@@ -41,9 +62,22 @@ export const useCustomersTableColumn = () => {
       cell: ({ row }) => <div>{row.getValue('email') || 'N/A'}</div>,
     },
     {
-      accessorKey: 'phone',
-      header: 'Phone Number',
-      cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
+      accessorKey: 'channel',
+      header: 'Channel',
+      cell: ({ row }) => <div>{row.getValue('channel') || 'N/A'}</div>,
+    },
+    {
+      accessorKey: 'location',
+      header: 'Region',
+      cell: ({ row }) => <div>{row.getValue('location') || 'N/A'}</div>,
+    },
+    {
+      accessorKey: 'source',
+      header: 'Source',
+      cell: ({ row }) => {
+        const source = row.getValue('source') as string;
+        return <Badge>{source}</Badge>;
+      },
     },
     {
       accessorKey: 'lastPurchaseDate',
@@ -68,11 +102,6 @@ export const useCustomersTableColumn = () => {
           </Badge>
         );
       },
-    },
-    {
-      accessorKey: 'source',
-      header: 'Source',
-      cell: ({ row }) => <div>{row.getValue('source') || 'N/A'}</div>,
     },
   ];
   return columns;

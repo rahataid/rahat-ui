@@ -205,7 +205,7 @@ export default function CustomersUploadPage() {
 
               {/* Upload Status */}
               {uploadCustomers.isSuccess && (
-                <div className="flex items-center gap-2 p-4 bg-green-50 text-green-700 rounded-lg">
+                <div className="flex items-center gap-2 p-4 bg-success/10 text-success rounded-lg">
                   <CheckCircle className="h-5 w-5" />
                   <span className="text-sm font-medium">
                     File uploaded successfully!

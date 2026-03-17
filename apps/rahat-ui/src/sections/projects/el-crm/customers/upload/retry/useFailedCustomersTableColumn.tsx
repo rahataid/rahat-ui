@@ -39,8 +39,8 @@ function EditableCell({
         value={localValue}
         className={`h-8 px-2 py-1 text-sm ${
           isEdited
-            ? 'border-green-400 ring-1 ring-green-300 bg-green-50'
-            : 'border-red-300 bg-red-50 text-red-700'
+            ? 'border-success ring-1 ring-success/30 bg-success/5'
+            : 'border-destructive/50 bg-destructive/5 text-destructive'
         }`}
         onChange={(e) => {
           setLocalValue(e.target.value);
@@ -82,7 +82,7 @@ function DateEditableCell({
           className={`text-xs ${
             isEdited
               ? 'line-through opacity-50 text-muted-foreground'
-              : 'text-red-600'
+              : 'text-destructive'
           }`}
         >
           Original: {new Date(originalValue).toLocaleDateString()}
@@ -92,7 +92,7 @@ function DateEditableCell({
         type="date"
         value={localValue}
         className={`h-8 px-2 py-1 text-sm ${
-          isEdited ? 'border-green-400 bg-green-50' : 'border-red-300 bg-red-50'
+          isEdited ? 'border-success bg-success/5' : 'border-destructive/50 bg-destructive/5'
         }`}
         onChange={(e) => {
           setLocalValue(e.target.value);
@@ -222,7 +222,7 @@ export const useFailedCustomersTableColumn = (
                 (messages as string[]).map((msg, msgIdx) => (
                   <div
                     key={`${idx}-${msgIdx}`}
-                    className="text-sm text-red-600"
+                    className="text-sm text-destructive"
                   >
                     - {msg}
                   </div>

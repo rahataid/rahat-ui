@@ -1,5 +1,10 @@
 import { CustomerCategory, CustomerSource } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 import { useParams, useRouter } from 'next/navigation';
 
@@ -20,84 +25,184 @@ export const useCustomersTableColumn = () => {
   const { id } = useParams();
   const router = useRouter();
 
-  const getCategoryBgColor = (category: string) => {
+  const getCategoryBadgeVariant = (category: string) => {
     switch (category) {
       case CustomerCategory.ACTIVE:
-        return 'blue';
+        return 'success' as const;
       case CustomerCategory.INACTIVE:
-        return 'gray';
+        return 'secondary' as const;
       case CustomerCategory.NEWLY_INACTIVE:
-        return 'red';
+        return 'destructive' as const;
       default:
-        return 'gray';
+        return 'secondary' as const;
     }
   };
 
   const columns: ColumnDef<CustomerTableRow>[] = [
     {
       accessorKey: 'bde',
-      header: 'BDE/BDM',
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('bde') || 'N/A'}</div>
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          BDE/BDM
+        </span>
       ),
+      cell: ({ row }) => {
+        const value = row.getValue('bde') as string;
+        return (
+          <span className="text-sm font-medium">
+            {value || (
+              <span className="text-muted-foreground/60">—</span>
+            )}
+          </span>
+        );
+      },
     },
     {
       accessorKey: 'customerCode',
-      header: 'Customer Code',
-      cell: ({ row }) => <div>{row.getValue('customerCode')}</div>,
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Code
+        </span>
+      ),
+      cell: ({ row }) => (
+        <span className="text-sm font-mono text-muted-foreground">
+          {row.getValue('customerCode')}
+        </span>
+      ),
     },
     {
       accessorKey: 'name',
-      header: 'Customer Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Customer Name
+        </span>
+      ),
+      cell: ({ row }) => (
+        <span className="text-sm font-medium text-foreground">
+          {row.getValue('name')}
+        </span>
+      ),
     },
     {
       accessorKey: 'phone',
-      header: 'Phone Number',
-      cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Phone
+        </span>
+      ),
+      cell: ({ row }) => {
+        const val = row.getValue('phone') as string;
+        return (
+          <span className="text-sm tabular-nums">
+            {val || <span className="text-muted-foreground/60">—</span>}
+          </span>
+        );
+      },
     },
     {
       accessorKey: 'email',
-      header: 'Email ID',
-      cell: ({ row }) => <div>{row.getValue('email') || 'N/A'}</div>,
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Email
+        </span>
+      ),
+      cell: ({ row }) => {
+        const email = row.getValue('email') as string;
+        if (!email)
+          return <span className="text-muted-foreground/60">—</span>;
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-sm truncate max-w-[180px] block cursor-default">
+                {email}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{email}</p>
+            </TooltipContent>
+          </Tooltip>
+        );
+      },
     },
     {
       accessorKey: 'channel',
-      header: 'Channel',
-      cell: ({ row }) => <div>{row.getValue('channel') || 'N/A'}</div>,
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Channel
+        </span>
+      ),
+      cell: ({ row }) => {
+        const val = row.getValue('channel') as string;
+        return val ? (
+          <span className="text-sm">{val}</span>
+        ) : (
+          <span className="text-muted-foreground/60">—</span>
+        );
+      },
     },
     {
       accessorKey: 'location',
-      header: 'Region',
-      cell: ({ row }) => <div>{row.getValue('location') || 'N/A'}</div>,
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Region
+        </span>
+      ),
+      cell: ({ row }) => {
+        const val = row.getValue('location') as string;
+        return val ? (
+          <span className="text-sm">{val}</span>
+        ) : (
+          <span className="text-muted-foreground/60">—</span>
+        );
+      },
     },
     {
       accessorKey: 'source',
-      header: 'Source',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Source
+        </span>
+      ),
       cell: ({ row }) => {
         const source = row.getValue('source') as string;
-        return <Badge>{source}</Badge>;
+        return (
+          <Badge variant={source === CustomerSource.PRIMARY ? 'default' : 'secondary'}>
+            {source}
+          </Badge>
+        );
       },
     },
     {
       accessorKey: 'lastPurchaseDate',
-      header: 'Last Purchase Date',
-      cell: ({ row }) => (
-        <div>
-          {row.getValue('lastPurchaseDate')
-            ? new Date(row.getValue('lastPurchaseDate')).toLocaleDateString()
-            : 'N/A'}
-        </div>
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Last Purchase
+        </span>
       ),
+      cell: ({ row }) => {
+        const date = row.getValue('lastPurchaseDate') as string;
+        if (!date)
+          return <span className="text-muted-foreground/60">—</span>;
+        const formatted = new Date(date).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        });
+        return <span className="text-sm tabular-nums">{formatted}</span>;
+      },
     },
     {
       accessorKey: 'category',
-      header: 'Category',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Category
+        </span>
+      ),
       cell: ({ row }) => {
         const category = row.getValue('category') as string;
-        const color = getCategoryBgColor(category);
+        const variant = getCategoryBadgeVariant(category);
         return (
-          <Badge className={`bg-${color}-200`}>
+          <Badge variant={variant}>
             {category?.split('_').join(' ')}
           </Badge>
         );

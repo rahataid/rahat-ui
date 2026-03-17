@@ -31,13 +31,13 @@ export default function CustomPagination({
 }: IProps) {
   const lastPage = meta?.lastPage || 1;
   return (
-    <div className="flex items-center justify-between sm:justify-end space-x-4 p-1 pl-2 pr-2 border-t bg-card">
+    <div className="flex items-center justify-between sm:justify-end space-x-4 px-4 py-2.5 border-t bg-card">
       {/* <div className="flex-1 text-sm text-muted-foreground">
         {currentPage} of {total} row(s) selected.
       </div> */}
       {handlePageSizeChange && (
         <div className="flex items-center gap-2">
-          <div className="text-sm hidden sm:block font-medium">
+          <div className="text-sm hidden sm:block text-muted-foreground">
             Rows per page
           </div>
           <Select
@@ -59,7 +59,7 @@ export default function CustomPagination({
           </Select>
         </div>
       )}
-      <div className="text-sm">
+      <div className="text-sm text-muted-foreground">
         Page {currentPage} of {lastPage}
       </div>
       <div className="space-x-2">

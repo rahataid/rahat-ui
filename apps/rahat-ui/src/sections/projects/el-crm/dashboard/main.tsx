@@ -127,9 +127,9 @@ export default function DashboardView() {
           {/* Charts Section */}
           {/* Row 1: Two Pie Charts */}
           <div className="grid gap-6 md:grid-cols-2">
-            <Card className="border-2 border-border">
+            <Card>
               <CardHeader>
-                <CardTitle>Messages Sent</CardTitle>
+                <CardTitle className="text-base font-semibold">Messages Sent</CardTitle>
                 <CardDescription>
                   Distribution of messages sent to consumers vs customers
                 </CardDescription>
@@ -166,20 +166,20 @@ export default function DashboardView() {
                 </ChartContainer>
                 <div className="flex justify-center gap-4 mt-4 text-sm">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-blue-400"></div>
-                    <span>Consumers</span>
+                    <div className="w-3 h-3 rounded-full bg-[#60a5fa]"></div>
+                    <span className="text-muted-foreground">Consumers</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-emerald-400"></div>
-                    <span>Customers</span>
+                    <div className="w-3 h-3 rounded-full bg-[#34d399]"></div>
+                    <span className="text-muted-foreground">Customers</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-2 border-border">
+            <Card>
               <CardHeader>
-                <CardTitle>Delivery Status</CardTitle>
+                <CardTitle className="text-base font-semibold">Delivery Status</CardTitle>
                 <CardDescription>
                   Message delivery success vs failure rates
                 </CardDescription>
@@ -216,12 +216,12 @@ export default function DashboardView() {
                 </ChartContainer>
                 <div className="flex justify-center gap-4 mt-4 text-sm">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-violet-400"></div>
-                    <span>Delivered</span>
+                    <div className="w-3 h-3 rounded-full bg-[#a78bfa]"></div>
+                    <span className="text-muted-foreground">Delivered</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-rose-400"></div>
-                    <span>Failed</span>
+                    <div className="w-3 h-3 rounded-full bg-[#fb7185]"></div>
+                    <span className="text-muted-foreground">Failed</span>
                   </div>
                 </div>
               </CardContent>
@@ -231,7 +231,7 @@ export default function DashboardView() {
           {/* Row 2: Stacked/Bar Chart for Customer Categorization */}
           <Card>
             <CardHeader>
-              <CardTitle>Customer Categorization</CardTitle>
+              <CardTitle className="text-base font-semibold">Customer Categorization</CardTitle>
               <CardDescription>
                 Active, Inactive, and Newly Active customers per month
               </CardDescription>

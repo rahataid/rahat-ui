@@ -119,12 +119,12 @@ export default function SummaryView() {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
-                <MessageSquare className="h-4 w-4 text-blue-600" />
+                <MessageSquare className="h-4 w-4 text-primary" />
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">
                     Total Messages Sent
                   </p>
-                  <p className="text-2xl font-bold text-blue-600">1,247</p>
+                  <p className="text-2xl font-bold text-primary">1,247</p>
                 </div>
               </div>
             </CardContent>
@@ -133,12 +133,12 @@ export default function SummaryView() {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
+                <CheckCircle className="h-4 w-4 text-success" />
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">
                     Delivery Successful
                   </p>
-                  <p className="text-2xl font-bold text-green-600">1,156</p>
+                  <p className="text-2xl font-bold text-success">1,156</p>
                 </div>
               </div>
             </CardContent>
@@ -147,12 +147,12 @@ export default function SummaryView() {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
-                <XCircle className="h-4 w-4 text-red-600" />
+                <XCircle className="h-4 w-4 text-destructive" />
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">
                     Delivery Failed
                   </p>
-                  <p className="text-2xl font-bold text-red-600">91</p>
+                  <p className="text-2xl font-bold text-destructive">91</p>
                 </div>
               </div>
             </CardContent>
@@ -161,12 +161,12 @@ export default function SummaryView() {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
-                <Smartphone className="h-4 w-4 text-purple-600" />
+                <Smartphone className="h-4 w-4 text-muted-foreground" />
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">
                     Most Used Channel
                   </p>
-                  <p className="text-2xl font-bold text-purple-600">SMS</p>
+                  <p className="text-2xl font-bold text-foreground">SMS</p>
                 </div>
               </div>
             </CardContent>
@@ -185,24 +185,24 @@ export default function SummaryView() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Badge
-                      className="bg-blue-100 text-blue-800"
+                      className="bg-primary/10 text-primary"
                       variant="secondary"
                     >
                       SMS
                     </Badge>
                   </div>
-                  <span className="font-semibold text-green-600">456</span>
+                  <span className="font-semibold text-success">456</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Badge
-                      className="bg-green-100 text-green-800"
+                      className="bg-success/10 text-success"
                       variant="secondary"
                     >
                       WhatsApp
                     </Badge>
                   </div>
-                  <span className="font-semibold text-green-600">389</span>
+                  <span className="font-semibold text-success">389</span>
                 </div>
               </div>
             </CardContent>
@@ -219,24 +219,24 @@ export default function SummaryView() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Badge
-                      className="bg-blue-100 text-blue-800"
+                      className="bg-primary/10 text-primary"
                       variant="secondary"
                     >
                       SMS
                     </Badge>
                   </div>
-                  <span className="font-semibold text-red-600">34</span>
+                  <span className="font-semibold text-destructive">34</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Badge
-                      className="bg-green-100 text-green-800"
+                      className="bg-success/10 text-success"
                       variant="secondary"
                     >
                       WhatsApp
                     </Badge>
                   </div>
-                  <span className="font-semibold text-red-600">28</span>
+                  <span className="font-semibold text-destructive">28</span>
                 </div>
               </div>
             </CardContent>

@@ -109,7 +109,7 @@ export default function CreateTemplateView() {
                       {...register('name')}
                     />
                     {errors.name && (
-                      <p className="text-sm text-red-500">
+                      <p className="text-sm text-destructive">
                         {errors.name.message}
                       </p>
                     )}
@@ -144,7 +144,7 @@ export default function CreateTemplateView() {
                           </SelectContent>
                         </Select>
                         {errors.transport && (
-                          <p className="text-sm text-red-500">
+                          <p className="text-sm text-destructive">
                             {errors.transport.message}
                           </p>
                         )}
@@ -164,7 +164,7 @@ export default function CreateTemplateView() {
                   rows={6}
                 />
                 {errors.body && (
-                  <p className="text-sm text-red-500">{errors.body.message}</p>
+                  <p className="text-sm text-destructive">{errors.body.message}</p>
                 )}
                 <p className="text-xs text-muted-foreground">
                   Tip: Use double curly braces {'{{variable}}'} for dynamic

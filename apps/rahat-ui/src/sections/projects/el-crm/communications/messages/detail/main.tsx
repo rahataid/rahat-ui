@@ -107,20 +107,20 @@ export default function MessageDetailPage() {
   const getChannelColor = (channel: string) => {
     switch (channel) {
       case 'SMS':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-primary/10 text-primary';
       case 'WhatsApp':
-        return 'bg-green-100 text-green-800';
+        return 'bg-success/10 text-success';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Sent':
-        return 'bg-green-100 text-green-800';
+        return 'bg-success/10 text-success';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -224,7 +224,7 @@ export default function MessageDetailPage() {
         <div className="flex flex-col lg:flex-row gap-4 w-full">
           {/* Left Section  — 1/3 on large screens */}
           <div className="flex-[2]">
-            <Card className="p-4 rounded-sm bg-white h-full">
+            <Card className="p-4 rounded-lg bg-card h-full">
               <CardTitle className="flex gap-2 pb-2">
                 <Badge
                   className={getStatusColor(
@@ -250,12 +250,12 @@ export default function MessageDetailPage() {
             <DataCard
               title="Successfully Delivered"
               smallNumber={(count?.SUCCESS ?? 0).toString()}
-              className="rounded-sm w-full h-20 pt-10 pb-8"
+              className="w-full h-20 pt-10 pb-8"
             />
             <DataCard
               title="Failed Delivered"
               smallNumber={(count?.FAIL ?? 0).toString()}
-              className="rounded-sm w-full h-20 pt-10 pb-8"
+              className="w-full h-20 pt-10 pb-8"
             />
           </div>
         </div>
@@ -331,7 +331,7 @@ export default function MessageDetailPage() {
                 </div>
 
                 {/* RIGHT TABLE SECTION */}
-                <Card className="lg:col-span-2 rounded-sm">
+                <Card className="lg:col-span-2 rounded-lg">
                   <CardHeader className="grid grid-cols-4 gap-3 pb-0 pt-2 px-3">
                     <div className="col-span-3">
                       <SearchInput

@@ -107,7 +107,7 @@ export default function ConsumersView() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-success">
                 {messageDeliverySuccessful}
               </div>
             </CardContent>
@@ -119,7 +119,7 @@ export default function ConsumersView() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">
+              <div className="text-2xl font-bold text-destructive">
                 {messageDeliveryFailed}
               </div>
             </CardContent>
@@ -131,7 +131,7 @@ export default function ConsumersView() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-2xl font-bold text-primary">
                 {consumersCompleting1Year}
               </div>
             </CardContent>
@@ -140,7 +140,7 @@ export default function ConsumersView() {
 
         <Card>
           <CardContent className="mt-6">
-            <div className="flex flex-wrap gap-4 mb-2">
+            <div className="flex flex-wrap gap-4 mb-4">
               {/* Search */}
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

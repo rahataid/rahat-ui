@@ -156,7 +156,7 @@ export default function ComposeMessageView() {
                       {...register('name')}
                     />
                     {errors.name && (
-                      <p className="text-sm text-red-500">
+                      <p className="text-sm text-destructive">
                         {errors.name.message}
                       </p>
                     )}
@@ -189,7 +189,7 @@ export default function ComposeMessageView() {
                             </SelectContent>
                           </Select>
                           {errors.targetType && (
-                            <p className="text-sm text-red-500">
+                            <p className="text-sm text-destructive">
                               {errors.targetType.message}
                             </p>
                           )}
@@ -265,7 +265,7 @@ export default function ComposeMessageView() {
                             </SelectContent>
                           </Select>
                           {errors.messagingChannel && (
-                            <p className="text-sm text-red-500">
+                            <p className="text-sm text-destructive">
                               {errors.messagingChannel.message}
                             </p>
                           )}
@@ -290,7 +290,7 @@ export default function ComposeMessageView() {
                       rows={4}
                     />
                     {errors.customMessage && (
-                      <p className="text-sm text-red-500">
+                      <p className="text-sm text-destructive">
                         {errors.customMessage.message}
                       </p>
                     )}
@@ -348,7 +348,7 @@ export default function ComposeMessageView() {
                         )}
                       />
                       {errors.selectedTemplate && (
-                        <p className="text-sm text-red-500">
+                        <p className="text-sm text-destructive">
                           {errors.selectedTemplate.message}
                         </p>
                       )}

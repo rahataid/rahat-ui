@@ -53,11 +53,11 @@ export default function UserView() {
 
   return (
     <>
-      <div className="p-4">
-        <div className="flex justify-between items-center space-x-8 mb-4">
+      <div className="p-4 sm:p-6">
+        <div className="flex justify-between items-center space-x-8 mb-6">
           <div>
-            <h1 className="font-semibold text-[28px]">Users</h1>
-            <p className="text-muted-foreground text-base">
+            <h1 className="font-semibold text-2xl sm:text-3xl tracking-tight">Users</h1>
+            <p className="text-muted-foreground text-sm mt-1">
               Here is the list of all the users
             </p>
           </div>

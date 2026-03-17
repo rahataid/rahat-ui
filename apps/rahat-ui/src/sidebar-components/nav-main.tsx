@@ -51,8 +51,8 @@ export function NavMain(items: IProps) {
                     tooltip={item.title}
                     className={
                       isActive
-                        ? 'bg-primary text-white rounded'
-                        : 'text-muted-foreground rounded hover:text-foreground'
+                        ? 'bg-primary text-primary-foreground rounded-md shadow-sm'
+                        : 'text-muted-foreground rounded-md hover:bg-accent hover:text-foreground transition-colors'
                     }
                   >
                     {item.icon}
@@ -97,8 +97,8 @@ export function NavMain(items: IProps) {
                   tooltip={item.title}
                   className={
                     isActive
-                      ? 'bg-primary text-white rounded'
-                      : 'text-muted-foreground rounded hover:text-foreground'
+                      ? 'bg-primary text-primary-foreground rounded-md shadow-sm'
+                      : 'text-muted-foreground rounded-md hover:bg-accent hover:text-foreground transition-colors'
                   }
                 >
                   {item.icon}

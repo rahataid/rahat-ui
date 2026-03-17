@@ -29,21 +29,21 @@ export function DateRangePicker({ value, onChange }: Props) {
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className="min-w-[250px] justify-start text-left font-normal"
+            className="min-w-[220px] h-9 justify-start text-left text-sm font-normal"
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
+            <CalendarIcon className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
 
             {value?.from ? (
               value.to ? (
-                <>
-                  {format(value.from, 'LLL dd, y')} -{' '}
-                  {format(value.to, 'LLL dd, y')}
-                </>
+                <span>
+                  {format(value.from, 'MMM dd, y')} –{' '}
+                  {format(value.to, 'MMM dd, y')}
+                </span>
               ) : (
-                format(value.from, 'LLL dd, y')
+                format(value.from, 'MMM dd, y')
               )
             ) : (
-              'Select date range'
+              <span className="text-muted-foreground">Select date range</span>
             )}
           </Button>
         </PopoverTrigger>

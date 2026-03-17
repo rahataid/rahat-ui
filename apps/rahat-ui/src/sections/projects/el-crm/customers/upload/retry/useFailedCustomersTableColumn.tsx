@@ -1,6 +1,11 @@
 import { CustomerCategory } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
@@ -26,7 +31,14 @@ function EditableCell({
   const [localValue, setLocalValue] = useState(originalValue || '');
   const isEdited = localValue !== (originalValue || '');
 
-  if (!hasError) return <div>{originalValue || 'N/A'}</div>;
+  if (!hasError)
+    return (
+      <span className="text-sm">
+        {originalValue || (
+          <span className="text-muted-foreground/60">—</span>
+        )}
+      </span>
+    );
 
   return (
     <div className="flex flex-col gap-1">
@@ -35,19 +47,28 @@ function EditableCell({
           {originalValue}
         </div>
       )}
-      <Input
-        value={localValue}
-        className={`h-8 px-2 py-1 text-sm ${
-          isEdited
-            ? 'border-green-400 ring-1 ring-green-300 bg-green-50'
-            : 'border-red-300 bg-red-50 text-red-700'
-        }`}
-        onChange={(e) => {
-          setLocalValue(e.target.value);
-          onCellChange(rowIndex, field, e.target.value);
-        }}
-        placeholder={`Fix ${field}...`}
-      />
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Input
+            value={localValue}
+            className={`h-8 px-2 py-1 text-sm ${
+              isEdited
+                ? 'border-success ring-1 ring-success/30 bg-success/5'
+                : 'border-destructive/50 bg-destructive/5 text-destructive'
+            }`}
+            onChange={(e) => {
+              setLocalValue(e.target.value);
+              onCellChange(rowIndex, field, e.target.value);
+            }}
+            placeholder={`Fix ${field}...`}
+          />
+        </TooltipTrigger>
+        {!isEdited && (
+          <TooltipContent side="bottom">
+            <p className="text-xs">This field has a validation error — edit to fix</p>
+          </TooltipContent>
+        )}
+      </Tooltip>
     </div>
   );
 }
@@ -69,9 +90,15 @@ function DateEditableCell({
 
   if (!hasError) {
     return (
-      <div>
-        {originalValue ? new Date(originalValue).toLocaleDateString() : 'N/A'}
-      </div>
+      <span className="text-sm tabular-nums">
+        {originalValue
+          ? new Date(originalValue).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            })
+          : (<span className="text-muted-foreground/60">—</span>)}
+      </span>
     );
   }
 
@@ -82,7 +109,7 @@ function DateEditableCell({
           className={`text-xs ${
             isEdited
               ? 'line-through opacity-50 text-muted-foreground'
-              : 'text-red-600'
+              : 'text-destructive'
           }`}
         >
           Original: {new Date(originalValue).toLocaleDateString()}
@@ -92,7 +119,7 @@ function DateEditableCell({
         type="date"
         value={localValue}
         className={`h-8 px-2 py-1 text-sm ${
-          isEdited ? 'border-green-400 bg-green-50' : 'border-red-300 bg-red-50'
+          isEdited ? 'border-success bg-success/5' : 'border-destructive/50 bg-destructive/5'
         }`}
         onChange={(e) => {
           setLocalValue(e.target.value);
@@ -111,16 +138,16 @@ export const useFailedCustomersTableColumn = (
 ) => {
   useParams() as { id: UUID }; // keep for future use if needed
 
-  const getCategoryBgColor = (category: string) => {
+  const getCategoryVariant = (category: string) => {
     switch (category) {
       case CustomerCategory.ACTIVE:
-        return 'blue';
+        return 'success' as const;
       case CustomerCategory.INACTIVE:
-        return 'gray';
+        return 'secondary' as const;
       case CustomerCategory.NEWLY_INACTIVE:
-        return 'red';
+        return 'destructive' as const;
       default:
-        return 'gray';
+        return 'secondary' as const;
     }
   };
 
@@ -128,14 +155,26 @@ export const useFailedCustomersTableColumn = (
     () => [
       {
         accessorKey: 'customerCode',
-        header: 'Customer Code',
+        header: () => (
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Code
+          </span>
+        ),
         cell: ({ row }: any) => (
-          <div>{row.getValue('customerCode') || 'N/A'}</div>
+          <span className="text-sm font-mono text-muted-foreground">
+            {row.getValue('customerCode') || (
+              <span className="text-muted-foreground/60">—</span>
+            )}
+          </span>
         ),
       },
       {
         accessorKey: 'name',
-        header: 'Customer Name',
+        header: () => (
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Customer Name
+          </span>
+        ),
         cell: ({ row }: any) => (
           <EditableCell
             key={resetKey}
@@ -149,7 +188,11 @@ export const useFailedCustomersTableColumn = (
       },
       {
         accessorKey: 'email',
-        header: 'Email ID',
+        header: () => (
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Email
+          </span>
+        ),
         cell: ({ row }: any) => (
           <EditableCell
             key={resetKey}
@@ -163,7 +206,11 @@ export const useFailedCustomersTableColumn = (
       },
       {
         accessorKey: 'phone',
-        header: 'Phone Number',
+        header: () => (
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Phone
+          </span>
+        ),
         cell: ({ row }: any) => (
           <EditableCell
             key={resetKey}
@@ -177,7 +224,11 @@ export const useFailedCustomersTableColumn = (
       },
       {
         accessorKey: 'lastPurchaseDate',
-        header: 'Last Purchase Date',
+        header: () => (
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Last Purchase
+          </span>
+        ),
         cell: ({ row }: any) => (
           <DateEditableCell
             key={resetKey}
@@ -190,45 +241,78 @@ export const useFailedCustomersTableColumn = (
       },
       {
         accessorKey: 'category',
-        header: 'Category',
+        header: () => (
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Category
+          </span>
+        ),
         cell: ({ row }) => {
           const category = row.getValue('category') as string;
-          const color = getCategoryBgColor(category);
-          return category ? (
-            <Badge className={`bg-${color}-200`}>
+          if (!category)
+            return <span className="text-muted-foreground/60">—</span>;
+          const variant = getCategoryVariant(category);
+          return (
+            <Badge variant={variant}>
               {category?.split('_').join(' ')}
             </Badge>
-          ) : (
-            'N/A'
           );
         },
       },
       {
         accessorKey: 'source',
-        header: 'Source',
-        cell: ({ row }) => <div>{row.getValue('source') || 'N/A'}</div>,
+        header: () => (
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Source
+          </span>
+        ),
+        cell: ({ row }) => {
+          const val = row.getValue('source') as string;
+          return val ? (
+            <Badge variant={val === 'PRIMARY' ? 'default' : 'secondary'}>
+              {val}
+            </Badge>
+          ) : (
+            <span className="text-muted-foreground/60">—</span>
+          );
+        },
       },
       {
         accessorKey: 'error',
-        header: 'Error',
+        header: () => (
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Errors
+          </span>
+        ),
         cell: ({ row }: any) => {
           const errorObj = row.original?.error as
             | Record<string, string[]>
             | undefined;
-          if (!errorObj || Object.keys(errorObj).length === 0) return 'N/A';
+          if (!errorObj || Object.keys(errorObj).length === 0)
+            return <span className="text-muted-foreground/60">—</span>;
+          const errorCount = Object.values(errorObj).flat().length;
           return (
-            <div className="flex flex-col space-y-1">
-              {Object.entries(errorObj).map(([field, messages], idx) =>
-                (messages as string[]).map((msg, msgIdx) => (
-                  <div
-                    key={`${idx}-${msgIdx}`}
-                    className="text-sm text-red-600"
-                  >
-                    - {msg}
-                  </div>
-                )),
-              )}
-            </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex flex-col gap-0.5 cursor-default">
+                  {Object.entries(errorObj).map(([field, messages], idx) =>
+                    (messages as string[]).map((msg, msgIdx) => (
+                      <span
+                        key={`${idx}-${msgIdx}`}
+                        className="text-xs text-destructive leading-relaxed"
+                      >
+                        • {msg}
+                      </span>
+                    )),
+                  )}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="left" className="max-w-[300px]">
+                <p className="text-xs">
+                  {errorCount} validation error{errorCount !== 1 ? 's' : ''} —
+                  fix the highlighted fields and retry
+                </p>
+              </TooltipContent>
+            </Tooltip>
           );
         },
       },

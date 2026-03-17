@@ -88,10 +88,10 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                         key={subItem.title}
                         className={`flex justify-between p-2 mb-1 items-center rounded-md cursor-pointer ${
                           subItem.disabled
-                            ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                            ? 'bg-muted text-muted-foreground cursor-not-allowed'
                             : pathName === subItem.path
-                            ? 'bg-primary text-white'
-                            : 'hover:bg-secondary'
+                            ? 'bg-primary text-primary-foreground shadow-sm'
+                            : 'hover:bg-accent hover:text-foreground transition-colors'
                         }`}
                         onClick={() =>
                           !subItem.disabled &&

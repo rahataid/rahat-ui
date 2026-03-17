@@ -31,7 +31,7 @@ export default function useCommsLogsTableColumns() {
               <TooltipTrigger asChild>
                 <div className="flex items-center gap-2 cursor-pointer">
                   <Badge className={renderBadgeBg(status)}>{status}</Badge>
-                  <TriangleAlert className="h-4 w-4 text-red-500" />
+                  <TriangleAlert className="h-4 w-4 text-destructive" />
                 </div>
               </TooltipTrigger>
               <TooltipContent className="max-w-xs break-words">
@@ -72,13 +72,13 @@ function renderDateTime(dateTime: string) {
 
 function renderBadgeBg(status: string) {
   if (status === BroadcastStatus.FAIL) {
-    return 'bg-red-200';
+    return 'bg-destructive/10 text-destructive';
   }
   if (status === BroadcastStatus.SUCCESS) {
-    return 'bg-green-200';
+    return 'bg-success/10 text-success';
   }
   if (status === BroadcastStatus.PENDING) {
-    return 'bg-yellow-200';
+    return 'bg-warning/10 text-warning';
   }
-  return 'bg-gray-200';
+  return 'bg-muted text-muted-foreground';
 }

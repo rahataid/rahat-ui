@@ -45,56 +45,50 @@ export default function DashboardView() {
   const newDatasource = useGetDataSource();
 
   return (
-    <div className="bg-card p-2 sm:p-4">
-      <div className="mb-4">
-        <h1 className="font-semibold text-[22px] sm:text-[28px]">Dashboard</h1>
-        <p className="text-muted-foreground text-sm sm:text-base">
+    <div className="p-4 sm:p-6">
+      {/* Page Header */}
+      <div className="mb-6">
+        <h1 className="font-semibold text-2xl sm:text-3xl tracking-tight text-foreground">
+          Dashboard
+        </h1>
+        <p className="text-muted-foreground text-sm sm:text-base mt-1">
           Your Hub for Real-Time Analytics and Data Visualization of the system
         </p>
       </div>
 
       <Tabs defaultValue="overview">
-        {/* Scrollable Tabs for Mobile */}
-        <TabsList className="border bg-secondary rounded w-full sm:w-60 flex">
+        <TabsList className="bg-muted rounded-lg w-full sm:w-auto inline-flex p-1">
           <TabsTrigger
-            className="flex-1 data-[state=active]:bg-white px-4"
+            className="flex-1 sm:flex-none rounded-md px-6 py-1.5 text-sm font-medium transition-all data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm"
             value="overview"
           >
             Overview
           </TabsTrigger>
           <TabsTrigger
-            className="flex-1 data-[state=active]:bg-white px-4"
+            className="flex-1 sm:flex-none rounded-md px-6 py-1.5 text-sm font-medium transition-all data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm"
             value="graphs"
           >
             Graphs
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview">
-          {/* Dynamic Height for Mobile */}
+        <TabsContent value="overview" className="mt-4">
           <ScrollArea className="h-auto md:h-[calc(100vh-220px)]">
             {newDatasource?.data && newDatasource?.data[0]?.data?.ui.length && (
               <DynamicReports
-                className="grid gap-2"
+                className="grid gap-4"
                 dataSources={newDatasource?.data[0]?.data?.dataSources}
                 ui={newDatasource?.data[0]?.data?.ui}
               />
             )}
-
-            {/* {dataForMap && (
-              <StyledMapContainer>
-                <ClusterMap
-                  {...mapboxBasicConfig}
-                  mapStyle={THEMES.light}
-                  dataForMap={dataForMap}
-                  className="w-full h-[300px] sm:h-[500px]"
-                />
-              </StyledMapContainer>
-            )} */}
           </ScrollArea>
         </TabsContent>
 
-        <TabsContent value="graphs">Graphs</TabsContent>
+        <TabsContent value="graphs" className="mt-4">
+          <div className="flex items-center justify-center h-48 rounded-lg border border-dashed border-border text-muted-foreground text-sm">
+            Graphs will appear here
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
   );

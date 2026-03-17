@@ -20,6 +20,7 @@ import { SessionStatus } from '@rumsan/connect/src/types';
 import MessageWithToggle from './messageWithToggle';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { useRouter } from 'next/navigation';
@@ -61,6 +62,19 @@ export function CommunicationCard({
   const [isPlaying, setIsPlaying] = useState(false);
   const confirmationDialog = useBoolean();
   const router = useRouter();
+
+  const getSessionStatusBadgeClass = (status?: string) => {
+    switch (status) {
+      case SessionStatus.PENDING:
+        return 'text-red-400 bg-yellow-100';
+      case SessionStatus.COMPLETED:
+        return 'text-green-700 bg-green-200';
+      case SessionStatus.NEW:
+        return 'text-red-700 bg-red-200';
+      default:
+        return 'text-red-700 bg-red-200';
+    }
+  };
 
   const getIcon = () => {
     switch (activityCommunication?.transportName) {
@@ -123,7 +137,6 @@ export function CommunicationCard({
             {getIcon()}
           </div>
 
-          {/* Title and Meta Information */}
           <div className="flex-1 min-w-0">
             {/* Title Row */}
             <div className="flex items-center gap-2 mb-1">
@@ -144,28 +157,23 @@ export function CommunicationCard({
               )}
               <TooltipWrapper
                 tip={`Communication Status: ${
-                  activityCommunication?.sessionStatus.charAt(0).toUpperCase() +
-                  activityCommunication?.sessionStatus.slice(1).toLowerCase()
+                  activityCommunication?.sessionStatus
+                    ? formatEnumString(activityCommunication.sessionStatus)
+                    : 'Unknown'
                 }`}
               >
                 <Badge
-                  className={`text-xs font-normal ${
-                    activityCommunication?.sessionStatus === 'PENDING'
-                      ? 'text-red-400 bg-yellow-100'
-                      : activityCommunication?.sessionStatus === 'COMPLETED'
-                      ? 'text-green-700 bg-green-200'
-                      : 'text-red-700 bg-red-200'
-                  }`}
+                  className={`text-xs font-normal ${getSessionStatusBadgeClass(
+                    activityCommunication?.sessionStatus,
+                  )}`}
                 >
                   {activityCommunication?.sessionStatus
-                    .charAt(0)
-                    .toUpperCase() +
-                    activityCommunication?.sessionStatus.slice(1).toLowerCase()}
+                    ? formatEnumString(activityCommunication.sessionStatus)
+                    : 'Unknown'}
                 </Badge>
               </TooltipWrapper>
             </div>
 
-            {/* Meta Information */}
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <TooltipWrapper
                 tip={`Communication Channel: ${activityCommunication?.transportName}`}
@@ -224,7 +232,6 @@ export function CommunicationCard({
           </TooltipWrapper>
         )}
 
-        {/* Message Content for Email/SMS */}
         {(activityCommunication?.transportName === 'EMAIL' ||
           activityCommunication?.transportName === 'SMS') && (
           <TooltipWrapper

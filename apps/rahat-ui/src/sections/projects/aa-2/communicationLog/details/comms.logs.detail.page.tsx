@@ -414,11 +414,9 @@ export default function CommsLogsDetailPage() {
                     </p>
                   </TooltipWrapper>
                   <TooltipWrapper
-                    tip={`Communication Message: ${
-                      typeof logs?.communicationDetail?.message === 'string'
-                        ? logs?.communicationDetail?.message
-                        : logs?.communicationDetail?.message?.fileName || 'N/A'
-                    }`}
+                    tip={`Communication Message: ${getCommunicationMessage(
+                      logs?.communicationDetail?.message,
+                    )}`}
                   >
                     <div>
                       {renderMessage(logs?.communicationDetail?.message)}
@@ -478,6 +476,13 @@ export default function CommsLogsDetailPage() {
       </div>
     </div>
   );
+}
+
+function getCommunicationMessage(message: any): string {
+  if (typeof message === 'string') {
+    return message;
+  }
+  return message?.fileName || 'N/A';
 }
 
 function renderMessage(message: any) {

@@ -24,6 +24,7 @@ import {
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import * as XLSX from 'xlsx';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { formatEnumString } from 'apps/rahat-ui/src/utils/string';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import MessageWithToggle from '../../activities/components/messageWithToggle';
 
@@ -75,6 +76,19 @@ export function CommunicationDetailCard({
   const count = useSessionBroadCastCount([activityCommunication?.sessionId]);
 
   const [isPlaying, setIsPlaying] = useState(false);
+
+  const getSessionStatusBadgeClass = (status?: string) => {
+    switch (status) {
+      case 'PENDING':
+        return 'text-red-400 bg-yellow-100';
+      case 'COMPLETED':
+        return 'text-green-700 bg-green-200';
+      case 'FAILED':
+        return 'text-red-700 bg-red-200';
+      default:
+        return 'bg-gray-200';
+    }
+  };
 
   const getIcon = () => {
     switch (activityCommunication?.transportName) {
@@ -132,25 +146,19 @@ export function CommunicationDetailCard({
               </TooltipWrapper>
               <TooltipWrapper
                 tip={`Communication Status: ${
-                  activityCommunication?.sessionStatus.charAt(0).toUpperCase() +
-                  activityCommunication?.sessionStatus.slice(1).toLowerCase()
+                  activityCommunication?.sessionStatus
+                    ? formatEnumString(activityCommunication.sessionStatus)
+                    : 'Unknown'
                 }`}
               >
                 <Badge
-                  className={`text-xs font-normal ${
-                    activityCommunication?.sessionStatus === 'PENDING'
-                      ? 'text-red-400 bg-yellow-100'
-                      : activityCommunication?.sessionStatus === 'COMPLETED'
-                      ? 'text-green-700 bg-green-200'
-                      : activityCommunication?.sessionStatus === 'FAILED'
-                      ? 'text-red-700 bg-red-200'
-                      : 'bg-gray-200'
-                  }`}
+                  className={`text-xs font-normal ${getSessionStatusBadgeClass(
+                    activityCommunication?.sessionStatus,
+                  )}`}
                 >
                   {activityCommunication?.sessionStatus
-                    .charAt(0)
-                    .toUpperCase() +
-                    activityCommunication?.sessionStatus.slice(1).toLowerCase()}
+                    ? formatEnumString(activityCommunication.sessionStatus)
+                    : 'Unknown'}
                 </Badge>
               </TooltipWrapper>
             </div>

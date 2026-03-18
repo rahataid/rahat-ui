@@ -18,7 +18,7 @@ interface PhaseCardProps {
   status: string;
   title: string;
   responsibleStation: string;
-  leadTime: string;
+  leadTime?: string;
   responsibility: string;
   onUpdateStatus: () => void;
   className?: string;

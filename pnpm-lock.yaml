@@ -90,8 +90,8 @@ importers:
         specifier: 0.0.14
         version: 0.0.14
       '@rahataid/sdk':
-        specifier: 0.0.35
-        version: 0.0.35
+        specifier: 0.0.36
+        version: 0.0.36
       '@rumsan/communication':
         specifier: ^0.0.23
         version: 0.0.23
@@ -3142,8 +3142,8 @@ packages:
   '@rahataid/el-subgraph@0.0.14':
     resolution: {integrity: sha512-tBsvFOXbMquudfQCMnxVGZwvLWixC3TvN/Tqc43PY2UMr4JNOxYuBozMtUafYxxxiZtxaxu+n7tccWs+g6KoNQ==}
 
-  '@rahataid/sdk@0.0.35':
-    resolution: {integrity: sha512-8ZLXLMfr+ZXlrtidXSUCi/1oCsaTf2TA4VP7vEpJto+wN+ujUEb9Vfu2VFghbQ9hVTKGOWo0v0Wx0MqRZwxsUQ==}
+  '@rahataid/sdk@0.0.36':
+    resolution: {integrity: sha512-GAtsrZbZuLekwV684/b0/w2JIKzoRdT8qrOO4rdbH13agAyZxbs24+ETeR0KBLczjOYvCMgI5ddZ8a3lwGihkA==}
 
   '@react-native-async-storage/async-storage@1.24.0':
     resolution: {integrity: sha512-W4/vbwUOYOjco0x3toB8QCr7EjIP6nE9G7o8PMguvvjYT5Awg09lyV4enACRx4s++PPulBiBSjL0KTFx2u0Z/g==}
@@ -15625,7 +15625,7 @@ snapshots:
     transitivePeerDependencies:
       - graphql
 
-  '@rahataid/sdk@0.0.35': {}
+  '@rahataid/sdk@0.0.36': {}
 
   '@react-native-async-storage/async-storage@1.24.0(react-native@0.80.0(@babel/core@7.27.4)(@types/react@18.3.23)(bufferutil@4.0.9)(react@18.2.0))':
     dependencies:

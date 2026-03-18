@@ -473,6 +473,7 @@ export default function ComposeScheduleView() {
       targetType: selectedGroup,
       transportId: selectedTransportId,
       message: messageContent,
+      isScheduled: true,
       options: Object.keys(options).length ? options : undefined,
     });
 

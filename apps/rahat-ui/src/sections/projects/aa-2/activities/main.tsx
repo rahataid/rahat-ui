@@ -75,18 +75,18 @@ export default function ActivitiesView() {
     return Array.from(seen);
   }, [activitiesData]);
 
-  // const sortedPhases = [
-  //   'PREPAREDNESS',
-  //   'ACTIVATION',
-  //   'READINESS',
-  //   'POST-ACTIVATION',
-  //   'PRE-ACTIVATION',
-  // ];
-  const sortedPhases = useMemo(() => {
-    const pinned = pinnedPhases.filter((p) => uniquePhases.includes(p));
-    const unpinned = uniquePhases.filter((p) => !pinnedPhases.includes(p));
-    return [...pinned, ...unpinned];
-  }, [pinnedPhases, uniquePhases]);
+  const sortedPhases = [
+    'PREPAREDNESS',
+    'ACTIVATION',
+    // 'READINESS',
+    // 'POST-ACTIVATION',
+    // 'PRE-ACTIVATION',
+  ];
+  // const sortedPhases = useMemo(() => {
+  //   const pinned = pinnedPhases.filter((p) => uniquePhases.includes(p));
+  //   const unpinned = uniquePhases.filter((p) => !pinnedPhases.includes(p));
+  //   return [...pinned, ...unpinned];
+  // }, [pinnedPhases, uniquePhases]);
 
   const phaseDataMap = useMemo(() => {
     const map: Record<string, IActivitiesItem[]> = {};

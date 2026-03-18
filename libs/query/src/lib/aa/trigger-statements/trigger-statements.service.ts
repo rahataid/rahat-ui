@@ -53,6 +53,54 @@ export const useCreateTriggerStatement = () => {
   });
 };
 
+export const useCreatePhase = () => {
+  const q = useProjectAction();
+  const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      phasePayload,
+    }: {
+      projectUUID: UUID;
+      phasePayload: any;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'ms.phases.create',
+          payload: phasePayload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['phases'] });
+      qc.invalidateQueries({ queryKey: ['triggerstatements'] });
+      toast.fire({
+        title: 'Phase added successfully.',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while adding phase.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 export const useAddTriggerStatementToPhase = () => {
   const q = useProjectAction();
   const alert = useSwal();

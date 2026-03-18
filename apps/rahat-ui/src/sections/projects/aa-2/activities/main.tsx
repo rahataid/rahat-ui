@@ -12,7 +12,6 @@ import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSidebar } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 const PHASE_DESCRIPTIONS: Record<string, string> = {
   PREPAREDNESS: 'Overview of preparedness phase',
@@ -75,6 +74,7 @@ export default function ActivitiesView() {
     return Array.from(seen);
   }, [activitiesData]);
 
+  // For testing the design
   // const sortedPhases = [
   //   'PREPAREDNESS',
   //   'ACTIVATION',
@@ -174,7 +174,6 @@ export default function ActivitiesView() {
           } transition-width duration-300 overflow-x-auto  [&::-webkit-scrollbar]:h-1.5  [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300`}
           style={{ scrollbarGutter: 'stable' }}
         >
-          {/* <div className="grid grid-cols-3 gap-4 overflow-x-auto"> */}
           {sortedPhases.map((phase) => (
             <div key={phase} className="min-w-[320px] w-full">
               <PhaseContent
@@ -192,33 +191,19 @@ export default function ActivitiesView() {
           ))}
           {sortedPhases.length === 2 && (
             <div className="min-w-[320px]">
-              <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-gray-300 bg-gray-50">
+              <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
                 <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100">
-                    <Plus className="w-6 h-6 text-gray-400" />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <p className="text-base font-medium text-gray-700">
-                      Add a New Phase
-                    </p>
-                    <p className="text-sm text-gray-400">
-                      Create a new phase to organise and track additional
-                      activities
-                    </p>
-                  </div>
-                  <RoleAuth
-                    roles={[
-                      AARoles.ADMIN,
-                      AARoles.MANAGER,
-                      AARoles.Municipality,
-                    ]}
-                    hasContent={false}
-                  >
-                    <Button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium transition-colors">
-                      <Plus className="w-4 h-4" />
+                  <div className="flex flex-col gap-1 items-center ">
+                    <p className="text-base font-medium text-blue-500 ">
                       Add Phase
-                    </Button>
-                  </RoleAuth>
+                    </p>
+                    <p className="text-sm text-blue-400">
+                      Click here to add new phase
+                    </p>
+                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100">
+                      <Plus className="w-6 h-6 text-blue-500" />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>

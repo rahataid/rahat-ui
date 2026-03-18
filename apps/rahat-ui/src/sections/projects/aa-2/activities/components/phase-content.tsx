@@ -12,25 +12,7 @@ import {
 import PhaseCard from './phase-card';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-
-interface Phase {
-  id: string;
-  responsibleStation: string;
-  status: string;
-  leadTime?: string;
-  phase?: string;
-  title: string;
-  responsibility: string;
-}
-
-interface PhasecontentProps {
-  title: string;
-  description: string;
-  loading: boolean;
-  phases: Phase[];
-  isPinned?: boolean;
-  onTogglePin?: () => void;
-}
+import { PhaseContentProps } from 'apps/rahat-ui/src/types/activities';
 
 export default function PhaseContent({
   title,
@@ -39,7 +21,7 @@ export default function PhaseContent({
   loading,
   isPinned = false,
   onTogglePin,
-}: PhasecontentProps) {
+}: PhaseContentProps) {
   const { id: projectID } = useParams();
   const [searchQuery, setSearchQuery] = useState('');
 

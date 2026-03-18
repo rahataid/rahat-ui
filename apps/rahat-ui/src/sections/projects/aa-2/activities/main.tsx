@@ -35,7 +35,15 @@ export default function ActivitiesView() {
     if (!storageKey) return;
     try {
       const stored = localStorage.getItem(storageKey);
-      if (stored) setPinnedPhases(JSON.parse(stored));
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          const sanitizedPinnedPhases = parsed
+            .filter((phase): phase is string => typeof phase === 'string')
+            .slice(0, 3);
+          setPinnedPhases(sanitizedPinnedPhases);
+        }
+      }
     } catch (error) {
       console.error('Failed to parse pinned phases from localStorage', error);
     }
@@ -66,12 +74,16 @@ export default function ActivitiesView() {
   );
 
   const uniquePhases = useMemo(() => {
-    if (!activitiesData) return [];
-    const seen = new Set<string>();
-    activitiesData.forEach((d: IActivitiesItem) => {
-      if (d.phase) seen.add(d.phase);
-    });
-    return Array.from(seen);
+    // Start from all known phases so that phases with zero activities still render as cards
+    const phaseSet = new Set<string>(Object.keys(PHASE_DESCRIPTIONS));
+    if (activitiesData) {
+      activitiesData.forEach((d: IActivitiesItem) => {
+        if (d.phase) {
+          phaseSet.add(d.phase);
+        }
+      });
+    }
+    return Array.from(phaseSet);
   }, [activitiesData]);
 
   // For testing the design
@@ -82,6 +94,7 @@ export default function ActivitiesView() {
   //   'POST-ACTIVATION',
   //   'PRE-ACTIVATION',
   // ];
+
   const sortedPhases = useMemo(() => {
     const pinned = pinnedPhases.filter((p) => uniquePhases.includes(p));
     const unpinned = uniquePhases.filter((p) => !pinnedPhases.includes(p));

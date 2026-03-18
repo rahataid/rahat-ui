@@ -37,25 +37,6 @@ export default function PhaseCard({
   const router = useRouter();
   const { id: ProjectId } = useParams();
 
-  // const getStatusBg = (status: string) => {
-  //   if (status === 'NOT_STARTED') {
-  //     return 'bg-red-200';
-  //   }
-
-  //   if (status === 'WORK_IN_PROGRESS') {
-  //     return 'bg-orange-200';
-  //   }
-
-  //   if (status === 'COMPLETED') {
-  //     return 'bg-green-200';
-  //   }
-
-  //   if (status === 'DELAYED') {
-  //     return 'bg-gray-200';
-  //   }
-
-  //   return '';
-  // };
   return (
     <Card
       className={(cn(' border-gray-300 shadow-sm p-4 rounded-xl '), className)}
@@ -97,7 +78,10 @@ export default function PhaseCard({
         </div>
         <TooltipWrapper tip={`Activity Title: ${title}`}>
           <h3 className="text-sm font-medium text-gray-900 truncate w-[320px]">
-            {title}
+            {title.length > 25
+              ? `${title.substring(0, 20)}...`
+              : title ?? 'N/A'}
+            {/* {title} */}
           </h3>
         </TooltipWrapper>
         <div className="flex items-center gap-1 text-sm text-gray-500">

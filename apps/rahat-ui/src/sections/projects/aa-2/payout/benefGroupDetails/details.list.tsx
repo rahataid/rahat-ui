@@ -230,7 +230,7 @@ export default function BeneficiaryGroupTransactionDetailsList() {
                   >
                     <TooltipWrapper
                       tip="Payout cannot be verified because funds have not been disbursed to the beneficiary group."
-                      disable={!payout?.beneficiaryGroupToken?.isDisbursed}
+                      disable={payout?.beneficiaryGroupToken?.isDisbursed}
                     >
                       <Button
                         className={`gap-2 text-sm ${

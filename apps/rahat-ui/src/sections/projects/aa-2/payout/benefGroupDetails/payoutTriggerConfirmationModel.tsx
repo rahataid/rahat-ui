@@ -29,23 +29,25 @@ export default function PayoutConfirmationDialog({
         roles={[AARoles.ADMIN, AARoles.Municipality]}
         hasContent={false}
       >
-        {payoutData?.type === 'FSP' && (
-          <TooltipWrapper
-            tip="Payout cannot be triggered because funds have not been disbursed to the beneficiary group."
-            disable={!payoutData?.beneficiaryGroupToken?.isDisbursed}
-          >
-            <AlertDialogTrigger asChild>
-              <Button
-                className={`bg-blue-600 hover:bg-blue-700 text-white ${
-                  !!payoutData?.isPayoutTriggered && 'hidden'
-                }`}
-                disabled={!payoutData?.beneficiaryGroupToken?.isDisbursed}
-              >
-                Trigger Payout
-              </Button>
-            </AlertDialogTrigger>
-          </TooltipWrapper>
-        )}
+        {payoutData?.type === 'FSP' &&
+          (payoutData?.extras?.paymentProviderName === 'NCHL' ||
+            payoutData?.extras?.paymentProviderName === 'Namaste Pay') && (
+            <TooltipWrapper
+              tip="Payout cannot be triggered because funds have not been disbursed to the beneficiary group."
+              disable={payoutData?.beneficiaryGroupToken?.isDisbursed}
+            >
+              <AlertDialogTrigger asChild>
+                <Button
+                  className={`bg-blue-600 hover:bg-blue-700 text-white ${
+                    !!payoutData?.isPayoutTriggered && 'hidden'
+                  }`}
+                  disabled={!payoutData?.beneficiaryGroupToken?.isDisbursed}
+                >
+                  Trigger Payout
+                </Button>
+              </AlertDialogTrigger>
+            </TooltipWrapper>
+          )}
       </RoleAuth>
       <AlertDialogContent className="max-w-lg">
         <AlertDialogHeader>

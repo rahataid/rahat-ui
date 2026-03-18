@@ -31,6 +31,12 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import {
   useListElCrmTransport,
   useCreateTemplate,
   useUploadFile,
@@ -293,25 +299,30 @@ export default function CreateTemplateView() {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="border-b border-border bg-card/50 px-6 py-4">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={() => router.back()}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">
-              Create Message Template
-            </h1>
-            <p className="text-muted-foreground">
-              Create and manage a new message template
-            </p>
+    <TooltipProvider delayDuration={200}>
+      <div className="flex flex-col h-full">
+        <div className="border-b border-border bg-card px-6 py-5">
+          <div className="flex items-center gap-4">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="sm" onClick={() => router.back()}>
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Back to templates</TooltipContent>
+            </Tooltip>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                Create Message Template
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Create and manage a new message template
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex-1 p-6">
+        <div className="flex-1 p-6 overflow-auto">
         <Card>
           <CardHeader>
             <CardTitle>Template Management</CardTitle>
@@ -493,23 +504,29 @@ export default function CreateTemplateView() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex justify-end gap-3">
+              <div className="flex justify-end gap-3 pt-4 border-t">
                 <Link
                   href={`/projects/el-crm/${projectUUID}/communications/templates`}
                 >
-                  <Button type="button" variant="outline">
+                  <Button type="button" variant="outline" size="sm">
                     Cancel
                   </Button>
                 </Link>
-                <Button disabled={isUploading} type="submit">
-                  <Save className="mr-2 h-4 w-4" />
-                  Create Template
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button disabled={isUploading} type="submit" size="sm" className="gap-2">
+                      <Save className="h-3.5 w-3.5" />
+                      Create Template
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Save the template</TooltipContent>
+                </Tooltip>
               </div>
             </form>
           </CardContent>
         </Card>
       </div>
     </div>
+    </TooltipProvider>
   );
 }

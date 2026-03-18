@@ -43,6 +43,12 @@ import { Textarea } from '@rahat-ui/shadcn/components/textarea';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { cn } from '@rahat-ui/shadcn/src/utils';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import {
   useCreateElCrmCampaign,
   useCreateElCrmAutomationRule,
   useDeleteElCrmAutomationRule,
@@ -523,30 +529,35 @@ export default function ComposeScheduleView() {
   }, [messageContent, isWhatsApp, templates.data]);
 
   return (
+    <TooltipProvider delayDuration={200}>
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="border-b border-border bg-card/50 px-6 py-4">
-        <div className="flex items-center gap-4">
-          <Link
-            href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
-          >
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back
-            </Button>
-          </Link>
+      <div className="border-b border-border bg-card px-6 py-5">
+        <div className="flex items-center gap-3">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
+              >
+                <Button variant="ghost" size="sm">
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>Back to scheduled messages</TooltipContent>
+          </Tooltip>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
               Schedule Message
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm text-muted-foreground mt-1">
               Create and schedule a new message to your audience
             </p>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-6 overflow-auto">
         <Card>
           <CardHeader className="border-b">
             <CardTitle>Schedule Message</CardTitle>
@@ -912,19 +923,25 @@ export default function ComposeScheduleView() {
 
                     {/* Action buttons */}
                     <div className="flex justify-end gap-3 pt-4 border-t">
-                      <Button variant="outline" onClick={resetForm}>
+                      <Button variant="outline" size="sm" onClick={resetForm}>
                         Cancel
                       </Button>
-                      <Button
-                        disabled={!canSubmit || createCampaign.isPending}
-                        onClick={handleSubmit}
-                        className="gap-2"
-                      >
-                        <Calendar className="h-4 w-4" />
-                        {createCampaign.isPending
-                          ? 'Scheduling…'
-                          : 'Schedule Message'}
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size="sm"
+                            disabled={!canSubmit || createCampaign.isPending}
+                            onClick={handleSubmit}
+                            className="gap-2"
+                          >
+                            <Calendar className="h-4 w-4" />
+                            {createCampaign.isPending
+                              ? 'Scheduling…'
+                              : 'Schedule Message'}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Schedule this message for delivery</TooltipContent>
+                      </Tooltip>
                     </div>
                   </div>
                 )}
@@ -932,7 +949,9 @@ export default function ComposeScheduleView() {
                 {/* Empty state */}
                 {!selectedTransportId && (
                   <div className="text-center py-8 text-muted-foreground">
-                    <MessageSquare className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <div className="rounded-full bg-muted p-4 inline-flex mb-3">
+                      <MessageSquare className="h-8 w-8 opacity-50" />
+                    </div>
                     <p>Start by selecting a messaging channel above</p>
                   </div>
                 )}
@@ -1313,7 +1332,9 @@ export default function ComposeScheduleView() {
                   </p>
                 ) : !automations.data?.length ? (
                   <div className="text-center py-10 text-muted-foreground border border-dashed rounded-lg">
-                    <Zap className="h-12 w-12 mx-auto mb-3 opacity-40" />
+                    <div className="rounded-full bg-muted p-4 inline-flex mx-auto mb-3">
+                      <Zap className="h-8 w-8 opacity-40" />
+                    </div>
                     <p className="font-medium">No automation rules found</p>
                     <p className="text-xs mt-1">
                       {canCreateRules
@@ -1343,6 +1364,7 @@ export default function ComposeScheduleView() {
         </Card>
       </div>
     </div>
+    </TooltipProvider>
   );
 }
 

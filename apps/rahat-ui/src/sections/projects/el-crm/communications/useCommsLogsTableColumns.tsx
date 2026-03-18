@@ -8,16 +8,31 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { TriangleAlert } from 'lucide-react';
 
+const getStatusVariant = (status: string) => {
+  if (status === BroadcastStatus.FAIL) return 'destructive';
+  if (status === BroadcastStatus.SUCCESS) return 'success';
+  if (status === BroadcastStatus.PENDING) return 'warning';
+  return 'secondary';
+};
+
 export default function useCommsLogsTableColumns() {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'audience',
-      header: 'Audience',
-      cell: ({ row }) => <div className="">{row?.original?.address}</div>,
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Audience</span>
+      ),
+      cell: ({ row }) => (
+        <span className="font-medium">
+          {row?.original?.address || '\u2014'}
+        </span>
+      ),
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Status</span>
+      ),
       cell: ({ row }) => {
         const status = row?.original?.status;
         const disposition = row?.original?.disposition;
@@ -30,7 +45,7 @@ export default function useCommsLogsTableColumns() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="flex items-center gap-2 cursor-pointer">
-                  <Badge className={renderBadgeBg(status)}>{status}</Badge>
+                  <Badge variant={getStatusVariant(status)}>{status}</Badge>
                   <TriangleAlert className="h-4 w-4 text-destructive" />
                 </div>
               </TooltipTrigger>
@@ -41,20 +56,28 @@ export default function useCommsLogsTableColumns() {
           );
         }
 
-        return <Badge className={renderBadgeBg(status)}>{status}</Badge>;
+        return <Badge variant={getStatusVariant(status)}>{status}</Badge>;
       },
     },
     {
       accessorKey: 'attempts',
-      header: 'Attempts',
-      cell: ({ row }) => {
-        return <div className="ml-8">{row?.original?.attempts}</div>;
-      },
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Attempts</span>
+      ),
+      cell: ({ row }) => (
+        <span className="tabular-nums">{row?.original?.attempts ?? '\u2014'}</span>
+      ),
     },
     {
       accessorKey: 'timeStamp',
-      header: 'Timestamp',
-      cell: ({ row }) => <div>{renderDateTime(row?.original?.createdAt)}</div>,
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Timestamp</span>
+      ),
+      cell: ({ row }) => (
+        <span className="tabular-nums">
+          {renderDateTime(row?.original?.createdAt)}
+        </span>
+      ),
     },
   ];
   return columns;
@@ -63,22 +86,7 @@ export default function useCommsLogsTableColumns() {
 function renderDateTime(dateTime: string) {
   if (dateTime) {
     const d = new Date(dateTime);
-    const localeDate = d.toLocaleDateString();
-    const localeTime = d.toLocaleTimeString();
-    return `${localeDate} ${localeTime}`;
+    return d.toLocaleString();
   }
-  return 'N/A';
-}
-
-function renderBadgeBg(status: string) {
-  if (status === BroadcastStatus.FAIL) {
-    return 'bg-destructive/10 text-destructive';
-  }
-  if (status === BroadcastStatus.SUCCESS) {
-    return 'bg-success/10 text-success';
-  }
-  if (status === BroadcastStatus.PENDING) {
-    return 'bg-warning/10 text-warning';
-  }
-  return 'bg-muted text-muted-foreground';
+  return '\u2014';
 }

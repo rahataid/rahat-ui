@@ -50,6 +50,7 @@ import {
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
@@ -65,27 +66,27 @@ export default function TemplatesView() {
 
   const templates = templateList || [];
 
-  const getChannelColor = (channel: string) => {
+  const getChannelVariant = (channel: string) => {
     switch (channel) {
       case 'SMS':
-        return 'bg-primary/10 text-primary';
+        return 'default';
       case 'WhatsApp':
-        return 'bg-success/10 text-success';
+        return 'success';
       default:
-        return 'bg-muted text-muted-foreground';
+        return 'secondary';
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusVariant = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return 'bg-primary/10 text-primary';
+        return 'warning';
       case 'APPROVED':
-        return 'bg-green-100 text-green-800';
+        return 'success';
       case 'REJECTED':
-        return 'bg-red-100 text-red-800';
+        return 'destructive';
       default:
-        return 'bg-muted text-muted-foreground';
+        return 'secondary';
     }
   };
 
@@ -156,43 +157,51 @@ export default function TemplatesView() {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="border-b border-border bg-card/50 px-6 py-4">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Templates</h1>
-            <p className="text-muted-foreground">
-              Manage and create message templates
-            </p>
-          </div>
+    <TooltipProvider delayDuration={200}>
+      <div className="flex flex-col h-full">
+        <div className="border-b border-border bg-card px-6 py-5">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                Templates
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Manage and create message templates
+              </p>
+            </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <Link
-              href={`/projects/el-crm/${projectUUID}/communications/templates/create`}
-            >
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Template
-              </Button>
-            </Link>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/projects/el-crm/${projectUUID}/communications/templates/create`}
+                >
+                  <Button size="sm" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add Template
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>Create a new message template</TooltipContent>
+            </Tooltip>
           </div>
         </div>
-      </div>
 
-      <div className="flex-1 p-6">
+        <div className="flex-1 p-6 overflow-auto">
         {templates.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-96 text-center">
-            <MessageSquare className="h-12 w-12 text-muted-foreground mb-4" />
+            <div className="rounded-full bg-muted p-4 mb-4">
+              <MessageSquare className="h-8 w-8 text-muted-foreground" />
+            </div>
             <h3 className="text-lg font-semibold text-foreground mb-2">
               No templates yet
             </h3>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-sm text-muted-foreground mb-6">
               Create your first template to get started
             </p>
             <Link
               href={`/projects/el-crm/${projectUUID}/communications/templates/create`}
             >
-              <Button>
+              <Button size="sm">
                 <Plus className="mr-2 h-4 w-4" />
                 Create Template
               </Button>
@@ -206,7 +215,7 @@ export default function TemplatesView() {
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">
                     Total Templates
                   </p>
-                  <p className="mt-1 text-2xl font-semibold text-foreground">
+                  <p className="mt-1 text-3xl font-bold tracking-tight tabular-nums text-foreground">
                     {templates.length}
                   </p>
                 </CardContent>
@@ -216,7 +225,7 @@ export default function TemplatesView() {
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">
                     Approved
                   </p>
-                  <p className="mt-1 text-2xl font-semibold text-green-600">
+                  <p className="mt-1 text-3xl font-bold tracking-tight tabular-nums text-success">
                     {approvedCount}
                   </p>
                 </CardContent>
@@ -226,7 +235,7 @@ export default function TemplatesView() {
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">
                     Media Templates
                   </p>
-                  <p className="mt-1 text-2xl font-semibold text-blue-600">
+                  <p className="mt-1 text-3xl font-bold tracking-tight tabular-nums text-primary">
                     {totalMediaTemplates}
                   </p>
                 </CardContent>
@@ -352,10 +361,7 @@ export default function TemplatesView() {
                               ).toLocaleDateString()}
                             </CardDescription>
                           </div>
-                          <Badge
-                            className={getChannelColor(channelName)}
-                            variant="secondary"
-                          >
+                          <Badge variant={getChannelVariant(channelName)}>
                             {channelName}
                           </Badge>
                         </div>
@@ -365,13 +371,10 @@ export default function TemplatesView() {
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <div className="flex cursor-pointer items-center gap-2">
-                                  <Badge
-                                    className={getStatusColor(template.status)}
-                                    variant="secondary"
-                                  >
+                                  <Badge variant={getStatusVariant(template.status)}>
                                     {template.status}
                                   </Badge>
-                                  <TriangleAlert className="h-4 w-4 text-red-500" />
+                                  <TriangleAlert className="h-4 w-4 text-destructive" />
                                 </div>
                               </TooltipTrigger>
 
@@ -380,10 +383,7 @@ export default function TemplatesView() {
                               </TooltipContent>
                             </Tooltip>
                           ) : (
-                            <Badge
-                              className={getStatusColor(template.status)}
-                              variant="secondary"
-                            >
+                            <Badge variant={getStatusVariant(template.status)}>
                               {template.status}
                             </Badge>
                           )}
@@ -507,5 +507,6 @@ export default function TemplatesView() {
         )}
       </div>
     </div>
+    </TooltipProvider>
   );
 }

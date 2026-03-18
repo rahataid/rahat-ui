@@ -39,6 +39,12 @@ import {
 import FiltersTags from '../../../components/filtersTags';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { DatePicker } from 'apps/rahat-ui/src/components/datePicker';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export default function ScheduledView() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -106,29 +112,35 @@ export default function ScheduledView() {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="border-b border-border bg-card/50 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">
-              Scheduled Messages
-            </h1>
-            <p className="text-muted-foreground">
-              View and manage scheduled messages
-            </p>
+    <TooltipProvider delayDuration={200}>
+      <div className="flex flex-col h-full">
+        <div className="border-b border-border bg-card px-6 py-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                Scheduled Messages
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                View and manage scheduled messages
+              </p>
+            </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/projects/el-crm/${projectUUID}/communications/scheduled/compose`}
+                >
+                  <Button size="sm" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Schedule Message
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>Create a new scheduled message</TooltipContent>
+            </Tooltip>
           </div>
-          <Link
-            href={`/projects/el-crm/${projectUUID}/communications/scheduled/compose`}
-          >
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Schedule Message
-            </Button>
-          </Link>
         </div>
-      </div>
 
-      <div className="flex-1 p-6">
+        <div className="flex-1 p-6 overflow-auto">
         <div className="space-y-4">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <Card className="border-border/80">
@@ -140,7 +152,7 @@ export default function ScheduledView() {
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">
                     This Page
                   </p>
-                  <p className="text-xl font-semibold text-foreground">
+                  <p className="text-3xl font-bold tracking-tight tabular-nums text-foreground">
                     {data?.length || 0}
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -159,7 +171,7 @@ export default function ScheduledView() {
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">
                     Already Sent
                   </p>
-                  <p className="text-xl font-semibold text-foreground">
+                  <p className="text-3xl font-bold tracking-tight tabular-nums text-foreground">
                     {sentCount}
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -178,7 +190,7 @@ export default function ScheduledView() {
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">
                     Reach
                   </p>
-                  <p className="text-xl font-semibold text-foreground">
+                  <p className="text-3xl font-bold tracking-tight tabular-nums text-foreground">
                     {totalRecipients.toLocaleString()}
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -373,5 +385,6 @@ export default function ScheduledView() {
         </div>
       </div>
     </div>
+    </TooltipProvider>
   );
 }

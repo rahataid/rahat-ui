@@ -9,11 +9,18 @@ import {
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import {
   Plus,
   MessageSquare,
   CheckCircle,
   XCircle,
   Smartphone,
+  Send,
 } from 'lucide-react';
 import Link from 'next/link';
 import { UUID } from 'crypto';
@@ -92,176 +99,186 @@ export default function SummaryView() {
   });
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="border-b border-border bg-card/50 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">
-              Communication Center
-            </h1>
-            <p className="text-muted-foreground">
-              Send messages and track communication logs
-            </p>
+    <TooltipProvider delayDuration={200}>
+      <div className="flex flex-col h-full">
+        <div className="border-b border-border bg-card px-6 py-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                Communication Center
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Send messages and track communication logs
+              </p>
+            </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/projects/el-crm/${projectUUID}/communications/messages/compose`}
+                >
+                  <Button size="sm" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Create Message
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>Compose a new message</TooltipContent>
+            </Tooltip>
           </div>
-          <Link
-            href={`/projects/el-crm/${projectUUID}/communications/messages/compose`}
-          >
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Create Message
-            </Button>
-          </Link>
+        </div>
+
+        <div className="flex-1 p-6 space-y-6 overflow-auto">
+          <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                title: 'Total Messages Sent',
+                value: '1,247',
+                icon: MessageSquare,
+                color: 'text-primary',
+                bgColor: 'bg-primary/5',
+                iconColor: 'text-primary',
+                tooltip: 'Total messages sent across all channels',
+              },
+              {
+                title: 'Delivery Successful',
+                value: '1,156',
+                icon: CheckCircle,
+                color: 'text-success',
+                bgColor: 'bg-success/5',
+                iconColor: 'text-success',
+                tooltip: 'Messages successfully delivered to recipients',
+              },
+              {
+                title: 'Delivery Failed',
+                value: '91',
+                icon: XCircle,
+                color: 'text-destructive',
+                bgColor: 'bg-destructive/5',
+                iconColor: 'text-destructive',
+                tooltip: 'Messages that failed to deliver',
+              },
+              {
+                title: 'Most Used Channel',
+                value: 'SMS',
+                icon: Smartphone,
+                color: 'text-foreground',
+                bgColor: 'bg-muted',
+                iconColor: 'text-muted-foreground',
+                tooltip: 'The channel used most frequently for messaging',
+              },
+            ].map((stat) => (
+              <Card
+                key={stat.title}
+                className="relative overflow-hidden transition-shadow hover:shadow-md"
+              >
+                <CardContent className="p-5">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1.5">
+                      <p className="text-sm font-medium text-muted-foreground leading-none">
+                        {stat.title}
+                      </p>
+                      <p
+                        className={`text-3xl font-bold tracking-tight tabular-nums ${stat.color}`}
+                      >
+                        {stat.value}
+                      </p>
+                    </div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className={`rounded-lg p-2.5 ${stat.bgColor}`}>
+                          <stat.icon className={`h-5 w-5 ${stat.iconColor}`} />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p className="max-w-[220px]">{stat.tooltip}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium">
+                  Successful Delivery by Channel
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="default">SMS</Badge>
+                    <span className="font-semibold tabular-nums text-success">
+                      456
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Badge variant="secondary">WhatsApp</Badge>
+                    <span className="font-semibold tabular-nums text-success">
+                      700
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium">
+                  Failed Delivery by Channel
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="default">SMS</Badge>
+                    <span className="font-semibold tabular-nums text-destructive">
+                      45
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Badge variant="secondary">WhatsApp</Badge>
+                    <span className="font-semibold tabular-nums text-destructive">
+                      46
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Message Logs Table */}
+          <Card>
+            <div className="flex items-center gap-2 border-b px-6 py-4">
+              <Send className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium text-foreground">
+                Recent Message Logs
+              </span>
+              {meta?.total != null && (
+                <Badge variant="outline" className="tabular-nums">
+                  {meta.total}
+                </Badge>
+              )}
+            </div>
+            <CardContent className="p-0">
+              <DemoTable table={table} />
+              <div className="p-4 border-t">
+                <CustomPagination
+                  meta={meta || { total: 0, currentPage: 0 }}
+                  handleNextPage={setNextPage}
+                  handlePrevPage={setPrevPage}
+                  handlePageSizeChange={setPerPage}
+                  currentPage={pagination.page}
+                  perPage={pagination.perPage}
+                  total={meta?.total}
+                />
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
-
-      <div className="flex-1 p-6 space-y-6">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2">
-                <MessageSquare className="h-4 w-4 text-primary" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Total Messages Sent
-                  </p>
-                  <p className="text-2xl font-bold text-primary">1,247</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-4 w-4 text-success" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Delivery Successful
-                  </p>
-                  <p className="text-2xl font-bold text-success">1,156</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2">
-                <XCircle className="h-4 w-4 text-destructive" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Delivery Failed
-                  </p>
-                  <p className="text-2xl font-bold text-destructive">91</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2">
-                <Smartphone className="h-4 w-4 text-muted-foreground" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Most Used Channel
-                  </p>
-                  <p className="text-2xl font-bold text-foreground">SMS</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">
-                Successful Delivery by Channel
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Badge
-                      className="bg-primary/10 text-primary"
-                      variant="secondary"
-                    >
-                      SMS
-                    </Badge>
-                  </div>
-                  <span className="font-semibold text-success">456</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Badge
-                      className="bg-success/10 text-success"
-                      variant="secondary"
-                    >
-                      WhatsApp
-                    </Badge>
-                  </div>
-                  <span className="font-semibold text-success">389</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">
-                Failed Delivery by Channel
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Badge
-                      className="bg-primary/10 text-primary"
-                      variant="secondary"
-                    >
-                      SMS
-                    </Badge>
-                  </div>
-                  <span className="font-semibold text-destructive">34</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Badge
-                      className="bg-success/10 text-success"
-                      variant="secondary"
-                    >
-                      WhatsApp
-                    </Badge>
-                  </div>
-                  <span className="font-semibold text-destructive">28</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Message Logs */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Message Logs</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DemoTable table={table} />
-            <CustomPagination
-              meta={meta || { total: 0, currentPage: 0 }}
-              handleNextPage={setNextPage}
-              handlePrevPage={setPrevPage}
-              handlePageSizeChange={setPerPage}
-              currentPage={pagination.page}
-              perPage={pagination.perPage}
-              total={meta?.total}
-            />
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+    </TooltipProvider>
   );
 }

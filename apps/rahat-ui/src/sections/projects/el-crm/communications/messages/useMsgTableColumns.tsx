@@ -5,98 +5,114 @@ import { Eye } from 'lucide-react';
 import React from 'react';
 import Link from 'next/link';
 import { targetTypeMap } from '../const';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export const useMsgTableColumn = () => {
   const { id } = useParams();
   const router = useRouter();
 
-  const getChannelColor = (channel: string) => {
+  const getChannelVariant = (channel: string) => {
     switch (channel) {
       case 'SMS':
-        return 'bg-primary/10 text-primary';
+        return 'default';
       case 'WhatsApp':
-        return 'bg-success/10 text-success';
+        return 'success';
       default:
-        return 'bg-muted text-muted-foreground';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Sent':
-        return 'bg-success/10 text-success';
-      default:
-        return 'bg-muted text-muted-foreground';
+        return 'secondary';
     }
   };
 
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Name</span>
+      ),
+      cell: ({ row }) => (
+        <span className="font-medium">{row.getValue('name') || '\u2014'}</span>
+      ),
     },
     {
       accessorKey: 'transportName',
-      header: 'Channel',
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Channel</span>
+      ),
       cell: ({ row }) => (
-        <Badge
-          className={getChannelColor(row.getValue('transportName'))}
-          variant="secondary"
-        >
+        <Badge variant={getChannelVariant(row.getValue('transportName'))}>
           {row.getValue('transportName')}
         </Badge>
       ),
     },
     {
       accessorKey: 'targetType',
-      header: 'Group',
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Group</span>
+      ),
       cell: ({ row }) => {
         const value = row.getValue('targetType') as keyof typeof targetTypeMap;
-
-        return <div>{targetTypeMap[value] || 'N/A'}</div>;
+        return <span>{targetTypeMap[value] || '\u2014'}</span>;
       },
     },
     {
       accessorKey: 'recipientCount',
-      header: 'Recipients',
-      cell: ({ row }) => <div>{row.getValue('recipientCount') || 'N/A'}</div>,
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Recipients</span>
+      ),
+      cell: ({ row }) => (
+        <span className="tabular-nums">
+          {row.getValue('recipientCount') || '\u2014'}
+        </span>
+      ),
     },
     {
       accessorKey: 'createdAt',
-      header: 'Created Date',
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Created Date</span>
+      ),
       cell: ({ row }) => (
-        <div>
+        <span className="tabular-nums">
           {row.getValue('createdAt')
             ? new Date(row.getValue('createdAt')).toLocaleString()
-            : 'N/A'}
-        </div>
+            : '\u2014'}
+        </span>
       ),
     },
     {
       accessorKey: 'sessionId',
-      header: 'Status',
-      cell: ({ row }) => (
-        <Badge
-          className={getStatusColor(
-            row.getValue('sessionId') ? 'Sent' : 'Draft',
-          )}
-        >
-          {row.getValue('sessionId') ? 'Sent' : 'Draft'}
-        </Badge>
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Status</span>
       ),
+      cell: ({ row }) => {
+        const isSent = !!row.getValue('sessionId');
+        return (
+          <Badge variant={isSent ? 'success' : 'secondary'}>
+            {isSent ? 'Sent' : 'Draft'}
+          </Badge>
+        );
+      },
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Actions</span>
+      ),
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <Link
-            href={`/projects/el-crm/${id}/communications/messages/${row.original.uuid}`}
-          >
-            <Eye className="h-4 w-4 rounded-full hover:bg-accent" />
-          </Link>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href={`/projects/el-crm/${id}/communications/messages/${row.original.uuid}`}
+              >
+                <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>View details</TooltipContent>
+          </Tooltip>
         );
       },
     },

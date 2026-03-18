@@ -24,6 +24,12 @@ import {
 
 import { CalendarIcon, Send, Plus, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
@@ -115,29 +121,34 @@ export default function ComposeMessageView() {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="border-b border-border bg-card/50 px-6 py-4">
-        <div className="flex items-center gap-4">
-          <Link
-            href={`/projects/el-crm/${projectUUID}/communications/messages`}
-          >
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              {/* Back to Communications */}
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">
-              Compose Message
-            </h1>
-            <p className="text-muted-foreground">
-              Create and send a new message to your audience
-            </p>
+    <TooltipProvider delayDuration={200}>
+      <div className="flex flex-col h-full">
+        <div className="border-b border-border bg-card px-6 py-5">
+          <div className="flex items-center gap-4">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/projects/el-crm/${projectUUID}/communications/messages`}
+                >
+                  <Button variant="ghost" size="sm">
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>Back to messages</TooltipContent>
+            </Tooltip>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                Compose Message
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Create and send a new message to your audience
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex-1 p-6">
+        <div className="flex-1 p-6 overflow-auto">
         <Card>
           <CardHeader>
             <CardTitle>Compose Message</CardTitle>
@@ -375,23 +386,29 @@ export default function ComposeMessageView() {
               )}
 
               {/* Send Button */}
-              <div className="flex justify-end gap-3">
+              <div className="flex justify-end gap-3 pt-4 border-t">
                 <Link
                   href={`/projects/el-crm/${projectUUID}/communications/messages`}
                 >
-                  <Button type="button" variant="outline">
+                  <Button type="button" variant="outline" size="sm">
                     Cancel
                   </Button>
                 </Link>
-                <Button type="submit" className="min-w-[120px]">
-                  <Send className="mr-2 h-4 w-4" />
-                  Create Message
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button type="submit" size="sm" className="gap-2">
+                      <Send className="h-3.5 w-3.5" />
+                      Create Message
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Send the composed message</TooltipContent>
+                </Tooltip>
               </div>
             </form>
           </CardContent>
         </Card>
       </div>
     </div>
+    </TooltipProvider>
   );
 }

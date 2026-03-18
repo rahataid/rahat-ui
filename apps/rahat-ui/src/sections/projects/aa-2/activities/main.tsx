@@ -23,7 +23,7 @@ export default function ActivitiesView() {
   const { id: projectID } = useParams();
   const { state } = useSidebar();
   const router = useRouter();
-  const { data, activitiesData, isLoading } = useActivities(projectID as UUID, {
+  const { activitiesData, isLoading } = useActivities(projectID as UUID, {
     perPage: 9999,
   });
 
@@ -101,29 +101,32 @@ export default function ActivitiesView() {
   }, [activitiesData]);
 
   const handleDownloadReport = () => {
-    if (activitiesData.length < 1) return toast.error('No data to download.');
-    const mappedData = activitiesData?.map((item: IActivitiesItem) => {
-      let timeStamp;
-      if (item?.completedAt) {
-        const d = new Date(item.completedAt);
-        const localeDate = d.toLocaleDateString();
-        const localeTime = d.toLocaleTimeString();
-        timeStamp = `${localeDate} ${localeTime}`;
-      }
-      return {
-        Title: item.title || 'N/A',
-        'Early Action': item.category || 'N/A',
-        Phase: item.phase || 'N/A',
-        Type: item.isAutomated ? 'Automated' : 'Manual',
-        Responsibility: item.responsibility,
-        'Responsible Station': item.source || 'N/A',
-        Status: item.status || 'N/A',
-        Timestamp: timeStamp || 'N/A',
-        'Completed by': item.completedBy || 'N/A',
-        'Difference in trigger and activity completion':
-          item.timeDifference || 'N/A',
-      };
-    });
+    if (!activitiesData?.length) {
+      return toast.error('No data to download.');
+    }
+    const mappedData =
+      activitiesData?.map((item: IActivitiesItem) => {
+        let timeStamp;
+        if (item?.completedAt) {
+          const d = new Date(item.completedAt);
+          const localeDate = d.toLocaleDateString();
+          const localeTime = d.toLocaleTimeString();
+          timeStamp = `${localeDate} ${localeTime}`;
+        }
+        return {
+          Title: item.title || 'N/A',
+          'Early Action': item.category || 'N/A',
+          Phase: item.phase || 'N/A',
+          Type: item.isAutomated ? 'Automated' : 'Manual',
+          Responsibility: item.responsibility,
+          'Responsible Station': item.source || 'N/A',
+          Status: item.status || 'N/A',
+          Timestamp: timeStamp || 'N/A',
+          'Completed by': item.completedBy || 'N/A',
+          'Difference in trigger and activity completion':
+            item.timeDifference || 'N/A',
+        };
+      }) ?? [];
 
     generateExcel(mappedData, 'Activities_Report', 10);
   };
@@ -171,7 +174,7 @@ export default function ActivitiesView() {
             state === 'expanded'
               ? 'w-[calc(100vw-18rem)]'
               : 'w-[calc(100vw-5rem)]'
-          } transition-width duration-300 overflow-x-auto  [&::-webkit-scrollbar]:h-1.5  [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300`}
+          } transition-[width] duration-300 overflow-x-auto  [&::-webkit-scrollbar]:h-1.5  [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300`}
           style={{ scrollbarGutter: 'stable' }}
         >
           {sortedPhases.map((phase) => (

@@ -205,9 +205,16 @@ export default function CustomersPage() {
 
   const activeFilterCount = React.useMemo(() => {
     if (!filters) return 0;
-    return Object.values(filters).filter(
+    const { startDate, endDate, ...rest } = filters as Record<string, any>;
+    const otherCount = Object.values(rest).filter(
       (v) => v !== null && v !== undefined && v !== '',
     ).length;
+    const dateRangeCount =
+      (startDate !== null && startDate !== undefined && startDate !== '') ||
+      (endDate !== null && endDate !== undefined && endDate !== '')
+        ? 1
+        : 0;
+    return otherCount + dateRangeCount;
   }, [filters]);
 
   const statCards = [

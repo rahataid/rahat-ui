@@ -39,6 +39,7 @@ export const TAGS = {
   LIST_IMPORTS: 'list_imports',
   GET_IMPORT: 'get_import',
   GET_IMPORT_FILE: 'get_import_file',
+  START_IMPORT: 'start_import',
   NEW_COMMS: {
     LIST_TRANSPORTS: 'new_comms.list_transports',
     RETRY_FAILED: 'new_comms.retry_failed',

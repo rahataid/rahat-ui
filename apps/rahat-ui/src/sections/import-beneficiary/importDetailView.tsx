@@ -1,10 +1,24 @@
 'use client';
 import { useCallback, useMemo } from 'react';
-import { useGetImport, useGetImportFile } from '@rahat-ui/query';
+import {
+  useGetImport,
+  useGetImportFile,
+  useStartImport,
+  useImportProgress,
+  useDownloadImportErrors,
+} from '@rahat-ui/query';
 import { useParams, useSearchParams } from 'next/navigation';
 import HeaderWithBack from '../projects/components/header.with.back';
 import DataCard from '../../components/dataCard';
-import { Calendar, Download, FileSpreadsheet, Users2 } from 'lucide-react';
+import {
+  AlertCircle,
+  Calendar,
+  Download,
+  FileSpreadsheet,
+  Loader2,
+  Play,
+  Users2,
+} from 'lucide-react';
 import { CircleEllipsisIcon } from 'lucide-react';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Button } from '@rahat-ui/shadcn/components/button';
@@ -16,7 +30,9 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
 import { UUID } from 'crypto';
+import { toast } from 'react-toastify';
 
 function ImportDetailView() {
   const { uuid } = useParams();
@@ -34,6 +50,36 @@ function ImportDetailView() {
   } = useGetImportFile(uuid as UUID);
 
   const csvError = csvErrorObj?.message || null;
+
+  const startImport = useStartImport();
+  const { progress, isListening, startListening } = useImportProgress(
+    uuid as string,
+  );
+  const downloadErrors = useDownloadImportErrors();
+
+  const currentStatus =
+    progress?.status || importData?.data?.status || 'NEW';
+
+  const handleStartImport = async () => {
+    try {
+      await startImport.mutateAsync(uuid as string);
+      toast.success('Import started');
+      startListening();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Failed to start import');
+    }
+  };
+
+  const handleDownloadErrors = async () => {
+    try {
+      await downloadErrors(uuid as string, groupName || undefined);
+    } catch {
+      toast.error('Failed to download errors');
+    }
+  };
+
+  const isProcessing =
+    currentStatus === 'PROCESSING' || startImport.isPending || isListening;
 
   const { csvHeaders, csvData } = useMemo(() => {
     if (!csvText) return { csvHeaders: [], csvData: [] };
@@ -70,14 +116,83 @@ function ImportDetailView() {
       }).format(new Date(date))
     : '-';
 
+  const progressPercent =
+    progress && progress.total > 0
+      ? (progress.processed / progress.total) * 100
+      : 0;
+
   return (
     <div className="p-4 h-[calc(100vh-65px)] flex flex-col overflow-hidden">
       <div className="shrink-0">
-        <HeaderWithBack
-          title={groupName || 'Import Detail'}
-          subtitle="Here is the detailed view of the selected import"
-          path="/import-beneficiary"
-        />
+        <div className="flex items-center justify-between">
+          <HeaderWithBack
+            title={groupName || 'Import Detail'}
+            subtitle="Here is the detailed view of the selected import"
+            path="/import-beneficiary"
+          />
+          <div className="flex items-center gap-2">
+            {currentStatus === 'NEW' && !isProcessing && (
+              <Button onClick={handleStartImport} disabled={startImport.isPending}>
+                {startImport.isPending ? (
+                  <Loader2 size={18} className="mr-2 animate-spin" />
+                ) : (
+                  <Play size={18} className="mr-2" />
+                )}
+                Start Import
+              </Button>
+            )}
+            {(currentStatus === 'FAILED' ||
+              (progress && progress.failed > 0)) && (
+              <Button
+                variant="outline"
+                onClick={handleDownloadErrors}
+                className="text-red-600"
+              >
+                <AlertCircle size={18} className="mr-2" />
+                Download Errors
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        {isProcessing && (
+          <div className="mt-3 mb-1 space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground flex items-center gap-2">
+                <Loader2 size={14} className="animate-spin" />
+                Processing import...
+              </span>
+              {progress && (
+                <span className="text-muted-foreground">
+                  {progress.processed} / {progress.total} processed
+                  {progress.failed > 0 && (
+                    <span className="text-red-500 ml-2">
+                      ({progress.failed} failed)
+                    </span>
+                  )}
+                  {progress.duplicates > 0 && (
+                    <span className="text-yellow-600 ml-2">
+                      ({progress.duplicates} duplicates)
+                    </span>
+                  )}
+                </span>
+              )}
+            </div>
+            <Progress value={progressPercent} className="h-2" />
+          </div>
+        )}
+
+        {/* Completed summary */}
+        {!isProcessing && progress && currentStatus === 'IMPORTED' && (
+          <div className="mt-3 mb-1 p-3 bg-green-50 border border-green-200 rounded-md text-sm text-green-800">
+            Import completed: {progress.processed} of {progress.total}{' '}
+            processed
+            {progress.failed > 0 && `, ${progress.failed} failed`}
+            {progress.duplicates > 0 &&
+              `, ${progress.duplicates} duplicates`}
+          </div>
+        )}
 
         <div className="grid grid-cols-2 xl:grid-cols-3 gap-4 pl-1 mt-4 mb-4">
           <DataCard
@@ -93,7 +208,7 @@ function ImportDetailView() {
           <DataCard
             title="Status"
             Icon={FileSpreadsheet}
-            smallNumber={importData?.data?.status || '-'}
+            smallNumber={currentStatus}
           />
         </div>
       </div>

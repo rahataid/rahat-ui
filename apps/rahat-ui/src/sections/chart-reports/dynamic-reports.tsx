@@ -350,7 +350,7 @@ const DynamicReports: FC<DynamicReportsProps> = ({
     <div key={rowIndex} className="mb-4">
       {row?.title && <h1 className="font-bold text-lg mt-4">{row.title}</h1>}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
-        {row.fields.map((component, colIndex) => (
+        {row?.fields?.map((component, colIndex) => (
           <div key={colIndex} className="w-full">
             {renderUIComponent(component, colIndex)}
           </div>

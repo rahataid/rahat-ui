@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronRight } from 'lucide-react';
+import { useCallback } from 'react';
 
 import {
   Collapsible,
@@ -18,9 +19,16 @@ import {
   useSidebar,
 } from 'libs/shadcn/src/components/ui/sidebar';
 import Link from 'next/link';
-import { NavItem } from '../sections/projects/components';
 import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
+
+type NavItem = {
+  title: string;
+  path?: string;
+  icon?: React.ReactNode;
+  children?: NavItem[];
+  onClick?: () => void;
+  subtitle?: number;
+};
 
 type IProps = {
   items?: NavItem[];
@@ -32,17 +40,22 @@ export function NavMain(items: IProps) {
 
   const { setOpenMobile, setOpen } = useSidebar();
 
+  const handleMobileClose = useCallback(() => {
+    setOpenMobile(false);
+  }, [setOpenMobile]);
+
   return (
     <SidebarGroup>
-      {/* <SidebarGroupLabel>Platform</SidebarGroupLabel> */}
       <SidebarMenu>
-        {items?.items?.map((item) => {
+        {items?.items?.map((item, index) => {
           const isActive = (item.path as string)?.split('/')[4] === activePath;
+
+          if (!item?.path && !item?.children?.length) return null;
+
           return item?.children?.length ? (
             <Collapsible
-              key={item.title}
+              key={item.title || `item-${index}`}
               asChild
-              // defaultOpen={item?.isActive}
               className="group/collapsible"
             >
               <SidebarMenuItem>
@@ -62,49 +75,54 @@ export function NavMain(items: IProps) {
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    {item.children?.map((subItem) => {
-                      const isSubActive =
-                        (subItem.path as string)?.split('/')[5] ===
-                        activeSubPath;
-                      return (
-                        <SidebarMenuSubItem key={subItem.title}>
-                          <Link href={subItem.path as string}>
-                            <SidebarMenuSubButton
-                              asChild
-                              className={
-                                isSubActive
-                                  ? 'text-primary font-medium'
-                                  : 'text-muted-foreground rounded hover:text-foreground'
-                              }
+                    {item.children?.map((subItem, subIndex) => (
+                      <SidebarMenuSubItem
+                        key={subItem.title || `subitem-${subIndex}`}
+                      >
+                        <SidebarMenuSubButton asChild>
+                          {subItem?.path ? (
+                            <Link
+                              onClick={handleMobileClose}
+                              href={subItem.path || '#'}
+                              className="w-full flex items-center"
                             >
                               <span>{subItem.title}</span>
-                            </SidebarMenuSubButton>
-                          </Link>
-                        </SidebarMenuSubItem>
-                      );
-                    })}
+                            </Link>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                subItem.onClick?.();
+                                handleMobileClose();
+                              }}
+                              className="w-full flex items-center"
+                            >
+                              <span>{subItem.title}</span>
+                            </button>
+                          )}
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
                   </SidebarMenuSub>
                 </CollapsibleContent>
               </SidebarMenuItem>
             </Collapsible>
           ) : (
-            <SidebarMenuItem>
-              <Link
-                onClick={() => setOpenMobile(false)}
-                href={item.path as string}
-              >
-                <SidebarMenuButton
-                  tooltip={item.title}
-                  className={
-                    isActive
-                      ? 'bg-primary text-primary-foreground rounded-md shadow-sm'
-                      : 'text-muted-foreground rounded-md hover:bg-accent hover:text-foreground transition-colors'
-                  }
-                >
-                  {item.icon}
-                  <span>{item.title}</span>
-                </SidebarMenuButton>
-              </Link>
+            <SidebarMenuItem key={item.title || `item-${index}`}>
+              {item.path && (
+                <Link onClick={handleMobileClose} href={item.path}>
+                  <SidebarMenuButton
+                    tooltip={item.title}
+                    className={
+                      isActive
+                        ? 'bg-blue-500 text-white rounded'
+                        : 'text-muted-foreground rounded hover:text-foreground'
+                    }
+                  >
+                    {item.icon}
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </Link>
+              )}
             </SidebarMenuItem>
           );
         })}

@@ -1,22 +1,13 @@
 'use client';
-import { useEffect, useState } from 'react';
-
-import {
-  VisibilityState,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  useReactTable,
-  ColumnDef,
-} from '@tanstack/react-table';
-
-import { useGetImport, usePagination } from '@rahat-ui/query';
+import { useCallback, useMemo } from 'react';
+import { useGetImport, useGetImportFile } from '@rahat-ui/query';
 import { useParams, useSearchParams } from 'next/navigation';
 import HeaderWithBack from '../projects/components/header.with.back';
 import DataCard from '../../components/dataCard';
-import { Calendar, FileSpreadsheet, Users2 } from 'lucide-react';
+import { Calendar, Download, FileSpreadsheet, Users2 } from 'lucide-react';
 import { CircleEllipsisIcon } from 'lucide-react';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   TableBody,
   TableCell,
@@ -25,7 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { UUID } from 'crypto';
 
 function ImportDetailView() {
@@ -37,38 +27,36 @@ function ImportDetailView() {
 
   const { data: importData, isLoading } = useGetImport(uuid as UUID);
 
-  const [csvData, setCsvData] = useState<string[][]>([]);
-  const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
-  const [csvLoading, setCsvLoading] = useState(false);
-  const [csvError, setCsvError] = useState<string | null>(null);
+  const {
+    data: csvText,
+    isLoading: csvLoading,
+    error: csvErrorObj,
+  } = useGetImportFile(uuid as UUID);
 
-  useEffect(() => {
-    const fetchCsv = async () => {
-      const fileUrl = importData?.data?.extras?.originalFileUrl;
-      if (!fileUrl) return;
+  const csvError = csvErrorObj?.message || null;
 
-      setCsvLoading(true);
-      setCsvError(null);
-      try {
-        const response = await fetch(fileUrl);
-        if (!response.ok) throw new Error('Failed to fetch CSV file');
-        const text = await response.text();
-        const rows = text
-          .split('\n')
-          .map((row) => row.split(',').map((cell) => cell.trim()));
-        if (rows.length > 0) {
-          setCsvHeaders(rows[0]);
-          setCsvData(rows.slice(1).filter((row) => row.some((cell) => cell)));
-        }
-      } catch (err: any) {
-        setCsvError(err.message || 'Failed to load CSV');
-      } finally {
-        setCsvLoading(false);
-      }
+  const { csvHeaders, csvData } = useMemo(() => {
+    if (!csvText) return { csvHeaders: [], csvData: [] };
+    const rows = csvText
+      .split('\n')
+      .map((row: string) => row.split(',').map((cell: string) => cell.trim()));
+    if (rows.length === 0) return { csvHeaders: [], csvData: [] };
+    return {
+      csvHeaders: rows[0],
+      csvData: rows.slice(1).filter((row: string[]) => row.some((cell) => cell)),
     };
+  }, [csvText]);
 
-    fetchCsv();
-  }, [importData?.data?.extras?.originalFileUrl]);
+  const handleDownload = useCallback(() => {
+    if (!csvText) return;
+    const blob = new Blob([csvText], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${groupName || 'import'}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [csvText, groupName]);
 
   const formatDate = date
     ? new Intl.DateTimeFormat('en-US', {
@@ -83,28 +71,34 @@ function ImportDetailView() {
     : '-';
 
   return (
-    <div className="p-4 space-y-4 pb-0">
-      <HeaderWithBack
-        title={groupName || 'Import Detail'}
-        subtitle="Here is the detailed view of the selected import"
-        path="/import-beneficiary"
-      />
+    <div className="p-4 h-[calc(100vh-65px)] flex flex-col overflow-hidden">
+      <div className="shrink-0">
+        <HeaderWithBack
+          title={groupName || 'Import Detail'}
+          subtitle="Here is the detailed view of the selected import"
+          path="/import-beneficiary"
+        />
 
-      <div className="grid grid-cols-2 xl:grid-cols-3 gap-4 pl-1 mb-2">
-        <DataCard
-          title="Beneficiary Count"
-          Icon={Users2}
-          smallNumber={count || importData?.data?.beneficiaryCount || 0}
-        />
-        <DataCard title="Created at" Icon={Calendar} smallNumber={formatDate} />
-        <DataCard
-          title="Status"
-          Icon={FileSpreadsheet}
-          smallNumber={importData?.data?.status || '-'}
-        />
+        <div className="grid grid-cols-2 xl:grid-cols-3 gap-4 pl-1 mt-4 mb-4">
+          <DataCard
+            title="Beneficiary Count"
+            Icon={Users2}
+            smallNumber={count || importData?.data?.beneficiaryCount || 0}
+          />
+          <DataCard
+            title="Created at"
+            Icon={Calendar}
+            smallNumber={formatDate}
+          />
+          <DataCard
+            title="Status"
+            Icon={FileSpreadsheet}
+            smallNumber={importData?.data?.status || '-'}
+          />
+        </div>
       </div>
 
-      <div className="p-4 pb-8 border rounded-sm">
+      <div className="border rounded-sm flex-1 min-h-0 flex flex-col overflow-hidden">
         {isLoading || csvLoading ? (
           <div className="flex items-center justify-center h-[400px]">
             <div className="text-center">
@@ -117,26 +111,44 @@ function ImportDetailView() {
             <p className="text-sm text-red-500">{csvError}</p>
           </div>
         ) : csvHeaders.length > 0 ? (
-          <TableComponent>
-            <ScrollArea className="h-[calc(100vh-400px)] bg-card">
-              <TableHeader className="sticky top-0 bg-card">
-                <TableRow>
-                  {csvHeaders.map((header, index) => (
-                    <TableHead key={index}>{header}</TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {csvData.map((row, rowIndex) => (
-                  <TableRow key={rowIndex}>
-                    {row.map((cell, cellIndex) => (
-                      <TableCell key={cellIndex}>{cell}</TableCell>
+          <>
+            <div className="flex items-center justify-between p-4 pb-2 shrink-0">
+              <p className="text-sm text-muted-foreground">
+                {csvData.length} rows, {csvHeaders.length} columns
+              </p>
+              <Button variant="outline" size="sm" onClick={handleDownload}>
+                <Download className="h-4 w-4 mr-2" />
+                Download CSV
+              </Button>
+            </div>
+            <div className="overflow-auto flex-1 min-h-0">
+              <TableComponent>
+                <TableHeader className="sticky top-0 bg-card z-10">
+                  <TableRow>
+                    {csvHeaders.map((header, index) => (
+                      <TableHead key={index} className="whitespace-nowrap">
+                        {header}
+                      </TableHead>
                     ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </ScrollArea>
-          </TableComponent>
+                </TableHeader>
+                <TableBody>
+                  {csvData.map((row, rowIndex) => (
+                    <TableRow key={rowIndex}>
+                      {row.map((cell, cellIndex) => (
+                        <TableCell
+                          key={cellIndex}
+                          className="whitespace-nowrap"
+                        >
+                          {cell}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </TableComponent>
+            </div>
+          </>
         ) : (
           <div className="flex items-center justify-center h-[400px]">
             <p className="text-sm text-gray-500">No CSV data available</p>

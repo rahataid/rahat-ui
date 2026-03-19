@@ -34,3 +34,23 @@ export const useGetImport = (
     queryClient,
   );
 };
+
+export const useGetImportFile = (
+  uuid: UUID | undefined,
+): UseQueryResult<string, Error> => {
+  const { rumsanService, queryClient } = useRSQuery();
+  return useQuery(
+    {
+      queryKey: [TAGS.GET_IMPORT_FILE, uuid],
+      queryFn: async () => {
+        const response = await rumsanService.client.get(
+          `/imports/${uuid}/file`,
+          { responseType: 'text' },
+        );
+        return response.data as string;
+      },
+      enabled: !!uuid,
+    },
+    queryClient,
+  );
+};

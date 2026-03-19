@@ -14,8 +14,6 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
-import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
 // ─── All cell components live at MODULE scope ─────────────────────────────────
@@ -196,14 +194,55 @@ function SourceEditableCell({
   );
 }
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
+// ─── Shared Components & Factories ──────────────────────────────────────────
+
+const ColumnHeader = ({ children }: { children: string }) => (
+  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+    {children}
+  </span>
+);
+
+// Factory: produces a standard editable text column — eliminates per-column boilerplate
+const makeEditableColumn = (
+  field: string,
+  header: string,
+  resetKey: number,
+  onCellChange: (rowIndex: number, field: string, value: string) => void,
+): ColumnDef<any> => ({
+  accessorKey: field,
+  header: () => <ColumnHeader>{header}</ColumnHeader>,
+  cell: ({ row }: any) => (
+    <EditableCell
+      key={resetKey}
+      originalValue={row.getValue(field)}
+      hasError={row.original?.error?.[field]?.length > 0}
+      rowIndex={row.index}
+      field={field}
+      onCellChange={onCellChange}
+    />
+  ),
+});
+
+// Human-readable labels for error field names (module scope — no recreation per render)
+const FIELD_LABELS: Record<string, string> = {
+  customerCode: 'Customer Code',
+  name: 'Customer Name',
+  phone: 'Phone',
+  email: 'Email',
+  channel: 'Channel',
+  location: 'Region',
+  source: 'Source',
+  lastPurchaseDate: 'Last Purchase Date',
+  bde: 'BDE',
+  bdm: 'BDM',
+};
+
+// ─── Hook ─────────────────────────────────────────────────────────────────────────────
 
 export const useFailedCustomersTableColumn = (
   onCellChange: (rowIndex: number, field: string, value: string) => void,
   resetKey: number,
 ) => {
-  useParams() as { id: UUID }; // keep for future use if needed
-
   const getCategoryVariant = (category: string) => {
     switch (category) {
       case CustomerCategory.ACTIVE:
@@ -217,166 +256,17 @@ export const useFailedCustomersTableColumn = (
     }
   };
 
-  // Human-readable labels for error field names.
-  const fieldLabels: Record<string, string> = {
-    customerCode: 'Customer Code',
-    name: 'Customer Name',
-    phone: 'Phone',
-    email: 'Email',
-    channel: 'Channel',
-    location: 'Region',
-    source: 'Source',
-    lastPurchaseDate: 'Last Purchase Date',
-    bde: 'BDE',
-    bdm: 'BDM',
-  };
-
   const columns: ColumnDef<any>[] = useMemo(
     () => [
-      {
-        accessorKey: 'bdm',
-        header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            BDM
-          </span>
-        ),
-        cell: ({ row }: any) => (
-          <EditableCell
-            key={resetKey}
-            originalValue={row.getValue('bdm')}
-            hasError={row.original?.error?.bdm?.length > 0}
-            rowIndex={row.index}
-            field="bdm"
-            onCellChange={onCellChange}
-          />
-        ),
-      },
-      {
-        accessorKey: 'bde',
-        header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            BDE
-          </span>
-        ),
-        cell: ({ row }: any) => (
-          <EditableCell
-            key={resetKey}
-            originalValue={row.getValue('bde')}
-            hasError={row.original?.error?.bde?.length > 0}
-            rowIndex={row.index}
-            field="bde"
-            onCellChange={onCellChange}
-          />
-        ),
-      },
-      {
-        accessorKey: 'customerCode',
-        header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Code
-          </span>
-        ),
-        cell: ({ row }: any) => (
-          <EditableCell
-            key={resetKey}
-            originalValue={row.getValue('customerCode')}
-            hasError={row.original?.error?.customerCode?.length > 0}
-            rowIndex={row.index}
-            field="customerCode"
-            onCellChange={onCellChange}
-          />
-        ),
-      },
-      {
-        accessorKey: 'name',
-        header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Customer Name
-          </span>
-        ),
-        cell: ({ row }: any) => (
-          <EditableCell
-            key={resetKey}
-            originalValue={row.getValue('name')}
-            hasError={row.original?.error?.name?.length > 0}
-            rowIndex={row.index}
-            field="name"
-            onCellChange={onCellChange}
-          />
-        ),
-      },
-      {
-        accessorKey: 'phone',
-        header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Phone
-          </span>
-        ),
-        cell: ({ row }: any) => (
-          <EditableCell
-            key={resetKey}
-            originalValue={row.getValue('phone')}
-            hasError={row.original?.error?.phone?.length > 0}
-            rowIndex={row.index}
-            field="phone"
-            onCellChange={onCellChange}
-          />
-        ),
-      },
-      {
-        accessorKey: 'email',
-        header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Email
-          </span>
-        ),
-        cell: ({ row }: any) => (
-          <EditableCell
-            key={resetKey}
-            originalValue={row.getValue('email')}
-            hasError={row.original?.error?.email?.length > 0}
-            rowIndex={row.index}
-            field="email"
-            onCellChange={onCellChange}
-          />
-        ),
-      },
-      {
-        accessorKey: 'channel',
-        header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Channel
-          </span>
-        ),
-        cell: ({ row }: any) => (
-          <EditableCell
-            key={resetKey}
-            originalValue={row.getValue('channel')}
-            hasError={row.original?.error?.channel?.length > 0}
-            rowIndex={row.index}
-            field="channel"
-            onCellChange={onCellChange}
-          />
-        ),
-      },
-      {
-        accessorKey: 'location',
-        header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Region
-          </span>
-        ),
-        cell: ({ row }: any) => (
-          <EditableCell
-            key={resetKey}
-            originalValue={row.getValue('location')}
-            hasError={row.original?.error?.location?.length > 0}
-            rowIndex={row.index}
-            field="location"
-            onCellChange={onCellChange}
-          />
-        ),
-      },
+      // 8 text-editable columns consolidated via factory — was ~160 lines of repetitive defs
+      makeEditableColumn('bdm', 'BDM', resetKey, onCellChange),
+      makeEditableColumn('bde', 'BDE', resetKey, onCellChange),
+      makeEditableColumn('customerCode', 'Code', resetKey, onCellChange),
+      makeEditableColumn('name', 'Customer Name', resetKey, onCellChange),
+      makeEditableColumn('phone', 'Phone', resetKey, onCellChange),
+      makeEditableColumn('email', 'Email', resetKey, onCellChange),
+      makeEditableColumn('channel', 'Channel', resetKey, onCellChange),
+      makeEditableColumn('location', 'Region', resetKey, onCellChange),
       {
         accessorKey: 'source',
         header: () => (
@@ -453,7 +343,7 @@ export const useFailedCustomersTableColumn = (
                         className="text-xs text-destructive leading-relaxed"
                       >
                         <span className="font-medium">
-                          {fieldLabels[field] ?? field}:
+                          {FIELD_LABELS[field] ?? field}:
                         </span>{' '}
                         {msg}
                       </span>

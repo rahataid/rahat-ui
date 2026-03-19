@@ -1,18 +1,27 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSwal } from '../../swal';
 import { UUID } from 'crypto';
 import { useRSQuery } from '@rumsan/react-query';
 import { useProjectAction } from '../projects';
 
+// Shared toast configuration — avoids duplicating mixin options in every hook
+const TOAST_CONFIG = {
+  toast: true,
+  position: 'top-end' as const,
+  showConfirmButton: false,
+  timer: 3000,
+};
+
+// Extracts the most useful error message from API error responses
+const getErrorMessage = (error: unknown, fallback: string): string => {
+  const err = error as any;
+  return err?.response?.data?.message || err?.message || fallback;
+};
+
 export const useUploadCustomers = () => {
   const { rumsanService } = useRSQuery();
   const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const toast = alert.mixin(TOAST_CONFIG);
   return useMutation({
     mutationFn: async ({
       projectId,
@@ -36,12 +45,11 @@ export const useUploadCustomers = () => {
         icon: 'success',
       });
     },
-    onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+    onError: (error: unknown) => {
       toast.fire({
-        title: 'Error while uploading customers.',
+        title: 'Customer upload failed',
         icon: 'error',
-        text: errorMessage,
+        text: getErrorMessage(error, 'Please check your file format and try again.'),
       });
     },
   });
@@ -97,13 +105,9 @@ export const useFailedBatch = (uuid: UUID, payload: any) => {
 
 export const useRetryCustomerImport = () => {
   const q = useProjectAction();
+  const queryClient = useQueryClient();
   const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const toast = alert.mixin(TOAST_CONFIG);
   return useMutation({
     mutationFn: async ({
       projectUUID,
@@ -122,18 +126,20 @@ export const useRetryCustomerImport = () => {
     },
     onSuccess: () => {
       q.reset();
+      // Invalidate batch queries so stale data isn't shown if user navigates back
+      queryClient.invalidateQueries({ queryKey: ['failed-batch'] });
+      queryClient.invalidateQueries({ queryKey: ['single-failed-batch'] });
       toast.fire({
         title: 'Batch retry initiated successfully',
         icon: 'success',
       });
     },
-    onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
+    onError: (error: unknown) => {
       q.reset();
       toast.fire({
-        title: 'Error while retrying batch.',
+        title: 'Batch retry failed',
         icon: 'error',
-        text: errorMessage,
+        text: getErrorMessage(error, 'An unexpected error occurred. Please try again.'),
       });
     },
   });

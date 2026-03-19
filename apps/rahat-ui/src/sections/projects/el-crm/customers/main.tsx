@@ -519,7 +519,8 @@ export default function CustomersPage() {
               {activeFilterCount > 0 && (
                 <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-border/50">
                   <span className="text-xs text-muted-foreground">
-                    Showing results for:
+                    Showing {meta?.total ?? 0} customer
+                    {(meta?.total ?? 0) === 1 ? '' : 's'} for:
                   </span>
                   {filters?.bde && (
                     <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">

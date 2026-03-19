@@ -1,5 +1,8 @@
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
-import { ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
+import {
+  ChartDonut,
+  ChartHorizontalStacked,
+} from '@rahat-ui/shadcn/src/components/charts';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { ArrowRight, Plus } from 'lucide-react';
 import TriggerDetailsCard from './trigger.details.card';
@@ -20,6 +23,7 @@ type IProps = {
   hideViewDetails?: boolean;
   handleViewDetails?: () => void;
   isActive?: boolean;
+  chartType?: 'horizontal' | 'donut';
 };
 
 export default function TriggersPhaseCard({
@@ -38,6 +42,7 @@ export default function TriggersPhaseCard({
   hideViewDetails = false,
   isActive,
   handleViewDetails,
+  chartType = 'horizontal',
 }: IProps) {
   const totalCharSeries = chartSeries.reduce((a, b) => a + b, 0);
 
@@ -75,29 +80,36 @@ export default function TriggersPhaseCard({
             totalRequiredTriggers={requiredOptionalTriggers}
           />
         </div>
-        <div className="flex justify-center mb-2 ">
+        <div className="flex justify-center mb-2">
           {totalCharSeries === 0 ? (
-            <div className="relative w-full h-full flex items-center justify-center">
-              <svg
-                className="max-w-[200px] max-h-[200px] w-[250px] h-[250px]"
-                viewBox="0 0 120 120"
-                role="img"
-                aria-label="No data"
-              >
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="50"
-                  fill="transparent"
-                  stroke="#E0E0E0"
-                  strokeWidth="12"
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <p className="text-gray-600">No Data</p>
+            chartType === 'donut' ? (
+              <div className="relative w-full h-full flex items-center justify-center">
+                <svg
+                  className="max-w-[200px] max-h-[200px] w-[250px] h-[250px]"
+                  viewBox="0 0 120 120"
+                  role="img"
+                  aria-label="No data"
+                >
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="50"
+                    fill="transparent"
+                    stroke="#E0E0E0"
+                    strokeWidth="12"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <p className="text-gray-600">No Data</p>
+                </div>
               </div>
-            </div>
-          ) : (
+            ) : (
+              <div className="w-full my-4 space-y-2">
+                <div className="w-full h-5 rounded-full bg-gray-200" />
+                <p className="text-sm text-gray-400 text-center">No Data</p>
+              </div>
+            )
+          ) : chartType === 'donut' ? (
             <ChartDonut
               series={chartSeries}
               labels={chartLabels}
@@ -107,6 +119,14 @@ export default function TriggersPhaseCard({
               showLegend={false}
               colors={['#297AD6', '#E8C468']}
               showDonutLabel={true}
+            />
+          ) : (
+            <ChartHorizontalStacked
+              series={chartSeries}
+              labels={chartLabels}
+              colors={['#297AD6', '#E8C468']}
+              width="100%"
+              height={100}
             />
           )}
         </div>

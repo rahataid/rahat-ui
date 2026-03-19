@@ -64,9 +64,9 @@ export default function ImportListTable({
             className="rounded w-full"
           />
         </div>
-        <TableComponent>
-          <ScrollArea className="h-[570px] bg-card">
-            <TableHeader>
+        <ScrollArea className="h-[calc(100vh-340px)]">
+          <TableComponent>
+            <TableHeader className="sticky top-0 bg-card">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
@@ -115,29 +115,27 @@ export default function ImportListTable({
                         </div>
                       </div>
                     ) : (
-                      <div className="w-full h-[480px]">
-                        <div className="flex flex-col items-center justify-center">
-                          <Image
-                            src="/noData.png"
-                            height={250}
-                            width={250}
-                            alt="no data"
-                          />
-                          <p className="text-medium text-base mb-1">
-                            No Data Available
-                          </p>
-                          <p className="text-sm mb-4 text-gray-500">
-                            There are no imports to display at the moment
-                          </p>
-                        </div>
+                      <div className="flex flex-col items-center justify-center">
+                        <Image
+                          src="/noData.png"
+                          height={250}
+                          width={250}
+                          alt="no data"
+                        />
+                        <p className="text-medium text-base mb-1">
+                          No Data Available
+                        </p>
+                        <p className="text-sm mb-4 text-gray-500">
+                          There are no imports to display at the moment
+                        </p>
                       </div>
                     )}
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
-          </ScrollArea>
-        </TableComponent>
+          </TableComponent>
+        </ScrollArea>
       </div>
     </>
   );

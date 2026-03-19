@@ -52,13 +52,13 @@ function ImportListView() {
   });
 
   return (
-    <div className="p-4">
+    <div className="p-4 flex flex-col h-[calc(100vh-65px)]">
       <HeaderWithBack
         title="Import Beneficiary"
         subtitle="Here are the beneficiary imports listed from the imports API"
         path="/beneficiary"
       />
-      <div className="p-4 border rounded-sm">
+      <div className="p-4 border rounded-sm flex-1 overflow-hidden">
         <ImportListTable
           table={table}
           setFilters={setFilters}

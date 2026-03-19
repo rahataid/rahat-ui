@@ -188,7 +188,7 @@ export default function CustomersPage() {
     // Prepare and export data
     const data = tableData.map(formatCustomerForExport);
     const worksheet = XLSX.utils.json_to_sheet(data);
-    
+
     // Apply column widths
     worksheet['!cols'] = CUSTOMER_EXPORT_CONFIG.columns.map((col) => ({
       wch: col.width,
@@ -243,7 +243,8 @@ export default function CustomersPage() {
       color: 'text-warning',
       bgColor: 'bg-warning/5',
       iconColor: 'text-warning',
-      tooltip: 'Customers who have not made purchases beyond the inactive threshold',
+      tooltip:
+        'Customers who have not made purchases beyond the inactive threshold',
     },
     {
       title: 'Newly Inactive',
@@ -342,12 +343,8 @@ export default function CustomersPage() {
                     </div>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div
-                          className={`rounded-lg p-2.5 ${stat.bgColor}`}
-                        >
-                          <stat.icon
-                            className={`h-5 w-5 ${stat.iconColor}`}
-                          />
+                        <div className={`rounded-lg p-2.5 ${stat.bgColor}`}>
+                          <stat.icon className={`h-5 w-5 ${stat.iconColor}`} />
                         </div>
                       </TooltipTrigger>
                       <TooltipContent side="bottom">
@@ -411,33 +408,29 @@ export default function CustomersPage() {
               </div>
 
               <div className="flex flex-wrap items-end gap-3">
-                {/* Search BDE */}
-                <div className="flex-1 min-w-[180px] max-w-[240px] space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">
-                    BDE
-                  </Label>
-                  <div className="relative">
-                    <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      placeholder="Search BDE..."
-                      value={filters?.bde || ''}
-                      onChange={(e) => handleSearch(e, 'bde')}
-                      className="pl-8 h-9 text-sm"
-                    />
-                  </div>
-                </div>
-
                 {/* Search BDM */}
                 <div className="flex-1 min-w-[180px] max-w-[240px] space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">
-                    BDM
-                  </Label>
+                  <Label className="text-xs text-muted-foreground">BDM</Label>
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       placeholder="Search BDM..."
                       value={filters?.bdm || ''}
                       onChange={(e) => handleSearch(e, 'bdm')}
+                      className="pl-8 h-9 text-sm"
+                    />
+                  </div>
+                </div>
+
+                {/* Search BDE */}
+                <div className="flex-1 min-w-[180px] max-w-[240px] space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">BDE</Label>
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      placeholder="Search BDE..."
+                      value={filters?.bde || ''}
+                      onChange={(e) => handleSearch(e, 'bde')}
                       className="pl-8 h-9 text-sm"
                     />
                   </div>
@@ -590,8 +583,7 @@ export default function CustomersPage() {
                   )}
                   {dateRange?.from && (
                     <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
-                      Date:{' '}
-                      {format(dateRange.from, 'MMM d')}
+                      Date: {format(dateRange.from, 'MMM d')}
                       {dateRange.to
                         ? ` – ${format(dateRange.to, 'MMM d, yyyy')}`
                         : ''}

@@ -41,24 +41,6 @@ export const useCustomersTableColumn = () => {
 
   const columns: ColumnDef<CustomerTableRow>[] = [
     {
-      accessorKey: 'bde',
-      header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          BDE
-        </span>
-      ),
-      cell: ({ row }) => {
-        const value = row.getValue('bde') as string;
-        return (
-          <span className="text-sm font-medium">
-            {value || (
-              <span className="text-muted-foreground/60">—</span>
-            )}
-          </span>
-        );
-      },
-    },
-    {
       accessorKey: 'bdm',
       header: () => (
         <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -69,9 +51,23 @@ export const useCustomersTableColumn = () => {
         const value = row.getValue('bdm') as string;
         return (
           <span className="text-sm font-medium">
-            {value || (
-              <span className="text-muted-foreground/60">—</span>
-            )}
+            {value || <span className="text-muted-foreground/60">—</span>}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: 'bde',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          BDE
+        </span>
+      ),
+      cell: ({ row }) => {
+        const value = row.getValue('bde') as string;
+        return (
+          <span className="text-sm font-medium">
+            {value || <span className="text-muted-foreground/60">—</span>}
           </span>
         );
       },
@@ -127,8 +123,7 @@ export const useCustomersTableColumn = () => {
       ),
       cell: ({ row }) => {
         const email = row.getValue('email') as string;
-        if (!email)
-          return <span className="text-muted-foreground/60">—</span>;
+        if (!email) return <span className="text-muted-foreground/60">—</span>;
         return (
           <Tooltip>
             <TooltipTrigger asChild>
@@ -185,7 +180,11 @@ export const useCustomersTableColumn = () => {
       cell: ({ row }) => {
         const source = row.getValue('source') as string;
         return (
-          <Badge variant={source === CustomerSource.PRIMARY ? 'default' : 'secondary'}>
+          <Badge
+            variant={
+              source === CustomerSource.PRIMARY ? 'default' : 'secondary'
+            }
+          >
             {source}
           </Badge>
         );
@@ -200,8 +199,7 @@ export const useCustomersTableColumn = () => {
       ),
       cell: ({ row }) => {
         const date = row.getValue('lastPurchaseDate') as string;
-        if (!date)
-          return <span className="text-muted-foreground/60">—</span>;
+        if (!date) return <span className="text-muted-foreground/60">—</span>;
         const formatted = new Date(date).toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
@@ -221,9 +219,7 @@ export const useCustomersTableColumn = () => {
         const category = row.getValue('category') as string;
         const variant = getCategoryBadgeVariant(category);
         return (
-          <Badge variant={variant}>
-            {category?.split('_').join(' ')}
-          </Badge>
+          <Badge variant={variant}>{category?.split('_').join(' ')}</Badge>
         );
       },
     },

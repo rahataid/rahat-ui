@@ -234,24 +234,6 @@ export const useFailedCustomersTableColumn = (
   const columns: ColumnDef<any>[] = useMemo(
     () => [
       {
-        accessorKey: 'bde',
-        header: () => (
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            BDE
-          </span>
-        ),
-        cell: ({ row }: any) => (
-          <EditableCell
-            key={resetKey}
-            originalValue={row.getValue('bde')}
-            hasError={row.original?.error?.bde?.length > 0}
-            rowIndex={row.index}
-            field="bde"
-            onCellChange={onCellChange}
-          />
-        ),
-      },
-      {
         accessorKey: 'bdm',
         header: () => (
           <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -265,6 +247,24 @@ export const useFailedCustomersTableColumn = (
             hasError={row.original?.error?.bdm?.length > 0}
             rowIndex={row.index}
             field="bdm"
+            onCellChange={onCellChange}
+          />
+        ),
+      },
+      {
+        accessorKey: 'bde',
+        header: () => (
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            BDE
+          </span>
+        ),
+        cell: ({ row }: any) => (
+          <EditableCell
+            key={resetKey}
+            originalValue={row.getValue('bde')}
+            hasError={row.original?.error?.bde?.length > 0}
+            rowIndex={row.index}
+            field="bde"
             onCellChange={onCellChange}
           />
         ),

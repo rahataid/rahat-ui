@@ -51,45 +51,47 @@ export default function TriggerStatementView() {
     );
   };
   return (
-    <div className="p-4">
+    <div className="p-4 h-[calc(100vh-64px)] flex flex-col overflow-hidden">
       <Heading
         title="Trigger Statement"
         description="Track all the trigger reports here"
       />
-      <div className="flex flex-wrap gap-4">
-        {phases
-          .filter((p) => p.name !== 'PREPAREDNESS')
-          .map((d) => (
-            <div
-              key={d.id}
-              className="w-full md:w-[32%] flex-grow flex-shrink-0"
-            >
-              <TriggersPhaseCard
-                title={d.name}
-                subtitle={`Overview of ${d.name.toLowerCase()} phase`}
-                handleAddTrigger={() => handleAddTrigger(d)}
-                chartLabels={['Mandatory', 'Optional']}
-                chartSeries={[
-                  d?.phaseStats?.totalMandatoryTriggers || 0,
-                  d?.phaseStats?.totalOptionalTriggers || 0,
-                ]}
-                requiredMandatoryTriggers={d?.requiredMandatoryTriggers || 0}
-                requiredOptionalTriggers={d?.requiredOptionalTriggers || 0}
-                mandatoryTriggers={d?.phaseStats?.totalMandatoryTriggers || 0}
-                optionalTriggers={d?.phaseStats?.totalOptionalTriggers || 0}
-                triggeredMandatoryTriggers={
-                  d?.phaseStats?.totalMandatoryTriggersTriggered || 0
-                }
-                triggeredOptionalTriggers={
-                  d?.phaseStats?.totalOptionalTriggersTriggered || 0
-                }
-                handleViewDetails={() => handleViewDetails(d)}
-                isActive={d?.isActive}
-              />
-            </div>
-          ))}
+      <div className="flex gap-4 flex-1 overflow-hidden mt-4">
+        {/* Left section – phase cards in a 2-column grid, scrollable */}
+        <div className="flex-1 overflow-y-auto pr-2">
+          <div className="grid grid-cols-2 gap-4">
+            {phases
+              .filter((p) => p.name !== 'PREPAREDNESS')
+              .map((d) => (
+                <TriggersPhaseCard
+                  key={d.id}
+                  title={d.name}
+                  subtitle={`Overview of ${d.name.toLowerCase()} phase`}
+                  handleAddTrigger={() => handleAddTrigger(d)}
+                  chartLabels={['Mandatory', 'Optional']}
+                  chartSeries={[
+                    d?.phaseStats?.totalMandatoryTriggers || 0,
+                    d?.phaseStats?.totalOptionalTriggers || 0,
+                  ]}
+                  requiredMandatoryTriggers={d?.requiredMandatoryTriggers || 0}
+                  requiredOptionalTriggers={d?.requiredOptionalTriggers || 0}
+                  mandatoryTriggers={d?.phaseStats?.totalMandatoryTriggers || 0}
+                  optionalTriggers={d?.phaseStats?.totalOptionalTriggers || 0}
+                  triggeredMandatoryTriggers={
+                    d?.phaseStats?.totalMandatoryTriggersTriggered || 0
+                  }
+                  triggeredOptionalTriggers={
+                    d?.phaseStats?.totalOptionalTriggersTriggered || 0
+                  }
+                  handleViewDetails={() => handleViewDetails(d)}
+                  isActive={d?.isActive}
+                />
+              ))}
+          </div>
+        </div>
 
-        <div className="w-full md:w-[32%] flex-grow flex-shrink-0">
+        {/* Right section – recent triggers list */}
+        <div className="w-[380px] shrink-0">
           <TriggersListCard
             projectId={projectId}
             triggers={triggeredTriggers}

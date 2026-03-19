@@ -56,22 +56,6 @@ export default function TriggersPhaseCard({
                 : 'text-green-500 bg-green-100'
             } text-xs px-1`}
           />
-
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
-            <IconLabelBtn
-              variant="outline"
-              className={`border-primary text-primary !m-0 ${
-                hideAddTrigger && 'hidden'
-              }`}
-              Icon={Plus}
-              name="Add Trigger"
-              handleClick={handleAddTrigger}
-              disabled={isActive}
-            />
-          </RoleAuth>
         </div>
         <div className="flex justify-center mb-2 ">
           {totalCharSeries === 0 ? (
@@ -128,15 +112,32 @@ export default function TriggersPhaseCard({
         </div>
       </div>
 
-      <IconLabelBtn
-        variant="outline"
-        className={`border-primary text-primary w-full mt-8 flex-row-reverse gap-2 ${
-          hideViewDetails && 'hidden'
-        }`}
-        Icon={ArrowRight}
-        name="View Details"
-        handleClick={handleViewDetails}
-      />
+      <div className="flex gap-2 mt-8">
+        <RoleAuth
+          roles={[AARoles.ADMIN, AARoles.Municipality]}
+          hasContent={false}
+        >
+          <IconLabelBtn
+            variant="outline"
+            className={`border-primary text-primary flex-1 ${
+              hideAddTrigger && 'hidden'
+            }`}
+            Icon={Plus}
+            name="Add Trigger"
+            handleClick={handleAddTrigger}
+            disabled={isActive}
+          />
+        </RoleAuth>
+        <IconLabelBtn
+          variant="outline"
+          className={`border-primary text-primary flex-1 flex-row-reverse gap-2 ${
+            hideViewDetails && 'hidden'
+          }`}
+          Icon={ArrowRight}
+          name="View Details"
+          handleClick={handleViewDetails}
+        />
+      </div>
     </div>
   );
 }

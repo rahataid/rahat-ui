@@ -41,6 +41,7 @@ import { ClientSidePagination, HeaderWithBack } from 'apps/rahat-ui/src/common';
 import {
   CloudDownload,
   FileWarning,
+  Info,
   Repeat2,
   Share,
   Users,
@@ -752,37 +753,77 @@ export default function ImportStakeholder() {
   return (
     <>
       <div className="p-4  h-[calc(100vh-120px)]">
-        <div className="flex justify-between items-center mb-2">
+        <div className="flex justify-between items-start mb-2">
           <HeaderWithBack
             title="Import Stakeholders"
             subtitle="List of all stakeholders you can import"
             path={`/projects/aa/${id}/stakeholders`}
           />
-          <div className="flex mt-4 gap-2">
-            {hasValidationErrors && (
+          <div className="flex flex-col items-end gap-2 mt-4">
+            <div className="flex gap-2">
+              {hasValidationErrors && (
+                <Button
+                  onClick={handleDownloadErrors}
+                  type="button"
+                  variant="outline"
+                >
+                  <FileWarning size={22} className="mr-1" />
+                  Download Errors
+                </Button>
+              )}
               <Button
-                onClick={handleDownloadErrors}
+                onClick={handleSampleDownload}
                 type="button"
                 variant="outline"
               >
-                <FileWarning size={22} className="mr-1" />
-                Download Errors
+                <CloudDownload size={22} className="mr-1" />
+                Download Sample
               </Button>
-            )}
-            <Button
-              onClick={handleSampleDownload}
-              type="button"
-              variant="outline"
-            >
-              <CloudDownload size={22} className="mr-1" />
-              Download Sample
-            </Button>
+            </div>
+            {(hasFrontendErrors || validationResponse !== null) &&
+              data.length > 1 && (
+                <div className="flex flex-col gap-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded text-xs text-gray-600">
+                  {hasFrontendErrors && (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-sm bg-red-200 border border-red-400" />
+                        <span>Duplicate phone number found in file</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-sm bg-yellow-200 border border-yellow-400" />
+                        <span>Duplicate email found in file</span>
+                      </div>
+                    </>
+                  )}
+                  {hasValidationErrors && (
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-sm bg-red-200 border border-red-400" />
+                      <span>Validation error - invalid or duplicate data</span>
+                    </div>
+                  )}
+                  {validationResponse !== null &&
+                    newStakeholderPhones.size > 0 && (
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-sm bg-green-200 border border-green-400" />
+                        <span>New stakeholder will be created</span>
+                      </div>
+                    )}
+                  {validationResponse !== null &&
+                    updateStakeholderPhones.size > 0 && (
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-sm bg-yellow-200 border border-yellow-400" />
+                        <span>Existing stakeholder will be updated</span>
+                      </div>
+                    )}
+                </div>
+              )}
           </div>
         </div>
 
-        <div className=" p-4 border bg-card rounded-sm">
-          <div className="flex justify-between space-x-2">
-            <div className="relative w-full">
+        <div className="p-4 border bg-card rounded-sm">
+          <div className="flex items-center gap-4">
+            {/* File Input */}
+            <div className="relative flex-shrink-0">
               <Input
                 type="file"
                 ref={inputRef}
@@ -791,22 +832,24 @@ export default function ImportStakeholder() {
               />
 
               <div
-                className="flex items-center border rounded-sm cursor-pointer w-full"
+                className="flex items-center border rounded-sm cursor-pointer"
                 onClick={() => inputRef.current?.click()}
               >
-                <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-4 py-2 font-semibold text-sm hover:bg-gray-200 transition-colors space-x-3">
+                <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-3 py-2 font-semibold text-sm hover:bg-gray-200 transition-colors whitespace-nowrap">
                   {selectedFile ? (
                     <>
-                      <Repeat2 size={22} className="px-1" /> Replace
+                      <Repeat2 size={18} className="mr-1" /> Replace
                     </>
                   ) : (
                     <>
-                      <Share size={22} className="px-1" />
+                      <Share size={18} className="mr-1" />
                       Choose File
                     </>
                   )}
                 </span>
-                <span className="px-4 py-2 flex-grow truncate">{fileName}</span>
+                <span className="px-3 py-2 truncate max-w-[150px]">
+                  {fileName}
+                </span>
               </div>
             </div>
           </div>
@@ -815,7 +858,7 @@ export default function ImportStakeholder() {
         <>
           {data.length > 1 && (
             <>
-              <div className="border-2 border-dashed border-black mt-6 mx-auto w-full">
+              <div className="border-2 border-dashed border-black mt-4 mx-auto w-full">
                 <ScrollArea className="h-[calc(100vh-430px)] w-full">
                   <Table className="table-auto w-full">
                     <TableHeader>

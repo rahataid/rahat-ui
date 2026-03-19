@@ -12,10 +12,11 @@ export interface Customer {
   source: CustomerSource;
   walletAddress?: string;
   location?: string;
+  bde?: string;
+  bdm?: string;
   extras?: {
     email?: string;
     channel?: string;
-    bde?: string;
   };
 }
 

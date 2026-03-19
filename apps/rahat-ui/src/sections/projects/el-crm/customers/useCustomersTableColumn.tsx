@@ -10,6 +10,7 @@ import { useParams, useRouter } from 'next/navigation';
 
 interface CustomerTableRow {
   bde: string;
+  bdm: string;
   customerCode: string;
   name: string;
   phone: string;
@@ -43,11 +44,29 @@ export const useCustomersTableColumn = () => {
       accessorKey: 'bde',
       header: () => (
         <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          BDE/BDM
+          BDE
         </span>
       ),
       cell: ({ row }) => {
         const value = row.getValue('bde') as string;
+        return (
+          <span className="text-sm font-medium">
+            {value || (
+              <span className="text-muted-foreground/60">—</span>
+            )}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: 'bdm',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          BDM
+        </span>
+      ),
+      cell: ({ row }) => {
+        const value = row.getValue('bdm') as string;
         return (
           <span className="text-sm font-medium">
             {value || (

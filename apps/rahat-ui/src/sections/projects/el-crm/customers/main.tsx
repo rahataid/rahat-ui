@@ -66,7 +66,8 @@ import {
 // Export configuration
 const CUSTOMER_EXPORT_CONFIG = {
   columns: [
-    { label: 'BDE/BDM', key: 'bde', width: 20 },
+    { label: 'BDE', key: 'bde', width: 20 },
+    { label: 'BDM', key: 'bdm', width: 20 },
     { label: 'Customer Code', key: 'customerCode', width: 20 },
     { label: 'Customer name', key: 'name', width: 25 },
     { label: 'Mobile No.', key: 'phone', width: 15 },
@@ -167,7 +168,6 @@ export default function CustomersPage() {
       ...c,
       email: c?.extras?.email,
       channel: c?.extras?.channel,
-      bde: c?.extras?.bde,
     }));
   }, [customers]);
 
@@ -404,17 +404,33 @@ export default function CustomersPage() {
               </div>
 
               <div className="flex flex-wrap items-end gap-3">
-                {/* Search BDE/BDM */}
+                {/* Search BDE */}
                 <div className="flex-1 min-w-[180px] max-w-[240px] space-y-1.5">
                   <Label className="text-xs text-muted-foreground">
-                    BDE/BDM
+                    BDE
                   </Label>
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                     <Input
-                      placeholder="Search BDE/BDM..."
+                      placeholder="Search BDE..."
                       value={filters?.bde || ''}
                       onChange={(e) => handleSearch(e, 'bde')}
+                      className="pl-8 h-9 text-sm"
+                    />
+                  </div>
+                </div>
+
+                {/* Search BDM */}
+                <div className="flex-1 min-w-[180px] max-w-[240px] space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">
+                    BDM
+                  </Label>
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      placeholder="Search BDM..."
+                      value={filters?.bdm || ''}
+                      onChange={(e) => handleSearch(e, 'bdm')}
                       className="pl-8 h-9 text-sm"
                     />
                   </div>
@@ -507,10 +523,22 @@ export default function CustomersPage() {
                   </span>
                   {filters?.bde && (
                     <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
-                      BDE/BDM: {filters.bde}
+                      BDE: {filters.bde}
                       <button
                         type="button"
                         onClick={() => handleFilter('bde', 'all')}
+                        className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  )}
+                  {filters?.bdm && (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
+                      BDM: {filters.bdm}
+                      <button
+                        type="button"
+                        onClick={() => handleFilter('bdm', 'all')}
                         className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
                       >
                         <X className="h-3 w-3" />

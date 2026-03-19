@@ -30,6 +30,12 @@ import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import React from 'react';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import useCommsLogsTableColumns from '../../useCommsLogsTableColumns';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export default function MessageDetailPage() {
   const { id: projectUUID, messageId } = useParams() as {
@@ -89,55 +95,52 @@ export default function MessageDetailPage() {
     [filters, setFilters],
   );
 
-  const getChannelColor = (channel: string) => {
+  const getChannelVariant = (channel: string) => {
     switch (channel) {
       case 'SMS':
-        return 'bg-primary/10 text-primary';
+        return 'default';
       case 'WhatsApp':
-        return 'bg-success/10 text-success';
+        return 'success';
       default:
-        return 'bg-muted text-muted-foreground';
+        return 'secondary';
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusVariant = (status: string) => {
     switch (status) {
       case 'Sent':
-        return 'bg-success/10 text-success';
+        return 'success';
       default:
-        return 'bg-muted text-muted-foreground';
+        return 'secondary';
     }
   };
 
   if (!campaign) {
     return (
       <div className="flex flex-col h-full">
-        <div className="border-b border-border bg-card/50 px-6 py-4">
+        <div className="border-b border-border bg-card px-6 py-5">
           <div className="flex items-center gap-4">
             <Link
               href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
             >
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back
+              <Button variant="ghost" size="sm">
+                <ArrowLeft className="h-4 w-4" />
               </Button>
             </Link>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">
-                Message Not Found
-              </h1>
-            </div>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+              Message Not Found
+            </h1>
           </div>
         </div>
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <p className="text-muted-foreground mb-4">
+            <p className="text-sm text-muted-foreground mb-4">
               The message you're looking for doesn't exist.
             </p>
             <Link
               href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
             >
-              <Button>Go Back to Messages</Button>
+              <Button size="sm">Go Back to Messages</Button>
             </Link>
           </div>
         </div>
@@ -171,201 +174,204 @@ export default function MessageDetailPage() {
   const failedCount = count?.FAIL ?? 0;
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="border-b border-border bg-card/50 px-6 py-4">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <TooltipProvider delayDuration={200}>
+      <div className="flex flex-col h-full">
+        <div className="border-b border-border bg-card px-6 py-5">
           <div className="flex items-start gap-3">
-            <Link
-              href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
-            >
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back
-              </Button>
-            </Link>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
+                >
+                  <Button variant="ghost" size="sm">
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>Back to scheduled messages</TooltipContent>
+            </Tooltip>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
                 {campaign.name}
               </h1>
-              <p className="text-muted-foreground">View message details</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                View scheduled message details
+              </p>
             </div>
           </div>
         </div>
-      </div>
 
-      {isLoading ? (
-        <div className="space-y-4 p-6">
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-80 w-full" />
-        </div>
-      ) : (
-        <div className="flex-1 p-6 space-y-6">
-          <div className="grid gap-4 lg:grid-cols-3">
-            <Card className="lg:col-span-1">
-              <CardContent className="space-y-4 p-4">
-                <div className="flex items-center justify-between">
-                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">
-                    Schedule Status
-                  </Label>
-                  <Badge className={getStatusColor(isSent ? 'Sent' : 'Draft')}>
-                    {isSent ? 'Sent' : 'Scheduled'}
-                  </Badge>
-                </div>
-
-                <div>
-                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">
-                    Message Name
-                  </Label>
-                  <p className="mt-1 text-base font-semibold text-foreground">
-                    {campaign.name}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-md border bg-muted/30 p-3">
-                    <div className="mb-1 flex items-center gap-1 text-xs text-muted-foreground">
-                      <Users className="h-3.5 w-3.5" />
-                      Recipients
-                    </div>
-                    <p className="font-semibold text-foreground">
-                      {(campaign?.recipientCount || 0).toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="rounded-md border bg-muted/30 p-3">
-                    <div className="mb-1 flex items-center gap-1 text-xs text-muted-foreground">
-                      <CalendarDays className="h-3.5 w-3.5" />
-                      Created
-                    </div>
-                    <p className="font-semibold text-foreground">
-                      {format(new Date(campaign.createdAt), 'MMM dd, yyyy')}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2">
-              <DataCard
-                title="Successfully Delivered"
-                smallNumber={deliveredCount.toString()}
-                className="rounded-sm w-full h-24 pt-10 pb-8"
-              />
-              <DataCard
-                title="Failed Delivered"
-                smallNumber={failedCount.toString()}
-                className="rounded-sm w-full h-24 pt-10 pb-8"
-              />
-            </div>
+        {isLoading ? (
+          <div className="space-y-4 p-6">
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-80 w-full" />
           </div>
-
-          <Card>
-            <CardHeader className="border-b pb-4">
-              <CardTitle>Message Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6 pt-6">
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                <div className="space-y-5 lg:col-span-1">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-xs uppercase tracking-wide text-muted-foreground">
-                        Channel
-                      </Label>
-                      <div className="mt-2">
-                        <Badge
-                          className={getChannelColor(campaign.transportName)}
-                          variant="secondary"
-                        >
-                          {campaign.transportName}
-                        </Badge>
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label className="text-xs uppercase tracking-wide text-muted-foreground">
-                        Group
-                      </Label>
-                      <p className="mt-2 text-sm font-medium text-foreground">
-                        {campaign.targetType}
-                      </p>
-                    </div>
+        ) : (
+          <div className="flex-1 p-6 space-y-6 overflow-auto">
+            <div className="grid gap-4 lg:grid-cols-3">
+              <Card className="lg:col-span-1">
+                <CardContent className="space-y-4 p-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                      Schedule Status
+                    </Label>
+                    <Badge variant={getStatusVariant(isSent ? 'Sent' : 'Draft')}>
+                      {isSent ? 'Sent' : 'Scheduled'}
+                    </Badge>
                   </div>
 
                   <div>
                     <Label className="text-xs uppercase tracking-wide text-muted-foreground">
-                      Message Content
+                      Message Name
                     </Label>
-                    <Card className="mt-2">
-                      <CardContent className="max-h-[320px] overflow-auto p-4">
-                        <p className="whitespace-pre-wrap text-sm text-foreground">
-                          {campaign.body}
-                        </p>
-                      </CardContent>
-                    </Card>
+                    <p className="mt-1 text-base font-semibold text-foreground">
+                      {campaign.name}
+                    </p>
                   </div>
-                </div>
 
-                <Card className="rounded-sm lg:col-span-2">
-                  <CardHeader className="space-y-3 border-b px-3 pb-3 pt-3">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium text-foreground">
-                        Delivery Logs ({meta?.total || 0})
-                      </Label>
-                      {hasActiveFilters && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={clearAllFilters}
-                        >
-                          <FilterX className="mr-2 h-4 w-4" />
-                          Reset Filters
-                        </Button>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
-                      <div className="md:col-span-3">
-                        <SearchInput
-                          value={filters.address}
-                          name="Audience"
-                          onSearch={(e) => handleSearch(e, 'address')}
-                        />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-md border bg-muted/30 p-3">
+                      <div className="mb-1 flex items-center gap-1 text-xs text-muted-foreground">
+                        <Users className="h-3.5 w-3.5" />
+                        Recipients
                       </div>
-
-                      <div className="md:col-span-1 !mt-0">
-                        <SelectComponent
-                          name="Status"
-                          options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
-                          onChange={(value) =>
-                            handleFilterChange('status', value)
-                          }
-                          value={filters?.status ?? 'ALL'}
-                        />
-                      </div>
+                      <p className="font-semibold tabular-nums text-foreground">
+                        {(campaign?.recipientCount || 0).toLocaleString()}
+                      </p>
                     </div>
-                  </CardHeader>
+                    <div className="rounded-md border bg-muted/30 p-3">
+                      <div className="mb-1 flex items-center gap-1 text-xs text-muted-foreground">
+                        <CalendarDays className="h-3.5 w-3.5" />
+                        Created
+                      </div>
+                      <p className="font-semibold tabular-nums text-foreground">
+                        {format(new Date(campaign.createdAt), 'MMM dd, yyyy')}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-                  <CardContent className="px-3 pt-4">
-                    <CommsLogsTable table={table} />
-                  </CardContent>
-
-                  <CardFooter className="justify-end border-t pt-4">
-                    <CustomPagination
-                      meta={meta}
-                      handleNextPage={setNextPage}
-                      handlePrevPage={setPrevPage}
-                      handlePageSizeChange={setPerPage}
-                      currentPage={pagination.page}
-                      perPage={pagination.perPage}
-                      total={meta?.total}
-                    />
-                  </CardFooter>
-                </Card>
+              <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2">
+                <DataCard
+                  title="Successfully Delivered"
+                  smallNumber={deliveredCount.toString()}
+                  className="rounded-sm w-full h-24 pt-10 pb-8"
+                />
+                <DataCard
+                  title="Failed Delivered"
+                  smallNumber={failedCount.toString()}
+                  className="rounded-sm w-full h-24 pt-10 pb-8"
+                />
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-    </div>
+            </div>
+
+            <Card>
+              <CardHeader className="border-b pb-4">
+                <CardTitle>Message Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6 pt-6">
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                  <div className="space-y-5 lg:col-span-1">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                          Channel
+                        </Label>
+                        <div className="mt-2">
+                          <Badge variant={getChannelVariant(campaign.transportName)}>
+                            {campaign.transportName}
+                          </Badge>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                          Group
+                        </Label>
+                        <p className="mt-2 text-sm font-medium text-foreground">
+                          {campaign.targetType}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                        Message Content
+                      </Label>
+                      <Card className="mt-2">
+                        <CardContent className="max-h-[320px] overflow-auto p-4">
+                          <p className="whitespace-pre-wrap text-sm text-foreground">
+                            {campaign.body}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+
+                  <Card className="rounded-sm lg:col-span-2">
+                    <CardHeader className="space-y-3 border-b px-3 pb-3 pt-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm font-medium text-foreground">
+                          Delivery Logs ({meta?.total || 0})
+                        </Label>
+                        {hasActiveFilters && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearAllFilters}
+                          >
+                            <FilterX className="mr-2 h-4 w-4" />
+                            Reset Filters
+                          </Button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
+                        <div className="md:col-span-3">
+                          <SearchInput
+                            value={filters.address}
+                            name="Audience"
+                            onSearch={(e) => handleSearch(e, 'address')}
+                          />
+                        </div>
+
+                        <div className="md:col-span-1 !mt-0">
+                          <SelectComponent
+                            name="Status"
+                            options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
+                            onChange={(value) =>
+                              handleFilterChange('status', value)
+                            }
+                            value={filters?.status ?? 'ALL'}
+                          />
+                        </div>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="p-0">
+                      <CommsLogsTable table={table} />
+                    </CardContent>
+
+                    <CardFooter className="justify-end border-t p-4">
+                      <CustomPagination
+                        meta={meta}
+                        handleNextPage={setNextPage}
+                        handlePrevPage={setPrevPage}
+                        handlePageSizeChange={setPerPage}
+                        currentPage={pagination.page}
+                        perPage={pagination.perPage}
+                        total={meta?.total}
+                      />
+                    </CardFooter>
+                  </Card>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
+    </TooltipProvider>
   );
 }

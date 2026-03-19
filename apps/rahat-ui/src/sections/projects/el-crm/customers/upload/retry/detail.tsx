@@ -39,11 +39,16 @@ export default function BatchDetailView() {
   const tableData = useMemo(
     () =>
       failedBatch?.batch?.map((b) => {
+        // Flatten legacy `extras` into top-level so table accessorKeys
+        // (email, channel) resolve correctly for both old and new data.
+        const { extras, ...flat } = b;
+        const row = { ...flat, ...extras };
+
         const errorEntry = failedBatch?.errorDetails?.error?.find(
           (v) => v[b.customerCode],
         );
         const errors = errorEntry?.[b.customerCode];
-        return { ...b, error: errors ?? '' };
+        return { ...row, error: errors ?? '' };
       }),
     [failedBatch],
   );
@@ -60,13 +65,14 @@ export default function BatchDetailView() {
     [],
   );
 
-  // Merged data for retry submission
+  // Merged data for retry submission — strips the transient `error`
+  // property so stale validation info isn't sent back to the server.
   const editedData = useMemo(() => {
     if (!tableData) return [];
-    return tableData.map((row, index) => ({
-      ...row,
-      ...(cellEdits[index] ?? {}),
-    }));
+    return tableData.map((row, index) => {
+      const { error, ...clean } = { ...row, ...(cellEdits[index] ?? {}) };
+      return clean;
+    });
   }, [tableData, cellEdits]);
 
   const hasEdits = Object.keys(cellEdits).length > 0;

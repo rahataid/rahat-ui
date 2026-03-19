@@ -110,8 +110,7 @@ export const useCustomersBatchTableColumn = () => {
       ),
       cell: ({ row }) => {
         const value = row.getValue('lastRetryAt');
-        if (!value)
-          return <span className="text-muted-foreground/60">—</span>;
+        if (!value) return <span className="text-muted-foreground/60">—</span>;
         return (
           <span className="text-sm tabular-nums">
             {new Date(value as string).toLocaleDateString('en-US', {
@@ -153,22 +152,24 @@ export const useCustomersBatchTableColumn = () => {
                 <p>View failed customers and fix errors</p>
               </TooltipContent>
             </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-8 gap-1.5"
-                  onClick={() => handleRetryImport(row.original.uuid)}
-                >
-                  <RotateCcw className="h-3.5 w-3.5" />
-                  Retry
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Retry importing this batch as-is</p>
-              </TooltipContent>
-            </Tooltip>
+            {row.original.status !== 'CRM_VALIDATION_FAILED' && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-8 gap-1.5"
+                    onClick={() => handleRetryImport(row.original.uuid)}
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                    Retry
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Retry importing this batch as-is</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
         );
       },

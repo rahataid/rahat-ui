@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heading } from 'apps/rahat-ui/src/common';
 import { TriggersListCard, TriggersPhaseCard } from './components';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useParams, useRouter } from 'next/navigation';
 import {
   useAAStationsStore,
@@ -58,8 +59,8 @@ export default function TriggerStatementView() {
       />
       <div className="flex gap-4 flex-1 overflow-hidden mt-4">
         {/* Left section – phase cards in a 2-column grid, scrollable */}
-        <div className="flex-1 overflow-y-auto pr-2">
-          <div className="grid grid-cols-2 gap-4">
+        <ScrollArea className="flex-1 ">
+          <div className="grid grid-cols-2 gap-4 pr-2">
             {phases
               .filter((p) => p.name !== 'PREPAREDNESS')
               .map((d) => (
@@ -88,7 +89,7 @@ export default function TriggerStatementView() {
                 />
               ))}
           </div>
-        </div>
+        </ScrollArea>
 
         {/* Right section – recent triggers list */}
         <div className="w-[380px] shrink-0">

@@ -80,7 +80,7 @@ export default function TriggersPhaseCard({
             totalRequiredTriggers={requiredOptionalTriggers}
           />
         </div>
-        <div className="flex justify-center mb-2">
+        <div className="flex justify-center mb-1">
           {totalCharSeries === 0 ? (
             chartType === 'donut' ? (
               <div className="relative w-full h-full flex items-center justify-center">
@@ -104,8 +104,8 @@ export default function TriggersPhaseCard({
                 </div>
               </div>
             ) : (
-              <div className="w-full my-4 space-y-2">
-                <div className="w-full h-5 rounded-full bg-gray-200" />
+              <div className="w-full my-4 mx-5 space-y-2 ">
+                <div className="w-full h-4 rounded-md bg-gray-200" />
                 <p className="text-sm text-gray-400 text-center">No Data</p>
               </div>
             )
@@ -116,7 +116,7 @@ export default function TriggersPhaseCard({
               donutSize="80%"
               width={250}
               height={200}
-              showLegend={false}
+              showLegend={true}
               colors={['#297AD6', '#E8C468']}
               showDonutLabel={true}
             />
@@ -132,7 +132,7 @@ export default function TriggersPhaseCard({
         </div>
       </div>
 
-      <div className="flex gap-2 mt-8">
+      <div className="flex gap-2 ">
         <RoleAuth
           roles={[AARoles.ADMIN, AARoles.Municipality]}
           hasContent={false}

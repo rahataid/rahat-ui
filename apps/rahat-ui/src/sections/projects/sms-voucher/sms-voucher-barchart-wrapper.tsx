@@ -21,6 +21,7 @@ const BarChartWrapper = ({ actualData, component }: BarChartData) => {
   const categories = barData?.data.map((b: any) => b.id);
   const series = barData?.data.map((b: any) => b.count);
   const currentYear = new Date().getFullYear();
+  const START_YEAR = 2025;
   const currentMonth = new Date().getMonth() + 1;
 
   const currentMonthName = MONTHS.find(
@@ -67,10 +68,16 @@ const BarChartWrapper = ({ actualData, component }: BarChartData) => {
     }
   };
 
-  const transformedYearData = Array.from({ length: 5 }, (_, index) => {
-    const year = currentYear + index;
-    return { label: year.toString(), value: year.toString() };
-  });
+  const transformedYearData = Array.from(
+    { length: currentYear + 5 - START_YEAR + 1 },
+    (_, index) => {
+      const year = START_YEAR + index;
+      return {
+        label: year.toString(),
+        value: year.toString(),
+      };
+    },
+  );
 
   const transformedMonthData =
     MONTHS.map((item) => ({
@@ -109,7 +116,7 @@ const BarChartWrapper = ({ actualData, component }: BarChartData) => {
                     handleSelect(key, value, 'eyeCheckup')
                   }
                   current={currentMonthName?.label}
-                  className="w-[100px]"
+                  className="w-[150px]"
                 />
                 <DropdownComponent
                   transformedData={transformedYearData}
@@ -118,7 +125,7 @@ const BarChartWrapper = ({ actualData, component }: BarChartData) => {
                     handleSelect(key, value, 'eyeCheckup')
                   }
                   current={eyeCheckupFilters.year.toString()}
-                  className="w-[100px]"
+                  className="w-[150px]"
                 />
               </div>
             </div>
@@ -146,7 +153,7 @@ const BarChartWrapper = ({ actualData, component }: BarChartData) => {
                     handleSelect(key, value, 'purchase')
                   }
                   current={currentMonthName?.label}
-                  className="w-[100px]"
+                  className="w-[150px]"
                 />
                 <DropdownComponent
                   transformedData={transformedYearData}
@@ -155,7 +162,7 @@ const BarChartWrapper = ({ actualData, component }: BarChartData) => {
                     handleSelect(key, value, 'purchase')
                   }
                   current={purchaseFilters.year.toString()}
-                  className="w-[100px]"
+                  className="w-[150px]"
                 />
               </div>
             </div>

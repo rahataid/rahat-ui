@@ -1,9 +1,9 @@
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { formatDateFromBloackChain } from 'apps/rahat-ui/src/utils';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { mapTopic } from '../../const';
 import Link from 'next/link';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
 export const useElkenyaVendorsTransactionsTableColumns = () => {
   const columns: ColumnDef<any>[] = [

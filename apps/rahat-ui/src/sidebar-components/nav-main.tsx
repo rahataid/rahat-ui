@@ -36,6 +36,8 @@ type IProps = {
 export function NavMain(items: IProps) {
   const currentPath = usePathname();
   const activePath = currentPath.split('/')[4];
+  const activeSubPath = currentPath.split('/')[5];
+
   const { setOpenMobile, setOpen } = useSidebar();
 
   const handleMobileClose = useCallback(() => {
@@ -58,7 +60,14 @@ export function NavMain(items: IProps) {
             >
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.title}>
+                  <SidebarMenuButton
+                    tooltip={item.title}
+                    className={
+                      isActive
+                        ? 'bg-primary text-primary-foreground rounded-md shadow-sm'
+                        : 'text-muted-foreground rounded-md hover:bg-accent hover:text-foreground transition-colors'
+                    }
+                  >
                     {item.icon}
                     <span>{item.title}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />

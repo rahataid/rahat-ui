@@ -9,7 +9,6 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { UUID } from 'crypto';
 import { Copy, CopyCheck, Store } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -17,6 +16,7 @@ import React from 'react';
 import HeaderWithBack from '../../components/header.with.back';
 import VendorsBeneficiaryList from './vendors.beneficiary.list';
 import VendorsTransactionsHistory from './vendors.transactions.history';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 
 export default function VendorsDetail() {
   const { id } = useParams() as { id: UUID };

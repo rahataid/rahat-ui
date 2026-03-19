@@ -57,6 +57,24 @@ export default function TriggersPhaseCard({
             } text-xs px-1`}
           />
         </div>
+        <div className="grid grid-cols-2 gap-2">
+          <TriggerDetailsCard
+            title="Mandatory"
+            color="blue"
+            bgColor="bg-[#EAF2FB]"
+            totalTriggers={mandatoryTriggers}
+            totalTriggered={triggeredMandatoryTriggers}
+            totalRequiredTriggers={requiredMandatoryTriggers}
+          />
+          <TriggerDetailsCard
+            title="Optional"
+            color="yellow"
+            bgColor="bg-[#FCF6E9]"
+            totalTriggers={optionalTriggers}
+            totalTriggered={triggeredOptionalTriggers}
+            totalRequiredTriggers={requiredOptionalTriggers}
+          />
+        </div>
         <div className="flex justify-center mb-2 ">
           {totalCharSeries === 0 ? (
             <div className="relative w-full h-full flex items-center justify-center">
@@ -91,24 +109,6 @@ export default function TriggersPhaseCard({
               showDonutLabel={true}
             />
           )}
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          <TriggerDetailsCard
-            title="Mandatory"
-            color="blue"
-            bgColor="bg-[#EAF2FB]"
-            totalTriggers={mandatoryTriggers}
-            totalTriggered={triggeredMandatoryTriggers}
-            totalRequiredTriggers={requiredMandatoryTriggers}
-          />
-          <TriggerDetailsCard
-            title="Optional"
-            color="yellow"
-            bgColor="bg-[#FCF6E9]"
-            totalTriggers={optionalTriggers}
-            totalTriggered={triggeredOptionalTriggers}
-            totalRequiredTriggers={requiredOptionalTriggers}
-          />
         </div>
       </div>
 

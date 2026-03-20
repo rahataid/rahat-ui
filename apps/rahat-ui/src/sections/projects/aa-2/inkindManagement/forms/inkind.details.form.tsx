@@ -56,7 +56,6 @@ export default function InkindDetailsForm({ formData, onNext }: Props) {
       <form onSubmit={handleSubmit(onNext)}>
         <div className="border rounded-sm p-4 flex flex-col space-y-4">
           <p className="text-base font-semibold">Register Inkind</p>
-          {/* Name */}
           <FormField
             control={control}
             name="name"
@@ -71,7 +70,6 @@ export default function InkindDetailsForm({ formData, onNext }: Props) {
             )}
           />
 
-          {/* Description */}
           <FormField
             control={control}
             name="description"
@@ -91,7 +89,6 @@ export default function InkindDetailsForm({ formData, onNext }: Props) {
             )}
           />
 
-          {/* Type */}
           <FormField
             control={control}
             name="type"
@@ -120,7 +117,6 @@ export default function InkindDetailsForm({ formData, onNext }: Props) {
             )}
           />
 
-          {/* Actions */}
           <div className="flex justify-end items-center">
             <div className="flex space-x-2">
               <Button

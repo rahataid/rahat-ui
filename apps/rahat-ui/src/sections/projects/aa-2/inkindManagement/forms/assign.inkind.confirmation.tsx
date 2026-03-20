@@ -34,14 +34,9 @@ export default function AssignInkindConfirmation({
   const assignGroupInkind = useAssignGroupInkind(projectUUID);
 
   const group = useGetBeneficiaryGroup(formData.groupId as UUID);
-  // API returns { success, data: { groupedBeneficiaries } }
-  // group.data = the axios response body
   const rawData = group?.data;
   const beneficiaries: any[] =
-    rawData?.data?.groupedBeneficiaries ?? // { success, data: { groupedBeneficiaries } }
-    rawData?.groupedBeneficiaries ?? // { groupedBeneficiaries } (unwrapped)
-    [];
-
+    rawData?.data?.groupedBeneficiaries ?? rawData?.groupedBeneficiaries ?? [];
   const cardData = [
     { label: 'In-Kind Item', value: formData.inkindName },
     { label: 'Beneficiary Group', value: formData.groupName },
@@ -68,7 +63,6 @@ export default function AssignInkindConfirmation({
   return (
     <div className="flex flex-col h-[calc(100vh-220px)] p-2">
       <div className="flex gap-3 flex-1 min-h-0 mb-3">
-        {/* Left: Summary card */}
         <div className="w-[60%] p-4 rounded-md bg-gray-50 flex flex-col space-y-4 overflow-y-auto">
           <p className="font-semibold text-sm mb-1">Assignment Summary</p>
           {cardData.map((item) => (
@@ -79,7 +73,6 @@ export default function AssignInkindConfirmation({
           ))}
         </div>
 
-        {/* Right: Beneficiary list */}
         <div className="w-[40%] p-4 rounded-md bg-gray-50 flex flex-col min-h-0">
           <p className="font-semibold text-sm mb-2">
             Beneficiaries List ({beneficiaries.length})

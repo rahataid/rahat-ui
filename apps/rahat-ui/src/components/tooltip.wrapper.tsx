@@ -17,10 +17,13 @@ export default function TooltipWrapper({
   children,
   disable = false,
 }: TooltipWrapperProps) {
+  if (disable || !tip?.trim()) {
+    return <>{children}</>;
+  }
   return (
     <TooltipProvider delayDuration={200}>
       <Tooltip>
-        <TooltipTrigger asChild disabled={disable}>
+        <TooltipTrigger asChild>
           <div>{children}</div>
         </TooltipTrigger>
         <TooltipContent className="bg-secondary" side="top">

@@ -1,5 +1,5 @@
 'use client';
-import { useActivities } from '@rahat-ui/query';
+import { useActivities, usePhasesStore } from '@rahat-ui/query';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { generateExcel } from 'apps/rahat-ui/src/utils';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
@@ -13,12 +13,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSidebar } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 
-const PHASE_DESCRIPTIONS: Record<string, string> = {
-  PREPAREDNESS: 'Overview of preparedness phase',
-  READINESS: 'Overview of readiness phase',
-  ACTIVATION: 'Overview of activation phase',
-};
-
 export default function ActivitiesView() {
   const { id: projectID } = useParams();
   const { state } = useSidebar();
@@ -26,6 +20,10 @@ export default function ActivitiesView() {
   const { activitiesData, isLoading } = useActivities(projectID as UUID, {
     perPage: 9999,
   });
+
+  const { phases } = usePhasesStore((state) => ({
+    phases: state.phases,
+  }));
 
   const storageKey = projectID ? `aa_pinned_phases_${projectID}` : null;
 
@@ -73,6 +71,17 @@ export default function ActivitiesView() {
     [storageKey, pinnedPhases],
   );
 
+  const uniquePhaseNames = Array.from(
+    new Set(phases.map((phase) => phase.name)),
+  );
+
+  const PHASE_DESCRIPTIONS: Record<string, string> = Object.fromEntries(
+    uniquePhaseNames.map((name) => [
+      name,
+      `Overview of ${name.toLowerCase()} phase`,
+    ]),
+  );
+
   const uniquePhases = useMemo(() => {
     // Start from all known phases so that phases with zero activities still render as cards
     const phaseSet = new Set<string>(Object.keys(PHASE_DESCRIPTIONS));
@@ -90,9 +99,9 @@ export default function ActivitiesView() {
   // const sortedPhases = [
   //   'PREPAREDNESS',
   //   'ACTIVATION',
-  //   'READINESS',
-  //   'POST-ACTIVATION',
-  //   'PRE-ACTIVATION',
+  //     'READINESS',
+  //     'POST-ACTIVATION',
+  //     'PRE-ACTIVATION',
   // ];
 
   const sortedPhases = useMemo(() => {
@@ -210,15 +219,15 @@ export default function ActivitiesView() {
               <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
                 <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
                   <div className="flex flex-col gap-1 items-center ">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100">
+                      <Plus className="w-6 h-6 text-blue-500" />
+                    </div>
                     <p className="text-base font-medium text-blue-500 ">
                       Add Phase
                     </p>
                     <p className="text-sm text-blue-400">
                       Click here to add new phase
                     </p>
-                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100">
-                      <Plus className="w-6 h-6 text-blue-500" />
-                    </div>
                   </div>
                 </CardContent>
               </Card>

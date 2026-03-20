@@ -23,6 +23,8 @@ import {
 import {
   InkindDetailsSchema,
   InkindDetailsValues,
+  INKIND_TYPES,
+  INKIND_TYPE_LABELS,
 } from '../schemas/inkind.validation';
 import type { InkindFormData } from '../schemas/inkind.validation';
 
@@ -53,6 +55,7 @@ export default function InkindDetailsForm({ formData, onNext }: Props) {
     <Form {...form}>
       <form onSubmit={handleSubmit(onNext)}>
         <div className="border rounded-sm p-4 flex flex-col space-y-4">
+          <p className="text-base font-semibold">Register Inkind</p>
           {/* Name */}
           <FormField
             control={control}
@@ -105,8 +108,11 @@ export default function InkindDetailsForm({ formData, onNext }: Props) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="PRE_DEFINED">Pre-Defined</SelectItem>
-                    <SelectItem value="WALK_IN">Walk-In</SelectItem>
+                    {INKIND_TYPES.map((t) => (
+                      <SelectItem key={t} value={t}>
+                        {INKIND_TYPE_LABELS[t]}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />

@@ -5,3 +5,4 @@ export { default as InkindUpdateSheet } from './inkind.update.sheet';
 export { default as InkindAllocationList } from './inkind.allocation.list';
 export { default as InkindAllocationDetail } from './inkind.allocation.detail';
 export { default as InkindTransactionDetail } from './inkind.transaction.detail';
+export { default as InkindInfoItem } from './inkind.info.item';

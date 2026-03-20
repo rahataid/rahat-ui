@@ -27,7 +27,6 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useInkindsSummary, useInkindTransactions } from '@rahat-ui/query';
 
-// ─── Types ───────────────────────────────────────────────────────────────────
 type Movement = {
   id: number;
   uuid: string;
@@ -59,7 +58,6 @@ type Movement = {
   redemption: unknown | null;
 };
 
-// ─── Config ──────────────────────────────────────────────────────────────────
 const MOVEMENT_CONFIG: Record<
   string,
   { label: string; color: string; bgColor: string; Icon: React.ElementType }
@@ -96,17 +94,14 @@ const MOVEMENT_CONFIG: Record<
   },
 };
 
-// ─── Detail row helper ───────────────────────────────────────────────────────
 function DetailRow({
   icon: Icon,
   label,
   value,
-  valueClass = '',
 }: {
   icon: React.ElementType;
   label: string;
   value: React.ReactNode;
-  valueClass?: string;
 }) {
   return (
     <div className="flex items-start gap-3 py-3 border-b last:border-0">
@@ -115,13 +110,20 @@ function DetailRow({
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
-        <p className={`text-sm font-medium break-all ${valueClass}`}>{value}</p>
+        <p className="text-sm font-medium break-all">{value}</p>
       </div>
     </div>
   );
 }
 
-// ─── Main Component ──────────────────────────────────────────────────────────
+function SectionTitle({ title }: { title: string }) {
+  return (
+    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+      {title}
+    </p>
+  );
+}
+
 export default function InkindOverview() {
   const { id } = useParams();
   const projectUUID = id as UUID;
@@ -131,16 +133,17 @@ export default function InkindOverview() {
 
   const inkindItems: any[] = summaryData?.data ?? [];
   const movements: Movement[] = txData?.data ?? [];
-
   const [selectedMovement, setSelectedMovement] = useState<Movement | null>(
     null,
   );
 
-  // ── Stat cards ─────────────────────────────────────────────────────────────
-  const totalItems = inkindItems.length;
   const totalAvailableStock = inkindItems.reduce(
     (s: number, i: any) => s + (i.availableStock ?? 0),
     0,
+  );
+
+  const sortedMovements = [...movements].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
   return (
@@ -151,12 +154,11 @@ export default function InkindOverview() {
         description="Overview of all in-kind items and stock movements"
       />
 
-      {/* ── Stat cards ───────────────────────────────────────────────────── */}
       <div className="grid xl:grid-cols-4 lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-3 mb-3">
         <DataCard
           className="rounded-sm"
           title="Total In-Kind Types"
-          number={String(totalItems)}
+          number={String(inkindItems.length)}
           subtitle="Distinct items registered"
         />
         <DataCard
@@ -167,7 +169,6 @@ export default function InkindOverview() {
         />
       </div>
 
-      {/* ── Movement list ─────────────────────────────────────────────────── */}
       <div className="flex flex-col flex-[2] border rounded-sm p-4 min-h-0">
         <h1 className="text-sm font-semibold mb-0.5">Overall Inkind Flow</h1>
         <p className="text-xs text-muted-foreground mb-3">
@@ -180,79 +181,69 @@ export default function InkindOverview() {
             </p>
           ) : (
             <div className="flex flex-col space-y-2">
-              {[...movements]
-                .sort(
-                  (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime(),
-                )
-                .map((movement) => {
-                  const config =
-                    MOVEMENT_CONFIG[movement.type] ?? MOVEMENT_CONFIG['ADD'];
-                  const { Icon } = config;
-                  const inkindName = movement.inkind?.name ?? '—';
-                  const isPositive =
-                    movement.type === 'ADD' || movement.type === 'UNLOCK';
+              {sortedMovements.map((movement) => {
+                const config =
+                  MOVEMENT_CONFIG[movement.type] ?? MOVEMENT_CONFIG['ADD'];
+                const { Icon } = config;
+                const isPositive =
+                  movement.type === 'ADD' || movement.type === 'UNLOCK';
 
-                  return (
-                    <button
-                      key={movement.uuid}
-                      onClick={() => setSelectedMovement(movement)}
-                      className="flex items-center justify-between px-3 py-2.5 rounded-sm border border-gray-100 hover:bg-gray-50 hover:border-primary/30 transition-colors text-left w-full"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${config.bgColor}`}
-                        >
-                          <Icon
-                            size={15}
-                            className={config.color}
-                            strokeWidth={2}
-                          />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium leading-none">
-                            {inkindName}
-                          </p>
-                          {movement.groupInkind && (
-                            <p className="text-xs text-muted-foreground mt-0.5">
-                              Group ID:{' '}
-                              {movement.groupInkind.groupId.slice(0, 8)}…
-                            </p>
-                          )}
+                return (
+                  <button
+                    key={movement.uuid}
+                    onClick={() => setSelectedMovement(movement)}
+                    className="flex items-center justify-between px-3 py-2.5 rounded-sm border border-gray-100 hover:bg-gray-50 hover:border-primary/30 transition-colors text-left w-full"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${config.bgColor}`}
+                      >
+                        <Icon
+                          size={15}
+                          className={config.color}
+                          strokeWidth={2}
+                        />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium leading-none">
+                          {movement.inkind?.name ?? '—'}
+                        </p>
+                        {movement.groupInkind && (
                           <p className="text-xs text-muted-foreground mt-0.5">
-                            {movement.createdAt
-                              ? format(
-                                  new Date(movement.createdAt),
-                                  'dd MMM yyyy, HH:mm',
-                                )
-                              : '—'}
+                            Group ID: {movement.groupInkind.groupId.slice(0, 8)}
+                            …
                           </p>
-                        </div>
+                        )}
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {movement.createdAt
+                            ? format(
+                                new Date(movement.createdAt),
+                                'dd MMM yyyy, HH:mm',
+                              )
+                            : '—'}
+                        </p>
                       </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span
-                          className={`text-sm font-semibold ${config.color}`}
-                        >
-                          {isPositive ? '+' : '-'}
-                          {movement.quantity ?? 0}
-                        </span>
-                        <Badge
-                          variant="outline"
-                          className={`rounded-sm text-xs ${config.color} border-current`}
-                        >
-                          {config.label}
-                        </Badge>
-                      </div>
-                    </button>
-                  );
-                })}
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className={`text-sm font-semibold ${config.color}`}>
+                        {isPositive ? '+' : '-'}
+                        {movement.quantity ?? 0}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className={`rounded-sm text-xs ${config.color} border-current`}
+                      >
+                        {config.label}
+                      </Badge>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           )}
         </ScrollArea>
       </div>
 
-      {/* ── Detail sheet ──────────────────────────────────────────────────── */}
       <Sheet
         open={!!selectedMovement}
         onOpenChange={(o) => !o && setSelectedMovement(null)}
@@ -295,11 +286,8 @@ export default function InkindOverview() {
                     </div>
                   </SheetHeader>
 
-                  {/* ── Transaction info ─────────────────────────────────── */}
                   <div className="mb-5">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-                      Transaction
-                    </p>
+                    <SectionTitle title="Transaction" />
                     <div className="border rounded-md px-3">
                       <DetailRow
                         icon={Hash}
@@ -331,12 +319,9 @@ export default function InkindOverview() {
                     </div>
                   </div>
 
-                  {/* ── In-Kind item ─────────────────────────────────────── */}
                   {selectedMovement.inkind && (
                     <div className="mb-5">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-                        In-Kind Item
-                      </p>
+                      <SectionTitle title="In-Kind Item" />
                       <div className="border rounded-md px-3">
                         <DetailRow
                           icon={Package}
@@ -375,12 +360,9 @@ export default function InkindOverview() {
                     </div>
                   )}
 
-                  {/* ── Group allocation ─────────────────────────────────── */}
                   {selectedMovement.groupInkind && (
                     <div className="mb-5">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-                        Group Allocation
-                      </p>
+                      <SectionTitle title="Group Allocation" />
                       <div className="border rounded-md px-3">
                         <DetailRow
                           icon={Users}

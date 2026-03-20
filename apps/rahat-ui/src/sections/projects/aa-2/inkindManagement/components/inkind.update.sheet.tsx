@@ -34,13 +34,16 @@ import { UUID } from 'crypto';
 import {
   InkindDetailsSchema,
   InkindDetailsValues,
+  InkindType,
+  INKIND_TYPES,
+  INKIND_TYPE_LABELS,
 } from '../schemas/inkind.validation';
 
 interface InkindItem {
   uuid: string;
   name: string;
   description?: string;
-  type: string;
+  type: InkindType;
   availableStock?: number;
 }
 
@@ -73,7 +76,7 @@ export default function InkindUpdateSheet({
       form.reset({
         name: item.name,
         description: item.description ?? '',
-        type: (item.type as 'PRE_DEFINED' | 'WALK_IN') ?? 'PRE_DEFINED',
+        type: (item.type as InkindType) ?? 'PRE_DEFINED',
       });
     }
   }, [item, form]);
@@ -84,7 +87,7 @@ export default function InkindUpdateSheet({
       uuid: item.uuid,
       name: values.name,
       description: values.description,
-      type: values.type as 'PRE_DEFINED' | 'WALK_IN',
+      type: values.type as InkindType,
     });
     onOpenChange(false);
   };
@@ -150,8 +153,11 @@ export default function InkindUpdateSheet({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="PRE_DEFINED">Pre-Defined</SelectItem>
-                      <SelectItem value="WALK_IN">Walk-In</SelectItem>
+                      {INKIND_TYPES.map((t) => (
+                        <SelectItem key={t} value={t}>
+                          {INKIND_TYPE_LABELS[t]}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

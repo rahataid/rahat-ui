@@ -8,6 +8,7 @@ import { useCreateInkind } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import type { InkindDetailsValues } from '../schemas/inkind.validation';
+import { INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
 
 interface Props {
   formData: InkindDetailsValues;
@@ -64,7 +65,7 @@ export default function InkindConfirmation({
                   }
                   className="rounded-sm text-sm"
                 >
-                  {formData.type === 'PRE_DEFINED' ? 'Pre-Defined' : 'Walk-In'}
+                  {INKIND_TYPE_LABELS[formData.type]}
                 </Badge>
               </div>
             </div>

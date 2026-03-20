@@ -7,7 +7,7 @@ import {
   TabsList,
   TabsTrigger,
 } from 'libs/shadcn/src/components/ui/tabs';
-import { useEffect } from 'react';
+import { ComponentType, useEffect } from 'react';
 import InkindList from './inkind.list';
 import InkindOverview from './inkind.overview';
 import InkindAllocationList from './inkind.allocation.list';
@@ -20,7 +20,7 @@ const INKIND_TABS = [
 
 type InkindTabValue = (typeof INKIND_TABS)[number]['value'];
 
-const componentMap: Record<InkindTabValue, React.ComponentType> = {
+const componentMap: Record<InkindTabValue, ComponentType> = {
   inkindList: InkindList,
   inkindOverview: InkindOverview,
   inkindAllocation: InkindAllocationList,

@@ -29,6 +29,29 @@ export type ListInkindParams = {
   name?: string;
 };
 
+function useToast() {
+  const alert = useSwal();
+  return alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+}
+
+// Common runAction hook as similar mutation is required over sevices
+async function runAction(
+  q: ReturnType<typeof useProjectAction>,
+  projectUUID: UUID,
+  action: string,
+  payload: Record<string, unknown>,
+) {
+  return q.mutateAsync({
+    uuid: projectUUID as `${string}-${string}-${string}-${string}-${string}`,
+    data: { action, payload },
+  });
+}
+
 export const useInkinds = (
   projectUUID: UUID,
   params: ListInkindParams = {},
@@ -40,16 +63,7 @@ export const useInkinds = (
     queryKey: ['aa.inkinds.get', projectUUID, paramsString],
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    queryFn: async () => {
-      const result = await q.mutateAsync({
-        uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
-        data: {
-          action: 'aa.inkinds.get',
-          payload: { ...params },
-        },
-      });
-      return result;
-    },
+    queryFn: () => runAction(q, projectUUID, 'aa.inkinds.get', { ...params }),
   });
 };
 
@@ -60,40 +74,19 @@ export const useGetOneInkind = (projectUUID: UUID, inkindUUID: string) => {
     queryKey: ['aa.inkinds.getOne', projectUUID, inkindUUID],
     enabled: !!inkindUUID,
     refetchOnMount: true,
-    queryFn: async () => {
-      const result = await q.mutateAsync({
-        uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
-        data: {
-          action: 'aa.inkinds.getOne',
-          payload: { uuid: inkindUUID },
-        },
-      });
-      return result;
-    },
+    queryFn: () =>
+      runAction(q, projectUUID, 'aa.inkinds.getOne', { uuid: inkindUUID }),
   });
 };
 
 export const useCreateInkind = (projectUUID: UUID) => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const toast = useToast();
 
   return useMutation({
-    mutationFn: async (payload: CreateInkindPayload) => {
-      return q.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: 'aa.inkinds.create',
-          payload,
-        },
-      });
-    },
+    mutationFn: (payload: CreateInkindPayload) =>
+      runAction(q, projectUUID, 'aa.inkinds.create', payload as any),
     onSuccess: () => {
       q.reset();
       toast.fire({
@@ -105,12 +98,11 @@ export const useCreateInkind = (projectUUID: UUID) => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
         title: 'Error while creating in-kind item.',
         icon: 'error',
-        text: errorMessage,
+        text: error?.response?.data?.message || 'Error',
       });
     },
   });
@@ -119,24 +111,11 @@ export const useCreateInkind = (projectUUID: UUID) => {
 export const useUpdateInkind = (projectUUID: UUID) => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const toast = useToast();
 
   return useMutation({
-    mutationFn: async (payload: UpdateInkindPayload) => {
-      return q.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: 'aa.inkinds.update',
-          payload,
-        },
-      });
-    },
+    mutationFn: (payload: UpdateInkindPayload) =>
+      runAction(q, projectUUID, 'aa.inkinds.update', payload as any),
     onSuccess: () => {
       q.reset();
       toast.fire({
@@ -148,12 +127,11 @@ export const useUpdateInkind = (projectUUID: UUID) => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
         title: 'Error while updating in-kind item.',
         icon: 'error',
-        text: errorMessage,
+        text: error?.response?.data?.message || 'Error',
       });
     },
   });
@@ -162,24 +140,11 @@ export const useUpdateInkind = (projectUUID: UUID) => {
 export const useDeleteInkind = (projectUUID: UUID) => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const toast = useToast();
 
   return useMutation({
-    mutationFn: async ({ uuid }: { uuid: string }) => {
-      return q.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: 'aa.inkinds.delete',
-          payload: { uuid },
-        },
-      });
-    },
+    mutationFn: ({ uuid }: { uuid: string }) =>
+      runAction(q, projectUUID, 'aa.inkinds.delete', { uuid }),
     onSuccess: () => {
       q.reset();
       toast.fire({
@@ -191,18 +156,16 @@ export const useDeleteInkind = (projectUUID: UUID) => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
         title: 'Error while deleting in-kind item.',
         icon: 'error',
-        text: errorMessage,
+        text: error?.response?.data?.message || 'Error',
       });
     },
   });
 };
 
-// Fetches all inkind items (no pagination) for overview summary stats
 export const useInkindsSummary = (projectUUID: UUID) => {
   const q = useProjectAction();
 
@@ -210,20 +173,15 @@ export const useInkindsSummary = (projectUUID: UUID) => {
     queryKey: ['aa.inkinds.summary', projectUUID],
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    queryFn: async () => {
-      const result = await q.mutateAsync({
-        uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
-        data: {
-          action: 'aa.inkinds.get',
-          payload: { perPage: 1000, order: 'desc', sort: 'createdAt' },
-        },
-      });
-      return result;
-    },
+    queryFn: () =>
+      runAction(q, projectUUID, 'aa.inkinds.get', {
+        perPage: 1000,
+        order: 'desc',
+        sort: 'createdAt',
+      }),
   });
 };
 
-// Fetches inkind tracker transactions (stock movements / flow)
 export const useInkindTransactions = (projectUUID: UUID) => {
   const q = useProjectAction();
 
@@ -231,40 +189,19 @@ export const useInkindTransactions = (projectUUID: UUID) => {
     queryKey: ['aa.inkindStock.getAllMovements', projectUUID],
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    queryFn: async () => {
-      const result = await q.mutateAsync({
-        uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
-        data: {
-          action: 'aaProject.inkindStock.getAllMovements',
-          payload: {},
-        },
-      });
-      return result;
-    },
+    queryFn: () =>
+      runAction(q, projectUUID, 'aaProject.inkindStock.getAllMovements', {}),
   });
 };
 
 export const useAddInkindStock = (projectUUID: UUID) => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const toast = useToast();
 
   return useMutation({
-    mutationFn: async (payload: { inkindId: string; quantity: number }) => {
-      return q.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: 'aaProject.inkindStock.add',
-          payload,
-        },
-      });
-    },
+    mutationFn: (payload: { inkindId: string; quantity: number }) =>
+      runAction(q, projectUUID, 'aaProject.inkindStock.add', payload as any),
     onSuccess: () => {
       q.reset();
       toast.fire({ title: 'Stock added successfully.', icon: 'success' });
@@ -276,12 +213,11 @@ export const useAddInkindStock = (projectUUID: UUID) => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
         title: 'Error while adding stock.',
         icon: 'error',
-        text: errorMessage,
+        text: error?.response?.data?.message || 'Error',
       });
     },
   });
@@ -290,24 +226,11 @@ export const useAddInkindStock = (projectUUID: UUID) => {
 export const useRemoveInkindStock = (projectUUID: UUID) => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const toast = useToast();
 
   return useMutation({
-    mutationFn: async (payload: { inkindUuid: string; quantity: number }) => {
-      return q.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: 'aaProject.inkindStock.remove',
-          payload,
-        },
-      });
-    },
+    mutationFn: (payload: { inkindUuid: string; quantity: number }) =>
+      runAction(q, projectUUID, 'aaProject.inkindStock.remove', payload as any),
     onSuccess: () => {
       q.reset();
       toast.fire({ title: 'Stock removed successfully.', icon: 'success' });
@@ -319,12 +242,11 @@ export const useRemoveInkindStock = (projectUUID: UUID) => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
         title: 'Error while removing stock.',
         icon: 'error',
-        text: errorMessage,
+        text: error?.response?.data?.message || 'Error',
       });
     },
   });
@@ -337,44 +259,28 @@ export const useGroupInkindAllocations = (projectUUID: UUID) => {
     queryKey: ['aaProject.groupInkinds.getByGroup', projectUUID],
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    queryFn: async () => {
-      const result = await q.mutateAsync({
-        uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
-        data: {
-          action: 'aaProject.groupInkinds.getByGroup',
-          payload: {},
-        },
-      });
-      return result;
-    },
+    queryFn: () =>
+      runAction(q, projectUUID, 'aaProject.groupInkinds.getByGroup', {}),
   });
 };
 
 export const useUpdateGroupInkindAllocation = (projectUUID: UUID) => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const toast = useToast();
 
   return useMutation({
-    mutationFn: async (payload: {
+    mutationFn: (payload: {
       groupId: string;
       inkindId: string;
       quantity: number;
-    }) => {
-      return q.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: 'aaProject.groupInkinds.updateQuantity',
-          payload,
-        },
-      });
-    },
+    }) =>
+      runAction(
+        q,
+        projectUUID,
+        'aaProject.groupInkinds.updateQuantity',
+        payload as any,
+      ),
     onSuccess: () => {
       q.reset();
       toast.fire({
@@ -392,12 +298,11 @@ export const useUpdateGroupInkindAllocation = (projectUUID: UUID) => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
         title: 'Error while updating allocation.',
         icon: 'error',
-        text: errorMessage,
+        text: error?.response?.data?.message || 'Error',
       });
     },
   });
@@ -414,16 +319,10 @@ export const useGetGroupInkindDetail = (
     enabled: !!allocationUUID,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    queryFn: async () => {
-      const result = await q.mutateAsync({
-        uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
-        data: {
-          action: 'aaProject.groupInkinds.getOne',
-          payload: { uuid: allocationUUID },
-        },
-      });
-      return result;
-    },
+    queryFn: () =>
+      runAction(q, projectUUID, 'aaProject.groupInkinds.getOne', {
+        uuid: allocationUUID,
+      }),
   });
 };
 
@@ -442,40 +341,26 @@ export const useGetGroupInkindRedemptions = (
     enabled: !!allocationUUID,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    queryFn: async () => {
-      const result = await q.mutateAsync({
-        uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
-        data: {
-          action: 'aaProject.groupInkinds.getRedemptions',
-          payload: { groupInkindUuid: allocationUUID },
-        },
-      });
-      return result;
-    },
+    queryFn: () =>
+      runAction(q, projectUUID, 'aaProject.groupInkinds.getRedemptions', {
+        groupInkindUuid: allocationUUID,
+      }),
   });
 };
 
 export const useAssignGroupInkind = (projectUUID: UUID) => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
+  const toast = useToast();
 
   return useMutation({
-    mutationFn: async (payload: { groupId: string; inkindId: string }) => {
-      return q.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: 'aaProject.groupInkinds.assign',
-          payload,
-        },
-      });
-    },
+    mutationFn: (payload: { groupId: string; inkindId: string }) =>
+      runAction(
+        q,
+        projectUUID,
+        'aaProject.groupInkinds.assign',
+        payload as any,
+      ),
     onSuccess: () => {
       q.reset();
       toast.fire({
@@ -487,12 +372,11 @@ export const useAssignGroupInkind = (projectUUID: UUID) => {
       });
     },
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
         title: 'Error while assigning inkind to group.',
         icon: 'error',
-        text: errorMessage,
+        text: error?.response?.data?.message || 'Error',
       });
     },
   });

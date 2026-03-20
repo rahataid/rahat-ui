@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -47,12 +47,13 @@ import InkindUpdateSheet from './inkind.update.sheet';
 import { useSwal } from 'apps/rahat-ui/src/components/swal';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import { InkindType, INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
 
 export type InkindItem = {
   uuid: string;
   name: string;
   description?: string;
-  type: string;
+  type: InkindType;
   availableStock?: number;
 };
 
@@ -63,24 +64,41 @@ type StockDialogState = {
   quantity: string;
 };
 
+type ActionButtonProps = {
+  label: string;
+  icon: React.ReactNode;
+  hoverClass: string;
+  onClick: () => void;
+};
+
+function ActionButton({ label, icon, hoverClass, onClick }: ActionButtonProps) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          onClick={onClick}
+          className={`p-1.5 rounded transition-colors ${hoverClass}`}
+        >
+          {icon}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="top">
+        <p>{label}</p>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
 export default function InkindList() {
   const router = useRouter();
   const { id } = useParams();
   const projectUUID = id as UUID;
 
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 10,
-  });
-
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [selectedItem, setSelectedItem] = useState<InkindItem | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-
   const [stockDialog, setStockDialog] = useState<StockDialogState>({
     open: false,
     mode: 'add',
@@ -119,13 +137,11 @@ export default function InkindList() {
     }
   };
 
-  const openStockDialog = (item: InkindItem, mode: 'add' | 'remove') => {
+  const openStockDialog = (item: InkindItem, mode: 'add' | 'remove') =>
     setStockDialog({ open: true, mode, item, quantity: '' });
-  };
 
-  const closeStockDialog = () => {
+  const closeStockDialog = () =>
     setStockDialog({ open: false, mode: 'add', item: null, quantity: '' });
-  };
 
   const handleStockSubmit = async () => {
     const { mode, item, quantity } = stockDialog;
@@ -153,130 +169,103 @@ export default function InkindList() {
     closeStockDialog();
   };
 
-  const rows: InkindItem[] = [...(data?.data ?? [])].sort((a: any, b: any) => {
-    const aTime = new Date(a.updatedAt ?? a.createdAt ?? 0).getTime();
-    const bTime = new Date(b.updatedAt ?? b.createdAt ?? 0).getTime();
-    return bTime - aTime;
-  });
+  const rows = useMemo<InkindItem[]>(
+    () =>
+      [...(data?.data ?? [])].sort((a: any, b: any) => {
+        const aTime = new Date(a.updatedAt ?? a.createdAt ?? 0).getTime();
+        const bTime = new Date(b.updatedAt ?? b.createdAt ?? 0).getTime();
+        return bTime - aTime;
+      }),
+    [data],
+  );
   const meta = data?.meta;
 
-  const columns: ColumnDef<InkindItem>[] = [
-    {
-      accessorKey: 'name',
-      header: 'Name',
-      cell: ({ row }) => (
-        <span className="font-medium">{row.getValue('name')}</span>
-      ),
-    },
-    {
-      accessorKey: 'description',
-      header: 'Description',
-      cell: ({ row }) => (
-        <span className="text-muted-foreground text-sm">
-          {row.getValue('description') || '—'}
-        </span>
-      ),
-    },
-    {
-      accessorKey: 'type',
-      header: 'Type',
-      cell: ({ row }) => {
-        const type = row.getValue('type') as string;
-        return (
-          <Badge
-            variant={type === 'PRE_DEFINED' ? 'default' : 'secondary'}
-            className="rounded-sm"
-          >
-            {type === 'PRE_DEFINED' ? 'Pre-Defined' : 'Walk-In'}
-          </Badge>
-        );
+  const columns: ColumnDef<InkindItem>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'name',
+        header: 'Name',
+        cell: ({ row }) => (
+          <span className="font-medium">{row.getValue('name')}</span>
+        ),
       },
-    },
-    {
-      accessorKey: 'availableStock',
-      header: 'Available Stock',
-      cell: ({ row }) => (
-        <span className="font-semibold text-primary">
-          {row.getValue('availableStock') ?? 0}
-        </span>
-      ),
-    },
-    {
-      id: 'actions',
-      header: 'Actions',
-      cell: ({ row }) => {
-        const item = row.original;
-        return (
-          <TooltipProvider>
-            <div className="flex items-center gap-1">
-              {/* Add Stock */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={() => openStockDialog(item, 'add')}
-                    className="p-1.5 rounded hover:bg-green-50 text-green-600 transition-colors"
-                  >
-                    <PlusCircle size={16} strokeWidth={1.8} />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  <p>Add Stock</p>
-                </TooltipContent>
-              </Tooltip>
-
-              {/* Remove Stock */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={() => openStockDialog(item, 'remove')}
-                    className="p-1.5 rounded hover:bg-yellow-50 text-yellow-600 transition-colors"
-                  >
-                    <MinusCircle size={16} strokeWidth={1.8} />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  <p>Remove Stock</p>
-                </TooltipContent>
-              </Tooltip>
-
-              {/* Delete */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={() => handleDelete(item)}
-                    className="p-1.5 rounded hover:bg-red-50 text-red-500 transition-colors"
-                  >
-                    <Trash2 size={16} strokeWidth={1.8} />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  <p>Delete</p>
-                </TooltipContent>
-              </Tooltip>
-
-              {/* Update Details */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={() => {
-                      setSelectedItem(item);
-                      setIsSheetOpen(true);
-                    }}
-                    className="p-1.5 rounded hover:bg-blue-50 text-blue-500 transition-colors"
-                  >
-                    <Pencil size={16} strokeWidth={1.8} />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  <p>Update Details</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          </TooltipProvider>
-        );
+      {
+        accessorKey: 'description',
+        header: 'Description',
+        cell: ({ row }) => (
+          <span className="text-muted-foreground text-sm">
+            {row.getValue('description') || '—'}
+          </span>
+        ),
       },
-    },
-  ];
+      {
+        accessorKey: 'type',
+        header: 'Type',
+        cell: ({ row }) => {
+          const type = row.getValue('type') as InkindType;
+          return (
+            <Badge
+              variant={type === 'PRE_DEFINED' ? 'default' : 'secondary'}
+              className="rounded-sm"
+            >
+              {INKIND_TYPE_LABELS[type]}
+            </Badge>
+          );
+        },
+      },
+      {
+        accessorKey: 'availableStock',
+        header: 'Available Stock',
+        cell: ({ row }) => (
+          <span className="font-semibold text-primary">
+            {row.getValue('availableStock') ?? 0}
+          </span>
+        ),
+      },
+      {
+        id: 'actions',
+        header: 'Actions',
+        cell: ({ row }) => {
+          const item = row.original;
+          return (
+            <TooltipProvider>
+              <div className="flex items-center gap-1">
+                <ActionButton
+                  label="Add Stock"
+                  icon={<PlusCircle size={16} strokeWidth={1.8} />}
+                  hoverClass="hover:bg-green-50 text-green-600"
+                  onClick={() => openStockDialog(item, 'add')}
+                />
+                <ActionButton
+                  label="Remove Stock"
+                  icon={<MinusCircle size={16} strokeWidth={1.8} />}
+                  hoverClass="hover:bg-yellow-50 text-yellow-600"
+                  onClick={() => openStockDialog(item, 'remove')}
+                />
+                <ActionButton
+                  label="Delete"
+                  icon={<Trash2 size={16} strokeWidth={1.8} />}
+                  hoverClass="hover:bg-red-50 text-red-500"
+                  onClick={() => handleDelete(item)}
+                />
+                <ActionButton
+                  label="Update Details"
+                  icon={<Pencil size={16} strokeWidth={1.8} />}
+                  hoverClass="hover:bg-blue-50 text-blue-500"
+                  onClick={() => {
+                    setSelectedItem(item);
+                    setIsSheetOpen(true);
+                  }}
+                />
+              </div>
+            </TooltipProvider>
+          );
+        },
+      },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   const table = useReactTable({
     data: rows,
@@ -350,7 +339,6 @@ export default function InkindList() {
         onOpenChange={setIsSheetOpen}
       />
 
-      {/* Add / Remove Stock Dialog */}
       <Dialog
         open={stockDialog.open}
         onOpenChange={(o) => !o && closeStockDialog()}

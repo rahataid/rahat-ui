@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useGroupInkindAllocations } from '@rahat-ui/query';
+import { useGroupInkindAllocations, useBeneficiaryGroups } from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -32,8 +32,10 @@ type AllocationRow = {
   groupName: string;
   inkindId: string;
   inkindName: string;
+  inkindType?: string;
   quantityAllocated: number;
   quantityRedeemed: number;
+  beneficiaryCount: number;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -62,8 +64,10 @@ const DUMMY_ROWS: AllocationRow[] = [
     groupName: 'AA DEMO 2',
     inkindId: 'ink-1',
     inkindName: 'GAMCHA',
+    inkindType: 'PRE_DEFINED',
     quantityAllocated: 6,
     quantityRedeemed: 0,
+    beneficiaryCount: 0,
     createdAt: new Date().toISOString(),
   },
   {
@@ -72,8 +76,10 @@ const DUMMY_ROWS: AllocationRow[] = [
     groupName: 'Flood Relief Group',
     inkindId: 'ink-3',
     inkindName: 'Blanket',
+    inkindType: 'WALK_IN',
     quantityAllocated: 10,
     quantityRedeemed: 5,
+    beneficiaryCount: 0,
     createdAt: new Date().toISOString(),
   },
   {
@@ -82,8 +88,10 @@ const DUMMY_ROWS: AllocationRow[] = [
     groupName: 'Shelter Support Group',
     inkindId: 'ink-4',
     inkindName: 'Tarpaulin Sheet',
+    inkindType: 'PRE_DEFINED',
     quantityAllocated: 20,
     quantityRedeemed: 20,
+    beneficiaryCount: 0,
     createdAt: new Date().toISOString(),
   },
 ];
@@ -95,6 +103,10 @@ export default function InkindAllocationList() {
   const router = useRouter();
 
   const { data, isLoading } = useGroupInkindAllocations(projectUUID);
+  const { data: groupsList } = useBeneficiaryGroups(projectUUID, {
+    page: 1,
+    perPage: 1000,
+  });
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -108,9 +120,39 @@ export default function InkindAllocationList() {
 
   const rows: AllocationRow[] = useMemo(() => {
     const d = data?.data ?? data?.response?.data ?? data;
-    if (Array.isArray(d) && d.length > 0) return d;
+    if (Array.isArray(d) && d.length > 0) {
+      return d
+        .map((item: any) => {
+          const gId = item.groupId ?? item.group?.uuid ?? '';
+          const matchedGroup = Array.isArray(groupsList)
+            ? groupsList.find((g: any) => g.uuid === gId)
+            : null;
+          const beneficiaryCount =
+            matchedGroup?._count?.groupedBeneficiaries ??
+            item.group?._count?.groupedBeneficiaries ??
+            0;
+          return {
+            uuid: item.uuid,
+            groupId: gId,
+            groupName: item.group?.name ?? item.groupName ?? 'N/A',
+            inkindId: item.inkindId ?? item.inkind?.uuid ?? '',
+            inkindName: item.inkind?.name ?? item.inkindName ?? 'N/A',
+            inkindType: item.inkind?.type ?? item.inkindType ?? 'N/A',
+            quantityAllocated: item.quantityAllocated ?? 0,
+            quantityRedeemed: item.quantityRedeemed ?? 0,
+            beneficiaryCount,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+          };
+        })
+        .sort((a: AllocationRow, b: AllocationRow) => {
+          const aTime = new Date(a.updatedAt ?? a.createdAt ?? 0).getTime();
+          const bTime = new Date(b.updatedAt ?? b.createdAt ?? 0).getTime();
+          return bTime - aTime;
+        });
+    }
     return DUMMY_ROWS;
-  }, [data]);
+  }, [data, groupsList]);
 
   const columns: ColumnDef<AllocationRow>[] = [
     {
@@ -128,6 +170,19 @@ export default function InkindAllocationList() {
       ),
     },
     {
+      accessorKey: 'inkindType',
+      header: 'Inkind Type',
+      cell: ({ row }) => {
+        const t = row.original.inkindType || 'N/A';
+        const label = t
+          .toLowerCase()
+          .split('_')
+          .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(' ');
+        return <Badge className="bg-gray-200 text-gray-600">{label}</Badge>;
+      },
+    },
+    {
       id: 'status',
       header: 'Status',
       cell: ({ row }) => {
@@ -141,12 +196,12 @@ export default function InkindAllocationList() {
       header: 'Total Redeemed',
       cell: ({ row }) => {
         const redeemed = row.getValue('quantityRedeemed') as number;
-        const allocated = row.original.quantityAllocated;
+        const totalBenef = row.original.beneficiaryCount;
         return (
           <span className="font-semibold text-primary">
             {redeemed}{' '}
             <span className="text-xs font-normal text-muted-foreground">
-              / {allocated}
+              / {totalBenef}
             </span>
           </span>
         );
@@ -161,11 +216,23 @@ export default function InkindAllocationList() {
           Icon={Eye}
           tip="View Details"
           iconStyle="hover:text-primary cursor-pointer"
-          handleOnClick={() =>
+          handleOnClick={() => {
+            const r = row.original;
+            const params = new URLSearchParams({
+              groupId: r.groupId,
+              inkindId: r.inkindId,
+              groupName: r.groupName,
+              inkindName: r.inkindName,
+              quantityAllocated: String(r.quantityAllocated),
+              quantityRedeemed: String(r.quantityRedeemed),
+              beneficiaryCount: String(r.beneficiaryCount),
+            });
             router.push(
-              `/projects/aa/${id}/inkind-management/${row.original.uuid}`,
-            )
-          }
+              `/projects/aa/${id}/inkind-management/${
+                r.uuid
+              }?${params.toString()}`,
+            );
+          }}
         />
       ),
     },

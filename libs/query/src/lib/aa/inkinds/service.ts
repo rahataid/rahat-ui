@@ -299,7 +299,7 @@ export const useRemoveInkindStock = (projectUUID: UUID) => {
   });
 
   return useMutation({
-    mutationFn: async (payload: { inkindId: string; quantity: number }) => {
+    mutationFn: async (payload: { inkindUuid: string; quantity: number }) => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
@@ -334,14 +334,14 @@ export const useGroupInkindAllocations = (projectUUID: UUID) => {
   const q = useProjectAction();
 
   return useQuery({
-    queryKey: ['aaProject.groupInkinds.list', projectUUID],
+    queryKey: ['aaProject.groupInkinds.getByGroup', projectUUID],
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {
       const result = await q.mutateAsync({
         uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
         data: {
-          action: 'aaProject.groupInkinds.list',
+          action: 'aaProject.groupInkinds.getByGroup',
           payload: {},
         },
       });

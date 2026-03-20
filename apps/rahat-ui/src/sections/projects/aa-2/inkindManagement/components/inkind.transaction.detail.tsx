@@ -122,8 +122,7 @@ export default function InkindTransactionDetail() {
   const allocation =
     allocationData?.data ?? allocationData?.response?.data ?? allocationData;
 
-  const groupName =
-    allocation?.group?.name ?? allocation?.groupName ?? 'Group Allocation';
+  const groupName = allocation?.group?.name ?? allocation?.groupName ?? 'N/A';
   const inkindName =
     allocation?.inkind?.name ?? allocation?.inkindName ?? 'N/A';
   const inkindType =
@@ -201,7 +200,7 @@ export default function InkindTransactionDetail() {
           className="h-24 w-full rounded-sm pt-1"
         />
         <DataCard
-          title="Inkind Item"
+          title="Inkind Name"
           number={txn.inkindName}
           className="h-24 w-full rounded-sm pt-1"
         />
@@ -222,26 +221,16 @@ export default function InkindTransactionDetail() {
               value={txn.beneficiaryWalletAddress}
             />
             <InfoItem label="Transaction ID" value={txn.transactionId} />
-            <InfoItem label="Type">
-              <Badge className={typeBadgeStyle}>{formatType(txn.type)}</Badge>
-            </InfoItem>
 
             {/* Row 2 */}
             <InfoItem
               label="Quantity Disbursed"
               value={txn.quantityDisbursed}
             />
-            <InfoItem label="In-Kind Item" value={txn.inkindName} />
-            <InfoItem label="Item Type">
-              <Badge className="bg-gray-200 text-gray-600">
-                {formatType(txn.inkindType)}
-              </Badge>
-            </InfoItem>
+            <InfoItem label="Inkind Name" value={txn.inkindName} />
 
             {/* Row 3 */}
             <InfoItem label="Timestamp" value={formatDate(txn.createdAt)} />
-            <InfoItem label="Created At" value={formatDate(txn.createdAt)} />
-            <InfoItem label="Updated At" value={formatDate(txn.updatedAt)} />
           </div>
         </CardContent>
       </Card>

@@ -169,7 +169,7 @@ export default function InkindOverview() {
 
       {/* ── Movement list ─────────────────────────────────────────────────── */}
       <div className="flex flex-col flex-[2] border rounded-sm p-4 min-h-0">
-        <h1 className="text-sm font-semibold mb-0.5">Overall In-Kind Flow</h1>
+        <h1 className="text-sm font-semibold mb-0.5">Overall Inkind Flow</h1>
         <p className="text-xs text-muted-foreground mb-3">
           Click on any movement to view details
         </p>
@@ -180,65 +180,73 @@ export default function InkindOverview() {
             </p>
           ) : (
             <div className="flex flex-col space-y-2">
-              {[...movements].reverse().map((movement) => {
-                const config =
-                  MOVEMENT_CONFIG[movement.type] ?? MOVEMENT_CONFIG['ADD'];
-                const { Icon } = config;
-                const inkindName = movement.inkind?.name ?? '—';
-                const isPositive =
-                  movement.type === 'ADD' || movement.type === 'UNLOCK';
+              {[...movements]
+                .sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime(),
+                )
+                .map((movement) => {
+                  const config =
+                    MOVEMENT_CONFIG[movement.type] ?? MOVEMENT_CONFIG['ADD'];
+                  const { Icon } = config;
+                  const inkindName = movement.inkind?.name ?? '—';
+                  const isPositive =
+                    movement.type === 'ADD' || movement.type === 'UNLOCK';
 
-                return (
-                  <button
-                    key={movement.uuid}
-                    onClick={() => setSelectedMovement(movement)}
-                    className="flex items-center justify-between px-3 py-2.5 rounded-sm border border-gray-100 hover:bg-gray-50 hover:border-primary/30 transition-colors text-left w-full"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${config.bgColor}`}
-                      >
-                        <Icon
-                          size={15}
-                          className={config.color}
-                          strokeWidth={2}
-                        />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium leading-none">
-                          {inkindName}
-                        </p>
-                        {movement.groupInkind && (
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            Group ID: {movement.groupInkind.groupId.slice(0, 8)}
-                            …
+                  return (
+                    <button
+                      key={movement.uuid}
+                      onClick={() => setSelectedMovement(movement)}
+                      className="flex items-center justify-between px-3 py-2.5 rounded-sm border border-gray-100 hover:bg-gray-50 hover:border-primary/30 transition-colors text-left w-full"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${config.bgColor}`}
+                        >
+                          <Icon
+                            size={15}
+                            className={config.color}
+                            strokeWidth={2}
+                          />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium leading-none">
+                            {inkindName}
                           </p>
-                        )}
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {movement.createdAt
-                            ? format(
-                                new Date(movement.createdAt),
-                                'dd MMM yyyy, HH:mm',
-                              )
-                            : '—'}
-                        </p>
+                          {movement.groupInkind && (
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              Group ID:{' '}
+                              {movement.groupInkind.groupId.slice(0, 8)}…
+                            </p>
+                          )}
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {movement.createdAt
+                              ? format(
+                                  new Date(movement.createdAt),
+                                  'dd MMM yyyy, HH:mm',
+                                )
+                              : '—'}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className={`text-sm font-semibold ${config.color}`}>
-                        {isPositive ? '+' : '-'}
-                        {movement.quantity ?? 0}
-                      </span>
-                      <Badge
-                        variant="outline"
-                        className={`rounded-sm text-xs ${config.color} border-current`}
-                      >
-                        {config.label}
-                      </Badge>
-                    </div>
-                  </button>
-                );
-              })}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span
+                          className={`text-sm font-semibold ${config.color}`}
+                        >
+                          {isPositive ? '+' : '-'}
+                          {movement.quantity ?? 0}
+                        </span>
+                        <Badge
+                          variant="outline"
+                          className={`rounded-sm text-xs ${config.color} border-current`}
+                        >
+                          {config.label}
+                        </Badge>
+                      </div>
+                    </button>
+                  );
+                })}
             </div>
           )}
         </ScrollArea>

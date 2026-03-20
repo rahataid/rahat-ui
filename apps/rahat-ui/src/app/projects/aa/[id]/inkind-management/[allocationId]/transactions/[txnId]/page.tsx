@@ -6,7 +6,12 @@ import { InkindTransactionDetail } from 'apps/rahat-ui/src/sections/projects/aa-
 const Page = () => {
   return (
     <RoleAuth
-      roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality, AARoles.UNICEFNepalCO]}
+      roles={[
+        AARoles.ADMIN,
+        AARoles.MANAGER,
+        AARoles.Municipality,
+        AARoles.UNICEFNepalCO,
+      ]}
     >
       <InkindTransactionDetail />
     </RoleAuth>

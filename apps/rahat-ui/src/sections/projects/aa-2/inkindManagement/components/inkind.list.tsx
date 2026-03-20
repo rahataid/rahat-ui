@@ -148,12 +148,16 @@ export default function InkindList() {
     if (mode === 'add') {
       await addStock.mutateAsync({ inkindId: item.uuid, quantity: qty });
     } else {
-      await removeStock.mutateAsync({ inkindId: item.uuid, quantity: qty });
+      await removeStock.mutateAsync({ inkindUuid: item.uuid, quantity: qty });
     }
     closeStockDialog();
   };
 
-  const rows: InkindItem[] = data?.data ?? [];
+  const rows: InkindItem[] = [...(data?.data ?? [])].sort((a: any, b: any) => {
+    const aTime = new Date(a.updatedAt ?? a.createdAt ?? 0).getTime();
+    const bTime = new Date(b.updatedAt ?? b.createdAt ?? 0).getTime();
+    return bTime - aTime;
+  });
   const meta = data?.meta;
 
   const columns: ColumnDef<InkindItem>[] = [

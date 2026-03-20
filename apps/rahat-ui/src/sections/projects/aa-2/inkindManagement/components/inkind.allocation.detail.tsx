@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
-  useGetGroupInkindDetail,
+  useGroupInkindAllocations,
   useGetGroupInkindRedemptions,
+  useSingleBeneficiaryGroup,
 } from '@rahat-ui/query';
 import {
   getCoreRowModel,
@@ -82,23 +83,56 @@ export default function InkindAllocationDetail() {
   const { id, allocationId } = useParams();
   const projectUUID = id as UUID;
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const { data: detailData, isLoading: detailLoading } =
-    useGetGroupInkindDetail(projectUUID, allocationId as string);
+  // ── Query params as immediate fallbacks ──────────────────────────────────
+  const qGroupId = searchParams.get('groupId') ?? '';
+  const qInkindId = searchParams.get('inkindId') ?? '';
+  const qGroupName = searchParams.get('groupName') ?? 'N/A';
+  const qInkindName = searchParams.get('inkindName') ?? 'N/A';
+  const qAllocated = Number(searchParams.get('quantityAllocated') ?? 0);
+  const qRedeemed = Number(searchParams.get('quantityRedeemed') ?? 0);
+  const qBeneficiaryCount = Number(searchParams.get('beneficiaryCount') ?? 0);
+
+  // ── Fetch full allocations list and find the matching record ─────────────
+  const { data: allData, isLoading: detailLoading } =
+    useGroupInkindAllocations(projectUUID);
+
+  const detail = useMemo(() => {
+    const list = allData?.data ?? allData?.response?.data ?? allData;
+    if (!Array.isArray(list)) return null;
+    return (
+      list.find((item: any) => item.uuid === allocationId) ??
+      list.find(
+        (item: any) =>
+          (item.groupId ?? item.group?.uuid) === qGroupId &&
+          (item.inkindId ?? item.inkind?.uuid) === qInkindId,
+      ) ??
+      null
+    );
+  }, [allData, allocationId, qGroupId, qInkindId]);
 
   const { data: redemptionsData, isLoading: redemptionsLoading } =
     useGetGroupInkindRedemptions(projectUUID, allocationId as string);
 
-  const detail = detailData?.data ?? detailData?.response?.data ?? detailData;
-  const groupName =
-    detail?.group?.name ?? detail?.groupName ?? 'N/A';
-  const inkindName = detail?.inkind?.name ?? detail?.inkindName ?? 'N/A';
-  const groupId = detail?.groupId ?? detail?.group?.uuid ?? '';
-  const inkindId = detail?.inkindId ?? detail?.inkind?.uuid ?? '';
-  const quantityAllocated = detail?.quantityAllocated ?? 0;
-  const quantityRedeemed = detail?.quantityRedeemed ?? 0;
+  const groupId = detail?.groupId ?? detail?.group?.uuid ?? qGroupId;
+  const inkindId = detail?.inkindId ?? detail?.inkind?.uuid ?? qInkindId;
+
+  // ── Fetch single group to get _count.groupedBeneficiaries ────────────────
+  const { data: groupData } = useSingleBeneficiaryGroup(
+    projectUUID,
+    groupId as UUID,
+  );
+
+  const groupName = detail?.group?.name ?? detail?.groupName ?? qGroupName;
+  const inkindName = detail?.inkind?.name ?? detail?.inkindName ?? qInkindName;
+  const quantityAllocated = detail?.quantityAllocated ?? qAllocated;
+  const quantityRedeemed = detail?.quantityRedeemed ?? qRedeemed;
   const beneficiaryCount =
-    detail?.group?.beneficiaryCount ?? detail?.beneficiaryCount ?? 0;
+    groupData?._count?.groupedBeneficiaries ??
+    groupData?.groupedBeneficiaries?.length ??
+    detail?.group?.beneficiaryCount ??
+    qBeneficiaryCount;
   const status = deriveStatus(quantityAllocated, quantityRedeemed);
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -150,19 +184,6 @@ export default function InkindAllocationDetail() {
           maxLength={16}
         />
       ),
-    },
-    {
-      accessorKey: 'type',
-      header: 'Type',
-      cell: ({ row }) => {
-        const t = row.original.type || 'N/A';
-        const label = t
-          .toLowerCase()
-          .split('_')
-          .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
-          .join(' ');
-        return <Badge className="bg-gray-200 text-gray-600">{label}</Badge>;
-      },
     },
     {
       accessorKey: 'quantityDisbursed',
@@ -219,7 +240,7 @@ export default function InkindAllocationDetail() {
 
   const dataCards = [
     {
-      name: 'Inkind Assigned',
+      name: 'Inkind Name',
       amount: inkindName,
     },
     {

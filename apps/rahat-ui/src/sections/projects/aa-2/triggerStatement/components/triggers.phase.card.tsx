@@ -62,27 +62,9 @@ export default function TriggersPhaseCard({
             } text-xs px-1`}
           />
         </div>
-        <div className="grid grid-cols-2 gap-2">
-          <TriggerDetailsCard
-            title="Mandatory"
-            color="blue"
-            bgColor="bg-[#EAF2FB]"
-            totalTriggers={mandatoryTriggers}
-            totalTriggered={triggeredMandatoryTriggers}
-            totalRequiredTriggers={requiredMandatoryTriggers}
-          />
-          <TriggerDetailsCard
-            title="Optional"
-            color="yellow"
-            bgColor="bg-[#FCF6E9]"
-            totalTriggers={optionalTriggers}
-            totalTriggered={triggeredOptionalTriggers}
-            totalRequiredTriggers={requiredOptionalTriggers}
-          />
-        </div>
-        <div className="flex justify-center mb-1">
-          {totalCharSeries === 0 ? (
-            chartType === 'donut' ? (
+        {chartType === 'donut' && (
+          <div className="flex justify-center mb-1">
+            {totalCharSeries === 0 ? (
               <div className="relative w-full h-full flex items-center justify-center">
                 <svg
                   className="max-w-[200px] max-h-[200px] w-[250px] h-[250px]"
@@ -104,32 +86,55 @@ export default function TriggersPhaseCard({
                 </div>
               </div>
             ) : (
+              <ChartDonut
+                series={chartSeries}
+                labels={chartLabels}
+                donutSize="80%"
+                width={250}
+                height={200}
+                showLegend={true}
+                colors={['#297AD6', '#E8C468']}
+                showDonutLabel={true}
+              />
+            )}
+          </div>
+        )}
+        <div className="grid grid-cols-2 gap-2">
+          <TriggerDetailsCard
+            title="Mandatory"
+            color="blue"
+            bgColor="bg-[#EAF2FB]"
+            totalTriggers={mandatoryTriggers}
+            totalTriggered={triggeredMandatoryTriggers}
+            totalRequiredTriggers={requiredMandatoryTriggers}
+          />
+          <TriggerDetailsCard
+            title="Optional"
+            color="yellow"
+            bgColor="bg-[#FCF6E9]"
+            totalTriggers={optionalTriggers}
+            totalTriggered={triggeredOptionalTriggers}
+            totalRequiredTriggers={requiredOptionalTriggers}
+          />
+        </div>
+        {chartType === 'horizontal' && (
+          <div className="flex justify-center mb-1">
+            {totalCharSeries === 0 ? (
               <div className="w-full my-4 mx-5 space-y-2 ">
                 <div className="w-full h-4 rounded-md bg-gray-200" />
                 <p className="text-sm text-gray-400 text-center">No Data</p>
               </div>
-            )
-          ) : chartType === 'donut' ? (
-            <ChartDonut
-              series={chartSeries}
-              labels={chartLabels}
-              donutSize="80%"
-              width={250}
-              height={200}
-              showLegend={true}
-              colors={['#297AD6', '#E8C468']}
-              showDonutLabel={true}
-            />
-          ) : (
-            <ChartHorizontalStacked
-              series={chartSeries}
-              labels={chartLabels}
-              colors={['#297AD6', '#E8C468']}
-              width="100%"
-              height={100}
-            />
-          )}
-        </div>
+            ) : (
+              <ChartHorizontalStacked
+                series={chartSeries}
+                labels={chartLabels}
+                colors={['#297AD6', '#E8C468']}
+                width="100%"
+                height={100}
+              />
+            )}
+          </div>
+        )}
       </div>
 
       <div className="flex gap-2 ">

@@ -44,7 +44,8 @@ export default function ChartHorizontalStacked({
     dataLabels: {
       enabled: true,
       formatter: (_val: number, opts: any) => {
-        const raw = opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex];
+        const raw =
+          opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex];
         return raw > 0 ? String(raw) : '';
       },
       style: { fontSize: '11px', fontWeight: 600 },
@@ -63,6 +64,7 @@ export default function ChartHorizontalStacked({
       horizontalAlign: 'center',
       markers: { size: 8 },
     },
+
     tooltip: {
       y: {
         formatter: (val: number) => String(val),

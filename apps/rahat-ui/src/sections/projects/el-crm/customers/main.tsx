@@ -314,7 +314,7 @@ export default function CustomersPage() {
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Import customers from a CSV or Excel file</p>
+                  <p>Import customers from a Excel file</p>
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -409,7 +409,7 @@ export default function CustomersPage() {
 
               <div className="flex flex-wrap items-end gap-3">
                 {/* Search BDM */}
-                <div className="flex-1 min-w-[180px] max-w-[240px] space-y-1.5">
+                <div className="flex-1 min-w-[180px] space-y-1.5">
                   <Label className="text-xs text-muted-foreground">BDM</Label>
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -423,7 +423,7 @@ export default function CustomersPage() {
                 </div>
 
                 {/* Search BDE */}
-                <div className="flex-1 min-w-[180px] max-w-[240px] space-y-1.5">
+                <div className="flex-1 min-w-[180px] space-y-1.5">
                   <Label className="text-xs text-muted-foreground">BDE</Label>
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -437,7 +437,7 @@ export default function CustomersPage() {
                 </div>
 
                 {/* Search Customer Name */}
-                <div className="flex-1 min-w-[180px] max-w-[240px] space-y-1.5">
+                <div className="flex-1 min-w-[180px] space-y-1.5">
                   <Label className="text-xs text-muted-foreground">
                     Customer Name
                   </Label>
@@ -612,7 +612,7 @@ export default function CustomersPage() {
             <CardContent className="p-0">
               <DemoTable
                 table={table}
-                tableHeight="h-[calc(100vh-560px)]"
+                tableHeight="h-[calc(100vh-530px)]"
                 loading={isLoading}
               />
               <CustomPagination

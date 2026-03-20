@@ -4,6 +4,14 @@ import { UUID } from 'crypto';
 import { useRSQuery } from '@rumsan/react-query';
 import { useProjectAction } from '../projects';
 
+interface UploadResponse {
+  totalRecords?: number;
+  totalVendors?: number;
+  failedVendors?: number;
+  batchesCreated?: number;
+  message?: string;
+}
+
 // Shared toast configuration — avoids duplicating mixin options in every hook
 const TOAST_CONFIG = {
   toast: true,
@@ -12,14 +20,24 @@ const TOAST_CONFIG = {
   timer: 3000,
 };
 
-// Extracts the most useful error message from API error responses
+// Extracts the most useful error message from API error responses.
+// Backend may return nested structures (RpcException wraps inner errors),
+// validation arrays, or plain strings — try each shape in priority order.
 const getErrorMessage = (error: unknown, fallback: string): string => {
   const err = error as any;
-  return err?.response?.data?.message || err?.message || fallback;
+  const raw =
+    err?.response?.data?.message ||
+    err?.response?.message ||
+    err?.message;
+
+  if (Array.isArray(raw)) return raw.join('. ');
+  if (typeof raw === 'string' && raw.length > 0) return raw;
+  return fallback;
 };
 
 export const useUploadCustomers = () => {
   const { rumsanService } = useRSQuery();
+  const queryClient = useQueryClient();
   const alert = useSwal();
   const toast = alert.mixin(TOAST_CONFIG);
   return useMutation({
@@ -37,19 +55,65 @@ export const useUploadCustomers = () => {
       formData.append('doctype', doctype);
       formData.append('projectId', projectId);
       const res = await rumsanService.client.post('/vendors/upload', formData);
-      return res?.data;
+      // Backend wraps response via ResponseTransformInterceptor: { success, data: { ... } }
+      // Axios unwraps one layer (res.data), so actual payload is at res.data.data
+      const body = res?.data;
+      return (body?.data ?? body) as UploadResponse;
     },
-    onSuccess: () => {
-      toast.fire({
-        title: 'Customers upload in progress',
-        icon: 'success',
-      });
+    onSuccess: (data: UploadResponse) => {
+      // Refresh failed-batch list so the badge appears if some records failed
+      queryClient.invalidateQueries({ queryKey: ['failed-batch'] });
+
+      const total = data?.totalRecords ?? 0;
+      const valid = data?.totalVendors ?? 0;
+      const failed = data?.failedVendors ?? 0;
+
+      if (failed === 0) {
+        // All records valid
+        toast.fire({
+          title: 'All customers uploaded successfully',
+          icon: 'success',
+          text: total
+            ? `All ${total} records are being processed.`
+            : 'Your customer data is being processed.',
+        });
+      } else if (valid === 0) {
+        // All records failed validation
+        toast.fire({
+          title: 'No valid customers found',
+          icon: 'error',
+          text: `All ${failed} records have validation errors. Check the Failed Batches section to review and fix them.`,
+          timer: 6000,
+        });
+      } else {
+        // Partial success
+        toast.fire({
+          title: 'Upload partially successful',
+          icon: 'warning',
+          text: `${valid} of ${total} customers are being processed. ${failed} record${failed !== 1 ? 's' : ''} had errors — review them in Failed Batches.`,
+          timer: 6000,
+        });
+      }
     },
     onError: (error: unknown) => {
+      const detail = getErrorMessage(error, '');
+      const isEmptyFile = detail.toLowerCase().includes('empty');
+      const isMissingHeaders = detail.toLowerCase().includes('missing header');
+
+      let text: string;
+      if (isEmptyFile) {
+        text = 'The uploaded file has no data. Please add customer records and try again.';
+      } else if (isMissingHeaders) {
+        text = `${detail}. Download the sample template for the correct format.`;
+      } else {
+        text = detail || 'Please check your file format and try again.';
+      }
+
       toast.fire({
-        title: 'Customer upload failed',
+        title: 'Upload could not be completed',
         icon: 'error',
-        text: getErrorMessage(error, 'Please check your file format and try again.'),
+        text,
+        timer: 5000,
       });
     },
   });
@@ -130,16 +194,23 @@ export const useRetryCustomerImport = () => {
       queryClient.invalidateQueries({ queryKey: ['failed-batch'] });
       queryClient.invalidateQueries({ queryKey: ['single-failed-batch'] });
       toast.fire({
-        title: 'Batch retry initiated successfully',
+        title: 'Import retry started',
         icon: 'success',
+        text: 'The corrected data is being re-processed. You will be redirected shortly.',
       });
     },
     onError: (error: unknown) => {
       q.reset();
+      const detail = getErrorMessage(error, '');
+      const isValidation = detail.toLowerCase().includes('valid');
+
       toast.fire({
-        title: 'Batch retry failed',
+        title: 'Retry could not be completed',
         icon: 'error',
-        text: getErrorMessage(error, 'An unexpected error occurred. Please try again.'),
+        text: isValidation
+          ? `${detail}. Please review the highlighted fields and correct them before retrying.`
+          : detail || 'Something went wrong. Please try again or contact support if the issue persists.',
+        timer: 5000,
       });
     },
   });

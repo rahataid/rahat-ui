@@ -21,6 +21,7 @@ import {
   CheckCircle,
   Download,
   AlertCircle,
+  AlertTriangle,
   Info,
   FileUp,
 } from 'lucide-react';
@@ -88,7 +89,10 @@ export default function CustomersUploadPage() {
       doctype,
     });
 
-    router.push(`/projects/el-crm/${projectUUID}/customers`);
+    // Brief delay so the user can read the status banner before redirecting
+    setTimeout(() => {
+      router.push(`/projects/el-crm/${projectUUID}/customers`);
+    }, 2500);
   };
 
   const handleRemoveFile = () => {
@@ -250,21 +254,89 @@ export default function CustomersUploadPage() {
                 </div>
 
                 {/* Upload Status */}
-                {uploadCustomers.isSuccess && (
-                  <div className="flex items-center gap-2.5 p-3.5 bg-success/10 border border-success/20 rounded-lg">
-                    <CheckCircle className="h-4 w-4 text-success shrink-0" />
-                    <span className="text-sm font-medium text-success">
-                      File uploaded successfully! Redirecting...
-                    </span>
-                  </div>
-                )}
+                {uploadCustomers.isSuccess && (() => {
+                  const data = uploadCustomers.data as any;
+                  const failed = data?.failedVendors ?? 0;
+                  const valid = data?.totalVendors ?? 0;
+                  const total = data?.totalRecords ?? 0;
+
+                  if (failed > 0 && valid > 0) {
+                    // Partial success
+                    return (
+                      <div className="flex items-start gap-2.5 p-3.5 bg-warning/10 border border-warning/20 rounded-lg">
+                        <AlertTriangle className="h-4 w-4 text-warning shrink-0 mt-0.5" />
+                        <div className="space-y-1">
+                          <span className="text-sm font-medium text-warning block">
+                            Upload partially successful
+                          </span>
+                          <span className="text-sm text-warning/80">
+                            {valid} of {total} customers are being processed.
+                            {' '}{failed} record{failed !== 1 ? 's' : ''} had validation errors.
+                            {' '}You can review and fix them in the{' '}
+                            <strong className="text-warning">Failed Batches</strong> section.
+                            {' '}Redirecting…
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  if (failed > 0 && valid === 0) {
+                    // All failed
+                    return (
+                      <div className="flex items-start gap-2.5 p-3.5 bg-destructive/10 border border-destructive/20 rounded-lg">
+                        <AlertCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+                        <div className="space-y-1">
+                          <span className="text-sm font-medium text-destructive block">
+                            No valid customers found
+                          </span>
+                          <span className="text-sm text-destructive/80">
+                            All {failed} records have validation errors.
+                            {' '}Check the <strong className="text-destructive">Failed Batches</strong> section to review and fix them.
+                            {' '}Redirecting…
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // All success
+                  return (
+                    <div className="flex items-center gap-2.5 p-3.5 bg-success/10 border border-success/20 rounded-lg">
+                      <CheckCircle className="h-4 w-4 text-success shrink-0" />
+                      <span className="text-sm font-medium text-success">
+                        {total
+                          ? `All ${total} customers uploaded successfully!`
+                          : 'File uploaded successfully!'}
+                        {' '}Redirecting…
+                      </span>
+                    </div>
+                  );
+                })()}
 
                 {uploadCustomers.isError && (
-                  <div className="flex items-center gap-2.5 p-3.5 bg-destructive/10 border border-destructive/20 rounded-lg">
-                    <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
-                    <span className="text-sm font-medium text-destructive">
-                      Upload failed. Please check your file and try again.
-                    </span>
+                  <div className="flex items-start gap-2.5 p-3.5 bg-destructive/10 border border-destructive/20 rounded-lg">
+                    <AlertCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <span className="text-sm font-medium text-destructive block">
+                        Upload could not be completed
+                      </span>
+                      <span className="text-sm text-destructive/80">
+                        {(uploadCustomers.error as any)?.response?.data
+                          ?.message ||
+                          (uploadCustomers.error as any)?.message ||
+                          'Please check your file format and try again.'}
+                        {' '}You can{' '}
+                        <a
+                          href="/files/sample_customer.xlsx"
+                          download
+                          className="underline underline-offset-2 font-medium"
+                        >
+                          download the sample template
+                        </a>{' '}
+                        for reference.
+                      </span>
+                    </div>
                   </div>
                 )}
 

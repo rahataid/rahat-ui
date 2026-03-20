@@ -62,6 +62,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { useSwal } from '@rahat-ui/query/swal';
 
 // Export configuration
 const CUSTOMER_EXPORT_CONFIG = {
@@ -97,6 +98,14 @@ const formatCustomerForExport = (customer: any) => {
 
 export default function CustomersPage() {
   const { id: projectUUID } = useParams() as { id: UUID };
+
+  const swal = useSwal();
+  const toast = swal.mixin({
+    toast: true,
+    position: 'top-end' as const,
+    showConfirmButton: false,
+    timer: 3000,
+  });
 
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
 
@@ -181,7 +190,11 @@ export default function CustomersPage() {
 
   const handleDownloadCustomers = React.useCallback(() => {
     if (!tableData?.length) {
-      alert('No customers to download');
+      toast.fire({
+        title: 'No data to export',
+        icon: 'info',
+        text: 'There are no customers matching your current filters.',
+      });
       return;
     }
 

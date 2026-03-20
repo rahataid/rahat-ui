@@ -1,5 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { AlertCircle, Download, Eye, Loader2, Play } from 'lucide-react';
+import { AlertCircle, Download, Eye, Loader2, FolderDown } from 'lucide-react';
 import Link from 'next/link';
 import {
   Tooltip,
@@ -7,6 +7,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Import } from '@rahataid/sdk/clients';
 import {
   useDownloadImportErrors,
@@ -22,6 +33,7 @@ function ImportActionCell({ row }: { row: any }) {
   const status = row.getValue('status') as string;
   const uuid = row.original.uuid;
   const groupName = row.getValue('groupName') as string;
+  const beneficiaryCount = row.getValue('beneficiaryCount') as number;
 
   const startImport = useStartImport();
   const { progress, isListening, startListening } = useImportProgress(uuid);
@@ -52,28 +64,55 @@ function ImportActionCell({ row }: { row: any }) {
   return (
     <div className="flex gap-2 items-center">
       {currentStatus === 'NEW' && !isProcessing && (
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={handleStartImport}
-                disabled={startImport.isPending}
-              >
-                {startImport.isPending ? (
-                  <Loader2 size={18} className="animate-spin" />
-                ) : (
-                  <Play size={18} strokeWidth={2} />
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary">
-              <p className="text-xs font-medium">Start Import</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <AlertDialog>
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    disabled={startImport.isPending}
+                  >
+                    {startImport.isPending ? (
+                      <Loader2 size={18} className="animate-spin" />
+                    ) : (
+                      <FolderDown size={18} strokeWidth={2} />
+                    )}
+                  </Button>
+                </AlertDialogTrigger>
+              </TooltipTrigger>
+              <TooltipContent className="bg-secondary">
+                <p className="text-xs font-medium">Start Import</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Confirm Import</AlertDialogTitle>
+              <AlertDialogDescription>
+                Review the details below before starting the import.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="rounded-md border p-3 space-y-2 text-sm my-2">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Group Name</span>
+                <span className="font-medium">{groupName}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Beneficiaries to Import</span>
+                <span className="font-medium">{beneficiaryCount}</span>
+              </div>
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleStartImport}>
+                Start Import
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       )}
 
       {isProcessing && progress && (

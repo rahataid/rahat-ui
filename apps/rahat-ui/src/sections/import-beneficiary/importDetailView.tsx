@@ -23,6 +23,17 @@ import { CircleEllipsisIcon } from 'lucide-react';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import {
   TableBody,
   TableCell,
   Table as TableComponent,
@@ -132,14 +143,40 @@ function ImportDetailView() {
           />
           <div className="flex items-center gap-2">
             {currentStatus === 'NEW' && !isProcessing && (
-              <Button onClick={handleStartImport} disabled={startImport.isPending}>
-                {startImport.isPending ? (
-                  <Loader2 size={18} className="mr-2 animate-spin" />
-                ) : (
-                  <Play size={18} className="mr-2" />
-                )}
-                Start Import
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button disabled={startImport.isPending}>
+                    <Play size={18} className="mr-2" />
+                    Start Import
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirm Import</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Review the details below before starting the import.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <div className="rounded-md border p-3 space-y-2 text-sm my-2">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Group Name</span>
+                      <span className="font-medium">{groupName || '-'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Beneficiaries to Import</span>
+                      <span className="font-medium">
+                        {count || importData?.data?.beneficiaryCount || '-'}
+                      </span>
+                    </div>
+                  </div>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleStartImport}>
+                      Start Import
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
             {(currentStatus === 'FAILED' ||
               (progress && progress.failed > 0)) && (

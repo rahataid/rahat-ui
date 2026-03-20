@@ -323,10 +323,6 @@ export const useUploadStakeholders = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [TAGS.GET_STAKEHOLDERS] });
       queryClient.invalidateQueries({ queryKey: ['stakeholdersGroups'] });
-      toast.fire({
-        icon: 'success',
-        title: 'Stakeholders uploaded successfully',
-      });
     },
     onError: (error: any) => {
       console.error('Upload error', error);

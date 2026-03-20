@@ -116,7 +116,6 @@ export default function AssignInkindForm({ onNext }: Props) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="border rounded-sm p-4 flex flex-col space-y-4">
           <p className="text-base font-semibold">Assign Inkind to Group</p>
-          {/* In-kind selector */}
           <FormField
             control={control}
             name="inkindId"
@@ -196,7 +195,6 @@ export default function AssignInkindForm({ onNext }: Props) {
             )}
           />
 
-          {/* Beneficiary Group selector */}
           <FormField
             control={control}
             name="groupId"

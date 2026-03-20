@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useInkinds, useBeneficiaryGroups } from '@rahat-ui/query';
@@ -33,13 +32,10 @@ import {
 } from 'libs/shadcn/src/components/ui/command';
 import { Check, ChevronDown } from 'lucide-react';
 import { toast } from 'react-toastify';
-
-export const AssignInkindSchema = z.object({
-  inkindId: z.string().min(1, 'Please select an in-kind item'),
-  groupId: z.string().min(1, 'Please select a beneficiary group'),
-});
-
-export type AssignInkindValues = z.infer<typeof AssignInkindSchema>;
+import {
+  AssignInkindSchema,
+  AssignInkindValues,
+} from './schema/inkinds.schema';
 
 interface Props {
   onNext: (

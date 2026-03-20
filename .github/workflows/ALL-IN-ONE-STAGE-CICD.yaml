@@ -50,7 +50,7 @@ jobs:
           case "${{ inputs.environment }}" in
             malawi-stage)            BASE="K8s-Manifest/Rahat/Malawi-Stage/Argo-Rollout" ;;
             cambodia-stage)          BASE="K8s-Manifest/Rahat/Cambodia-Stage/Argo-Rollout" ;;
-            # zambia-stage)            BASE="K8s-Manifest/Rahat/Main-Cam-Ken/Argo-Rollout" ;;
+            Main-Cam-Ken)            BASE="K8s-Manifest/Rahat/Main-Cam-Ken/Argo-Rollout" ;;
             aa-evm-unicef-stage)     BASE="K8s-Manifest/Rahat/AA-EVM-Unicef-Stage/Argo-Rollout" ;;
             aa-stage)                BASE="K8s-Manifest/Rahat/AA-Stage/Argo-Rollout" ;;
             ct-stage)                BASE="K8s-Manifest/Rahat/CT-Stage/Argo-Rollout" ;;

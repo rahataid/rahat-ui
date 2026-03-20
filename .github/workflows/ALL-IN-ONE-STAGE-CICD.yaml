@@ -1,0 +1,147 @@
+name: ALL-IN-ONE STAGE CI/CD
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select the deployment environment"
+        required: true
+        type: choice
+        options:
+          - "malawi-stage"
+          - "cambodia-stage"
+          - "Main-Cam-Ken"
+          - "aa-evm-unicef-stage"
+          - "aa-stage"
+          - "ct-stage"
+          - "Main-Cam-Ken"
+          - "Cambodia-Stage"
+          - "Cambodia-Prod-Replicate"
+          - "OffRamp-Stage"
+          - "SMS-Voucher-Stage"
+          - "WSD-Stage"
+      update_manifest:
+        description: "Update Kubernetes manifest?"
+        required: true
+        type: choice
+        options:
+          - "true"
+          - "false"
+        default: "true"
+env:
+  CI: false
+
+jobs:
+  rahat-ui:
+    name: Build && Push rahat-ui
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get short SHA and Run ID
+        id: vars
+        run: |
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "run_id_short=${GITHUB_RUN_ID: -4}" >> $GITHUB_OUTPUT
+
+      - name: Resolve manifest path
+        id: manifests
+        run: |
+          case "${{ inputs.environment }}" in
+            malawi-stage)            BASE="K8s-Manifest/Rahat/Malawi-Stage/Argo-Rollout" ;;
+            cambodia-stage)          BASE="K8s-Manifest/Rahat/Cambodia-Stage/Argo-Rollout" ;;
+            # zambia-stage)            BASE="K8s-Manifest/Rahat/Main-Cam-Ken/Argo-Rollout" ;;
+            aa-evm-unicef-stage)     BASE="K8s-Manifest/Rahat/AA-EVM-Unicef-Stage/Argo-Rollout" ;;
+            aa-stage)                BASE="K8s-Manifest/Rahat/AA-Stage/Argo-Rollout" ;;
+            ct-stage)                BASE="K8s-Manifest/Rahat/CT-Stage/Argo-Rollout" ;;
+            Main-Cam-Ken)            BASE="K8s-Manifest/Rahat/Main-Cam-Ken/Argo-Rollout" ;;
+            Cambodia-Stage)          BASE="K8s-Manifest/Rahat/Cambodia-Stage/Argo-Rollout" ;;
+            Cambodia-Prod-Replicate) BASE="K8s-Manifest/Rahat/Cambodia-Prod-Replicate/Argo-Rollout" ;;
+            OffRamp-Stage)           BASE="K8s-Manifest/Rahat/OffRamp-Stage/Argo-Rollout" ;;
+            SMS-Voucher-Stage)       BASE="K8s-Manifest/Rahat/SMS-Voucher-Stage/Argo-Rollout" ;;
+            WSD-Stage)               BASE="K8s-Manifest/Rahat/WSD-Stage/Argo-Rollout" ;;
+          esac
+          echo "ui=${BASE}/ui.yaml" >> $GITHUB_OUTPUT
+
+      - name: Import Secrets
+        uses: hashicorp/vault-action@v2.4.0
+        with:
+          url: ${{ secrets.VAULT_URL }}
+          token: ${{ secrets.VAULT_TOKEN }}
+          secrets: |
+            github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
+            github/data/general/docker/esatya password | DOCKERHUB_TOKEN ;
+            github/data/rahat/rahat-ui/stage/${{ inputs.environment }} rahat-ui | ENV ;
+
+      - name: Create environment file
+        run: tee ./.env <<<"$ENV"
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20.10.0
+
+      - name: Install & Build
+        run: |
+          npm install -g pnpm@8.14.1
+          pnpm install
+          pnpm build:all
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+
+      - name: Build && Push rahat-ui
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.rahat-ui
+          push: true
+          tags: |
+            esatya/rahat-ui:${{ inputs.environment }}
+            esatya/rahat-ui:${{ inputs.environment }}-${{ steps.vars.outputs.sha_short }}-${{ steps.vars.outputs.run_id_short }}
+
+    outputs:
+      sha_short: ${{ steps.vars.outputs.sha_short }}
+      run_id_short: ${{ steps.vars.outputs.run_id_short }}
+      ui_manifest: ${{ steps.manifests.outputs.ui }}
+
+  update-manifest:
+    name: Update Kubernetes Manifest
+    needs: rahat-ui
+    runs-on: ubuntu-latest
+    if: ${{ inputs.update_manifest == 'true' }}
+
+    steps:
+      - name: Import Secrets
+        uses: hashicorp/vault-action@v2.4.0
+        with:
+          url: ${{ secrets.VAULT_URL }}
+          token: ${{ secrets.VAULT_TOKEN }}
+          secrets: |
+            github/data/general/Stage-Manifest repo | MANIFEST_REPO ;
+            github/data/general/Stage-Manifest ssh-key | SSH_KEY ;
+
+      - name: Checkout Manifest Repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.MANIFEST_REPO }}
+          ssh-key: ${{ env.SSH_KEY }}
+
+      - name: Update image tag
+        run: |
+          TAG="${{ inputs.environment }}-${{ needs.rahat-ui.outputs.sha_short }}-${{ needs.rahat-ui.outputs.run_id_short }}"
+          sed -i "s|image: esatya/rahat-ui:.*|image: esatya/rahat-ui:${TAG}|" ${{ needs.rahat-ui.outputs.ui_manifest }}
+
+      - name: Commit and Push Changes
+        run: |
+          TAG="${{ inputs.environment }}-${{ needs.rahat-ui.outputs.sha_short }}-${{ needs.rahat-ui.outputs.run_id_short }}"
+          git config user.name "riwaj-rumsan"
+          git config user.email "riwaj.chipalu@rumsan.net"
+          git add ${{ needs.rahat-ui.outputs.ui_manifest }}
+          git commit -m "runner: Update rahat-ui ${{ inputs.environment }} image tags to ${TAG}"
+          git push origin main

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -56,8 +56,8 @@ export default function AssignInkindForm({ onNext }: Props) {
   const { id } = useParams();
   const projectUUID = id as UUID;
 
-  const [inkindOpen, setInkindOpen] = React.useState(false);
-  const [groupOpen, setGroupOpen] = React.useState(false);
+  const [inkindOpen, setInkindOpen] = useState(false);
+  const [groupOpen, setGroupOpen] = useState(false);
 
   const { data: inkindsData } = useInkinds(projectUUID, {
     perPage: 1000,
@@ -97,7 +97,7 @@ export default function AssignInkindForm({ onNext }: Props) {
 
     if (availableStock < beneficiaryCount) {
       toast.error(
-        `Not enough in-kind stock. Available: ${availableStock}, required: ${beneficiaryCount} (one per beneficiary).`,
+        `Not enough inkind stock. Available: ${availableStock}, required: ${beneficiaryCount} (one per beneficiary).`,
       );
       return;
     }
@@ -115,7 +115,7 @@ export default function AssignInkindForm({ onNext }: Props) {
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="border rounded-sm p-4 flex flex-col space-y-4">
-          <p className="text-base font-semibold">Assign In-Kind to Group</p>
+          <p className="text-base font-semibold">Assign Inkind to Group</p>
           {/* In-kind selector */}
           <FormField
             control={control}
@@ -123,7 +123,7 @@ export default function AssignInkindForm({ onNext }: Props) {
             render={({ field }) => (
               <FormItem className="flex flex-col space-y-3 w-full">
                 <FormLabel className="mt-1 text-base font-medium">
-                  In-Kind Item
+                  Inkind Item
                 </FormLabel>
                 <Popover open={inkindOpen} onOpenChange={setInkindOpen}>
                   <PopoverTrigger asChild>

@@ -10,10 +10,12 @@ import {
 import { useEffect } from 'react';
 import InkindList from './inkind.list';
 import InkindOverview from './inkind.overview';
+import InkindAllocationList from './inkind.allocation.list';
 
 const INKIND_TABS = [
   { value: 'inkindOverview', label: 'Inkind Overview' },
-  { value: 'inkindList', label: 'Budget List' },
+  { value: 'inkindList', label: 'Inkind List' },
+  { value: 'inkindAllocation', label: 'Allocation List' },
 ] as const;
 
 type InkindTabValue = (typeof INKIND_TABS)[number]['value'];
@@ -21,6 +23,7 @@ type InkindTabValue = (typeof INKIND_TABS)[number]['value'];
 const componentMap: Record<InkindTabValue, React.ComponentType> = {
   inkindList: InkindList,
   inkindOverview: InkindOverview,
+  inkindAllocation: InkindAllocationList,
 };
 
 export default function InkindTabs() {

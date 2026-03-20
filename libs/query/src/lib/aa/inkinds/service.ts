@@ -228,14 +228,14 @@ export const useInkindTransactions = (projectUUID: UUID) => {
   const q = useProjectAction();
 
   return useQuery({
-    queryKey: ['aa.inkind-tracker.getTransactions', projectUUID],
+    queryKey: ['aa.inkindStock.getAllMovements', projectUUID],
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {
       const result = await q.mutateAsync({
         uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
         data: {
-          action: 'aa.inkind-tracker.getTransactions',
+          action: 'aaProject.inkindStock.getAllMovements',
           payload: {},
         },
       });
@@ -326,6 +326,131 @@ export const useRemoveInkindStock = (projectUUID: UUID) => {
         icon: 'error',
         text: errorMessage,
       });
+    },
+  });
+};
+
+export const useGroupInkindAllocations = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  return useQuery({
+    queryKey: ['aaProject.groupInkinds.list', projectUUID],
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const result = await q.mutateAsync({
+        uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
+        data: {
+          action: 'aaProject.groupInkinds.list',
+          payload: {},
+        },
+      });
+      return result;
+    },
+  });
+};
+
+export const useUpdateGroupInkindAllocation = (projectUUID: UUID) => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async (payload: {
+      groupId: string;
+      inkindId: string;
+      quantity: number;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.groupInkinds.updateQuantity',
+          payload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Allocation updated successfully.',
+        icon: 'success',
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['aaProject.groupInkinds.list', projectUUID],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['aa.inkinds.get', projectUUID],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['aa.inkinds.summary', projectUUID],
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while updating allocation.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useGetGroupInkindDetail = (
+  projectUUID: UUID,
+  allocationUUID: string,
+) => {
+  const q = useProjectAction();
+
+  return useQuery({
+    queryKey: ['aaProject.groupInkinds.getOne', projectUUID, allocationUUID],
+    enabled: !!allocationUUID,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const result = await q.mutateAsync({
+        uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
+        data: {
+          action: 'aaProject.groupInkinds.getOne',
+          payload: { uuid: allocationUUID },
+        },
+      });
+      return result;
+    },
+  });
+};
+
+export const useGetGroupInkindRedemptions = (
+  projectUUID: UUID,
+  allocationUUID: string,
+) => {
+  const q = useProjectAction();
+
+  return useQuery({
+    queryKey: [
+      'aaProject.groupInkinds.redemptions',
+      projectUUID,
+      allocationUUID,
+    ],
+    enabled: !!allocationUUID,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const result = await q.mutateAsync({
+        uuid: projectUUID as '${string}-${string}-${string}-${string}-${string}',
+        data: {
+          action: 'aaProject.groupInkinds.getRedemptions',
+          payload: { groupInkindUuid: allocationUUID },
+        },
+      });
+      return result;
     },
   });
 };

@@ -1,4 +1,4 @@
-name: ALL-IN-ONE STAGE CI/CD
+name: AA ALL STAGE CI/CD
 on:
   workflow_dispatch:
     inputs:

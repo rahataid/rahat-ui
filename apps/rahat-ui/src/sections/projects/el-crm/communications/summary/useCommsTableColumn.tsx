@@ -14,57 +14,75 @@ import { format } from 'date-fns';
 import { Eye } from 'lucide-react';
 import React from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export const useCommsTableColumn = () => {
   const { id } = useParams();
   const router = useRouter();
 
   const getStatusVariant = (status: string) => {
-    return status === 'Delivered' ? 'default' : 'destructive';
+    return status === 'Delivered' ? 'success' : 'destructive';
   };
 
-  const getChannelColor = (channel: string) => {
+  const getChannelVariant = (channel: string) => {
     switch (channel) {
       case 'SMS':
-        return 'bg-primary/10 text-primary';
+        return 'default';
       case 'WhatsApp':
-        return 'bg-success/10 text-success';
+        return 'success';
       default:
-        return 'bg-muted text-muted-foreground';
+        return 'secondary';
     }
   };
 
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'date',
-      header: 'Date',
-      cell: ({ row }) => <div>{row.getValue('date')}</div>,
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Date</span>
+      ),
+      cell: ({ row }) => (
+        <span className="tabular-nums">{row.getValue('date')}</span>
+      ),
     },
     {
       accessorKey: 'channel',
-      header: 'Channel',
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Channel</span>
+      ),
       cell: ({ row }) => (
-        <Badge
-          className={getChannelColor(row.getValue('channel'))}
-          variant="secondary"
-        >
+        <Badge variant={getChannelVariant(row.getValue('channel'))}>
           {row.getValue('channel')}
         </Badge>
       ),
     },
     {
       accessorKey: 'group',
-      header: 'Group',
-      cell: ({ row }) => <div>{row.getValue('group') || 'N/A'}</div>,
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Group</span>
+      ),
+      cell: ({ row }) => (
+        <span>{row.getValue('group') || '\u2014'}</span>
+      ),
     },
     {
       accessorKey: 'templateName',
-      header: 'Template Name',
-      cell: ({ row }) => <div>{row.getValue('templateName') || 'N/A'}</div>,
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Template</span>
+      ),
+      cell: ({ row }) => (
+        <span>{row.getValue('templateName') || '\u2014'}</span>
+      ),
     },
     {
       accessorKey: 'status',
-      header: 'Status',
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Status</span>
+      ),
       cell: ({ row }) => (
         <Badge variant={getStatusVariant(row.getValue('status'))}>
           {row.getValue('status')}
@@ -73,17 +91,23 @@ export const useCommsTableColumn = () => {
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Actions</span>
+      ),
       enableHiding: false,
       cell: ({ row }) => {
         const log = row.original;
         return (
           <Dialog>
-            <DialogTrigger>
-              <Button variant="outline" size="sm">
-                <Eye className="mr-2 h-4 w-4" />
-                View Details
-              </Button>
+            <DialogTrigger asChild>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>View message details</TooltipContent>
+              </Tooltip>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
@@ -92,34 +116,31 @@ export const useCommsTableColumn = () => {
               <div className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
+                    <Label className="text-xs uppercase tracking-wide text-muted-foreground">
                       Date
                     </Label>
-                    <p className="text-sm">
+                    <p className="mt-1 text-sm tabular-nums">
                       {format(new Date(log.date), 'MMM dd, yyyy')}
                     </p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
+                    <Label className="text-xs uppercase tracking-wide text-muted-foreground">
                       Channel
                     </Label>
                     <div className="mt-1">
-                      <Badge
-                        className={getChannelColor(log.channel)}
-                        variant="secondary"
-                      >
+                      <Badge variant={getChannelVariant(log.channel)}>
                         {log.channel}
                       </Badge>
                     </div>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
+                    <Label className="text-xs uppercase tracking-wide text-muted-foreground">
                       Template
                     </Label>
-                    <p className="text-sm">{log.templateName}</p>
+                    <p className="mt-1 text-sm">{log.templateName || '\u2014'}</p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
+                    <Label className="text-xs uppercase tracking-wide text-muted-foreground">
                       Status
                     </Label>
                     <div className="mt-1">
@@ -131,23 +152,23 @@ export const useCommsTableColumn = () => {
                 </div>
 
                 <div>
-                  <Label className="text-sm font-medium text-muted-foreground">
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">
                     Message Content
                   </Label>
                   <Card className="mt-2">
                     <CardContent className="p-4">
-                      <p className="text-sm">{log.messageContent}</p>
+                      <p className="text-sm">{log.messageContent || '\u2014'}</p>
                     </CardContent>
                   </Card>
                 </div>
 
                 <div>
-                  <Label className="text-sm font-medium text-muted-foreground">
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">
                     Group Status
                   </Label>
                   <Card className="mt-2">
                     <CardContent className="p-4">
-                      <p className="text-sm">{log.groupStatus}</p>
+                      <p className="text-sm">{log.groupStatus || '\u2014'}</p>
                     </CardContent>
                   </Card>
                 </div>

@@ -61,7 +61,7 @@ export default function HealthWorkersView() {
       <div className="rounded border bg-card p-4">
         <CambodiaTable
           table={table}
-          tableHeight="h-[calc(100vh-590px)]"
+          tableHeight="h-[calc(300px)]"
           loading={isLoading}
         />
       </div>

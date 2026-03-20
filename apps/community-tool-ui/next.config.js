@@ -35,6 +35,13 @@ const nextConfig = {
       test: /\.svg$/,
       use: ['@svgr/webpack'],
     });
+
+    // Handle worker files as modules to fix PostHog HeartbeatWorker issue
+    config.module.rules.push({
+      test: /HeartbeatWorker\.js$/,
+      type: 'javascript/esm',
+    });
+
     return config;
   },
   async rewrites() {

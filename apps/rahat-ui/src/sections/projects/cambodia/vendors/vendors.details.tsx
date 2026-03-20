@@ -1,4 +1,8 @@
-import { useCambodiaVendorGet, useCambodiaVendorsStats } from '@rahat-ui/query';
+import {
+  useCambodiaLineChartsReports,
+  useCambodiaVendorGet,
+  useCambodiaVendorsStats,
+} from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
@@ -14,16 +18,66 @@ import HeaderWithBack from '../../components/header.with.back';
 import ConversionListView from './conversion.list.view';
 import HealthWorkersView from './health.workers.view';
 import TransactionHistoryView from './transaction.history.view';
+import CambodiaLineCharts from '../../../chart-reports/cambodia-line-chart';
+import MONTHS from '../../../../utils/months.json';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import DropdownComponent from '../../components/dropdownComponent';
+import SpinnerLoader from '../../components/spinner.loader';
 
 export default function VendorsDetail() {
   const { id, vendorId } = useParams();
   const { data } = useCambodiaVendorGet({ projectUUID: id, vendorId }) as any;
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<number>(0);
+  const currentYear = new Date().getFullYear();
+
+  const currentMonth = new Date().getMonth() + 1;
+  const currentMonthName = MONTHS.find(
+    (month) => month.value === currentMonth.toString(),
+  );
+  const [filters, setFilters] = React.useState({
+    month: currentMonth,
+    year: currentYear,
+  });
   const { data: vendorsStats } = useCambodiaVendorsStats({
     projectUUID: id,
     vendorId,
   }) as any;
+
+  const { data: lineChartReport, isLoading: lineChartLoading } =
+    useCambodiaLineChartsReports({
+      projectUUID: id,
+      filters,
+      vendorId: vendorId as string,
+    });
+  const transformedYearData = Array.from({ length: 5 }, (_, index) => {
+    const year = currentYear + index;
+    return {
+      label: year.toString(),
+      value: year.toString(),
+    };
+  });
+  const transformedMonthData =
+    MONTHS.map((item) => ({
+      label: item.label.toString(),
+      value: item.value.toString(),
+    })) || [];
+
+  if (lineChartLoading) {
+    return (
+      <div className="flex justify-center items-center">
+        <SpinnerLoader />
+      </div>
+    );
+  }
+  const handleSelect = (key: string, value: string) => {
+    if (key === 'Months') {
+      setFilters({ ...filters, month: parseInt(value) });
+    }
+    if (key === 'Years') {
+      setFilters({ ...filters, year: parseInt(value) });
+    }
+  };
 
   const clickToCopy = (walletAddress: string, id: number) => {
     navigator.clipboard.writeText(walletAddress);
@@ -34,7 +88,7 @@ export default function VendorsDetail() {
   };
 
   return (
-    <div className="h-[calc(100vh-95px)] m-4 ">
+    <div className="m-4 ">
       <div className="flex justify-between items-center">
         <HeaderWithBack
           title={data?.data?.User?.name}
@@ -100,6 +154,7 @@ export default function VendorsDetail() {
           number={vendorsStats?.data?.footfalls || 0}
         />
       </div>
+
       <div className="p-5 rounded border shadow-sm grid grid-cols-3 gap-5 mb-2 h-20">
         <div>
           <h1 className="text-md text-muted-foreground">Wallet Address</h1>
@@ -128,6 +183,33 @@ export default function VendorsDetail() {
           <h1 className="text-md text-muted-foreground">Status</h1>
           <Badge>Not Approved</Badge>
         </div> */}
+      </div>
+      {/* line graph  */}
+      <div className="mt-4 flex justify-end">
+        <DropdownComponent
+          transformedData={transformedMonthData}
+          title={'Months'}
+          handleSelect={handleSelect}
+          current={currentMonthName?.label}
+        />
+        <DropdownComponent
+          transformedData={transformedYearData}
+          title={'Years'}
+          handleSelect={handleSelect}
+          current={currentYear}
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {lineChartReport?.data?.map((item) => {
+          return (
+            <CambodiaLineCharts
+              series={item?.series}
+              categories={item?.categories}
+              name={item?.name}
+              key={item.name}
+            />
+          );
+        })}
       </div>
       <Tabs defaultValue="transactionHistory">
         <TabsList className="border bg-secondary rounded mb-2">

@@ -127,6 +127,8 @@ export function CommunicationDetailCard({
     XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
   };
 
+  const hasNoFailedDeliveries = count?.data?.data?.FAIL === 0;
+
   return (
     <Card className="mb-4 rounded-sm">
       <CardContent className="pt-4 px-4 pb-4">
@@ -246,20 +248,24 @@ export function CommunicationDetailCard({
 
         <CardFooter className="pt-4 px-0 pb-0 flex justify-end">
           <div className="flex gap-3">
-            <Button
-              variant="outline"
-              className="gap-2"
-              onClick={onFailedExports}
-              disabled={count?.data?.data?.FAIL === 0}
+            <TooltipWrapper
+              tip="No failed deliveries to export"
+              disable={!hasNoFailedDeliveries}
             >
-              Failed Exports
-              <CloudDownload className="h-4 w-4" />
-            </Button>
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={onFailedExports}
+                disabled={hasNoFailedDeliveries}
+              >
+                Failed Exports
+                <CloudDownload className="h-4 w-4" />
+              </Button>
+            </TooltipWrapper>
             <Button
               variant="outline"
               className="flex-1 gap-2 text-blue-600 border-blue-200"
               onClick={onViewDetails}
-              disabled={activityCommunication?.sessionStatus === 'NEW'}
             >
               View Details
               <ArrowRight className="h-4 w-4" />

@@ -821,9 +821,9 @@ export default function ImportStakeholder() {
         </div>
 
         <div className="p-4 border bg-card rounded-sm">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 w-full">
             {/* File Input */}
-            <div className="relative flex-shrink-0">
+            <div className="relative w-full">
               <Input
                 type="file"
                 ref={inputRef}
@@ -832,7 +832,7 @@ export default function ImportStakeholder() {
               />
 
               <div
-                className="flex items-center border rounded-sm cursor-pointer"
+                className="flex items-center border rounded-sm cursor-pointer w-full"
                 onClick={() => inputRef.current?.click()}
               >
                 <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-3 py-2 font-semibold text-sm hover:bg-gray-200 transition-colors whitespace-nowrap">
@@ -847,9 +847,7 @@ export default function ImportStakeholder() {
                     </>
                   )}
                 </span>
-                <span className="px-3 py-2 truncate max-w-[150px]">
-                  {fileName}
-                </span>
+                <span className="px-3 py-2 truncate w-full">{fileName}</span>
               </div>
             </div>
           </div>

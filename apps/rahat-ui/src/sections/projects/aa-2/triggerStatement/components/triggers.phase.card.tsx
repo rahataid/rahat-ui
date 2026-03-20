@@ -4,8 +4,9 @@ import {
   ChartHorizontalStacked,
 } from '@rahat-ui/shadcn/src/components/charts';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
-import { ArrowRight, Plus } from 'lucide-react';
+import { ArrowRight, Pin, PinOff, Plus } from 'lucide-react';
 import TriggerDetailsCard from './trigger.details.card';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 type IProps = {
   title: string;
@@ -24,6 +25,8 @@ type IProps = {
   handleViewDetails?: () => void;
   isActive?: boolean;
   chartType?: 'horizontal' | 'donut';
+  isPinned?: boolean;
+  onTogglePin?: () => void;
 };
 
 export default function TriggersPhaseCard({
@@ -43,24 +46,44 @@ export default function TriggersPhaseCard({
   isActive,
   handleViewDetails,
   chartType = 'horizontal',
+  isPinned = false,
+  onTogglePin,
 }: IProps) {
   const totalCharSeries = chartSeries.reduce((a, b) => a + b, 0);
 
   return (
     <div className="p-4 rounded border shadow-md flex flex-col justify-between">
       <div>
-        <div className="flex flex-wrap justify-between items-center gap-2">
-          <Heading
-            title={title}
-            titleStyle="text-xl"
-            description={subtitle}
-            status={isActive ? 'Triggered' : 'Not Triggered'}
-            badgeClassName={`${
-              isActive
-                ? 'text-red-500 bg-red-100'
-                : 'text-green-500 bg-green-100'
-            } text-xs px-1`}
-          />
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-start justify-between w-full">
+            {/* Pin icon in place of status — next to title */}
+            <Heading
+              title={title}
+              titleStyle="text-xl"
+              description={subtitle}
+              status={isActive ? 'Triggered' : 'Not Triggered'}
+              badgeClassName={`${
+                isActive
+                  ? 'text-red-500 bg-red-100'
+                  : 'text-green-500 bg-green-100'
+              } text-xs px-1`}
+            />
+            <Button
+              variant={'secondary'}
+              disabled={!onTogglePin}
+              onClick={onTogglePin}
+              title={isPinned ? 'Unpin phase' : 'Pin phase'}
+              className={`mt-1 p-1 rounded hover:bg-muted transition-colors shrink-0 ${
+                isPinned ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              {isPinned ? (
+                <Pin className="w-4 h-4 fill-current" />
+              ) : (
+                <PinOff className="w-4 h-4" />
+              )}
+            </Button>
+          </div>
         </div>
         {chartType === 'donut' && (
           <div className="flex justify-center mb-1">

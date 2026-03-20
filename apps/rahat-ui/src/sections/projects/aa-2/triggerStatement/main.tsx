@@ -12,6 +12,22 @@ import {
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 
+const getPinnedKey = (projectId: string) => `rahat_pinned_phases_${projectId}`;
+
+const loadPinnedPhases = (projectId: string): string[] => {
+  try {
+    const stored = localStorage.getItem(getPinnedKey(projectId));
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    console.error('Failed to load pinned phases');
+    return [];
+  }
+};
+
+const savePinnedPhases = (projectId: string, ids: string[]) => {
+  localStorage.setItem(getPinnedKey(projectId), JSON.stringify(ids));
+};
+
 export default function TriggerStatementView() {
   const router = useRouter();
   const params = useParams();
@@ -22,6 +38,28 @@ export default function TriggerStatementView() {
 
   useAATriggerStatements(projectId, { perPage: 9999 });
   const triggers = useAAStationsStore((state) => state.triggers);
+
+  const [pinnedPhaseIds, setPinnedPhaseIds] = React.useState<string[]>(() =>
+    loadPinnedPhases(projectId),
+  );
+
+  const togglePinPhase = (phaseId: string) => {
+    setPinnedPhaseIds((prev) => {
+      const updated = prev.includes(phaseId)
+        ? prev.filter((id) => id !== phaseId)
+        : [phaseId, ...prev];
+      savePinnedPhases(projectId, updated);
+      return updated;
+    });
+  };
+
+  const sortedPhases = React.useMemo(() => {
+    const filtered = phases.filter((p) => p.name !== 'PREPAREDNESS');
+    return [
+      ...filtered.filter((p) => pinnedPhaseIds.includes(p.uuid)),
+      ...filtered.filter((p) => !pinnedPhaseIds.includes(p.uuid)),
+    ];
+  }, [phases, pinnedPhaseIds]);
 
   const triggeredTriggers = React.useMemo(
     () => triggers?.filter((t) => t.isTriggered),
@@ -61,33 +99,33 @@ export default function TriggerStatementView() {
         {/* Left section – phase cards in a 2-column grid, scrollable */}
         <ScrollArea className="flex-1 ">
           <div className="grid grid-cols-2 gap-4 pr-2">
-            {phases
-              .filter((p) => p.name !== 'PREPAREDNESS')
-              .map((d) => (
-                <TriggersPhaseCard
-                  key={d.id}
-                  title={d.name}
-                  subtitle={`Overview of ${d.name.toLowerCase()} phase`}
-                  handleAddTrigger={() => handleAddTrigger(d)}
-                  chartLabels={['Mandatory', 'Optional']}
-                  chartSeries={[
-                    d?.phaseStats?.totalMandatoryTriggers || 0,
-                    d?.phaseStats?.totalOptionalTriggers || 0,
-                  ]}
-                  requiredMandatoryTriggers={d?.requiredMandatoryTriggers || 0}
-                  requiredOptionalTriggers={d?.requiredOptionalTriggers || 0}
-                  mandatoryTriggers={d?.phaseStats?.totalMandatoryTriggers || 0}
-                  optionalTriggers={d?.phaseStats?.totalOptionalTriggers || 0}
-                  triggeredMandatoryTriggers={
-                    d?.phaseStats?.totalMandatoryTriggersTriggered || 0
-                  }
-                  triggeredOptionalTriggers={
-                    d?.phaseStats?.totalOptionalTriggersTriggered || 0
-                  }
-                  handleViewDetails={() => handleViewDetails(d)}
-                  isActive={d?.isActive}
-                />
-              ))}
+            {sortedPhases.map((d) => (
+              <TriggersPhaseCard
+                key={d.id}
+                title={d.name}
+                subtitle={`Overview of ${d.name.toLowerCase()} phase`}
+                handleAddTrigger={() => handleAddTrigger(d)}
+                chartLabels={['Mandatory', 'Optional']}
+                chartSeries={[
+                  d?.phaseStats?.totalMandatoryTriggers || 0,
+                  d?.phaseStats?.totalOptionalTriggers || 0,
+                ]}
+                requiredMandatoryTriggers={d?.requiredMandatoryTriggers || 0}
+                requiredOptionalTriggers={d?.requiredOptionalTriggers || 0}
+                mandatoryTriggers={d?.phaseStats?.totalMandatoryTriggers || 0}
+                optionalTriggers={d?.phaseStats?.totalOptionalTriggers || 0}
+                triggeredMandatoryTriggers={
+                  d?.phaseStats?.totalMandatoryTriggersTriggered || 0
+                }
+                triggeredOptionalTriggers={
+                  d?.phaseStats?.totalOptionalTriggersTriggered || 0
+                }
+                handleViewDetails={() => handleViewDetails(d)}
+                isActive={d?.isActive}
+                isPinned={pinnedPhaseIds.includes(d.uuid)}
+                onTogglePin={() => togglePinPhase(d.uuid)}
+              />
+            ))}
           </div>
         </ScrollArea>
 

@@ -45,6 +45,7 @@ import {
   CustomerCategory,
   CustomerSource,
   useCustomers,
+  useExportCustomers,
   usePagination,
   useCustomerStats,
   useFailedBatch,
@@ -172,6 +173,8 @@ export default function CustomersPage() {
 
   const columns = useCustomersTableColumn();
 
+  const exportCustomersMutation = useExportCustomers();
+
   const tableData = React.useMemo(() => {
     return customers?.map((c: Customer) => ({
       ...c,
@@ -188,33 +191,66 @@ export default function CustomersPage() {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  const handleDownloadCustomers = React.useCallback(() => {
-    if (!tableData?.length) {
+  const handleDownloadCustomers = React.useCallback(async () => {
+    try {
       toast.fire({
-        title: 'No data to export',
+        title: 'Preparing export...',
         icon: 'info',
-        text: 'There are no customers matching your current filters.',
+        text: 'Fetching all filtered customer data.',
       });
-      return;
+
+      const result = await exportCustomersMutation.mutateAsync({
+        uuid: projectUUID,
+        payload: {
+          ...debouncedFilters,
+        },
+      });
+
+      const allCustomers = result?.data || [];
+
+      if (!allCustomers.length) {
+        toast.fire({
+          title: 'No data to export',
+          icon: 'info',
+          text: 'There are no customers matching your current filters.',
+        });
+        return;
+      }
+
+      const exportData = allCustomers.map((c: any) => {
+        const mapped = {
+          ...c,
+          email: c?.extras?.email,
+          channel: c?.extras?.channel,
+        };
+        return formatCustomerForExport(mapped);
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      worksheet['!cols'] = CUSTOMER_EXPORT_CONFIG.columns.map((col) => ({
+        wch: col.width,
+      }));
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Customers');
+      XLSX.writeFile(
+        workbook,
+        `customers-${new Date().toISOString().split('T')[0]}.xlsx`,
+      );
+
+      toast.fire({
+        title: 'Export complete',
+        icon: 'success',
+        text: `Exported ${allCustomers.length} customers.`,
+      });
+    } catch {
+      toast.fire({
+        title: 'Export failed',
+        icon: 'error',
+        text: 'Something went wrong while exporting. Please try again.',
+      });
     }
-
-    // Prepare and export data
-    const data = tableData.map(formatCustomerForExport);
-    const worksheet = XLSX.utils.json_to_sheet(data);
-
-    // Apply column widths
-    worksheet['!cols'] = CUSTOMER_EXPORT_CONFIG.columns.map((col) => ({
-      wch: col.width,
-    }));
-
-    // Create and write workbook
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Customers');
-    XLSX.writeFile(
-      workbook,
-      `customers-${new Date().toISOString().split('T')[0]}.xlsx`,
-    );
-  }, [tableData]);
+  }, [debouncedFilters, projectUUID]);
 
   const activeFilterCount = React.useMemo(() => {
     if (!filters) return 0;
@@ -407,14 +443,15 @@ export default function CustomersPage() {
                         size="sm"
                         variant="outline"
                         onClick={handleDownloadCustomers}
+                        disabled={exportCustomersMutation.isPending}
                         className="h-8 gap-1.5"
                       >
                         <Download className="h-3.5 w-3.5" />
-                        Export
+                        {exportCustomersMutation.isPending ? 'Exporting...' : 'Export'}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Download filtered customer data as Excel file</p>
+                      <p>Download all filtered customer data as Excel file</p>
                     </TooltipContent>
                   </Tooltip>
                 </div>

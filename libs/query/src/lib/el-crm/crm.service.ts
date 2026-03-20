@@ -143,6 +143,29 @@ export const useCustomers = (uuid: UUID, payload: any) => {
   };
 };
 
+export const useExportCustomers = () => {
+  const q = useProjectAction();
+
+  return useMutation({
+    mutationFn: async ({
+      uuid,
+      payload,
+    }: {
+      uuid: UUID;
+      payload: any;
+    }) => {
+      const result = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'elProject.crm.exportVendor',
+          payload,
+        },
+      });
+      return result;
+    },
+  });
+};
+
 export const useFailedBatch = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
 

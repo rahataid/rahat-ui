@@ -131,6 +131,7 @@ export default function TriggerStatementDetail() {
           >
             <TooltipWrapper
               tip={isEditDeleteDisabled ? getEditDeleteTip() : ''}
+              disable={!isEditDeleteDisabled}
             >
               <DeleteButton
                 className={`rounded flex gap-1 items-center text-sm font-medium ${
@@ -149,6 +150,7 @@ export default function TriggerStatementDetail() {
           >
             <TooltipWrapper
               tip={isEditDeleteDisabled ? getEditDeleteTip() : ''}
+              disable={!isEditDeleteDisabled}
             >
               <EditButton
                 className={`rounded flex gap-1 items-center text-sm font-medium ${

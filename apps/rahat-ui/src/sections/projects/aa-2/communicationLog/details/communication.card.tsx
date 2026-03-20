@@ -127,7 +127,7 @@ export function CommunicationDetailCard({
     XLSX.writeFile(workbook, 'CommunicationFailed.xlsx');
   };
 
-  const hasNoFailedDeliveries = count?.data?.data?.FAIL === 0;
+  const hasNoFailedDeliveries = (count?.data?.data?.FAIL ?? 0) === 0;
 
   return (
     <Card className="mb-4 rounded-sm">

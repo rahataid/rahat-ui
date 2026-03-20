@@ -39,7 +39,6 @@ import {
   Mail,
   RefreshCcw,
   Mic,
-  Text,
   MessageSquare,
 } from 'lucide-react';
 
@@ -118,8 +117,11 @@ export default function CommsLogsDetailPage() {
     useSingleActivity(projectID as UUID, activityId);
 
   const communicationTitle = logs?.communicationDetail?.communicationTitle;
-  const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
-    useListSessionLogs(sessionId, { ...pagination, ...cleanFilters });
+  const {
+    data: sessionLogs,
+    isLoading: isLoadingSessionLogs,
+    isError: isSessionLogsError,
+  } = useListSessionLogs(sessionId, { ...pagination, ...cleanFilters });
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
 
@@ -224,13 +226,17 @@ export default function CommsLogsDetailPage() {
       : `/projects/aa/${projectID}/communication-logs/details/${activityId}`;
   }, [from, projectID, activityId, tab, subTab, backFrom]);
 
+  const sessionLogsData = sessionLogs?.httpReponse?.data?.data;
+
   const hasNoLogsForExport =
     !isLoading &&
     !isLoadingActivity &&
     !isLoadingSessionLogs &&
-    !sessionLogs?.httpReponse?.data?.data?.length;
+    !isSessionLogsError &&
+    Array.isArray(sessionLogsData) &&
+    sessionLogsData.length === 0;
 
-  const hasNoFailedDeliveries = count?.data?.data?.FAIL === 0;
+  const hasNoFailedDeliveries = (count?.data?.data?.FAIL ?? 0) === 0;
 
   return (
     <div className="p-4">

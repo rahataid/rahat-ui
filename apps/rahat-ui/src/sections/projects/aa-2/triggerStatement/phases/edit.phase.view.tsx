@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  useCreatePhase,
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
+  useSinglePhase,
+  useUpdatePhase,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
@@ -16,7 +17,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { Back, Heading } from 'apps/rahat-ui/src/common';
+import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
@@ -29,15 +30,19 @@ import {
   getAddPhaseDefaultValues,
 } from './phase.schema';
 
-export default function AddPhaseView() {
+export default function EditPhaseView() {
   const params = useParams();
   const router = useRouter();
   const projectId = params.id as UUID;
-  const createPhase = useCreatePhase();
+  const phaseId = params.phaseId as UUID;
+
+  const updatePhase = useUpdatePhase();
 
   const { settings } = useProjectSettingsStore((state) => ({
     settings: state.settings,
   }));
+
+  const { data: phase, isLoading } = useSinglePhase(projectId, phaseId);
 
   const dataSourceSettings =
     settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE];
@@ -68,13 +73,21 @@ export default function AddPhaseView() {
   });
 
   React.useEffect(() => {
-    if (riverBasin) {
-      form.setValue('riverBasin', riverBasin, { shouldValidate: true });
-    }
-  }, [riverBasin, form]);
+    if (!phase) return;
 
-  const handleAddPhase = async (data: AddPhaseFormValues) => {
+    form.reset({
+      name: phase?.name || '',
+      riverBasin: phase?.source?.riverBasin || riverBasin || '',
+      requiredMandatoryTriggers: String(phase?.requiredMandatoryTriggers || ''),
+      requiredOptionalTriggers: String(phase?.requiredOptionalTriggers || ''),
+      canRevert: !!phase?.canRevert,
+      canTriggerPayout: !!phase?.canTriggerPayout,
+    });
+  }, [phase, form, riverBasin]);
+
+  const handleUpdatePhase = async (data: AddPhaseFormValues) => {
     const payload = {
+      uuid: phaseId,
       name: data.name.trim(),
       source: phaseSource,
       river_basin: data.riverBasin,
@@ -84,31 +97,45 @@ export default function AddPhaseView() {
     };
 
     try {
-      await createPhase.mutateAsync({
+      await updatePhase.mutateAsync({
         projectUUID: projectId,
         phasePayload: payload,
       });
 
-      router.push(triggerStatementPath);
+      router.push(
+        `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}`,
+      );
     } catch (_error) {}
   };
 
   const handleReset = () => {
-    const resetValues = getAddPhaseDefaultValues(riverBasin || '');
-    form.reset(resetValues);
-    form.setValue('canRevert', resetValues.canRevert);
-    form.setValue('canTriggerPayout', resetValues.canTriggerPayout);
+    if (!phase) {
+      const resetValues = getAddPhaseDefaultValues(riverBasin || '');
+      form.reset(resetValues);
+      return;
+    }
+
+    form.reset({
+      name: phase?.name || '',
+      riverBasin: phase?.source?.riverBasin || riverBasin || '',
+      requiredMandatoryTriggers: String(phase?.requiredMandatoryTriggers || ''),
+      requiredOptionalTriggers: String(phase?.requiredOptionalTriggers || ''),
+      canRevert: !!phase?.canRevert,
+      canTriggerPayout: !!phase?.canTriggerPayout,
+    });
   };
+
+  if (isLoading) return <TableLoader />;
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleAddPhase)}>
+      <form onSubmit={form.handleSubmit(handleUpdatePhase)}>
         <div className="p-4">
           <Back path={triggerStatementPath} />
           <div className="mt-4">
             <Heading
-              title="Add Phase"
-              description="Fill the form below to create new phase"
+              title="Edit Phase"
+              description="Edit the form below to update this phase"
             />
           </div>
 
@@ -119,7 +146,7 @@ export default function AddPhaseView() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phase Name</FormLabel>
+                    <FormLabel>Phase Name*</FormLabel>
                     <FormControl>
                       <Input placeholder="Write phase name" {...field} />
                     </FormControl>
@@ -246,10 +273,10 @@ export default function AddPhaseView() {
 
               <div className="flex justify-end gap-2 pt-2">
                 <Button type="button" variant="outline" className='w-36' onClick={handleReset}>
-                  Clear
+                  Reset
                 </Button>
-                <Button type="submit" className='w-36' disabled={createPhase.isPending}>
-                  {createPhase.isPending ? 'Adding...' : 'Add'}
+                <Button type="submit" className='w-36' disabled={updatePhase.isPending} >
+                  {updatePhase.isPending ? 'Updating...' : 'Update'}
                 </Button>
               </div>
             </div>

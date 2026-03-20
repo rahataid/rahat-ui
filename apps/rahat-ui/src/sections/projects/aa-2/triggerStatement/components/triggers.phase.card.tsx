@@ -1,7 +1,11 @@
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
-import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
-import { ArrowRight, Plus } from 'lucide-react';
+import {
+  CustomAlertDialog,
+  Heading,
+  IconLabelBtn,
+} from 'apps/rahat-ui/src/common';
+import { ArrowRight, Plus, SquarePen } from 'lucide-react';
 import TriggerDetailsCard from './trigger.details.card';
 
 type IProps = {
@@ -9,6 +13,8 @@ type IProps = {
   subtitle: string;
   hideAddTrigger?: boolean;
   handleAddTrigger?: () => void;
+  hideEditPhase?: boolean;
+  handleEditPhase?: () => void;
   chartSeries: number[];
   chartLabels: string[];
   requiredMandatoryTriggers: number;
@@ -27,6 +33,8 @@ export default function TriggersPhaseCard({
   subtitle,
   hideAddTrigger = false,
   handleAddTrigger,
+  hideEditPhase = false,
+  handleEditPhase,
   chartLabels,
   chartSeries,
   mandatoryTriggers,
@@ -61,16 +69,33 @@ export default function TriggersPhaseCard({
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
           >
-            <IconLabelBtn
-              variant="outline"
-              className={`border-primary text-primary !m-0 ${
-                hideAddTrigger && 'hidden'
-              }`}
-              Icon={Plus}
-              name="Add Trigger"
-              handleClick={handleAddTrigger}
-              disabled={isActive}
-            />
+            <div className="flex items-center gap-2">
+              <div className={`${hideEditPhase && 'hidden'}`}>
+                <CustomAlertDialog
+                  dialogTrigger={
+                    <IconLabelBtn
+                      variant="outline"
+                      className="border-primary text-primary !m-0"
+                      Icon={SquarePen}
+                      name="Edit Phase"
+                    />
+                  }
+                  title="Edit Phase"
+                  description="Are you sure you want to edit this phase?"
+                  handleContinueClick={handleEditPhase || (() => {})}
+                />
+              </div>
+              <IconLabelBtn
+                variant="outline"
+                className={`border-primary text-primary !m-0 ${
+                  hideAddTrigger && 'hidden'
+                }`}
+                Icon={Plus}
+                name="Add Trigger"
+                handleClick={handleAddTrigger}
+                disabled={isActive}
+              />
+            </div>
           </RoleAuth>
         </div>
         <div className="flex justify-center mb-2 ">

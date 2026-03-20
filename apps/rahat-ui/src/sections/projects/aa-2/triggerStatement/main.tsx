@@ -58,6 +58,13 @@ export default function TriggerStatementView() {
     router.push(`/projects/aa/${projectId}/trigger-statements/phase/add`);
   };
 
+  const handleEditPhase = (phase: any) => {
+    if (!phase?.uuid) return;
+    router.push(
+      `/projects/aa/${projectId}/trigger-statements/phase/${phase.uuid}/edit`,
+    );
+  };
+
   return (
     <div className="p-4">
       <div className="flex justify-between items-center">
@@ -87,6 +94,7 @@ export default function TriggerStatementView() {
               <TriggersPhaseCard
                 title={d.name}
                 subtitle={`Overview of ${d.name.toLowerCase()} phase`}
+                handleEditPhase={() => handleEditPhase(d)}
                 handleAddTrigger={() => handleAddTrigger(d)}
                 chartLabels={['Mandatory', 'Optional']}
                 chartSeries={[

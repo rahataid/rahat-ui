@@ -3,7 +3,10 @@
 import React, { useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useGroupInkindAllocations, useBeneficiaryGroups } from '@rahat-ui/query';
+import {
+  useGroupInkindAllocations,
+  useBeneficiaryGroups,
+} from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,

@@ -288,7 +288,7 @@ export default function InkindAllocationDetail() {
             </span>
           </div>
           <p className="text-xs text-muted-foreground mb-3">
-            List of all beneficiaries who received this in-kind item
+            List of all beneficiaries who received this inkind
           </p>
 
           <SearchInput

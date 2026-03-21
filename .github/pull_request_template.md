@@ -1,14 +1,14 @@
-## 📌 Description
-
-<!-- What does this PR do? Explain clearly -->
-
-- ***
-
 ## 🔗 Related Issue
 
 <!-- Link issue (if any) -->
 
 - [ ] Added issue link
+
+## 📌 Description
+
+<!-- What does this PR do? Explain clearly -->
+
+-
 
 ---
 
@@ -37,11 +37,11 @@
 
 ### Before
 
-<!-- Add screenshots -->
+## <!-- Add screenshots -->
 
 ### After
 
-<!-- Add screenshots -->
+## <!-- Add screenshots -->
 
 ---
 
@@ -59,4 +59,4 @@
 
 <!-- Anything special reviewer should know -->
 
-- ***
+-

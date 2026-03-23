@@ -12,12 +12,14 @@ import {
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 
-const getPinnedKey = (projectId: string) => `rahat_pinned_phases_${projectId}`;
+const TRIGGER_PIN_PHASE = 'TRIGGER_PIN_PHASE';
 
 const loadPinnedPhases = (projectId: string): string[] => {
   try {
-    const stored = localStorage.getItem(getPinnedKey(projectId));
-    return stored ? JSON.parse(stored) : [];
+    const stored = localStorage.getItem(TRIGGER_PIN_PHASE);
+    if (!stored) return [];
+    const central = JSON.parse(stored);
+    return Array.isArray(central[projectId]) ? central[projectId] : [];
   } catch {
     console.error('Failed to load pinned phases');
     return [];
@@ -25,7 +27,14 @@ const loadPinnedPhases = (projectId: string): string[] => {
 };
 
 const savePinnedPhases = (projectId: string, ids: string[]) => {
-  localStorage.setItem(getPinnedKey(projectId), JSON.stringify(ids));
+  try {
+    const stored = localStorage.getItem(TRIGGER_PIN_PHASE);
+    const central = stored ? JSON.parse(stored) : {};
+    central[projectId] = ids;
+    localStorage.setItem(TRIGGER_PIN_PHASE, JSON.stringify(central));
+  } catch {
+    console.error('Failed to save pinned phases');
+  }
 };
 
 export default function TriggerStatementView() {

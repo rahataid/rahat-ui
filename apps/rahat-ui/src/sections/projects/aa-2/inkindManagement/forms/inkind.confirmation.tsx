@@ -1,8 +1,6 @@
 'use client';
 
-import { useState } from 'react';
 import { Button } from 'libs/shadcn/src/components/ui/button';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 import { useCreateInkind } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
@@ -31,6 +29,7 @@ export default function InkindConfirmation({
         name: formData.name,
         description: formData.description,
         type: formData.type,
+        quantity: formData.quantity,
       });
       onSuccess();
     } catch {
@@ -63,6 +62,12 @@ export default function InkindConfirmation({
                   {INKIND_TYPE_LABELS[formData.type]}
                 </p>
               </div>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Quantity</p>
+              <p className="text-lg font-semibold text-primary">
+                {formData.quantity}
+              </p>
             </div>
           </div>
         </div>

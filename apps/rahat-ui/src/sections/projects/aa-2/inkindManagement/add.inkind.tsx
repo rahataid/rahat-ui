@@ -32,7 +32,7 @@ export default function AddInkindView() {
     if (currentStep > 0) {
       setCurrentStep((s) => s - 1);
     } else {
-      router.push(`/projects/aa/${id}/inkind-management`);
+      router.push(`/projects/aa/${id}/inkind-management?tab=inkindList`);
     }
   }, [currentStep, id, router]);
 
@@ -42,7 +42,7 @@ export default function AddInkindView() {
   };
 
   const handleSuccess = () => {
-    router.push(`/projects/aa/${id}/inkind-management`);
+    router.push(`/projects/aa/${id}/inkind-management?tab=inkindList`);
   };
 
   return (

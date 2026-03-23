@@ -30,6 +30,8 @@ import {
   useInkindTransactions,
   useBeneficiaryGroups,
 } from '@rahat-ui/query';
+import { INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
+import { formatLabel } from './inkind.allocation.list';
 
 type Movement = {
   id: number;
@@ -192,7 +194,7 @@ export default function InkindOverview() {
         </p>
         <ScrollArea className="flex-1 min-h-0">
           {movements.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-6">
+            <p className="text-sm text-muted-foreground align-center justify-center text-center py-6">
               No movements recorded yet.
             </p>
           ) : (
@@ -225,17 +227,8 @@ export default function InkindOverview() {
                           <p className="text-sm font-medium leading-none">
                             {movement.inkind?.name ?? '—'}
                           </p>
-                          <Badge
-                            variant={
-                              movement.inkind?.type === 'PRE_DEFINED'
-                                ? 'default'
-                                : 'secondary'
-                            }
-                            className="rounded-sm text-xs h-5 px-1"
-                          >
-                            {movement.inkind?.type == 'PRE_DEFINED'
-                              ? 'Pre-defined'
-                              : 'Walk In'}
+                          <Badge className="bg-gray-200 text-gray-600">
+                            {formatLabel(INKIND_TYPE_LABELS[movement.inkind?.type])}
                           </Badge>
                         </div>
                         {movement.groupInkind && (

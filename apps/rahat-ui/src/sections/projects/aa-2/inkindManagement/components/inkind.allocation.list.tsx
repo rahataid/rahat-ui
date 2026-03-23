@@ -57,7 +57,7 @@ const STATUS_STYLE: Record<string, string> = {
   Completed: 'bg-green-100 text-green-500',
 };
 
-function formatLabel(value: string) {
+export function formatLabel(value: string) {
   return value
     .toLowerCase()
     .split('_')

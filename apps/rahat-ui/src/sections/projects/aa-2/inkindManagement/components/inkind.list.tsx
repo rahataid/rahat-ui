@@ -64,6 +64,7 @@ import {
   NAME_MAX,
   DESCRIPTION_MAX,
 } from '../schemas/inkind.validation';
+import { formatLabel } from './inkind.allocation.list';
 
 export type InkindItem = {
   uuid: string;
@@ -359,11 +360,8 @@ export default function InkindList() {
         cell: ({ row }) => {
           const type = row.getValue('type') as InkindType;
           return (
-            <Badge
-              variant={type === 'PRE_DEFINED' ? 'default' : 'secondary'}
-              className="rounded-sm"
-            >
-              {INKIND_TYPE_LABELS[type]}
+            <Badge className="bg-gray-200 text-gray-600">
+              {formatLabel(INKIND_TYPE_LABELS[type])}
             </Badge>
           );
         },
@@ -374,6 +372,24 @@ export default function InkindList() {
         cell: ({ row }) => (
           <span className="font-semibold">
             {row.getValue('availableStock') ?? 0}
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'reservedStock',
+        header: 'Reserved Stock',
+        cell: ({ row }) => (
+          <span className="font-semibold">
+            {row.getValue('reservedStock') ?? 0}
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'allocatedStock',
+        header: 'Allocated Stock',
+        cell: ({ row }) => (
+          <span className="font-semibold">
+            {row.getValue('allocatedStock') ?? 0}
           </span>
         ),
       },

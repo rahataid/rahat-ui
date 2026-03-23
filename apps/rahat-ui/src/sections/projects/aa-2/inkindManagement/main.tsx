@@ -3,7 +3,7 @@
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { Plus } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { InkindTabs } from './components';
 import { useInkinds } from '@rahat-ui/query';
 import { UUID } from 'crypto';
@@ -11,6 +11,8 @@ import { UUID } from 'crypto';
 export default function InKindManagementView() {
   const router = useRouter();
   const { id } = useParams();
+  const searchParams = useSearchParams();
+  const tab = searchParams.get('tab');
 
   // Query goes here
   const { data } = useInkinds(id as UUID, {
@@ -21,7 +23,7 @@ export default function InKindManagementView() {
   });
 
   const isInkindDataAvailable = !!data?.data.length;
-  
+
   return (
     <div className="p-4">
       <div className="flex justify-between items-center space-x-4">
@@ -36,7 +38,7 @@ export default function InKindManagementView() {
           <IconLabelBtn
             Icon={Plus}
             handleClick={() =>
-              router.push(`/projects/aa/${id}/inkind-management/assign`)
+              router.push(`/projects/aa/${id}/inkind-management/assign?tab=${tab}`)
             }
             name="Assign Inkind"
             disabled={!isInkindDataAvailable}

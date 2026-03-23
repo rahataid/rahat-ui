@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ChevronLeft, CheckCircle2, Info } from 'lucide-react';
 import AssignInkindForm from './forms/assign.inkind.form';
 import AssignInkindConfirmation from './forms/assign.inkind.confirmation';
@@ -25,6 +25,8 @@ type AssignInkindSummary = AssignInkindValues & {
 
 export default function AssignInkindView() {
   const { id } = useParams();
+  const searchParams = useSearchParams();
+  const tab = searchParams.get('tab');
   const router = useRouter();
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -34,7 +36,7 @@ export default function AssignInkindView() {
     if (currentStep > 0) {
       setCurrentStep((s) => s - 1);
     } else {
-      router.push(`/projects/aa/${id}/inkind-management`);
+      router.push(`/projects/aa/${id}/inkind-management?tab=${tab}`);
     }
   }, [currentStep, id, router]);
 
@@ -44,7 +46,7 @@ export default function AssignInkindView() {
   };
 
   const handleSuccess = () => {
-    router.push(`/projects/aa/${id}/inkind-management`);
+    router.push(`/projects/aa/${id}/inkind-management?tab=inkindAllocation`);
   };
 
   return (

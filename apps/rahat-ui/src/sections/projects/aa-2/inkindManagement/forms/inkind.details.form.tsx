@@ -34,6 +34,7 @@ const DEFAULT_VALUES: InkindDetailsValues = {
   name: '',
   description: '',
   type: '',
+  quantity: undefined,
 };
 
 interface Props {
@@ -52,7 +53,8 @@ export default function InkindDetailsForm({
     defaultValues: {
       name: formData.name ?? DEFAULT_VALUES.name,
       description: formData.description ?? DEFAULT_VALUES.description,
-      type: formData.type ?? DEFAULT_VALUES.type,
+      type: formData.type,
+      quantity: formData.quantity ?? DEFAULT_VALUES.quantity,
     },
   });
 
@@ -79,7 +81,7 @@ export default function InkindDetailsForm({
     <Form {...form}>
       <form onSubmit={handleSubmit(handleNext)}>
         <div className="border rounded-sm p-4 flex flex-col space-y-4">
-          <p className="text-base font-semibold">Register Inkind</p>
+          <p className="text-base font-semibold">Create Inkind</p>
           <FormField
             control={control}
             name="name"
@@ -145,10 +147,8 @@ export default function InkindDetailsForm({
             name="type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Type</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                >
+                <FormLabel>Inkind Type</FormLabel>
+                <Select onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />
@@ -160,9 +160,33 @@ export default function InkindDetailsForm({
                         {INKIND_TYPE_LABELS[t]}
                       </SelectItem>
                     ))}
-
                   </SelectContent>
                 </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="quantity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Inkind Quantity (optional)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Enter quantity"
+                    min={1}
+                    {...field}
+                    value={field.value ?? ''}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value === '' ? undefined : +e.target.value,
+                      )
+                    }
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

@@ -140,10 +140,16 @@ export default function TriggersPhaseCard({
             totalRequiredTriggers={requiredOptionalTriggers}
           />
         </div>
+        <div className="flex gap-2 w-full mt-4 justify-center items-center mx-auto">
+          <p className="text-2xl font-medium text-blue-500">
+            {mandatoryTriggers + optionalTriggers}
+          </p>
+          <p className="text-sm/4">Total Triggers</p>
+        </div>
         {chartType === 'horizontal' && (
-          <div className="flex justify-center mb-1">
+          <div className="flex justify-center  -my-7 ">
             {totalCharSeries === 0 ? (
-              <div className="w-full my-4 mx-5 space-y-2 ">
+              <div className="w-full my-2 mx-5 space-y-2 ">
                 <div className="w-full h-4 rounded-md bg-gray-200" />
                 <p className="text-sm text-gray-400 text-center">No Data</p>
               </div>
@@ -153,14 +159,15 @@ export default function TriggersPhaseCard({
                 labels={chartLabels}
                 colors={['#297AD6', '#E8C468']}
                 width="100%"
-                height={100}
+                height={75}
+                showLegend={false}
               />
             )}
           </div>
         )}
       </div>
 
-      <div className="flex gap-2 ">
+      <div className="flex gap-2 mt-1 ">
         <RoleAuth
           roles={[AARoles.ADMIN, AARoles.Municipality]}
           hasContent={false}

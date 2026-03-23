@@ -172,7 +172,7 @@ export default function InkindUpdateSheet({
                 onClick={() => onOpenChange(false)}
                 disabled={updateInkind.isPending}
               >
-                Cancel
+                Reset
               </Button>
               <Button
                 type="submit"

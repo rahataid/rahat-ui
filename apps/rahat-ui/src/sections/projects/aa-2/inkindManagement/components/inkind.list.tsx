@@ -341,7 +341,7 @@ export default function InkindList() {
     () => [
       {
         accessorKey: 'name',
-        header: 'Name',
+        header: 'Inkind Name',
         cell: ({ row }) => (
           <span className="font-medium">{row.getValue('name')}</span>
         ),
@@ -458,12 +458,12 @@ export default function InkindList() {
             router.push(`/projects/aa/${id}/inkind-management/add`)
           }
         >
-          Register Inkind
+          Create Inkind
         </Button>
       </div>
       <SearchInput
         className="w-full mb-2"
-        name="Inkind"
+        name="Inkind Name"
         value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
         onSearch={(event) =>
           table.getColumn('name')?.setFilterValue(event.target.value)
@@ -471,7 +471,7 @@ export default function InkindList() {
       />
       <DemoTable
         table={table}
-        tableHeight="h-[calc(100vh-420px)]"
+        // tableHeight="h-[calc(100vh - 300px)]"
         loading={isLoading}
       />
       <CustomPagination
@@ -684,7 +684,7 @@ export default function InkindList() {
                 setUpdateErrors({});
               }}
             >
-              Cancel
+              Reset
             </Button>
             <Button
               onClick={handleUpdateNext}
@@ -698,7 +698,7 @@ export default function InkindList() {
                     (updateDialog.item.description ?? '').trim())
               }
             >
-              Next
+              Continue
             </Button>
           </DialogFooter>
         </DialogContent>

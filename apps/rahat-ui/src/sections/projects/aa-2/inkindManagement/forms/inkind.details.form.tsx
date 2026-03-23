@@ -33,7 +33,7 @@ import type { InkindFormData } from '../schemas/inkind.validation';
 const DEFAULT_VALUES: InkindDetailsValues = {
   name: '',
   description: '',
-  type: 'PRE_DEFINED',
+  type: '',
 };
 
 interface Props {
@@ -86,7 +86,7 @@ export default function InkindDetailsForm({
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center justify-between">
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Inkind Name</FormLabel>
                   <span
                     className={`text-xs ${
                       (nameValue?.length ?? 0) >= NAME_MAX
@@ -148,7 +148,6 @@ export default function InkindDetailsForm({
                 <FormLabel>Type</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -161,6 +160,7 @@ export default function InkindDetailsForm({
                         {INKIND_TYPE_LABELS[t]}
                       </SelectItem>
                     ))}
+
                   </SelectContent>
                 </Select>
                 <FormMessage />

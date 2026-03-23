@@ -131,7 +131,7 @@ export default function InkindAllocationList() {
     },
     {
       accessorKey: 'groupName',
-      header: 'Assigned Group',
+      header: 'Beneficiary Group',
       cell: ({ row }) => (
         <TruncatedCell text={row.original.groupName} maxLength={20} />
       ),
@@ -231,7 +231,7 @@ export default function InkindAllocationList() {
       />
       <DemoTable
         table={table}
-        tableHeight="h-[calc(100vh-420px)]"
+        // tableHeight="h-[calc(100vh-420px)]"
         loading={isLoading}
       />
       <CustomPagination

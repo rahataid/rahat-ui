@@ -208,7 +208,7 @@ export default function InkindOverview() {
                   <button
                     key={movement.uuid}
                     onClick={() => setSelectedMovement(movement)}
-                    className="flex items-center justify-between px-3 py-2.5 rounded-sm border border-gray-100 hover:bg-gray-50 hover:border-primary/30 transition-colors text-left w-full"
+                    className="flex items-center justify-between px-3 py-2.5 rounded-sm border border-gray-100 hover:bg-gray-50 transition-colors text-left w-full"
                   >
                     <div className="flex items-center gap-3">
                       <div
@@ -231,7 +231,7 @@ export default function InkindOverview() {
                                 ? 'default'
                                 : 'secondary'
                             }
-                            className="rounded-xs"
+                            className="rounded-sm text-xs h-5 px-1"
                           >
                             {movement.inkind?.type == 'PRE_DEFINED'
                               ? 'Pre-defined'

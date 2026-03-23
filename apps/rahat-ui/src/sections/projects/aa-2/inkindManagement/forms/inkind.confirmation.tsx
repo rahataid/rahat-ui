@@ -45,7 +45,7 @@ export default function InkindConfirmation({
           <p className="font-semibold text-sm mb-2">Inkind Details</p>
           <div className="flex flex-col space-y-3">
             <div>
-              <p className="text-sm text-muted-foreground">Name</p>
+              <p className="text-sm text-muted-foreground">Inkind Name</p>
               <p className="text-lg font-semibold text-primary">
                 {formData.name}
               </p>
@@ -59,14 +59,9 @@ export default function InkindConfirmation({
             <div>
               <p className="text-sm text-muted-foreground">Type</p>
               <div className="mt-1 w-fit">
-                <Badge
-                  variant={
-                    formData.type === 'PRE_DEFINED' ? 'default' : 'secondary'
-                  }
-                  className="rounded-sm text-sm"
-                >
+                <p className="text-lg font-semibold text-primary">
                   {INKIND_TYPE_LABELS[formData.type]}
-                </Badge>
+                </p>
               </div>
             </div>
           </div>

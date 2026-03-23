@@ -62,7 +62,7 @@ export default function InkindTabs() {
             <TabsContent
               key={tab.value}
               value={tab.value}
-              className="px-4 pb-4 mt-0 h-[calc(100vh-130px)] overflow-auto"
+              className="px-4 pb-4 mt-0 overflow-auto"
             >
               <TabComponent />
             </TabsContent>

@@ -23,8 +23,8 @@ export const InkindDetailsSchema = z.object({
       DESCRIPTION_MAX,
       `Description must be ${DESCRIPTION_MAX} characters or fewer`,
     ),
-  type: z.enum(INKIND_TYPES, {
-    required_error: 'Type is required',
+  type: z.string().refine((val) => INKIND_TYPES.includes(val as any), {
+    message: 'Type is required',
   }),
 });
 

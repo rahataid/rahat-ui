@@ -115,7 +115,7 @@ export default function TriggersPhaseCard({
                 donutSize="80%"
                 width={250}
                 height={200}
-                showLegend={true}
+                showLegend={chartType === 'donut'}
                 colors={['#297AD6', '#E8C468']}
                 showDonutLabel={true}
               />

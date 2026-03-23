@@ -7,12 +7,9 @@ import {
   useUpdatePhase,
 } from '@rahat-ui/query';
 import { PhaseForm } from './PhaseForm';
-import {
-  Back,
-  CustomAlertDialog,
-  Heading,
-  TableLoader,
-} from 'apps/rahat-ui/src/common';
+import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
+import { Trash } from 'lucide-react';
+import { DialogComponent } from 'apps/rahat-ui/src/sections/projects/aa-2/activities/details/dialog.reuse';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
@@ -23,7 +20,6 @@ import {
   AddPhaseSchema,
   getAddPhaseDefaultValues,
 } from './phase.schema';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 export default function EditPhaseView() {
   const params = useParams();
@@ -81,11 +77,12 @@ export default function EditPhaseView() {
         projectUUID: projectId,
         phasePayload: payload,
       });
-
       router.push(
         `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}`,
       );
-    } catch (_error) {}
+    } catch (error) {
+      console.error('Update phase error:', error);
+    }
   };
 
   const handleReset = () => {
@@ -113,35 +110,34 @@ export default function EditPhaseView() {
           uuid: phaseId,
         },
       });
-
       router.push(triggerStatementPath);
-    } catch (_error) {}
+    } catch (error) {
+      console.error('Delete phase error:', error);
+    }
   };
 
   if (isLoading) return <TableLoader />;
 
   return (
     <>
-      <Back path={triggerStatementPath} />
+      <div className="mt-4 px-4">
+        <Back path={triggerStatementPath} />
+      </div>
       <div className="mt-4 px-4 flex items-start justify-between gap-3">
         <Heading
           title="Edit Phase"
           description="Edit the form below to update this phase"
         />
-        <CustomAlertDialog
-          dialogTrigger={
-            <Button
-              type="button"
-              variant="destructive"
-              className="w-36"
-              disabled={deletePhase.isPending}
-            >
-              {deletePhase.isPending ? 'Deleting...' : 'Delete Phase'}
-            </Button>
-          }
-          title="Delete Phase"
-          description="Are you sure you want to delete this phase?"
-          handleContinueClick={handleDeletePhase}
+        <DialogComponent
+          buttonIcon={Trash}
+          buttonText="Delete Phase"
+          dialogTitle="Delete Phase"
+          dialogDescription="Are you sure you want to delete this phase?"
+          confirmButtonText={deletePhase.isPending ? 'Deleting...' : 'Delete'}
+          handleClick={handleDeletePhase}
+          buttonClassName="rounded-sm w-full text-red-500 border-red-500"
+          confirmButtonClassName="rounded-sm w-full bg-red-500"
+          variant="outline"
         />
       </div>
       <PhaseForm

@@ -23,6 +23,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/alert';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export default function PhaseDetail() {
   const router = useRouter();
@@ -95,14 +96,19 @@ export default function PhaseDetail() {
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
           >
-            <IconLabelBtn
-              variant="outline"
-              className="text-primary border-primary"
-              Icon={Plus}
-              disabled={phase?.isActive}
-              name="Add Trigger"
-              handleClick={handleAddTriggerClick}
-            />
+            <TooltipWrapper
+              tip="Cannot add triggers for an active phase"
+              disable={!phase?.isActive}
+            >
+              <IconLabelBtn
+                variant="outline"
+                className="text-primary border-primary"
+                Icon={Plus}
+                disabled={phase?.isActive}
+                name="Add Trigger"
+                handleClick={handleAddTriggerClick}
+              />
+            </TooltipWrapper>
           </RoleAuth>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
@@ -110,7 +116,9 @@ export default function PhaseDetail() {
           >
             <>
               {isDisabled ? (
-                <IconLabelBtn Icon={Undo2} name="Revert" disabled />
+                <TooltipWrapper tip="Cannot revert an inactive phase">
+                  <IconLabelBtn Icon={Undo2} name="Revert" disabled />
+                </TooltipWrapper>
               ) : (
                 <CustomAlertDialog
                   dialogTrigger={<IconLabelBtn Icon={Undo2} name="Revert" />}

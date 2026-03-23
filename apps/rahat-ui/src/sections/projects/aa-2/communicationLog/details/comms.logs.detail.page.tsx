@@ -1,5 +1,6 @@
 import {
   useGetCommunicationLogs,
+  useListAllTransports,
   useListSessionLogs,
   usePagination,
   useRetryFailedBroadcast,
@@ -38,7 +39,7 @@ import {
   Mail,
   RefreshCcw,
   Mic,
-  Text,
+  MessageSquare,
 } from 'lucide-react';
 
 import { useParams, useSearchParams } from 'next/navigation';
@@ -50,6 +51,7 @@ import CommsLogsTable from '../table/comms.logs.table';
 import useCommsLogsTableColumns from '../table/useCommsLogsTableColumns';
 import { getPhaseColor } from 'apps/rahat-ui/src/utils/getPhaseColor';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export default function CommsLogsDetailPage() {
   const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
@@ -83,9 +85,29 @@ export default function CommsLogsDetailPage() {
     activityId,
   );
 
-  const columns = useCommsLogsTableColumns(
-    logs?.sessionDetails?.Transport?.name,
-  );
+  const appTransports = useListAllTransports();
+
+  const resolvedTransportName = useMemo(() => {
+    const fromSession = logs?.sessionDetails?.Transport?.name;
+    if (fromSession) return fromSession;
+
+    const transportId = logs?.communicationDetail?.transportId;
+    const fromTransport = appTransports?.find(
+      (transport: any) => transport?.cuid === transportId,
+    )?.name;
+    if (fromTransport) return fromTransport;
+
+    if (
+      logs?.communicationDetail?.message &&
+      typeof logs?.communicationDetail?.message !== 'string'
+    ) {
+      return 'VOICE';
+    }
+
+    return 'SMS';
+  }, [logs, appTransports]);
+
+  const columns = useCommsLogsTableColumns(resolvedTransportName);
   const cleanFilters = Object.fromEntries(
     Object.entries(debounceSearch).filter(
       ([_, v]) => v !== '' && v !== null && v !== undefined,
@@ -95,8 +117,11 @@ export default function CommsLogsDetailPage() {
     useSingleActivity(projectID as UUID, activityId);
 
   const communicationTitle = logs?.communicationDetail?.communicationTitle;
-  const { data: sessionLogs, isLoading: isLoadingSessionLogs } =
-    useListSessionLogs(sessionId, { ...pagination, ...cleanFilters });
+  const {
+    data: sessionLogs,
+    isLoading: isLoadingSessionLogs,
+    isError: isSessionLogsError,
+  } = useListSessionLogs(sessionId, { ...pagination, ...cleanFilters });
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta;
 
@@ -115,11 +140,15 @@ export default function CommsLogsDetailPage() {
   };
 
   const logsGroupName = useMemo(() => {
-    if (logs?.groupName.length > 20) {
-      return `${logs?.groupName?.slice(0, 20)}...`;
-    } else {
-      return logs?.groupName;
+    const groupName = logs?.group?.name || logs?.groupName || '';
+
+    if (!groupName) return 'N/A';
+
+    if (groupName.length > 20) {
+      return `${groupName.slice(0, 20)}...`;
     }
+
+    return groupName;
   }, [logs]);
 
   const table = useReactTable({
@@ -197,6 +226,18 @@ export default function CommsLogsDetailPage() {
       : `/projects/aa/${projectID}/communication-logs/details/${activityId}`;
   }, [from, projectID, activityId, tab, subTab, backFrom]);
 
+  const sessionLogsData = sessionLogs?.httpReponse?.data?.data;
+
+  const hasNoLogsForExport =
+    !isLoading &&
+    !isLoadingActivity &&
+    !isLoadingSessionLogs &&
+    !isSessionLogsError &&
+    Array.isArray(sessionLogsData) &&
+    sessionLogsData.length === 0;
+
+  const hasNoFailedDeliveries = (count?.data?.data?.FAIL ?? 0) === 0;
+
   return (
     <div className="p-4">
       <div className="flex flex-col space-y-0">
@@ -209,34 +250,44 @@ export default function CommsLogsDetailPage() {
               description="Here is the detailed view of selected communication"
             />
             <div className="flex gap-2 flex-col md:flex-row">
-              <Button
-                variant="outline"
-                className=" gap-2 h-7"
-                onClick={onExportAll}
-                disabled={
-                  isLoading ||
-                  isLoadingActivity ||
-                  isLoadingSessionLogs ||
-                  !sessionLogs?.httpReponse?.data?.data?.length
-                }
+              <TooltipWrapper
+                tip="No communication logs available to export"
+                disable={!hasNoLogsForExport}
               >
-                <CloudDownload className="h-3.5 w-3.5" />
-                {isLoading || isLoadingActivity || isLoadingSessionLogs
-                  ? 'Loading...'
-                  : 'Export All Logs'}
-              </Button>
-              <Button
-                variant="outline"
-                className=" gap-2 h-7"
-                onClick={onFailedExports}
-                disabled={count?.data?.data?.FAIL === 0}
+                <Button
+                  variant="outline"
+                  className=" gap-2 h-7"
+                  onClick={onExportAll}
+                  disabled={
+                    isLoading ||
+                    isLoadingActivity ||
+                    isLoadingSessionLogs ||
+                    hasNoLogsForExport
+                  }
+                >
+                  <CloudDownload className="h-3.5 w-3.5" />
+                  {isLoading || isLoadingActivity || isLoadingSessionLogs
+                    ? 'Loading...'
+                    : 'Export All Logs'}
+                </Button>
+              </TooltipWrapper>
+              <TooltipWrapper
+                tip="No failed deliveries to export"
+                disable={!hasNoFailedDeliveries}
               >
-                <CloudDownload className="h-3.5 w-3.5" />
-                Failed Exports Attempts
-              </Button>
+                <Button
+                  variant="outline"
+                  className=" gap-2 h-7"
+                  onClick={onFailedExports}
+                  disabled={hasNoFailedDeliveries}
+                >
+                  <CloudDownload className="h-3.5 w-3.5" />
+                  Failed Exports Attempts
+                </Button>
+              </TooltipWrapper>
               {count?.data?.data &&
                 count?.data?.data?.FAIL > 0 &&
-                logs?.sessionDetails?.Transport?.name === 'VOICE' && (
+                resolvedTransportName === 'VOICE' && (
                   <RoleAuth
                     roles={[
                       AARoles.ADMIN,
@@ -269,39 +320,55 @@ export default function CommsLogsDetailPage() {
               <div className="flex-[2]">
                 <Card className="p-4 rounded-sm bg-white h-full">
                   <CardTitle className="flex gap-2 pb-2">
-                    <Badge
-                      className={`${getPhaseColor(
-                        activityDetail?.phase?.name,
-                      )}`}
+                    <TooltipWrapper
+                      tip={`Activity Phase: ${activityDetail?.phase?.name}`}
                     >
-                      {activityDetail?.phase?.name}
-                    </Badge>
-                    <Badge
-                      className={`rounded-xl capitalize text-xs font-normal ${getStatusBg(
-                        activityDetail?.status,
-                      )}`}
+                      <Badge
+                        className={`${getPhaseColor(
+                          activityDetail?.phase?.name,
+                        )}`}
+                      >
+                        {activityDetail?.phase?.name}
+                      </Badge>
+                    </TooltipWrapper>
+                    <TooltipWrapper
+                      tip={`Activity Status: ${activityDetail?.status}`}
                     >
-                      {activityDetail?.status
-                        .toLowerCase()
-                        .split('_')
-                        .map(
-                          (word) =>
-                            word.charAt(0).toUpperCase() + word.slice(1),
-                        )
-                        .join(' ')}
-                    </Badge>
+                      <Badge
+                        className={`rounded-xl capitalize text-xs font-normal ${getStatusBg(
+                          activityDetail?.status,
+                        )}`}
+                      >
+                        {activityDetail?.status
+                          .toLowerCase()
+                          .split('_')
+                          .map(
+                            (word: string) =>
+                              word.charAt(0).toUpperCase() + word.slice(1),
+                          )
+                          .join(' ')}
+                      </Badge>
+                    </TooltipWrapper>
                   </CardTitle>
                   <CardContent className="pl-1 pb-1  font-semibold flex flex-col gap-1">
                     <Label className="text-muted-foreground text-xs">
                       Activity Title:
                     </Label>
-                    <Label className="text-base space-y-1 font-semibold">
-                      {activityDetail?.title}
-                    </Label>
+                    <TooltipWrapper
+                      tip={`Activity Title: ${activityDetail?.title}`}
+                    >
+                      <Label className="text-base space-y-1 font-semibold">
+                        {activityDetail?.title}
+                      </Label>
+                    </TooltipWrapper>
                   </CardContent>
-                  <CardFooter className="pl-1 pb-2 text-sm text-muted-foreground">
-                    {activityDetail?.description}
-                  </CardFooter>
+                  <TooltipWrapper
+                    tip={`Activity Description: ${activityDetail?.description}`}
+                  >
+                    <CardFooter className="pl-1 pb-2 text-sm text-muted-foreground">
+                      {activityDetail?.description}
+                    </CardFooter>
+                  </TooltipWrapper>
                 </Card>
               </div>
 
@@ -361,17 +428,15 @@ export default function CommsLogsDetailPage() {
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 flex items-center justify-center">
-                      {logs?.sessionDetails?.Transport?.name === 'VOICE' ? (
+                      {resolvedTransportName === 'VOICE' ? (
                         <Mic />
-                      ) : logs?.sessionDetails?.Transport?.name === 'EMAIL' ? (
+                      ) : resolvedTransportName === 'EMAIL' ? (
                         <Mail />
                       ) : (
-                        <Text />
+                        <MessageSquare />
                       )}
                     </div>
-                    <span className="font-medium">
-                      {logs?.sessionDetails?.Transport?.name}
-                    </span>
+                    <span className="font-medium">{resolvedTransportName}</span>
                   </div>
 
                   <Badge
@@ -389,8 +454,33 @@ export default function CommsLogsDetailPage() {
 
                 {/* Communication */}
                 <div className="space-y-3">
-                  <p className="text-sm text-gray-500">{communicationTitle}</p>
-                  {renderMessage(logs?.communicationDetail?.message)}
+                  <TooltipWrapper
+                    tip={`Communication Title: ${communicationTitle}`}
+                  >
+                    <p className="text-sm text-gray-500">
+                      {communicationTitle}
+                    </p>
+                  </TooltipWrapper>
+                  {logs?.communicationDetail?.subject && (
+                    <TooltipWrapper
+                      tip={`Communication Subject: ${logs?.communicationDetail?.subject}`}
+                    >
+                      <div>
+                        <p className="font-medium">
+                          {logs.communicationDetail.subject}
+                        </p>
+                      </div>
+                    </TooltipWrapper>
+                  )}
+                  <TooltipWrapper
+                    tip={`Communication Message: ${getCommunicationMessage(
+                      logs?.communicationDetail?.message,
+                    )}`}
+                  >
+                    <div>
+                      {renderMessage(logs?.communicationDetail?.message)}
+                    </div>
+                  </TooltipWrapper>
                 </div>
               </CardContent>
             </Card>
@@ -445,6 +535,13 @@ export default function CommsLogsDetailPage() {
       </div>
     </div>
   );
+}
+
+function getCommunicationMessage(message: any): string {
+  if (typeof message === 'string') {
+    return message;
+  }
+  return message?.fileName || 'N/A';
 }
 
 function renderMessage(message: any) {

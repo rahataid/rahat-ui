@@ -3,24 +3,24 @@ on:
   workflow_dispatch:
     inputs:
       apps_to_build:
-        description: "Apps to build (comma-separated: rahat-ui,community-tool-ui). Leave empty for all."
+        description: 'Apps to build (comma-separated: rahat-ui,community-tool-ui). Leave empty for all.'
         required: false
-        default: ""
+        default: ''
         type: string
       tag_suffix:
-        description: "Tag suffix (e.g., test-load)"
+        description: 'Tag suffix (e.g., test-load)'
         required: true
-        default: "test-load"
+        default: 'test-load'
         type: string
       vault_secret_path:
-        description: "Vault secret path (e.g., github/data/rahat/rahat-ui/demo/aa/redcross)"
+        description: 'Vault secret path (e.g., github/data/rahat/rahat-ui/demo/aa/redcross)'
         required: true
-        default: "github/data/rahat/rahat-ui/dev/aa/dev-qa"
+        default: 'github/data/rahat/rahat-ui/dev/aa/dev-qa'
         type: string
       vault_secret_key:
-        description: "Key within the Vault secret that holds the env (e.g., rahat-ui)"
+        description: 'Key within the Vault secret that holds the env (e.g., rahat-ui)'
         required: true
-        default: "rahat-ui"
+        default: 'rahat-ui'
         type: string
 
 concurrency:
@@ -94,7 +94,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.10.0
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

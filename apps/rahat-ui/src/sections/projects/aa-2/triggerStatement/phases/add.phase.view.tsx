@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   useCreatePhase,
   PROJECT_SETTINGS_KEYS,
+  usePhases,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -34,6 +35,7 @@ export default function AddPhaseView() {
   const router = useRouter();
   const projectId = params.id as UUID;
   const createPhase = useCreatePhase();
+  const { data: phasesData = [] } = usePhases(projectId);
 
   const { settings } = useProjectSettingsStore((state) => ({
     settings: state.settings,
@@ -73,14 +75,26 @@ export default function AddPhaseView() {
     }
   }, [riverBasin, form]);
 
+  const hasPayoutEnabledPhase = React.useMemo(
+    () => phasesData?.some((phase: any) => phase?.canTriggerPayout),
+    [phasesData],
+  );
+
+  React.useEffect(() => {
+    if (!hasPayoutEnabledPhase) return;
+    form.setValue('canTriggerPayout', false, { shouldValidate: true });
+  }, [hasPayoutEnabledPhase, form]);
+
   const handleAddPhase = async (data: AddPhaseFormValues) => {
     const payload = {
-      name: data.name.trim(),
+      name: data.name.trim().toUpperCase(),
       source: phaseSource,
       river_basin: data.riverBasin,
       activeYear: String(activeYear || ''),
+      requiredMandatoryTriggers: data.requiredMandatoryTriggers,
+      requiredOptionalTriggers: data.requiredOptionalTriggers,
       canRevert: !!data.canRevert,
-      canTriggerPayout: !!data.canTriggerPayout,
+      canTriggerPayout: hasPayoutEnabledPhase ? false : !!data.canTriggerPayout,
     };
 
     try {
@@ -226,18 +240,26 @@ export default function AddPhaseView() {
                     control={form.control}
                     name="canTriggerPayout"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value === true}
-                            onCheckedChange={(checked) => {
-                              field.onChange(checked === true);
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className="font-medium">
-                          Can Trigger Payout
-                        </FormLabel>
+                      <FormItem className="space-y-1">
+                        <div className="flex flex-row items-center space-x-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value === true}
+                              disabled={hasPayoutEnabledPhase}
+                              onCheckedChange={(checked) => {
+                                field.onChange(checked === true);
+                              }}
+                            />
+                          </FormControl>
+                          <FormLabel className="font-medium">
+                            Can Trigger Payout
+                          </FormLabel>
+                        </div>
+                        {hasPayoutEnabledPhase ? (
+                          <p className="text-sm text-yellow-600">
+                            A phase with payout enabled already exists.
+                          </p>
+                        ) : null}
                       </FormItem>
                     )}
                   />
@@ -245,10 +267,19 @@ export default function AddPhaseView() {
               </div>
 
               <div className="flex justify-end gap-2 pt-2">
-                <Button type="button" variant="outline" className='w-36' onClick={handleReset}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-36"
+                  onClick={handleReset}
+                >
                   Clear
                 </Button>
-                <Button type="submit" className='w-36' disabled={createPhase.isPending}>
+                <Button
+                  type="submit"
+                  className="w-36"
+                  disabled={createPhase.isPending}
+                >
                   {createPhase.isPending ? 'Adding...' : 'Add'}
                 </Button>
               </div>

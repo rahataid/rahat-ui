@@ -53,7 +53,7 @@ export default function InkindDetailsForm({
     defaultValues: {
       name: formData.name ?? DEFAULT_VALUES.name,
       description: formData.description ?? DEFAULT_VALUES.description,
-      type: formData.type,
+      type: formData.type ?? DEFAULT_VALUES.type,
       quantity: formData.quantity ?? DEFAULT_VALUES.quantity,
     },
   });
@@ -148,7 +148,7 @@ export default function InkindDetailsForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Inkind Type</FormLabel>
-                <Select onValueChange={field.onChange}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select type" />

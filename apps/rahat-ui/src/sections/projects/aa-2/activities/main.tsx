@@ -1,5 +1,5 @@
 'use client';
-import { useActivities, usePhasesStore } from '@rahat-ui/query';
+import { useActivities, usePhases, usePhasesStore } from '@rahat-ui/query';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { generateExcel } from 'apps/rahat-ui/src/utils';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
@@ -20,6 +20,8 @@ export default function ActivitiesView() {
   const { activitiesData, isLoading } = useActivities(projectID as UUID, {
     perPage: 9999,
   });
+
+  usePhases(projectID as UUID);
 
   const { phases } = usePhasesStore((state) => ({
     phases: state.phases,

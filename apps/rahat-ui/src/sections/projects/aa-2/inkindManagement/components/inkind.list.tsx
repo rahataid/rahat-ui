@@ -30,10 +30,26 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { PlusCircle, MinusCircle, Trash2, Pencil, Loader2 } from 'lucide-react';
+import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import {
+  PlusCircle,
+  MinusCircle,
+  Trash2,
+  Pencil,
+  Loader2,
+  AlertCircle,
+} from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -41,13 +57,17 @@ import {
   useDeleteInkind,
   useAddInkindStock,
   useRemoveInkindStock,
+  useUpdateInkind,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import InkindUpdateSheet from './inkind.update.sheet';
 import { useSwal } from 'apps/rahat-ui/src/components/swal';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-import { InkindType, INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
+import {
+  InkindType,
+  INKIND_TYPES,
+  INKIND_TYPE_LABELS,
+} from '../schemas/inkind.validation';
 
 export type InkindItem = {
   uuid: string;
@@ -62,6 +82,22 @@ type StockDialogState = {
   mode: 'add' | 'remove';
   item: InkindItem | null;
   quantity: string;
+};
+
+type UpdateDialogState = {
+  open: boolean;
+  item: InkindItem | null;
+  name: string;
+  description: string;
+  type: InkindType;
+};
+
+type ConfirmDialogState = {
+  open: boolean;
+  item: InkindItem | null;
+  name: string;
+  description: string;
+  type: InkindType;
 };
 
 type ActionButtonProps = {
@@ -89,6 +125,22 @@ function ActionButton({ label, icon, hoverClass, onClick }: ActionButtonProps) {
   );
 }
 
+const EMPTY_UPDATE: UpdateDialogState = {
+  open: false,
+  item: null,
+  name: '',
+  description: '',
+  type: 'PRE_DEFINED',
+};
+
+const EMPTY_CONFIRM: ConfirmDialogState = {
+  open: false,
+  item: null,
+  name: '',
+  description: '',
+  type: 'PRE_DEFINED',
+};
+
 export default function InkindList() {
   const router = useRouter();
   const { id } = useParams();
@@ -97,14 +149,16 @@ export default function InkindList() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-  const [selectedItem, setSelectedItem] = useState<InkindItem | null>(null);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [stockDialog, setStockDialog] = useState<StockDialogState>({
     open: false,
     mode: 'add',
     item: null,
     quantity: '',
   });
+  const [updateDialog, setUpdateDialog] =
+    useState<UpdateDialogState>(EMPTY_UPDATE);
+  const [confirmDialog, setConfirmDialog] =
+    useState<ConfirmDialogState>(EMPTY_CONFIRM);
 
   const { data, isLoading } = useInkinds(projectUUID, {
     page: pagination.pageIndex + 1,
@@ -116,6 +170,7 @@ export default function InkindList() {
   const deleteInkind = useDeleteInkind(projectUUID);
   const addStock = useAddInkindStock(projectUUID);
   const removeStock = useRemoveInkindStock(projectUUID);
+  const updateInkind = useUpdateInkind(projectUUID);
   const queryClient = useQueryClient();
   const dialog = useSwal();
 
@@ -169,6 +224,44 @@ export default function InkindList() {
     closeStockDialog();
   };
 
+  // Update flow: open edit modal pre-filled with current values
+  const openUpdateDialog = (item: InkindItem) =>
+    setUpdateDialog({
+      open: true,
+      item,
+      name: item.name,
+      description: item.description ?? '',
+      type: item.type,
+    });
+
+  // Move from edit modal → confirmation modal
+  const handleUpdateNext = () => {
+    const { name, description, type, item } = updateDialog;
+    if (!name.trim()) {
+      toast.error('Name is required.');
+      return;
+    }
+    if (!description.trim()) {
+      toast.error('Description is required.');
+      return;
+    }
+    setUpdateDialog(EMPTY_UPDATE);
+    setConfirmDialog({ open: true, item, name, description, type });
+  };
+
+  // Confirmed — call the API
+  const handleUpdateConfirm = async () => {
+    const { item, name, description, type } = confirmDialog;
+    if (!item) return;
+    await updateInkind.mutateAsync({
+      uuid: item.uuid,
+      name,
+      description,
+      type,
+    });
+    setConfirmDialog(EMPTY_CONFIRM);
+  };
+
   const rows = useMemo<InkindItem[]>(
     () =>
       [...(data?.data ?? [])].sort((a: any, b: any) => {
@@ -193,9 +286,7 @@ export default function InkindList() {
         accessorKey: 'description',
         header: 'Description',
         cell: ({ row }) => (
-          <span className="text-muted-foreground text-sm">
-            {row.getValue('description') || '—'}
-          </span>
+          <span className="text-sm">{row.getValue('description') || '—'}</span>
         ),
       },
       {
@@ -217,7 +308,7 @@ export default function InkindList() {
         accessorKey: 'availableStock',
         header: 'Available Stock',
         cell: ({ row }) => (
-          <span className="font-semibold text-primary">
+          <span className="font-semibold">
             {row.getValue('availableStock') ?? 0}
           </span>
         ),
@@ -252,10 +343,7 @@ export default function InkindList() {
                   label="Update Details"
                   icon={<Pencil size={16} strokeWidth={1.8} />}
                   hoverClass="hover:bg-blue-50 text-blue-500"
-                  onClick={() => {
-                    setSelectedItem(item);
-                    setIsSheetOpen(true);
-                  }}
+                  onClick={() => openUpdateDialog(item)}
                 />
               </div>
             </TooltipProvider>
@@ -332,13 +420,7 @@ export default function InkindList() {
         perPage={pagination.pageSize}
       />
 
-      <InkindUpdateSheet
-        projectUUID={projectUUID}
-        item={selectedItem}
-        open={isSheetOpen}
-        onOpenChange={setIsSheetOpen}
-      />
-
+      {/* ── Stock Add / Remove Dialog ── */}
       <Dialog
         open={stockDialog.open}
         onOpenChange={(o) => !o && closeStockDialog()}
@@ -413,6 +495,160 @@ export default function InkindList() {
                 'Add Stock'
               ) : (
                 'Remove Stock'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={updateDialog.open}
+        onOpenChange={(o) => !o && setUpdateDialog(EMPTY_UPDATE)}
+      >
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Update Inkind Item</DialogTitle>
+            <DialogDescription>
+              Edit the details below, then review before saving.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 py-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="update-name">Name</Label>
+              <Input
+                id="update-name"
+                placeholder="Item name"
+                value={updateDialog.name}
+                onChange={(e) =>
+                  setUpdateDialog((prev) => ({ ...prev, name: e.target.value }))
+                }
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="update-description">Description</Label>
+              <Textarea
+                id="update-description"
+                placeholder="Item description"
+                className="resize-none"
+                rows={3}
+                value={updateDialog.description}
+                onChange={(e) =>
+                  setUpdateDialog((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Type</Label>
+              <Select
+                value={updateDialog.type}
+                onValueChange={(v) =>
+                  setUpdateDialog((prev) => ({
+                    ...prev,
+                    type: v as InkindType,
+                  }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {INKIND_TYPES.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {INKIND_TYPE_LABELS[t]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="secondary"
+              onClick={() => setUpdateDialog(EMPTY_UPDATE)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleUpdateNext}>Next</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Update Details — Step 2: Confirmation Modal ── */}
+      <Dialog
+        open={confirmDialog.open}
+        onOpenChange={(o) => !o && setConfirmDialog(EMPTY_CONFIRM)}
+      >
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              Confirm Changes
+            </DialogTitle>
+            <DialogDescription>
+              Review the changes below before saving.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 py-2 text-sm">
+            <div className="rounded-sm border bg-muted/40 px-3 py-3 space-y-2">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Name</span>
+                <span className="font-medium">{confirmDialog.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Description</span>
+                <span className="font-medium max-w-[60%] text-right break-words">
+                  {confirmDialog.description}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Type</span>
+                <Badge
+                  variant={
+                    confirmDialog.type === 'PRE_DEFINED'
+                      ? 'default'
+                      : 'secondary'
+                  }
+                  className="rounded-sm"
+                >
+                  {INKIND_TYPE_LABELS[confirmDialog.type]}
+                </Badge>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setConfirmDialog(EMPTY_CONFIRM);
+                setUpdateDialog({
+                  open: true,
+                  item: confirmDialog.item,
+                  name: confirmDialog.name,
+                  description: confirmDialog.description,
+                  type: confirmDialog.type,
+                });
+              }}
+              disabled={updateInkind.isPending}
+            >
+              Back
+            </Button>
+            <Button
+              onClick={handleUpdateConfirm}
+              disabled={updateInkind.isPending}
+            >
+              {updateInkind.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Confirm'
               )}
             </Button>
           </DialogFooter>

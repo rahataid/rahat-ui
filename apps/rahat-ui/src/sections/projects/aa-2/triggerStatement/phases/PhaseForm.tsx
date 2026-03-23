@@ -1,9 +1,6 @@
 import React from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import {
-  AddPhaseFormInputValues,
-  AddPhaseFormValues,
-} from './phase.schema';
+import { AddPhaseFormInputValues, AddPhaseFormValues } from './phase.schema';
 import {
   Form,
   FormControl,
@@ -152,19 +149,21 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                   control={form.control}
                   name="canTriggerPayout"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value === true}
-                          disabled={hasPayoutEnabledPhase}
-                          onCheckedChange={(checked) => {
-                            field.onChange(checked === true);
-                          }}
-                        />
-                      </FormControl>
-                      <FormLabel className="font-medium">
-                        Can Trigger Payout
-                      </FormLabel>
+                    <FormItem className="space-y-1">
+                      <div className="flex flex-row items-center space-x-2">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value === true}
+                            disabled={hasPayoutEnabledPhase}
+                            onCheckedChange={(checked) => {
+                              field.onChange(checked === true);
+                            }}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-medium">
+                          Can Trigger Payout
+                        </FormLabel>
+                      </div>
                       {hasPayoutEnabledPhase ? (
                         <p className="text-sm text-yellow-600 ml-2">
                           A phase with payout enabled already exists.

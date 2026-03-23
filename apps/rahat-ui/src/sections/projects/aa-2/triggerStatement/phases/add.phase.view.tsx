@@ -104,8 +104,8 @@ export default function AddPhaseView() {
 
   return (
     <>
-      <Back path={triggerStatementPath} />
-      <div className="mt-4">
+      <div className="mt-4 px-4">
+        <Back path={triggerStatementPath} />
         <Heading
           title="Add Phase"
           description="Fill the form below to create new phase"

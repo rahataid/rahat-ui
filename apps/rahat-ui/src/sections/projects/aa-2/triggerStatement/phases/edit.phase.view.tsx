@@ -69,9 +69,11 @@ export default function EditPhaseView() {
   const handleUpdatePhase = async (data: AddPhaseFormValues) => {
     const payload = {
       uuid: phaseId,
-      name: data.name.trim(),
+      name: data.name.trim().toUpperCase(),
       canRevert: !!data.canRevert,
       canTriggerPayout: !!data.canTriggerPayout,
+      requiredMandatoryTriggers: Number(data.requiredMandatoryTriggers),
+      requiredOptionalTriggers: Number(data.requiredOptionalTriggers),
     };
 
     try {
@@ -121,7 +123,7 @@ export default function EditPhaseView() {
   return (
     <>
       <Back path={triggerStatementPath} />
-      <div className="mt-4 flex items-start justify-between gap-3">
+      <div className="mt-4 px-4 flex items-start justify-between gap-3">
         <Heading
           title="Edit Phase"
           description="Edit the form below to update this phase"
@@ -134,7 +136,7 @@ export default function EditPhaseView() {
               className="w-36"
               disabled={deletePhase.isPending}
             >
-              {deletePhase.isPending ? 'Deleting...' : 'Delete'}
+              {deletePhase.isPending ? 'Deleting...' : 'Delete Phase'}
             </Button>
           }
           title="Delete Phase"

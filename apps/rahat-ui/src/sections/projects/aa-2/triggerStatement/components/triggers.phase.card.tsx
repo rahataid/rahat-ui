@@ -10,6 +10,8 @@ type IProps = {
   subtitle: string;
   hideAddTrigger?: boolean;
   handleAddTrigger?: () => void;
+  hideEditPhase?: boolean;
+  handleEditPhase?: () => void;
   chartSeries: number[];
   chartLabels: string[];
   requiredMandatoryTriggers: number;
@@ -28,6 +30,8 @@ export default function TriggersPhaseCard({
   subtitle,
   hideAddTrigger = false,
   handleAddTrigger,
+  hideEditPhase = false,
+  handleEditPhase,
   chartLabels,
   chartSeries,
   mandatoryTriggers,

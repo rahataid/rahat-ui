@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   Plus,
   Settings,
+  SquarePen,
   Undo2,
 } from 'lucide-react';
 import { TriggersListTabs, TriggersPhaseCard } from './components';
@@ -37,6 +38,12 @@ export default function PhaseDetail() {
 
   const handleAddTriggerClick = () => {
     router.push(`/projects/aa/${projectId}/trigger-statements/add`);
+  };
+
+  const handleEditPhase = () => {
+    router.push(
+      `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}/edit`,
+    );
   };
 
   const isDisabled =
@@ -80,22 +87,6 @@ export default function PhaseDetail() {
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
           >
-            <IconLabelBtn
-              variant="outline"
-              Icon={Settings}
-              name="Manage Threshold"
-              handleClick={() => {
-                router.push(
-                  `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}/config-threshold`,
-                );
-              }}
-            />
-          </RoleAuth>
-
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
             <TooltipWrapper
               tip="Cannot add triggers for an active phase"
               disable={!phase?.isActive}
@@ -109,6 +100,19 @@ export default function PhaseDetail() {
                 handleClick={handleAddTriggerClick}
               />
             </TooltipWrapper>
+          </RoleAuth>
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
+            <CustomAlertDialog
+              dialogTrigger={
+                <IconLabelBtn Icon={SquarePen} name="Edit Phase" />
+              }
+              title="Edit Phase"
+              description="Are you sure you want to edit this phase?"
+              handleContinueClick={handleEditPhase}
+            />
           </RoleAuth>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
@@ -157,6 +161,7 @@ export default function PhaseDetail() {
           <TriggersPhaseCard
             title="Phase Overview"
             subtitle={`Overview of ${phase?.name?.toLowerCase()} phase`}
+            hideEditPhase={true}
             chartLabels={['Mandatory', 'Optional']}
             chartSeries={[
               phase?.totalMandatoryTriggers,

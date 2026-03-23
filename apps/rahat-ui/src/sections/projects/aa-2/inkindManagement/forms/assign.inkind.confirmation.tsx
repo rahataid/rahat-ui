@@ -4,7 +4,7 @@ import { Button } from 'libs/shadcn/src/components/ui/button';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Loader2, UserRound } from 'lucide-react';
 import { useAssignGroupInkind, useGetBeneficiaryGroup } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { truncatedText } from 'apps/community-tool-ui/src/utils';
 import { NoResult } from 'apps/rahat-ui/src/common';
@@ -20,15 +20,16 @@ interface AssignInkindSummary {
 
 interface Props {
   formData: AssignInkindSummary;
-  onBack: () => void;
   onSuccess: () => void;
+  tab: string | null;
 }
 
 export default function AssignInkindConfirmation({
   formData,
-  onBack,
   onSuccess,
+  tab
 }: Props) {
+  const router = useRouter();
   const { id } = useParams();
   const projectUUID = id as UUID;
   const assignGroupInkind = useAssignGroupInkind(projectUUID);
@@ -105,10 +106,10 @@ export default function AssignInkindConfirmation({
         <Button
           type="button"
           variant="secondary"
-          onClick={onBack}
+          onClick={() => router.push(`/projects/aa/${id}/inkind-management?tab=${tab}`)}
           disabled={assignGroupInkind.isPending}
         >
-          Back
+          Cancel
         </Button>
         <Button
           className="px-10 rounded-sm"
@@ -121,7 +122,7 @@ export default function AssignInkindConfirmation({
               Assigning...
             </>
           ) : (
-            'Assign InKinds'
+            'Assign Inkinds'
           )}
         </Button>
       </div>

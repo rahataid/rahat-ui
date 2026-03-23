@@ -134,7 +134,6 @@ export default function AddInkindView() {
         {currentStep === 1 && (
           <InkindConfirmation
             formData={formData as InkindDetailsValues}
-            onBack={() => setCurrentStep(0)}
             onSuccess={handleSuccess}
           />
         )}

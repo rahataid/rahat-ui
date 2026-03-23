@@ -283,7 +283,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                 Clear
               </Button>
               <Button type="submit" className="px-10 rounded-sm w-40">
-                Next
+                Continue
               </Button>
             </div>
           </div>

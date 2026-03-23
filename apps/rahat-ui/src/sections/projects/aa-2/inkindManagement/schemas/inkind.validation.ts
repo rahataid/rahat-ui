@@ -26,7 +26,12 @@ export const InkindDetailsSchema = z.object({
   type: z.string().refine((val) => INKIND_TYPES.includes(val as any), {
     message: 'Type is required',
   }),
-  quantity: z.number().min(1, 'Quantity must be at least 1').optional(),
+  quantity: z
+    .string()
+    .optional()
+    .refine((val) => !val || (Number(val) > 0 && /^\d+$/.test(val)), {
+      message: 'Quantity must be a positive number',
+    }),
 });
 
 export type InkindDetailsValues = z.infer<typeof InkindDetailsSchema>;

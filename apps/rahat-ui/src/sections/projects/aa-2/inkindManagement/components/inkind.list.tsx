@@ -376,20 +376,20 @@ export default function InkindList() {
         ),
       },
       {
-        accessorKey: 'reservedStock',
-        header: 'Reserved Stock',
+        accessorKey: 'assignedStock',
+        header: 'Assigned Stock',
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.getValue('reservedStock') ?? 0}
+            {row.getValue('assignedStock') ?? 0}
           </span>
         ),
       },
       {
-        accessorKey: 'allocatedStock',
-        header: 'Allocated Stock',
+        accessorKey: 'redeemedStock',
+        header: 'Redeemed Stock',
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.getValue('allocatedStock') ?? 0}
+            {row.getValue('redeemedStock') ?? 0}
           </span>
         ),
       },

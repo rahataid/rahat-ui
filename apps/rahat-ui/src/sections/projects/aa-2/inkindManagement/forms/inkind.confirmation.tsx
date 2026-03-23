@@ -3,23 +3,22 @@
 import { Button } from 'libs/shadcn/src/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useCreateInkind } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import type { InkindDetailsValues } from '../schemas/inkind.validation';
 import { INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
 
 interface Props {
   formData: InkindDetailsValues;
-  onBack: () => void;
   onSuccess: () => void;
 }
 
 export default function InkindConfirmation({
   formData,
-  onBack,
   onSuccess,
 }: Props) {
   const { id } = useParams();
+  const router = useRouter();
   const projectUUID = id as UUID;
   const createInkind = useCreateInkind(projectUUID);
 
@@ -29,7 +28,7 @@ export default function InkindConfirmation({
         name: formData.name,
         description: formData.description,
         type: formData.type,
-        quantity: formData.quantity,
+        quantity: parseInt(formData.quantity ?? '0', 10) || undefined,
       });
       onSuccess();
     } catch {
@@ -63,12 +62,14 @@ export default function InkindConfirmation({
                 </p>
               </div>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Quantity</p>
-              <p className="text-lg font-semibold text-primary">
-                {formData.quantity}
-              </p>
-            </div>
+            {formData.quantity && (
+              <div>
+                <p className="text-sm text-muted-foreground">Quantity</p>
+                <p className="text-lg font-semibold text-primary">
+                  {formData.quantity}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -77,7 +78,7 @@ export default function InkindConfirmation({
         <Button
           type="button"
           variant="secondary"
-          onClick={onBack}
+          onClick={() => router.push(`/projects/aa/${id}/inkind-management?tab=inkindList`)}
           disabled={createInkind.isPending}
         >
           Cancel

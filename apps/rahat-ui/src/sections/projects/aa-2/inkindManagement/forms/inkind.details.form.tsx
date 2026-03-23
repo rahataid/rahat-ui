@@ -34,7 +34,7 @@ const DEFAULT_VALUES: InkindDetailsValues = {
   name: '',
   description: '',
   type: '',
-  quantity: undefined,
+  quantity: '',
 };
 
 interface Props {
@@ -175,16 +175,14 @@ export default function InkindDetailsForm({
                 <FormLabel>Inkind Quantity (optional)</FormLabel>
                 <FormControl>
                   <Input
-                    type="number"
+                    type="text"
                     placeholder="Enter quantity"
-                    min={1}
                     {...field}
                     value={field.value ?? ''}
-                    onChange={(e) =>
-                      field.onChange(
-                        e.target.value === '' ? undefined : +e.target.value,
-                      )
-                    }
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      field.onChange(val);
+                    }}
                   />
                 </FormControl>
                 <FormMessage />

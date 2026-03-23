@@ -132,8 +132,8 @@ export default function AssignInkindView() {
         {currentStep === 1 && formData && (
           <AssignInkindConfirmation
             formData={formData}
-            onBack={handleBack}
             onSuccess={handleSuccess}
+            tab={tab}
           />
         )}
       </div>

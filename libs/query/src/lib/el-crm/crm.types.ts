@@ -26,9 +26,14 @@ export interface Stat {
     | 'ACTIVE_CUSTOMER'
     | 'INACTIVE_CUSTOMER'
     | 'NEWLY_INACTIVE_CUSTOMER'
-    | 'CUSTOMERS_BY_MONTH';
-  data: number;
-  group: 'VENDOR';
+    | 'CUSTOMERS_BY_MONTH'
+    | 'TOTAL_MESSAGES_SENT'
+    | 'TOTAL_MESSAGES_SUCCESS'
+    | 'TOTAL_MESSAGES_FAILED'
+    | 'MESSAGES_TO_CONSUMERS'
+    | 'MESSAGES_TO_CUSTOMERS';
+  data: number | unknown;
+  group: 'VENDOR' | 'COMMUNICATION';
   createdAt: Date;
   updatedAt: Date;
 }

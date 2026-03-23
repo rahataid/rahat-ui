@@ -43,18 +43,25 @@ import { CustomerCategory, Stat, useCustomerStats } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 
-const messagesSentData = [
-  { name: 'Consumers', value: 2400, fill: '#6366f1' },
-  { name: 'Customers', value: 1600, fill: '#22d3ee' },
-];
-
-const deliveryStatusData = [
-  { name: 'Delivered', value: 3200, fill: '#8b5cf6' },
-  { name: 'Failed', value: 800, fill: '#f43f5e' },
-];
-
 const DONUT_COLORS_MESSAGES = ['#6366f1', '#22d3ee'];
 const DONUT_COLORS_DELIVERY = ['#8b5cf6', '#f43f5e'];
+const monthlyTrendData = [
+  { month: 'Jan', messages: 2400 },
+  { month: 'Feb', messages: 1398 },
+  { month: 'Mar', messages: 9800 },
+  { month: 'Apr', messages: 3908 },
+  { month: 'May', messages: 4800 },
+  { month: 'Jun', messages: 3800 },
+];
+
+const customerCategorizationData = [
+  { month: 'Jan', active: 1200, inactive: 800, newlyActive: 400 },
+  { month: 'Feb', active: 1100, inactive: 900, newlyActive: 300 },
+  { month: 'Mar', active: 1400, inactive: 700, newlyActive: 600 },
+  { month: 'Apr', active: 1300, inactive: 750, newlyActive: 500 },
+  { month: 'May', active: 1500, inactive: 650, newlyActive: 550 },
+  { month: 'Jun', active: 1600, inactive: 600, newlyActive: 600 },
+];
 
 export default function DashboardView() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -64,9 +71,50 @@ export default function DashboardView() {
   const totalCustomers =
     stats?.find((stat: Stat) => stat.name === 'TOTAL_CUSTOMER')?.data || 0;
 
+  const totalMessagesSent =
+    stats?.find((stat: Stat) => stat.name === 'TOTAL_MESSAGES_SENT')?.data || 0;
+
+  const successfulMessages =
+    stats?.find((stat: Stat) => stat.name === 'TOTAL_MESSAGES_SUCCESS')?.data ||
+    0;
+
+  const failedMessages =
+    stats?.find((stat: Stat) => stat.name === 'TOTAL_MESSAGES_FAILED')?.data ||
+    0;
+
+  const messagesToConsumers =
+    stats?.find((stat: Stat) => stat.name === 'MESSAGES_TO_CONSUMERS')?.data ||
+    0;
+
+  const messagesToCustomers =
+    stats?.find((stat: Stat) => stat.name === 'MESSAGES_TO_CUSTOMERS')?.data ||
+    0;
+
   const customersByMonth =
     stats?.find((stat: Stat) => stat.name === 'CUSTOMERS_BY_MONTH')?.data || [];
+  const messagesSentData = [
+    {
+      name: 'Consumers',
+      value: Number(messagesToConsumers) || 0,
+      fill: '#6366f1',
+    },
+    {
+      name: 'Customers',
+      value: Number(messagesToCustomers) || 0,
+      fill: '#22d3ee',
+    },
+  ];
 
+  const deliveryStatusData = [
+    {
+      name: 'Delivered',
+      value: Number(successfulMessages) || 0,
+      fill: '#8b5cf6',
+    },
+    { name: 'Failed', value: Number(failedMessages) || 0, fill: '#f43f5e' },
+  ];
+  const totalMessages = messagesSentData.reduce((s, d) => s + d.value, 0);
+  const totalDelivery = deliveryStatusData.reduce((s, d) => s + d.value, 0);
   const statCards = [
     {
       title: 'Total Customers',
@@ -86,16 +134,13 @@ export default function DashboardView() {
     },
     {
       title: 'Total Messages Sent',
-      value: 0,
+      value: totalMessages,
       icon: Send,
       bgColor: 'bg-violet-500/5',
       iconColor: 'text-violet-500',
       tooltip: 'Total messages dispatched across all channels',
     },
   ];
-
-  const totalMessages = messagesSentData.reduce((s, d) => s + d.value, 0);
-  const totalDelivery = deliveryStatusData.reduce((s, d) => s + d.value, 0);
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -415,10 +460,7 @@ export default function DashboardView() {
                   className="h-[320px]"
                 >
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={customersByMonth}
-                      barCategoryGap="20%"
-                    >
+                    <BarChart data={customersByMonth} barCategoryGap="20%">
                       <CartesianGrid
                         strokeDasharray="3 3"
                         vertical={false}

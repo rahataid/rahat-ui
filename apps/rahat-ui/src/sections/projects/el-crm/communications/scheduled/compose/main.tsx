@@ -41,6 +41,14 @@ import { Switch } from '@rahat-ui/shadcn/components/switch';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Textarea } from '@rahat-ui/shadcn/components/textarea';
 import { Label } from '@rahat-ui/shadcn/components/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { cn } from '@rahat-ui/shadcn/src/utils';
 import {
   Tooltip,
@@ -331,6 +339,7 @@ export default function ComposeScheduleView() {
   const [campaignName, setCampaignName] = useState('');
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   // Automation rule creation state
   const [showRuleBuilder, setShowRuleBuilder] = useState(false);
@@ -453,6 +462,35 @@ export default function ComposeScheduleView() {
     !!messageContent &&
     !!selectedTransportId;
 
+  const selectedTemplateName = useMemo(() => {
+    if (!messageContent) return 'Not selected';
+    if (!isWhatsApp) return 'Custom message';
+
+    return (
+      templates.data?.find(
+        (template: TemplateOption) =>
+          template.externalId === messageContent ||
+          template.cuid === messageContent,
+      )?.name ?? messageContent
+    );
+  }, [messageContent, isWhatsApp, templates.data]);
+
+  const selectedAudienceLabel =
+    AUDIENCE_GROUPS.find((group) => group.id === selectedGroup)?.name ??
+    selectedGroup;
+
+  const scheduledAtLabel = useMemo(() => {
+    if (!scheduleDate || !scheduleTime) return 'Not selected';
+    const scheduled = new Date(`${scheduleDate}T${scheduleTime}`);
+    if (Number.isNaN(scheduled.getTime())) return 'Invalid date/time';
+    return scheduled.toLocaleString();
+  }, [scheduleDate, scheduleTime]);
+
+  const activeFilters = useMemo(
+    () => filterRows.filter((row) => row.field && row.value),
+    [filterRows],
+  );
+
   const handleSubmit = async () => {
     if (!isScheduleDateTimeValid) return;
 
@@ -487,6 +525,7 @@ export default function ComposeScheduleView() {
       await trigger.mutateAsync({ uuid: campaign.uuid });
     }
 
+    setIsConfirmDialogOpen(false);
     router.push(`/projects/el-crm/${projectUUID}/communications/scheduled`);
   };
 
@@ -530,840 +569,956 @@ export default function ComposeScheduleView() {
 
   return (
     <TooltipProvider delayDuration={200}>
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="border-b border-border bg-card px-6 py-5">
-        <div className="flex items-center gap-3">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
-              >
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent>Back to scheduled messages</TooltipContent>
-          </Tooltip>
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              Schedule Message
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Create and schedule a new message to your audience
-            </p>
+      <div className="flex flex-col h-full">
+        {/* Header */}
+        <div className="border-b border-border bg-card px-6 py-5">
+          <div className="flex items-center gap-3">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/projects/el-crm/${projectUUID}/communications/scheduled`}
+                >
+                  <Button variant="ghost" size="sm">
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>Back to scheduled messages</TooltipContent>
+            </Tooltip>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                Schedule Message
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Create and schedule a new message to your audience
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex-1 p-6 overflow-auto">
-        <Card>
-          <CardHeader className="border-b">
-            <CardTitle>Schedule Message</CardTitle>
-            <CardDescription>
-              Choose how you want to schedule your message
-            </CardDescription>
-          </CardHeader>
+        <div className="flex-1 p-6 overflow-auto">
+          <Card>
+            <CardHeader className="border-b">
+              <CardTitle>Schedule Message</CardTitle>
+              <CardDescription>
+                Choose how you want to schedule your message
+              </CardDescription>
+            </CardHeader>
 
-          <CardContent className="pt-6">
-            <Tabs defaultValue="manual" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="manual" className="gap-2">
-                  <Calendar className="h-4 w-4" />
-                  Manual
-                </TabsTrigger>
-                <TabsTrigger value="automatic" className="gap-2">
-                  <Zap className="h-4 w-4" />
-                  Automatic
-                </TabsTrigger>
-              </TabsList>
+            <CardContent className="pt-6">
+              <Tabs defaultValue="manual" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-6">
+                  <TabsTrigger value="manual" className="gap-2">
+                    <Calendar className="h-4 w-4" />
+                    Manual
+                  </TabsTrigger>
+                  <TabsTrigger value="automatic" className="gap-2">
+                    <Zap className="h-4 w-4" />
+                    Automatic
+                  </TabsTrigger>
+                </TabsList>
 
-              {/* ── MANUAL TAB ── */}
-              <TabsContent value="manual" className="space-y-4">
-                {/* Step 1: Channel */}
-                <StepCard
-                  step={1}
-                  title="Select Channel"
-                  completed={!!selectedTransportId}
-                  active={currentStep === 1}
-                  badge={selectedTransportName || undefined}
-                >
-                  {transport.isLoading ? (
-                    <p className="ml-10 text-sm text-muted-foreground">
-                      Loading channels…
-                    </p>
-                  ) : (
-                    <div className="grid grid-cols-3 gap-3 ml-10">
-                      {transport.data?.map((ch: TransportOption) => (
-                        <button
-                          key={ch.cuid}
-                          type="button"
-                          onClick={() => {
-                            setSelectedTransportId(ch.cuid);
-                            setSelectedTransportName(ch.name);
-                            setMessageContent('');
-                          }}
-                          className={cn(
-                            'flex flex-col items-center gap-2 rounded-lg border-2 p-4 transition-all hover:border-primary/50',
-                            selectedTransportId === ch.cuid
-                              ? 'border-primary bg-primary/5'
-                              : 'border-border',
-                          )}
-                        >
-                          <MessageSquare className="h-6 w-6" />
-                          <span className="text-sm font-medium">{ch.name}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </StepCard>
-
-                {/* Step 2: Template or custom message */}
-                {selectedTransportId && (
+                {/* ── MANUAL TAB ── */}
+                <TabsContent value="manual" className="space-y-4">
+                  {/* Step 1: Channel */}
                   <StepCard
-                    step={2}
-                    title={isWhatsApp ? 'Select Template' : 'Message Content'}
-                    completed={!!messageContent}
-                    active={currentStep === 2}
-                    badge={templateBadge}
+                    step={1}
+                    title="Select Channel"
+                    completed={!!selectedTransportId}
+                    active={currentStep === 1}
+                    badge={selectedTransportName || undefined}
                   >
-                    <div className="ml-10">
-                      {isWhatsApp ? (
-                        templates.isLoading ? (
-                          <p className="text-sm text-muted-foreground">
-                            Loading templates…
-                          </p>
-                        ) : (
-                          <Select
-                            value={messageContent}
-                            onValueChange={setMessageContent}
+                    {transport.isLoading ? (
+                      <p className="ml-10 text-sm text-muted-foreground">
+                        Loading channels…
+                      </p>
+                    ) : (
+                      <div className="grid grid-cols-3 gap-3 ml-10">
+                        {transport.data?.map((ch: TransportOption) => (
+                          <button
+                            key={ch.cuid}
+                            type="button"
+                            onClick={() => {
+                              setSelectedTransportId(ch.cuid);
+                              setSelectedTransportName(ch.name);
+                              setMessageContent('');
+                            }}
+                            className={cn(
+                              'flex flex-col items-center gap-2 rounded-lg border-2 p-4 transition-all hover:border-primary/50',
+                              selectedTransportId === ch.cuid
+                                ? 'border-primary bg-primary/5'
+                                : 'border-border',
+                            )}
                           >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Choose a template" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {templates.data?.map((t: TemplateOption) => (
-                                <SelectItem
-                                  key={t.cuid}
-                                  value={t.externalId ?? t.cuid}
-                                >
-                                  {t.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )
-                      ) : (
-                        <Textarea
-                          placeholder="Type your message here…"
-                          value={messageContent}
-                          onChange={(e) => setMessageContent(e.target.value)}
-                          rows={4}
-                        />
-                      )}
-                    </div>
-                  </StepCard>
-                )}
-
-                {/* Step 3: Audience Group */}
-                {messageContent && (
-                  <StepCard
-                    step={3}
-                    title="Select Audience Group"
-                    completed={!!selectedGroup}
-                    active={currentStep === 3}
-                    badge={
-                      AUDIENCE_GROUPS.find((g) => g.id === selectedGroup)?.name
-                    }
-                  >
-                    <div className="grid grid-cols-2 gap-3 ml-10">
-                      {AUDIENCE_GROUPS.map((group) => (
-                        <button
-                          key={group.id}
-                          type="button"
-                          onClick={() => {
-                            setSelectedGroup(group.id);
-                            setFilterRows([]);
-                          }}
-                          className={cn(
-                            'flex flex-col items-start gap-1 rounded-lg border-2 p-4 transition-all hover:border-primary/50',
-                            selectedGroup === group.id
-                              ? 'border-primary bg-primary/5'
-                              : 'border-border',
-                          )}
-                        >
-                          <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4" />
+                            <MessageSquare className="h-6 w-6" />
                             <span className="text-sm font-medium">
-                              {group.name}
+                              {ch.name}
                             </span>
-                          </div>
-                          <span className="text-xs text-muted-foreground">
-                            {group.description}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </StepCard>
-                )}
 
-                {/* Step 4+: Filters & Schedule */}
-                {selectedGroup && (
-                  <div className="space-y-4">
-                    {/* Audience filters (optional) */}
-                    {selectedGroup &&
-                      (() => {
-                        const activeFieldOptions =
-                          selectedGroup === 'VENDOR'
-                            ? FILTER_FIELD_OPTIONS
-                            : BENEFICIARY_FILTER_FIELD_OPTIONS;
-                        return (
-                          <div className="rounded-lg border p-4">
-                            <div className="flex items-center gap-3 mb-4">
-                              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground text-sm font-medium">
-                                4
-                              </div>
-                              <div>
-                                <span className="font-medium">
-                                  Filter Audience
-                                </span>
-                                <p className="text-xs text-muted-foreground">
-                                  Optional: Narrow down your audience
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="ml-10 space-y-2">
-                              {filterRows.map((row) => {
-                                const usedFields = filterRows
-                                  .filter((r) => r.id !== row.id && r.field)
-                                  .map((r) => r.field);
-                                const valueOptions = row.field
-                                  ? FILTER_VALUE_OPTIONS[
-                                      row.field as FilterField
-                                    ]
-                                  : undefined;
-                                return (
-                                  <div
-                                    key={row.id}
-                                    className="flex items-center gap-2"
+                  {/* Step 2: Template or custom message */}
+                  {selectedTransportId && (
+                    <StepCard
+                      step={2}
+                      title={isWhatsApp ? 'Select Template' : 'Message Content'}
+                      completed={!!messageContent}
+                      active={currentStep === 2}
+                      badge={templateBadge}
+                    >
+                      <div className="ml-10">
+                        {isWhatsApp ? (
+                          templates.isLoading ? (
+                            <p className="text-sm text-muted-foreground">
+                              Loading templates…
+                            </p>
+                          ) : (
+                            <Select
+                              value={messageContent}
+                              onValueChange={setMessageContent}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Choose a template" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {templates.data?.map((t: TemplateOption) => (
+                                  <SelectItem
+                                    key={t.cuid}
+                                    value={t.externalId ?? t.cuid}
                                   >
-                                    {/* Field selector */}
-                                    <Select
-                                      value={row.field}
-                                      onValueChange={(val) =>
-                                        updateFilterRow(row.id, {
-                                          field: val as FilterField,
-                                          value: '',
-                                        })
-                                      }
+                                    {t.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )
+                        ) : (
+                          <Textarea
+                            placeholder="Type your message here…"
+                            value={messageContent}
+                            onChange={(e) => setMessageContent(e.target.value)}
+                            rows={4}
+                          />
+                        )}
+                      </div>
+                    </StepCard>
+                  )}
+
+                  {/* Step 3: Audience Group */}
+                  {messageContent && (
+                    <StepCard
+                      step={3}
+                      title="Select Audience Group"
+                      completed={!!selectedGroup}
+                      active={currentStep === 3}
+                      badge={
+                        AUDIENCE_GROUPS.find((g) => g.id === selectedGroup)
+                          ?.name
+                      }
+                    >
+                      <div className="grid grid-cols-2 gap-3 ml-10">
+                        {AUDIENCE_GROUPS.map((group) => (
+                          <button
+                            key={group.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedGroup(group.id);
+                              setFilterRows([]);
+                            }}
+                            className={cn(
+                              'flex flex-col items-start gap-1 rounded-lg border-2 p-4 transition-all hover:border-primary/50',
+                              selectedGroup === group.id
+                                ? 'border-primary bg-primary/5'
+                                : 'border-border',
+                            )}
+                          >
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4" />
+                              <span className="text-sm font-medium">
+                                {group.name}
+                              </span>
+                            </div>
+                            <span className="text-xs text-muted-foreground">
+                              {group.description}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </StepCard>
+                  )}
+
+                  {/* Step 4+: Filters & Schedule */}
+                  {selectedGroup && (
+                    <div className="space-y-4">
+                      {/* Audience filters (optional) */}
+                      {selectedGroup &&
+                        (() => {
+                          const activeFieldOptions =
+                            selectedGroup === 'VENDOR'
+                              ? FILTER_FIELD_OPTIONS
+                              : BENEFICIARY_FILTER_FIELD_OPTIONS;
+                          return (
+                            <div className="rounded-lg border p-4">
+                              <div className="flex items-center gap-3 mb-4">
+                                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground text-sm font-medium">
+                                  4
+                                </div>
+                                <div>
+                                  <span className="font-medium">
+                                    Filter Audience
+                                  </span>
+                                  <p className="text-xs text-muted-foreground">
+                                    Optional: Narrow down your audience
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="ml-10 space-y-2">
+                                {filterRows.map((row) => {
+                                  const usedFields = filterRows
+                                    .filter((r) => r.id !== row.id && r.field)
+                                    .map((r) => r.field);
+                                  const valueOptions = row.field
+                                    ? FILTER_VALUE_OPTIONS[
+                                        row.field as FilterField
+                                      ]
+                                    : undefined;
+                                  return (
+                                    <div
+                                      key={row.id}
+                                      className="flex items-center gap-2"
                                     >
-                                      <SelectTrigger className="w-44">
-                                        <SelectValue placeholder="Select field" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        {activeFieldOptions.map((opt) => (
-                                          <SelectItem
-                                            key={opt.value}
-                                            value={opt.value}
-                                            disabled={usedFields.includes(
-                                              opt.value,
-                                            )}
-                                          >
-                                            {opt.label}
-                                          </SelectItem>
-                                        ))}
-                                      </SelectContent>
-                                    </Select>
-
-                                    <span className="text-muted-foreground text-sm shrink-0">
-                                      =
-                                    </span>
-
-                                    {/* Value input — dropdown for known enums, text for location */}
-                                    {valueOptions ? (
+                                      {/* Field selector */}
                                       <Select
-                                        value={row.value}
+                                        value={row.field}
                                         onValueChange={(val) =>
                                           updateFilterRow(row.id, {
-                                            value: val,
+                                            field: val as FilterField,
+                                            value: '',
                                           })
                                         }
                                       >
-                                        <SelectTrigger className="flex-1">
-                                          <SelectValue placeholder="Select value" />
+                                        <SelectTrigger className="w-44">
+                                          <SelectValue placeholder="Select field" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                          {valueOptions.map((opt) => (
+                                          {activeFieldOptions.map((opt) => (
                                             <SelectItem
                                               key={opt.value}
                                               value={opt.value}
+                                              disabled={usedFields.includes(
+                                                opt.value,
+                                              )}
                                             >
                                               {opt.label}
                                             </SelectItem>
                                           ))}
                                         </SelectContent>
                                       </Select>
-                                    ) : (
-                                      <Input
-                                        placeholder={
-                                          row.field === 'location'
-                                            ? 'e.g., Kathmandu'
-                                            : 'Value'
-                                        }
-                                        value={row.value}
-                                        onChange={(e) =>
-                                          updateFilterRow(row.id, {
-                                            value: e.target.value,
-                                          })
-                                        }
-                                        className="flex-1"
-                                      />
-                                    )}
 
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
-                                      onClick={() => removeFilterRow(row.id)}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                );
-                              })}
-
-                              {/* Add filter — hide when all fields are already used */}
-                              {filterRows.length <
-                                activeFieldOptions.length && (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="gap-1.5 mt-1 text-muted-foreground"
-                                  onClick={addFilterRow}
-                                >
-                                  <Plus className="h-3.5 w-3.5" />
-                                  Add Filter
-                                </Button>
-                              )}
-
-                              {/* Estimated recipients */}
-                              {selectedGroup === 'VENDOR' && (
-                                <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
-                                  <Users className="h-4 w-4" />
-                                  <span>
-                                    Estimated recipients:{' '}
-                                    {recipientEstimate.isLoading ? (
-                                      <span className="italic">
-                                        calculating…
+                                      <span className="text-muted-foreground text-sm shrink-0">
+                                        =
                                       </span>
-                                    ) : (
-                                      <>
-                                        <strong className="text-foreground">
-                                          {recipientEstimate.meta?.total ?? 0}
-                                        </strong>{' '}
-                                        customers
-                                      </>
-                                    )}
-                                  </span>
-                                </div>
-                              )}
+
+                                      {/* Value input — dropdown for known enums, text for location */}
+                                      {valueOptions ? (
+                                        <Select
+                                          value={row.value}
+                                          onValueChange={(val) =>
+                                            updateFilterRow(row.id, {
+                                              value: val,
+                                            })
+                                          }
+                                        >
+                                          <SelectTrigger className="flex-1">
+                                            <SelectValue placeholder="Select value" />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            {valueOptions.map((opt) => (
+                                              <SelectItem
+                                                key={opt.value}
+                                                value={opt.value}
+                                              >
+                                                {opt.label}
+                                              </SelectItem>
+                                            ))}
+                                          </SelectContent>
+                                        </Select>
+                                      ) : (
+                                        <Input
+                                          placeholder={
+                                            row.field === 'location'
+                                              ? 'e.g., Kathmandu'
+                                              : 'Value'
+                                          }
+                                          value={row.value}
+                                          onChange={(e) =>
+                                            updateFilterRow(row.id, {
+                                              value: e.target.value,
+                                            })
+                                          }
+                                          className="flex-1"
+                                        />
+                                      )}
+
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
+                                        onClick={() => removeFilterRow(row.id)}
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  );
+                                })}
+
+                                {/* Add filter — hide when all fields are already used */}
+                                {filterRows.length <
+                                  activeFieldOptions.length && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="gap-1.5 mt-1 text-muted-foreground"
+                                    onClick={addFilterRow}
+                                  >
+                                    <Plus className="h-3.5 w-3.5" />
+                                    Add Filter
+                                  </Button>
+                                )}
+
+                                {/* Estimated recipients */}
+                                {selectedGroup === 'VENDOR' && (
+                                  <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
+                                    <Users className="h-4 w-4" />
+                                    <span>
+                                      Estimated recipients:{' '}
+                                      {recipientEstimate.isLoading ? (
+                                        <span className="italic">
+                                          calculating…
+                                        </span>
+                                      ) : (
+                                        <>
+                                          <strong className="text-foreground">
+                                            {recipientEstimate.meta?.total ?? 0}
+                                          </strong>{' '}
+                                          customers
+                                        </>
+                                      )}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })()}
+
+                      {/* Schedule Details */}
+                      <div className="rounded-lg border p-4">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground text-sm font-medium">
+                            5
+                          </div>
+                          <span className="font-medium">Schedule Details</span>
+                        </div>
+
+                        <div className="ml-10 space-y-4">
+                          <div className="space-y-2">
+                            <Label>Campaign Name</Label>
+                            <Input
+                              placeholder="e.g., March Promo Campaign"
+                              value={campaignName}
+                              onChange={(e) => setCampaignName(e.target.value)}
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Date</Label>
+                              <Input
+                                type="date"
+                                min={new Date().toISOString().slice(0, 10)}
+                                value={scheduleDate}
+                                onChange={(e) =>
+                                  setScheduleDate(e.target.value)
+                                }
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Time</Label>
+                              <Input
+                                type="time"
+                                value={scheduleTime}
+                                onChange={(e) =>
+                                  setScheduleTime(e.target.value)
+                                }
+                              />
                             </div>
                           </div>
-                        );
-                      })()}
 
-                    {/* Schedule Details */}
-                    <div className="rounded-lg border p-4">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground text-sm font-medium">
-                          5
+                          {!isScheduleDateTimeValid && (
+                            <p className="text-sm text-destructive">
+                              Please choose a future date and time.
+                            </p>
+                          )}
                         </div>
-                        <span className="font-medium">Schedule Details</span>
                       </div>
 
-                      <div className="ml-10 space-y-4">
-                        <div className="space-y-2">
-                          <Label>Campaign Name</Label>
-                          <Input
-                            placeholder="e.g., March Promo Campaign"
-                            value={campaignName}
-                            onChange={(e) => setCampaignName(e.target.value)}
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label>Date</Label>
-                            <Input
-                              type="date"
-                              min={new Date().toISOString().slice(0, 10)}
-                              value={scheduleDate}
-                              onChange={(e) => setScheduleDate(e.target.value)}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label>Time</Label>
-                            <Input
-                              type="time"
-                              value={scheduleTime}
-                              onChange={(e) => setScheduleTime(e.target.value)}
-                            />
-                          </div>
-                        </div>
-
-                        {!isScheduleDateTimeValid && (
-                          <p className="text-sm text-destructive">
-                            Please choose a future date and time.
-                          </p>
-                        )}
+                      {/* Action buttons */}
+                      <div className="flex justify-end gap-3 pt-4 border-t">
+                        <Button variant="outline" size="sm" onClick={resetForm}>
+                          Cancel
+                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="sm"
+                              disabled={
+                                !canSubmit ||
+                                createCampaign.isPending ||
+                                trigger.isPending
+                              }
+                              onClick={() => setIsConfirmDialogOpen(true)}
+                              className="gap-2"
+                            >
+                              <Calendar className="h-4 w-4" />
+                              {createCampaign.isPending || trigger.isPending
+                                ? 'Scheduling…'
+                                : 'Schedule Message'}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Schedule this message for delivery
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
-
-                    {/* Action buttons */}
-                    <div className="flex justify-end gap-3 pt-4 border-t">
-                      <Button variant="outline" size="sm" onClick={resetForm}>
-                        Cancel
-                      </Button>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            size="sm"
-                            disabled={!canSubmit || createCampaign.isPending}
-                            onClick={handleSubmit}
-                            className="gap-2"
-                          >
-                            <Calendar className="h-4 w-4" />
-                            {createCampaign.isPending
-                              ? 'Scheduling…'
-                              : 'Schedule Message'}
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Schedule this message for delivery</TooltipContent>
-                      </Tooltip>
-                    </div>
-                  </div>
-                )}
-
-                {/* Empty state */}
-                {!selectedTransportId && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <div className="rounded-full bg-muted p-4 inline-flex mb-3">
-                      <MessageSquare className="h-8 w-8 opacity-50" />
-                    </div>
-                    <p>Start by selecting a messaging channel above</p>
-                  </div>
-                )}
-              </TabsContent>
-
-              {/* ── AUTOMATIC TAB ── */}
-              <TabsContent value="automatic" className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">
-                    Automations that trigger based on data-driven conditions.
-                    Toggle to activate or deactivate.
-                  </p>
-                  {canCreateRules && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="gap-1.5"
-                      onClick={() => {
-                        setShowRuleBuilder((v) => !v);
-                        setRuleConditions([emptyCondition()]);
-                      }}
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                      {showRuleBuilder ? 'Cancel' : 'Create Rule'}
-                    </Button>
                   )}
-                </div>
 
-                {/* ── Rule Builder ── */}
-                {canCreateRules && showRuleBuilder && (
-                  <div className="border rounded-lg p-4 space-y-4 bg-muted/30">
-                    <p className="font-medium text-sm">New Automation Rule</p>
-
-                    {/* Campaign selector */}
-                    <div className="space-y-1">
-                      <Label className="text-xs">Linked Campaign</Label>
-                      <Select
-                        value={ruleCampaignId}
-                        onValueChange={setRuleCampaignId}
-                      >
-                        <SelectTrigger className="h-8 text-xs">
-                          <SelectValue placeholder="Select campaign…" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {availableRuleCampaigns.map((c: CampaignOption) => (
-                            <SelectItem key={c.id} value={String(c.id)}>
-                              {c.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                  {/* Empty state */}
+                  {!selectedTransportId && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <div className="rounded-full bg-muted p-4 inline-flex mb-3">
+                        <MessageSquare className="h-8 w-8 opacity-50" />
+                      </div>
+                      <p>Start by selecting a messaging channel above</p>
                     </div>
+                  )}
+                </TabsContent>
 
-                    {/* Target type */}
-                    <div className="space-y-1">
-                      <Label className="text-xs">Target Group</Label>
-                      <Select
-                        value={ruleTargetType}
-                        onValueChange={(value) => {
-                          setRuleTargetType(value as RuleTargetType);
-                          setRuleCampaignId('');
+                {/* ── AUTOMATIC TAB ── */}
+                <TabsContent value="automatic" className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">
+                      Automations that trigger based on data-driven conditions.
+                      Toggle to activate or deactivate.
+                    </p>
+                    {canCreateRules && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1.5"
+                        onClick={() => {
+                          setShowRuleBuilder((v) => !v);
+                          setRuleConditions([emptyCondition()]);
                         }}
                       >
-                        <SelectTrigger className="h-8 text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="VENDOR">
-                            Customers (Vendor)
-                          </SelectItem>
-                          <SelectItem value="BENEFICIARY">
-                            Consumers (Beneficiary)
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                        <Plus className="h-3.5 w-3.5" />
+                        {showRuleBuilder ? 'Cancel' : 'Create Rule'}
+                      </Button>
+                    )}
+                  </div>
 
-                    {/* Conditions */}
-                    <div className="space-y-2">
-                      <Label className="text-xs">Conditions</Label>
-                      {ruleConditions.map((cond, idx) => (
-                        <div
-                          key={cond.id}
-                          className="grid grid-cols-12 gap-1 items-start"
+                  {/* ── Rule Builder ── */}
+                  {canCreateRules && showRuleBuilder && (
+                    <div className="border rounded-lg p-4 space-y-4 bg-muted/30">
+                      <p className="font-medium text-sm">New Automation Rule</p>
+
+                      {/* Campaign selector */}
+                      <div className="space-y-1">
+                        <Label className="text-xs">Linked Campaign</Label>
+                        <Select
+                          value={ruleCampaignId}
+                          onValueChange={setRuleCampaignId}
                         >
-                          {(() => {
-                            const fieldConfig = getConditionFieldConfig(
-                              cond.fieldPath,
-                            );
-                            const operatorOptions = (
-                              fieldConfig?.operators ?? ['EQ']
-                            ).map((operator) => ({
-                              value: operator,
-                              label: OPERATOR_LABELS[operator] ?? operator,
-                            }));
-                            const hideValueInput = NULLABLE_OPERATORS.includes(
-                              cond.operator,
-                            );
-                            const valueOptions =
-                              fieldConfig?.valueOptions ?? [];
-                            return (
-                              <>
-                                <div className="col-span-3">
-                                  <Select
-                                    value={cond.fieldPath}
-                                    onValueChange={(value) =>
-                                      handleConditionFieldChange(cond.id, value)
-                                    }
-                                  >
-                                    <SelectTrigger className="h-8 text-xs">
-                                      <SelectValue placeholder="Select field" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {conditionFieldOptions.map((field) => (
-                                        <SelectItem
-                                          key={field.value}
-                                          value={field.value}
-                                        >
-                                          {field.label}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                                <div className="col-span-3">
-                                  <Select
-                                    value={cond.operator}
-                                    onValueChange={(value) =>
-                                      handleConditionOperatorChange(
-                                        cond.id,
-                                        value,
-                                      )
-                                    }
-                                    disabled={!cond.fieldPath}
-                                  >
-                                    <SelectTrigger className="h-8 text-xs">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {operatorOptions.map((o) => (
-                                        <SelectItem
-                                          key={o.value}
-                                          value={o.value}
-                                        >
-                                          {o.label}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                                <div className="col-span-2">
-                                  <Select
-                                    value={cond.valueType}
-                                    onValueChange={(value) =>
-                                      updateRuleCondition(cond.id, {
-                                        valueType: value,
-                                      })
-                                    }
-                                    disabled={!cond.fieldPath || !!fieldConfig}
-                                  >
-                                    <SelectTrigger className="h-8 text-xs">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {VALUE_TYPE_OPTIONS.map((o) => (
-                                        <SelectItem
-                                          key={o.value}
-                                          value={o.value}
-                                        >
-                                          {o.label}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                                <div className="col-span-3">
-                                  {hideValueInput ? (
-                                    <div className="h-8 rounded-md border border-dashed px-3 text-xs text-muted-foreground flex items-center">
-                                      No value needed
-                                    </div>
-                                  ) : valueOptions.length ? (
+                          <SelectTrigger className="h-8 text-xs">
+                            <SelectValue placeholder="Select campaign…" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableRuleCampaigns.map((c: CampaignOption) => (
+                              <SelectItem key={c.id} value={String(c.id)}>
+                                {c.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Target type */}
+                      <div className="space-y-1">
+                        <Label className="text-xs">Target Group</Label>
+                        <Select
+                          value={ruleTargetType}
+                          onValueChange={(value) => {
+                            setRuleTargetType(value as RuleTargetType);
+                            setRuleCampaignId('');
+                          }}
+                        >
+                          <SelectTrigger className="h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="VENDOR">
+                              Customers (Vendor)
+                            </SelectItem>
+                            <SelectItem value="BENEFICIARY">
+                              Consumers (Beneficiary)
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Conditions */}
+                      <div className="space-y-2">
+                        <Label className="text-xs">Conditions</Label>
+                        {ruleConditions.map((cond, idx) => (
+                          <div
+                            key={cond.id}
+                            className="grid grid-cols-12 gap-1 items-start"
+                          >
+                            {(() => {
+                              const fieldConfig = getConditionFieldConfig(
+                                cond.fieldPath,
+                              );
+                              const operatorOptions = (
+                                fieldConfig?.operators ?? ['EQ']
+                              ).map((operator) => ({
+                                value: operator,
+                                label: OPERATOR_LABELS[operator] ?? operator,
+                              }));
+                              const hideValueInput =
+                                NULLABLE_OPERATORS.includes(cond.operator);
+                              const valueOptions =
+                                fieldConfig?.valueOptions ?? [];
+                              return (
+                                <>
+                                  <div className="col-span-3">
                                     <Select
-                                      value={cond.value}
+                                      value={cond.fieldPath}
                                       onValueChange={(value) =>
-                                        updateRuleCondition(cond.id, { value })
+                                        handleConditionFieldChange(
+                                          cond.id,
+                                          value,
+                                        )
                                       }
                                     >
                                       <SelectTrigger className="h-8 text-xs">
-                                        <SelectValue placeholder="Select value" />
+                                        <SelectValue placeholder="Select field" />
                                       </SelectTrigger>
                                       <SelectContent>
-                                        {valueOptions.map((option) => (
+                                        {conditionFieldOptions.map((field) => (
                                           <SelectItem
-                                            key={option.value}
-                                            value={option.value}
+                                            key={field.value}
+                                            value={field.value}
                                           >
-                                            {option.label}
+                                            {field.label}
                                           </SelectItem>
                                         ))}
                                       </SelectContent>
                                     </Select>
-                                  ) : (
-                                    <Input
-                                      className="h-8 text-xs"
-                                      placeholder={
-                                        fieldConfig?.placeholder ?? 'value'
-                                      }
-                                      value={cond.value}
-                                      onChange={(e) =>
-                                        updateRuleCondition(cond.id, {
-                                          value: e.target.value,
-                                        })
+                                  </div>
+                                  <div className="col-span-3">
+                                    <Select
+                                      value={cond.operator}
+                                      onValueChange={(value) =>
+                                        handleConditionOperatorChange(
+                                          cond.id,
+                                          value,
+                                        )
                                       }
                                       disabled={!cond.fieldPath}
-                                    />
-                                  )}
-                                </div>
-                                <div className="col-span-1 flex justify-center pt-1">
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      setRuleConditions(
-                                        ruleConditions.filter(
-                                          (_, i) => i !== idx,
-                                        ),
-                                      )
-                                    }
-                                    className="text-destructive hover:opacity-70"
-                                    title="Remove condition"
-                                    aria-label="Remove condition"
-                                  >
-                                    <X className="h-3.5 w-3.5" />
-                                  </button>
-                                </div>
-                              </>
-                            );
-                          })()}
-                        </div>
-                      ))}
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="gap-1 text-xs"
-                        onClick={() =>
-                          setRuleConditions([
-                            ...ruleConditions,
-                            emptyCondition(),
-                          ])
-                        }
-                      >
-                        <Plus className="h-3 w-3" /> Add Condition
-                      </Button>
-                    </div>
+                                    >
+                                      <SelectTrigger className="h-8 text-xs">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {operatorOptions.map((o) => (
+                                          <SelectItem
+                                            key={o.value}
+                                            value={o.value}
+                                          >
+                                            {o.label}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <div className="col-span-2">
+                                    <Select
+                                      value={cond.valueType}
+                                      onValueChange={(value) =>
+                                        updateRuleCondition(cond.id, {
+                                          valueType: value,
+                                        })
+                                      }
+                                      disabled={
+                                        !cond.fieldPath || !!fieldConfig
+                                      }
+                                    >
+                                      <SelectTrigger className="h-8 text-xs">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {VALUE_TYPE_OPTIONS.map((o) => (
+                                          <SelectItem
+                                            key={o.value}
+                                            value={o.value}
+                                          >
+                                            {o.label}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <div className="col-span-3">
+                                    {hideValueInput ? (
+                                      <div className="h-8 rounded-md border border-dashed px-3 text-xs text-muted-foreground flex items-center">
+                                        No value needed
+                                      </div>
+                                    ) : valueOptions.length ? (
+                                      <Select
+                                        value={cond.value}
+                                        onValueChange={(value) =>
+                                          updateRuleCondition(cond.id, {
+                                            value,
+                                          })
+                                        }
+                                      >
+                                        <SelectTrigger className="h-8 text-xs">
+                                          <SelectValue placeholder="Select value" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {valueOptions.map((option) => (
+                                            <SelectItem
+                                              key={option.value}
+                                              value={option.value}
+                                            >
+                                              {option.label}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    ) : (
+                                      <Input
+                                        className="h-8 text-xs"
+                                        placeholder={
+                                          fieldConfig?.placeholder ?? 'value'
+                                        }
+                                        value={cond.value}
+                                        onChange={(e) =>
+                                          updateRuleCondition(cond.id, {
+                                            value: e.target.value,
+                                          })
+                                        }
+                                        disabled={!cond.fieldPath}
+                                      />
+                                    )}
+                                  </div>
+                                  <div className="col-span-1 flex justify-center pt-1">
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setRuleConditions(
+                                          ruleConditions.filter(
+                                            (_, i) => i !== idx,
+                                          ),
+                                        )
+                                      }
+                                      className="text-destructive hover:opacity-70"
+                                      title="Remove condition"
+                                      aria-label="Remove condition"
+                                    >
+                                      <X className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
+                                </>
+                              );
+                            })()}
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="gap-1 text-xs"
+                          onClick={() =>
+                            setRuleConditions([
+                              ...ruleConditions,
+                              emptyCondition(),
+                            ])
+                          }
+                        >
+                          <Plus className="h-3 w-3" /> Add Condition
+                        </Button>
+                      </div>
 
-                    {/* Recurrence options */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="flex items-center gap-2">
-                        <Switch
-                          id="rule-recurring"
-                          checked={ruleIsRecurring}
-                          onCheckedChange={setRuleIsRecurring}
-                        />
-                        <Label
-                          htmlFor="rule-recurring"
-                          className="text-xs cursor-pointer"
-                        >
-                          Recurring
-                        </Label>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Switch
-                          id="rule-fire-once"
-                          checked={ruleFireOnce}
-                          onCheckedChange={setRuleFireOnce}
-                        />
-                        <Label
-                          htmlFor="rule-fire-once"
-                          className="text-xs cursor-pointer"
-                        >
-                          Fire once per target
-                        </Label>
-                      </div>
-                      {ruleIsRecurring && (
+                      {/* Recurrence options */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            id="rule-recurring"
+                            checked={ruleIsRecurring}
+                            onCheckedChange={setRuleIsRecurring}
+                          />
+                          <Label
+                            htmlFor="rule-recurring"
+                            className="text-xs cursor-pointer"
+                          >
+                            Recurring
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            id="rule-fire-once"
+                            checked={ruleFireOnce}
+                            onCheckedChange={setRuleFireOnce}
+                          />
+                          <Label
+                            htmlFor="rule-fire-once"
+                            className="text-xs cursor-pointer"
+                          >
+                            Fire once per target
+                          </Label>
+                        </div>
+                        {ruleIsRecurring && (
+                          <div className="space-y-1">
+                            <Label className="text-xs">Cooldown days</Label>
+                            <Input
+                              className="h-8 text-xs"
+                              type="number"
+                              placeholder="e.g. 30"
+                              value={ruleCooldownDays}
+                              onChange={(e) =>
+                                setRuleCooldownDays(e.target.value)
+                              }
+                            />
+                          </div>
+                        )}
                         <div className="space-y-1">
-                          <Label className="text-xs">Cooldown days</Label>
+                          <Label className="text-xs">
+                            Max sends per target
+                          </Label>
                           <Input
                             className="h-8 text-xs"
                             type="number"
-                            placeholder="e.g. 30"
-                            value={ruleCooldownDays}
-                            onChange={(e) =>
-                              setRuleCooldownDays(e.target.value)
-                            }
+                            placeholder="unlimited"
+                            value={ruleMaxSends}
+                            onChange={(e) => setRuleMaxSends(e.target.value)}
                           />
                         </div>
-                      )}
-                      <div className="space-y-1">
-                        <Label className="text-xs">Max sends per target</Label>
-                        <Input
-                          className="h-8 text-xs"
-                          type="number"
-                          placeholder="unlimited"
-                          value={ruleMaxSends}
-                          onChange={(e) => setRuleMaxSends(e.target.value)}
-                        />
+                      </div>
+
+                      {/* Submit */}
+                      <div className="flex justify-end gap-2 pt-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setShowRuleBuilder(false)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          size="sm"
+                          disabled={
+                            !ruleCampaignId ||
+                            ruleConditions.length === 0 ||
+                            ruleConditions.some(
+                              (c) =>
+                                !c.fieldPath ||
+                                (!NULLABLE_OPERATORS.includes(c.operator) &&
+                                  !c.value),
+                            ) ||
+                            createAutomationRule.isPending
+                          }
+                          onClick={() => {
+                            createAutomationRule.mutate(
+                              {
+                                campaignId: Number(ruleCampaignId),
+                                targetType: ruleTargetType,
+                                isRecurring: ruleIsRecurring,
+                                fireOnceOnEntry: ruleFireOnce,
+                                ...(ruleCooldownDays
+                                  ? {
+                                      recurrenceCooldownDays:
+                                        Number(ruleCooldownDays),
+                                    }
+                                  : {}),
+                                ...(ruleMaxSends
+                                  ? { maxSendsPerTarget: Number(ruleMaxSends) }
+                                  : {}),
+                                conditions: ruleConditions.map((c, idx) => ({
+                                  fieldPath: c.fieldPath,
+                                  operator: c.operator,
+                                  valueType: c.valueType,
+                                  value: c.value || undefined,
+                                  groupNo: c.groupNo,
+                                  sortOrder: idx,
+                                })),
+                              },
+                              {
+                                onSuccess: () => {
+                                  setShowRuleBuilder(false);
+                                  setRuleConditions([emptyCondition()]);
+                                  setRuleCampaignId('');
+                                },
+                              },
+                            );
+                          }}
+                        >
+                          {createAutomationRule.isPending
+                            ? 'Saving…'
+                            : 'Save Rule'}
+                        </Button>
                       </div>
                     </div>
+                  )}
 
-                    {/* Submit */}
-                    <div className="flex justify-end gap-2 pt-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setShowRuleBuilder(false)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        size="sm"
-                        disabled={
-                          !ruleCampaignId ||
-                          ruleConditions.length === 0 ||
-                          ruleConditions.some(
-                            (c) =>
-                              !c.fieldPath ||
-                              (!NULLABLE_OPERATORS.includes(c.operator) &&
-                                !c.value),
-                          ) ||
-                          createAutomationRule.isPending
-                        }
-                        onClick={() => {
-                          createAutomationRule.mutate(
-                            {
-                              campaignId: Number(ruleCampaignId),
-                              targetType: ruleTargetType,
-                              isRecurring: ruleIsRecurring,
-                              fireOnceOnEntry: ruleFireOnce,
-                              ...(ruleCooldownDays
-                                ? {
-                                    recurrenceCooldownDays:
-                                      Number(ruleCooldownDays),
-                                  }
-                                : {}),
-                              ...(ruleMaxSends
-                                ? { maxSendsPerTarget: Number(ruleMaxSends) }
-                                : {}),
-                              conditions: ruleConditions.map((c, idx) => ({
-                                fieldPath: c.fieldPath,
-                                operator: c.operator,
-                                valueType: c.valueType,
-                                value: c.value || undefined,
-                                groupNo: c.groupNo,
-                                sortOrder: idx,
-                              })),
-                            },
-                            {
-                              onSuccess: () => {
-                                setShowRuleBuilder(false);
-                                setRuleConditions([emptyCondition()]);
-                                setRuleCampaignId('');
-                              },
-                            },
-                          );
-                        }}
-                      >
-                        {createAutomationRule.isPending
-                          ? 'Saving…'
-                          : 'Save Rule'}
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {automations.isLoading ? (
-                  <p className="text-sm text-muted-foreground py-4">
-                    Loading automations…
-                  </p>
-                ) : !automations.data?.length ? (
-                  <div className="text-center py-10 text-muted-foreground border border-dashed rounded-lg">
-                    <div className="rounded-full bg-muted p-4 inline-flex mx-auto mb-3">
-                      <Zap className="h-8 w-8 opacity-40" />
-                    </div>
-                    <p className="font-medium">No automation rules found</p>
-                    <p className="text-xs mt-1">
-                      {canCreateRules
-                        ? 'Click Create Rule to define a data-driven automation.'
-                        : 'No automation rules are configured for this project.'}
+                  {automations.isLoading ? (
+                    <p className="text-sm text-muted-foreground py-4">
+                      Loading automations…
                     </p>
-                  </div>
-                ) : (
-                  automationRules.map((rule) => (
-                    <AutomationRuleCard
-                      key={rule.uuid}
-                      rule={rule}
-                      isPending={
-                        toggleAutomation.isPending ||
-                        deleteAutomationRule.isPending
-                      }
-                      onToggle={(uuid, isEnabled) =>
-                        toggleAutomation.mutate({ uuid, isEnabled })
-                      }
-                      onDelete={(uuid) => deleteAutomationRule.mutate(uuid)}
-                    />
-                  ))
-                )}
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+                  ) : !automations.data?.length ? (
+                    <div className="text-center py-10 text-muted-foreground border border-dashed rounded-lg">
+                      <div className="rounded-full bg-muted p-4 inline-flex mx-auto mb-3">
+                        <Zap className="h-8 w-8 opacity-40" />
+                      </div>
+                      <p className="font-medium">No automation rules found</p>
+                      <p className="text-xs mt-1">
+                        {canCreateRules
+                          ? 'Click Create Rule to define a data-driven automation.'
+                          : 'No automation rules are configured for this project.'}
+                      </p>
+                    </div>
+                  ) : (
+                    automationRules.map((rule) => (
+                      <AutomationRuleCard
+                        key={rule.uuid}
+                        rule={rule}
+                        isPending={
+                          toggleAutomation.isPending ||
+                          deleteAutomationRule.isPending
+                        }
+                        onToggle={(uuid, isEnabled) =>
+                          toggleAutomation.mutate({ uuid, isEnabled })
+                        }
+                        onDelete={(uuid) => deleteAutomationRule.mutate(uuid)}
+                      />
+                    ))
+                  )}
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Dialog
+          open={isConfirmDialogOpen}
+          onOpenChange={(open) => {
+            if (createCampaign.isPending || trigger.isPending) return;
+            setIsConfirmDialogOpen(open);
+          }}
+        >
+          <DialogContent className="sm:max-w-xl">
+            <DialogHeader>
+              <DialogTitle>Confirm schedule and trigger</DialogTitle>
+              <DialogDescription>
+                Review the details before scheduling and triggering this
+                message.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 text-sm">
+              <div className="grid grid-cols-2 gap-3 rounded-md border p-3">
+                <div>
+                  <p className="text-muted-foreground">Campaign</p>
+                  <p className="font-medium">
+                    {campaignName || 'Not provided'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Channel</p>
+                  <p className="font-medium">
+                    {selectedTransportName || 'Not selected'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Audience</p>
+                  <p className="font-medium">
+                    {selectedAudienceLabel || 'Not selected'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Scheduled For</p>
+                  <p className="font-medium">{scheduledAtLabel}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Template</p>
+                  <p className="font-medium">{selectedTemplateName}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Estimated recipients</p>
+                  <p className="font-medium">
+                    {selectedGroup === 'VENDOR'
+                      ? recipientEstimate.meta?.total ?? 0
+                      : 'Calculated by trigger'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-1 rounded-md border p-3">
+                <p className="text-muted-foreground">Message</p>
+                <p className="whitespace-pre-wrap break-words">
+                  {messageContent || 'No message content'}
+                </p>
+              </div>
+
+              {activeFilters.length > 0 && (
+                <div className="space-y-1 rounded-md border p-3">
+                  <p className="text-muted-foreground">Applied filters</p>
+                  {activeFilters.map((row) => (
+                    <p key={row.id} className="text-foreground">
+                      {row.field} = {row.value}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsConfirmDialogOpen(false)}
+                disabled={createCampaign.isPending || trigger.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                disabled={createCampaign.isPending || trigger.isPending}
+                className="gap-2"
+              >
+                <Zap className="h-4 w-4" />
+                {createCampaign.isPending || trigger.isPending
+                  ? 'Scheduling…'
+                  : 'Confirm and trigger'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
-    </div>
     </TooltipProvider>
   );
 }

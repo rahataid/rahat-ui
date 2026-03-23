@@ -17,7 +17,6 @@ import {
   Filter,
   Plus,
   Radio,
-  Users,
   X,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -83,12 +82,23 @@ export default function ScheduledView() {
     (value) => value !== undefined && value !== null && value !== '',
   ).length;
 
-  const totalRecipients = (data || []).reduce(
-    (sum: number, item: any) => sum + Number(item?.recipientCount || 0),
-    0,
-  );
+  const isFutureScheduled = (item: any) => {
+    const scheduledTime = item?.options?.scheduledTimestamp;
+    if (!scheduledTime) return false;
 
-  const sentCount = (data || []).filter((item: any) => item?.sessionId).length;
+    const scheduledDate = new Date(scheduledTime);
+    if (Number.isNaN(scheduledDate.getTime())) return false;
+
+    return scheduledDate > new Date();
+  };
+
+  const sentCount = (data || []).filter(
+    (item: any) => item?.sessionId && !isFutureScheduled(item),
+  ).length;
+
+  const pendingSchedulesCount = (data || []).filter((item: any) =>
+    isFutureScheduled(item),
+  ).length;
 
   const clearAllFilters = () => {
     setFilters({});
@@ -183,18 +193,18 @@ export default function ScheduledView() {
 
             <Card className="border-border/80 sm:col-span-2 lg:col-span-1">
               <CardContent className="flex items-center gap-3 p-4">
-                <div className="rounded-md bg-blue-500/10 p-2 text-blue-600">
-                  <Users className="h-4 w-4" />
+                <div className="rounded-md bg-amber-500/10 p-2 text-amber-600">
+                  <CalendarRange className="h-4 w-4" />
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                    Reach
+                    Pending Schedules
                   </p>
                   <p className="text-3xl font-bold tracking-tight tabular-nums text-foreground">
-                    {totalRecipients.toLocaleString()}
+                    {pendingSchedulesCount}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Recipients on this page
+                    Scheduled for later
                   </p>
                 </div>
               </CardContent>

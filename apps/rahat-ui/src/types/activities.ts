@@ -5,7 +5,7 @@ import { GroupType } from './communication';
 
 // If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 export interface IActivitiesItem {
-  id: number;
+  id: string;
   campaignId: string;
   title: string;
   responsibility: string;
@@ -17,7 +17,14 @@ export interface IActivitiesItem {
   // hazardType: string;
   status: string;
   activityType: string;
-  activtiyComm: Record<string, any>;
+  activtiyComm: Record<string, unknown>;
+  isAutomated?: boolean;
+  completedBy?: string;
+  completedAt?: string;
+  timeDifference?: string;
+  leadTime?: string;
+  notes?: string;
+  createdAt?: string;
   activityDocuments: {
     mediaURL: string;
     fileName: string;
@@ -72,4 +79,22 @@ export interface Template {
   isAutomated: boolean;
   completedBy: string;
   hasCommunication: boolean;
+}
+export interface Phase {
+  id: string;
+  responsibleStation: string;
+  status: string;
+  leadTime?: string;
+  phase?: string;
+  title: string;
+  responsibility: string;
+}
+
+export interface PhaseContentProps {
+  title: string;
+  description: string;
+  loading: boolean;
+  phases: Phase[];
+  isPinned?: boolean;
+  onTogglePin?: () => void;
 }

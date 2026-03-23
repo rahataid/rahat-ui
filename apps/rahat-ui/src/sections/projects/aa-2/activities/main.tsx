@@ -25,18 +25,19 @@ export default function ActivitiesView() {
     phases: state.phases,
   }));
 
-  const storageKey = projectID ? `aa_pinned_phases_${projectID}` : null;
+  const PINNED_PHASES_KEY = 'aa_pinned_phases';
 
   const [pinnedPhases, setPinnedPhases] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!storageKey) return;
+    if (!projectID) return;
     try {
-      const stored = localStorage.getItem(storageKey);
+      const stored = localStorage.getItem(PINNED_PHASES_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          const sanitizedPinnedPhases = parsed
+        const projectPhases = parsed[projectID as string];
+        if (Array.isArray(projectPhases)) {
+          const sanitizedPinnedPhases = projectPhases
             .filter((phase): phase is string => typeof phase === 'string')
             .slice(0, 3);
           setPinnedPhases(sanitizedPinnedPhases);
@@ -45,7 +46,7 @@ export default function ActivitiesView() {
     } catch (error) {
       console.error('Failed to parse pinned phases from localStorage', error);
     }
-  }, [storageKey]);
+  }, [projectID]);
 
   const togglePin = useCallback(
     (phase: string) => {
@@ -60,15 +61,18 @@ export default function ActivitiesView() {
         ? pinnedPhases.filter((p) => p !== phase)
         : [phase, ...pinnedPhases];
       setPinnedPhases(next);
-      if (storageKey) {
+      if (projectID) {
         try {
-          localStorage.setItem(storageKey, JSON.stringify(next));
+          const existing = localStorage.getItem(PINNED_PHASES_KEY);
+          const central = existing ? JSON.parse(existing) : {};
+          central[projectID as string] = next;
+          localStorage.setItem(PINNED_PHASES_KEY, JSON.stringify(central));
         } catch (error) {
           console.error('Failed to save pinned phases', error);
         }
       }
     },
-    [storageKey, pinnedPhases],
+    [projectID, pinnedPhases],
   );
 
   const uniquePhaseNames = Array.from(

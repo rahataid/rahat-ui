@@ -9,6 +9,7 @@ import {
   AlertCircleIcon,
   AlertTriangle,
   Plus,
+  Settings,
   SquarePen,
   Undo2,
 } from 'lucide-react';
@@ -82,22 +83,6 @@ export default function PhaseDetail() {
           description={`Detailed view of the ${phase?.name?.toLowerCase()} phase`}
         />
         <div className="flex space-x-2">
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
-            <IconLabelBtn
-              variant="outline"
-              Icon={Settings}
-              name="Manage Threshold"
-              handleClick={() => {
-                router.push(
-                  `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}/config-threshold`,
-                );
-              }}
-            />
-          </RoleAuth>
-
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}

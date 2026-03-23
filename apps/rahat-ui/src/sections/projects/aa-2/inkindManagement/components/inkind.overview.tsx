@@ -221,9 +221,23 @@ export default function InkindOverview() {
                         />
                       </div>
                       <div>
-                        <p className="text-sm font-medium leading-none">
-                          {movement.inkind?.name ?? '—'}
-                        </p>
+                        <div className="flex flex-row items-center gap-2">
+                          <p className="text-sm font-medium leading-none">
+                            {movement.inkind?.name ?? '—'}
+                          </p>
+                          <Badge
+                            variant={
+                              movement.inkind?.type === 'PRE_DEFINED'
+                                ? 'default'
+                                : 'secondary'
+                            }
+                            className="rounded-xs"
+                          >
+                            {movement.inkind?.type == 'PRE_DEFINED'
+                              ? 'Pre-defined'
+                              : 'Walk In'}
+                          </Badge>
+                        </div>
                         {movement.groupInkind && (
                           <p className="text-xs text-muted-foreground mt-0.5">
                             {groupNameMap[movement.groupInkind.groupId] ??

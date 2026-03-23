@@ -36,13 +36,6 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
-import {
   PlusCircle,
   MinusCircle,
   Trash2,
@@ -214,13 +207,13 @@ export default function InkindList() {
       return;
     }
     const result = await dialog.fire({
-      title: 'Delete In-Kind Item',
+      title: 'Delete Inkind Item',
       text: `Are you sure you want to delete "${item.name}"? This action cannot be undone.`,
-      icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, Delete',
       cancelButtonText: 'Cancel',
+      confirmButtonText: 'Confirm',
       confirmButtonColor: '#ef4444',
+      reverseButtons: true,
     });
     if (result.isConfirmed) {
       await deleteInkind.mutateAsync({ uuid: item.uuid });
@@ -470,7 +463,7 @@ export default function InkindList() {
       </div>
       <SearchInput
         className="w-full mb-2"
-        name="name"
+        name="Inkind"
         value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
         onSearch={(event) =>
           table.getColumn('name')?.setFilterValue(event.target.value)
@@ -502,28 +495,32 @@ export default function InkindList() {
         open={stockDialog.open}
         onOpenChange={(o) => !o && closeStockDialog()}
       >
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent className="w-[500px] max-w-[95vw]">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-lg">
               {stockDialog.mode === 'add' ? 'Add Stock' : 'Remove Stock'}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-3 py-2">
+          <div className="space-y-4 py-2">
             <div>
               <p className="text-sm text-muted-foreground">Item</p>
-              <p className="font-semibold">{stockDialog.item?.name}</p>
+              <p className="text-base font-semibold">
+                {stockDialog.item?.name}
+              </p>
             </div>
             {stockDialog.mode === 'remove' && (
               <div>
                 <p className="text-sm text-muted-foreground">Available Stock</p>
-                <p className="font-semibold text-primary">
+                <p className="text-base font-semibold text-primary">
                   {stockDialog.item?.availableStock ?? 0}
                 </p>
               </div>
             )}
-            <div className="space-y-1.5">
-              <Label htmlFor="quantity">Quantity</Label>
+            <div className="space-y-2">
+              <Label className="text-sm font-medium" htmlFor="quantity">
+                Quantity
+              </Label>
               <Input
                 id="quantity"
                 type="number"
@@ -534,6 +531,7 @@ export default function InkindList() {
                     : undefined
                 }
                 placeholder="Enter quantity"
+                className="text-base h-10"
                 value={stockDialog.quantity}
                 onChange={(e) =>
                   setStockDialog((prev) => ({
@@ -546,7 +544,7 @@ export default function InkindList() {
               />
               {stockDialog.error && (
                 <p className="flex items-center gap-1 text-sm text-destructive">
-                  <AlertCircle size={12} />
+                  <AlertCircle size={13} />
                   {stockDialog.error}
                 </p>
               )}
@@ -586,18 +584,20 @@ export default function InkindList() {
           }
         }}
       >
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent className="w-[500px] max-w-[95vw]">
           <DialogHeader>
-            <DialogTitle>Update Inkind Item</DialogTitle>
+            <DialogTitle className="text-lg">Update Inkind Item</DialogTitle>
             <DialogDescription>
               Edit the details below, then review before saving.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-3 py-2">
-            <div className="space-y-1.5">
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="update-name">Name</Label>
+                <Label className="text-sm font-medium" htmlFor="update-name">
+                  Name
+                </Label>
                 <span
                   className={`text-xs ${
                     updateDialog.name.length >= NAME_MAX
@@ -612,6 +612,7 @@ export default function InkindList() {
                 id="update-name"
                 placeholder="Item name"
                 maxLength={NAME_MAX}
+                className="text-base h-10"
                 value={updateDialog.name}
                 onChange={(e) => {
                   setUpdateDialog((prev) => ({
@@ -629,9 +630,14 @@ export default function InkindList() {
                 </p>
               )}
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="update-description">Description</Label>
+                <Label
+                  className="text-sm font-medium"
+                  htmlFor="update-description"
+                >
+                  Description
+                </Label>
                 <span
                   className={`text-xs ${
                     updateDialog.description.length >= DESCRIPTION_MAX
@@ -645,8 +651,8 @@ export default function InkindList() {
               <Textarea
                 id="update-description"
                 placeholder="Item description"
-                className="resize-none"
-                rows={3}
+                className="resize-none text-base"
+                rows={4}
                 maxLength={DESCRIPTION_MAX}
                 value={updateDialog.description}
                 onChange={(e) => {
@@ -667,29 +673,6 @@ export default function InkindList() {
                   {updateErrors.description}
                 </p>
               )}
-            </div>
-            <div className="space-y-1.5">
-              <Label>Type</Label>
-              <Select
-                value={updateDialog.type}
-                onValueChange={(v) =>
-                  setUpdateDialog((prev) => ({
-                    ...prev,
-                    type: v as InkindType,
-                  }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {INKIND_TYPES.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {INKIND_TYPE_LABELS[t]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
           </div>
 
@@ -712,8 +695,7 @@ export default function InkindList() {
                   updateDialog.name.trim() ===
                     (updateDialog.item.name ?? '').trim() &&
                   updateDialog.description.trim() ===
-                    (updateDialog.item.description ?? '').trim() &&
-                  updateDialog.type === updateDialog.item.type)
+                    (updateDialog.item.description ?? '').trim())
               }
             >
               Next
@@ -727,9 +709,9 @@ export default function InkindList() {
         open={confirmDialog.open}
         onOpenChange={(o) => !o && setConfirmDialog(EMPTY_CONFIRM)}
       >
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent className="w-[500px] max-w-[95vw]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="text-lg flex items-center gap-2">
               Confirm Changes
             </DialogTitle>
             <DialogDescription>
@@ -737,30 +719,23 @@ export default function InkindList() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-3 py-2 text-sm">
-            <div className="rounded-sm border bg-muted/40 px-3 py-3 space-y-2">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Name</span>
-                <span className="font-medium">{confirmDialog.name}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Description</span>
-                <span className="font-medium max-w-[60%] text-right break-words">
-                  {confirmDialog.description}
+          <div className="space-y-3 py-2">
+            <div className="rounded-sm border bg-muted/40 px-4 py-3 space-y-3">
+              <div className="flex justify-between items-start gap-4">
+                <span className="text-sm text-muted-foreground shrink-0">
+                  Name
+                </span>
+                <span className="text-sm font-medium text-right">
+                  {confirmDialog.name}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Type</span>
-                <Badge
-                  variant={
-                    confirmDialog.type === 'PRE_DEFINED'
-                      ? 'default'
-                      : 'secondary'
-                  }
-                  className="rounded-sm"
-                >
-                  {INKIND_TYPE_LABELS[confirmDialog.type]}
-                </Badge>
+              <div className="flex justify-between items-start gap-4">
+                <span className="text-sm text-muted-foreground shrink-0">
+                  Description
+                </span>
+                <span className="text-sm font-medium max-w-[65%] text-right break-words">
+                  {confirmDialog.description}
+                </span>
               </div>
             </div>
           </div>

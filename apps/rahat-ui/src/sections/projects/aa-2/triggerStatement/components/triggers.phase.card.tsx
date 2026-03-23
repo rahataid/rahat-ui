@@ -1,6 +1,7 @@
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { ArrowRight, Plus } from 'lucide-react';
 import TriggerDetailsCard from './trigger.details.card';
 
@@ -61,16 +62,21 @@ export default function TriggersPhaseCard({
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
           >
-            <IconLabelBtn
-              variant="outline"
-              className={`border-primary text-primary !m-0 ${
-                hideAddTrigger && 'hidden'
-              }`}
-              Icon={Plus}
-              name="Add Trigger"
-              handleClick={handleAddTrigger}
-              disabled={isActive}
-            />
+            <TooltipWrapper
+              tip="Cannot add triggers for an active phase"
+              disable={!isActive}
+            >
+              <IconLabelBtn
+                variant="outline"
+                className={`border-primary text-primary !m-0 ${
+                  hideAddTrigger && 'hidden'
+                }`}
+                Icon={Plus}
+                name="Add Trigger"
+                handleClick={handleAddTrigger}
+                disabled={isActive}
+              />
+            </TooltipWrapper>
           </RoleAuth>
         </div>
         <div className="flex justify-center mb-2 ">

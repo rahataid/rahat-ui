@@ -58,6 +58,7 @@ import {
   useAddInkindStock,
   useRemoveInkindStock,
   useUpdateInkind,
+  useGroupInkindAllocations,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useSwal } from 'apps/rahat-ui/src/components/swal';
@@ -67,6 +68,8 @@ import {
   InkindType,
   INKIND_TYPES,
   INKIND_TYPE_LABELS,
+  NAME_MAX,
+  DESCRIPTION_MAX,
 } from '../schemas/inkind.validation';
 
 export type InkindItem = {
@@ -82,6 +85,7 @@ type StockDialogState = {
   mode: 'add' | 'remove';
   item: InkindItem | null;
   quantity: string;
+  error: string;
 };
 
 type UpdateDialogState = {
@@ -105,15 +109,27 @@ type ActionButtonProps = {
   icon: React.ReactNode;
   hoverClass: string;
   onClick: () => void;
+  disabled?: boolean;
 };
 
-function ActionButton({ label, icon, hoverClass, onClick }: ActionButtonProps) {
+function ActionButton({
+  label,
+  icon,
+  hoverClass,
+  onClick,
+  disabled = false,
+}: ActionButtonProps) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <button
           onClick={onClick}
-          className={`p-1.5 rounded transition-colors ${hoverClass}`}
+          disabled={disabled}
+          className={`p-1.5 rounded transition-colors ${
+            disabled
+              ? 'opacity-35 cursor-not-allowed text-muted-foreground'
+              : hoverClass
+          }`}
         >
           {icon}
         </button>
@@ -154,11 +170,16 @@ export default function InkindList() {
     mode: 'add',
     item: null,
     quantity: '',
+    error: '',
   });
   const [updateDialog, setUpdateDialog] =
     useState<UpdateDialogState>(EMPTY_UPDATE);
   const [confirmDialog, setConfirmDialog] =
     useState<ConfirmDialogState>(EMPTY_CONFIRM);
+  const [updateErrors, setUpdateErrors] = useState<{
+    name?: string;
+    description?: string;
+  }>({});
 
   const { data, isLoading } = useInkinds(projectUUID, {
     page: pagination.pageIndex + 1,
@@ -174,7 +195,24 @@ export default function InkindList() {
   const queryClient = useQueryClient();
   const dialog = useSwal();
 
+  const { data: allocationsData } = useGroupInkindAllocations(projectUUID);
+  const assignedInkindIds = useMemo<Set<string>>(() => {
+    const raw: unknown = allocationsData;
+    const list: { inkindId?: string }[] = Array.isArray(raw)
+      ? raw
+      : Array.isArray((raw as any)?.data)
+      ? (raw as any).data
+      : [];
+    return new Set(list.map((a) => a.inkindId).filter(Boolean) as string[]);
+  }, [allocationsData]);
+
   const handleDelete = async (item: InkindItem) => {
+    if (assignedInkindIds.has(item.uuid)) {
+      toast.error(
+        'Inkind is already assigned to a group so cannot be removed.',
+      );
+      return;
+    }
     const result = await dialog.fire({
       title: 'Delete In-Kind Item',
       text: `Are you sure you want to delete "${item.name}"? This action cannot be undone.`,
@@ -193,10 +231,16 @@ export default function InkindList() {
   };
 
   const openStockDialog = (item: InkindItem, mode: 'add' | 'remove') =>
-    setStockDialog({ open: true, mode, item, quantity: '' });
+    setStockDialog({ open: true, mode, item, quantity: '', error: '' });
 
   const closeStockDialog = () =>
-    setStockDialog({ open: false, mode: 'add', item: null, quantity: '' });
+    setStockDialog({
+      open: false,
+      mode: 'add',
+      item: null,
+      quantity: '',
+      error: '',
+    });
 
   const handleStockSubmit = async () => {
     const { mode, item, quantity } = stockDialog;
@@ -204,14 +248,22 @@ export default function InkindList() {
 
     const qty = parseInt(quantity, 10);
     if (!quantity || isNaN(qty) || qty <= 0) {
-      toast.error('Please enter a valid quantity greater than 0.');
+      setStockDialog((prev) => ({
+        ...prev,
+        error: 'Quantity must be greater than 0.',
+      }));
       return;
     }
 
     if (mode === 'remove') {
       const available = item.availableStock ?? 0;
       if (qty > available) {
-        toast.error(`Cannot remove ${qty}. Only ${available} units available.`);
+        setStockDialog((prev) => ({
+          ...prev,
+          error: `Cannot remove ${qty}. Only ${available} unit${
+            available !== 1 ? 's' : ''
+          } available.`,
+        }));
         return;
       }
     }
@@ -224,8 +276,8 @@ export default function InkindList() {
     closeStockDialog();
   };
 
-  // Update flow: open edit modal pre-filled with current values
-  const openUpdateDialog = (item: InkindItem) =>
+  const openUpdateDialog = (item: InkindItem) => {
+    setUpdateErrors({});
     setUpdateDialog({
       open: true,
       item,
@@ -233,18 +285,37 @@ export default function InkindList() {
       description: item.description ?? '',
       type: item.type,
     });
+  };
 
-  // Move from edit modal → confirmation modal
   const handleUpdateNext = () => {
     const { name, description, type, item } = updateDialog;
+    const errors: { name?: string; description?: string } = {};
+
     if (!name.trim()) {
-      toast.error('Name is required.');
-      return;
+      errors.name = 'Name is required.';
+    } else if (name.length > NAME_MAX) {
+      errors.name = `Name must be ${NAME_MAX} characters or fewer.`;
+    } else {
+      const trimmed = name.trim().toLowerCase();
+      const duplicate = rows.some(
+        (r) => r.uuid !== item?.uuid && r.name.trim().toLowerCase() === trimmed,
+      );
+      if (duplicate)
+        errors.name = 'An inkind item with this name already exists.';
     }
+
     if (!description.trim()) {
-      toast.error('Description is required.');
+      errors.description = 'Description is required.';
+    } else if (description.length > DESCRIPTION_MAX) {
+      errors.description = `Description must be ${DESCRIPTION_MAX} characters or fewer.`;
+    }
+
+    if (errors.name || errors.description) {
+      setUpdateErrors(errors);
       return;
     }
+
+    setUpdateErrors({});
     setUpdateDialog(EMPTY_UPDATE);
     setConfirmDialog({ open: true, item, name, description, type });
   };
@@ -318,6 +389,7 @@ export default function InkindList() {
         header: 'Actions',
         cell: ({ row }) => {
           const item = row.original;
+          const isAssigned = assignedInkindIds.has(item.uuid);
           return (
             <TooltipProvider>
               <div className="flex items-center gap-1">
@@ -334,9 +406,14 @@ export default function InkindList() {
                   onClick={() => openStockDialog(item, 'remove')}
                 />
                 <ActionButton
-                  label="Delete"
+                  label={
+                    isAssigned
+                      ? 'Cannot delete — assigned to a group'
+                      : 'Delete'
+                  }
                   icon={<Trash2 size={16} strokeWidth={1.8} />}
                   hoverClass="hover:bg-red-50 text-red-500"
+                  disabled={isAssigned}
                   onClick={() => handleDelete(item)}
                 />
                 <ActionButton
@@ -352,7 +429,7 @@ export default function InkindList() {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [assignedInkindIds],
   );
 
   const table = useReactTable({
@@ -462,10 +539,17 @@ export default function InkindList() {
                   setStockDialog((prev) => ({
                     ...prev,
                     quantity: e.target.value,
+                    error: '',
                   }))
                 }
                 onKeyDown={(e) => e.key === 'Enter' && handleStockSubmit()}
               />
+              {stockDialog.error && (
+                <p className="flex items-center gap-1 text-sm text-destructive">
+                  <AlertCircle size={12} />
+                  {stockDialog.error}
+                </p>
+              )}
             </div>
           </div>
 
@@ -477,15 +561,7 @@ export default function InkindList() {
             >
               Cancel
             </Button>
-            <Button
-              onClick={handleStockSubmit}
-              disabled={isPending}
-              className={
-                stockDialog.mode === 'remove'
-                  ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
-                  : ''
-              }
-            >
+            <Button onClick={handleStockSubmit} disabled={isPending}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -503,7 +579,12 @@ export default function InkindList() {
 
       <Dialog
         open={updateDialog.open}
-        onOpenChange={(o) => !o && setUpdateDialog(EMPTY_UPDATE)}
+        onOpenChange={(o) => {
+          if (!o) {
+            setUpdateDialog(EMPTY_UPDATE);
+            setUpdateErrors({});
+          }
+        }}
       >
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
@@ -515,31 +596,77 @@ export default function InkindList() {
 
           <div className="space-y-3 py-2">
             <div className="space-y-1.5">
-              <Label htmlFor="update-name">Name</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="update-name">Name</Label>
+                <span
+                  className={`text-xs ${
+                    updateDialog.name.length >= NAME_MAX
+                      ? 'text-destructive'
+                      : 'text-muted-foreground'
+                  }`}
+                >
+                  {updateDialog.name.length}/{NAME_MAX}
+                </span>
+              </div>
               <Input
                 id="update-name"
                 placeholder="Item name"
+                maxLength={NAME_MAX}
                 value={updateDialog.name}
-                onChange={(e) =>
-                  setUpdateDialog((prev) => ({ ...prev, name: e.target.value }))
-                }
+                onChange={(e) => {
+                  setUpdateDialog((prev) => ({
+                    ...prev,
+                    name: e.target.value,
+                  }));
+                  if (updateErrors.name)
+                    setUpdateErrors((prev) => ({ ...prev, name: undefined }));
+                }}
               />
+              {updateErrors.name && (
+                <p className="flex items-center gap-1 text-xs text-destructive">
+                  <AlertCircle size={12} />
+                  {updateErrors.name}
+                </p>
+              )}
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="update-description">Description</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="update-description">Description</Label>
+                <span
+                  className={`text-xs ${
+                    updateDialog.description.length >= DESCRIPTION_MAX
+                      ? 'text-destructive'
+                      : 'text-muted-foreground'
+                  }`}
+                >
+                  {updateDialog.description.length}/{DESCRIPTION_MAX}
+                </span>
+              </div>
               <Textarea
                 id="update-description"
                 placeholder="Item description"
                 className="resize-none"
                 rows={3}
+                maxLength={DESCRIPTION_MAX}
                 value={updateDialog.description}
-                onChange={(e) =>
+                onChange={(e) => {
                   setUpdateDialog((prev) => ({
                     ...prev,
                     description: e.target.value,
-                  }))
-                }
+                  }));
+                  if (updateErrors.description)
+                    setUpdateErrors((prev) => ({
+                      ...prev,
+                      description: undefined,
+                    }));
+                }}
               />
+              {updateErrors.description && (
+                <p className="flex items-center gap-1 text-xs text-destructive">
+                  <AlertCircle size={12} />
+                  {updateErrors.description}
+                </p>
+              )}
             </div>
             <div className="space-y-1.5">
               <Label>Type</Label>
@@ -569,11 +696,28 @@ export default function InkindList() {
           <DialogFooter>
             <Button
               variant="secondary"
-              onClick={() => setUpdateDialog(EMPTY_UPDATE)}
+              onClick={() => {
+                setUpdateDialog(EMPTY_UPDATE);
+                setUpdateErrors({});
+              }}
             >
               Cancel
             </Button>
-            <Button onClick={handleUpdateNext}>Next</Button>
+            <Button
+              onClick={handleUpdateNext}
+              disabled={
+                !updateDialog.name.trim() ||
+                !updateDialog.description.trim() ||
+                (updateDialog.item !== null &&
+                  updateDialog.name.trim() ===
+                    (updateDialog.item.name ?? '').trim() &&
+                  updateDialog.description.trim() ===
+                    (updateDialog.item.description ?? '').trim() &&
+                  updateDialog.type === updateDialog.item.type)
+              }
+            >
+              Next
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

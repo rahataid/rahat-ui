@@ -25,7 +25,11 @@ import {
 import { format } from 'date-fns';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useInkindsSummary, useInkindTransactions } from '@rahat-ui/query';
+import {
+  useInkindsSummary,
+  useInkindTransactions,
+  useBeneficiaryGroups,
+} from '@rahat-ui/query';
 
 type Movement = {
   id: number;
@@ -63,25 +67,25 @@ const MOVEMENT_CONFIG: Record<
   { label: string; color: string; bgColor: string; Icon: React.ElementType }
 > = {
   ADD: {
-    label: 'Stock In',
+    label: 'Inkind Added',
     color: 'text-green-600',
     bgColor: 'bg-green-100',
     Icon: ArrowUp,
   },
   REMOVE: {
-    label: 'Stock Out',
+    label: 'Inkind Removed',
     color: 'text-red-600',
     bgColor: 'bg-red-100',
     Icon: ArrowDown,
   },
   LOCK: {
-    label: 'Reserved',
+    label: 'Assigned to group',
     color: 'text-yellow-600',
     bgColor: 'bg-yellow-100',
     Icon: Archive,
   },
   UNLOCK: {
-    label: 'Released',
+    label: 'Inkind Unlocked',
     color: 'text-blue-600',
     bgColor: 'bg-blue-100',
     Icon: ArchiveRestore,
@@ -130,6 +134,18 @@ export default function InkindOverview() {
 
   const { data: summaryData } = useInkindsSummary(projectUUID);
   const { data: txData } = useInkindTransactions(projectUUID);
+  const { data: groupsData } = useBeneficiaryGroups(projectUUID, {
+    page: 1,
+    perPage: 1000,
+  });
+
+  const groupNameMap = React.useMemo<Record<string, string>>(() => {
+    const list: { uuid?: string; name?: string }[] =
+      (groupsData as any)?.data ?? groupsData ?? [];
+    return Object.fromEntries(
+      list.map((g) => [g.uuid ?? '', g.name ?? g.uuid ?? '']),
+    );
+  }, [groupsData]);
 
   const inkindItems: any[] = summaryData?.data ?? [];
   const movements: Movement[] = txData?.data ?? [];
@@ -210,8 +226,8 @@ export default function InkindOverview() {
                         </p>
                         {movement.groupInkind && (
                           <p className="text-xs text-muted-foreground mt-0.5">
-                            Group ID: {movement.groupInkind.groupId.slice(0, 8)}
-                            …
+                            {groupNameMap[movement.groupInkind.groupId] ??
+                              movement.groupInkind.groupId.slice(0, 8) + '…'}
                           </p>
                         )}
                         <p className="text-xs text-muted-foreground mt-0.5">
@@ -366,8 +382,12 @@ export default function InkindOverview() {
                       <div className="border rounded-md px-3">
                         <DetailRow
                           icon={Users}
-                          label="Group ID"
-                          value={selectedMovement.groupInkind.groupId}
+                          label="Group"
+                          value={
+                            groupNameMap[
+                              selectedMovement.groupInkind.groupId
+                            ] ?? selectedMovement.groupInkind.groupId
+                          }
                         />
                         <DetailRow
                           icon={Layers}

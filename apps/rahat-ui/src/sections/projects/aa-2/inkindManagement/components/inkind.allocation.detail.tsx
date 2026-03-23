@@ -237,17 +237,14 @@ export default function InkindAllocationDetail() {
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-1">
             <Package className="h-4 w-4 text-muted-foreground" />
-            <h2 className="font-semibold text-sm">{groupName}</h2>
-            <span className="text-muted-foreground text-xs">
-              — Disbursement Records
-            </span>
+            <h2 className="font-semibold text-sm">Inkind logs</h2>
           </div>
           <p className="text-xs text-muted-foreground mb-3">
             List of all beneficiaries who received this inkind
           </p>
           <SearchInput
             className="w-full mb-2"
-            name="beneficiaryWalletAddress"
+            name="Beneficiary Wallet Address"
             value={
               (table
                 .getColumn('beneficiaryWalletAddress')

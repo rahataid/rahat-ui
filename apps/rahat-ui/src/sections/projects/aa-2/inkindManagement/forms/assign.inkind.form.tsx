@@ -66,7 +66,9 @@ export default function AssignInkindForm({ onNext }: Props) {
     perPage: 100,
   });
 
-  const inkindItems: any[] = inkindsData?.data ?? [];
+  const inkindItems: any[] = (inkindsData?.data ?? []).filter(
+    (i: any) => i.type === 'PRE_DEFINED',
+  );
   const groups: BeneficiaryGroupListItem[] = benGroups.data ?? [];
 
   const form = useForm<AssignInkindValues>({
@@ -142,7 +144,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                   <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]">
                     <Command>
                       <CommandInput
-                        placeholder="Search in-kind items..."
+                        placeholder="Search inkind items..."
                         className="h-9"
                       />
                       <CommandList>

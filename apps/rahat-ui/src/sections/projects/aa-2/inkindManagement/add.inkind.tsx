@@ -7,13 +7,26 @@ import { INKIND_FORM_STEPS } from './consts/inkind.consts';
 import InkindDetailsForm from './forms/inkind.details.form';
 import InkindConfirmation from './forms/inkind.confirmation';
 import type { InkindDetailsValues } from './schemas/inkind.validation';
+import { useInkinds } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 export default function AddInkindView() {
   const { id } = useParams();
   const router = useRouter();
+  const projectUUID = id as UUID;
 
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Partial<InkindDetailsValues>>({});
+
+  const { data: inkindsData } = useInkinds(projectUUID, {
+    page: 1,
+    perPage: 1000,
+    order: 'desc',
+    sort: 'createdAt',
+  });
+  const existingNames: string[] = (inkindsData?.data ?? []).map(
+    (item: { name: string }) => item.name,
+  );
 
   const handleBack = useCallback(() => {
     if (currentStep > 0) {
@@ -112,7 +125,11 @@ export default function AddInkindView() {
       {/* ── Step content ───────────────────────────────────────────── */}
       <div className="px-4 pb-4">
         {currentStep === 0 && (
-          <InkindDetailsForm formData={formData} onNext={handleDetailsNext} />
+          <InkindDetailsForm
+            formData={formData}
+            onNext={handleDetailsNext}
+            existingNames={existingNames}
+          />
         )}
         {currentStep === 1 && (
           <InkindConfirmation

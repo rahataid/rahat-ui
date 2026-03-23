@@ -8,9 +8,21 @@ export const INKIND_TYPE_LABELS: Record<InkindType, string> = {
   WALK_IN: 'Walk-In',
 };
 
+export const NAME_MAX = 100;
+export const DESCRIPTION_MAX = 500;
+
 export const InkindDetailsSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  description: z.string().min(1, 'Description is required'),
+  name: z
+    .string()
+    .min(1, 'Name is required')
+    .max(NAME_MAX, `Name must be ${NAME_MAX} characters or fewer`),
+  description: z
+    .string()
+    .min(1, 'Description is required')
+    .max(
+      DESCRIPTION_MAX,
+      `Description must be ${DESCRIPTION_MAX} characters or fewer`,
+    ),
   type: z.enum(INKIND_TYPES, {
     required_error: 'Type is required',
   }),

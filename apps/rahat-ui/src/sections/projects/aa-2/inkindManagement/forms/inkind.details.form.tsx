@@ -25,6 +25,8 @@ import {
   InkindDetailsValues,
   INKIND_TYPES,
   INKIND_TYPE_LABELS,
+  NAME_MAX,
+  DESCRIPTION_MAX,
 } from '../schemas/inkind.validation';
 import type { InkindFormData } from '../schemas/inkind.validation';
 
@@ -37,9 +39,14 @@ const DEFAULT_VALUES: InkindDetailsValues = {
 interface Props {
   formData: Partial<InkindFormData>;
   onNext: (data: InkindDetailsValues) => void;
+  existingNames?: string[];
 }
 
-export default function InkindDetailsForm({ formData, onNext }: Props) {
+export default function InkindDetailsForm({
+  formData,
+  onNext,
+  existingNames = [],
+}: Props) {
   const form = useForm<InkindDetailsValues>({
     resolver: zodResolver(InkindDetailsSchema),
     defaultValues: {
@@ -49,11 +56,28 @@ export default function InkindDetailsForm({ formData, onNext }: Props) {
     },
   });
 
-  const { control, handleSubmit, reset } = form;
+  const { control, handleSubmit, reset, watch, setError } = form;
+
+  const nameValue = watch('name');
+  const descriptionValue = watch('description');
+
+  const handleNext = (data: InkindDetailsValues) => {
+    const trimmed = data.name.trim().toLowerCase();
+    const duplicate = existingNames.some(
+      (n) => n.trim().toLowerCase() === trimmed,
+    );
+    if (duplicate) {
+      setError('name', {
+        message: 'An inkind item with this name already exists.',
+      });
+      return;
+    }
+    onNext(data);
+  };
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit(onNext)}>
+      <form onSubmit={handleSubmit(handleNext)}>
         <div className="border rounded-sm p-4 flex flex-col space-y-4">
           <p className="text-base font-semibold">Register Inkind</p>
           <FormField
@@ -61,9 +85,24 @@ export default function InkindDetailsForm({ formData, onNext }: Props) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <div className="flex items-center justify-between">
+                  <FormLabel>Name</FormLabel>
+                  <span
+                    className={`text-xs ${
+                      (nameValue?.length ?? 0) >= NAME_MAX
+                        ? 'text-destructive'
+                        : 'text-muted-foreground'
+                    }`}
+                  >
+                    {nameValue?.length ?? 0}/{NAME_MAX}
+                  </span>
+                </div>
                 <FormControl>
-                  <Input placeholder="e.g. Rice (50kg bags)" {...field} />
+                  <Input
+                    placeholder="e.g. Rice (50kg bags)"
+                    maxLength={NAME_MAX}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -75,12 +114,24 @@ export default function InkindDetailsForm({ formData, onNext }: Props) {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <div className="flex items-center justify-between">
+                  <FormLabel>Description</FormLabel>
+                  <span
+                    className={`text-xs ${
+                      (descriptionValue?.length ?? 0) >= DESCRIPTION_MAX
+                        ? 'text-destructive'
+                        : 'text-muted-foreground'
+                    }`}
+                  >
+                    {descriptionValue?.length ?? 0}/{DESCRIPTION_MAX}
+                  </span>
+                </div>
                 <FormControl>
                   <Textarea
                     placeholder="Briefly describe this in-kind item..."
                     className="resize-none"
                     rows={3}
+                    maxLength={DESCRIPTION_MAX}
                     {...field}
                   />
                 </FormControl>

@@ -124,7 +124,7 @@ export default function InkindAllocationList() {
   const columns: ColumnDef<AllocationRow>[] = [
     {
       accessorKey: 'inkindName',
-      header: 'In-Kind Name',
+      header: 'Inkind Name',
       cell: ({ row }) => (
         <TruncatedCell text={row.original.inkindName} maxLength={20} />
       ),
@@ -160,9 +160,9 @@ export default function InkindAllocationList() {
       accessorKey: 'quantityRedeemed',
       header: 'Total Redeemed',
       cell: ({ row }) => (
-        <span className="font-semibold text-primary">
+        <span className="font-semibold">
           {row.original.quantityRedeemed}{' '}
-          <span className="text-xs font-normal text-muted-foreground">
+          <span className="text-xs font-normal">
             / {row.original.beneficiaryCount}
           </span>
         </span>
@@ -217,11 +217,11 @@ export default function InkindAllocationList() {
       <Heading
         title="Allocation List"
         titleStyle="text-lg"
-        description="In-kind items assigned to beneficiary groups"
+        description="Inkind items assigned to beneficiary groups"
       />
       <SearchInput
         className="w-full mb-2"
-        name="inkindName"
+        name="Inkind Name"
         value={
           (table.getColumn('inkindName')?.getFilterValue() as string) ?? ''
         }

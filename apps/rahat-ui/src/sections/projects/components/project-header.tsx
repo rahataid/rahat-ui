@@ -46,8 +46,14 @@ export function ProjectNav({
   }));
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const handleLogout = () => {
+    const pinnedPhaseEntries = Object.entries(localStorage).filter(([key]) =>
+      key.startsWith('aa_pinned_phases_'),
+    );
     clearUser();
     clearAuth();
+    pinnedPhaseEntries.forEach(([key, value]) =>
+      localStorage.setItem(key, value),
+    );
     toast.success('Logged out successfully.');
     // setTimeout(() => window.location.reload(), 1000);
     setTimeout(() => window.location.replace('/auth/login'), 1000);

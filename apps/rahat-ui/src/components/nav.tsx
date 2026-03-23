@@ -40,10 +40,15 @@ export function Nav({ hasDefaultHeader = true }) {
 
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const handleLogout = () => {
+    const pinnedPhaseEntries = Object.entries(localStorage).filter(([key]) =>
+      key.startsWith('aa_pinned_phases_'),
+    );
     clearUser();
     clearAuth();
     // localStorage.clear()
-
+    pinnedPhaseEntries.forEach(([key, value]) =>
+      localStorage.setItem(key, value),
+    );
     toast.success('Logged out successfully.');
     setTimeout(() => window.location.replace('/auth/login'), 1000);
   };

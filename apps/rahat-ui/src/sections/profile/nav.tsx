@@ -38,8 +38,14 @@ export function Nav() {
   }));
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const handleLogout = () => {
+    const pinnedPhaseEntries = Object.entries(localStorage).filter(([key]) =>
+      key.startsWith('aa_pinned_phases_'),
+    );
     clearUser();
     clearAuth();
+    pinnedPhaseEntries.forEach(([key, value]) =>
+      localStorage.setItem(key, value),
+    );
     window.location.reload();
   };
 

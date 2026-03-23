@@ -1,11 +1,8 @@
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
-import {
-  CustomAlertDialog,
-  Heading,
-  IconLabelBtn,
-} from 'apps/rahat-ui/src/common';
-import { ArrowRight, Plus, SquarePen } from 'lucide-react';
+import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { ArrowRight, Plus } from 'lucide-react';
 import TriggerDetailsCard from './trigger.details.card';
 
 type IProps = {
@@ -69,22 +66,10 @@ export default function TriggersPhaseCard({
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
           >
-            <div className="flex items-center gap-2">
-              <div className={`${hideEditPhase && 'hidden'}`}>
-                <CustomAlertDialog
-                  dialogTrigger={
-                    <IconLabelBtn
-                      variant="outline"
-                      className="border-primary text-primary !m-0"
-                      Icon={SquarePen}
-                      name="Edit Phase"
-                    />
-                  }
-                  title="Edit Phase"
-                  description="Are you sure you want to edit this phase?"
-                  handleContinueClick={handleEditPhase || (() => {})}
-                />
-              </div>
+            <TooltipWrapper
+              tip="Cannot add triggers for an active phase"
+              disable={!isActive}
+            >
               <IconLabelBtn
                 variant="outline"
                 className={`border-primary text-primary !m-0 ${
@@ -95,7 +80,7 @@ export default function TriggersPhaseCard({
                 handleClick={handleAddTrigger}
                 disabled={isActive}
               />
-            </div>
+            </TooltipWrapper>
           </RoleAuth>
         </div>
         <div className="flex justify-center mb-2 ">

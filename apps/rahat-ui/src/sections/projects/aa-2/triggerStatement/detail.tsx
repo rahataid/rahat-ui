@@ -29,6 +29,7 @@ import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { AlertCircleIcon } from 'lucide-react';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export default function TriggerStatementDetail() {
   const router = useRouter();
@@ -60,6 +61,18 @@ export default function TriggerStatementDetail() {
     value: trigger?.transactionHash,
   });
   const removeTrigger = useDeleteTriggerStatement();
+
+  const isEditDeleteDisabled = trigger?.isTriggered || trigger?.phase?.isActive;
+
+  const getEditDeleteTip = () => {
+    if (trigger?.isTriggered) {
+      return 'Cannot modify a triggered trigger';
+    }
+    if (trigger?.phase?.isActive) {
+      return 'Cannot modify trigger in an active phase';
+    }
+    return '';
+  };
 
   const versionType = type as string | undefined;
 
@@ -116,32 +129,42 @@ export default function TriggerStatementDetail() {
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
           >
-            <DeleteButton
-              className={`rounded flex gap-1 items-center text-sm font-medium ${
-                version && 'hidden'
-              }`}
-              name="trigger"
-              label="Delete"
-              handleContinueClick={handleDelete}
-              disabled={trigger?.isTriggered || trigger?.phase?.isActive}
-            />
+            <TooltipWrapper
+              tip={isEditDeleteDisabled ? getEditDeleteTip() : ''}
+              disable={!isEditDeleteDisabled}
+            >
+              <DeleteButton
+                className={`rounded flex gap-1 items-center text-sm font-medium ${
+                  version && 'hidden'
+                }`}
+                name="trigger"
+                label="Delete"
+                handleContinueClick={handleDelete}
+                disabled={isEditDeleteDisabled}
+              />
+            </TooltipWrapper>
           </RoleAuth>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
           >
-            <EditButton
-              className={`rounded flex gap-1 items-center text-sm font-medium ${
-                version && 'hidden'
-              }`}
-              label="Edit"
-              onFallback={() =>
-                router.push(
-                  `/projects/aa/${id}/trigger-statements/${triggerIdKey}/edit`,
-                )
-              }
-              disabled={trigger?.phase?.isActive || trigger?.isTriggered}
-            />
+            <TooltipWrapper
+              tip={isEditDeleteDisabled ? getEditDeleteTip() : ''}
+              disable={!isEditDeleteDisabled}
+            >
+              <EditButton
+                className={`rounded flex gap-1 items-center text-sm font-medium ${
+                  version && 'hidden'
+                }`}
+                label="Edit"
+                onFallback={() =>
+                  router.push(
+                    `/projects/aa/${id}/trigger-statements/${triggerIdKey}/edit`,
+                  )
+                }
+                disabled={isEditDeleteDisabled}
+              />
+            </TooltipWrapper>
           </RoleAuth>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}

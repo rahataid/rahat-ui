@@ -247,6 +247,36 @@ export const useStakeholderDetails = (
   return query?.data;
 };
 
+export const useValidateStakeholders = () => {
+  const { rumsanService } = useRSQuery();
+
+  return useMutation({
+    mutationFn: async ({
+      selectedFile,
+      doctype,
+      projectId,
+    }: {
+      selectedFile: File;
+      doctype: string;
+      projectId?: UUID;
+    }) => {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('doctype', doctype);
+      formData.append(
+        'action',
+        'aaProject.stakeholders.validateBulkStakeholders',
+      );
+
+      const response = await rumsanService.client.post(
+        `/projects/${projectId}/upload`,
+        formData,
+      );
+      return response?.data;
+    },
+  });
+};
+
 export const useUploadStakeholders = () => {
   const queryClient = useQueryClient();
   const { rumsanService } = useRSQuery();
@@ -263,16 +293,26 @@ export const useUploadStakeholders = () => {
       selectedFile,
       doctype,
       projectId,
+      isGroupCreate,
+      groupName,
     }: {
       selectedFile: File;
       doctype: string;
       projectId?: UUID;
+      isGroupCreate?: boolean;
+      groupName?: string;
     }) => {
       const formData = new FormData();
       formData.append('file', selectedFile);
       formData.append('doctype', doctype);
       formData.append('action', 'aaProject.stakeholders.bulkAdd');
-      // if (projectId) formData.append('projectId', projectId);
+      formData.append(
+        'payload',
+        JSON.stringify({
+          isGroupCreate: isGroupCreate || false,
+          ...(groupName && { groupName }),
+        }),
+      );
 
       const response = await rumsanService.client.post(
         `/projects/${projectId}/upload`,
@@ -282,10 +322,7 @@ export const useUploadStakeholders = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [TAGS.GET_STAKEHOLDERS] });
-      toast.fire({
-        icon: 'success',
-        title: 'Stakeholders uploaded successfully',
-      });
+      queryClient.invalidateQueries({ queryKey: ['stakeholdersGroups'] });
     },
     onError: (error: any) => {
       console.error('Upload error', error);

@@ -3,10 +3,11 @@ import {
   ChartDonut,
   ChartHorizontalStacked,
 } from '@rahat-ui/shadcn/src/components/charts';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { ArrowRight, Pin, PinOff, Plus } from 'lucide-react';
 import TriggerDetailsCard from './trigger.details.card';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 type IProps = {
   title: string;
@@ -154,11 +155,15 @@ export default function TriggersPhaseCard({
         )}
 
         {chartType === 'horizontal' && (
-          <div className="flex justify-center  -my-7 ">
+          <div className="flex justify-center ">
             {totalCharSeries === 0 ? (
-              <div className="w-full my-2 mx-5 space-y-2 ">
-                <div className="w-full h-4 rounded-md bg-gray-200" />
-                <p className="text-sm text-gray-400 text-center">No Data</p>
+              <div
+                className="w-full mx-5 flex items-center justify-center"
+                style={{ height: 75 }}
+              >
+                <TooltipWrapper tip="No data to display">
+                  <div className="w-[18rem] h-4 rounded-md bg-gray-200" />
+                </TooltipWrapper>
               </div>
             ) : (
               <ChartHorizontalStacked

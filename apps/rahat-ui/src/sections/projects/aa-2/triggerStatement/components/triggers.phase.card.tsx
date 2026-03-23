@@ -27,6 +27,7 @@ type IProps = {
   chartType?: 'horizontal' | 'donut';
   isPinned?: boolean;
   onTogglePin?: () => void;
+  hidePin?: boolean;
 };
 
 export default function TriggersPhaseCard({
@@ -48,9 +49,9 @@ export default function TriggersPhaseCard({
   chartType = 'horizontal',
   isPinned = false,
   onTogglePin,
+  hidePin = false,
 }: IProps) {
   const totalCharSeries = chartSeries.reduce((a, b) => a + b, 0);
-
   return (
     <div className="p-4 rounded border shadow-md flex flex-col justify-between">
       <div>
@@ -68,21 +69,23 @@ export default function TriggersPhaseCard({
                   : 'text-green-500 bg-green-100'
               } text-xs px-1`}
             />
-            <Button
-              variant={'secondary'}
-              disabled={!onTogglePin}
-              onClick={onTogglePin}
-              title={isPinned ? 'Unpin phase' : 'Pin phase'}
-              className={`mt-1 p-1 rounded hover:bg-muted transition-colors shrink-0 ${
-                isPinned ? 'text-primary' : 'text-muted-foreground'
-              }`}
-            >
-              {isPinned ? (
-                <Pin className="w-4 h-4 fill-current" />
-              ) : (
-                <PinOff className="w-4 h-4" />
-              )}
-            </Button>
+            {!hidePin && (
+              <Button
+                variant={'secondary'}
+                disabled={!onTogglePin}
+                onClick={onTogglePin}
+                title={isPinned ? 'Unpin phase' : 'Pin phase'}
+                className={`mt-1 p-1 rounded hover:bg-muted transition-colors shrink-0 ${
+                  isPinned ? 'text-primary' : 'text-muted-foreground'
+                }`}
+              >
+                {isPinned ? (
+                  <Pin className="w-4 h-4 fill-current" />
+                ) : (
+                  <PinOff className="w-4 h-4" />
+                )}
+              </Button>
+            )}
           </div>
         </div>
         {chartType === 'donut' && (
@@ -140,12 +143,16 @@ export default function TriggersPhaseCard({
             totalRequiredTriggers={requiredOptionalTriggers}
           />
         </div>
-        <div className="flex gap-2 w-full mt-4 justify-center items-center mx-auto">
-          <p className="text-2xl font-medium text-blue-500">
-            {mandatoryTriggers + optionalTriggers}
-          </p>
-          <p className="text-sm/4">Total Triggers</p>
-        </div>
+
+        {chartType === 'horizontal' && (
+          <div className="flex gap-2 w-full mt-4 justify-center items-center mx-auto">
+            <p className="text-2xl font-medium text-blue-500">
+              {mandatoryTriggers + optionalTriggers}
+            </p>
+            <p className="text-sm/4">Total Triggers</p>
+          </div>
+        )}
+
         {chartType === 'horizontal' && (
           <div className="flex justify-center  -my-7 ">
             {totalCharSeries === 0 ? (

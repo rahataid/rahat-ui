@@ -11,6 +11,8 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
+import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
+import { Plus } from 'lucide-react';
 
 const TRIGGER_PIN_PHASE = 'TRIGGER_PIN_PHASE';
 
@@ -135,6 +137,25 @@ export default function TriggerStatementView() {
                 onTogglePin={() => togglePinPhase(d.uuid)}
               />
             ))}
+            {sortedPhases.length === 3 && (
+              <div>
+                <Card className="flex flex-col rounded-xl h-[calc(100vh-460px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
+                  <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
+                    <div className="flex flex-col gap-1 items-center ">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100">
+                        <Plus className="w-6 h-6 text-blue-500" />
+                      </div>
+                      <p className="text-base font-medium text-blue-500 ">
+                        Add Phase
+                      </p>
+                      <p className="text-sm text-blue-400">
+                        Click here to add new phase
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </div>
         </ScrollArea>
 

@@ -164,6 +164,7 @@ export default function PhaseDetail() {
             hideViewDetails={true}
             isActive={phase?.isActive}
             chartType="donut"
+            hidePin={true}
           />
         </div>
 

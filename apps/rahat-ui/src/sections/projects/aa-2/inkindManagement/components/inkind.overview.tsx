@@ -186,7 +186,7 @@ export default function InkindOverview() {
       <div className="grid xl:grid-cols-4 lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-3 mb-3">
         <DataCard
           className="rounded-sm"
-          title="Total In-Kind Types"
+          title="Total Inkind Types"
           number={String(inkindItems.length)}
           subtitle="Distinct items registered"
         />
@@ -214,13 +214,13 @@ export default function InkindOverview() {
         <h1 className="text-sm font-semibold mb-0.5">Overall Inkind Flow</h1>
         {movements.length !== 0 && (
           <p className="text-xs text-muted-foreground mb-3">
-            Click on any movement to view details
+            Click on any logs to view details
           </p>
         )}
         <ScrollArea className="flex-1 min-h-[200px] max-h-[50vh] overflow-auto items-center justify-center">
           {movements.length === 0 ? (
             <p className="text-sm text-muted-foreground align-center justify-center text-center py-6">
-              No movements recorded yet.
+              No records available.
             </p>
           ) : (
             <div className="flex flex-col space-y-2">
@@ -367,7 +367,7 @@ export default function InkindOverview() {
 
                   {selectedMovement.inkind && (
                     <div className="mb-5">
-                      <SectionTitle title="In-Kind Item" />
+                      <SectionTitle title="Inkind Item" />
                       <div className="border rounded-md px-3">
                         <DetailRow
                           icon={Package}
@@ -378,12 +378,9 @@ export default function InkindOverview() {
                           icon={Layers}
                           label="Type"
                           value={
-                            <Badge
-                              variant="secondary"
-                              className="rounded-sm text-xs"
-                            >
-                              {selectedMovement.inkind.type}
-                            </Badge>
+                          <Badge className="bg-gray-200 text-gray-600">
+                            {formatLabel(INKIND_TYPE_LABELS[selectedMovement.inkind.type])}
+                          </Badge>
                           }
                         />
                         <DetailRow

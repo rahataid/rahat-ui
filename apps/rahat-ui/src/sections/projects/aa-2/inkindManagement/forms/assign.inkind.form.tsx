@@ -136,7 +136,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                         {field.value
                           ? inkindItems.find((i) => i.uuid === field.value)
                               ?.name
-                          : 'Select In-Kind Item'}
+                          : 'Select InKind Item'}
                         <ChevronDown className="opacity-50" />
                       </Button>
                     </FormControl>

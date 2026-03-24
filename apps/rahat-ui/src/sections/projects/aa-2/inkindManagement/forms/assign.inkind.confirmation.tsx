@@ -8,6 +8,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { truncatedText } from 'apps/community-tool-ui/src/utils';
 import { NoResult } from 'apps/rahat-ui/src/common';
+import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 
 interface AssignInkindSummary {
   inkindId: string;
@@ -39,7 +40,7 @@ export default function AssignInkindConfirmation({
   const beneficiaries: any[] =
     rawData?.data?.groupedBeneficiaries ?? rawData?.groupedBeneficiaries ?? [];
   const cardData = [
-    { label: 'In-Kind Item', value: formData.inkindName },
+    { label: 'Inkind Item', value: formData.inkindName },
     { label: 'Beneficiary Group', value: formData.groupName },
     { label: 'Available Stock', value: formData.availableStock },
     { label: 'Beneficiaries', value: formData.beneficiaryCount },
@@ -69,7 +70,7 @@ export default function AssignInkindConfirmation({
           {cardData.map((item) => (
             <div key={item.label}>
               <p className="text-sm text-muted-foreground">{item.label}</p>
-              <p className="text-lg font-semibold text-primary">{item.value}</p>
+              <TruncatedCell text={item.value as string} maxLength={30} className='text-lg font-semibold text-primary' />
             </div>
           ))}
         </div>

@@ -45,11 +45,11 @@ export default function InkindConfirmation({
           <div className="flex flex-col space-y-3">
             <div>
               <p className="text-sm text-muted-foreground">Inkind Name</p>
-              <TruncatedCell text={formData.name} maxLength={30} />
+              <TruncatedCell text={formData.name} maxLength={30} className='text-lg font-semibold text-primary'/>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Description</p>
-              <TruncatedCell text={formData.description} maxLength={50} />
+              <TruncatedCell text={formData.description} maxLength={50} className='text-lg font-semibold text-primary'/>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Type</p>

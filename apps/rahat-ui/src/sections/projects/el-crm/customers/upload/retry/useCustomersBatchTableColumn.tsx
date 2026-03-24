@@ -92,7 +92,11 @@ export const useCustomersBatchTableColumn = () => {
         </span>
       ),
       cell: ({ row }) => {
-        const errorCause = row.original?.errorCause;
+        const rawCause = row.original?.errorCause;
+        const errorCause =
+          typeof rawCause === 'string' && rawCause !== '[object Object]'
+            ? rawCause
+            : null;
         return (
           <Tooltip>
             <TooltipTrigger asChild>

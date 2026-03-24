@@ -254,8 +254,10 @@ export default function BatchDetailView() {
                         : 'Database processing failed'}
                     </p>
                     <p className="text-sm text-warning/80 mt-0.5">
-                      {failedBatch?.errorCause ||
-                        'This batch encountered a system error during processing.'}{' '}
+                      {typeof failedBatch?.errorCause === 'string' &&
+                      failedBatch.errorCause !== '[object Object]'
+                        ? failedBatch.errorCause
+                        : 'This batch encountered a system error during processing.'}{' '}
                       The data itself is valid — click{' '}
                       <strong className="text-warning">Retry Import</strong> to
                       re-process.

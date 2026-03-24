@@ -1,0 +1,127 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  useCreatePhase,
+  PROJECT_SETTINGS_KEYS,
+  usePhases,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
+import { PhaseForm } from './PhaseForm';
+import { Back, Heading } from 'apps/rahat-ui/src/common';
+import { UUID } from 'crypto';
+import { useParams, useRouter } from 'next/navigation';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import {
+  AddPhaseFormInputValues,
+  AddPhaseFormValues,
+  AddPhaseSchema,
+  getAddPhaseDefaultValues,
+} from './phase.schema';
+
+export default function AddPhaseView() {
+  const params = useParams();
+  const router = useRouter();
+  const projectId = params.id as UUID;
+  const createPhase = useCreatePhase();
+  const { data: phasesData = [] } = usePhases(projectId);
+
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
+
+  const dataSourceSettings =
+    settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE];
+
+  const phaseSource = React.useMemo(() => {
+    if (dataSourceSettings?.dhm) return 'DHM';
+    if (dataSourceSettings?.glofas) return 'GLOFAS';
+    if (dataSourceSettings?.gfh) return 'GFH';
+    return 'DHM';
+  }, [dataSourceSettings]);
+
+  const activeYear =
+    settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+      'active_year'
+    ];
+
+  const riverBasin =
+    settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+      'river_basin'
+    ];
+
+  const triggerStatementPath = `/projects/aa/${projectId}/trigger-statements`;
+
+  const form = useForm<AddPhaseFormInputValues, unknown, AddPhaseFormValues>({
+    resolver: zodResolver(AddPhaseSchema),
+    defaultValues: getAddPhaseDefaultValues(riverBasin || ''),
+    mode: 'onChange',
+  });
+
+  React.useEffect(() => {
+    if (riverBasin) {
+      form.setValue('riverBasin', riverBasin, { shouldValidate: true });
+    }
+  }, [riverBasin, form]);
+
+  const hasPayoutEnabledPhase = React.useMemo(
+    () => phasesData?.some((phase: any) => phase?.canTriggerPayout),
+    [phasesData],
+  );
+
+  React.useEffect(() => {
+    if (!hasPayoutEnabledPhase) return;
+    form.setValue('canTriggerPayout', false, { shouldValidate: true });
+  }, [hasPayoutEnabledPhase, form]);
+
+  const handleAddPhase = async (data: AddPhaseFormValues) => {
+    const payload = {
+      name: data.name.trim().toUpperCase(),
+      source: phaseSource,
+      river_basin: data.riverBasin,
+      activeYear: String(activeYear || ''),
+      requiredMandatoryTriggers: data.requiredMandatoryTriggers,
+      requiredOptionalTriggers: data.requiredOptionalTriggers,
+      canRevert: !!data.canRevert,
+      canTriggerPayout: hasPayoutEnabledPhase ? false : !!data.canTriggerPayout,
+    };
+
+    try {
+      await createPhase.mutateAsync({
+        projectUUID: projectId,
+        phasePayload: payload,
+      });
+
+      router.push(triggerStatementPath);
+    } catch (error) {
+      console.error('Error creating phase:', error);
+    }
+  };
+
+  const handleReset = () => {
+    const resetValues = getAddPhaseDefaultValues(riverBasin || '');
+    form.reset(resetValues);
+    form.setValue('canRevert', resetValues.canRevert);
+    form.setValue('canTriggerPayout', resetValues.canTriggerPayout);
+  };
+
+  return (
+    <>
+      <div className="mt-4 px-4">
+        <Back path={triggerStatementPath} />
+        <Heading
+          title="Add Phase"
+          description="Fill the form below to create new phase"
+        />
+      </div>
+      <PhaseForm
+        form={form}
+        onSubmit={handleAddPhase}
+        onReset={handleReset}
+        loading={createPhase.isPending}
+        submitLabel="Add"
+        resetLabel="Clear"
+        hasPayoutEnabledPhase={hasPayoutEnabledPhase}
+      />
+    </>
+  );
+}

@@ -1,31 +1,49 @@
-name: AA ALL DEV CI/CD
+name: ALL DEV CI/CD
+
 on:
   workflow_dispatch:
     inputs:
       apps_to_build:
-        description: 'Apps to build (comma-separated: rahat-ui,community-tool-ui). Leave empty for all.'
+        description: "Apps to build (comma-separated: rahat-ui,community-tool-ui). Leave empty for all."
         required: false
-        default: ''
+        default: ""
         type: string
       tag_suffix:
-        description: 'Tag suffix (e.g., test-load)'
+        description: "Tag suffix (e.g., test-load)"
         required: true
-        default: 'test-load'
+        default: "aa-dev"
         type: string
       vault_secret_path:
-        description: 'Vault secret path (e.g., github/data/rahat/rahat-ui/demo/aa/redcross)'
+        description: "Vault secret path"
         required: true
-        default: 'github/data/rahat/rahat-ui/dev/aa/dev-qa'
-        type: string
-      vault_secret_key:
-        description: 'Key within the Vault secret that holds the env (e.g., rahat-ui)'
-        required: true
-        default: 'rahat-ui'
-        type: string
+        type: choice
+        options:
+          # Dev folder
+          - "[DEV] github/data/rahat/rahat-ui/dev/aa/dev-qa"
+          - "[DEV] github/data/rahat/rahat-ui/dev/aa/stellar"
+          - "[DEV] github/data/rahat/rahat-ui/dev/aa/unicef"
+          - "[DEV] github/data/rahat/rahat-ui/dev/el/crm"
+          - "[DEV] github/data/rahat/rahat-ui/dev/unicef/aidlink"
 
-concurrency:
-  group: aa-test-load-${{ github.ref }}
-  cancel-in-progress: true
+          # Demo folder
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/mcn"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/redcross"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/testload"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aa/unicef"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/aidlink"
+          - "[DEMO] github/data/rahat/rahat-ui/demo/c2c/xcapita"
+
+          # Main folder
+          - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwa"
+          - "[MAIN] github/data/rahat/rahat-ui/main/aa/geruwarm"
+          - "[MAIN] github/data/rahat/rahat-ui/main/aa/mcn"
+          - "[MAIN] github/data/rahat/rahat-ui/main/cam-ken-merge"
+
+      vault_secret_key:
+        description: "Key within the Vault secret that holds the env (e.g., rahat-ui)"
+        required: true
+        default: "rahat-ui"
+        type: string
 
 env:
   CI: false
@@ -65,6 +83,15 @@ jobs:
         uses: actions/checkout@v4
 
       # -----------------------------
+      # Strip prefix from Vault secret path
+      # -----------------------------
+      - name: Strip prefix from Vault path
+        id: vault-path
+        run: |
+          CLEAN_PATH="${{ inputs.vault_secret_path#*] }}"
+          echo "VAULT_PATH=${CLEAN_PATH}" >> $GITHUB_OUTPUT
+
+      # -----------------------------
       # Vault Secret Import
       # -----------------------------
       - name: Import Secrets from Vault
@@ -76,13 +103,18 @@ jobs:
           secrets: |
             github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
             github/data/general/docker/esatya password | DOCKERHUB_TOKEN ;
-            ${{ inputs.vault_secret_path }} ${{ inputs.vault_secret_key }} | ENV ;
+            ${{ steps.vault-path.outputs.VAULT_PATH }} ${{ inputs.vault_secret_key }} | ENV ;
 
       # -----------------------------
       # Environment Injection
       # -----------------------------
       - name: Create environment file
-        run: tee ./.env <<< "$ENV"
+        run: |
+          if [ -z "$ENV" ]; then
+            echo "ERROR: Vault secret is empty!"
+            exit 1
+          fi
+          tee ./.env <<< "$ENV"
 
       # -----------------------------
       # Node + PNPM Setup
@@ -94,7 +126,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20.10.0
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

@@ -43,7 +43,13 @@ export function Nav() {
     clearUser();
     clearAuth();
     if (pinnedPhases) localStorage.setItem('aa_pinned_phases', pinnedPhases);
-    if (triggerPinPhase) localStorage.setItem('TRIGGER_PIN_PHASE', triggerPinPhase);
+    if (triggerPinPhase)
+      localStorage.setItem('TRIGGER_PIN_PHASE', triggerPinPhase);
+    clearUser();
+    clearAuth();
+    if (pinnedPhases) {
+      localStorage.setItem('aa_pinned_phases', pinnedPhases);
+    }
     window.location.reload();
   };
 

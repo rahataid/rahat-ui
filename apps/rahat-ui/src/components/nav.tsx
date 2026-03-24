@@ -44,9 +44,12 @@ export function Nav({ hasDefaultHeader = true }) {
     const triggerPinPhase = localStorage.getItem('TRIGGER_PIN_PHASE');
     clearUser();
     clearAuth();
-    // localStorage.clear()
+    if (pinnedPhases) {
+      localStorage.setItem('aa_pinned_phases', pinnedPhases);
+    }
     if (pinnedPhases) localStorage.setItem('aa_pinned_phases', pinnedPhases);
-    if (triggerPinPhase) localStorage.setItem('TRIGGER_PIN_PHASE', triggerPinPhase);
+    if (triggerPinPhase)
+      localStorage.setItem('TRIGGER_PIN_PHASE', triggerPinPhase);
     toast.success('Logged out successfully.');
     setTimeout(() => window.location.replace('/auth/login'), 1000);
   };

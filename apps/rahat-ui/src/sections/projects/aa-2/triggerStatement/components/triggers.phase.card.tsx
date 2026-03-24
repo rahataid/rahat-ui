@@ -5,9 +5,10 @@ import {
 } from '@rahat-ui/shadcn/src/components/charts';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
-import { ArrowRight, Pin, PinOff, Plus } from 'lucide-react';
+import { ArrowRight, Plus } from 'lucide-react';
 import TriggerDetailsCard from './trigger.details.card';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import Image from 'next/image';
 
 type IProps = {
   title: string;
@@ -73,17 +74,27 @@ export default function TriggersPhaseCard({
             {!hidePin && (
               <Button
                 variant={'secondary'}
-                disabled={!onTogglePin}
                 onClick={onTogglePin}
-                title={isPinned ? 'Unpin phase' : 'Pin phase'}
-                className={`mt-1 p-1 rounded hover:bg-muted transition-colors shrink-0 ${
-                  isPinned ? 'text-primary' : 'text-muted-foreground'
-                }`}
+                className={'mt-1 p-0 bg-transparent w-6 h-6'}
               >
                 {isPinned ? (
-                  <Pin className="w-4 h-4 fill-current" />
+                  <Image
+                    src="/svg/pin-on.svg"
+                    alt="Unpin phase"
+                    title="Unpin phase"
+                    className="w-5 h-5 cursor-pointer active:scale-95 transition-transform"
+                    width={25}
+                    height={25}
+                  />
                 ) : (
-                  <PinOff className="w-4 h-4" />
+                  <Image
+                    src="/svg/pin-off.svg"
+                    alt="Pin phase"
+                    title="Pin phase"
+                    className="w-5 h-5 cursor-pointer active:scale-95 transition-transform"
+                    width={25}
+                    height={25}
+                  />
                 )}
               </Button>
             )}
@@ -158,11 +169,11 @@ export default function TriggersPhaseCard({
           <div className="flex justify-center ">
             {totalCharSeries === 0 ? (
               <div
-                className="w-full mx-5 flex items-center justify-center"
+                className=" mx-5 flex items-center justify-center"
                 style={{ height: 75 }}
               >
                 <TooltipWrapper tip="No data to display">
-                  <div className="w-[18rem] h-4 rounded-md bg-gray-200" />
+                  <div className="w-[16rem] h-4 rounded-md bg-gray-200" />
                 </TooltipWrapper>
               </div>
             ) : (

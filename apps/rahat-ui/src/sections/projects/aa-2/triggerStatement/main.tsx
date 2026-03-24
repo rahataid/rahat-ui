@@ -65,10 +65,9 @@ export default function TriggerStatementView() {
   };
 
   const sortedPhases = React.useMemo(() => {
-    const filtered = phases.filter((p) => p.name !== 'PREPAREDNESS');
     return [
-      ...filtered.filter((p) => pinnedPhaseIds.includes(p.uuid)),
-      ...filtered.filter((p) => !pinnedPhaseIds.includes(p.uuid)),
+      ...phases.filter((p) => pinnedPhaseIds.includes(p.uuid)),
+      ...phases.filter((p) => !pinnedPhaseIds.includes(p.uuid)),
     ];
   }, [phases, pinnedPhaseIds]);
 
@@ -106,7 +105,7 @@ export default function TriggerStatementView() {
         title="Trigger Statement"
         description="Track all the trigger reports here"
       />
-      <div className="flex gap-4 flex-1 overflow-hidden mt-4">
+      <div className="flex gap-1 flex-1 overflow-hidden mt-4">
         {/* Left section – phase cards in a 2-column grid, scrollable */}
         <ScrollArea className="flex-1 ">
           <div className="grid grid-cols-2 gap-4 pr-2">
@@ -139,7 +138,7 @@ export default function TriggerStatementView() {
             ))}
             {sortedPhases.length === 3 && (
               <div>
-                <Card className="flex flex-col rounded-xl h-[calc(100vh-350px)]  w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
+                <Card className="flex flex-col rounded-xl h-[calc(100vh-248px)]  w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
                   <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
                     <div className="flex flex-col gap-1 items-center ">
                       <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100">
@@ -160,7 +159,7 @@ export default function TriggerStatementView() {
         </ScrollArea>
 
         {/* Right section – recent triggers list */}
-        <div className="w-[380px] shrink-0">
+        <div className="w-[350px] shrink-0">
           <TriggersListCard
             projectId={projectId}
             triggers={triggeredTriggers}

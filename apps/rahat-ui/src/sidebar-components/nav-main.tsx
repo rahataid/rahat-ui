@@ -75,33 +75,44 @@ export function NavMain(items: IProps) {
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    {item.children?.map((subItem, subIndex) => (
-                      <SidebarMenuSubItem
-                        key={subItem.title || `subitem-${subIndex}`}
-                      >
-                        <SidebarMenuSubButton asChild>
-                          {subItem?.path ? (
-                            <Link
-                              onClick={handleMobileClose}
-                              href={subItem.path || '#'}
-                              className="w-full flex items-center"
-                            >
-                              <span>{subItem.title}</span>
-                            </Link>
-                          ) : (
-                            <button
-                              onClick={() => {
-                                subItem.onClick?.();
-                                handleMobileClose();
-                              }}
-                              className="w-full flex items-center"
-                            >
-                              <span>{subItem.title}</span>
-                            </button>
-                          )}
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
+                    {item.children?.map((subItem, subIndex) => {
+                      const isSubActive = subItem.path === currentPath;
+                      return (
+                        <SidebarMenuSubItem
+                          key={subItem.title || `subitem-${subIndex}`}
+                        >
+                          <SidebarMenuSubButton asChild>
+                            {subItem?.path ? (
+                              <Link
+                                onClick={handleMobileClose}
+                                href={subItem.path || '#'}
+                                className={`w-full flex items-center ${
+                                  isSubActive
+                                    ? 'bg-primary text-white rounded-md shadow-sm'
+                                    : ''
+                                }`}
+                              >
+                                <span>{subItem.title}</span>
+                              </Link>
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  subItem.onClick?.();
+                                  handleMobileClose();
+                                }}
+                                className={`w-full flex items-center ${
+                                  isSubActive
+                                    ? 'bg-primary text-white rounded-md shadow-sm'
+                                    : ''
+                                }`}
+                              >
+                                <span>{subItem.title}</span>
+                              </button>
+                            )}
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      );
+                    })}
                   </SidebarMenuSub>
                 </CollapsibleContent>
               </SidebarMenuItem>

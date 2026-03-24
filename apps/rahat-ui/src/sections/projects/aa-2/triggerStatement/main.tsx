@@ -8,8 +8,11 @@ import {
   usePhases,
   usePhasesStore,
 } from '@rahat-ui/query';
+import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { UUID } from 'crypto';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
+import { IconLabelBtn } from 'apps/rahat-ui/src/common';
+import { Plus } from 'lucide-react';
 
 export default function TriggerStatementView() {
   const router = useRouter();
@@ -50,12 +53,29 @@ export default function TriggerStatementView() {
       `/projects/aa/${projectId}/trigger-statements/phase/${phase?.uuid}`,
     );
   };
+
+  const handleAddPhase = () => {
+    router.push(`/projects/aa/${projectId}/trigger-statements/phase/add`);
+  };
+
   return (
     <div className="p-4">
-      <Heading
-        title="Trigger Statement"
-        description="Track all the trigger reports here"
-      />
+      <div className="flex justify-between items-center">
+        <Heading
+          title="Trigger Statement"
+          description="Track all the trigger reports here"
+        />
+        <RoleAuth
+          roles={[AARoles.ADMIN, AARoles.Municipality]}
+          hasContent={false}
+        >
+          <IconLabelBtn
+            Icon={Plus}
+            name="Add Phase"
+            handleClick={handleAddPhase}
+          />
+        </RoleAuth>
+      </div>
       <div className="flex flex-wrap gap-4">
         {phases
           .filter((p) => p.name !== 'PREPAREDNESS')
@@ -67,6 +87,7 @@ export default function TriggerStatementView() {
               <TriggersPhaseCard
                 title={d.name}
                 subtitle={`Overview of ${d.name.toLowerCase()} phase`}
+                hideEditPhase={true}
                 handleAddTrigger={() => handleAddTrigger(d)}
                 chartLabels={['Mandatory', 'Optional']}
                 chartSeries={[

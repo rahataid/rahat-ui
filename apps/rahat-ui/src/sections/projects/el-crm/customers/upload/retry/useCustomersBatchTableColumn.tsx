@@ -31,21 +31,30 @@ export const useCustomersBatchTableColumn = () => {
 
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'jobId',
+      accessorKey: 'updatedAt',
       header: () => (
         <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Job ID
+          Date
         </span>
       ),
       cell: ({ row }) => (
         <Tooltip>
           <TooltipTrigger asChild>
             <span className="text-sm font-mono truncate max-w-[260px] block cursor-default">
-              {row.getValue('jobId')}
+              {new Date(row.getValue('updatedAt') as string).toLocaleDateString(
+                'en-US',
+                {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                },
+              )}
             </span>
           </TooltipTrigger>
           <TooltipContent side="bottom">
-            <p className="font-mono text-xs">{row.getValue('jobId')}</p>
+            <p className="font-mono text-xs">
+              {new Date(row.getValue('updatedAt') as string).toLocaleString()}
+            </p>
           </TooltipContent>
         </Tooltip>
       ),
@@ -82,11 +91,23 @@ export const useCustomersBatchTableColumn = () => {
           Status
         </span>
       ),
-      cell: ({ row }) => (
-        <Badge variant="destructive">
-          {(row.getValue('status') as string)?.split('_').join(' ')}
-        </Badge>
-      ),
+      cell: ({ row }) => {
+        const errorCause = row.original?.errorCause;
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge variant="destructive" className="cursor-default">
+                {(row.getValue('status') as string)?.split('_').join(' ')}
+              </Badge>
+            </TooltipTrigger>
+            {errorCause && (
+              <TooltipContent side="bottom" className="max-w-[300px]">
+                <p className="text-xs">{errorCause}</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        );
+      },
     },
     {
       accessorKey: 'retryCount',

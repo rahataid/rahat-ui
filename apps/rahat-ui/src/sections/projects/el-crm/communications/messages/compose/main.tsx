@@ -30,6 +30,7 @@ import {
 } from '@rahat-ui/shadcn/components/select';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
+import { Switch } from '@rahat-ui/shadcn/components/switch';
 import { Textarea } from '@rahat-ui/shadcn/components/textarea';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { cn } from '@rahat-ui/shadcn/src/utils';
@@ -117,6 +118,7 @@ export default function ComposeMessageView() {
   const [selectedGroup, setSelectedGroup] = useState('');
   const [filterRows, setFilterRows] = useState<FilterRow[]>([]);
   const [campaignName, setCampaignName] = useState('');
+  const [isAutomatic, setIsAutomatic] = useState(false);
 
   // Data hooks
   const transport = useListElCrmTransport(projectUUID);
@@ -187,6 +189,7 @@ export default function ComposeMessageView() {
       options: Object.keys(options).length ? options : undefined,
       transportId: selectedTransportId,
       message: messageContent,
+      isAutomatic,
     };
     await createCampaign.mutateAsync(payload);
     router.push(`/projects/el-crm/${projectUUID}/communications/messages`);
@@ -400,156 +403,174 @@ export default function ComposeMessageView() {
               {/* Step 4: Campaign Details */}
               {selectedGroup && (
                 <div className="space-y-4">
+                  {/* Automatic Switch */}
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="automatic-switch"
+                      checked={isAutomatic}
+                      onCheckedChange={setIsAutomatic}
+                    />
+                    <Label
+                      htmlFor="automatic-switch"
+                      className="text-xs cursor-pointer"
+                    >
+                      Automatic Campaign
+                    </Label>
+                  </div>
+
                   {/* Audience filters (optional) */}
-                  {(() => {
-                    const activeFieldOptions =
-                      selectedGroup === 'VENDOR'
-                        ? FILTER_FIELD_OPTIONS
-                        : BENEFICIARY_FILTER_FIELD_OPTIONS;
-                    return (
-                      <div className="rounded-lg border p-4">
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground text-sm font-medium">
-                            4
+                  {!isAutomatic &&
+                    (() => {
+                      const activeFieldOptions =
+                        selectedGroup === 'VENDOR'
+                          ? FILTER_FIELD_OPTIONS
+                          : BENEFICIARY_FILTER_FIELD_OPTIONS;
+                      return (
+                        <div className="rounded-lg border p-4">
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground text-sm font-medium">
+                              4
+                            </div>
+                            <div>
+                              <span className="font-medium">
+                                Filter Audience
+                              </span>
+                              <p className="text-xs text-muted-foreground">
+                                Optional: Narrow down your audience
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <span className="font-medium">Filter Audience</span>
-                            <p className="text-xs text-muted-foreground">
-                              Optional: Narrow down your audience
-                            </p>
-                          </div>
-                        </div>
 
-                        <div className="ml-10 space-y-2">
-                          {filterRows.map((row) => {
-                            const usedFields = filterRows
-                              .filter((r) => r.id !== row.id && r.field)
-                              .map((r) => r.field);
-                            const valueOptions = row.field
-                              ? FILTER_VALUE_OPTIONS[row.field as FilterField]
-                              : undefined;
-                            return (
-                              <div
-                                key={row.id}
-                                className="flex items-center gap-2"
-                              >
-                                <Select
-                                  value={row.field}
-                                  onValueChange={(val) =>
-                                    updateFilterRow(row.id, {
-                                      field: val as FilterField,
-                                      value: '',
-                                    })
-                                  }
+                          <div className="ml-10 space-y-2">
+                            {filterRows.map((row) => {
+                              const usedFields = filterRows
+                                .filter((r) => r.id !== row.id && r.field)
+                                .map((r) => r.field);
+                              const valueOptions = row.field
+                                ? FILTER_VALUE_OPTIONS[row.field as FilterField]
+                                : undefined;
+                              return (
+                                <div
+                                  key={row.id}
+                                  className="flex items-center gap-2"
                                 >
-                                  <SelectTrigger className="w-44">
-                                    <SelectValue placeholder="Select field" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {activeFieldOptions.map((opt) => (
-                                      <SelectItem
-                                        key={opt.value}
-                                        value={opt.value}
-                                        disabled={usedFields.includes(
-                                          opt.value,
-                                        )}
-                                      >
-                                        {opt.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-
-                                <span className="text-muted-foreground text-sm shrink-0">
-                                  =
-                                </span>
-
-                                {valueOptions ? (
                                   <Select
-                                    value={row.value}
+                                    value={row.field}
                                     onValueChange={(val) =>
                                       updateFilterRow(row.id, {
-                                        value: val,
+                                        field: val as FilterField,
+                                        value: '',
                                       })
                                     }
                                   >
-                                    <SelectTrigger className="flex-1">
-                                      <SelectValue placeholder="Select value" />
+                                    <SelectTrigger className="w-44">
+                                      <SelectValue placeholder="Select field" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                      {valueOptions.map((opt) => (
+                                      {activeFieldOptions.map((opt) => (
                                         <SelectItem
                                           key={opt.value}
                                           value={opt.value}
+                                          disabled={usedFields.includes(
+                                            opt.value,
+                                          )}
                                         >
                                           {opt.label}
                                         </SelectItem>
                                       ))}
                                     </SelectContent>
                                   </Select>
-                                ) : (
-                                  <Input
-                                    placeholder={
-                                      row.field === 'location'
-                                        ? 'e.g., Kathmandu'
-                                        : 'Value'
-                                    }
-                                    value={row.value}
-                                    onChange={(e) =>
-                                      updateFilterRow(row.id, {
-                                        value: e.target.value,
-                                      })
-                                    }
-                                    className="flex-1"
-                                  />
-                                )}
 
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
-                                  onClick={() => removeFilterRow(row.id)}
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
+                                  <span className="text-muted-foreground text-sm shrink-0">
+                                    =
+                                  </span>
+
+                                  {valueOptions ? (
+                                    <Select
+                                      value={row.value}
+                                      onValueChange={(val) =>
+                                        updateFilterRow(row.id, {
+                                          value: val,
+                                        })
+                                      }
+                                    >
+                                      <SelectTrigger className="flex-1">
+                                        <SelectValue placeholder="Select value" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {valueOptions.map((opt) => (
+                                          <SelectItem
+                                            key={opt.value}
+                                            value={opt.value}
+                                          >
+                                            {opt.label}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  ) : (
+                                    <Input
+                                      placeholder={
+                                        row.field === 'location'
+                                          ? 'e.g., Kathmandu'
+                                          : 'Value'
+                                      }
+                                      value={row.value}
+                                      onChange={(e) =>
+                                        updateFilterRow(row.id, {
+                                          value: e.target.value,
+                                        })
+                                      }
+                                      className="flex-1"
+                                    />
+                                  )}
+
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
+                                    onClick={() => removeFilterRow(row.id)}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              );
+                            })}
+
+                            {filterRows.length < activeFieldOptions.length && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-1.5 mt-1 text-muted-foreground"
+                                onClick={addFilterRow}
+                              >
+                                <Plus className="h-3.5 w-3.5" />
+                                Add Filter
+                              </Button>
+                            )}
+
+                            {selectedGroup === 'VENDOR' && (
+                              <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
+                                <Users className="h-4 w-4" />
+                                <span>
+                                  Estimated recipients:{' '}
+                                  {recipientEstimate.isLoading ? (
+                                    <span className="italic">calculating…</span>
+                                  ) : (
+                                    <>
+                                      <strong className="text-foreground">
+                                        {recipientEstimate.meta?.total ?? 0}
+                                      </strong>{' '}
+                                      customers
+                                    </>
+                                  )}
+                                </span>
                               </div>
-                            );
-                          })}
-
-                          {filterRows.length < activeFieldOptions.length && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="gap-1.5 mt-1 text-muted-foreground"
-                              onClick={addFilterRow}
-                            >
-                              <Plus className="h-3.5 w-3.5" />
-                              Add Filter
-                            </Button>
-                          )}
-
-                          {selectedGroup === 'VENDOR' && (
-                            <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">
-                              <Users className="h-4 w-4" />
-                              <span>
-                                Estimated recipients:{' '}
-                                {recipientEstimate.isLoading ? (
-                                  <span className="italic">calculating…</span>
-                                ) : (
-                                  <>
-                                    <strong className="text-foreground">
-                                      {recipientEstimate.meta?.total ?? 0}
-                                    </strong>{' '}
-                                    customers
-                                  </>
-                                )}
-                              </span>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })()}
+                      );
+                    })()}
 
                   <div className="rounded-lg border p-4">
                     <div className="flex items-center gap-3 mb-4">

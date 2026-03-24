@@ -12,25 +12,8 @@ import {
 import PhaseCard from './phase-card';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-
-interface Phase {
-  id: string;
-  responsibleStation: string;
-  status: string;
-  leadTime?: string;
-  phase?: string;
-  title: string;
-  responsibility: string;
-}
-
-interface PhasecontentProps {
-  title: string;
-  description: string;
-  loading: boolean;
-  phases: Phase[];
-  isPinned?: boolean;
-  onTogglePin?: () => void;
-}
+import { PhaseContentProps } from 'apps/rahat-ui/src/types/activities';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 export default function PhaseContent({
   title,
@@ -39,7 +22,7 @@ export default function PhaseContent({
   loading,
   isPinned = false,
   onTogglePin,
-}: PhasecontentProps) {
+}: PhaseContentProps) {
   const { id: projectID } = useParams();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -62,27 +45,35 @@ export default function PhaseContent({
             <div className="flex items-center gap-2">
               {onTogglePin &&
                 (isPinned ? (
-                  <Image
-                    src="/svg/pin-on.svg"
-                    alt="Unpin phase"
-                    role="button"
-                    title="Unpin phase"
-                    className="w-5 h-5 cursor-pointer active:scale-95 transition-transform"
+                  <Button
                     onClick={onTogglePin}
-                    width={25}
-                    height={25}
-                  />
+                    variant={'secondary'}
+                    className="p-0 bg-transparent w-6 h-6"
+                  >
+                    <Image
+                      src="/svg/pin-on.svg"
+                      alt="Unpin phase"
+                      title="Unpin phase"
+                      className="w-5 h-5 cursor-pointer active:scale-95 transition-transform"
+                      width={25}
+                      height={25}
+                    />
+                  </Button>
                 ) : (
-                  <Image
-                    src="/svg/pin-off.svg"
-                    alt="Pin phase to front"
-                    role="button"
-                    title="Pin phase to front"
-                    className="w-5 h-5  cursor-pointer active:scale-95 transition-transform"
+                  <Button
                     onClick={onTogglePin}
-                    width={25}
-                    height={25}
-                  />
+                    variant={'secondary'}
+                    className="p-0 bg-transparent w-6 h-6"
+                  >
+                    <Image
+                      src="/svg/pin-off.svg"
+                      alt="Pin phase to front"
+                      title="Pin phase to front"
+                      className="w-5 h-5  cursor-pointer active:scale-95 transition-transform"
+                      width={25}
+                      height={25}
+                    />
+                  </Button>
                 ))}
               <Expand
                 role="button"
@@ -127,7 +118,9 @@ export default function PhaseContent({
             ))}
           </div>
         ) : (
-          <NoResult message="No Activities Available" />
+          <div className="flex flex-1 items-center justify-center ">
+            <NoResult message="No Activities Available" className="mt-1" />
+          </div>
         )}
       </CardContent>
     </Card>

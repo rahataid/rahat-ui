@@ -80,3 +80,21 @@ export interface Template {
   completedBy: string;
   hasCommunication: boolean;
 }
+export interface Phase {
+  id: string;
+  responsibleStation: string;
+  status: string;
+  leadTime?: string;
+  phase?: string;
+  title: string;
+  responsibility: string;
+}
+
+export interface PhaseContentProps {
+  title: string;
+  description: string;
+  loading: boolean;
+  phases: Phase[];
+  isPinned?: boolean;
+  onTogglePin?: () => void;
+}

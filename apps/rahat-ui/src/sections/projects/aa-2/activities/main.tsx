@@ -1,5 +1,5 @@
 'use client';
-import { useActivities } from '@rahat-ui/query';
+import { useActivities, usePhases, usePhasesStore } from '@rahat-ui/query';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { generateExcel } from 'apps/rahat-ui/src/utils';
 import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
@@ -12,35 +12,43 @@ import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSidebar } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-
-const PHASE_DESCRIPTIONS: Record<string, string> = {
-  PREPAREDNESS: 'Overview of preparedness phase',
-  READINESS: 'Overview of readiness phase',
-  ACTIVATION: 'Overview of activation phase',
-};
 
 export default function ActivitiesView() {
   const { id: projectID } = useParams();
   const { state } = useSidebar();
   const router = useRouter();
-  const { data, activitiesData, isLoading } = useActivities(projectID as UUID, {
+  const { activitiesData, isLoading } = useActivities(projectID as UUID, {
     perPage: 9999,
   });
 
-  const storageKey = projectID ? `aa_pinned_phases_${projectID}` : null;
+  usePhases(projectID as UUID);
+
+  const { phases } = usePhasesStore((state) => ({
+    phases: state.phases,
+  }));
+
+  const PINNED_PHASES_KEY = 'aa_pinned_phases';
 
   const [pinnedPhases, setPinnedPhases] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!storageKey) return;
+    if (!projectID) return;
     try {
-      const stored = localStorage.getItem(storageKey);
-      if (stored) setPinnedPhases(JSON.parse(stored));
+      const stored = localStorage.getItem(PINNED_PHASES_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const projectPhases = parsed[projectID as string];
+        if (Array.isArray(projectPhases)) {
+          const sanitizedPinnedPhases = projectPhases
+            .filter((phase): phase is string => typeof phase === 'string')
+            .slice(0, 3);
+          setPinnedPhases(sanitizedPinnedPhases);
+        }
+      }
     } catch (error) {
       console.error('Failed to parse pinned phases from localStorage', error);
     }
-  }, [storageKey]);
+  }, [projectID]);
 
   const togglePin = useCallback(
     (phase: string) => {
@@ -55,38 +63,58 @@ export default function ActivitiesView() {
         ? pinnedPhases.filter((p) => p !== phase)
         : [phase, ...pinnedPhases];
       setPinnedPhases(next);
-      if (storageKey) {
+      if (projectID) {
         try {
-          localStorage.setItem(storageKey, JSON.stringify(next));
+          const existing = localStorage.getItem(PINNED_PHASES_KEY);
+          const central = existing ? JSON.parse(existing) : {};
+          central[projectID as string] = next;
+          localStorage.setItem(PINNED_PHASES_KEY, JSON.stringify(central));
         } catch (error) {
           console.error('Failed to save pinned phases', error);
         }
       }
     },
-    [storageKey, pinnedPhases],
+    [projectID, pinnedPhases],
+  );
+
+  const uniquePhaseNames = Array.from(
+    new Set(phases.map((phase) => phase.name)),
+  );
+
+  const PHASE_DESCRIPTIONS: Record<string, string> = Object.fromEntries(
+    uniquePhaseNames.map((name) => [
+      name,
+      `Overview of ${name.toLowerCase()} phase`,
+    ]),
   );
 
   const uniquePhases = useMemo(() => {
-    if (!activitiesData) return [];
-    const seen = new Set<string>();
-    activitiesData.forEach((d: IActivitiesItem) => {
-      if (d.phase) seen.add(d.phase);
-    });
-    return Array.from(seen);
+    // Start from all known phases so that phases with zero activities still render as cards
+    const phaseSet = new Set<string>(Object.keys(PHASE_DESCRIPTIONS));
+    if (activitiesData) {
+      activitiesData.forEach((d: IActivitiesItem) => {
+        if (d.phase) {
+          phaseSet.add(d.phase);
+        }
+      });
+    }
+    return Array.from(phaseSet);
   }, [activitiesData]);
 
-  const sortedPhases = [
-    'PREPAREDNESS',
-    'ACTIVATION',
-    // 'READINESS',
-    // 'POST-ACTIVATION',
-    // 'PRE-ACTIVATION',
-  ];
-  // const sortedPhases = useMemo(() => {
-  //   const pinned = pinnedPhases.filter((p) => uniquePhases.includes(p));
-  //   const unpinned = uniquePhases.filter((p) => !pinnedPhases.includes(p));
-  //   return [...pinned, ...unpinned];
-  // }, [pinnedPhases, uniquePhases]);
+  // For testing the design
+  // const sortedPhases = [
+  //   'PREPAREDNESS',
+  //   'ACTIVATION',
+  //     'READINESS',
+  //     'POST-ACTIVATION',
+  //     'PRE-ACTIVATION',
+  // ];
+
+  const sortedPhases = useMemo(() => {
+    const pinned = pinnedPhases.filter((p) => uniquePhases.includes(p));
+    const unpinned = uniquePhases.filter((p) => !pinnedPhases.includes(p));
+    return [...pinned, ...unpinned];
+  }, [pinnedPhases, uniquePhases]);
 
   const phaseDataMap = useMemo(() => {
     const map: Record<string, IActivitiesItem[]> = {};
@@ -101,29 +129,32 @@ export default function ActivitiesView() {
   }, [activitiesData]);
 
   const handleDownloadReport = () => {
-    if (activitiesData.length < 1) return toast.error('No data to download.');
-    const mappedData = activitiesData?.map((item: IActivitiesItem) => {
-      let timeStamp;
-      if (item?.completedAt) {
-        const d = new Date(item.completedAt);
-        const localeDate = d.toLocaleDateString();
-        const localeTime = d.toLocaleTimeString();
-        timeStamp = `${localeDate} ${localeTime}`;
-      }
-      return {
-        Title: item.title || 'N/A',
-        'Early Action': item.category || 'N/A',
-        Phase: item.phase || 'N/A',
-        Type: item.isAutomated ? 'Automated' : 'Manual',
-        Responsibility: item.responsibility,
-        'Responsible Station': item.source || 'N/A',
-        Status: item.status || 'N/A',
-        Timestamp: timeStamp || 'N/A',
-        'Completed by': item.completedBy || 'N/A',
-        'Difference in trigger and activity completion':
-          item.timeDifference || 'N/A',
-      };
-    });
+    if (!activitiesData?.length) {
+      return toast.error('No data to download.');
+    }
+    const mappedData =
+      activitiesData?.map((item: IActivitiesItem) => {
+        let timeStamp;
+        if (item?.completedAt) {
+          const d = new Date(item.completedAt);
+          const localeDate = d.toLocaleDateString();
+          const localeTime = d.toLocaleTimeString();
+          timeStamp = `${localeDate} ${localeTime}`;
+        }
+        return {
+          Title: item.title || 'N/A',
+          'Early Action': item.category || 'N/A',
+          Phase: item.phase || 'N/A',
+          Type: item.isAutomated ? 'Automated' : 'Manual',
+          Responsibility: item.responsibility,
+          'Responsible Station': item.source || 'N/A',
+          Status: item.status || 'N/A',
+          Timestamp: timeStamp || 'N/A',
+          'Completed by': item.completedBy || 'N/A',
+          'Difference in trigger and activity completion':
+            item.timeDifference || 'N/A',
+        };
+      }) ?? [];
 
     generateExcel(mappedData, 'Activities_Report', 10);
   };
@@ -171,10 +202,9 @@ export default function ActivitiesView() {
             state === 'expanded'
               ? 'w-[calc(100vw-18rem)]'
               : 'w-[calc(100vw-5rem)]'
-          } transition-width duration-300 overflow-x-auto  [&::-webkit-scrollbar]:h-1.5  [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300`}
+          } transition-[width] duration-300 overflow-x-auto  [&::-webkit-scrollbar]:h-1.5  [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300`}
           style={{ scrollbarGutter: 'stable' }}
         >
-          {/* <div className="grid grid-cols-3 gap-4 overflow-x-auto"> */}
           {sortedPhases.map((phase) => (
             <div key={phase} className="min-w-[320px] w-full">
               <PhaseContent
@@ -192,33 +222,19 @@ export default function ActivitiesView() {
           ))}
           {sortedPhases.length === 2 && (
             <div className="min-w-[320px]">
-              <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-gray-300 bg-gray-50">
+              <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
                 <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100">
-                    <Plus className="w-6 h-6 text-gray-400" />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <p className="text-base font-medium text-gray-700">
-                      Add a New Phase
-                    </p>
-                    <p className="text-sm text-gray-400">
-                      Create a new phase to organise and track additional
-                      activities
-                    </p>
-                  </div>
-                  <RoleAuth
-                    roles={[
-                      AARoles.ADMIN,
-                      AARoles.MANAGER,
-                      AARoles.Municipality,
-                    ]}
-                    hasContent={false}
-                  >
-                    <Button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium transition-colors">
-                      <Plus className="w-4 h-4" />
+                  <div className="flex flex-col gap-1 items-center ">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100">
+                      <Plus className="w-6 h-6 text-blue-500" />
+                    </div>
+                    <p className="text-base font-medium text-blue-500 ">
                       Add Phase
-                    </Button>
-                  </RoleAuth>
+                    </p>
+                    <p className="text-sm text-blue-400">
+                      Click here to add new phase
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             </div>

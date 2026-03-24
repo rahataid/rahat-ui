@@ -11,7 +11,7 @@ on:
       tag_suffix:
         description: "Tag suffix (e.g., test-load)"
         required: true
-        default: "dev"
+        default: "aa-dev"
         type: string
       vault_secret_path:
         description: "Vault secret path"

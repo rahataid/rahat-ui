@@ -122,7 +122,7 @@ export default function AssignInkindConfirmation({
               Assigning...
             </>
           ) : (
-            'Assign Inkinds'
+            'Assign Inkind'
           )}
         </Button>
       </div>

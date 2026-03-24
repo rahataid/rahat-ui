@@ -32,6 +32,7 @@ import {
 } from '@rahat-ui/query';
 import { INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
 import { formatLabel } from './inkind.allocation.list';
+import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 
 type Movement = {
   id: number;
@@ -160,6 +161,16 @@ export default function InkindOverview() {
     0,
   );
 
+  const totalAssignedStock = inkindItems.reduce(
+    (s: number, i: any) => s + (i.assignedStock ?? 0),
+    0,
+  );
+
+  const totalRedeemedStock = inkindItems.reduce(
+    (s: number, i: any) => s + (i.redeemedStock ?? 0),
+    0,
+  );
+
   const sortedMovements = [...movements].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
@@ -184,6 +195,18 @@ export default function InkindOverview() {
           title="Available Stock"
           number={String(totalAvailableStock)}
           subtitle="Units currently available"
+        />
+                <DataCard
+          className="rounded-sm"
+          title="Assigned Stock"
+          number={String(totalAssignedStock)}
+          subtitle="Units currently assigned"
+        />
+                <DataCard
+          className="rounded-sm"
+          title="Redeemed Stock"
+          number={String(totalRedeemedStock)}
+          subtitle="Units currently redeemed"
         />
       </div>
 
@@ -224,9 +247,7 @@ export default function InkindOverview() {
                       </div>
                       <div>
                         <div className="flex flex-row items-center gap-2">
-                          <p className="text-sm font-medium leading-none">
-                            {movement.inkind?.name ?? '—'}
-                          </p>
+                          <TruncatedCell text={movement.inkind?.name || '—'} maxLength={30} />
                           <Badge className="bg-gray-200 text-gray-600">
                             {formatLabel(INKIND_TYPE_LABELS[movement.inkind?.type])}
                           </Badge>

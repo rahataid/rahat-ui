@@ -65,6 +65,7 @@ import {
   DESCRIPTION_MAX,
 } from '../schemas/inkind.validation';
 import { formatLabel } from './inkind.allocation.list';
+import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 
 export type InkindItem = {
   uuid: string;
@@ -344,14 +345,14 @@ export default function InkindList() {
         accessorKey: 'name',
         header: 'Inkind Name',
         cell: ({ row }) => (
-          <span className="font-medium">{row.getValue('name')}</span>
+          <TruncatedCell text={row.getValue('name')} maxLength={20} />
         ),
       },
       {
         accessorKey: 'description',
         header: 'Description',
         cell: ({ row }) => (
-          <span className="text-sm">{row.getValue('description') || '—'}</span>
+          <TruncatedCell text={row.getValue('description') || '—'} maxLength={30} />
         ),
       },
       {
@@ -741,17 +742,13 @@ export default function InkindList() {
                 <span className="text-sm text-muted-foreground shrink-0">
                   Name
                 </span>
-                <span className="text-sm font-medium text-right">
-                  {confirmDialog.name}
-                </span>
+                <TruncatedCell text={confirmDialog.name} maxLength={30} />
               </div>
               <div className="flex justify-between items-start gap-4">
                 <span className="text-sm text-muted-foreground shrink-0">
                   Description
                 </span>
-                <span className="text-sm font-medium max-w-[65%] text-right break-words">
-                  {confirmDialog.description}
-                </span>
+                <TruncatedCell text={confirmDialog.description} maxLength={50} />
               </div>
             </div>
           </div>

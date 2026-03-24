@@ -7,6 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import type { InkindDetailsValues } from '../schemas/inkind.validation';
 import { INKIND_TYPE_LABELS } from '../schemas/inkind.validation';
+import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 
 interface Props {
   formData: InkindDetailsValues;
@@ -44,15 +45,11 @@ export default function InkindConfirmation({
           <div className="flex flex-col space-y-3">
             <div>
               <p className="text-sm text-muted-foreground">Inkind Name</p>
-              <p className="text-lg font-semibold text-primary">
-                {formData.name}
-              </p>
+              <TruncatedCell text={formData.name} maxLength={30} />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Description</p>
-              <p className="text-lg font-semibold text-primary">
-                {formData.description}
-              </p>
+              <TruncatedCell text={formData.description} maxLength={50} />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Type</p>

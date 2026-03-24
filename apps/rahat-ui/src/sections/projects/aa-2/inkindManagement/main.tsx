@@ -7,6 +7,12 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { InkindTabs } from './components';
 import { useInkinds } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export default function InKindManagementView() {
   const router = useRouter();
@@ -35,14 +41,27 @@ export default function InKindManagementView() {
           roles={[AARoles.ADMIN, AARoles.Municipality]}
           hasContent={false}
         >
-          <IconLabelBtn
-            Icon={Plus}
-            handleClick={() =>
-              router.push(`/projects/aa/${id}/inkind-management/assign?tab=${tab}`)
-            }
-            name="Assign Inkind"
-            disabled={!isInkindDataAvailable}
-          />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span>
+                <IconLabelBtn
+                  Icon={Plus}
+                  handleClick={() =>
+                    router.push(`/projects/aa/${id}/inkind-management/assign?tab=${tab}`)
+                  }
+                  name="Assign Inkind"
+                  disabled={!isInkindDataAvailable}
+                />
+              </span>
+            </TooltipTrigger>
+            { !isInkindDataAvailable && (
+              <TooltipContent>
+                You must have at least one inkind item to assign.
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
         </RoleAuth>
       </div>
       <InkindTabs />

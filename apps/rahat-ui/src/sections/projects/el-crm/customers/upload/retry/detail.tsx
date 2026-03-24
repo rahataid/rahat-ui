@@ -232,34 +232,38 @@ export default function BatchDetailView() {
 
         <div className="flex-1 p-6 overflow-auto space-y-4">
           {/* Error Context Banner */}
-          {isValidationError ? (
-            <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
-              <AlertCircle className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-              <p className="text-sm text-muted-foreground">
-                Fields with errors are highlighted in red and editable. Fix the
-                values directly in the table, then click{' '}
-                <strong className="text-foreground">Retry Import</strong> to
-                re-submit with your corrections.
-              </p>
-            </div>
-          ) : (
-            <div className="flex items-start gap-3 rounded-lg border border-warning/20 bg-warning/10 px-4 py-3">
-              <AlertTriangle className="h-4 w-4 text-warning mt-0.5 shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-warning">
-                  {failedBatch?.status === 'CORE_SYNC_FAILED'
-                    ? 'Core platform sync failed'
-                    : 'Database processing failed'}
-                </p>
-                <p className="text-sm text-warning/80 mt-0.5">
-                  {failedBatch?.errorCause ||
-                    'This batch encountered a system error during processing.'}{' '}
-                  The data itself is valid — click{' '}
-                  <strong className="text-warning">Retry Import</strong> to
-                  re-process.
-                </p>
-              </div>
-            </div>
+          {!isLoading && (
+            <>
+              {isValidationError ? (
+                <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
+                  <AlertCircle className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                  <p className="text-sm text-muted-foreground">
+                    Fields with errors are highlighted in red and editable. Fix the
+                    values directly in the table, then click{' '}
+                    <strong className="text-foreground">Retry Import</strong> to
+                    re-submit with your corrections.
+                  </p>
+                </div>
+              ) : (
+                <div className="flex items-start gap-3 rounded-lg border border-warning/20 bg-warning/10 px-4 py-3">
+                  <AlertTriangle className="h-4 w-4 text-warning mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-warning">
+                      {failedBatch?.status === 'CORE_SYNC_FAILED'
+                        ? 'Core platform sync failed'
+                        : 'Database processing failed'}
+                    </p>
+                    <p className="text-sm text-warning/80 mt-0.5">
+                      {failedBatch?.errorCause ||
+                        'This batch encountered a system error during processing.'}{' '}
+                      The data itself is valid — click{' '}
+                      <strong className="text-warning">Retry Import</strong> to
+                      re-process.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {/* Table Card */}

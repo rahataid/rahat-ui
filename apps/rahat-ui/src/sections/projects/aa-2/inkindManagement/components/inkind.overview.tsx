@@ -212,10 +212,12 @@ export default function InkindOverview() {
 
       <div className="flex flex-col flex-[2] border rounded-sm p-4 min-h-0">
         <h1 className="text-sm font-semibold mb-0.5">Overall Inkind Flow</h1>
-        <p className="text-xs text-muted-foreground mb-3">
-          Click on any movement to view details
-        </p>
-        <ScrollArea className="flex-1 min-h-0">
+        {movements.length !== 0 && (
+          <p className="text-xs text-muted-foreground mb-3">
+            Click on any movement to view details
+          </p>
+        )}
+        <ScrollArea className="flex-1 min-h-[200px] max-h-[50vh] overflow-auto items-center justify-center">
           {movements.length === 0 ? (
             <p className="text-sm text-muted-foreground align-center justify-center text-center py-6">
               No movements recorded yet.

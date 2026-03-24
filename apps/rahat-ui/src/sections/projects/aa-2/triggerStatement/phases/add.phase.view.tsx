@@ -92,7 +92,9 @@ export default function AddPhaseView() {
       });
 
       router.push(triggerStatementPath);
-    } catch (_error) {}
+    } catch (error) {
+      console.error('Error creating phase:', error);
+    }
   };
 
   const handleReset = () => {

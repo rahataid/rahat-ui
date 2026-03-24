@@ -55,8 +55,8 @@ export default function EditPhaseView() {
     form.reset({
       name: phase?.name || '',
       riverBasin: phase?.source?.riverBasin || riverBasin || '',
-      requiredMandatoryTriggers: String(phase?.requiredMandatoryTriggers || ''),
-      requiredOptionalTriggers: String(phase?.requiredOptionalTriggers || ''),
+      requiredMandatoryTriggers: String(phase?.requiredMandatoryTriggers),
+      requiredOptionalTriggers: String(phase?.requiredOptionalTriggers),
       canRevert: !!phase?.canRevert,
       canTriggerPayout: !!phase?.canTriggerPayout,
     });
@@ -95,8 +95,8 @@ export default function EditPhaseView() {
     form.reset({
       name: phase?.name || '',
       riverBasin: phase?.source?.riverBasin || riverBasin || '',
-      requiredMandatoryTriggers: String(phase?.requiredMandatoryTriggers || ''),
-      requiredOptionalTriggers: String(phase?.requiredOptionalTriggers || ''),
+      requiredMandatoryTriggers: String(phase?.requiredMandatoryTriggers),
+      requiredOptionalTriggers: String(phase?.requiredOptionalTriggers),
       canRevert: !!phase?.canRevert,
       canTriggerPayout: !!phase?.canTriggerPayout,
     });

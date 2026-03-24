@@ -211,16 +211,37 @@ export const useRetryCustomerImport = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: (data: any) => {
       q.reset();
       // Invalidate batch queries so stale data isn't shown if user navigates back
       queryClient.invalidateQueries({ queryKey: ['failed-batch'] });
       queryClient.invalidateQueries({ queryKey: ['single-failed-batch'] });
-      toast.fire({
-        title: 'Import retry started',
-        icon: 'success',
-        text: 'The corrected data is being re-processed. You will be redirected shortly.',
-      });
+
+      const response = data?.data || data;
+      const failed = response?.failedVendors ?? 0;
+      const valid = response?.totalVendors ?? 0;
+
+      if (failed > 0 && valid > 0) {
+        toast.fire({
+          title: 'Partial retry success',
+          icon: 'warning',
+          text: `${valid} customers queued for import. ${failed} still have validation errors — fix and retry again.`,
+          timer: 5000,
+        });
+      } else if (failed > 0 && valid === 0) {
+        toast.fire({
+          title: 'Customers still have errors',
+          icon: 'error',
+          text: `All ${failed} customers still have validation errors. Please review and fix them.`,
+          timer: 5000,
+        });
+      } else {
+        toast.fire({
+          title: 'Import retry started',
+          icon: 'success',
+          text: 'The data is being re-processed.',
+        });
+      }
     },
     onError: (error: unknown) => {
       q.reset();

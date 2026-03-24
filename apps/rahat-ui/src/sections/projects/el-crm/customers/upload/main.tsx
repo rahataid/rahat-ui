@@ -71,28 +71,34 @@ export default function CustomersUploadPage() {
   };
 
   const uploadCustomers = useUploadCustomers();
-  const allowedExtensions: { [key: string]: string } = {
+  const allowedExtensions: Record<string, string> = {
     xlsx: 'excel',
     xls: 'excel',
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile || uploadCustomers.isPending) return;
 
-    // Determine doctype based on file extension
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
     const doctype = extension ? allowedExtensions[extension] : '';
 
-    await uploadCustomers.mutateAsync({
+    if (!doctype) return;
+
+    const result = await uploadCustomers.mutateAsync({
       projectId: projectUUID,
       selectedFile,
       doctype,
     });
 
-    // Brief delay so the user can read the status banner before redirecting
+    // Redirect delay scales with the severity of the result:
+    // all-success → quick redirect; partial/failure → longer so user can read
+    const failed = result?.failedVendors ?? 0;
+    const valid = result?.totalVendors ?? 0;
+    const delay = failed > 0 && valid === 0 ? 5000 : failed > 0 ? 4000 : 2500;
+
     setTimeout(() => {
       router.push(`/projects/el-crm/${projectUUID}/customers`);
-    }, 2500);
+    }, delay);
   };
 
   const handleRemoveFile = () => {

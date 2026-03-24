@@ -75,9 +75,9 @@ export default function CustomersUploadRetryView() {
           <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
             <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
             <p className="text-sm text-muted-foreground">
-              These batches failed during import due to some errors. You
-              can view the details of each batch and retry the import, or fix
-              the issues in the detail view before retrying.
+              These batches failed during import due to some errors. You can
+              view the details of each batch and retry the import, or fix the
+              issues in the detail view before retrying.
             </p>
           </div>
 

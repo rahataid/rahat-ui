@@ -88,7 +88,8 @@ jobs:
       - name: Strip prefix from Vault path
         id: vault-path
         run: |
-          CLEAN_PATH="${{ inputs.vault_secret_path#*] }}"
+          RAW_PATH="${{ inputs.vault_secret_path }}"
+          CLEAN_PATH="${RAW_PATH#*] }"
           echo "VAULT_PATH=${CLEAN_PATH}" >> $GITHUB_OUTPUT
 
       # -----------------------------

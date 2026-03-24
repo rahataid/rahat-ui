@@ -359,7 +359,8 @@ export default function ComposeScheduleView() {
   const templates = useListElCrmTemplate(projectUUID, { status: 'APPROVED' });
   const campaignList = useListElCrmCampaign(projectUUID, {
     page: 1,
-    perPage: 100,
+    perPage: 1000,
+    isAutomatic: true,
   });
   const createCampaign = useCreateElCrmCampaign(projectUUID);
   const trigger = useTriggerElCrmCampaign(projectUUID);

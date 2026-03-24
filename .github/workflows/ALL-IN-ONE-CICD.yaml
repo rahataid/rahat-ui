@@ -19,6 +19,7 @@ on:
         type: choice
         options:
           # Dev folder
+          - "[DEV] github/data/rahat/rahat-ui/dev/aa/dev"
           - "[DEV] github/data/rahat/rahat-ui/dev/aa/dev-qa"
           - "[DEV] github/data/rahat/rahat-ui/dev/aa/stellar"
           - "[DEV] github/data/rahat/rahat-ui/dev/aa/unicef"

@@ -12,6 +12,7 @@ import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSidebar } from '@rahat-ui/shadcn/src/components/ui/sidebar';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 export default function ActivitiesView() {
   const { id: projectID } = useParams();
@@ -225,9 +226,20 @@ export default function ActivitiesView() {
               <Card className="flex flex-col rounded-xl h-[calc(100vh-180px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
                 <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
                   <div className="flex flex-col gap-1 items-center ">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100">
-                      <Plus className="w-6 h-6 text-blue-500" />
-                    </div>
+                    <Button
+                      // onClick={() =>
+                      //   router.push(`/projects/aa/${projectID}/phases/add`)
+                      // }
+                      // variant={'outline'}
+                      className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100"
+                    >
+                      <div className="flex items-center justify-center w-4 h-4">
+                        <Plus
+                          className="  text-blue-500 hover:text-white"
+                          size={'2rem'}
+                        />
+                      </div>
+                    </Button>
                     <p className="text-base font-medium text-blue-500 ">
                       Add Phase
                     </p>

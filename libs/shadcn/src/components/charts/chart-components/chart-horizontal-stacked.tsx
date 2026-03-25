@@ -16,7 +16,7 @@ export default function ChartHorizontalStacked({
   labels,
   series,
   width = '100%',
-  height = 80,
+  height,
   colors = ['#297AD6', '#E8C468'],
   showLegend = true,
 }: Props) {
@@ -38,7 +38,7 @@ export default function ChartHorizontalStacked({
       bar: {
         horizontal: true,
         barHeight: '60%',
-        borderRadius: 4,
+        borderRadius: 10,
       },
     },
     dataLabels: {
@@ -57,14 +57,17 @@ export default function ChartHorizontalStacked({
       axisTicks: { show: false },
     },
     yaxis: { show: false },
-    grid: { show: false, padding: { top: 0, bottom: 0, left: 0, right: 0 } },
+    grid: {
+      show: false,
+      padding: { top: 0, bottom: 0, left: 0, right: 0 },
+    },
     legend: {
       show: showLegend,
       position: 'bottom',
       horizontalAlign: 'center',
       markers: { size: 8 },
     },
-
+    border: { show: true, color: '#E0E0E0', width: 1 },
     tooltip: {
       y: {
         formatter: (val: number) => String(val),

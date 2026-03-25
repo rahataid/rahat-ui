@@ -1,14 +1,11 @@
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
-import {
-  ChartDonut,
-  ChartHorizontalStacked,
-} from '@rahat-ui/shadcn/src/components/charts';
+import { ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { ArrowRight, Plus } from 'lucide-react';
 import TriggerDetailsCard from './trigger.details.card';
 import Image from 'next/image';
-
+import { SimpleHorizontalBar } from 'libs/shadcn/src/components/charts/chart-components/simple-horizontal-bar';
 type IProps = {
   title: string;
   subtitle: string;
@@ -166,22 +163,11 @@ export default function TriggersPhaseCard({
 
         {chartType === 'horizontal' && (
           <div className="flex justify-center ">
-            {totalCharSeries === 0 ? (
-              <div className="w-full my-2">
-                <div className="h-4 w-full rounded-full bg-gray-200 flex font-medium text-xs text-gray-800 justify-center items-center" />
-              </div>
-            ) : (
-              // <div className=" mt-1">
-              <ChartHorizontalStacked
-                series={chartSeries}
-                labels={chartLabels}
-                colors={['#297AD6', '#E8C468']}
-                width="100%"
-                height={75}
-                showLegend={false}
-              />
-              // </div>
-            )}
+            <SimpleHorizontalBar
+              values={chartSeries}
+              colors={['#297AD6', '#E8C468']}
+              height={15}
+            />
           </div>
         )}
       </div>

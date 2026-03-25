@@ -80,6 +80,20 @@ export default function MessageDetailPage() {
       enabled: !!campaign?.sessionId,
     },
   );
+
+  // Calculate total price from logs
+  const totalPrice = React.useMemo(() => {
+    if (!logs?.data) return 0;
+    return logs.data.reduce((sum: number, log: any) => {
+      let price = log?.disposition?.price;
+      if (typeof price === 'string' && price.startsWith('-')) {
+        price = price.substring(1);
+      }
+      const num = parseFloat(price);
+      return sum + (isNaN(num) ? 0 : num);
+    }, 0);
+  }, [logs]);
+
   const table = useReactTable({
     manualPagination: true,
     data: logs?.data || [],
@@ -215,7 +229,9 @@ export default function MessageDetailPage() {
                     <Label className="text-xs uppercase tracking-wide text-muted-foreground">
                       Schedule Status
                     </Label>
-                    <Badge variant={getStatusVariant(isSent ? 'Sent' : 'Draft')}>
+                    <Badge
+                      variant={getStatusVariant(isSent ? 'Sent' : 'Draft')}
+                    >
                       {isSent ? 'Sent' : 'Scheduled'}
                     </Badge>
                   </div>
@@ -263,6 +279,11 @@ export default function MessageDetailPage() {
                   smallNumber={failedCount.toString()}
                   className="rounded-sm w-full h-24 pt-10 pb-8"
                 />
+                <DataCard
+                  title="Total Price"
+                  smallNumber={totalPrice.toFixed(4)}
+                  className="rounded-sm w-full h-24 pt-10 pb-8"
+                />
               </div>
             </div>
 
@@ -279,7 +300,9 @@ export default function MessageDetailPage() {
                           Channel
                         </Label>
                         <div className="mt-2">
-                          <Badge variant={getChannelVariant(campaign.transportName)}>
+                          <Badge
+                            variant={getChannelVariant(campaign.transportName)}
+                          >
                             {campaign.transportName}
                           </Badge>
                         </div>

@@ -15,6 +15,7 @@ import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Plus } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { IconLabelBtn } from 'apps/rahat-ui/src/common';
 
 const TRIGGER_PIN_PHASE = 'TRIGGER_PIN_PHASE';
 
@@ -40,8 +41,6 @@ const savePinnedPhases = (projectId: string, ids: string[]) => {
     console.error('Failed to save pinned phases');
   }
 };
-import { IconLabelBtn } from 'apps/rahat-ui/src/common';
-import { Plus } from 'lucide-react';
 
 export default function TriggerStatementView() {
   const router = useRouter();
@@ -105,7 +104,9 @@ export default function TriggerStatementView() {
   };
 
   const handleAddPhase = () => {
-    router.push(`/projects/aa/${projectId}/trigger-statements/phase/add`);
+    router.push(
+      `/projects/aa/${projectId}/trigger-statements/phase/add?from=trigger-statements`,
+    );
   };
 
   return (
@@ -135,7 +136,6 @@ export default function TriggerStatementView() {
                 key={d.id}
                 title={d.name}
                 subtitle={`Overview of ${d.name.toLowerCase()} phase`}
-                hideEditPhase={true}
                 handleAddTrigger={() => handleAddTrigger(d)}
                 chartLabels={['Mandatory', 'Optional']}
                 chartSeries={[
@@ -165,10 +165,7 @@ export default function TriggerStatementView() {
                   <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
                     <div className="flex flex-col gap-1 items-center ">
                       <Button
-                        // onClick={() =>
-                        //   router.push(`/projects/aa/${projectID}/phases/add`)
-                        // }
-                        // variant={'outline'}
+                        onClick={handleAddPhase}
                         className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100"
                       >
                         <div className="flex items-center justify-center w-4 h-4">

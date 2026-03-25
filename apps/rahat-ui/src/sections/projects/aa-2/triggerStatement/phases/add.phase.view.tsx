@@ -8,8 +8,8 @@ import {
 import { PhaseForm } from './PhaseForm';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
-import { useParams, useRouter } from 'next/navigation';
-import React from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   AddPhaseFormInputValues,
@@ -22,17 +22,20 @@ export default function AddPhaseView() {
   const params = useParams();
   const router = useRouter();
   const projectId = params.id as UUID;
+  const searchParams = useSearchParams();
+
+  const navigation = searchParams.get('from');
+
   const createPhase = useCreatePhase();
   const { data: phasesData = [] } = usePhases(projectId);
 
   const { settings } = useProjectSettingsStore((state) => ({
     settings: state.settings,
   }));
-
   const dataSourceSettings =
     settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE];
 
-  const phaseSource = React.useMemo(() => {
+  const phaseSource = useMemo(() => {
     if (dataSourceSettings?.dhm) return 'DHM';
     if (dataSourceSettings?.glofas) return 'GLOFAS';
     if (dataSourceSettings?.gfh) return 'GFH';
@@ -49,7 +52,9 @@ export default function AddPhaseView() {
       'river_basin'
     ];
 
-  const triggerStatementPath = `/projects/aa/${projectId}/trigger-statements`;
+  const triggerStatementPath = `/projects/aa/${projectId}/${
+    navigation || 'trigger-statements'
+  }`;
 
   const form = useForm<AddPhaseFormInputValues, unknown, AddPhaseFormValues>({
     resolver: zodResolver(AddPhaseSchema),
@@ -57,18 +62,18 @@ export default function AddPhaseView() {
     mode: 'onChange',
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (riverBasin) {
       form.setValue('riverBasin', riverBasin, { shouldValidate: true });
     }
   }, [riverBasin, form]);
 
-  const hasPayoutEnabledPhase = React.useMemo(
+  const hasPayoutEnabledPhase = useMemo(
     () => phasesData?.some((phase: any) => phase?.canTriggerPayout),
     [phasesData],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!hasPayoutEnabledPhase) return;
     form.setValue('canTriggerPayout', false, { shouldValidate: true });
   }, [hasPayoutEnabledPhase, form]);
@@ -84,13 +89,11 @@ export default function AddPhaseView() {
       canRevert: !!data.canRevert,
       canTriggerPayout: hasPayoutEnabledPhase ? false : !!data.canTriggerPayout,
     };
-
     try {
       await createPhase.mutateAsync({
         projectUUID: projectId,
         phasePayload: payload,
       });
-
       router.push(triggerStatementPath);
     } catch (error) {
       console.error('Error creating phase:', error);

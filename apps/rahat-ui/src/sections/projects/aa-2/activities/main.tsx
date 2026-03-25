@@ -159,6 +159,12 @@ export default function ActivitiesView() {
 
     generateExcel(mappedData, 'Activities_Report', 10);
   };
+
+  const handleAddPhase = () => {
+    router.push(
+      `/projects/aa/${projectID}/trigger-statements/phase/add?from=activities`,
+    );
+  };
   return (
     <>
       <div className="p-4">
@@ -227,10 +233,7 @@ export default function ActivitiesView() {
                 <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
                   <div className="flex flex-col gap-1 items-center ">
                     <Button
-                      // onClick={() =>
-                      //   router.push(`/projects/aa/${projectID}/phases/add`)
-                      // }
-                      // variant={'outline'}
+                      onClick={handleAddPhase}
                       className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100"
                     >
                       <div className="flex items-center justify-center w-4 h-4">

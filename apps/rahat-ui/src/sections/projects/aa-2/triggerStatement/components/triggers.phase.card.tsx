@@ -7,7 +7,6 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { ArrowRight, Plus } from 'lucide-react';
 import TriggerDetailsCard from './trigger.details.card';
-import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import Image from 'next/image';
 
 type IProps = {
@@ -15,8 +14,6 @@ type IProps = {
   subtitle: string;
   hideAddTrigger?: boolean;
   handleAddTrigger?: () => void;
-  hideEditPhase?: boolean;
-  handleEditPhase?: () => void;
   chartSeries: number[];
   chartLabels: string[];
   requiredMandatoryTriggers: number;
@@ -39,8 +36,6 @@ export default function TriggersPhaseCard({
   subtitle,
   hideAddTrigger = false,
   handleAddTrigger,
-  hideEditPhase = false,
-  handleEditPhase,
   chartLabels,
   chartSeries,
   mandatoryTriggers,
@@ -172,15 +167,11 @@ export default function TriggersPhaseCard({
         {chartType === 'horizontal' && (
           <div className="flex justify-center ">
             {totalCharSeries === 0 ? (
-              <div
-                className=" mx-5 flex items-center justify-center"
-                style={{ height: 75 }}
-              >
-                <TooltipWrapper tip="No data to display">
-                  <div className="w-[16rem] h-4 rounded-md bg-gray-200" />
-                </TooltipWrapper>
+              <div className="w-full my-2">
+                <div className="h-4 w-full rounded-full bg-gray-200 flex font-medium text-xs text-gray-800 justify-center items-center" />
               </div>
             ) : (
+              // <div className=" mt-1">
               <ChartHorizontalStacked
                 series={chartSeries}
                 labels={chartLabels}
@@ -189,6 +180,7 @@ export default function TriggersPhaseCard({
                 height={75}
                 showLegend={false}
               />
+              // </div>
             )}
           </div>
         )}

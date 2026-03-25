@@ -161,7 +161,6 @@ export default function PhaseDetail() {
           <TriggersPhaseCard
             title="Phase Overview"
             subtitle={`Overview of ${phase?.name?.toLowerCase()} phase`}
-            hideEditPhase={true}
             chartLabels={['Mandatory', 'Optional']}
             chartSeries={[
               phase?.totalMandatoryTriggers,

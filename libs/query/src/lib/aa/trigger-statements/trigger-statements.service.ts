@@ -264,6 +264,41 @@ export const useDhmRainfallLevels = (uuid: UUID, payload: any) => {
   return query;
 };
 
+export const useDhmTemperatureLevels = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+  return useQuery({
+    queryKey: ['dhmtemperaturelevels', uuid, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.temperature.getDhm',
+          payload: payload,
+        },
+      });
+      return mutate.data;
+    },
+    staleTime: 15 * 60 * 1000, // 15 minutes
+  });
+};
+
+export const useDhmHumidityLevels = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+  return useQuery({
+    queryKey: ['dhmhumiditylevels', uuid, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.humidity.getDhm',
+          payload: payload,
+        },
+      });
+      return mutate.data;
+    },
+    staleTime: 15 * 60 * 1000, // 15 minutes
+  });
+};
 export const useAllGlofasProbFlood = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
   const alert = useSwal();

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { format } from 'date-fns';
 import { Activity, CalendarIcon, Trash2 } from 'lucide-react';
 
@@ -34,6 +34,8 @@ import { UUID } from 'crypto';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { defaultForecastTab } from 'apps/rahat-ui/src/constants/aa.tabValues.constants';
+import { useProjectInfo } from 'libs/query/src/lib/projects/projects.service';
+import { AWSSection } from './components/aws/aws.section';
 
 const componentMap = {
   dhm: DHMSection,
@@ -42,7 +44,9 @@ const componentMap = {
   gaugeReading: GaugeReading,
   gfh: GFHDetails,
   externalLinks: ExternalLinks,
-};
+  aws: AWSSection,
+  // nwp: NWPSection,
+} as const;
 
 type ComponentKey = keyof typeof componentMap;
 
@@ -50,6 +54,7 @@ interface BackendTab {
   value: ComponentKey;
   label: string;
   hasdatepicker?: boolean;
+  disabled?: boolean;
 }
 
 function DatePicker({
@@ -101,29 +106,49 @@ export default function DataSources() {
   const { activeTab, setActiveTab } = useActiveTab('');
   const [date, setDate] = useState<Date | null>(null);
   const { id: projectID } = useParams();
-  const route = useRouter();
-  const { data, isLoading } = useTabConfiguration(
+  const router = useRouter();
+
+  const { data, isLoading: isTabLoading } = useTabConfiguration(
     projectID as UUID,
     PROJECT_SETTINGS_KEYS.FORECAST_TAB_CONFIG,
   );
 
-  // Backend tabs OR default fallback
-  const backendTabs: BackendTab[] =
-    data?.value?.tabs?.length > 0 ? data.value?.tabs : defaultForecastTab;
+  const { data: projectInfo, isLoading: isProjectLoading } = useProjectInfo(
+    projectID as UUID,
+  );
 
-  const availableTabsConfig = backendTabs
-    .filter((tab) => componentMap[tab.value]) // remove invalid backend tabs
-    .map((tab) => ({
-      ...tab,
-      component: componentMap[tab.value],
-    }));
+  const projectType = projectInfo?.value?.project_type;
 
-  useEffect(() => {
-    if (!activeTab && !isLoading) {
-      const defaultTab = backendTabs[0].value;
-      setActiveTab(defaultTab);
+  const backendTabs = useMemo((): BackendTab[] => {
+    if (projectType === 'HEAT_WAVE') {
+      return [
+        { value: 'dhm', label: 'DHM' },
+        { value: 'dailyMonitoring', label: 'Daily Monitoring' },
+        { value: 'gaugeReading', label: 'Gauge Reading' },
+        { value: 'externalLinks', label: 'External Links' },
+        { value: 'aws', label: 'AWS' },
+        // { value: 'nwp', label: 'NWP' },
+      ];
     }
-  }, [backendTabs, activeTab, isLoading, setActiveTab]);
+
+    return data?.value?.tabs?.length > 0 ? data.value.tabs : defaultForecastTab;
+  }, [projectType, data]);
+
+  const availableTabsConfig = useMemo(() => {
+    return backendTabs
+      .filter((tab) => componentMap[tab.value as ComponentKey])
+      .map((tab) => ({
+        ...tab,
+        component: componentMap[tab.value as ComponentKey],
+      }));
+  }, [backendTabs]);
+
+  // Set default active tab
+  useEffect(() => {
+    if (!activeTab && !isTabLoading && backendTabs.length > 0) {
+      setActiveTab(backendTabs[0].value);
+    }
+  }, [activeTab, isTabLoading, backendTabs, setActiveTab]);
 
   useEffect(() => {
     if (
@@ -134,6 +159,8 @@ export default function DataSources() {
     }
   }, [activeTab, availableTabsConfig]);
 
+  const isLoading = isTabLoading || isProjectLoading;
+
   return (
     <div className="p-4">
       <div className="flex">
@@ -143,12 +170,14 @@ export default function DataSources() {
         />
         <IconLabelBtn
           Icon={Activity}
-          className="ml-auto px-4  text-xs mt-5"
+          className="ml-auto px-4 text-xs mt-5"
           variant="outline"
           name="Data Health Monitor"
-          size={'xs'}
+          size="xs"
           handleClick={() => {
-            route.push(`/projects/aa/${projectID}/data-sources/health-monitor`);
+            router.push(
+              `/projects/aa/${projectID}/data-sources/health-monitor`,
+            );
           }}
         />
       </div>
@@ -161,18 +190,15 @@ export default function DataSources() {
           </div>
         </>
       ) : (
-        <Tabs
-          value={activeTab}
-          defaultValue={activeTab}
-          onValueChange={setActiveTab}
-        >
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="flex justify-between">
-            {/* 🔹 Tab Triggers */}
+            {/* Tab Triggers */}
             <TabsList className="border bg-secondary rounded mb-2">
               {availableTabsConfig.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
+                  disabled={tab.disabled}
                   className="w-full data-[state=active]:bg-white data-[state=active]:text-gray-700"
                 >
                   {tab.label}
@@ -180,13 +206,13 @@ export default function DataSources() {
               ))}
             </TabsList>
 
-            {/* 🔹 Dynamic Date Picker (based on hasdatepicker) */}
+            {/* Dynamic Date Picker */}
             {availableTabsConfig.find(
               (tab) => tab.value === activeTab && tab.hasdatepicker,
             ) && <DatePicker date={date} setDate={setDate} />}
           </div>
 
-          {/* 🔹 Tab Contents */}
+          {/* Tab Contents */}
           {availableTabsConfig.map((tab) => {
             const Component = tab.component;
             return (

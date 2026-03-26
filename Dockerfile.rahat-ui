@@ -11,13 +11,16 @@ WORKDIR /usr/src/app
 RUN corepack enable
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
+# Build rahat-ui app
 RUN pnpm run rahat:build
 
 # -------- RUNNER --------
 FROM node:20-alpine AS runner
 WORKDIR /usr/src/app
 RUN corepack enable
+# Copy node_modules and built files
 COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/dist/apps/rahat-ui ./dist/apps/rahat-ui
+COPY --from=builder /usr/src/app/dist/apps/rahat-ui ./
 USER node
+# Start the Next.js production server
 CMD ["node_modules/.bin/next", "start"]

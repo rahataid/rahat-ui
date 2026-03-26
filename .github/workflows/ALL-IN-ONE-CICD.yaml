@@ -19,6 +19,7 @@ on:
         type: choice
         options:
           # Dev folder
+          - "[DEV] github/data/rahat/rahat-ui/dev/aa/dev"
           - "[DEV] github/data/rahat/rahat-ui/dev/aa/dev-qa"
           - "[DEV] github/data/rahat/rahat-ui/dev/aa/stellar"
           - "[DEV] github/data/rahat/rahat-ui/dev/aa/unicef"
@@ -88,7 +89,8 @@ jobs:
       - name: Strip prefix from Vault path
         id: vault-path
         run: |
-          CLEAN_PATH="${{ inputs.vault_secret_path#*] }}"
+          RAW_PATH="${{ inputs.vault_secret_path }}"
+          CLEAN_PATH="${RAW_PATH#*] }"
           echo "VAULT_PATH=${CLEAN_PATH}" >> $GITHUB_OUTPUT
 
       # -----------------------------

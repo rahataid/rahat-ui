@@ -17,6 +17,7 @@ export interface Customer {
   extras?: {
     email?: string;
     channel?: string;
+    lastMessageSent?: Date;
   };
 }
 

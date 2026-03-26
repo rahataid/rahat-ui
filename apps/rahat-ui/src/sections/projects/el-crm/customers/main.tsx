@@ -79,6 +79,7 @@ const CUSTOMER_EXPORT_CONFIG = {
     { label: 'Source', key: 'source', width: 15 },
     { label: 'Last purchase', key: 'lastPurchaseDate', width: 15 },
     { label: 'Category', key: 'category', width: 15 },
+    { label: 'Last message sent', key: 'lastMessageSent', width: 15 },
   ],
 };
 
@@ -180,6 +181,7 @@ export default function CustomersPage() {
       ...c,
       email: c?.extras?.email,
       channel: c?.extras?.channel,
+      lastMessageSent: c?.extras?.lastMessageSent,
     }));
   }, [customers]);
 
@@ -222,6 +224,7 @@ export default function CustomersPage() {
           ...c,
           email: c?.extras?.email,
           channel: c?.extras?.channel,
+          lastMessageSent: c?.extras?.lastMessageSent,
         };
         return formatCustomerForExport(mapped);
       });
@@ -447,7 +450,9 @@ export default function CustomersPage() {
                         className="h-8 gap-1.5"
                       >
                         <Download className="h-3.5 w-3.5" />
-                        {exportCustomersMutation.isPending ? 'Exporting...' : 'Export'}
+                        {exportCustomersMutation.isPending
+                          ? 'Exporting...'
+                          : 'Export'}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>

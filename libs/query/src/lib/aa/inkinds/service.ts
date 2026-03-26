@@ -348,6 +348,40 @@ export const useGetGroupInkindRedemptions = (
   });
 };
 
+export type GetGroupInkindLogsParams = {
+  search?: string;
+  sort?: 'redeemedAt' | 'quantity';
+  order?: 'asc' | 'desc';
+  page?: number;
+  perPage?: number;
+};
+
+export const useGetGroupInkindLogs = (
+  projectUUID: UUID,
+  allocationUUID: string,
+  params: GetGroupInkindLogsParams = {},
+) => {
+  const q = useProjectAction();
+  const paramsKey = JSON.stringify(params);
+
+  return useQuery({
+    queryKey: [
+      'aaProject.groupInkinds.getLogs',
+      projectUUID,
+      allocationUUID,
+      paramsKey,
+    ],
+    enabled: !!allocationUUID,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: () =>
+      runAction(q, projectUUID, 'aaProject.groupInkinds.getLogs', {
+        groupInkindId: allocationUUID,
+        ...params,
+      }),
+  });
+};
+
 export const useAssignGroupInkind = (projectUUID: UUID) => {
   const q = useProjectAction();
   const queryClient = useQueryClient();

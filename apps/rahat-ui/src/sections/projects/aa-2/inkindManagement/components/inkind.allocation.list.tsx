@@ -183,6 +183,10 @@ export default function InkindAllocationList() {
           quantityRedeemed: String(r.quantityRedeemed),
           beneficiaryCount: String(r.beneficiaryCount),
         });
+        console.debug(
+          'Navigating to details page with params:',
+          params.toString(),
+        );
         return (
           <TooltipComponent
             Icon={Eye}

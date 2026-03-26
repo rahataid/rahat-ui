@@ -11,7 +11,7 @@ WORKDIR /usr/src/app
 RUN corepack enable
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
-RUN pnpm build:rahat-ui
+RUN pnpm run rahat:build
 
 # -------- RUNNER --------
 FROM node:20-alpine AS runner

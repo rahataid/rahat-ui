@@ -1,26 +1,49 @@
-# -------- DEPENDENCIES --------
+# Stage 1: Dependencies
 FROM node:20-alpine AS deps
 WORKDIR /usr/src/app
+
+# Enable Corepack for pnpm
 RUN corepack enable
+
+# Copy package manifests for caching
 COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# -------- BUILDER --------
+# Stage 2: Builder
 FROM node:20-alpine AS builder
 WORKDIR /usr/src/app
 RUN corepack enable
+
+# Copy dependencies from deps stage
 COPY --from=deps /usr/src/app/node_modules ./node_modules
+
+# Copy the full source code
 COPY . .
-# Build rahat-ui app
+
+# Build the Next.js app
 RUN pnpm run rahat:build
 
-# -------- RUNNER --------
+# Ensure .next exists for runtime
+RUN [ -d "dist/apps/rahat-ui/.next" ] || (echo "ERROR: .next build missing!" && exit 1)
+
+# Stage 3: Runner / Production
 FROM node:20-alpine AS runner
 WORKDIR /usr/src/app
+
+# Enable Corepack for pnpm at runtime
 RUN corepack enable
-# Copy node_modules and built files
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/dist/apps/rahat-ui ./
+
+# Use non-root user for production safety
 USER node
-# Start the Next.js production server
+
+# Copy built app and node_modules
+COPY --from=builder /usr/src/app/dist/apps/rahat-ui ./
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+
+# Expose default Next.js port
+EXPOSE 3000
+
+# Start Next.js in production
 CMD ["node_modules/.bin/next", "start"]

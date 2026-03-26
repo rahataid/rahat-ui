@@ -1,21 +1,19 @@
-# Install dependencies only when needed
 FROM node:20-alpine AS deps
 WORKDIR /usr/src/app
-
-# Enable pnpm
 RUN corepack enable
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
-COPY dist/apps/rahat-ui/package.json ./
-RUN pnpm install
+FROM node:20-alpine AS builder
+WORKDIR /usr/src/app
+COPY --from=deps /usr/src/app/node_modules ./node_modules
+COPY . .
+RUN pnpm build:rahat-ui
 
 FROM node:20-alpine AS runner
 WORKDIR /usr/src/app
-
-# Enable pnpm (must run as root before USER node)
 RUN corepack enable
-
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/dist/apps/rahat-ui ./dist/apps/rahat-ui
 USER node
-
-COPY --chown=node:node dist/apps/rahat-ui/ ./
-COPY --chown=node:node --from=deps /usr/src/app/node_modules ./node_modules
-CMD [ "pnpm", "start" ]
+CMD ["node_modules/.bin/next", "start"]

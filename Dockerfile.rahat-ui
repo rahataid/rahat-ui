@@ -1,18 +1,22 @@
+# -------- DEPENDENCIES --------
 FROM node:20-alpine AS deps
 WORKDIR /usr/src/app
-RUN corepack enable
+RUN corepack enable                  # enable pnpm
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
+# -------- BUILDER --------
 FROM node:20-alpine AS builder
 WORKDIR /usr/src/app
+RUN corepack enable                  # << MUST enable pnpm here too
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
 RUN pnpm build:rahat-ui
 
+# -------- RUNNER --------
 FROM node:20-alpine AS runner
 WORKDIR /usr/src/app
-RUN corepack enable
+RUN corepack enable                  # enable pnpm for runtime if needed
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/dist/apps/rahat-ui ./dist/apps/rahat-ui
 USER node

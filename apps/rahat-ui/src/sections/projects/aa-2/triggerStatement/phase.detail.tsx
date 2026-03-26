@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   Plus,
   Settings,
+  SquarePen,
   Undo2,
 } from 'lucide-react';
 import { TriggersListTabs, TriggersPhaseCard } from './components';
@@ -23,6 +24,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/alert';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export default function PhaseDetail() {
   const router = useRouter();
@@ -36,6 +38,12 @@ export default function PhaseDetail() {
 
   const handleAddTriggerClick = () => {
     router.push(`/projects/aa/${projectId}/trigger-statements/add`);
+  };
+
+  const handleEditPhase = () => {
+    router.push(
+      `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}/edit`,
+    );
   };
 
   const isDisabled =
@@ -79,29 +87,31 @@ export default function PhaseDetail() {
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
           >
-            <IconLabelBtn
-              variant="outline"
-              Icon={Settings}
-              name="Manage Threshold"
-              handleClick={() => {
-                router.push(
-                  `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}/config-threshold`,
-                );
-              }}
-            />
+            <TooltipWrapper
+              tip="Cannot add triggers for an active phase"
+              disable={!phase?.isActive}
+            >
+              <IconLabelBtn
+                variant="outline"
+                className="text-primary border-primary"
+                Icon={Plus}
+                disabled={phase?.isActive}
+                name="Add Trigger"
+                handleClick={handleAddTriggerClick}
+              />
+            </TooltipWrapper>
           </RoleAuth>
-
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
           >
-            <IconLabelBtn
-              variant="outline"
-              className="text-primary border-primary"
-              Icon={Plus}
-              disabled={phase?.isActive}
-              name="Add Trigger"
-              handleClick={handleAddTriggerClick}
+            <CustomAlertDialog
+              dialogTrigger={
+                <IconLabelBtn Icon={SquarePen} name="Edit Phase" />
+              }
+              title="Edit Phase"
+              description="Are you sure you want to edit this phase?"
+              handleContinueClick={handleEditPhase}
             />
           </RoleAuth>
           <RoleAuth
@@ -110,7 +120,9 @@ export default function PhaseDetail() {
           >
             <>
               {isDisabled ? (
-                <IconLabelBtn Icon={Undo2} name="Revert" disabled />
+                <TooltipWrapper tip="Cannot revert an inactive phase">
+                  <IconLabelBtn Icon={Undo2} name="Revert" disabled />
+                </TooltipWrapper>
               ) : (
                 <CustomAlertDialog
                   dialogTrigger={<IconLabelBtn Icon={Undo2} name="Revert" />}
@@ -149,6 +161,7 @@ export default function PhaseDetail() {
           <TriggersPhaseCard
             title="Phase Overview"
             subtitle={`Overview of ${phase?.name?.toLowerCase()} phase`}
+            hideEditPhase={true}
             chartLabels={['Mandatory', 'Optional']}
             chartSeries={[
               phase?.totalMandatoryTriggers,

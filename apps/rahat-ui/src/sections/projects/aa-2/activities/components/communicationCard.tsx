@@ -32,7 +32,7 @@ interface BaseCommunication {
   groupType: string;
   transportId: string;
   communicationId: string;
-  subject: string;
+  subject?: string;
   groupName: string;
   sessionStatus: string;
   sessionId: string;
@@ -147,14 +147,12 @@ export function CommunicationCard({
                   {activityCommunication?.communicationTitle}
                 </h3>
               </TooltipWrapper>
-              {activityCommunication?.sessionStatus !== SessionStatus.NEW && (
-                <TooltipComponent
-                  Icon={ArrowUpRightSquare}
-                  tip="View Communication Log"
-                  handleOnClick={() => router.push(redirectLink)}
-                  iconStyle="text-primary"
-                />
-              )}
+              <TooltipComponent
+                Icon={ArrowUpRightSquare}
+                tip="View Communication Log"
+                handleOnClick={() => router.push(redirectLink)}
+                iconStyle="text-primary"
+              />
               <TooltipWrapper
                 tip={`Communication Status: ${
                   activityCommunication?.sessionStatus

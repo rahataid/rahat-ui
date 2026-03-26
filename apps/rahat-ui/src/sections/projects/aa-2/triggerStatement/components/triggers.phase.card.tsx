@@ -5,7 +5,7 @@ import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { ArrowRight, Plus } from 'lucide-react';
 import TriggerDetailsCard from './trigger.details.card';
 import Image from 'next/image';
-import { SimpleHorizontalBar } from 'libs/shadcn/src/components/charts/chart-components/simple-horizontal-bar';
+import { SimpleHorizontalBar } from 'apps/rahat-ui/src/components/simple-horizontal-bar';
 type IProps = {
   title: string;
   subtitle: string;

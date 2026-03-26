@@ -65,8 +65,29 @@ export default function useCommsLogsTableColumns() {
         <span className="text-xs uppercase tracking-wider">Attempts</span>
       ),
       cell: ({ row }) => (
-        <span className="tabular-nums">{row?.original?.attempts ?? '\u2014'}</span>
+        <span className="tabular-nums">
+          {row?.original?.attempts ?? '\u2014'}
+        </span>
       ),
+    },
+    {
+      accessorKey: 'price',
+      header: () => (
+        <span className="text-xs uppercase tracking-wider">Price</span>
+      ),
+      cell: ({ row }) => {
+        let price = row?.original?.disposition?.price;
+        if (typeof price === 'string' && price.startsWith('-')) {
+          price = price.substring(1);
+        }
+        return (
+          <span className="tabular-nums">
+            {price !== undefined && price !== null && price !== ''
+              ? price
+              : '\u2014'}
+          </span>
+        );
+      },
     },
     {
       accessorKey: 'timeStamp',

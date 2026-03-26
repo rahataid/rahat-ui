@@ -121,7 +121,7 @@ jobs:
       # Node + PNPM Setup
       # -----------------------------
       - name: Enable pnpm via Corepack
-        run: corepack enable && corepack prepare pnpm@8.14.1 --activate
+        run: corepack enable && corepack prepare pnpco9.0.0 --activate
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

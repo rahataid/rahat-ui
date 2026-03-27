@@ -73,7 +73,7 @@ export default function TriggerCard({
 
   return (
     <div
-      className="p-4 rounded border shadow cursor-pointer hover:shadow-md"
+      className="p-4 rounded-xl border shadow cursor-pointer hover:shadow-md"
       onClick={handleRoute}
     >
       <div className="flex justify-between items-center space-x-4 mb-2">

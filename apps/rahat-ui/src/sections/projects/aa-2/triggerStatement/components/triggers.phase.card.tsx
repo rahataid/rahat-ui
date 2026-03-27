@@ -1,10 +1,11 @@
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Heading, IconLabelBtn } from 'apps/rahat-ui/src/common';
+import { IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { ArrowRight, Plus } from 'lucide-react';
 import TriggerDetailsCard from './trigger.details.card';
 import Image from 'next/image';
+import { CardHeading } from 'apps/rahat-ui/src/common/card.heading';
 import { SimpleHorizontalBar } from 'apps/rahat-ui/src/components/simple-horizontal-bar';
 type IProps = {
   title: string;
@@ -51,17 +52,28 @@ export default function TriggersPhaseCard({
 }: IProps) {
   const totalCharSeries = chartSeries.reduce((a, b) => a + b, 0);
   return (
-    <div className="p-4 rounded border shadow-md flex flex-col justify-between">
+    <div className="p-4 rounded-xl border shadow-md flex flex-col justify-between">
       <div>
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-start justify-between w-full">
             {/* Pin icon in place of status — next to title */}
-            <Heading
+            {/* <Heading
+              title={title}
+              titleStyle="text-xl "
+              description={subtitle}
+              status={isActive ? 'Triggered' : 'Not Triggered'}
+              badgeClassName={`${
+                isActive
+                  ? 'text-red-500 bg-red-100'
+                  : 'text-green-500 bg-green-100'
+              } text-xs px-1`}
+            /> */}
+            <CardHeading
               title={title}
               titleStyle="text-xl"
               description={subtitle}
               status={isActive ? 'Triggered' : 'Not Triggered'}
-              badgeClassName={`${
+              badgeStyle={`${
                 isActive
                   ? 'text-red-500 bg-red-100'
                   : 'text-green-500 bg-green-100'
@@ -151,15 +163,6 @@ export default function TriggersPhaseCard({
             totalRequiredTriggers={requiredOptionalTriggers}
           />
         </div>
-
-        {chartType === 'horizontal' && (
-          <div className="flex gap-2 w-full mt-4 justify-center items-center mx-auto">
-            <p className="text-2xl font-medium text-blue-500">
-              {mandatoryTriggers + optionalTriggers}
-            </p>
-            <p className="text-sm/4">Total Triggers</p>
-          </div>
-        )}
 
         {chartType === 'horizontal' && (
           <div className="flex justify-center ">

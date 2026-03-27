@@ -91,6 +91,7 @@ export interface Phase {
 }
 
 export interface PhaseContentProps {
+  phaseId: string;
   title: string;
   description: string;
   loading: boolean;

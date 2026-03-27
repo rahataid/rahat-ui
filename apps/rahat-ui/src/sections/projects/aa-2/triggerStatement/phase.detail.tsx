@@ -34,6 +34,7 @@ export default function PhaseDetail() {
 
   const { data: phase, isLoading, error } = useSinglePhase(projectId, phaseId);
 
+  console.log('Phase Detail Data:', phase);
   const revertPhase = useRevertPhase();
 
   const handleAddTriggerClick = () => {
@@ -48,6 +49,8 @@ export default function PhaseDetail() {
 
   const isDisabled =
     !phase?.isActive || !phase?.canRevert || revertPhase.isPending;
+
+  const isEditDisabled = phase?.isActive || phase?.triggers?.length > 0;
 
   const handleRevertPhase = async () => {
     await revertPhase.mutateAsync({
@@ -107,7 +110,11 @@ export default function PhaseDetail() {
           >
             <CustomAlertDialog
               dialogTrigger={
-                <IconLabelBtn Icon={SquarePen} name="Edit Phase" />
+                <IconLabelBtn
+                  Icon={SquarePen}
+                  name="Edit Phase"
+                  disabled={isEditDisabled}
+                />
               }
               title="Edit Phase"
               description="Are you sure you want to edit this phase?"

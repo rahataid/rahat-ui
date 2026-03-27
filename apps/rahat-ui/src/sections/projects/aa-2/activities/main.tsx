@@ -27,7 +27,6 @@ export default function ActivitiesView() {
   const { phases } = usePhasesStore((state) => ({
     phases: state.phases,
   }));
-
   const PINNED_PHASES_KEY = 'aa_pinned_phases';
 
   const [pinnedPhases, setPinnedPhases] = useState<string[]>([]);
@@ -215,6 +214,7 @@ export default function ActivitiesView() {
           {sortedPhases.map((phase) => (
             <div key={phase} className="min-w-[320px] w-full">
               <PhaseContent
+                phaseId={phases.find((p) => p.name === phase)?.uuid}
                 title={phase.charAt(0) + phase.slice(1).toLowerCase()}
                 description={
                   PHASE_DESCRIPTIONS[phase] ??

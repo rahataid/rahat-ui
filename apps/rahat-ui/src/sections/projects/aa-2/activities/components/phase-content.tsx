@@ -16,6 +16,7 @@ import { PhaseContentProps } from 'apps/rahat-ui/src/types/activities';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 export default function PhaseContent({
+  phaseId,
   title,
   description,
   phases,
@@ -32,7 +33,7 @@ export default function PhaseContent({
   const router = useRouter();
 
   const lowerTitle = title.toLowerCase();
-
+  console.log(phaseId, 'phaseId in phase content');
   const handleUpdateStatus = (id: string) => {
     router.push(`/projects/aa/${projectID}/activities/${id}/update-status`);
   };

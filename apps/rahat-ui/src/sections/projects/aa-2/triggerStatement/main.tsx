@@ -161,7 +161,7 @@ export default function TriggerStatementView() {
 
             {sortedPhases.length === 3 && (
               <div>
-                <Card className="flex flex-col rounded-xl  max-h-[calc(100vh-350px)] h-full min-h-[calc(100vh-365px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
+                <Card className="flex flex-col rounded-xl h-full min-h-[calc(100vh-410px)] w-full items-center justify-center border-dashed border-2 border-blue-300 bg-gray-50">
                   <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
                     <div className="flex flex-col gap-1 items-center ">
                       <Button

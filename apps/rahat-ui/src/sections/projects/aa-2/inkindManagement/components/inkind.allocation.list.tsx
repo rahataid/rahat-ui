@@ -99,7 +99,7 @@ export default function InkindAllocationList() {
           inkindType: item.inkind?.type ?? item.inkindType ?? 'N/A',
           quantityAllocated: item.quantityAllocated ?? 0,
           quantityRedeemed: item.quantityRedeemed ?? 0,
-          beneficiaryCount: item.beneficiaryCount ?? 0,
+          beneficiaryCount: item.group?._count.beneficiaries ?? 0,
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
         };

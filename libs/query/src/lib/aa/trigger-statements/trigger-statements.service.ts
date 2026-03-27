@@ -406,7 +406,7 @@ export const useDhmRainfallLevels = (uuid: UUID, payload: any) => {
       });
       return mutate.data;
     },
-    staleTime: 15 * 60 * 1000, // 15 minutes
+    staleTime: 15 * 60 * 1000,
   });
 
   return query;
@@ -414,39 +414,80 @@ export const useDhmRainfallLevels = (uuid: UUID, payload: any) => {
 
 export const useDhmTemperatureLevels = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
   return useQuery({
-    queryKey: ['dhmtemperaturelevels', uuid, payload],
+    queryKey: ['dhmtemperaturelevels', uuid, payload.riverBasin, payload.from],
+    enabled: !!payload.riverBasin,
     queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: 'ms.temperature.getDhm',
-          payload: payload,
-        },
-      });
-      return mutate.data;
+      try {
+        const mutate = await q.mutateAsync({
+          uuid,
+          data: {
+            action: 'ms.temperature.getDhm',
+            payload: payload,
+          },
+        });
+        return mutate.data;
+      } catch (error: any) {
+        const errorMessage =
+          error?.response?.data?.message || 'Failed to fetch temperature data';
+        toast.fire({
+          title: 'Error loading temperature data',
+          text: errorMessage,
+          icon: 'error',
+        });
+        throw error;
+      }
     },
-    staleTime: 15 * 60 * 1000, // 15 minutes
+    staleTime: 15 * 60 * 1000,
   });
 };
 
 export const useDhmHumidityLevels = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
   return useQuery({
-    queryKey: ['dhmhumiditylevels', uuid, payload],
+    queryKey: ['dhmhumiditylevels', uuid, payload.riverBasin, payload.from],
+    enabled: !!payload.riverBasin,
     queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: 'ms.humidity.getDhm',
-          payload: payload,
-        },
-      });
-      return mutate.data;
+      try {
+        const mutate = await q.mutateAsync({
+          uuid,
+          data: {
+            action: 'ms.humidity.getDhm',
+            payload: payload,
+          },
+        });
+        return mutate.data;
+      } catch (error: any) {
+        const errorMessage =
+          error?.response?.data?.message || 'Failed to fetch humidity data';
+        toast.fire({
+          title: 'Error loading humidity data',
+          text: errorMessage,
+          icon: 'error',
+        });
+        throw error;
+      }
     },
-    staleTime: 15 * 60 * 1000, // 15 minutes
+    staleTime: 15 * 60 * 1000, 
   });
 };
+
 export const useAllGlofasProbFlood = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
   const alert = useSwal();

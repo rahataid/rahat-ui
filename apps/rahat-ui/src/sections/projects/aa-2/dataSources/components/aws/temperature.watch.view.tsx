@@ -1,4 +1,8 @@
-import { useDhmTemperatureLevels } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useDhmTemperatureLevels,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { Heading, NoResult, TableLoader } from 'apps/rahat-ui/src/common';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { Globe, RadioTower } from 'lucide-react';
@@ -8,25 +12,19 @@ import { format } from 'date-fns';
 import { useParams } from 'next/navigation';
 import { getTemperatureColor, roundValue } from './utils/color.utils';
 
-
-type TemperatureColors = {
-  bg: string;
-  border: string;
-  textValue: string;
-  badge: string;
-  statusLabel: string;
-  statusColor: string;
-};
-
-
 export default function TemperatureWatchView() {
   const params = useParams();
   const projectId = params.id as UUID;
   const formattedDate = format(new Date(), 'yyyy/MM/dd');
-  const riverBasin = 'Doda river at East-West Highway';
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
 
   const payload = {
-    riverBasin,
+    riverBasin:
+      settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+      'river_basin'
+      ],
     from: formattedDate,
   };
 
@@ -35,42 +33,28 @@ export default function TemperatureWatchView() {
     payload,
   );
 
-  console.log('Temperature Watch Data:', data);
-
-  const tn1dData = useMemo(() => {
+  const tn1hData = useMemo(() => {
     if (!data?.info || !Array.isArray(data.info)) return [];
-    return data.info.filter((item: any) => item?.parameter_code === 'TN_1D');
+    return data.info.filter((item: any) => item?.parameter_code === 'T_1H');
   }, [data]);
 
   const updatedAt = data?.updatedAt;
-  console.log('Filtered TN_1D Data:', updatedAt);
 
   if (isLoading) {
     return <TableLoader />;
   }
 
-  if (error) {
+  if (tn1hData.length === 0) {
     return (
       <div className="p-4">
-        <h2 className="text-lg font-medium">AWS Temperature Watch</h2>
-        <p className="text-sm text-red-500">
-          Error loading data: {error.message || String(error)}
-        </p>
-      </div>
-    );
-  }
-
-  if (tn1dData.length === 0) {
-    return (
-      <div className="p-4">
-        <NoResult message="No Temperature Data (TN_1D)" />
+        <NoResult message="No Temperature Data" />
       </div>
     );
   }
 
   return (
     <div className="flex flex-col space-y-6">
-      {tn1dData.map((tempInfo: any, index: number) => {
+      {tn1hData.map((tempInfo: any, index: number) => {
         const colors = getTemperatureColor(tempInfo?.value);
 
         return (
@@ -84,7 +68,7 @@ export default function TemperatureWatchView() {
                   title={tempInfo?.name || 'Unknown Station'}
                   titleStyle="text-xl/6 font-semibold"
                   description={`${
-                    tempInfo?.parameter_name || 'Air Temperature Daily Min'
+                    tempInfo?.parameter_name || 'Air Temperature Hourly'
                   }`}
                   updatedAt={updatedAt}
                 />
@@ -142,7 +126,7 @@ export default function TemperatureWatchView() {
               <p className={`font-semibold text-3xl/10 ${colors.textValue}`}>
                 {roundValue(tempInfo?.value)}
               </p>
-              <p className="text-sm/6 font-medium">Average Temperature</p>
+              <p className="text-sm/6 font-medium">Hourly Temperature</p>
               <p className="text-gray-500 text-sm/6">
                 {dateFormat(updatedAt, 'eee, MMM d yyyy, hh:mm:ss a')}
               </p>

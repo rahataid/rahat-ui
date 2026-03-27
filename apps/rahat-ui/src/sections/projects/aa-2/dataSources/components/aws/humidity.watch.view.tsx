@@ -1,4 +1,8 @@
-import { useDhmHumidityLevels } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useDhmHumidityLevels,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { Heading, NoResult, TableLoader } from 'apps/rahat-ui/src/common';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { Globe, RadioTower } from 'lucide-react';
@@ -8,25 +12,27 @@ import { format } from 'date-fns';
 import { useParams } from 'next/navigation';
 import { getHumidityColor, roundValue } from './utils/color.utils';
 
-
 export default function HumidityWatchView() {
   const params = useParams();
   const projectId = params.id as UUID;
   const formattedDate = format(new Date(), 'yyyy/MM/dd');
-  const riverBasin = 'Doda river at East-West Highway';
+  const { settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+  }));
 
   const payload = {
-    riverBasin,
+    riverBasin:
+      settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+        'river_basin'
+      ],
     from: formattedDate,
   };
 
   const { data, isLoading, error } = useDhmHumidityLevels(projectId, payload);
 
-  console.log('Humidity Watch Data:', data);
-
-  const humidityData = useMemo(() => {
+  const rh1hData = useMemo(() => {
     if (!data?.info || !Array.isArray(data.info)) return [];
-    return data.info;
+    return data.info.filter((item: any) => item?.parameter_code === 'RH_1H');
   }, [data]);
 
   const updatedAt = data?.updatedAt;
@@ -35,18 +41,7 @@ export default function HumidityWatchView() {
     return <TableLoader />;
   }
 
-  if (error) {
-    return (
-      <div className="p-4">
-        <h2 className="text-lg font-medium">AWS Humidity Watch</h2>
-        <p className="text-sm text-red-500">
-          Error loading data: {error.message || String(error)}
-        </p>
-      </div>
-    );
-  }
-
-  if (humidityData.length === 0) {
+  if (rh1hData.length === 0) {
     return (
       <div className="p-4">
         <NoResult message="No Humidity Data" />
@@ -56,7 +51,7 @@ export default function HumidityWatchView() {
 
   return (
     <div className="flex flex-col space-y-6">
-      {humidityData.map((humInfo: any, index: number) => {
+      {rh1hData.map((humInfo: any, index: number) => {
         const colors = getHumidityColor(humInfo?.value);
 
         return (
@@ -69,8 +64,9 @@ export default function HumidityWatchView() {
                 <Heading
                   title={humInfo?.name || 'Unknown Station'}
                   titleStyle="text-xl/6 font-semibold"
-                  description={humInfo?.parameter_name || 'Relative Humidity'}
-                  // descriptionClassName={`${colors.badge} text-white text-xs font-semibold px-3 py-1 rounded-full inline-block`}
+                  description={
+                    humInfo?.parameter_name || 'Relative Humidity Hourly'
+                  }
                   updatedAt={updatedAt}
                 />
                 <div>

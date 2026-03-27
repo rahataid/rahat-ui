@@ -61,8 +61,7 @@ export const useInkinds = (
 
   return useQuery({
     queryKey: ['aa.inkinds.get', projectUUID, paramsString],
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    staleTime: 10 * 60 * 1000, // 10 minutes
     queryFn: () => runAction(q, projectUUID, 'aa.inkinds.get', { ...params }),
   });
 };
@@ -171,14 +170,9 @@ export const useInkindsSummary = (projectUUID: UUID) => {
 
   return useQuery({
     queryKey: ['aa.inkinds.summary', projectUUID],
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000, // 5 minutes
     queryFn: () =>
-      runAction(q, projectUUID, 'aa.inkinds.get', {
-        perPage: 1000,
-        order: 'desc',
-        sort: 'createdAt',
-      }),
+      runAction(q, projectUUID, 'aa.inkinds.summary', {}),
   });
 };
 
@@ -187,8 +181,7 @@ export const useInkindTransactions = (projectUUID: UUID) => {
 
   return useQuery({
     queryKey: ['aa.inkindStock.getAllMovements', projectUUID],
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000,
     queryFn: () =>
       runAction(q, projectUUID, 'aaProject.inkindStock.getAllMovements', {}),
   });
@@ -257,8 +250,7 @@ export const useGroupInkindAllocations = (projectUUID: UUID) => {
 
   return useQuery({
     queryKey: ['aaProject.groupInkinds.getByGroup', projectUUID],
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000, // 5 minutes
     queryFn: () =>
       runAction(q, projectUUID, 'aaProject.groupInkinds.getByGroup', {}),
   });

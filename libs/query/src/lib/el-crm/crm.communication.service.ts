@@ -9,6 +9,7 @@ import {
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { useProjectAction } from '../projects';
+import { api } from '../../utils/api';
 
 // Constants for actions
 const CREATE_CAMPAIGN = 'elProject.campaign.create';
@@ -35,6 +36,7 @@ const CREATE_AUTOMATION = 'elProject.campaign.automation.create';
 const UPDATE_AUTOMATION = 'elProject.campaign.automation.update';
 const GET_AUTOMATION = 'elProject.campaign.automation.get';
 const DELETE_AUTOMATION = 'elProject.campaign.automation.delete';
+const AUTOMATION_DETAIL = 'elProject.campaign.automation.detail';
 
 const queryKeys = {
   //elCrmQueryKeys
@@ -606,5 +608,23 @@ export const useDeleteElCrmAutomationRule = (projectUUID: UUID) => {
     onError: () => {
       toast.fire({ title: 'Failed to delete automation rule', icon: 'error' });
     },
+  });
+};
+
+export const useAutomationDetail = (
+  projectUUID: UUID,
+  automationId: string,
+) => {
+  const action = useProjectAction();
+  return useQuery({
+    queryKey: ['automation-detail', automationId],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: { action: AUTOMATION_DETAIL, payload: { uuid: automationId } },
+      });
+      return res.data ?? null;
+    },
+    enabled: !!automationId,
   });
 };

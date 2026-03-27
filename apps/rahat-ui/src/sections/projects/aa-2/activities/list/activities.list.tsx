@@ -65,7 +65,8 @@ export default function ActivitiesList() {
   } = usePagination();
   React.useEffect(() => {
     const titleStr = Array.isArray(title) ? title[0] : title;
-    const formattedTitle = titleStr.toUpperCase();
+    const decodedTitle = decodeURIComponent(titleStr);
+    const formattedTitle = decodedTitle.toUpperCase();
 
     const isBackFromDetail = searchParams.get('backFromDetail') === 'true';
     const prevPagination = getPaginationFromLocalStorage(isBackFromDetail);
@@ -179,7 +180,9 @@ export default function ActivitiesList() {
         <div className="flex flex-col gap-2">
           <Back path={`/projects/aa/${projectID}/activities`} />
           <Heading
-            title={`${title[0].charAt(0).toUpperCase() + title.slice(1)}`}
+            title={decodeURIComponent(
+              Array.isArray(title) ? title[0] : title,
+            ).toUpperCase()}
             description="List of all the activities in the selected phase "
           />
         </div>

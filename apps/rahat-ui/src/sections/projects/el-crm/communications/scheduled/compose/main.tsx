@@ -1582,6 +1582,7 @@ function AutomationRuleCard({
 }) {
   const hasGenericConditions =
     Array.isArray(rule.conditions) && rule.conditions.length > 0;
+  const { id: projectUUID } = useParams() as { id: string };
   return (
     <div
       className={cn(
@@ -1600,13 +1601,19 @@ function AutomationRuleCard({
             <Zap className="h-5 w-5" />
           </div>
           <div>
-            <h4 className="font-medium">
-              {(rule.conditionType
-                ? CONDITION_LABELS[rule.conditionType]
-                : undefined) ??
-                rule.campaign?.name ??
-                'Automation Rule'}
-            </h4>
+            <Link
+              href={`/projects/el-crm/${projectUUID}/communications/scheduled/automation/${rule.uuid}`}
+              className="hover:underline focus:underline"
+              prefetch={false}
+            >
+              <h4 className="font-medium">
+                {(rule.conditionType
+                  ? CONDITION_LABELS[rule.conditionType]
+                  : undefined) ??
+                  rule.campaign?.name ??
+                  'Automation Rule'}
+              </h4>
+            </Link>
             <p className="text-sm text-muted-foreground">
               {rule.campaign?.name ?? '—'}
             </p>

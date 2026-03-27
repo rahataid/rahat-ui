@@ -7,6 +7,7 @@ import TriggerDetailsCard from './trigger.details.card';
 import Image from 'next/image';
 import { CardHeading } from 'apps/rahat-ui/src/common/card.heading';
 import { SimpleHorizontalBar } from 'apps/rahat-ui/src/components/simple-horizontal-bar';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 type IProps = {
   title: string;
   subtitle: string;
@@ -175,31 +176,43 @@ export default function TriggersPhaseCard({
         )}
       </div>
 
-      <div className="flex gap-2 mt-1 ">
-        <RoleAuth
-          roles={[AARoles.ADMIN, AARoles.Municipality]}
-          hasContent={false}
-        >
+      <div className="flex  gap-2 mt-1 ">
+        <div className="flex-1">
+          <RoleAuth
+            roles={[AARoles.ADMIN, AARoles.Municipality]}
+            hasContent={false}
+          >
+            <TooltipWrapper
+              tip={
+                isActive
+                  ? 'Cannot add triggers to an active phase'
+                  : 'Add a trigger to this phase'
+              }
+            >
+              <IconLabelBtn
+                variant="outline"
+                className={`border-primary text-primary  w-full ${
+                  hideAddTrigger && 'hidden'
+                }`}
+                Icon={Plus}
+                name="Add Trigger"
+                handleClick={handleAddTrigger}
+                disabled={isActive}
+              />
+            </TooltipWrapper>
+          </RoleAuth>
+        </div>
+        <div className="flex-1">
           <IconLabelBtn
             variant="outline"
-            className={`border-primary text-primary flex-1 ${
-              hideAddTrigger && 'hidden'
+            className={`border-primary text-primary flex-1 flex-row-reverse gap-2 w-full ${
+              hideViewDetails && 'hidden'
             }`}
-            Icon={Plus}
-            name="Add Trigger"
-            handleClick={handleAddTrigger}
-            disabled={isActive}
+            Icon={ArrowRight}
+            name="View Details"
+            handleClick={handleViewDetails}
           />
-        </RoleAuth>
-        <IconLabelBtn
-          variant="outline"
-          className={`border-primary text-primary flex-1 flex-row-reverse gap-2 ${
-            hideViewDetails && 'hidden'
-          }`}
-          Icon={ArrowRight}
-          name="View Details"
-          handleClick={handleViewDetails}
-        />
+        </div>
       </div>
     </div>
   );

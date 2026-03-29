@@ -248,7 +248,7 @@ export default function ScheduledView() {
                     </div>
                   </div>
 
-                  <div className="grid gap-4 md:grid-cols-3">
+                  <div className="grid gap-4 md:grid-cols-4">
                     <div className="space-y-2">
                       <Label htmlFor="template-filter" className="text-sm">
                         Template
@@ -302,6 +302,31 @@ export default function ScheduledView() {
                               {channel.name}
                             </SelectItem>
                           ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="status-filter" className="text-sm">
+                        Status
+                      </Label>
+                      <Select
+                        value={filters?.status || 'all'}
+                        onValueChange={(value) => {
+                          setFilters((prev) => ({
+                            ...prev,
+                            status: value === 'all' ? undefined : value,
+                          }));
+                        }}
+                      >
+                        <SelectTrigger id="status-filter">
+                          <SelectValue placeholder="All Statuses" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Statuses</SelectItem>
+                          <SelectItem value="Draft">Draft</SelectItem>
+                          <SelectItem value="Scheduled">Scheduled</SelectItem>
+                          <SelectItem value="Sent">Sent</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

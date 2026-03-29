@@ -50,7 +50,7 @@ export default function CustomPagination({
   return (
     <TooltipProvider delayDuration={400}>
       <nav
-        className="flex items-center justify-between border-t bg-card px-4 py-2.5"
+        className="flex items-center justify-between border-t bg-card px-4 py-2.5 rounded-b-lg"
         aria-label="Pagination"
       >
         {/* Left: Result range summary */}

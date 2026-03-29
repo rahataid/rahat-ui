@@ -3,12 +3,22 @@ import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import {
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import { useFailedCustomersTableColumn } from './useFailedCustomersTableColumn';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import Link from 'next/link';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { ArrowLeft, RotateCcw, AlertCircle, AlertTriangle, Pencil } from 'lucide-react';
+import {
+  ArrowLeft,
+  RotateCcw,
+  AlertCircle,
+  AlertTriangle,
+  Pencil,
+} from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import {
   Tooltip,
@@ -16,6 +26,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import ClientSidePagination from '../../../../components/client.side.pagination';
 
 export default function BatchDetailView() {
   const { id: projectUUID, batchId: batchUUID } = useParams() as {
@@ -90,10 +101,10 @@ export default function BatchDetailView() {
   const columns = useFailedCustomersTableColumn(handleCellChange, resetKey);
 
   const table = useReactTable({
-    manualPagination: true,
     data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   const handleReset = () => {
@@ -238,8 +249,8 @@ export default function BatchDetailView() {
                 <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
                   <AlertCircle className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
                   <p className="text-sm text-muted-foreground">
-                    Fields with errors are highlighted in red and editable. Fix the
-                    values directly in the table, then click{' '}
+                    Fields with errors are highlighted in red and editable. Fix
+                    the values directly in the table, then click{' '}
                     <strong className="text-foreground">Retry Import</strong> to
                     re-submit with your corrections.
                   </p>
@@ -276,6 +287,7 @@ export default function BatchDetailView() {
                 tableHeight="h-[calc(100vh-360px)]"
                 loading={isLoading}
               />
+              <ClientSidePagination table={table} />
             </CardContent>
           </Card>
         </div>

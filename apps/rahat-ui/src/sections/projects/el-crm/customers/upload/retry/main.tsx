@@ -1,4 +1,8 @@
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import {
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { useCustomersBatchTableColumn } from './useCustomersBatchTableColumn';
 import { useFailedBatch } from '@rahat-ui/query';
@@ -14,6 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import ClientSidePagination from '../../../../components/client.side.pagination';
 
 export default function CustomersUploadRetryView() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -23,10 +28,10 @@ export default function CustomersUploadRetryView() {
   const columns = useCustomersBatchTableColumn();
 
   const table = useReactTable({
-    manualPagination: true,
     data: failedBatch || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
   const batchCount = failedBatch?.length || 0;
 
@@ -84,11 +89,8 @@ export default function CustomersUploadRetryView() {
           {/* Table Card */}
           <Card className="flex flex-col">
             <CardContent className="p-0">
-              <DemoTable
-                table={table}
-                tableHeight="h-[calc(100vh-320px)]"
-                loading={isLoading}
-              />
+              <DemoTable table={table} loading={isLoading} />
+              <ClientSidePagination table={table} />
             </CardContent>
           </Card>
         </div>

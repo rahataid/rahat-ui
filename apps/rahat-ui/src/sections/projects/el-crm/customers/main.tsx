@@ -491,6 +491,22 @@ export default function CustomersPage() {
                   </div>
                 </div>
 
+                {/* Search Customer Code */}
+                <div className="flex-1 min-w-[180px] space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">
+                    Code
+                  </Label>
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      placeholder="Search code..."
+                      value={filters?.customerCode || ''}
+                      onChange={(e) => handleSearch(e, 'customerCode')}
+                      className="pl-8 h-9 text-sm"
+                    />
+                  </div>
+                </div>
+
                 {/* Search Customer Name */}
                 <div className="flex-1 min-w-[180px] space-y-1.5">
                   <Label className="text-xs text-muted-foreground">

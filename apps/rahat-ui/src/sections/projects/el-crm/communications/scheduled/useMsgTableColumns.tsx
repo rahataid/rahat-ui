@@ -2,7 +2,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { useParams, useRouter } from 'next/navigation';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Eye } from 'lucide-react';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { targetTypeMap } from '../const';
 import {
@@ -10,6 +10,66 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+
+function getStatus(row: any) {
+  const scheduledTime = row?.options?.scheduledTimestamp;
+  const sessionId = row?.sessionId;
+  if (scheduledTime && new Date(scheduledTime) > new Date()) return 'Scheduled';
+  if (sessionId) return 'Sent';
+  return 'Draft';
+}
+
+function formatRelative(diffMs: number) {
+  const abs = Math.abs(diffMs);
+  const days = Math.floor(abs / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((abs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((abs % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((abs % (1000 * 60)) / 1000);
+
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  if (minutes > 0) return `${minutes}m ${seconds}s`;
+  return `${Math.max(seconds, 1)}s`;
+}
+
+function ScheduledDateCell({ value, row }: { value: string; row: any }) {
+  const [now, setNow] = useState(() => new Date());
+  const status = getStatus(row.original);
+  const isCountdown = status === 'Scheduled' || status === 'Draft';
+
+  useEffect(() => {
+    if (!isCountdown) return;
+    const interval = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, [isCountdown]);
+
+  const scheduledDate = new Date(value);
+  const diffMs = scheduledDate.getTime() - now.getTime();
+  const formatted = formatRelative(diffMs);
+
+  let relativeLabel = '';
+  let colorClass = 'text-muted-foreground';
+
+  if (status === 'Sent') {
+    relativeLabel = `${formatted} ago`;
+    colorClass = 'text-muted-foreground';
+  } else if (diffMs > 0) {
+    relativeLabel = `${formatted} remaining`;
+    colorClass = 'text-amber-600';
+  } else {
+    relativeLabel = `${formatted} overdue`;
+    colorClass = 'text-destructive';
+  }
+
+  return (
+    <div className="flex flex-col">
+      <span className="tabular-nums">{scheduledDate.toLocaleString()}</span>
+      <span className={`text-xs mt-0.5 tabular-nums ${colorClass}`}>
+        {relativeLabel}
+      </span>
+    </div>
+  );
+}
 
 export const useScheduledTableColumn = () => {
   const { id } = useParams();
@@ -85,13 +145,10 @@ export const useScheduledTableColumn = () => {
         <span className="text-xs uppercase tracking-wider">Scheduled Date</span>
       ),
       accessorFn: (row) => row.options?.scheduledTimestamp,
-      cell: ({ getValue }) => {
+      cell: ({ getValue, row }) => {
         const value = getValue<string>();
-        return (
-          <span className="tabular-nums">
-            {value ? new Date(value).toLocaleString() : '\u2014'}
-          </span>
-        );
+        if (!value) return <span className="tabular-nums">{'\u2014'}</span>;
+        return <ScheduledDateCell value={value} row={row} />;
       },
     },
     {
@@ -100,16 +157,7 @@ export const useScheduledTableColumn = () => {
         <span className="text-xs uppercase tracking-wider">Status</span>
       ),
       cell: ({ row }) => {
-        const scheduledTime = row.original?.options?.scheduledTimestamp;
-        const sessionId = row.original?.sessionId;
-
-        let status = 'Draft';
-        if (scheduledTime && new Date(scheduledTime) > new Date()) {
-          status = 'Scheduled';
-        } else if (sessionId) {
-          status = 'Sent';
-        }
-
+        const status = getStatus(row.original);
         return <Badge variant={getStatusVariant(status)}>{status}</Badge>;
       },
     },

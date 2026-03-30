@@ -8,16 +8,16 @@ import { useCustomersBatchTableColumn } from './useCustomersBatchTableColumn';
 import { useFailedBatch } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
+import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
 import Link from 'next/link';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Button } from '@rahat-ui/shadcn/components/button';
 import { ArrowLeft, AlertTriangle, Info } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+} from '@rahat-ui/shadcn/components/tooltip';
 import ClientSidePagination from '../../../../components/client.side.pagination';
 
 export default function CustomersUploadRetryView() {

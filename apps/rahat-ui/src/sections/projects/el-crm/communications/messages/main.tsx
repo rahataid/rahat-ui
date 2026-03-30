@@ -21,7 +21,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+} from '@rahat-ui/shadcn/components/tooltip';
 
 export default function MessagesView() {
   const { id: projectUUID } = useParams() as { id: UUID };

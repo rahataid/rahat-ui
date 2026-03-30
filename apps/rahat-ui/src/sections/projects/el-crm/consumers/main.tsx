@@ -27,9 +27,9 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+} from '@rahat-ui/shadcn/components/tooltip';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Label } from '@rahat-ui/shadcn/components/label';
 
 const consumers = [
   {

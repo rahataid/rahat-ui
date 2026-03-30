@@ -1,11 +1,11 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+} from '@rahat-ui/shadcn/components/tooltip';
 import { TriangleAlert } from 'lucide-react';
 
 const getStatusVariant = (status: string) => {

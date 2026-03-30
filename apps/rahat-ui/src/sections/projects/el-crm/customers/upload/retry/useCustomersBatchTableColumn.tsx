@@ -1,11 +1,11 @@
 import { useDeleteFailedBatch, useRetryCustomerImport } from '@rahat-ui/query';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Badge } from '@rahat-ui/shadcn/components/badge';
+import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+} from '@rahat-ui/shadcn/components/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 import { UUID } from 'crypto';
 import { Eye, RotateCcw, Trash2 } from 'lucide-react';

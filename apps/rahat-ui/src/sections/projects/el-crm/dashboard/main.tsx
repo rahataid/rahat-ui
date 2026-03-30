@@ -6,23 +6,23 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@rahat-ui/shadcn/src/components/ui/card';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+} from '@rahat-ui/shadcn/components/card';
+import { Button } from '@rahat-ui/shadcn/components/button';
+import { Badge } from '@rahat-ui/shadcn/components/badge';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
-} from '@rahat-ui/shadcn/src/components/ui/chart';
+} from '@rahat-ui/shadcn/components/chart';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
+} from '@rahat-ui/shadcn/components/select';
 import {
   PieChart,
   Pie,
@@ -54,13 +54,13 @@ import {
   FileUp,
   XCircle,
 } from 'lucide-react';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+} from '@rahat-ui/shadcn/components/tooltip';
 import {
   CustomerCategory,
   Stat,

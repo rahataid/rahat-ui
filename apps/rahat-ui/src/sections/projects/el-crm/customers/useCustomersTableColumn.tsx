@@ -1,10 +1,10 @@
 import { CustomerCategory, CustomerSource } from '@rahat-ui/query';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Badge } from '@rahat-ui/shadcn/components/badge';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+} from '@rahat-ui/shadcn/components/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 import { useParams, useRouter } from 'next/navigation';
 

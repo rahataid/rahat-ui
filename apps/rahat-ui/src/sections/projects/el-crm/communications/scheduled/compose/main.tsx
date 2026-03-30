@@ -48,14 +48,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
+} from '@rahat-ui/shadcn/components/dialog';
 import { cn } from '@rahat-ui/shadcn/src/utils';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+} from '@rahat-ui/shadcn/components/tooltip';
 import {
   useCreateElCrmCampaign,
   useCreateElCrmAutomationRule,

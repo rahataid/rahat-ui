@@ -56,13 +56,13 @@ import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 import { DateRangePicker } from './dateRangePicker';
 import { DateRange } from 'react-day-picker';
 import { format } from 'date-fns';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Label } from '@rahat-ui/shadcn/components/label';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+} from '@rahat-ui/shadcn/components/tooltip';
 import { useSwal } from '@rahat-ui/query/swal';
 
 // Export configuration

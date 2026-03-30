@@ -47,14 +47,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+} from '@rahat-ui/shadcn/components/alert-dialog';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+} from '@rahat-ui/shadcn/components/tooltip';
+import { Label } from '@rahat-ui/shadcn/components/label';
 
 export default function TemplatesView() {
   const { id: projectUUID } = useParams() as { id: UUID };

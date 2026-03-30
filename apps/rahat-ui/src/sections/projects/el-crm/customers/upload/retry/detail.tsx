@@ -1,8 +1,8 @@
 import { useRetryCustomerImport, useSingleFailedBatch } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
-import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
+import { Badge } from '@rahat-ui/shadcn/components/badge';
 import {
   getCoreRowModel,
   getPaginationRowModel,
@@ -11,7 +11,7 @@ import {
 import { useFailedCustomersTableColumn } from './useFailedCustomersTableColumn';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import Link from 'next/link';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   ArrowLeft,
   RotateCcw,
@@ -25,7 +25,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+} from '@rahat-ui/shadcn/components/tooltip';
 import ClientSidePagination from '../../../../components/client.side.pagination';
 
 export default function BatchDetailView() {

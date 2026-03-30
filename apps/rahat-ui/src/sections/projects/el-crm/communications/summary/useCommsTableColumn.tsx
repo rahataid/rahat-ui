@@ -13,12 +13,12 @@ import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
 import { format } from 'date-fns';
 import { Eye } from 'lucide-react';
 import React from 'react';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+} from '@rahat-ui/shadcn/components/tooltip';
 
 export const useCommsTableColumn = () => {
   const { id } = useParams();

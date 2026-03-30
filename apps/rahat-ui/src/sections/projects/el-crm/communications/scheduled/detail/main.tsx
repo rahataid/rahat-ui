@@ -21,7 +21,7 @@ import {
   useListElCrmSessionBroadcast,
   usePagination,
 } from '@rahat-ui/query';
-import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import { Skeleton } from '@rahat-ui/shadcn/components/skeleton';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import CommsLogsTable from '../../../../aa/communication-logs/comms.logs.table';
 import SearchInput from '../../../../components/search.input';
@@ -35,7 +35,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+} from '@rahat-ui/shadcn/components/tooltip';
 
 export default function MessageDetailPage() {
   const { id: projectUUID, messageId } = useParams() as {

@@ -43,7 +43,7 @@ import {
   usePagination,
   useRetryFailedSession,
 } from '@rahat-ui/query';
-import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import { Skeleton } from '@rahat-ui/shadcn/components/skeleton';
 import SearchInput from '../../../../components/search.input';
 import SelectComponent from '../../../../cambodia/select.component';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
@@ -55,7 +55,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+} from '@rahat-ui/shadcn/components/tooltip';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { Label } from '@rahat-ui/shadcn/components/label';
 

@@ -1,18 +1,18 @@
 import { CustomerCategory } from '@rahat-ui/query';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Badge } from '@rahat-ui/shadcn/components/badge';
+import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
+} from '@rahat-ui/shadcn/components/select';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+} from '@rahat-ui/shadcn/components/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 

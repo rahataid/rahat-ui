@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Label } from '@rahat-ui/shadcn/components/label';
 
 import {
   Select,
@@ -42,7 +42,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+} from '@rahat-ui/shadcn/components/tooltip';
 
 export default function ScheduledView() {
   const { id: projectUUID } = useParams() as { id: UUID };

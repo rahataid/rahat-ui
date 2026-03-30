@@ -42,7 +42,6 @@ export default function EditPhaseView() {
     ];
 
   const triggerStatementPath = `/projects/aa/${projectId}/trigger-statements`;
-
   const form = useForm<AddPhaseFormInputValues, unknown, AddPhaseFormValues>({
     resolver: zodResolver(AddPhaseSchema),
     defaultValues: getAddPhaseDefaultValues(riverBasin || ''),
@@ -138,6 +137,7 @@ export default function EditPhaseView() {
           buttonClassName="rounded-sm w-full text-red-500 border-red-500"
           confirmButtonClassName="rounded-sm w-full bg-red-500"
           variant="outline"
+          data={phase}
         />
       </div>
       <PhaseForm

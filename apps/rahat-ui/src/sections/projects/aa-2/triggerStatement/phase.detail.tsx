@@ -48,8 +48,7 @@ export default function PhaseDetail() {
   const isDisabled =
     !phase?.isActive || !phase?.canRevert || revertPhase.isPending;
 
-  const isEditDisabled =
-    phase?.isActive || phase?.triggers?.length > 0 || !phase?._count.activity;
+  const isEditDisabled = phase?.isActive;
 
   const handleRevertPhase = async () => {
     await revertPhase.mutateAsync({

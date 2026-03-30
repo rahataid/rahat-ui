@@ -101,16 +101,16 @@ export const useScheduledTableColumn = () => {
     {
       accessorKey: 'name',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Name</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Name</span>
       ),
       cell: ({ row }) => (
-        <span className="font-medium">{row.getValue('name') || '\u2014'}</span>
+        <span className="text-sm font-medium">{row.getValue('name') || '\u2014'}</span>
       ),
     },
     {
       accessorKey: 'transportName',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Channel</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Channel</span>
       ),
       cell: ({ row }) => (
         <Badge variant={getChannelVariant(row.getValue('transportName'))}>
@@ -121,20 +121,20 @@ export const useScheduledTableColumn = () => {
     {
       accessorKey: 'targetType',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Group</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Group</span>
       ),
       cell: ({ row }) => {
         const value = row.getValue('targetType') as keyof typeof targetTypeMap;
-        return <span>{targetTypeMap[value] || '\u2014'}</span>;
+        return <span className="text-sm">{targetTypeMap[value] || '\u2014'}</span>;
       },
     },
     {
       accessorKey: 'recipientCount',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Recipients</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Recipients</span>
       ),
       cell: ({ row }) => (
-        <span className="tabular-nums">
+        <span className="text-sm tabular-nums">
           {row.getValue('recipientCount') || '\u2014'}
         </span>
       ),
@@ -142,19 +142,19 @@ export const useScheduledTableColumn = () => {
     {
       id: 'scheduledTimestamp',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Scheduled Date</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Scheduled Date</span>
       ),
       accessorFn: (row) => row.options?.scheduledTimestamp,
       cell: ({ getValue, row }) => {
         const value = getValue<string>();
-        if (!value) return <span className="tabular-nums">{'\u2014'}</span>;
+        if (!value) return <span className="text-sm tabular-nums">{'\u2014'}</span>;
         return <ScheduledDateCell value={value} row={row} />;
       },
     },
     {
       id: 'status',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Status</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</span>
       ),
       cell: ({ row }) => {
         const status = getStatus(row.original);
@@ -164,7 +164,7 @@ export const useScheduledTableColumn = () => {
     {
       id: 'actions',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Actions</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Actions</span>
       ),
       enableHiding: false,
       cell: ({ row }) => {

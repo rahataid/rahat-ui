@@ -22,7 +22,7 @@ interface PhaseFormProps {
   loading: boolean;
   submitLabel: string;
   resetLabel?: string;
-  hasPayoutEnabledPhase?: boolean;
+  payoutEnabledPhase?: { name?: string } | null;
 }
 
 export const PhaseForm: React.FC<PhaseFormProps> = ({
@@ -32,7 +32,7 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
   loading,
   submitLabel,
   resetLabel = 'Clear',
-  hasPayoutEnabledPhase = false,
+  payoutEnabledPhase = null,
 }) => (
   <Form {...form}>
     <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -154,7 +154,7 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                         <FormControl>
                           <Checkbox
                             checked={field.value === true}
-                            disabled={hasPayoutEnabledPhase}
+                            disabled={!!payoutEnabledPhase}
                             onCheckedChange={(checked) => {
                               field.onChange(checked === true);
                             }}
@@ -164,9 +164,10 @@ export const PhaseForm: React.FC<PhaseFormProps> = ({
                           Can Trigger Payout
                         </FormLabel>
                       </div>
-                      {hasPayoutEnabledPhase ? (
+                      {payoutEnabledPhase ? (
                         <p className="text-sm text-yellow-600 ml-2">
-                          A phase with payout enabled already exists.
+                          Phase "{payoutEnabledPhase.name}" already has payout
+                          enabled.
                         </p>
                       ) : null}
                     </FormItem>

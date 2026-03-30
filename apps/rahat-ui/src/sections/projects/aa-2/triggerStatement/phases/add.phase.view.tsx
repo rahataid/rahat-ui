@@ -68,15 +68,15 @@ export default function AddPhaseView() {
     }
   }, [riverBasin, form]);
 
-  const hasPayoutEnabledPhase = useMemo(
-    () => phasesData?.some((phase: any) => phase?.canTriggerPayout),
+  const payoutEnabledPhase = useMemo(
+    () => phasesData?.find((phase: any) => phase?.canTriggerPayout) || null,
     [phasesData],
   );
 
   useEffect(() => {
-    if (!hasPayoutEnabledPhase) return;
+    if (!payoutEnabledPhase) return;
     form.setValue('canTriggerPayout', false, { shouldValidate: true });
-  }, [hasPayoutEnabledPhase, form]);
+  }, [payoutEnabledPhase, form]);
 
   const handleAddPhase = async (data: AddPhaseFormValues) => {
     const payload = {
@@ -87,7 +87,7 @@ export default function AddPhaseView() {
       requiredMandatoryTriggers: data.requiredMandatoryTriggers,
       requiredOptionalTriggers: data.requiredOptionalTriggers,
       canRevert: !!data.canRevert,
-      canTriggerPayout: hasPayoutEnabledPhase ? false : !!data.canTriggerPayout,
+      canTriggerPayout: payoutEnabledPhase ? false : !!data.canTriggerPayout,
     };
     try {
       await createPhase.mutateAsync({
@@ -123,7 +123,7 @@ export default function AddPhaseView() {
         loading={createPhase.isPending}
         submitLabel="Add"
         resetLabel="Clear"
-        hasPayoutEnabledPhase={hasPayoutEnabledPhase}
+        payoutEnabledPhase={payoutEnabledPhase}
       />
     </>
   );

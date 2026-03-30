@@ -1,5 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Eye } from 'lucide-react';
 import React from 'react';
@@ -13,7 +13,6 @@ import {
 
 export const useMsgTableColumn = () => {
   const { id } = useParams();
-  const router = useRouter();
 
   const getChannelVariant = (channel: string) => {
     switch (channel) {
@@ -32,9 +31,17 @@ export const useMsgTableColumn = () => {
       header: () => (
         <span className="text-xs uppercase tracking-wider">Name</span>
       ),
-      cell: ({ row }) => (
-        <span className="font-medium">{row.getValue('name') || '\u2014'}</span>
-      ),
+      cell: ({ row }) => {
+        const name = (row.getValue('name') as string) || '\u2014';
+        return (
+          <span
+            className="block max-w-[260px] truncate font-medium"
+            title={name}
+          >
+            {name}
+          </span>
+        );
+      },
     },
     {
       accessorKey: 'transportName',

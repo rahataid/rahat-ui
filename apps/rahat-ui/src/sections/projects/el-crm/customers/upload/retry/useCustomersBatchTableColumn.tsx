@@ -1,4 +1,4 @@
-import { useRetryCustomerImport } from '@rahat-ui/query';
+import { useDeleteFailedBatch, useRetryCustomerImport } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -8,7 +8,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 import { UUID } from 'crypto';
-import { Eye, RotateCcw } from 'lucide-react';
+import { Eye, RotateCcw, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
 export const useCustomersBatchTableColumn = () => {
@@ -18,6 +18,7 @@ export const useCustomersBatchTableColumn = () => {
   const router = useRouter();
 
   const retryImport = useRetryCustomerImport();
+  const deleteBatch = useDeleteFailedBatch();
 
   const handleRetryImport = async (batchUUID: UUID) => {
     await retryImport.mutateAsync({
@@ -27,6 +28,13 @@ export const useCustomersBatchTableColumn = () => {
       },
     });
     router.push(`/projects/el-crm/${projectUUID}/customers`);
+  };
+
+  const handleDeleteBatch = async (batchUUID: UUID) => {
+    await deleteBatch.mutateAsync({
+      projectUUID,
+      batchUUID,
+    });
   };
 
   const columns: ColumnDef<any>[] = [
@@ -195,6 +203,21 @@ export const useCustomersBatchTableColumn = () => {
                 </TooltipContent>
               </Tooltip>
             )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 text-destructive hover:text-destructive"
+                  onClick={() => handleDeleteBatch(row.original.uuid)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Delete this batch log</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         );
       },

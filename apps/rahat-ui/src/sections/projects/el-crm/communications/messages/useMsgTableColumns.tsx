@@ -30,37 +30,60 @@ export const useMsgTableColumn = () => {
     {
       accessorKey: 'name',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Name</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Name
+        </span>
       ),
-      cell: ({ row }) => (
-        <span className="text-sm font-medium">{row.getValue('name') || '\u2014'}</span>
-      ),
+      cell: ({ row }) => {
+        const name = row.getValue('name') as string;
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-sm font-medium block max-w-[300px] truncate">
+                {name || '\u2014'}
+              </span>
+            </TooltipTrigger>
+            {name && name.length > 40 && (
+              <TooltipContent side="bottom" className="max-w-xs">
+                {name}
+              </TooltipContent>
+            )}
+          </Tooltip>
+        );
+      },
     },
     {
       accessorKey: 'transportName',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Channel</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Channel
+        </span>
       ),
-      cell: ({ row }) => (
-        <Badge variant={getChannelVariant(row.getValue('transportName'))}>
-          {row.getValue('transportName')}
-        </Badge>
-      ),
+      cell: ({ row }) => {
+        const label = row.getValue('transportName') as string;
+        return <Badge variant={getChannelVariant(label)}>{label}</Badge>;
+      },
     },
     {
       accessorKey: 'targetType',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Group</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Group
+        </span>
       ),
       cell: ({ row }) => {
         const value = row.getValue('targetType') as keyof typeof targetTypeMap;
-        return <span className='text-sm'>{targetTypeMap[value] || '\u2014'}</span>;
+        return (
+          <span className="text-sm">{targetTypeMap[value] || '\u2014'}</span>
+        );
       },
     },
     {
       accessorKey: 'recipientCount',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Recipients</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Recipients
+        </span>
       ),
       cell: ({ row }) => (
         <span className="text-sm tabular-nums">
@@ -71,20 +94,37 @@ export const useMsgTableColumn = () => {
     {
       accessorKey: 'createdAt',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Created Date</span>
-      ),
-      cell: ({ row }) => (
-        <span className="text-sm tabular-nums">
-          {row.getValue('createdAt')
-            ? new Date(row.getValue('createdAt')).toLocaleString()
-            : '\u2014'}
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Created Date
         </span>
       ),
+      cell: ({ row }) => {
+        const date = row.getValue('createdAt') as string;
+        if (!date) return <span className="text-sm">\u2014</span>;
+        const d = new Date(date);
+        return (
+          <span className="text-sm tabular-nums whitespace-nowrap">
+            {d.toLocaleDateString(undefined, {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            })}
+            <span className="text-muted-foreground ml-1">
+              {d.toLocaleTimeString(undefined, {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </span>
+          </span>
+        );
+      },
     },
     {
       accessorKey: 'sessionId',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Status
+        </span>
       ),
       cell: ({ row }) => {
         const isSent = !!row.getValue('sessionId');
@@ -98,7 +138,9 @@ export const useMsgTableColumn = () => {
     {
       id: 'actions',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Actions</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Actions
+        </span>
       ),
       enableHiding: false,
       cell: ({ row }) => {

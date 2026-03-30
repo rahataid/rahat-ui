@@ -20,7 +20,9 @@ export default function useCommsLogsTableColumns() {
     {
       accessorKey: 'audience',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Audience</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Audience
+        </span>
       ),
       cell: ({ row }) => (
         <span className="text-sm font-medium">
@@ -31,7 +33,9 @@ export default function useCommsLogsTableColumns() {
     {
       accessorKey: 'status',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Status
+        </span>
       ),
       cell: ({ row }) => {
         const status = row?.original?.status;
@@ -62,7 +66,9 @@ export default function useCommsLogsTableColumns() {
     {
       accessorKey: 'attempts',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Attempts</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Attempts
+        </span>
       ),
       cell: ({ row }) => (
         <span className="text-sm tabular-nums">
@@ -73,7 +79,9 @@ export default function useCommsLogsTableColumns() {
     {
       accessorKey: 'price',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Price</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Price
+        </span>
       ),
       cell: ({ row }) => {
         let price = row?.original?.disposition?.price;
@@ -92,22 +100,31 @@ export default function useCommsLogsTableColumns() {
     {
       accessorKey: 'timeStamp',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Timestamp</span>
-      ),
-      cell: ({ row }) => (
-        <span className="text-sm tabular-nums">
-          {renderDateTime(row?.original?.createdAt)}
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Timestamp
         </span>
       ),
+      cell: ({ row }) => {
+        const date = row?.original?.createdAt as string;
+        if (!date) return <span className="text-sm">\u2014</span>;
+        const d = new Date(date);
+        return (
+          <span className="text-sm tabular-nums whitespace-nowrap">
+            {d.toLocaleDateString(undefined, {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            })}
+            <span className="text-muted-foreground ml-1">
+              {d.toLocaleTimeString(undefined, {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </span>
+          </span>
+        );
+      },
     },
   ];
   return columns;
-}
-
-function renderDateTime(dateTime: string) {
-  if (dateTime) {
-    const d = new Date(dateTime);
-    return d.toLocaleString();
-  }
-  return '\u2014';
 }

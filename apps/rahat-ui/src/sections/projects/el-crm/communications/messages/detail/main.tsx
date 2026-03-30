@@ -57,6 +57,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import DemoTable from 'apps/rahat-ui/src/components/table';
+import { Label } from '@rahat-ui/shadcn/components/label';
 
 export default function MessageDetailPage() {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState(false);
@@ -595,46 +596,74 @@ export default function MessageDetailPage() {
       </div>
 
       <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
-        <DialogContent className="sm:max-w-xl">
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Confirm Message Send</DialogTitle>
-            <DialogDescription>
-              Please review the message details before sending.
-            </DialogDescription>
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-primary/10 p-2.5">
+                <Send className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <DialogTitle>Confirm Message Send</DialogTitle>
+                <DialogDescription className="mt-1">
+                  Review the details below before sending this campaign.
+                </DialogDescription>
+              </div>
+            </div>
           </DialogHeader>
 
-          <div className="grid gap-3 py-2 text-sm">
-            <div className="grid grid-cols-[130px,1fr] gap-3 items-start">
-              <span className="text-muted-foreground">Campaign</span>
-              <span className="font-medium break-words">{campaign.name}</span>
+          <div className="space-y-4 pt-2">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Campaign
+                </Label>
+                <p className="mt-1 text-sm font-medium text-foreground break-words line-clamp-2">
+                  {campaign.name}
+                </p>
+              </div>
+              <div>
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Channel
+                </Label>
+                <div className="mt-1">
+                  <Badge variant={getChannelVariant(campaign.transportName)}>
+                    {campaign.transportName}
+                  </Badge>
+                </div>
+              </div>
+              <div>
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Group
+                </Label>
+                <p className="mt-1 text-sm font-medium text-foreground">
+                  {campaign.targetType}
+                </p>
+              </div>
+              <div>
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Recipients
+                </Label>
+                <p className="mt-1 text-sm font-semibold tabular-nums text-foreground">
+                  {(campaign?.recipientCount || 0).toLocaleString()}
+                </p>
+              </div>
             </div>
-            <div className="grid grid-cols-[130px,1fr] gap-3 items-start">
-              <span className="text-muted-foreground">Channel</span>
-              <span className="font-medium break-words">
-                {campaign.transportName}
-              </span>
-            </div>
-            <div className="grid grid-cols-[130px,1fr] gap-3 items-start">
-              <span className="text-muted-foreground">Group</span>
-              <span className="font-medium break-words">
-                {campaign.targetType}
-              </span>
-            </div>
-            <div className="grid grid-cols-[130px,1fr] gap-3 items-start">
-              <span className="text-muted-foreground">Recipients</span>
-              <span className="font-medium break-words">
-                {(campaign?.recipientCount || 0).toLocaleString()}
-              </span>
-            </div>
-            <div className="grid grid-cols-[130px,1fr] gap-3 items-start">
-              <span className="text-muted-foreground">Message</span>
-              <span className="font-medium break-words whitespace-pre-wrap">
-                {campaign.body || '-'}
-              </span>
+
+            <div>
+              <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                Message Content
+              </Label>
+              <Card className="mt-2">
+                <CardContent className="max-h-[200px] overflow-auto p-4">
+                  <p className="whitespace-pre-wrap break-words text-sm text-foreground">
+                    {campaign.body || '—'}
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
 
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 pt-2">
             <Button
               type="button"
               variant="outline"

@@ -12,7 +12,7 @@ import { Trash } from 'lucide-react';
 import { DialogComponent } from 'apps/rahat-ui/src/sections/projects/aa-2/activities/details/dialog.reuse';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   AddPhaseFormInputValues,
@@ -29,12 +29,13 @@ export default function EditPhaseView() {
 
   const updatePhase = useUpdatePhase();
   const deletePhase = useDeletePhase();
+  const [isDeleted, setIsDeleted] = useState(false);
 
   const { settings } = useProjectSettingsStore((state) => ({
     settings: state.settings,
   }));
 
-  const { data: phase, isLoading } = useSinglePhase(projectId, phaseId);
+  const { data: phase, isLoading } = useSinglePhase(projectId, phaseId, { enabled: !isDeleted });
 
   const riverBasin =
     settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
@@ -103,6 +104,7 @@ export default function EditPhaseView() {
 
   const handleDeletePhase = async () => {
     try {
+      setIsDeleted(true);
       await deletePhase.mutateAsync({
         projectUUID: projectId,
         phasePayload: {
@@ -111,11 +113,12 @@ export default function EditPhaseView() {
       });
       router.push(triggerStatementPath);
     } catch (error) {
+      setIsDeleted(false);
       console.error('Delete phase error:', error);
     }
   };
 
-  if (isLoading) return <TableLoader />;
+  if (isLoading || isDeleted) return <TableLoader />;
 
   return (
     <>

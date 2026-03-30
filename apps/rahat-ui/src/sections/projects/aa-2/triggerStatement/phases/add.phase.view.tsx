@@ -79,8 +79,19 @@ export default function AddPhaseView() {
   }, [payoutEnabledPhase, form]);
 
   const handleAddPhase = async (data: AddPhaseFormValues) => {
+    const trimmedName = data.name.trim().toUpperCase();
+    const isDuplicate = phasesData.some(
+      (phase: any) => phase?.name?.trim().toUpperCase() === trimmedName,
+    );
+    if (isDuplicate) {
+      form.setError('name', {
+        type: 'manual',
+        message: 'This phase already exists.',
+      });
+      return;
+    }
     const payload = {
-      name: data.name.trim().toUpperCase(),
+      name: trimmedName,
       source: phaseSource,
       river_basin: data.riverBasin,
       activeYear: String(activeYear || ''),

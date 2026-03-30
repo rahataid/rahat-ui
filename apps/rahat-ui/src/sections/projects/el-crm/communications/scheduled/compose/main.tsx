@@ -372,6 +372,7 @@ export default function ComposeScheduleView() {
     page: 1,
     perPage: 1000,
     isAutomatic: true,
+    order: 'desc',
   });
   const createCampaign = useCreateElCrmCampaign(projectUUID);
   const trigger = useTriggerElCrmCampaign(projectUUID);
@@ -1343,9 +1344,7 @@ export default function ComposeScheduleView() {
                         </div>
                         {showRuleCooldownField && (
                           <div className="space-y-1">
-                            <Label className="text-xs">
-                              Cooldown days
-                            </Label>
+                            <Label className="text-xs">Cooldown days</Label>
                             <Input
                               className="h-8 text-xs"
                               type="number"
@@ -1356,7 +1355,8 @@ export default function ComposeScheduleView() {
                               }
                             />
                             <p className="text-[11px] text-muted-foreground">
-                              Required for recurring rules to prevent back-to-back sends.
+                              Required for recurring rules to prevent
+                              back-to-back sends.
                             </p>
                           </div>
                         )}
@@ -1378,7 +1378,8 @@ export default function ComposeScheduleView() {
                           </div>
                         ) : (
                           <div className="col-span-2 rounded-md border border-dashed px-3 py-2 text-[11px] text-muted-foreground">
-                            Fire once sends only the first time a target matches, so repeat limits and cooldown are hidden.
+                            Fire once sends only the first time a target
+                            matches, so repeat limits and cooldown are hidden.
                           </div>
                         )}
                       </div>

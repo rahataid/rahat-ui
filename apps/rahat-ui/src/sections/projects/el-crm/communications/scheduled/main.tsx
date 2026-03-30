@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Label } from '@rahat-ui/shadcn/components/label';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 import {
   Select,
@@ -14,9 +14,9 @@ import {
 import {
   CalendarClock,
   CalendarRange,
-  Filter,
   Plus,
   Radio,
+  SlidersHorizontal,
   X,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -35,7 +35,6 @@ import {
   useListElCrmTransport,
   usePagination,
 } from '@rahat-ui/query';
-import FiltersTags from '../../../components/filtersTags';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { DatePicker } from 'apps/rahat-ui/src/components/datePicker';
 import {
@@ -121,9 +120,40 @@ export default function ScheduledView() {
     }));
   };
 
+  const statCards = [
+    {
+      title: 'Total',
+      value: meta?.total || 0,
+      icon: CalendarClock,
+      color: 'text-foreground',
+      bgColor: 'bg-primary/5',
+      iconColor: 'text-primary',
+      tooltip: 'Total number of scheduled items',
+    },
+    {
+      title: 'Already Sent',
+      value: meta?.counts?.sent || 0,
+      icon: Radio,
+      color: 'text-success',
+      bgColor: 'bg-success/5',
+      iconColor: 'text-success',
+      tooltip: 'Messages already sent from schedule',
+    },
+    {
+      title: 'Pending Schedules',
+      value: meta?.counts?.pending || 0,
+      icon: CalendarRange,
+      color: 'text-warning',
+      bgColor: 'bg-warning/5',
+      iconColor: 'text-warning',
+      tooltip: 'Messages scheduled for later delivery',
+    },
+  ];
+
   return (
     <TooltipProvider delayDuration={200}>
       <div className="flex flex-col h-full">
+        {/* Page Header */}
         <div className="border-b border-border bg-card px-6 py-5">
           <div className="flex items-center justify-between">
             <div>
@@ -150,283 +180,311 @@ export default function ScheduledView() {
           </div>
         </div>
 
-        <div className="flex-1 p-6 overflow-auto">
-          <div className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <Card className="border-border/80">
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div className="rounded-md bg-primary/10 p-2 text-primary">
-                    <CalendarClock className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                      Total
-                    </p>
-                    <p className="text-3xl font-bold tracking-tight tabular-nums text-foreground">
-                      {meta?.total || 0}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Scheduled items
-                    </p>
+        <div className="flex-1 p-6 space-y-6 overflow-auto">
+          {/* Stats Grid */}
+          <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
+            {statCards.map((stat) => (
+              <Card
+                key={stat.title}
+                className="relative overflow-hidden transition-shadow hover:shadow-md"
+              >
+                <CardContent className="p-5">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1.5">
+                      <p className="text-sm font-medium text-muted-foreground leading-none">
+                        {stat.title}
+                      </p>
+                      <p
+                        className={`text-3xl font-bold tracking-tight ${stat.color}`}
+                      >
+                        {stat.value}
+                      </p>
+                    </div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className={`rounded-lg p-2.5 ${stat.bgColor}`}>
+                          <stat.icon className={`h-5 w-5 ${stat.iconColor}`} />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p className="max-w-[220px]">{stat.tooltip}</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 </CardContent>
               </Card>
+            ))}
+          </div>
 
-              <Card className="border-border/80">
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div className="rounded-md bg-emerald-500/10 p-2 text-emerald-600">
-                    <Radio className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                      Already Sent
-                    </p>
-                    <p className="text-3xl font-bold tracking-tight tabular-nums text-foreground">
-                      {meta?.counts?.sent || 0}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Sent from schedule
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+          {/* Scheduled Table Card */}
+          <Card className="flex flex-col">
+            {/* Filter Bar */}
+            <div className="border-b border-border px-5 py-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium text-foreground">
+                    Filters
+                  </span>
+                  {activeFilterCount > 0 && (
+                    <span className="inline-flex items-center justify-center h-5 min-w-[20px] rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </div>
+                {activeFilterCount > 0 && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={clearAllFilters}
+                    className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                    Clear all
+                  </Button>
+                )}
+              </div>
 
-              <Card className="border-border/80 sm:col-span-2 lg:col-span-1">
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div className="rounded-md bg-amber-500/10 p-2 text-amber-600">
-                    <CalendarRange className="h-4 w-4" />
+              <div className="flex flex-wrap items-end gap-3">
+                {/* Template Filter */}
+                <div className="space-y-1.5 flex-1">
+                  <Label className="text-xs text-muted-foreground">
+                    Template
+                  </Label>
+                  <Select
+                    value={filters?.message || 'all'}
+                    onValueChange={(value) => {
+                      setFilters((prev) => ({
+                        ...prev,
+                        message: value === 'all' ? undefined : value,
+                      }));
+                    }}
+                  >
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="All Templates" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Templates</SelectItem>
+                      {scheduledTemplates.map((template: any) => (
+                        <SelectItem
+                          key={template.externalId}
+                          value={template.externalId}
+                        >
+                          {template.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Channel Filter */}
+                <div className="space-y-1.5 min-w-[180px]">
+                  <Label className="text-xs text-muted-foreground">
+                    Channel
+                  </Label>
+                  <Select
+                    value={filters?.transportId || 'all'}
+                    onValueChange={(value) => {
+                      setFilters((prev) => ({
+                        ...prev,
+                        transportId: value === 'all' ? undefined : value,
+                      }));
+                    }}
+                  >
+                    <SelectTrigger className="w-[160px] h-9 text-sm">
+                      <SelectValue placeholder="All Channels" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Channels</SelectItem>
+                      {transport?.data?.map((channel: any) => (
+                        <SelectItem key={channel.cuid} value={channel.cuid}>
+                          {channel.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Status Filter */}
+                <div className="space-y-1.5 min-w-[180px]">
+                  <Label className="text-xs text-muted-foreground">
+                    Status
+                  </Label>
+                  <Select
+                    value={filters?.status || 'all'}
+                    onValueChange={(value) => {
+                      setFilters((prev) => ({
+                        ...prev,
+                        status: value === 'all' ? undefined : value,
+                      }));
+                    }}
+                  >
+                    <SelectTrigger className="w-[150px] h-9 text-sm">
+                      <SelectValue placeholder="All Statuses" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      <SelectItem value="Draft">Draft</SelectItem>
+                      <SelectItem value="Scheduled">Scheduled</SelectItem>
+                      <SelectItem value="Sent">Sent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Date Range Filter */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">
+                    Date Range
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <DatePicker
+                      placeholder="Start Date"
+                      handleDateChange={handleDateChange}
+                      type="start"
+                      value={
+                        filters?.startDate
+                          ? new Date(filters.startDate)
+                          : undefined
+                      }
+                    />
+                    <DatePicker
+                      placeholder="End Date"
+                      handleDateChange={handleDateChange}
+                      type="end"
+                      value={
+                        filters?.endDate
+                          ? new Date(filters.endDate)
+                          : undefined
+                      }
+                    />
                   </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                      Pending Schedules
-                    </p>
-                    <p className="text-3xl font-bold tracking-tight tabular-nums text-foreground">
-                      {meta?.counts?.pending || 0}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Scheduled for later
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
+
+              {/* Active Filter Tags */}
+              {activeFilterCount > 0 && (
+                <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-border/50">
+                  <span className="text-xs text-muted-foreground">
+                    Showing {data?.length || 0} scheduled message
+                    {(data?.length || 0) === 1 ? '' : 's'} for:
+                  </span>
+                  {filters?.message && (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
+                      Template: {scheduledTemplates.find((t: any) => t.externalId === filters.message)?.name || filters.message}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFilters((prev) => ({ ...prev, message: undefined }))
+                        }
+                        className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  )}
+                  {filters?.transportId && (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
+                      Channel: {transport?.data?.find((c: any) => c.cuid === filters.transportId)?.name || filters.transportId}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFilters((prev) => ({ ...prev, transportId: undefined }))
+                        }
+                        className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  )}
+                  {filters?.status && (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
+                      Status: {filters.status}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFilters((prev) => ({ ...prev, status: undefined }))
+                        }
+                        className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  )}
+                  {(filters?.startDate || filters?.endDate) && (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
+                      Date: {filters.startDate ? new Date(filters.startDate).toLocaleDateString() : '...'} – {filters.endDate ? new Date(filters.endDate).toLocaleDateString() : '...'}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFilters((prev) => ({
+                            ...prev,
+                            startDate: undefined,
+                            endDate: undefined,
+                          }))
+                        }
+                        className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
-            <Card className="border-border/80">
-              {hasActiveFilters && (
-                <FiltersTags
-                  filters={filters}
-                  setFilters={setFilters}
-                  total={data?.length}
-                />
-              )}
-
-              <CardContent className="space-y-4 pt-6">
-                <div className="rounded-lg border border-border/70 bg-muted/30 p-4">
-                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                      <Filter className="h-4 w-4 text-muted-foreground" />
-                      Filters
-                      {hasActiveFilters && (
-                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
-                          {activeFilterCount} active
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-2">
+            {/* Table */}
+            <CardContent className="p-0">
+              {data.length === 0 ? (
+                <div className="flex flex-col items-center justify-center px-6 py-12 text-center">
+                  <CalendarClock className="mx-auto mb-4 h-10 w-10 text-muted-foreground" />
+                  <h3 className="mb-2 text-lg font-semibold text-foreground">
+                    No scheduled messages found
+                  </h3>
+                  <p className="mx-auto mb-6 max-w-md text-sm text-muted-foreground">
+                    {hasActiveFilters
+                      ? 'No messages match your filters. Clear filters or adjust your date range to see more results.'
+                      : 'Schedule your first message to start planning outreach campaigns.'}
+                  </p>
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    {hasActiveFilters && (
                       <Button
                         type="button"
                         variant="outline"
-                        size="sm"
-                        className="h-8"
                         onClick={clearAllFilters}
-                        disabled={!hasActiveFilters}
                       >
-                        <X className="mr-2 h-3.5 w-3.5" />
-                        Clear Filters
+                        <X className="mr-2 h-4 w-4" />
+                        Reset Filters
                       </Button>
-                    </div>
-                  </div>
-
-                  <div className="grid gap-4 md:grid-cols-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="template-filter" className="text-sm">
-                        Template
-                      </Label>
-                      <Select
-                        value={filters?.message || 'all'}
-                        onValueChange={(value) => {
-                          setFilters((prev) => ({
-                            ...prev,
-                            message: value === 'all' ? undefined : value,
-                          }));
-                        }}
-                      >
-                        <SelectTrigger id="template-filter">
-                          <SelectValue placeholder="All Templates" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Templates</SelectItem>
-                          {scheduledTemplates.map((template: any) => (
-                            <SelectItem
-                              key={template.externalId}
-                              value={template.externalId}
-                            >
-                              {template.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="channel-filter" className="text-sm">
-                        Channel
-                      </Label>
-                      <Select
-                        value={filters?.transportId || 'all'}
-                        onValueChange={(value) => {
-                          setFilters((prev) => ({
-                            ...prev,
-                            transportId: value === 'all' ? undefined : value,
-                          }));
-                        }}
-                      >
-                        <SelectTrigger id="channel-filter">
-                          <SelectValue placeholder="All Channels" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Channels</SelectItem>
-                          {transport?.data?.map((channel: any) => (
-                            <SelectItem key={channel.cuid} value={channel.cuid}>
-                              {channel.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="status-filter" className="text-sm">
-                        Status
-                      </Label>
-                      <Select
-                        value={filters?.status || 'all'}
-                        onValueChange={(value) => {
-                          setFilters((prev) => ({
-                            ...prev,
-                            status: value === 'all' ? undefined : value,
-                          }));
-                        }}
-                      >
-                        <SelectTrigger id="status-filter">
-                          <SelectValue placeholder="All Statuses" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Statuses</SelectItem>
-                          <SelectItem value="Draft">Draft</SelectItem>
-                          <SelectItem value="Scheduled">Scheduled</SelectItem>
-                          <SelectItem value="Sent">Sent</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="date-filter" className="text-sm">
-                        Date Range
-                      </Label>
-                      <div className="flex items-center gap-2">
-                        <DatePicker
-                          placeholder="Start Date"
-                          handleDateChange={handleDateChange}
-                          type="start"
-                          value={
-                            filters?.startDate
-                              ? new Date(filters.startDate)
-                              : undefined
-                          }
-                        />
-                        <DatePicker
-                          placeholder="End Date"
-                          handleDateChange={handleDateChange}
-                          type="end"
-                          value={
-                            filters?.endDate
-                              ? new Date(filters.endDate)
-                              : undefined
-                          }
-                        />
-                      </div>
-                    </div>
+                    )}
+                    <Link
+                      href={`/projects/el-crm/${projectUUID}/communications/scheduled/compose`}
+                    >
+                      <Button>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Schedule Message
+                      </Button>
+                    </Link>
                   </div>
                 </div>
-
-                <div className="flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-                  <p>
-                    Showing{' '}
-                    <span className="font-medium text-foreground">
-                      {data?.length || 0}
-                    </span>{' '}
-                    scheduled messages
-                  </p>
-                  <p className="flex items-center gap-1">
-                    <CalendarRange className="h-4 w-4" />
-                    Total available:{' '}
-                    <span className="font-medium text-foreground">
-                      {meta?.total || 0}
-                    </span>
-                  </p>
-                </div>
-
-                {data.length === 0 ? (
-                  <div className="rounded-lg border border-dashed border-border bg-background px-6 py-12 text-center">
-                    <CalendarClock className="mx-auto mb-4 h-10 w-10 text-muted-foreground" />
-                    <h3 className="mb-2 text-lg font-semibold text-foreground">
-                      No scheduled messages found
-                    </h3>
-                    <p className="mx-auto mb-6 max-w-md text-sm text-muted-foreground">
-                      {hasActiveFilters
-                        ? 'No messages match your filters. Clear filters or adjust your date range to see more results.'
-                        : 'Schedule your first message to start planning outreach campaigns.'}
-                    </p>
-                    <div className="flex flex-wrap items-center justify-center gap-2">
-                      {hasActiveFilters && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={clearAllFilters}
-                        >
-                          <X className="mr-2 h-4 w-4" />
-                          Reset Filters
-                        </Button>
-                      )}
-                      <Link
-                        href={`/projects/el-crm/${projectUUID}/communications/scheduled/compose`}
-                      >
-                        <Button>
-                          <Plus className="mr-2 h-4 w-4" />
-                          Schedule Message
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <DemoTable table={table} />
-                    <CustomPagination
-                      meta={meta || { total: 0, currentPage: 0 }}
-                      handleNextPage={setNextPage}
-                      handlePrevPage={setPrevPage}
-                      handlePageSizeChange={setPerPage}
-                      currentPage={pagination.page}
-                      perPage={pagination.perPage}
-                      total={meta?.total}
-                    />
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+              ) : (
+                <>
+                  <DemoTable
+                    table={table}
+                    tableHeight="h-[calc(100vh-515px)]"
+                  />
+                  <CustomPagination
+                    meta={meta || { total: 0, currentPage: 0 }}
+                    handleNextPage={setNextPage}
+                    handlePrevPage={setPrevPage}
+                    handlePageSizeChange={setPerPage}
+                    currentPage={pagination.page}
+                    perPage={pagination.perPage}
+                    total={meta?.total}
+                  />
+                </>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </TooltipProvider>

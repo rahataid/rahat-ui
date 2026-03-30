@@ -79,7 +79,7 @@ export default function MessagesView() {
           </div>
         </div>
 
-        <div className="flex-1 p-6 overflow-auto">
+        <div className="flex-1 p-6 space-y-6 overflow-auto">
           {data.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-96 text-center">
               <div className="rounded-full bg-muted p-4 mb-4">
@@ -101,20 +101,21 @@ export default function MessagesView() {
               </Link>
             </div>
           ) : (
-            <Card>
+            <Card className="flex flex-col">
               <CardContent className="p-0">
-                <DemoTable table={table} />
-                <div className="p-4 border-t">
-                  <CustomPagination
-                    meta={meta || { total: 0, currentPage: 0 }}
-                    handleNextPage={setNextPage}
-                    handlePrevPage={setPrevPage}
-                    handlePageSizeChange={setPerPage}
-                    currentPage={pagination.page}
-                    perPage={pagination.perPage}
-                    total={meta?.total}
-                  />
-                </div>
+                <DemoTable
+                  table={table}
+                  tableHeight="h-[calc(100vh-256px)]"
+                />
+                <CustomPagination
+                  meta={meta || { total: 0, currentPage: 0 }}
+                  handleNextPage={setNextPage}
+                  handlePrevPage={setPrevPage}
+                  handlePageSizeChange={setPerPage}
+                  currentPage={pagination.page}
+                  perPage={pagination.perPage}
+                  total={meta?.total}
+                />
               </CardContent>
             </Card>
           )}

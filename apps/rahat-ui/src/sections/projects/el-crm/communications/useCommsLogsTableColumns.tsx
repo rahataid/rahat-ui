@@ -20,10 +20,10 @@ export default function useCommsLogsTableColumns() {
     {
       accessorKey: 'audience',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Audience</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Audience</span>
       ),
       cell: ({ row }) => (
-        <span className="font-medium">
+        <span className="text-sm font-medium">
           {row?.original?.address || '\u2014'}
         </span>
       ),
@@ -31,7 +31,7 @@ export default function useCommsLogsTableColumns() {
     {
       accessorKey: 'status',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Status</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</span>
       ),
       cell: ({ row }) => {
         const status = row?.original?.status;
@@ -62,10 +62,10 @@ export default function useCommsLogsTableColumns() {
     {
       accessorKey: 'attempts',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Attempts</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Attempts</span>
       ),
       cell: ({ row }) => (
-        <span className="tabular-nums">
+        <span className="text-sm tabular-nums">
           {row?.original?.attempts ?? '\u2014'}
         </span>
       ),
@@ -73,7 +73,7 @@ export default function useCommsLogsTableColumns() {
     {
       accessorKey: 'price',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Price</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Price</span>
       ),
       cell: ({ row }) => {
         let price = row?.original?.disposition?.price;
@@ -81,7 +81,7 @@ export default function useCommsLogsTableColumns() {
           price = price.substring(1);
         }
         return (
-          <span className="tabular-nums">
+          <span className="text-sm tabular-nums">
             {price !== undefined && price !== null && price !== ''
               ? price
               : '\u2014'}
@@ -92,10 +92,10 @@ export default function useCommsLogsTableColumns() {
     {
       accessorKey: 'timeStamp',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Timestamp</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Timestamp</span>
       ),
       cell: ({ row }) => (
-        <span className="tabular-nums">
+        <span className="text-sm tabular-nums">
           {renderDateTime(row?.original?.createdAt)}
         </span>
       ),

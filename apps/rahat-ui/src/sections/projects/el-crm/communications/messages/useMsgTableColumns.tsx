@@ -29,7 +29,9 @@ export const useMsgTableColumn = () => {
     {
       accessorKey: 'name',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Name</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Name
+        </span>
       ),
       cell: ({ row }) => {
         const name = (row.getValue('name') as string) || '\u2014';
@@ -46,7 +48,9 @@ export const useMsgTableColumn = () => {
     {
       accessorKey: 'transportName',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Channel</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Channel
+        </span>
       ),
       cell: ({ row }) => (
         <Badge variant={getChannelVariant(row.getValue('transportName'))}>
@@ -57,20 +61,26 @@ export const useMsgTableColumn = () => {
     {
       accessorKey: 'targetType',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Group</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Group
+        </span>
       ),
       cell: ({ row }) => {
         const value = row.getValue('targetType') as keyof typeof targetTypeMap;
-        return <span>{targetTypeMap[value] || '\u2014'}</span>;
+        return (
+          <span className="text-sm">{targetTypeMap[value] || '\u2014'}</span>
+        );
       },
     },
     {
       accessorKey: 'recipientCount',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Recipients</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Recipients
+        </span>
       ),
       cell: ({ row }) => (
-        <span className="tabular-nums">
+        <span className="text-sm tabular-nums">
           {row.getValue('recipientCount') || '\u2014'}
         </span>
       ),
@@ -78,10 +88,12 @@ export const useMsgTableColumn = () => {
     {
       accessorKey: 'createdAt',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Created Date</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Created Date
+        </span>
       ),
       cell: ({ row }) => (
-        <span className="tabular-nums">
+        <span className="text-sm tabular-nums">
           {row.getValue('createdAt')
             ? new Date(row.getValue('createdAt')).toLocaleString()
             : '\u2014'}
@@ -91,7 +103,9 @@ export const useMsgTableColumn = () => {
     {
       accessorKey: 'sessionId',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Status</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Status
+        </span>
       ),
       cell: ({ row }) => {
         const isSent = !!row.getValue('sessionId');
@@ -105,7 +119,9 @@ export const useMsgTableColumn = () => {
     {
       id: 'actions',
       header: () => (
-        <span className="text-xs uppercase tracking-wider">Actions</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Actions
+        </span>
       ),
       enableHiding: false,
       cell: ({ row }) => {

@@ -20,6 +20,7 @@ interface CustomerTableRow {
   source: CustomerSource;
   lastPurchaseDate: Date;
   category: CustomerCategory;
+  lastMessageSent: Date;
 }
 
 export const useCustomersTableColumn = () => {
@@ -221,6 +222,29 @@ export const useCustomersTableColumn = () => {
         return (
           <Badge variant={variant}>{category?.split('_').join(' ')}</Badge>
         );
+      },
+    },
+    {
+      accessorKey: 'lastMessageSent',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Last Message Sent
+        </span>
+      ),
+      cell: ({ row }) => {
+        const date = row.getValue('lastMessageSent') as string;
+        if (!date) return <span className="text-muted-foreground/60">—</span>;
+        const dateObj = new Date(date);
+        const formatted = dateObj.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        });
+        const time = dateObj.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        return <span className="text-sm tabular-nums">{formatted} {time}</span>;
       },
     },
   ];

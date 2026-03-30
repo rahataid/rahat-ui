@@ -98,7 +98,7 @@ module.exports = {
         'nav': '0 1px 2px 0 rgb(0 0 0 / 0.03)',
       },
       fontFamily: {
-        sans: ['var(--font-geist-sans)', ...fontFamily.sans],
+        // sans: ['var(--font-geist-sans)', ...fontFamily.sans],
         mono: ['var(--font-mono)', ...fontFamily.mono],
       },
       transitionDuration: {

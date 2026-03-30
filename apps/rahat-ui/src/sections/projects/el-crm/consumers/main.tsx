@@ -20,6 +20,7 @@ import {
   XCircle,
   CalendarCheck,
   X,
+  SlidersHorizontal,
 } from 'lucide-react';
 import {
   Tooltip,
@@ -185,10 +186,35 @@ export default function ConsumersView() {
 
           {/* Consumer Table Card */}
           <Card className="flex flex-col">
-            {/* Search Bar */}
+            {/* Filter Bar */}
             <div className="border-b border-border px-5 py-4">
-              <div className="flex items-end gap-3">
-                <div className="flex-1 max-w-sm space-y-1.5">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium text-foreground">
+                    Filters
+                  </span>
+                  {searchTerm && (
+                    <span className="inline-flex items-center justify-center h-5 min-w-[20px] rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                      1
+                    </span>
+                  )}
+                </div>
+                {searchTerm && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setSearchTerm('')}
+                    className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                    Clear all
+                  </Button>
+                )}
+              </div>
+
+              <div className="flex flex-wrap items-end gap-3">
+                <div className="flex-1 min-w-[180px] max-w-sm space-y-1.5">
                   <Label className="text-xs text-muted-foreground">
                     Search
                   </Label>
@@ -202,22 +228,14 @@ export default function ConsumersView() {
                     />
                   </div>
                 </div>
-                {searchTerm && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setSearchTerm('')}
-                    className="h-9 gap-1.5 text-muted-foreground hover:text-foreground"
-                  >
-                    <X className="h-3.5 w-3.5" />
-                    Clear
-                  </Button>
-                )}
               </div>
+
+              {/* Active Filter Tags */}
               {searchTerm && (
-                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/50">
+                <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-border/50">
                   <span className="text-xs text-muted-foreground">
-                    Showing results for:
+                    Showing {filteredConsumers.length} result
+                    {filteredConsumers.length !== 1 ? 's' : ''} for:
                   </span>
                   <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
                     &quot;{searchTerm}&quot;
@@ -229,10 +247,6 @@ export default function ConsumersView() {
                       <X className="h-3 w-3" />
                     </button>
                   </span>
-                  <span className="text-xs text-muted-foreground">
-                    · {filteredConsumers.length} result
-                    {filteredConsumers.length !== 1 ? 's' : ''}
-                  </span>
                 </div>
               )}
             </div>
@@ -241,7 +255,7 @@ export default function ConsumersView() {
             <CardContent className="p-0">
               <DemoTable
                 table={table}
-                tableHeight="h-[calc(100vh-560px)]"
+                tableHeight="h-[calc(100vh-530px)]"
               />
             </CardContent>
           </Card>

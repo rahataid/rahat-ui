@@ -1,4 +1,8 @@
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import {
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import { useCustomersBatchTableColumn } from './useCustomersBatchTableColumn';
 import { useFailedBatch } from '@rahat-ui/query';
@@ -14,6 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import ClientSidePagination from '../../../../components/client.side.pagination';
 
 export default function CustomersUploadRetryView() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -23,10 +28,10 @@ export default function CustomersUploadRetryView() {
   const columns = useCustomersBatchTableColumn();
 
   const table = useReactTable({
-    manualPagination: true,
     data: failedBatch || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
   const batchCount = failedBatch?.length || 0;
 
@@ -75,20 +80,17 @@ export default function CustomersUploadRetryView() {
           <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
             <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
             <p className="text-sm text-muted-foreground">
-              These batches failed during import due to some errors. You
-              can view the details of each batch and retry the import, or fix
-              the issues in the detail view before retrying.
+              These batches failed during import due to some errors. You can
+              view the details of each batch and retry the import, or fix the
+              issues in the detail view before retrying.
             </p>
           </div>
 
           {/* Table Card */}
           <Card className="flex flex-col">
             <CardContent className="p-0">
-              <DemoTable
-                table={table}
-                tableHeight="h-[calc(100vh-320px)]"
-                loading={isLoading}
-              />
+              <DemoTable table={table} loading={isLoading} />
+              <ClientSidePagination table={table} />
             </CardContent>
           </Card>
         </div>

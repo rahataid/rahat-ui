@@ -143,6 +143,29 @@ export const useCustomers = (uuid: UUID, payload: any) => {
   };
 };
 
+export const useExportCustomers = () => {
+  const q = useProjectAction();
+
+  return useMutation({
+    mutationFn: async ({
+      uuid,
+      payload,
+    }: {
+      uuid: UUID;
+      payload: any;
+    }) => {
+      const result = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'elProject.crm.exportVendor',
+          payload,
+        },
+      });
+      return result;
+    },
+  });
+};
+
 export const useFailedBatch = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
 
@@ -188,16 +211,37 @@ export const useRetryCustomerImport = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: (data: any) => {
       q.reset();
       // Invalidate batch queries so stale data isn't shown if user navigates back
       queryClient.invalidateQueries({ queryKey: ['failed-batch'] });
       queryClient.invalidateQueries({ queryKey: ['single-failed-batch'] });
-      toast.fire({
-        title: 'Import retry started',
-        icon: 'success',
-        text: 'The corrected data is being re-processed. You will be redirected shortly.',
-      });
+
+      const response = data?.data || data;
+      const failed = response?.failedVendors ?? 0;
+      const valid = response?.totalVendors ?? 0;
+
+      if (failed > 0 && valid > 0) {
+        toast.fire({
+          title: 'Partial retry success',
+          icon: 'warning',
+          text: `${valid} customers queued for import. ${failed} still have validation errors — fix and retry again.`,
+          timer: 5000,
+        });
+      } else if (failed > 0 && valid === 0) {
+        toast.fire({
+          title: 'Customers still have errors',
+          icon: 'error',
+          text: `All ${failed} customers still have validation errors. Please review and fix them.`,
+          timer: 5000,
+        });
+      } else {
+        toast.fire({
+          title: 'Import retry started',
+          icon: 'success',
+          text: 'The data is being re-processed.',
+        });
+      }
     },
     onError: (error: unknown) => {
       q.reset();
@@ -210,6 +254,48 @@ export const useRetryCustomerImport = () => {
         text: isValidation
           ? `${detail}. Please review the highlighted fields and correct them before retrying.`
           : detail || 'Something went wrong. Please try again or contact support if the issue persists.',
+        timer: 5000,
+      });
+    },
+  });
+};
+
+export const useDeleteFailedBatch = () => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin(TOAST_CONFIG);
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      batchUUID,
+    }: {
+      projectUUID: UUID;
+      batchUUID: UUID;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'elProject.crm.deleteFailedBatch',
+          payload: { batchUUID },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      queryClient.invalidateQueries({ queryKey: ['failed-batch'] });
+      toast.fire({
+        title: 'Batch log deleted',
+        icon: 'success',
+      });
+    },
+    onError: (error: unknown) => {
+      q.reset();
+      const detail = getErrorMessage(error, '');
+      toast.fire({
+        title: 'Failed to delete batch log',
+        icon: 'error',
+        text: detail || 'Something went wrong. Please try again.',
         timer: 5000,
       });
     },

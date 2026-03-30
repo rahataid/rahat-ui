@@ -22,6 +22,7 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
 } from '@tanstack/react-table';
+import ClientSidePagination from '../../../../components/client.side.pagination';
 
 export default function AutomationDetailPage() {
   const { id: projectUUID, automationId } = useParams() as {
@@ -143,7 +144,12 @@ export default function AutomationDetailPage() {
             {Array.isArray(logs) && logs.length === 0 ? (
               <div>No session logs found.</div>
             ) : (
-              table && <CommsLogsTable table={table} />
+              table && (
+                <>
+                  <CommsLogsTable table={table} />
+                  <ClientSidePagination table={table} />
+                </>
+              )
             )}
           </CardContent>
         </Card>

@@ -740,7 +740,7 @@ export default function ComposeMessageView() {
               className="gap-2"
             >
               <Send className="h-4 w-4" />
-              {createCampaign.isPending ? 'Sending…' : 'Send Message'}
+              {createCampaign.isPending ? 'Sending…' : 'Create Message'}
             </Button>
           </DialogFooter>
         </DialogContent>

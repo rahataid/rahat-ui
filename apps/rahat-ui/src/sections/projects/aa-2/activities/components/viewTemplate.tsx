@@ -96,7 +96,7 @@ const ViewTemplate = ({
             <div className="space-y-4">
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="filters" className="border-b">
-                  <AccordionTrigger className="hover:no-underline py-3">
+                  <AccordionTrigger className="hover:no-underline py-2">
                     <div className="flex items-center gap-2 mb-2">
                       <Filter className="w-4 h-4 text-muted-foreground" />
                       <span className="text-sm font-semibold text-foreground">

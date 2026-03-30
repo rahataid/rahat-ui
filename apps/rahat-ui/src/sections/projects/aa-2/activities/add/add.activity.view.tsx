@@ -75,6 +75,7 @@ import {
 } from 'apps/rahat-ui/src/types/activities';
 import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 export const DurationData = [
   { value: 'hours', label: 'Hours' },
   { value: 'days', label: 'Days' },
@@ -439,7 +440,7 @@ export default function AddActivities() {
         <div className={`flex ${viewTemplateOpen.value ? 'gap-0' : ''}`}>
           <div
             className={`p-4 ${
-              viewTemplateOpen.value ? 'w-3/5' : 'w-full'
+              viewTemplateOpen.value ? 'w-4/5' : 'w-full'
             } transition-all`}
           >
             <div className=" mb-2 flex flex-col space-y-0">
@@ -455,14 +456,18 @@ export default function AddActivities() {
 
                 <div className="flex justify-end mt-8">
                   <div className="flex gap-2">
-                    <Button
-                      className=" cursor-pointer border"
-                      type="button"
-                      variant={'link'}
-                      onClick={viewTemplateOpen.onTrue}
+                    <TooltipWrapper
+                      tip={'View templates to reuse for this activity'}
                     >
-                      <LayoutTemplate className="w-6 h-6 text-blue-500" />
-                    </Button>
+                      <Button
+                        className=" cursor-pointer border"
+                        type="button"
+                        variant={'link'}
+                        onClick={viewTemplateOpen.onTrue}
+                      >
+                        <LayoutTemplate className="w-6 h-6 text-blue-500" />
+                      </Button>
+                    </TooltipWrapper>
                     <Button
                       type="button"
                       variant="outline"

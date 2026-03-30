@@ -37,6 +37,10 @@ export default function AutomationDetailPage() {
 
   const rule = data?.rule;
   const logs = data?.logs || [];
+  const showsRecurringConfig =
+    Boolean(rule?.isRecurring) && Boolean(rule?.recurrenceCooldownDays);
+  const showsMaxSends =
+    !rule?.fireOnceOnEntry && rule?.maxSendsPerTarget != null;
 
   const columns = useCommsLogsTableColumns();
   const table = useReactTable({
@@ -95,17 +99,27 @@ export default function AutomationDetailPage() {
                 <div>{rule.targetType}</div>
               </div>
               <div>
-                <Label>Recurring</Label>
-                <div>
-                  {rule.isRecurring
-                    ? `Yes (Cooldown: ${rule.recurrenceCooldownDays} days)`
-                    : 'No'}
-                </div>
-              </div>
-              <div>
                 <Label>Fire Once Per Target</Label>
                 <div>{rule.fireOnceOnEntry ? 'Yes' : 'No'}</div>
               </div>
+              {showsRecurringConfig && (
+                <div>
+                  <Label>Recurring</Label>
+                  <div>Yes</div>
+                </div>
+              )}
+              {showsRecurringConfig && (
+                <div>
+                  <Label>Cooldown Days</Label>
+                  <div>{rule.recurrenceCooldownDays}</div>
+                </div>
+              )}
+              {showsMaxSends && (
+                <div>
+                  <Label>Max Sends Per Target</Label>
+                  <div>{rule.maxSendsPerTarget}</div>
+                </div>
+              )}
             </div>
             <div>
               <Label>Conditions</Label>

@@ -1,5 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Eye } from 'lucide-react';
 import React from 'react';
@@ -13,7 +13,6 @@ import {
 
 export const useMsgTableColumn = () => {
   const { id } = useParams();
-  const router = useRouter();
 
   const getChannelVariant = (channel: string) => {
     switch (channel) {

@@ -11,6 +11,14 @@ import {
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/components/dialog';
+import {
   ArrowLeft,
   CalendarDays,
   CheckCircle2,
@@ -51,6 +59,8 @@ import {
 import DemoTable from 'apps/rahat-ui/src/components/table';
 
 export default function MessageDetailPage() {
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState(false);
+
   const { id: projectUUID, messageId } = useParams() as {
     id: UUID;
     messageId: string;
@@ -154,9 +164,10 @@ export default function MessageDetailPage() {
     }
   };
 
-  const handleSendMessage = () => {
-    console.log('Sending message:', campaign?.uuid);
-    trigger.mutate({ uuid: campaign?.uuid || '' });
+  const handleSendMessage = async () => {
+    if (!campaign?.uuid) return;
+    setIsConfirmDialogOpen(false);
+    await trigger.mutateAsync({ uuid: campaign.uuid });
   };
 
   const hasActiveFilters = Object.values(filters || {}).some(
@@ -355,12 +366,12 @@ export default function MessageDetailPage() {
                 <TooltipTrigger asChild>
                   <Button
                     size="sm"
-                    disabled={isSent}
-                    onClick={handleSendMessage}
+                    disabled={isSent || trigger.isPending}
+                    onClick={() => setIsConfirmDialogOpen(true)}
                     className="gap-2"
                   >
                     <Send className="h-3.5 w-3.5" />
-                    Send Message
+                    {trigger.isPending ? 'Sending…' : 'Send Message'}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -582,6 +593,67 @@ export default function MessageDetailPage() {
           </div>
         )}
       </div>
+
+      <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
+        <DialogContent className="sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Confirm Message Send</DialogTitle>
+            <DialogDescription>
+              Please review the message details before sending.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-3 py-2 text-sm">
+            <div className="grid grid-cols-[130px,1fr] gap-3 items-start">
+              <span className="text-muted-foreground">Campaign</span>
+              <span className="font-medium break-words">{campaign.name}</span>
+            </div>
+            <div className="grid grid-cols-[130px,1fr] gap-3 items-start">
+              <span className="text-muted-foreground">Channel</span>
+              <span className="font-medium break-words">
+                {campaign.transportName}
+              </span>
+            </div>
+            <div className="grid grid-cols-[130px,1fr] gap-3 items-start">
+              <span className="text-muted-foreground">Group</span>
+              <span className="font-medium break-words">
+                {campaign.targetType}
+              </span>
+            </div>
+            <div className="grid grid-cols-[130px,1fr] gap-3 items-start">
+              <span className="text-muted-foreground">Recipients</span>
+              <span className="font-medium break-words">
+                {(campaign?.recipientCount || 0).toLocaleString()}
+              </span>
+            </div>
+            <div className="grid grid-cols-[130px,1fr] gap-3 items-start">
+              <span className="text-muted-foreground">Message</span>
+              <span className="font-medium break-words whitespace-pre-wrap">
+                {campaign.body || '-'}
+              </span>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsConfirmDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSendMessage}
+              disabled={trigger.isPending}
+              className="gap-2"
+            >
+              <Send className="h-4 w-4" />
+              {trigger.isPending ? 'Sending…' : 'Send Message'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </TooltipProvider>
   );
 }

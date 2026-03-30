@@ -33,6 +33,14 @@ import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Switch } from '@rahat-ui/shadcn/components/switch';
 import { Textarea } from '@rahat-ui/shadcn/components/textarea';
 import { Label } from '@rahat-ui/shadcn/components/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/components/dialog';
 import { cn } from '@rahat-ui/shadcn/src/utils';
 import {
   Tooltip,
@@ -119,6 +127,7 @@ export default function ComposeMessageView() {
   const [filterRows, setFilterRows] = useState<FilterRow[]>([]);
   const [campaignName, setCampaignName] = useState('');
   const [isAutomatic, setIsAutomatic] = useState(false);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   // Data hooks
   const transport = useListElCrmTransport(projectUUID);
@@ -170,6 +179,18 @@ export default function ComposeMessageView() {
     !!selectedGroup &&
     !!messageContent &&
     !!selectedTransportId;
+
+  const selectedTemplateName = useMemo(() => {
+    if (!isWhatsApp || !messageContent) return '';
+    return (
+      templates.data?.find(
+        (t: TemplateOption) => (t.externalId ?? t.cuid) === messageContent,
+      )?.name ?? ''
+    );
+  }, [isWhatsApp, messageContent, templates.data]);
+
+  const selectedGroupName =
+    AUDIENCE_GROUPS.find((g) => g.id === selectedGroup)?.name ?? '';
 
   const handleSubmit = async () => {
     const options: Record<string, string | undefined> = {};
@@ -602,7 +623,7 @@ export default function ComposeMessageView() {
                         <Button
                           size="sm"
                           disabled={!canSubmit || createCampaign.isPending}
-                          onClick={handleSubmit}
+                          onClick={() => setIsConfirmDialogOpen(true)}
                           className="gap-2"
                         >
                           <Send className="h-4 w-4" />
@@ -630,6 +651,100 @@ export default function ComposeMessageView() {
           </Card>
         </div>
       </div>
+
+      <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Confirm Message Details</DialogTitle>
+            <DialogDescription>
+              Review message information before sending this campaign.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-3 py-2 text-sm">
+            <DetailRow label="Campaign" value={campaignName || '-'} />
+            <DetailRow label="Channel" value={selectedTransportName || '-'} />
+            <DetailRow
+              label="Message Type"
+              value={isWhatsApp ? 'Template' : 'Custom Message'}
+            />
+            {isWhatsApp ? (
+              <DetailRow
+                label="Template"
+                value={selectedTemplateName || messageContent || '-'}
+              />
+            ) : (
+              <DetailRow
+                label="Message"
+                value={messageContent || '-'}
+                multiline
+              />
+            )}
+            <DetailRow label="Audience" value={selectedGroupName || '-'} />
+            <DetailRow
+              label="Campaign Mode"
+              value={isAutomatic ? 'Automatic' : 'Manual'}
+            />
+            {!isAutomatic && (
+              <DetailRow
+                label="Filters"
+                value={
+                  filterRows.filter((row) => row.field && row.value).length > 0
+                    ? filterRows
+                        .filter((row) => row.field && row.value)
+                        .map((row) => `${row.field}=${row.value}`)
+                        .join(', ')
+                    : 'No filters applied'
+                }
+                multiline
+              />
+            )}
+            {selectedGroup === 'VENDOR' && (
+              <DetailRow
+                label="Estimated Recipients"
+                value={
+                  recipientEstimate.isLoading
+                    ? 'Calculating...'
+                    : String(recipientEstimate.meta?.total ?? 0)
+                }
+              />
+            )}
+          </div>
+
+          <DialogFooter className="gap-2">
+            {isWhatsApp && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsConfirmDialogOpen(false);
+                  router.push(
+                    `/projects/el-crm/${projectUUID}/communications/templates/create`,
+                  );
+                }}
+              >
+                Create Template
+              </Button>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsConfirmDialogOpen(false)}
+            >
+              Close
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSubmit}
+              disabled={createCampaign.isPending}
+              className="gap-2"
+            >
+              <Send className="h-4 w-4" />
+              {createCampaign.isPending ? 'Sending…' : 'Create Message'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </TooltipProvider>
   );
 }
@@ -675,6 +790,30 @@ function StepCard({
         {badge && <Badge variant="secondary">{badge}</Badge>}
       </div>
       {children}
+    </div>
+  );
+}
+
+function DetailRow({
+  label,
+  value,
+  multiline,
+}: {
+  label: string;
+  value: string;
+  multiline?: boolean;
+}) {
+  return (
+    <div className="grid grid-cols-[140px,1fr] gap-3 items-start">
+      <span className="text-muted-foreground">{label}</span>
+      <span
+        className={cn(
+          'font-medium break-words',
+          multiline ? 'whitespace-pre-wrap' : '',
+        )}
+      >
+        {value}
+      </span>
     </div>
   );
 }

@@ -22,6 +22,7 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
 } from '@tanstack/react-table';
+import ClientSidePagination from '../../../../components/client.side.pagination';
 
 export default function AutomationDetailPage() {
   const { id: projectUUID, automationId } = useParams() as {
@@ -37,6 +38,10 @@ export default function AutomationDetailPage() {
 
   const rule = data?.rule;
   const logs = data?.logs || [];
+  const showsRecurringConfig =
+    Boolean(rule?.isRecurring) && Boolean(rule?.recurrenceCooldownDays);
+  const showsMaxSends =
+    !rule?.fireOnceOnEntry && rule?.maxSendsPerTarget != null;
 
   const columns = useCommsLogsTableColumns();
   const table = useReactTable({
@@ -95,17 +100,27 @@ export default function AutomationDetailPage() {
                 <div>{rule.targetType}</div>
               </div>
               <div>
-                <Label>Recurring</Label>
-                <div>
-                  {rule.isRecurring
-                    ? `Yes (Cooldown: ${rule.recurrenceCooldownDays} days)`
-                    : 'No'}
-                </div>
-              </div>
-              <div>
                 <Label>Fire Once Per Target</Label>
                 <div>{rule.fireOnceOnEntry ? 'Yes' : 'No'}</div>
               </div>
+              {showsRecurringConfig && (
+                <div>
+                  <Label>Recurring</Label>
+                  <div>Yes</div>
+                </div>
+              )}
+              {showsRecurringConfig && (
+                <div>
+                  <Label>Cooldown Days</Label>
+                  <div>{rule.recurrenceCooldownDays}</div>
+                </div>
+              )}
+              {showsMaxSends && (
+                <div>
+                  <Label>Max Sends Per Target</Label>
+                  <div>{rule.maxSendsPerTarget}</div>
+                </div>
+              )}
             </div>
             <div>
               <Label>Conditions</Label>
@@ -129,7 +144,12 @@ export default function AutomationDetailPage() {
             {Array.isArray(logs) && logs.length === 0 ? (
               <div>No session logs found.</div>
             ) : (
-              table && <CommsLogsTable table={table} />
+              table && (
+                <>
+                  <CommsLogsTable table={table} />
+                  <ClientSidePagination table={table} />
+                </>
+              )
             )}
           </CardContent>
         </Card>

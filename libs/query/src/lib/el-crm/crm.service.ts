@@ -260,6 +260,48 @@ export const useRetryCustomerImport = () => {
   });
 };
 
+export const useDeleteFailedBatch = () => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin(TOAST_CONFIG);
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      batchUUID,
+    }: {
+      projectUUID: UUID;
+      batchUUID: UUID;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'elProject.crm.deleteFailedBatch',
+          payload: { batchUUID },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      queryClient.invalidateQueries({ queryKey: ['failed-batch'] });
+      toast.fire({
+        title: 'Batch log deleted',
+        icon: 'success',
+      });
+    },
+    onError: (error: unknown) => {
+      q.reset();
+      const detail = getErrorMessage(error, '');
+      toast.fire({
+        title: 'Failed to delete batch log',
+        icon: 'error',
+        text: detail || 'Something went wrong. Please try again.',
+        timer: 5000,
+      });
+    },
+  });
+};
+
 export const useCustomerStats = (uuid: UUID) => {
   const q = useProjectAction();
 

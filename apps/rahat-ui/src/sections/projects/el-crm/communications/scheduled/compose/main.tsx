@@ -354,6 +354,17 @@ export default function ComposeScheduleView() {
   const [ruleMaxSends, setRuleMaxSends] = useState('');
   const [ruleFireOnce, setRuleFireOnce] = useState(false);
 
+  const resetRuleBuilder = () => {
+    setShowRuleBuilder(false);
+    setRuleTargetType('VENDOR');
+    setRuleCampaignId('');
+    setRuleConditions([emptyCondition()]);
+    setRuleIsRecurring(false);
+    setRuleCooldownDays('');
+    setRuleMaxSends('');
+    setRuleFireOnce(false);
+  };
+
   // Data hooks
   const transport = useListElCrmTransport(projectUUID);
   const templates = useListElCrmTemplate(projectUUID, { status: 'APPROVED' });
@@ -361,6 +372,7 @@ export default function ComposeScheduleView() {
     page: 1,
     perPage: 1000,
     isAutomatic: true,
+    order: 'desc',
   });
   const createCampaign = useCreateElCrmCampaign(projectUUID);
   const trigger = useTriggerElCrmCampaign(projectUUID);
@@ -383,6 +395,18 @@ export default function ComposeScheduleView() {
   }, [campaignList.data, ruleTargetType]);
 
   const automationRules = (automations.data ?? []) as AutomationRuleSummary[];
+  const effectiveRuleIsRecurring = ruleIsRecurring && !ruleFireOnce;
+  const showRuleCooldownField = effectiveRuleIsRecurring;
+  const showRuleMaxSendsField = !ruleFireOnce;
+  const isRuleSaveDisabled =
+    !ruleCampaignId ||
+    ruleConditions.length === 0 ||
+    ruleConditions.some(
+      (c) =>
+        !c.fieldPath || (!NULLABLE_OPERATORS.includes(c.operator) && !c.value),
+    ) ||
+    (effectiveRuleIsRecurring && !ruleCooldownDays) ||
+    createAutomationRule.isPending;
 
   const getConditionFieldConfig = (fieldPath: string) =>
     conditionFieldOptions.find((field) => field.value === fieldPath);
@@ -417,6 +441,24 @@ export default function ComposeScheduleView() {
         ? ''
         : ruleConditions.find((row) => row.id === id)?.value ?? '',
     });
+  };
+
+  const handleRuleRecurringChange = (checked: boolean) => {
+    setRuleIsRecurring(checked);
+
+    if (!checked) {
+      setRuleCooldownDays('');
+    }
+  };
+
+  const handleRuleFireOnceChange = (checked: boolean) => {
+    setRuleFireOnce(checked);
+
+    if (checked) {
+      setRuleIsRecurring(false);
+      setRuleCooldownDays('');
+      setRuleMaxSends('');
+    }
   };
 
   // Build filter payload for estimated recipients count
@@ -1023,7 +1065,12 @@ export default function ComposeScheduleView() {
                         variant="outline"
                         className="gap-1.5"
                         onClick={() => {
-                          setShowRuleBuilder((v) => !v);
+                          if (showRuleBuilder) {
+                            resetRuleBuilder();
+                            return;
+                          }
+
+                          setShowRuleBuilder(true);
                           setRuleConditions([emptyCondition()]);
                         }}
                       >
@@ -1271,8 +1318,9 @@ export default function ComposeScheduleView() {
                         <div className="flex items-center gap-2">
                           <Switch
                             id="rule-recurring"
-                            checked={ruleIsRecurring}
-                            onCheckedChange={setRuleIsRecurring}
+                            checked={effectiveRuleIsRecurring}
+                            onCheckedChange={handleRuleRecurringChange}
+                            disabled={ruleFireOnce}
                           />
                           <Label
                             htmlFor="rule-recurring"
@@ -1285,7 +1333,7 @@ export default function ComposeScheduleView() {
                           <Switch
                             id="rule-fire-once"
                             checked={ruleFireOnce}
-                            onCheckedChange={setRuleFireOnce}
+                            onCheckedChange={handleRuleFireOnceChange}
                           />
                           <Label
                             htmlFor="rule-fire-once"
@@ -1294,7 +1342,7 @@ export default function ComposeScheduleView() {
                             Fire once per target
                           </Label>
                         </div>
-                        {ruleIsRecurring && (
+                        {showRuleCooldownField && (
                           <div className="space-y-1">
                             <Label className="text-xs">Cooldown days</Label>
                             <Input
@@ -1306,20 +1354,34 @@ export default function ComposeScheduleView() {
                                 setRuleCooldownDays(e.target.value)
                               }
                             />
+                            <p className="text-[11px] text-muted-foreground">
+                              Required for recurring rules to prevent
+                              back-to-back sends.
+                            </p>
                           </div>
                         )}
-                        <div className="space-y-1">
-                          <Label className="text-xs">
-                            Max sends per target
-                          </Label>
-                          <Input
-                            className="h-8 text-xs"
-                            type="number"
-                            placeholder="unlimited"
-                            value={ruleMaxSends}
-                            onChange={(e) => setRuleMaxSends(e.target.value)}
-                          />
-                        </div>
+                        {showRuleMaxSendsField ? (
+                          <div className="space-y-1">
+                            <Label className="text-xs">
+                              Max sends per target
+                            </Label>
+                            <Input
+                              className="h-8 text-xs"
+                              type="number"
+                              placeholder="unlimited"
+                              value={ruleMaxSends}
+                              onChange={(e) => setRuleMaxSends(e.target.value)}
+                            />
+                            <p className="text-[11px] text-muted-foreground">
+                              Optional cap for repeatable rules.
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="col-span-2 rounded-md border border-dashed px-3 py-2 text-[11px] text-muted-foreground">
+                            Fire once sends only the first time a target
+                            matches, so repeat limits and cooldown are hidden.
+                          </div>
+                        )}
                       </div>
 
                       {/* Submit */}
@@ -1327,37 +1389,27 @@ export default function ComposeScheduleView() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => setShowRuleBuilder(false)}
+                          onClick={resetRuleBuilder}
                         >
                           Cancel
                         </Button>
                         <Button
                           size="sm"
-                          disabled={
-                            !ruleCampaignId ||
-                            ruleConditions.length === 0 ||
-                            ruleConditions.some(
-                              (c) =>
-                                !c.fieldPath ||
-                                (!NULLABLE_OPERATORS.includes(c.operator) &&
-                                  !c.value),
-                            ) ||
-                            createAutomationRule.isPending
-                          }
+                          disabled={isRuleSaveDisabled}
                           onClick={() => {
                             createAutomationRule.mutate(
                               {
                                 campaignId: Number(ruleCampaignId),
                                 targetType: ruleTargetType,
-                                isRecurring: ruleIsRecurring,
+                                isRecurring: effectiveRuleIsRecurring,
                                 fireOnceOnEntry: ruleFireOnce,
-                                ...(ruleCooldownDays
+                                ...(effectiveRuleIsRecurring && ruleCooldownDays
                                   ? {
                                       recurrenceCooldownDays:
                                         Number(ruleCooldownDays),
                                     }
                                   : {}),
-                                ...(ruleMaxSends
+                                ...(showRuleMaxSendsField && ruleMaxSends
                                   ? { maxSendsPerTarget: Number(ruleMaxSends) }
                                   : {}),
                                 conditions: ruleConditions.map((c, idx) => ({
@@ -1371,9 +1423,7 @@ export default function ComposeScheduleView() {
                               },
                               {
                                 onSuccess: () => {
-                                  setShowRuleBuilder(false);
-                                  setRuleConditions([emptyCondition()]);
-                                  setRuleCampaignId('');
+                                  resetRuleBuilder();
                                 },
                               },
                             );

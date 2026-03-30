@@ -250,31 +250,34 @@ export default function SummaryView() {
           </div>
 
           {/* Message Logs Table */}
-          <Card>
-            <div className="flex items-center gap-2 border-b px-6 py-4">
-              <Send className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium text-foreground">
-                Recent Message Logs
-              </span>
-              {meta?.total != null && (
-                <Badge variant="outline" className="tabular-nums">
-                  {meta.total}
-                </Badge>
-              )}
+          <Card className="flex flex-col">
+            <div className="border-b border-border px-5 py-4">
+              <div className="flex items-center gap-2">
+                <Send className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-medium text-foreground">
+                  Recent Message Logs
+                </span>
+                {meta?.total != null && (
+                  <span className="inline-flex items-center justify-center h-5 min-w-[20px] rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                    {meta.total}
+                  </span>
+                )}
+              </div>
             </div>
             <CardContent className="p-0">
-              <DemoTable table={table} />
-              <div className="p-4 border-t">
-                <CustomPagination
-                  meta={meta || { total: 0, currentPage: 0 }}
-                  handleNextPage={setNextPage}
-                  handlePrevPage={setPrevPage}
-                  handlePageSizeChange={setPerPage}
-                  currentPage={pagination.page}
-                  perPage={pagination.perPage}
-                  total={meta?.total}
-                />
-              </div>
+              <DemoTable
+                table={table}
+                tableHeight="h-[calc(100vh-600px)]"
+              />
+              <CustomPagination
+                meta={meta || { total: 0, currentPage: 0 }}
+                handleNextPage={setNextPage}
+                handlePrevPage={setPrevPage}
+                handlePageSizeChange={setPerPage}
+                currentPage={pagination.page}
+                perPage={pagination.perPage}
+                total={meta?.total}
+              />
             </CardContent>
           </Card>
         </div>

@@ -21,9 +21,7 @@ import {
 import {
   CheckCircle2,
   Clock3,
-  FilterX,
   Plus,
-  RefreshCcw,
   Search,
   Trash2,
   MessageSquare,
@@ -31,6 +29,9 @@ import {
   Video,
   Image as ImageIcon,
   FileText,
+  CheckCircle,
+  SlidersHorizontal,
+  X,
 } from 'lucide-react';
 import Link from 'next/link';
 import { UUID } from 'crypto';
@@ -53,6 +54,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 export default function TemplatesView() {
   const { id: projectUUID } = useParams() as { id: UUID };
@@ -133,11 +135,14 @@ export default function TemplatesView() {
     });
   }, [templates, searchQuery, statusFilter, channelFilter, typeFilter]);
 
-  const hasActiveFilters =
-    searchQuery.trim() !== '' ||
-    statusFilter !== 'ALL' ||
-    channelFilter !== 'ALL' ||
-    typeFilter !== 'ALL';
+  const activeFilterCount = [
+    searchQuery.trim() !== '',
+    statusFilter !== 'ALL',
+    channelFilter !== 'ALL',
+    typeFilter !== 'ALL',
+  ].filter(Boolean).length;
+
+  const hasActiveFilters = activeFilterCount > 0;
 
   const resetFilters = () => {
     setSearchQuery('');
@@ -156,11 +161,42 @@ export default function TemplatesView() {
     }
   };
 
+  const statCards = [
+    {
+      title: 'Total Templates',
+      value: templates.length,
+      icon: MessageSquare,
+      color: 'text-foreground',
+      bgColor: 'bg-primary/5',
+      iconColor: 'text-primary',
+      tooltip: 'Total number of message templates',
+    },
+    {
+      title: 'Approved',
+      value: approvedCount,
+      icon: CheckCircle,
+      color: 'text-success',
+      bgColor: 'bg-success/5',
+      iconColor: 'text-success',
+      tooltip: 'Templates approved and ready to use',
+    },
+    {
+      title: 'Media Templates',
+      value: totalMediaTemplates,
+      icon: FileText,
+      color: 'text-primary',
+      bgColor: 'bg-primary/5',
+      iconColor: 'text-primary',
+      tooltip: 'Templates that include media attachments',
+    },
+  ];
+
   return (
     <TooltipProvider delayDuration={200}>
       <div className="flex flex-col h-full">
+        {/* Page Header */}
         <div className="border-b border-border bg-card px-6 py-5">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight text-foreground">
                 Templates
@@ -169,7 +205,6 @@ export default function TemplatesView() {
                 Manage and create message templates
               </p>
             </div>
-
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
@@ -186,7 +221,7 @@ export default function TemplatesView() {
           </div>
         </div>
 
-        <div className="flex-1 p-6 overflow-auto">
+        <div className="flex-1 p-6 space-y-6 overflow-auto">
         {templates.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-96 text-center">
             <div className="rounded-full bg-muted p-4 mb-4">
@@ -208,88 +243,137 @@ export default function TemplatesView() {
             </Link>
           </div>
         ) : (
-          <div className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <Card className="border-border/80">
-                <CardContent className="p-4">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                    Total Templates
-                  </p>
-                  <p className="mt-1 text-3xl font-bold tracking-tight tabular-nums text-foreground">
-                    {templates.length}
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="border-border/80">
-                <CardContent className="p-4">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                    Approved
-                  </p>
-                  <p className="mt-1 text-3xl font-bold tracking-tight tabular-nums text-success">
-                    {approvedCount}
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="border-border/80 sm:col-span-2 lg:col-span-1">
-                <CardContent className="p-4">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                    Media Templates
-                  </p>
-                  <p className="mt-1 text-3xl font-bold tracking-tight tabular-nums text-primary">
-                    {totalMediaTemplates}
-                  </p>
-                </CardContent>
-              </Card>
+          <>
+            {/* Stats Grid */}
+            <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
+              {statCards.map((stat) => (
+                <Card
+                  key={stat.title}
+                  className="relative overflow-hidden transition-shadow hover:shadow-md"
+                >
+                  <CardContent className="p-5">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1.5">
+                        <p className="text-sm font-medium text-muted-foreground leading-none">
+                          {stat.title}
+                        </p>
+                        <p
+                          className={`text-3xl font-bold tracking-tight ${stat.color}`}
+                        >
+                          {stat.value}
+                        </p>
+                      </div>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className={`rounded-lg p-2.5 ${stat.bgColor}`}>
+                            <stat.icon className={`h-5 w-5 ${stat.iconColor}`} />
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                          <p className="max-w-[220px]">{stat.tooltip}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
 
-            <Card className="border-border/80">
-              <CardContent className="space-y-4 p-4">
-                <div className="grid gap-3 md:grid-cols-5">
-                  <div className="md:col-span-2">
+            {/* Filter Bar + Gallery Card */}
+            <Card className="flex flex-col">
+              {/* Filter Bar */}
+              <div className="border-b border-border px-5 py-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium text-foreground">
+                      Filters
+                    </span>
+                    {activeFilterCount > 0 && (
+                      <span className="inline-flex items-center justify-center h-5 min-w-[20px] rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                        {activeFilterCount}
+                      </span>
+                    )}
+                  </div>
+                  {hasActiveFilters && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={resetFilters}
+                      className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                      Clear all
+                    </Button>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap items-end gap-3">
+                  {/* Search */}
+                  <div className="flex-1 min-w-[180px] space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">
+                      Search
+                    </Label>
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search by name, content, channel"
-                        className="pl-9"
+                        className="pl-8 h-9 text-sm"
                       />
                     </div>
                   </div>
 
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ALL">All Status</SelectItem>
-                      <SelectItem value="APPROVED">Approved</SelectItem>
-                      <SelectItem value="PENDING">Pending</SelectItem>
-                      <SelectItem value="REJECTED">Rejected</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  {/* Status Filter */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">
+                      Status
+                    </Label>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="w-[150px] h-9 text-sm">
+                        <SelectValue placeholder="All Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ALL">All Status</SelectItem>
+                        <SelectItem value="APPROVED">Approved</SelectItem>
+                        <SelectItem value="PENDING">Pending</SelectItem>
+                        <SelectItem value="REJECTED">Rejected</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                  <Select
-                    value={channelFilter}
-                    onValueChange={setChannelFilter}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Channel" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ALL">All Channels</SelectItem>
-                      {channelOptions.map((channel) => (
-                        <SelectItem key={channel} value={channel}>
-                          {channel}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {/* Channel Filter */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">
+                      Channel
+                    </Label>
+                    <Select
+                      value={channelFilter}
+                      onValueChange={setChannelFilter}
+                    >
+                      <SelectTrigger className="w-[160px] h-9 text-sm">
+                        <SelectValue placeholder="All Channels" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ALL">All Channels</SelectItem>
+                        {channelOptions.map((channel) => (
+                          <SelectItem key={channel} value={channel}>
+                            {channel}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                  <div className="flex gap-2">
+                  {/* Type Filter */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">
+                      Type
+                    </Label>
                     <Select value={typeFilter} onValueChange={setTypeFilter}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Type" />
+                      <SelectTrigger className="w-[140px] h-9 text-sm">
+                        <SelectValue placeholder="All Types" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="ALL">All Types</SelectItem>
@@ -297,45 +381,86 @@ export default function TemplatesView() {
                         <SelectItem value="MEDIA">Media</SelectItem>
                       </SelectContent>
                     </Select>
-
-                    <Button
-                      variant="outline"
-                      onClick={resetFilters}
-                      disabled={!hasActiveFilters}
-                    >
-                      <FilterX className="h-4 w-4" />
-                    </Button>
                   </div>
                 </div>
 
-                <p className="text-sm text-muted-foreground">
-                  Showing{' '}
-                  <span className="font-semibold text-foreground">
-                    {filteredTemplates.length}
-                  </span>{' '}
-                  templates
-                </p>
-              </CardContent>
-            </Card>
+                {/* Active Filter Tags */}
+                {hasActiveFilters && (
+                  <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-border/50">
+                    <span className="text-xs text-muted-foreground">
+                      Showing {filteredTemplates.length} template
+                      {filteredTemplates.length === 1 ? '' : 's'} for:
+                    </span>
+                    {searchQuery.trim() !== '' && (
+                      <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
+                        Search: &quot;{searchQuery}&quot;
+                        <button
+                          type="button"
+                          onClick={() => setSearchQuery('')}
+                          className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    )}
+                    {statusFilter !== 'ALL' && (
+                      <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
+                        Status: {statusFilter}
+                        <button
+                          type="button"
+                          onClick={() => setStatusFilter('ALL')}
+                          className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    )}
+                    {channelFilter !== 'ALL' && (
+                      <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
+                        Channel: {channelFilter}
+                        <button
+                          type="button"
+                          onClick={() => setChannelFilter('ALL')}
+                          className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    )}
+                    {typeFilter !== 'ALL' && (
+                      <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
+                        Type: {typeFilter}
+                        <button
+                          type="button"
+                          onClick={() => setTypeFilter('ALL')}
+                          className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
 
-            {filteredTemplates.length === 0 ? (
-              <Card>
-                <CardContent className="flex min-h-[220px] flex-col items-center justify-center text-center">
-                  <MessageSquare className="mb-3 h-10 w-10 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold text-foreground">
-                    No matching templates
-                  </h3>
-                  <p className="mb-4 mt-1 text-sm text-muted-foreground">
-                    Try changing your search text or clearing filters.
-                  </p>
-                  <Button variant="outline" onClick={resetFilters}>
-                    <FilterX className="mr-2 h-4 w-4" />
-                    Reset Filters
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {/* Template Gallery */}
+              <CardContent className="p-5">
+                {filteredTemplates.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <MessageSquare className="mb-3 h-10 w-10 text-muted-foreground" />
+                    <h3 className="text-lg font-semibold text-foreground">
+                      No matching templates
+                    </h3>
+                    <p className="mb-4 mt-1 text-sm text-muted-foreground">
+                      Try changing your search text or clearing filters.
+                    </p>
+                    <Button variant="outline" onClick={resetFilters}>
+                      <X className="mr-2 h-4 w-4" />
+                      Reset Filters
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {filteredTemplates.map((template: any) => {
                   const channelName =
                     template?.Transport?.name || template?.channel || 'Unknown';
@@ -503,7 +628,9 @@ export default function TemplatesView() {
                 })}
               </div>
             )}
-          </div>
+          </CardContent>
+        </Card>
+          </>
         )}
       </div>
     </div>

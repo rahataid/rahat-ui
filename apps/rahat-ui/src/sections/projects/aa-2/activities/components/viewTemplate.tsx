@@ -16,7 +16,7 @@ import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { useParams } from 'next/navigation';
 import { useActivityTemplates } from '@rahat-ui/query/lib/aa/activities/activities.service';
 import { UUID } from 'crypto';
-import { Filter, Zap, Wrench, Eye, X, Save } from 'lucide-react';
+import { Filter, Zap, Wrench, Eye, X } from 'lucide-react';
 import {
   AUTOMATION_TYPE,
   PHASE,

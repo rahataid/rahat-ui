@@ -460,18 +460,11 @@ export default function AddActivities() {
                     <TooltipWrapper
                       tip={'View templates to reuse for this activity'}
                     >
-                      {/* <Button
-                        className=" cursor-pointer border"
-                        type="button"
-                        variant={'link'}
-                        onClick={viewTemplateOpen.onTrue}
-                      > */}
                       <LayoutTemplate
                         type="button"
                         onClick={viewTemplateOpen.onTrue}
                         className="w-6 h-6 text-blue-500 cursor-pointer hover:text-blue-600 transition-colors"
                       />
-                      {/* </Button> */}
                     </TooltipWrapper>
                     <Button
                       type="button"

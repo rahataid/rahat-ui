@@ -22,7 +22,6 @@ export function IconLabelBtn({
   type,
   size = 'xs',
 }: IProps) {
-  console.log(disabled, 'disabled in icon label btn');
   return (
     <Button
       className={className}

@@ -90,7 +90,6 @@ export default function TemperatureWatchDetails() {
     [tempInfo, colors],
   );
 
-  console.log('status color:', colors.statusColor);
   if (isLoading) return <TableLoader />;
 
   // Only show error page for non-data errors
@@ -173,21 +172,20 @@ export default function TemperatureWatchDetails() {
             </div>
 
             {/* Station Info Grid */}
-            <div className="flex items-start gap-4">
+            <div className="grid grid-cols-3 gap-3 mt-4">
               {stationInfo.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div
-                    className="flex flex-col items-center text-center"
-                    key={item.label}
-                  >
-                    <Icon className="text-gray-500 mb-2" size={20} />
-                    <p className="text-xs font-medium text-gray-600">
-                      {item.label}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {item.value ?? '--'}
-                    </p>
+                  <div className="flex space-x-3 items-center" key={item.label}>
+                    <div>
+                      <Icon className="text-gray-500" size={20} />
+                    </div>
+                    <div>
+                      <p className="text-sm/6 font-medium mb-1">{item.label}</p>
+                      <p className="text-sm/4 text-gray-600">
+                        {item.value ?? '--'}
+                      </p>
+                    </div>
                   </div>
                 );
               })}

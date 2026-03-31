@@ -38,7 +38,6 @@ function TemperatureWatchMap({ coordinates }: TemperatureWatchMapProps) {
       zoom: 10,
     });
   };
-  console.log('status color from map component', coordinates);
 
   return (
     <div className="p-4 rounded-sm shadow border">

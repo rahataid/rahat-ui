@@ -62,7 +62,7 @@ function TemperatureWatchMap({ coordinates }: TemperatureWatchMapProps) {
           initialViewState={{
             longitude: DEFAULT_LNG,
             latitude: DEFAULT_LAT,
-            zoom: 5.5,
+            zoom: 5.2,
             bearing: 0,
             pitch: 0,
           }}
@@ -96,33 +96,9 @@ function TemperatureWatchMap({ coordinates }: TemperatureWatchMapProps) {
 
           {coordinates &&
             coordinates?.map((item: Coordinate, index: number) => {
-              // Extract background color from statusColor (e.g., "bg-red-100 text-red-800 border border-red-600")
-              const statusColorClass = item.statusColor || 'bg-gray-100';
-              const bgMatch = statusColorClass.match(/bg-[\w-]+/);
-              const bgColorClass = bgMatch ? bgMatch[0] : 'bg-orange-100';
-
-              // Convert Tailwind class to actual color - matching status badge colors
-              const colorMap: Record<string, string> = {
-                // Temperature status colors (extracted from getTemperatureColor)
-                'bg-red-100': '#fee2e2',
-                'bg-orange-100': '#ffedd5',
-                'bg-orange-50': '#fff7ed',
-                'bg-amber-50': '#fffbeb',
-                'bg-yellow-50': '#fefce8',
-                'bg-lime-50': '#f7fee7',
-                'bg-green-50': '#f0fdf4',
-                'bg-green-100': '#dcfce7',
-                'bg-cyan-50': '#ecfeff',
-                'bg-sky-50': '#f0f9ff',
-                'bg-blue-50': '#eff6ff',
-                'bg-blue-100': '#dbeafe',
-                'bg-indigo-50': '#eef2ff',
-                'bg-violet-50': '#f5f3ff',
-                'bg-purple-50': '#faf5ff',
-                'bg-gray-50': '#f9fafb',
-                'bg-gray-100': '#f3f4f6',
-              };
-              const backgroundColor = colorMap[bgColorClass] || '#ffedd5';
+              const statusStyling =
+                item.statusColor ||
+                'bg-gray-100 text-gray-800 border border-gray-200';
 
               return (
                 <Marker
@@ -133,21 +109,7 @@ function TemperatureWatchMap({ coordinates }: TemperatureWatchMapProps) {
                 >
                   <div
                     onClick={(e) => zoomToSelectedLoc(e, item)}
-                    className="cursor-pointer hover:scale-125 transition-all"
-                    style={{
-                      backgroundColor,
-                      borderRadius: '50%',
-                      width: '56px',
-                      height: '56px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: '3px solid rgba(255, 255, 255, 0.95)',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                      fontWeight: '700',
-                      fontSize: '12px',
-                      color: '#1f2937',
-                    }}
+                    className={`cursor-pointer hover:scale-125 transition-all rounded-full border-1 border-white w-14 h-14 flex items-center justify-center font-bold text-xs ${statusStyling}`}
                   >
                     {item.value !== undefined
                       ? `${roundValue(item.value)}${item.unit || '°C'}`

@@ -14,29 +14,7 @@ export function TemperatureScaleBar({
       </p>
       <div className="relative h-[400px]">
         {/* Gradient Bar */}
-        <div
-          className="absolute inset-0 w-full"
-          style={{
-            background: `linear-gradient(to bottom,
-              #dc2626 0%,
-              #ea580c 6.67%,
-              #f97316 13.33%,
-              #fb923c 20%,
-              #fbbf24 26.67%,
-              #facc15 33.33%,
-              #a3e635 40%,
-              #4ade80 46.67%,
-              #22c55e 53.33%,
-              #06b6d4 60%,
-              #0ea5e9 66.67%,
-              #3b82f6 73.33%,
-              #2563eb 80%,
-              #4f46e5 86.67%,
-              #7c3aed 93.33%,
-              #a855f7 100%
-            )`,
-          }}
-        />
+        <div className="absolute inset-0 w-full bg-[linear-gradient(to_bottom,rgb(220_38_38)_0%,rgb(234_88_12)_6.67%,rgb(249_115_22)_13.33%,rgb(251_146_60)_20%,rgb(251_191_36)_26.67%,rgb(250_204_21)_33.33%,rgb(163_230_53)_40%,rgb(74_222_128)_46.67%,rgb(34_197_94)_53.33%,rgb(6_182_212)_60%,rgb(14_165_233)_66.67%,rgb(59_130_246)_73.33%,rgb(37_99_235)_80%,rgb(79_70_229)_86.67%,rgb(124_58_237)_93.33%,rgb(168_85_247)_100%)]" />
 
         {/* Temperature Labels */}
         <div className="absolute inset-0 flex flex-col justify-between py-1">

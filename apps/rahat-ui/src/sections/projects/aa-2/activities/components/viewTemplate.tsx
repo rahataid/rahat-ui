@@ -75,7 +75,7 @@ const ViewTemplate = ({
   return (
     <>
       <div className="border-l bg-background h-[calc(100vh-65px)] flex flex-col">
-        <div className="flex items-start justify-between p-4 border-b">
+        <div className="flex items-start justify-between p-3 border-b">
           <div>
             <h2 className="text-lg font-semibold">Activity Templates</h2>
             <p className="text-sm text-muted-foreground">
@@ -83,7 +83,6 @@ const ViewTemplate = ({
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Save className="w-5 h-5 text-muted-foreground cursor-pointer hover:text-foreground" />
             <X
               className="w-5 h-5 text-muted-foreground cursor-pointer hover:text-foreground"
               onClick={() => setOpen(false)}
@@ -107,7 +106,7 @@ const ViewTemplate = ({
                   <AccordionContent>
                     <div className="grid grid-cols-1 gap-3">
                       {/* Phase */}
-                      <div className="space-y-2">
+                      <div className="space-y-2 px-2">
                         <label className="text-sm font-medium">Phase</label>
                         <Select
                           value={filters.phase === '' ? 'all' : filters.phase}
@@ -119,7 +118,7 @@ const ViewTemplate = ({
                             }))
                           }
                         >
-                          <SelectTrigger className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring">
+                          <SelectTrigger className="w-full border border-input rounded-sm px-3 py-2 text-sm bg-background hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring">
                             <SelectValue placeholder="Select phase" />
                           </SelectTrigger>
 
@@ -137,7 +136,7 @@ const ViewTemplate = ({
                       </div>
 
                       {/* Category */}
-                      <div className="space-y-2">
+                      <div className="space-y-2 px-2">
                         <label className="text-sm font-medium">Category</label>
                         <Select
                           value={
@@ -151,7 +150,7 @@ const ViewTemplate = ({
                             }))
                           }
                         >
-                          <SelectTrigger className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring">
+                          <SelectTrigger className="w-full border border-input rounded-sm px-3 py-2 text-sm bg-background hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring">
                             <SelectValue placeholder="Select category" />
                           </SelectTrigger>
                           <SelectContent>
@@ -169,7 +168,7 @@ const ViewTemplate = ({
                       </div>
 
                       {/* Title */}
-                      <div className="space-y-2">
+                      <div className="space-y-2 px-2">
                         <label className="text-sm font-medium">Title</label>
                         <Input
                           placeholder="Search by title..."
@@ -181,12 +180,12 @@ const ViewTemplate = ({
                               page: 1,
                             }))
                           }
-                          className="border-input"
+                          className="border-input rounded-sm "
                         />
                       </div>
 
                       {/* Automated */}
-                      <div className="space-y-2">
+                      <div className="space-y-2 px-2">
                         <label className="text-sm font-medium">Type</label>
                         <Select
                           value={
@@ -207,7 +206,7 @@ const ViewTemplate = ({
                             }))
                           }
                         >
-                          <SelectTrigger className="w-full border border-input rounded-md px-3 py-2 text-sm bg-background hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring">
+                          <SelectTrigger className="w-full border border-input rounded-sm px-3 py-2 text-sm bg-background hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring">
                             <SelectValue placeholder="Select type" />
                           </SelectTrigger>
 
@@ -286,19 +285,19 @@ const ViewTemplate = ({
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-base text-foreground truncate group-hover:text-primary transition-colors">
+                        <h3 className="font-semibold text-base text-foreground  group-hover:text-primary transition-colors">
                           <TruncatedCell
                             text={item.title}
-                            maxLength={50}
-                            className="max-w-[350px] text-wrap"
+                            maxLength={30}
+                            className=""
                           />
                         </h3>
 
                         <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
                           <TruncatedCell
                             text={item.description}
-                            maxLength={45}
-                            className="max-w-[350px] text-wrap"
+                            maxLength={30}
+                            className="max-w-[350px] text-wrap "
                           />
                         </p>
 
@@ -354,6 +353,7 @@ const ViewTemplate = ({
                 <Button
                   variant="outline"
                   size="sm"
+                  type="button"
                   disabled={!templates.meta.prev}
                   onClick={() => setPrevPage()}
                   className="flex-1"
@@ -371,6 +371,7 @@ const ViewTemplate = ({
                 <Button
                   variant="outline"
                   size="sm"
+                  type="button"
                   disabled={!templates.meta.next}
                   onClick={() => setNextPage()}
                   className="flex-1"

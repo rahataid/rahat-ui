@@ -330,6 +330,7 @@ export default function AddActivities() {
 
   const resetForm = () => {
     form.reset();
+    setSelectedTemplateId(null);
     communicationForm.reset();
     addCommunicationOpen.onFalse();
     setCommunicationData([]);
@@ -454,19 +455,23 @@ export default function AddActivities() {
                   />
                 </div>
 
-                <div className="flex justify-end mt-8">
-                  <div className="flex gap-2">
+                <div className="flex justify-end mt-8 ">
+                  <div className="flex gap-2  items-center">
                     <TooltipWrapper
                       tip={'View templates to reuse for this activity'}
                     >
-                      <Button
+                      {/* <Button
                         className=" cursor-pointer border"
                         type="button"
                         variant={'link'}
                         onClick={viewTemplateOpen.onTrue}
-                      >
-                        <LayoutTemplate className="w-6 h-6 text-blue-500" />
-                      </Button>
+                      > */}
+                      <LayoutTemplate
+                        type="button"
+                        onClick={viewTemplateOpen.onTrue}
+                        className="w-6 h-6 text-blue-500 cursor-pointer hover:text-blue-600 transition-colors"
+                      />
+                      {/* </Button> */}
                     </TooltipWrapper>
                     <Button
                       type="button"

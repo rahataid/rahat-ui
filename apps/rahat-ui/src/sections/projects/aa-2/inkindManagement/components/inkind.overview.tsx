@@ -55,7 +55,9 @@ type Movement = {
   groupInkind: {
     id: number;
     uuid: string;
-    groupName: string;
+    group: {
+      name: string;
+    }
     groupId: string;
     inkindId: string;
     quantityAllocated: number;
@@ -161,25 +163,25 @@ export default function InkindOverview() {
         <DataCard
           className="rounded-sm"
           title="Total Inkind Types"
-          number={String(inkindItemsSummary.totalInkindTypes)}
+          number={String(inkindItemsSummary?.totalInkindTypes ? inkindItemsSummary.totalInkindTypes : 0)}
           subtitle="Distinct items registered"
         />
         <DataCard
           className="rounded-sm"
           title="Available Stock"
-          number={String(inkindItemsSummary.totalAvailableStock)}
+          number={String(inkindItemsSummary?.totalAvailableStock ? inkindItemsSummary.totalAvailableStock : 0)}
           subtitle="Units currently available"
         />
         <DataCard
           className="rounded-sm"
           title="Assigned Stock"
-          number={String(inkindItemsSummary.totalAssignedStock)}
+          number={String(inkindItemsSummary?.totalAssignedStock ? inkindItemsSummary.totalAssignedStock : 0)}
           subtitle="Units currently assigned"
         />
         <DataCard
           className="rounded-sm"
           title="Redeemed Stock"
-          number={String(inkindItemsSummary.totalRedeemedStock)}
+          number={String(inkindItemsSummary?.totalRedeemedStock ? inkindItemsSummary.totalRedeemedStock : 0)}
           subtitle="Units currently redeemed"
         />
       </div>
@@ -230,7 +232,7 @@ export default function InkindOverview() {
                         </div>
                         {movement.groupInkind && (
                           <p className="text-xs text-muted-foreground mt-0.5">
-                            {movement.groupInkind.groupName}
+                            {movement.groupInkind.group.name}
                           </p>
                         )}
                         <p className="text-xs text-muted-foreground mt-0.5">

@@ -195,7 +195,7 @@ export default function InkindList() {
 
   const isGroupAssigned = (itemUuid: string) => {
     const inkindDetails =  data?.data.find((a) => a.uuid == itemUuid);
-    return inkindDetails?.assignedToGroup ? inkindDetails?.assignedToGroup.length > 0 : false;
+    return inkindDetails?.groupInkinds ? inkindDetails?.groupInkinds.length > 0 : false;
   };
 
   const handleDelete = async (item: InkindItem) => {

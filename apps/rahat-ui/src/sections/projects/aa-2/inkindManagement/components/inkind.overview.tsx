@@ -232,7 +232,7 @@ export default function InkindOverview() {
                         </div>
                         {movement.groupInkind && (
                           <p className="text-xs text-muted-foreground mt-0.5">
-                            {movement.groupInkind.group.name}
+                            {movement.groupInkind?.group?.name || '-'}
                           </p>
                         )}
                         <p className="text-xs text-muted-foreground mt-0.5">

@@ -10,6 +10,7 @@ import {
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { SEP, toLabel, TriggerStatement } from '../utils';
 import { SOURCE_CONFIG } from '../trigger.statement.schema';
+import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 type IProps = {
   projectId: string;
   triggerId: string;
@@ -81,7 +82,11 @@ export default function TriggerCard({
           <Badge
             className={`font-medium ${phase && renderPhaseBadgeColor(phase)}`}
           >
-            {phase ? phase : triggerType}
+            <TruncatedCell
+              text={phase ? phase : triggerType || ''}
+              maxLength={10}
+            />
+            {/* {phase ? phase : triggerType} */}
           </Badge>
           <Badge className="font-medium">{capitalizeFirstLetter(type)}</Badge>
           {!!version && <Badge className="font-medium">V{version}</Badge>}

@@ -34,7 +34,6 @@ export default function PhaseDetail() {
   const { data: phase, isLoading, error } = useSinglePhase(projectId, phaseId);
 
   const revertPhase = useRevertPhase();
-
   const handleAddTriggerClick = () => {
     router.push(`/projects/aa/${projectId}/trigger-statements/add`);
   };
@@ -133,7 +132,15 @@ export default function PhaseDetail() {
           >
             <>
               {isDisabled ? (
-                <TooltipWrapper tip="Cannot revert an inactive phase">
+                <TooltipWrapper
+                  tip={`${
+                    !phase?.isActive
+                      ? 'Cannot revert an inactive phase'
+                      : !phase?.canRevert
+                      ? 'The revert feature was not included for this phase during its creation.'
+                      : ''
+                  }`}
+                >
                   <IconLabelBtn Icon={Undo2} name="Revert" disabled />
                 </TooltipWrapper>
               ) : (

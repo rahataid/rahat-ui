@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   PROJECT_SETTINGS_KEYS,
   useDeletePhase,
+  usePhases,
   useProjectSettingsStore,
   useSinglePhase,
   useUpdatePhase,
@@ -12,7 +13,7 @@ import { Trash } from 'lucide-react';
 import { DialogComponent } from 'apps/rahat-ui/src/sections/projects/aa-2/activities/details/dialog.reuse';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   AddPhaseFormInputValues,
@@ -31,17 +32,25 @@ export default function EditPhaseView() {
   const deletePhase = useDeletePhase();
   const [isDeleted, setIsDeleted] = useState(false);
 
+  const { data: phasesData = [] } = usePhases(projectId);
+
   const { settings } = useProjectSettingsStore((state) => ({
     settings: state.settings,
   }));
 
-  const { data: phase, isLoading } = useSinglePhase(projectId, phaseId, { enabled: !isDeleted });
+  const { data: phase, isLoading } = useSinglePhase(projectId, phaseId, {
+    enabled: !isDeleted,
+  });
 
   const riverBasin =
     settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
       'river_basin'
     ];
 
+  const payoutEnabledPhase = useMemo(
+    () => phasesData?.find((phase: any) => phase?.canTriggerPayout) || null,
+    [phasesData],
+  );
   const triggerStatementPath = `/projects/aa/${projectId}/trigger-statements`;
   const form = useForm<AddPhaseFormInputValues, unknown, AddPhaseFormValues>({
     resolver: zodResolver(AddPhaseSchema),
@@ -123,7 +132,9 @@ export default function EditPhaseView() {
   return (
     <>
       <div className="mt-4 px-4">
-        <Back path={triggerStatementPath} />
+        <Back
+          path={`/projects/aa/${projectId}/trigger-statements/phase/${phaseId}`}
+        />
       </div>
       <div className="mt-4 px-4 flex items-start justify-between gap-3">
         <Heading
@@ -150,6 +161,7 @@ export default function EditPhaseView() {
         loading={updatePhase.isPending}
         submitLabel="Update"
         resetLabel="Reset"
+        payoutEnabledPhase={payoutEnabledPhase}
       />
     </>
   );

@@ -484,7 +484,41 @@ export const useDhmHumidityLevels = (uuid: UUID, payload: any) => {
         throw error;
       }
     },
-    staleTime: 15 * 60 * 1000, 
+    staleTime: 15 * 60 * 1000,
+  });
+};
+
+export const useDhmSingleSeriesTemperatureLevels = (
+  uuid: UUID,
+  payload: {
+    type?: 'daily' | 'hourly';
+  },
+) => {
+  const q = useProjectAction();
+
+  const settings = useProjectSettingsStore((state) => state.settings);
+  const riverBasin =
+    settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.['river_basin'];
+
+  const parameter = payload.type === 'daily' ? 'TN_1D' : 'T_1H';
+
+  return useQuery({
+    queryKey: ['dhmsingleseriestemperaturelevels', uuid, parameter],
+    enabled: !!riverBasin,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.temperature.getDhmSingleSeries',
+          payload: {
+            riverBasin,
+            parameter,
+          },
+        },
+      });
+      return mutate.data;
+    },
+    staleTime: 15 * 60 * 1000,
   });
 };
 

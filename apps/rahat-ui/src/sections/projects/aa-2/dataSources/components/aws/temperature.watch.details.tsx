@@ -120,7 +120,6 @@ export default function TemperatureWatchDetails() {
         <Back />
         <Heading
           title="DHM Heatwave"
-          titleStyle="text-xl/6 font-semibold"
           description=""
         />
       </div>

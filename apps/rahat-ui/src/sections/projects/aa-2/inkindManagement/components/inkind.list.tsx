@@ -190,19 +190,16 @@ export default function InkindList() {
   const queryClient = useQueryClient();
   const dialog = useSwal();
 
-  const { data: allocationsData } = useGroupInkindAllocations(projectUUID);
-  const assignedInkindIds = useMemo<Set<string>>(() => {
-    const raw: unknown = allocationsData;
-    const list: { inkindId?: string }[] = Array.isArray(raw)
-      ? raw
-      : Array.isArray((raw as any)?.data)
-      ? (raw as any).data
-      : [];
-    return new Set(list.map((a) => a.inkindId).filter(Boolean) as string[]);
-  }, [allocationsData]);
+  console.log("tes", data);
+  console.log(data?.data);
+
+  const isGroupAssigned = (itemUuid: string) => {
+    const inkindDetails =  data?.data.find((a) => a.uuid == itemUuid);
+    return inkindDetails?.groupInkinds ? inkindDetails?.groupInkinds.length > 0 : false;
+  };
 
   const handleDelete = async (item: InkindItem) => {
-    if (assignedInkindIds.has(item.uuid)) {
+    if (isGroupAssigned(item.uuid)) {
       toast.error(
         'Inkind is already assigned to a group so cannot be removed.',
       );
@@ -399,7 +396,7 @@ export default function InkindList() {
         header: 'Actions',
         cell: ({ row }) => {
           const item = row.original;
-          const isAssigned = assignedInkindIds.has(item.uuid);
+          const isAssigned = isGroupAssigned(item.uuid);
           return (
             <TooltipProvider>
               <div className="flex items-center gap-1">
@@ -439,7 +436,7 @@ export default function InkindList() {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [assignedInkindIds],
+    [isGroupAssigned],
   );
 
   const table = useReactTable({

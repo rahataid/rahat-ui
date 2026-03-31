@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
@@ -71,17 +71,13 @@ export default function InkindAllocationList() {
   const router = useRouter();
 
   const { data, isLoading } = useGroupInkindAllocations(projectUUID);
-  const { data: groupsList } = useBeneficiaryGroups(projectUUID, {
-    page: 1,
-    perPage: 1000,
-  });
 
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     [],
   );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [pagination, setPagination] = React.useState({
+    useState<VisibilityState>({});
+  const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
   });
@@ -93,9 +89,6 @@ export default function InkindAllocationList() {
     return d
       .map((item: any) => {
         const groupId = item.groupId ?? item.group?.uuid ?? '';
-        const matchedGroup = Array.isArray(groupsList)
-          ? groupsList.find((g: any) => g.uuid === groupId)
-          : null;
 
         return {
           uuid: item.uuid,
@@ -106,10 +99,7 @@ export default function InkindAllocationList() {
           inkindType: item.inkind?.type ?? item.inkindType ?? 'N/A',
           quantityAllocated: item.quantityAllocated ?? 0,
           quantityRedeemed: item.quantityRedeemed ?? 0,
-          beneficiaryCount:
-            matchedGroup?._count?.groupedBeneficiaries ??
-            item.group?._count?.groupedBeneficiaries ??
-            0,
+          beneficiaryCount: item.group?._count?.beneficiaries ?? 0,
           createdAt: item.createdAt,
           updatedAt: item.updatedAt,
         };
@@ -119,7 +109,7 @@ export default function InkindAllocationList() {
           new Date(b.updatedAt ?? b.createdAt ?? 0).getTime() -
           new Date(a.updatedAt ?? a.createdAt ?? 0).getTime(),
       );
-  }, [data, groupsList]);
+  }, [data]);
 
   const columns: ColumnDef<AllocationRow>[] = [
     {
@@ -183,6 +173,10 @@ export default function InkindAllocationList() {
           quantityRedeemed: String(r.quantityRedeemed),
           beneficiaryCount: String(r.beneficiaryCount),
         });
+        console.debug(
+          'Navigating to details page with params:',
+          params.toString(),
+        );
         return (
           <TooltipComponent
             Icon={Eye}

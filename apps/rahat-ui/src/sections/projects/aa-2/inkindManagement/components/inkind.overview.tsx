@@ -55,6 +55,9 @@ type Movement = {
   groupInkind: {
     id: number;
     uuid: string;
+    group: {
+      name: string;
+    }
     groupId: string;
     inkindId: string;
     quantityAllocated: number;
@@ -137,38 +140,11 @@ export default function InkindOverview() {
 
   const { data: summaryData } = useInkindsSummary(projectUUID);
   const { data: txData } = useInkindTransactions(projectUUID);
-  const { data: groupsData } = useBeneficiaryGroups(projectUUID, {
-    page: 1,
-    perPage: 1000,
-  });
 
-  const groupNameMap = React.useMemo<Record<string, string>>(() => {
-    const list: { uuid?: string; name?: string }[] =
-      (groupsData as any)?.data ?? groupsData ?? [];
-    return Object.fromEntries(
-      list.map((g) => [g.uuid ?? '', g.name ?? g.uuid ?? '']),
-    );
-  }, [groupsData]);
-
-  const inkindItems: any[] = summaryData?.data ?? [];
+  const inkindItemsSummary: any[] = summaryData?.data ?? [];
   const movements: Movement[] = txData?.data ?? [];
   const [selectedMovement, setSelectedMovement] = useState<Movement | null>(
     null,
-  );
-
-  const totalAvailableStock = inkindItems.reduce(
-    (s: number, i: any) => s + (i.availableStock ?? 0),
-    0,
-  );
-
-  const totalAssignedStock = inkindItems.reduce(
-    (s: number, i: any) => s + (i.assignedStock ?? 0),
-    0,
-  );
-
-  const totalRedeemedStock = inkindItems.reduce(
-    (s: number, i: any) => s + (i.redeemedStock ?? 0),
-    0,
   );
 
   const sortedMovements = [...movements].sort(
@@ -187,25 +163,25 @@ export default function InkindOverview() {
         <DataCard
           className="rounded-sm"
           title="Total Inkind Types"
-          number={String(inkindItems.length)}
+          number={String(inkindItemsSummary?.totalInkindTypes ? inkindItemsSummary.totalInkindTypes : 0)}
           subtitle="Distinct items registered"
         />
         <DataCard
           className="rounded-sm"
           title="Available Stock"
-          number={String(totalAvailableStock)}
+          number={String(inkindItemsSummary?.totalAvailableStock ? inkindItemsSummary.totalAvailableStock : 0)}
           subtitle="Units currently available"
         />
-                <DataCard
+        <DataCard
           className="rounded-sm"
           title="Assigned Stock"
-          number={String(totalAssignedStock)}
+          number={String(inkindItemsSummary?.totalAssignedStock ? inkindItemsSummary.totalAssignedStock : 0)}
           subtitle="Units currently assigned"
         />
-                <DataCard
+        <DataCard
           className="rounded-sm"
           title="Redeemed Stock"
-          number={String(totalRedeemedStock)}
+          number={String(inkindItemsSummary?.totalRedeemedStock ? inkindItemsSummary.totalRedeemedStock : 0)}
           subtitle="Units currently redeemed"
         />
       </div>
@@ -256,8 +232,7 @@ export default function InkindOverview() {
                         </div>
                         {movement.groupInkind && (
                           <p className="text-xs text-muted-foreground mt-0.5">
-                            {groupNameMap[movement.groupInkind.groupId] ??
-                              movement.groupInkind.groupId.slice(0, 8) + '…'}
+                            {movement.groupInkind?.group?.name || '-'}
                           </p>
                         )}
                         <p className="text-xs text-muted-foreground mt-0.5">
@@ -411,9 +386,9 @@ export default function InkindOverview() {
                           icon={Users}
                           label="Group"
                           value={
-                            groupNameMap[
-                              selectedMovement.groupInkind.groupId
-                            ] ?? selectedMovement.groupInkind.groupId
+                            <span className="text-primary font-bold">
+                              {selectedMovement.groupInkind.groupName}
+                            </span>
                           }
                         />
                         <DetailRow

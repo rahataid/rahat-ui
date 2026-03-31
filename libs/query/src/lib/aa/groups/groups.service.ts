@@ -273,6 +273,7 @@ export const useBeneficiaryGroups = (uuid: UUID, payload: any) => {
 
   const query = useQuery({
     queryKey: ['stakeholdersGroups', uuid, payload],
+    staleTime: 5 * 60 * 1000, // 5 minutes
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,

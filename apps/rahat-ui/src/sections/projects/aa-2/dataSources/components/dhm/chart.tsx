@@ -15,6 +15,7 @@ type ChartProps = {
   yaxisTitle?: string;
   unit?: string;
   xDateFormat?: string; // format for x-axis date labels
+  yAxisFormatter?: (value: number) => string;
 };
 
 const TimeSeriesChart = ({
@@ -25,6 +26,7 @@ const TimeSeriesChart = ({
   xDateFormat = 'h:mm a',
   yaxisTitle = 'Water Level (m)',
   unit = '',
+  yAxisFormatter,
 }: ChartProps) => {
   if (!data || data.length === 0) return null;
 
@@ -96,6 +98,13 @@ const TimeSeriesChart = ({
       },
       min: minY - 0.5,
       max: maxY + 0.5,
+      labels: yAxisFormatter
+        ? {
+            formatter: function (value) {
+              return yAxisFormatter(value);
+            },
+          }
+        : undefined,
     },
     tooltip: {
       shared: false,

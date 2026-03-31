@@ -29,10 +29,7 @@ export default function TemperatureWatchView() {
     from: formattedDate,
   };
 
-  const { data, isLoading, error } = useDhmTemperatureLevels(
-    projectId,
-    payload,
-  );
+  const { data, isLoading } = useDhmTemperatureLevels(projectId, payload);
 
   const tn1hData = useMemo(() => {
     if (!data?.info || !Array.isArray(data.info)) return [];
@@ -57,7 +54,7 @@ export default function TemperatureWatchView() {
     <div className="flex flex-col space-y-6">
       {tn1hData.map((tempInfo: any, index: number) => {
         const colors = getTemperatureColor(tempInfo?.value);
-        const seriesId = tempInfo?.series_id || tempInfo?.id || index;
+        const seriesId = tempInfo?.series_id || tempInfo?.id || String(index);
 
         const stationInfo = [
           { icon: RadioTower, label: 'Station', value: tempInfo?.name || '--' },
@@ -71,7 +68,7 @@ export default function TemperatureWatchView() {
 
         return (
           <div
-            key={index}
+            key={seriesId}
             className="p-4 rounded-sm border shadow flex justify-between space-x-4 cursor-pointer hover:shadow-md"
             onClick={() =>
               router.push(

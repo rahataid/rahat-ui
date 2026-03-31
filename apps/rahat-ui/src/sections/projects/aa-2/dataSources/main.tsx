@@ -29,12 +29,11 @@ import GaugeReading from './components/gaugeReading';
 import GFHDetails from './components/gfh';
 import { GlofasSection } from './components/glofas';
 import { useParams, useRouter } from 'next/navigation';
-import { PROJECT_SETTINGS_KEYS, useTabConfiguration } from '@rahat-ui/query';
+import { PROJECT_SETTINGS_KEYS, useProjectInfo, useTabConfiguration } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { defaultForecastTab } from 'apps/rahat-ui/src/constants/aa.tabValues.constants';
-import { useProjectInfo } from 'libs/query/src/lib/projects/projects.service';
 import { AWSSection } from './components/aws/aws.section';
 
 const componentMap = {

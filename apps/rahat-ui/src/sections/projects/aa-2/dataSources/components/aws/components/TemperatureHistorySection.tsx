@@ -63,16 +63,23 @@ export function TemperatureHistorySection({
 
   return (
     <div className="p-4 rounded-sm border shadow">
-      <p className="text-lg/7 font-semibold mb-3">Temperature History</p>
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-lg/7 font-semibold">Temperature History</p>
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => onTabChange(v as 'hourly' | 'daily')}
+        >
+          <TabsList>
+            <TabsTrigger value="hourly">Hourly</TabsTrigger>
+            <TabsTrigger value="daily">Daily</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
       <Tabs
         value={activeTab}
         onValueChange={(v) => onTabChange(v as 'hourly' | 'daily')}
       >
-        <TabsList>
-          <TabsTrigger value="hourly">Hourly</TabsTrigger>
-          <TabsTrigger value="daily">Daily</TabsTrigger>
-        </TabsList>
-
         <TabsContent value="hourly">
           {renderContent('h:mm a', 'hourly')}
         </TabsContent>

@@ -28,7 +28,7 @@ export default function HumidityWatchView() {
     from: formattedDate,
   };
 
-  const { data, isLoading, error } = useDhmHumidityLevels(projectId, payload);
+  const { data, isLoading } = useDhmHumidityLevels(projectId, payload);
 
   const rh1hData = useMemo(() => {
     if (!data?.info || !Array.isArray(data.info)) return [];

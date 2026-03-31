@@ -28,7 +28,7 @@ export default function TemperatureWatchDetails() {
 
   const tempInfo = data?.info;
   const updatedAt = data?.updatedAt;
-  const columns = useTemperatureTableColumns();
+  const columns = useTemperatureTableColumns(tempInfo?.unit ?? '°C');
 
   const history = useMemo(() => tempInfo?.history ?? [], [tempInfo?.history]);
 
@@ -58,7 +58,7 @@ export default function TemperatureWatchDetails() {
 
   const colors = useMemo(
     () =>
-      tempInfo?.value
+      tempInfo?.value != null
         ? getTemperatureColor(tempInfo.value)
         : {
             statusColor: 'bg-gray-400',
@@ -118,10 +118,7 @@ export default function TemperatureWatchDetails() {
     <div className="p-4 flex flex-col space-y-4">
       <div>
         <Back />
-        <Heading
-          title="DHM Heatwave"
-          description=""
-        />
+        <Heading title="DHM Heatwave" description="" />
       </div>
 
       {/* No Data Warning */}

@@ -15,7 +15,7 @@ type ChartProps = {
   yaxisTitle?: string;
   unit?: string;
   xDateFormat?: string; // format for x-axis date labels
-  yAxisFormatter?: (value: number) => string; 
+  yAxisFormatter?: (value: number) => string;
 };
 
 const TimeSeriesChart = ({

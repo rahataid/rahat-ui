@@ -109,7 +109,7 @@ function TemperatureWatchMap({ coordinates }: TemperatureWatchMapProps) {
                 >
                   <div
                     onClick={(e) => zoomToSelectedLoc(e, item)}
-                    className={`cursor-pointer hover:scale-125 transition-all rounded-full border-1 border-white w-14 h-14 flex items-center justify-center font-bold text-xs ${statusStyling}`}
+                    className={`cursor-pointer hover:scale-125 transition-all rounded-full border-2 border-white w-10 h-10 flex items-center justify-center font-bold text-[10px] ${statusStyling}`}
                   >
                     {item.value !== undefined
                       ? `${roundValue(item.value)}${item.unit || '°C'}`

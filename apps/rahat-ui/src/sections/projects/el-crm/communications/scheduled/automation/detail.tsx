@@ -8,11 +8,13 @@ import {
 } from '@rahat-ui/shadcn/components/card';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Label } from '@rahat-ui/shadcn/components/label';
-import { ArrowLeft, Zap } from 'lucide-react';
+import { Button } from '@rahat-ui/shadcn/components/button';
+import { ArrowLeft, Play, Loader2, Zap } from 'lucide-react';
 import Link from 'next/link';
 import {
   useAutomationDetail,
   useListElCrmSessionBroadcast,
+  useTriggerElCrmAutomationManual,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import useCommsLogsTableColumns from '../../useCommsLogsTableColumns';
@@ -34,7 +36,8 @@ export default function AutomationDetailPage() {
     projectUUID,
     automationId,
   );
-  console.log({ data });
+
+  const triggerManual = useTriggerElCrmAutomationManual(projectUUID);
 
   const rule = data?.rule;
   const logs = data?.logs || [];
@@ -60,15 +63,33 @@ export default function AutomationDetailPage() {
   return (
     <div className="flex flex-col h-full">
       <div className="border-b border-border bg-card px-6 py-5">
-        <div className="flex items-center gap-4">
-          <Link
-            href={`/projects/el-crm/${projectUUID}/communications/scheduled/compose`}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Automation Details
-          </h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link
+              href={`/projects/el-crm/${projectUUID}/communications/scheduled/compose`}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+              Automation Details
+            </h1>
+          </div>
+          {rule?.isEnabled && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-2"
+              disabled={triggerManual.isPending}
+              onClick={() => triggerManual.mutate(automationId)}
+            >
+              {triggerManual.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Play className="h-4 w-4" />
+              )}
+              Run Now
+            </Button>
+          )}
         </div>
       </div>
       <div className="flex-1 p-6 space-y-6 overflow-auto">

@@ -37,6 +37,8 @@ const UPDATE_AUTOMATION = 'elProject.campaign.automation.update';
 const GET_AUTOMATION = 'elProject.campaign.automation.get';
 const DELETE_AUTOMATION = 'elProject.campaign.automation.delete';
 const AUTOMATION_DETAIL = 'elProject.campaign.automation.detail';
+const LIST_AUTOMATION_LOGS = 'elProject.campaign.automation.logs';
+const TRIGGER_AUTOMATION_MANUAL = 'elProject.campaign.automation.trigger_manual';
 
 const queryKeys = {
   //elCrmQueryKeys
@@ -50,6 +52,7 @@ const queryKeys = {
   elCrmSessionBroadcast: 'elCrmSessionBroadcast',
   elCrmAutomationList: 'elCrmAutomationList',
   elCrmAutomationDetail: 'elCrmAutomationDetail',
+  elCrmAutomationLogs: 'elCrmAutomationLogs',
 };
 
 // Hooks for create campaign
@@ -626,5 +629,81 @@ export const useAutomationDetail = (
       return res.data ?? null;
     },
     enabled: !!automationId,
+  });
+};
+
+export const useListElCrmAutomationLogs = (
+  projectUUID: UUID,
+  payload?: {
+    page?: number;
+    perPage?: number;
+    ruleId?: string;
+    status?: string;
+    startDate?: string;
+    endDate?: string;
+  },
+) => {
+  const action = useProjectAction();
+
+  const query = useQuery({
+    queryKey: [queryKeys.elCrmAutomationLogs, projectUUID, payload],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: LIST_AUTOMATION_LOGS,
+          payload: payload ?? { page: 1, perPage: 20 },
+        },
+      });
+      return { data: res.data, meta: res.response.meta };
+    },
+  });
+  return {
+    ...query,
+    data: query?.data?.data || [],
+    meta: query?.data?.meta,
+  };
+};
+
+export const useTriggerElCrmAutomationManual = (projectUUID: UUID) => {
+  const action = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async (ruleUUID: string) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: TRIGGER_AUTOMATION_MANUAL,
+          payload: { uuid: ruleUUID },
+        },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.elCrmAutomationLogs],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.elCrmAutomationList],
+      });
+      toast.fire({
+        title: 'Automation triggered successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error) => {
+      toast.fire({
+        title: `Failed to trigger automation. ${error?.message || ''}`,
+        icon: 'error',
+      });
+    },
   });
 };

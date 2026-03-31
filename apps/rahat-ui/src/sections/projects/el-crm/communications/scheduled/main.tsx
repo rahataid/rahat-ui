@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
@@ -12,21 +13,30 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/components/select';
 import {
+  AlertTriangle,
   CalendarClock,
   CalendarRange,
+  CheckCircle,
   Plus,
   Radio,
   SlidersHorizontal,
   X,
+  Zap,
+  Clock,
+  History,
+  Ban,
+  RotateCcw,
+  Trash2,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useScheduledTableColumn } from './useMsgTableColumns';
+import { useScheduledTableColumn, getStatus } from './useMsgTableColumns';
 import {
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
+  RowSelectionState,
 } from '@tanstack/react-table';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import {
@@ -77,9 +87,12 @@ export default function ScheduledView() {
     (value) => value !== undefined && value !== null && value !== '',
   );
 
-  const activeFilterCount = Object.values(filters || {}).filter(
-    (value) => value !== undefined && value !== null && value !== '',
-  ).length;
+  const activeFilterCount = [
+    filters?.message,
+    filters?.transportId,
+    filters?.status,
+    filters?.startDate || filters?.endDate ? 'dateRange' : undefined,
+  ].filter(Boolean).length;
 
   const isFutureScheduled = (item: any) => {
     const scheduledTime = item?.options?.scheduledTimestamp;
@@ -103,6 +116,7 @@ export default function ScheduledView() {
     setFilters({});
   };
 
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const columns = useScheduledTableColumn();
 
   const table = useReactTable({
@@ -111,7 +125,15 @@ export default function ScheduledView() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onRowSelectionChange: setRowSelection,
+    enableRowSelection: true,
+    state: {
+      rowSelection,
+    },
   });
+
+  const selectedRows = table.getFilteredSelectedRowModel().rows;
+  const selectedCount = selectedRows.length;
 
   const handleDateChange = (date: Date, type: string) => {
     setFilters((prev) => ({
@@ -148,7 +170,47 @@ export default function ScheduledView() {
       iconColor: 'text-warning',
       tooltip: 'Messages scheduled for later delivery',
     },
+    {
+      title: 'Active Rules',
+      value: meta?.automation?.activeRules || 0,
+      icon: Zap,
+      color: 'text-foreground',
+      bgColor: 'bg-blue-500/5',
+      iconColor: 'text-blue-500',
+      tooltip: 'Number of active automation rules',
+    },
+    {
+      title: 'Auto Sent (24h)',
+      value: meta?.automation?.sent24h || 0,
+      icon: CheckCircle,
+      color: 'text-success',
+      bgColor: 'bg-emerald-500/5',
+      iconColor: 'text-emerald-500',
+      tooltip: 'Messages sent by automation in last 24 hours',
+    },
+    {
+      title: 'Auto Failed (24h)',
+      value: meta?.automation?.failed24h || 0,
+      icon: AlertTriangle,
+      color: 'text-destructive',
+      bgColor: 'bg-destructive/5',
+      iconColor: 'text-destructive',
+      tooltip: 'Automation messages that failed in last 24 hours',
+    },
   ];
+
+  const getNextAutomationRun = () => {
+    const now = new Date();
+    const nextRun = new Date(now);
+    nextRun.setUTCHours(0, 0, 0, 0);
+    if (nextRun <= now) {
+      nextRun.setUTCDate(nextRun.getUTCDate() + 1);
+    }
+    const diffMs = nextRun.getTime() - now.getTime();
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours}h ${minutes}m`;
+  };
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -182,7 +244,7 @@ export default function ScheduledView() {
 
         <div className="flex-1 p-6 space-y-6 overflow-auto">
           {/* Stats Grid */}
-          <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {statCards.map((stat) => (
               <Card
                 key={stat.title}
@@ -215,6 +277,30 @@ export default function ScheduledView() {
               </Card>
             ))}
           </div>
+
+          {/* Automation Info Bar */}
+          {(meta?.automation?.activeRules ?? 0) > 0 && (
+            <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-2.5">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <span>
+                  Next automation run in{' '}
+                  <span className="font-medium text-foreground">
+                    {getNextAutomationRun()}
+                  </span>{' '}
+                  (daily at midnight UTC)
+                </span>
+              </div>
+              <Link
+                href={`/projects/el-crm/${projectUUID}/communications/scheduled/automation-history`}
+              >
+                <Button variant="ghost" size="sm" className="gap-1.5 h-7 text-xs">
+                  <History className="h-3.5 w-3.5" />
+                  View Automation History
+                </Button>
+              </Link>
+            </div>
+          )}
 
           {/* Scheduled Table Card */}
           <Card className="flex flex-col">
@@ -468,6 +554,63 @@ export default function ScheduledView() {
                 </div>
               ) : (
                 <>
+                  {selectedCount > 0 && (
+                    <div className="flex items-center justify-between border-b border-border px-5 py-3 bg-muted/30">
+                      <span className="text-sm text-muted-foreground">
+                        {selectedCount} item{selectedCount !== 1 ? 's' : ''} selected
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5 h-8 text-xs"
+                          onClick={() => {
+                            const pendingRows = selectedRows.filter(
+                              (r) => getStatus(r.original) === 'Scheduled',
+                            );
+                            if (pendingRows.length === 0) return;
+                            // TODO: Wire to bulk cancel endpoint when available
+                            setRowSelection({});
+                          }}
+                        >
+                          <Ban className="h-3.5 w-3.5" />
+                          Cancel Pending
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5 h-8 text-xs"
+                          onClick={() => {
+                            const failedRows = selectedRows.filter(
+                              (r) => getStatus(r.original) === 'Failed',
+                            );
+                            if (failedRows.length === 0) return;
+                            // TODO: Wire to bulk retry endpoint when available
+                            setRowSelection({});
+                          }}
+                        >
+                          <RotateCcw className="h-3.5 w-3.5" />
+                          Retry Failed
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5 h-8 text-xs text-destructive hover:text-destructive"
+                          onClick={() => {
+                            const draftRows = selectedRows.filter(
+                              (r) => getStatus(r.original) === 'Draft',
+                            );
+                            if (draftRows.length === 0) return;
+                            // TODO: Wire to bulk delete endpoint when available
+                            setRowSelection({});
+                          }}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          Delete Drafts
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                   <DemoTable
                     table={table}
                     tableHeight="h-[calc(100vh-515px)]"

@@ -213,9 +213,10 @@ export default function InkindAllocationList() {
     },
   ];
 
-  const filteredRows = typeFilter
-    ? rows.filter((r) => r.inkindType === typeFilter)
-    : rows;
+  const filteredRows = useMemo(
+    () => (typeFilter ? rows.filter((r) => r.inkindType === typeFilter) : rows),
+    [rows, typeFilter],
+  );
 
   const table = useReactTable({
     data: filteredRows,

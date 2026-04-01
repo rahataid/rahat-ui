@@ -187,6 +187,7 @@ export const useInkindTransactions = (
   return useQuery({
     queryKey: ['aa.inkindStock.getAllMovements', projectUUID, page, perPage],
     staleTime: 5 * 60 * 1000,
+    placeholderData: (prev) => prev,
     queryFn: () =>
       runAction(q, projectUUID, 'aaProject.inkindStock.getAllMovements', {
         page,

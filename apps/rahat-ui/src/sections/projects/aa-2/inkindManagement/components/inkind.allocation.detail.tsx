@@ -86,6 +86,8 @@ export default function InkindAllocationDetail() {
   const sp = useSearchParams();
 
   const qGroupName = sp.get('groupName') ?? 'N/A';
+  const qInkindType = sp.get('inkindType') ?? '';
+  const qInkindAvailableStock = Number(sp.get('inkindAvailableStock') ?? 0);
 
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<'redeemedAt' | 'quantity'>('redeemedAt');
@@ -112,10 +114,20 @@ export default function InkindAllocationDetail() {
 
   const groupName = groupInkind?.groupName ?? qGroupName;
   const inkindName = groupInkind?.inkindName ?? 'N/A';
+  const inkindType = groupInkind?.inkindType ?? qInkindType;
+  const inkindAvailableStock = groupInkind?.inkindAvailableStock ?? qInkindAvailableStock;
   const quantityAllocated = groupInkind?.quantityAllocated ?? 0;
   const quantityRedeemed = groupInkind?.quantityRedeemed ?? 0;
   const totalBeneficiaries = groupInkind?.totalBeneficiaries ?? 0;
-  const status = deriveStatus(quantityAllocated, quantityRedeemed);
+
+  const isWalkIn = inkindType === 'WALK_IN';
+  const totalAvailableInkinds = isWalkIn
+    ? inkindAvailableStock + quantityRedeemed
+    : quantityAllocated;
+
+  const status = isWalkIn
+    ? deriveStatus(totalAvailableInkinds, quantityRedeemed)
+    : deriveStatus(quantityAllocated, quantityRedeemed);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
@@ -228,7 +240,7 @@ export default function InkindAllocationDetail() {
         {[
           { name: 'Inkind Name', amount: inkindName },
           { name: 'No of Beneficiaries', amount: totalBeneficiaries },
-          { name: 'Total Available Inkinds', amount: quantityAllocated },
+          { name: 'Total Available Inkinds', amount: totalAvailableInkinds },
           { name: 'Total Redeemed', amount: quantityRedeemed },
         ].map((card) => (
           <DataCard

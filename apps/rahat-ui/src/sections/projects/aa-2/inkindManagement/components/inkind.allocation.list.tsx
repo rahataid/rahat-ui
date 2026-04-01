@@ -35,6 +35,7 @@ type AllocationRow = {
   inkindId: string;
   inkindName: string;
   inkindType: string;
+  inkindAvailableStock: number;
   quantityAllocated: number;
   quantityRedeemed: number;
   beneficiaryCount: number;
@@ -97,6 +98,7 @@ export default function InkindAllocationList() {
           inkindId: item.inkindId ?? item.inkind?.uuid ?? '',
           inkindName: item.inkind?.name ?? item.inkindName ?? 'N/A',
           inkindType: item.inkind?.type ?? item.inkindType ?? 'N/A',
+          inkindAvailableStock: item.inkind?.availableStock ?? 0,
           quantityAllocated: item.quantityAllocated ?? 0,
           quantityRedeemed: item.quantityRedeemed ?? 0,
           beneficiaryCount: item.group?._count?.beneficiaries ?? 0,
@@ -149,14 +151,17 @@ export default function InkindAllocationList() {
     {
       accessorKey: 'quantityRedeemed',
       header: 'Total Redeemed',
-      cell: ({ row }) => (
-        <span className="font-semibold">
-          {row.original.quantityRedeemed}{' '}
-          <span className="text-xs font-normal">
-            / {row.original.beneficiaryCount}
+      cell: ({ row }) => {
+        const isWalkIn = row.original.inkindType === 'WALK_IN';
+        return (
+          <span className="font-semibold">
+            {row.original.quantityRedeemed}{' '}
+            <span className="text-xs font-normal">
+              / {isWalkIn ? (row.original.inkindAvailableStock + row.original.quantityRedeemed) : row.original.beneficiaryCount}
+            </span>
           </span>
-        </span>
-      ),
+        );
+      },
     },
     {
       id: 'actions',

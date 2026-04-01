@@ -176,14 +176,22 @@ export const useInkindsSummary = (projectUUID: UUID) => {
   });
 };
 
-export const useInkindTransactions = (projectUUID: UUID) => {
+export const useInkindTransactions = (
+  projectUUID: UUID,
+  params?: { page?: number; perPage?: number },
+) => {
   const q = useProjectAction();
+  const page = params?.page ?? 1;
+  const perPage = params?.perPage ?? 10;
 
   return useQuery({
-    queryKey: ['aa.inkindStock.getAllMovements', projectUUID],
+    queryKey: ['aa.inkindStock.getAllMovements', projectUUID, page, perPage],
     staleTime: 5 * 60 * 1000,
     queryFn: () =>
-      runAction(q, projectUUID, 'aaProject.inkindStock.getAllMovements', {}),
+      runAction(q, projectUUID, 'aaProject.inkindStock.getAllMovements', {
+        page,
+        perPage,
+      }),
   });
 };
 

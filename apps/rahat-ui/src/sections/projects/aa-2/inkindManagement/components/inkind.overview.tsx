@@ -138,11 +138,15 @@ export default function InkindOverview() {
   const { id } = useParams();
   const projectUUID = id as UUID;
 
+  const [page, setPage] = useState(1);
+  const perPage = 10;
+
   const { data: summaryData } = useInkindsSummary(projectUUID);
-  const { data: txData } = useInkindTransactions(projectUUID);
+  const { data: txData } = useInkindTransactions(projectUUID, { page, perPage });
 
   const inkindItemsSummary: any[] = summaryData?.data ?? [];
   const movements: Movement[] = txData?.data ?? [];
+  const meta = txData?.meta;
   const [selectedMovement, setSelectedMovement] = useState<Movement | null>(
     null,
   );
@@ -187,7 +191,30 @@ export default function InkindOverview() {
       </div>
 
       <div className="flex flex-col flex-[2] border rounded-sm p-4 min-h-0">
-        <h1 className="text-sm font-semibold mb-0.5">Overall Inkind Flow</h1>
+        <div className="flex items-start justify-between mb-0.5">
+          <h1 className="text-sm font-semibold">Overall Inkind Flow</h1>
+          {meta && meta.lastPage > 1 && (
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={!meta.prev}
+                className="h-7 w-7 flex items-center justify-center rounded border text-xs disabled:opacity-40 hover:bg-muted transition-colors"
+              >
+                ‹
+              </button>
+              <span className="text-xs text-muted-foreground px-1">
+                {meta.currentPage} / {meta.lastPage}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(meta.lastPage, p + 1))}
+                disabled={!meta.next}
+                className="h-7 w-7 flex items-center justify-center rounded border text-xs disabled:opacity-40 hover:bg-muted transition-colors"
+              >
+                ›
+              </button>
+            </div>
+          )}
+        </div>
         {movements.length !== 0 && (
           <p className="text-xs text-muted-foreground mb-3">
             Click on any logs to view details

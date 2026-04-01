@@ -224,10 +224,11 @@ export default function InkindAllocationDetail() {
         badgeClassName={STATUS_STYLE[status]}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
         {[
           { name: 'Inkind Name', amount: inkindName },
           { name: 'No of Beneficiaries', amount: totalBeneficiaries },
+          { name: 'Total Available Inkinds', amount: quantityAllocated },
           { name: 'Total Redeemed', amount: quantityRedeemed },
         ].map((card) => (
           <DataCard
@@ -260,21 +261,6 @@ export default function InkindAllocationDetail() {
                 setPage(1);
               }}
             />
-            <Select
-              value={sort}
-              onValueChange={(v) => {
-                setSort(v as 'redeemedAt' | 'quantity');
-                setPage(1);
-              }}
-            >
-              <SelectTrigger className="w-40 h-9 text-sm">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="redeemedAt">Redeemed At</SelectItem>
-                <SelectItem value="quantity">Quantity</SelectItem>
-              </SelectContent>
-            </Select>
             <Button
               variant="outline"
               size="sm"

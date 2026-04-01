@@ -48,7 +48,7 @@ export default function InkindTransactionDetail() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <DataCard
-          title="Quantity Disbursed"
+          title="Quantity Redeemed"
           Icon={Package}
           smallNumber={quantity}
           className="h-24 w-full rounded-sm pt-1"
@@ -82,7 +82,7 @@ export default function InkindTransactionDetail() {
               copyable
             />
             <InfoItem label="Redeemed At" value={formatDate(redeemedAt)} />
-            <InfoItem label="Quantity Disbursed" value={quantity} />
+            <InfoItem label="Quantity Redeemed" value={quantity} />
             <InfoItem label="Vendor Name" value={vendorName || undefined} />
             <InfoItem
               label="Vendor Wallet Address"

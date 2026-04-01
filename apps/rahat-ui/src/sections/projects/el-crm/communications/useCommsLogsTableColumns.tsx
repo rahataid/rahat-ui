@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { TriangleAlert } from 'lucide-react';
+import { CircleAlert, TriangleAlert } from 'lucide-react';
 
 const getStatusVariant = (status: string) => {
   if (status === BroadcastStatus.FAIL) return 'destructive';
@@ -20,7 +20,9 @@ export default function useCommsLogsTableColumns() {
     {
       accessorKey: 'audience',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Audience</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Audience
+        </span>
       ),
       cell: ({ row }) => (
         <span className="text-sm font-medium">
@@ -31,14 +33,19 @@ export default function useCommsLogsTableColumns() {
     {
       accessorKey: 'status',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Status
+        </span>
       ),
       cell: ({ row }) => {
         const status = row?.original?.status;
         const disposition = row?.original?.disposition;
 
-        const errorMessage =
-          disposition?.data?.message || disposition?.error || 'Unknown error';
+        const statusMessage =
+          disposition?.message ||
+          disposition?.data?.message ||
+          disposition?.error ||
+          disposition?.reason;
 
         if (status === 'FAIL') {
           return (
@@ -50,7 +57,23 @@ export default function useCommsLogsTableColumns() {
                 </div>
               </TooltipTrigger>
               <TooltipContent className="max-w-xs break-words">
-                <p className="text-sm">{errorMessage}</p>
+                <p className="text-sm">{statusMessage || 'Unknown error'}</p>
+              </TooltipContent>
+            </Tooltip>
+          );
+        }
+
+        if (status === 'SCHEDULED' && statusMessage) {
+          return (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center gap-2 cursor-pointer">
+                  <Badge variant={getStatusVariant(status)}>{status}</Badge>
+                  <CircleAlert className="h-4 w-4 text-muted-foreground" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs break-words">
+                <p className="text-sm">{statusMessage}</p>
               </TooltipContent>
             </Tooltip>
           );
@@ -62,7 +85,9 @@ export default function useCommsLogsTableColumns() {
     {
       accessorKey: 'attempts',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Attempts</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Attempts
+        </span>
       ),
       cell: ({ row }) => (
         <span className="text-sm tabular-nums">
@@ -73,7 +98,9 @@ export default function useCommsLogsTableColumns() {
     {
       accessorKey: 'price',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Price</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Price
+        </span>
       ),
       cell: ({ row }) => {
         let price = row?.original?.disposition?.price;
@@ -92,7 +119,9 @@ export default function useCommsLogsTableColumns() {
     {
       accessorKey: 'timeStamp',
       header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Timestamp</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Timestamp
+        </span>
       ),
       cell: ({ row }) => (
         <span className="text-sm tabular-nums">

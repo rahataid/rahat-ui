@@ -165,7 +165,7 @@ export default function InkindAllocationDetail() {
       accessorKey: 'quantity',
       header: 'Qty',
       cell: ({ row }) => (
-        <span className="font-semibold text-primary">
+        <span className="font-semibold">
           {row.original.quantity}
         </span>
       ),
@@ -174,7 +174,7 @@ export default function InkindAllocationDetail() {
       accessorKey: 'redeemedAt',
       header: 'Redeemed At',
       cell: ({ row }) => (
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm">
           {row.original.redeemedAt
             ? format(new Date(row.original.redeemedAt), 'MMM dd, yyyy, hh:mm a')
             : '—'}

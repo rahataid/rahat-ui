@@ -179,13 +179,13 @@ export default function InkindOverview() {
         <DataCard
           className="rounded-sm"
           title="Assigned Stock"
-          number={String(inkindItemsSummary?.totalAssignedStock ? inkindItemsSummary.totalAssignedStock : 0)}
+          number={String(inkindItemsSummary?.totalAssigned ? inkindItemsSummary.totalAssigned : 0)}
           subtitle="Units currently assigned"
         />
         <DataCard
           className="rounded-sm"
           title="Redeemed Stock"
-          number={String(inkindItemsSummary?.totalRedeemedStock ? inkindItemsSummary.totalRedeemedStock : 0)}
+          number={String(inkindItemsSummary?.totalRedeemed ? inkindItemsSummary.totalRedeemed : 0)}
           subtitle="Units currently redeemed"
         />
       </div>

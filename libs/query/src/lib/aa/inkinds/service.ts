@@ -169,10 +169,10 @@ export const useInkindsSummary = (projectUUID: UUID) => {
   const q = useProjectAction();
 
   return useQuery({
-    queryKey: ['aa.inkinds.summary', projectUUID],
+    queryKey: ['aa.inkinds.getSummary', projectUUID],
     staleTime: 5 * 60 * 1000, // 5 minutes
     queryFn: () =>
-      runAction(q, projectUUID, 'aa.inkinds.summary', {}),
+      runAction(q, projectUUID, 'aa.inkinds.getSummary', {}),
   });
 };
 
@@ -202,7 +202,7 @@ export const useAddInkindStock = (projectUUID: UUID) => {
         queryKey: ['aa.inkinds.get', projectUUID],
       });
       queryClient.invalidateQueries({
-        queryKey: ['aa.inkinds.summary', projectUUID],
+        queryKey: ['aa.inkinds.getSummary', projectUUID],
       });
     },
     onError: (error: any) => {
@@ -231,7 +231,7 @@ export const useRemoveInkindStock = (projectUUID: UUID) => {
         queryKey: ['aa.inkinds.get', projectUUID],
       });
       queryClient.invalidateQueries({
-        queryKey: ['aa.inkinds.summary', projectUUID],
+        queryKey: ['aa.inkinds.getSummary', projectUUID],
       });
     },
     onError: (error: any) => {
@@ -286,7 +286,7 @@ export const useUpdateGroupInkindAllocation = (projectUUID: UUID) => {
         queryKey: ['aa.inkinds.get', projectUUID],
       });
       queryClient.invalidateQueries({
-        queryKey: ['aa.inkinds.summary', projectUUID],
+        queryKey: ['aa.inkinds.getSummary', projectUUID],
       });
     },
     onError: (error: any) => {
@@ -395,6 +395,12 @@ export const useAssignGroupInkind = (projectUUID: UUID) => {
       });
       queryClient.invalidateQueries({
         queryKey: ['aa.inkinds.get', projectUUID],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['aa.inkinds.getSummary', projectUUID],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['aaProject.groupInkinds.getByGroup', projectUUID]
       });
     },
     onError: (error: any) => {

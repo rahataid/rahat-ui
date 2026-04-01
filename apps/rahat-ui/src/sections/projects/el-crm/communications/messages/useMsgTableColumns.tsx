@@ -34,14 +34,20 @@ export const useMsgTableColumn = () => {
         </span>
       ),
       cell: ({ row }) => {
-        const name = (row.getValue('name') as string) || '\u2014';
+        const name = row.getValue('name') as string;
         return (
-          <span
-            className="block max-w-[260px] truncate font-medium"
-            title={name}
-          >
-            {name}
-          </span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-sm font-medium block max-w-[300px] truncate">
+                {name || '\u2014'}
+              </span>
+            </TooltipTrigger>
+            {name && name.length > 40 && (
+              <TooltipContent side="bottom" className="max-w-xs">
+                {name}
+              </TooltipContent>
+            )}
+          </Tooltip>
         );
       },
     },
@@ -52,11 +58,10 @@ export const useMsgTableColumn = () => {
           Channel
         </span>
       ),
-      cell: ({ row }) => (
-        <Badge variant={getChannelVariant(row.getValue('transportName'))}>
-          {row.getValue('transportName')}
-        </Badge>
-      ),
+      cell: ({ row }) => {
+        const label = row.getValue('transportName') as string;
+        return <Badge variant={getChannelVariant(label)}>{label}</Badge>;
+      },
     },
     {
       accessorKey: 'targetType',
@@ -92,13 +97,26 @@ export const useMsgTableColumn = () => {
           Created Date
         </span>
       ),
-      cell: ({ row }) => (
-        <span className="text-sm tabular-nums">
-          {row.getValue('createdAt')
-            ? new Date(row.getValue('createdAt')).toLocaleString()
-            : '\u2014'}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const date = row.getValue('createdAt') as string;
+        if (!date) return <span className="text-sm">\u2014</span>;
+        const d = new Date(date);
+        return (
+          <span className="text-sm tabular-nums whitespace-nowrap">
+            {d.toLocaleDateString(undefined, {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            })}
+            <span className="text-muted-foreground ml-1">
+              {d.toLocaleTimeString(undefined, {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </span>
+          </span>
+        );
+      },
     },
     {
       accessorKey: 'sessionId',

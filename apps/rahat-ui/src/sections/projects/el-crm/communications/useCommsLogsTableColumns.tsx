@@ -123,20 +123,27 @@ export default function useCommsLogsTableColumns() {
           Timestamp
         </span>
       ),
-      cell: ({ row }) => (
-        <span className="text-sm tabular-nums">
-          {renderDateTime(row?.original?.createdAt)}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const date = row?.original?.createdAt as string;
+        if (!date) return <span className="text-sm">\u2014</span>;
+        const d = new Date(date);
+        return (
+          <span className="text-sm tabular-nums whitespace-nowrap">
+            {d.toLocaleDateString(undefined, {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            })}
+            <span className="text-muted-foreground ml-1">
+              {d.toLocaleTimeString(undefined, {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </span>
+          </span>
+        );
+      },
     },
   ];
   return columns;
-}
-
-function renderDateTime(dateTime: string) {
-  if (dateTime) {
-    const d = new Date(dateTime);
-    return d.toLocaleString();
-  }
-  return '\u2014';
 }

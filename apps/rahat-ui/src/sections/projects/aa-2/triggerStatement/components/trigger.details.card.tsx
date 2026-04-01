@@ -20,7 +20,7 @@ const TriggerDetailsCard = ({
   totalRequiredTriggers,
 }: IProps) => {
   return (
-    <div className={`${bgColor} rounded p-4 space-y-1`}>
+    <div className={`${bgColor} rounded-xl p-4 space-y-1`}>
       <p className="text-sm/4">{title} Triggers</p>
       <div className="flex items-center gap-1">
         <p className={`text-2xl font-medium text-${color}-500`}>

@@ -374,6 +374,29 @@ export const useGetGroupInkindLogs = (
   });
 };
 
+export const useGetUnassignedGroupInkind = (
+  projectUUID: UUID,
+  inkindUUID: string,
+) => {
+  const q = useProjectAction();
+
+  return useQuery({
+    queryKey: [
+      'aaProject.groupInkinds.getUnassignedGroupInkind',
+      projectUUID,
+      inkindUUID,
+    ],
+    enabled: !!inkindUUID,
+    queryFn: () =>
+      runAction(
+        q,
+        projectUUID,
+        'aaProject.groupInkinds.getUnassignedGroupInkind',
+        { uuid: inkindUUID },
+      ),
+  });
+};
+
 export const useAssignGroupInkind = (projectUUID: UUID) => {
   const q = useProjectAction();
   const queryClient = useQueryClient();

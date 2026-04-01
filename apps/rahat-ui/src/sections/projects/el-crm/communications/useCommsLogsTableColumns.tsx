@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { TriangleAlert } from 'lucide-react';
+import { CircleAlert, TriangleAlert } from 'lucide-react';
 
 const getStatusVariant = (status: string) => {
   if (status === BroadcastStatus.FAIL) return 'destructive';
@@ -41,8 +41,11 @@ export default function useCommsLogsTableColumns() {
         const status = row?.original?.status;
         const disposition = row?.original?.disposition;
 
-        const errorMessage =
-          disposition?.data?.message || disposition?.error || 'Unknown error';
+        const statusMessage =
+          disposition?.message ||
+          disposition?.data?.message ||
+          disposition?.error ||
+          disposition?.reason;
 
         if (status === 'FAIL') {
           return (
@@ -54,7 +57,23 @@ export default function useCommsLogsTableColumns() {
                 </div>
               </TooltipTrigger>
               <TooltipContent className="max-w-xs break-words">
-                <p className="text-sm">{errorMessage}</p>
+                <p className="text-sm">{statusMessage || 'Unknown error'}</p>
+              </TooltipContent>
+            </Tooltip>
+          );
+        }
+
+        if (status === 'SCHEDULED' && statusMessage) {
+          return (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center gap-2 cursor-pointer">
+                  <Badge variant={getStatusVariant(status)}>{status}</Badge>
+                  <CircleAlert className="h-4 w-4 text-muted-foreground" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs break-words">
+                <p className="text-sm">{statusMessage}</p>
               </TooltipContent>
             </Tooltip>
           );

@@ -163,15 +163,24 @@ export default function DashboardView() {
   const customersByMonth: CustomersByMonthEntry[] =
     getStat(stats, 'CUSTOMERS_BY_MONTH') || [];
 
-  const commStats: CommunicationStats = getStat(
-    stats,
-    'COMMUNICATION_STATS',
-  ) || {
-    sent: 0,
-    failed: 0,
-    skipped: 0,
-    totalMessages: 0,
-    deliveryRate: 0,
+  // Communication stats are now provided as individual stats, not a combined object
+  const totalMessagesSent: number = getStat(stats, 'TOTAL_MESSAGES_SENT') || 0;
+  const totalMessagesSuccess: number =
+    getStat(stats, 'TOTAL_MESSAGES_SUCCESS') || 0;
+  const totalMessagesFailed: number =
+    getStat(stats, 'TOTAL_MESSAGES_FAILED') || 0;
+  // If skipped is not available, default to 0
+  const totalMessagesSkipped: number =
+    getStat(stats, 'TOTAL_MESSAGES_SKIPPED') || 0;
+  const commStats: CommunicationStats = {
+    sent: totalMessagesSuccess,
+    failed: totalMessagesFailed,
+    skipped: totalMessagesSkipped,
+    totalMessages: totalMessagesSent,
+    deliveryRate:
+      totalMessagesSent > 0
+        ? Math.round((totalMessagesSuccess / totalMessagesSent) * 100)
+        : 0,
   };
 
   const automationHealth: AutomationHealth = getStat(
@@ -186,8 +195,7 @@ export default function DashboardView() {
   const failedBatchCount: number = getStat(stats, 'FAILED_BATCH_COUNT') || 0;
   const recentCampaigns: RecentCampaign[] =
     getStat(stats, 'RECENT_CAMPAIGNS') || [];
-  const recentImports: RecentImport[] =
-    getStat(stats, 'RECENT_IMPORTS') || [];
+  const recentImports: RecentImport[] = getStat(stats, 'RECENT_IMPORTS') || [];
 
   // -- Derived Data -----------------------------------------------------------
 
@@ -217,7 +225,9 @@ export default function DashboardView() {
     else if (dateRange === '90d') cutoff.setDate(now.getDate() - 90);
     else if (dateRange === 'ytd') cutoff.setMonth(0, 1);
 
-    const cutoffKey = `${cutoff.getFullYear()}-${(cutoff.getMonth() + 1).toString().padStart(2, '0')}`;
+    const cutoffKey = `${cutoff.getFullYear()}-${(cutoff.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}`;
     return customersByMonth.filter(
       (entry: CustomersByMonthEntry) => entry.month >= cutoffKey,
     );
@@ -288,20 +298,20 @@ export default function DashboardView() {
         commStats.deliveryRate >= 80
           ? 'bg-emerald-500/10'
           : commStats.deliveryRate >= 60
-            ? 'bg-amber-500/10'
-            : 'bg-red-500/10',
+          ? 'bg-amber-500/10'
+          : 'bg-red-500/10',
       iconColor:
         commStats.deliveryRate >= 80
           ? 'text-emerald-500'
           : commStats.deliveryRate >= 60
-            ? 'text-amber-500'
-            : 'text-red-500',
+          ? 'text-amber-500'
+          : 'text-red-500',
       subtitle:
         commStats.deliveryRate >= 80
           ? 'Healthy'
           : commStats.deliveryRate >= 60
-            ? 'Needs improvement'
-            : 'Critical',
+          ? 'Needs improvement'
+          : 'Critical',
     },
   ];
 
@@ -363,10 +373,10 @@ export default function DashboardView() {
                           </p>
                         )}
                       </div>
-                      <div className={`rounded-lg p-2 ${card.bgColor} shrink-0`}>
-                        <card.icon
-                          className={`h-4 w-4 ${card.iconColor}`}
-                        />
+                      <div
+                        className={`rounded-lg p-2 ${card.bgColor} shrink-0`}
+                      >
+                        <card.icon className={`h-4 w-4 ${card.iconColor}`} />
                       </div>
                     </div>
                   </CardContent>
@@ -466,10 +476,7 @@ export default function DashboardView() {
                   </ChartContainer>
                   <div className="flex justify-center gap-6 mt-2 text-sm">
                     {categoryDonutData.map((item) => (
-                      <div
-                        key={item.name}
-                        className="flex items-center gap-2"
-                      >
+                      <div key={item.name} className="flex items-center gap-2">
                         <span
                           className="h-2.5 w-2.5 rounded-full"
                           style={{ backgroundColor: item.fill }}
@@ -747,10 +754,7 @@ export default function DashboardView() {
                     },
                     { label: 'Inactive', color: COLORS.inactive },
                   ].map((item) => (
-                    <div
-                      key={item.label}
-                      className="flex items-center gap-2"
-                    >
+                    <div key={item.label} className="flex items-center gap-2">
                       <span
                         className="h-2.5 w-2.5 rounded-full"
                         style={{ backgroundColor: item.color }}
@@ -806,24 +810,22 @@ export default function DashboardView() {
                         <span className="text-right">Sent</span>
                         <span className="text-right">Date</span>
                       </div>
-                      {recentCampaigns.map(
-                        (campaign: RecentCampaign) => (
-                          <div
-                            key={campaign.uuid}
-                            className="grid grid-cols-[1fr_60px_60px] gap-2 py-2.5 border-b border-border/50 last:border-0 text-sm hover:bg-muted/50 -mx-2 px-2 rounded-sm transition-colors"
-                          >
-                            <span className="truncate text-foreground font-medium">
-                              {campaign.name}
-                            </span>
-                            <span className="text-right tabular-nums text-muted-foreground">
-                              {campaign.recipientCount}
-                            </span>
-                            <span className="text-right text-muted-foreground text-xs">
-                              {formatDate(campaign.createdAt)}
-                            </span>
-                          </div>
-                        ),
-                      )}
+                      {recentCampaigns.map((campaign: RecentCampaign) => (
+                        <div
+                          key={campaign.uuid}
+                          className="grid grid-cols-[1fr_60px_60px] gap-2 py-2.5 border-b border-border/50 last:border-0 text-sm hover:bg-muted/50 -mx-2 px-2 rounded-sm transition-colors"
+                        >
+                          <span className="truncate text-foreground font-medium">
+                            {campaign.name}
+                          </span>
+                          <span className="text-right tabular-nums text-muted-foreground">
+                            {campaign.recipientCount}
+                          </span>
+                          <span className="text-right text-muted-foreground text-xs">
+                            {formatDate(campaign.createdAt)}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
@@ -946,7 +948,9 @@ export default function DashboardView() {
                           className="flex items-center gap-3 py-2 border-b border-border/50 last:border-0"
                         >
                           <div
-                            className={`rounded-full p-1.5 ${isFailed ? 'bg-red-500/10' : 'bg-emerald-500/10'}`}
+                            className={`rounded-full p-1.5 ${
+                              isFailed ? 'bg-red-500/10' : 'bg-emerald-500/10'
+                            }`}
                           >
                             {isFailed ? (
                               <XCircle className="h-4 w-4 text-red-500" />

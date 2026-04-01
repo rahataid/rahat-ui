@@ -9,7 +9,7 @@ type IProps = {
 
 export default function TriggersListCard({ projectId, triggers }: IProps) {
   return (
-    <div className="p-4 rounded border shadow-md">
+    <div className="p-4 rounded-xl border shadow-md">
       <Heading
         title="Recent Triggers"
         titleStyle="text-xl/6"

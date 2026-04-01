@@ -7,7 +7,11 @@ import { usePhasesStore } from './phases.store';
 import React, { useEffect } from 'react';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
-export const useSinglePhase = (uuid: UUID, phaseId: UUID) => {
+export const useSinglePhase = (
+  uuid: UUID,
+  phaseId: UUID,
+  options?: { enabled?: boolean },
+) => {
   const q = useProjectAction();
   const { setThreshhold } = usePhasesStore((state) => ({
     setThreshhold: state.setThreshold,
@@ -22,6 +26,7 @@ export const useSinglePhase = (uuid: UUID, phaseId: UUID) => {
 
   const query = useQuery({
     queryKey: ['phase', uuid, phaseId],
+    enabled: options?.enabled !== false,
     queryFn: async () => {
       try {
         const mutate = await q.mutateAsync({

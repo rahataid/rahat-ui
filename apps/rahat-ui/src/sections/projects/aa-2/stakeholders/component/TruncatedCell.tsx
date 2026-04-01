@@ -36,7 +36,7 @@ export function TruncatedCell({
           </span>
         </TooltipTrigger>
         <TooltipContent className={cn('rounded-sm', className)}>
-          <p className="whitespace-pre-line flex wrap break-words max-w-[20vw]">{text}</p>
+          <p className="whitespace-pre-line flex wrap break-words">{text}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

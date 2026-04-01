@@ -16,7 +16,7 @@ const requiredMandatoryTriggerNumber = z.preprocess(
       invalid_type_error: 'Please enter a valid number.',
     })
     .int('Please enter an integer.')
-    .nonnegative('Value cannot be negative.'),
+    .nonnegative('Value must be greater than or equal to 0.'),
 );
 
 const requiredOptionalTriggerNumber = z.preprocess(
@@ -35,7 +35,7 @@ const requiredOptionalTriggerNumber = z.preprocess(
       invalid_type_error: 'Please enter a valid number.',
     })
     .int('Please enter an integer.')
-    .nonnegative('Value cannot be negative.'),
+    .nonnegative('Value must be greater than or equal to 0.'),
 );
 
 export const AddPhaseSchema = z.object({

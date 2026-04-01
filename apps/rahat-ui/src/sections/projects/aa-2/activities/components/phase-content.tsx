@@ -32,7 +32,6 @@ export default function PhaseContent({
   const router = useRouter();
 
   const lowerTitle = title.toLowerCase();
-
   const handleUpdateStatus = (id: string) => {
     router.push(`/projects/aa/${projectID}/activities/${id}/update-status`);
   };

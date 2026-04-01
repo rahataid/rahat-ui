@@ -2,7 +2,7 @@ import { Toaster } from '@rahat-ui/shadcn/components/toaster';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { GeistSans } from 'geist/font/sans';
+import { Plus_Jakarta_Sans, DM_Sans } from 'next/font/google';
 import { QueryProvider } from '../providers/query-provider';
 import { SecondPanelProvider } from '../providers/second-panel-provider';
 import { ServiceProvider } from '../providers/service.provider';
@@ -14,6 +14,20 @@ import { CommunicationQueryProvider } from '@rumsan/communication-query/provider
 import { NewCommunicationQueryProvider } from '@rahat-ui/query';
 import { PostHogProvider } from '../providers/PostHogProvider';
 import { headers } from 'next/headers';
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-plus-jakarta',
+  display: 'swap',
+});
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-dm-sans',
+  display: 'swap',
+});
 
 export const metadata = {
   icons: {
@@ -31,7 +45,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head nonce={nonce}></head>
-      <body>
+      <body
+        className={`${plusJakarta.variable} ${dmSans.variable} font-sans`}
+      >
         <title>Welcome to Rahat</title>
         <PostHogProvider>
           <Wagmi>
@@ -44,10 +60,10 @@ export default function RootLayout({
                         <ThemeProvider
                           attribute="class"
                           defaultTheme="light"
-                          // enableSystem
-                          // disableTransitionOnChange
+                          forcedTheme="light"
+                          disableTransitionOnChange
                         >
-                          <main className={GeistSans.className}>
+                          <main>
                             {children}
                           </main>
                           <script nonce={nonce} />

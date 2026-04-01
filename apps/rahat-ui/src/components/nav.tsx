@@ -18,7 +18,6 @@ import { useUserStore } from '@rumsan/react-query';
 import { useAuthStore } from '@rumsan/react-query/auth';
 import { toast } from 'react-toastify';
 import { paths } from '../routes/paths';
-import ThemeSwitch from './themeToggleSwitch';
 import ConnectWallet from './wallet/connect-wallet';
 import SearchInput from '../sections/projects/components/search.input';
 import { SidebarTrigger } from '@rahat-ui/shadcn/src/components/ui/sidebar';
@@ -40,7 +39,7 @@ export function Nav({ hasDefaultHeader = true }) {
 
   return (
     hasDefaultHeader && (
-      <div className="h-14 flex justify-between items-center pl-2 pr-6 z-50 bg-card border-b shadow-nav">
+      <div className="h-14 flex justify-between items-center pl-2 pr-6 z-50 bg-background shadow-neu-extruded-sm">
         <div className="flex items-center space-x-4">
           <SidebarTrigger />
           {/* <SearchInput name="" onSearch={() => {}} isDisabled /> */}

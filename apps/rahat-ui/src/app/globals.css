@@ -3,41 +3,43 @@
 @tailwind utilities;
 
 /* ============================================
-   RAHAT CRM — Premium Design Token System
+   RAHAT CRM — Neumorphism (Soft UI) Design System
    ============================================
-   Color format: HSL channels (H S% L%) without hsl() wrapper
-   Usage: hsl(var(--token)) in Tailwind config
+   Base surface: #E0E5EC (cool grey)
+   Shadow system: Dual-source lighting (top-left light, bottom-right dark)
+   Accent: #6C63FF (electric indigo)
+   Fonts: Plus Jakarta Sans (headings) + DM Sans (body)
    ============================================ */
 
 @layer base {
   :root {
-    /* --- Surface & Background --- */
-    --background: 210 20% 98%;
-    --foreground: 220 25% 10%;
+    /* --- Neumorphic Surface Palette --- */
+    --background: 216 20% 90%;        /* #E0E5EC — base surface */
+    --foreground: 220 20% 20%;        /* #2D3142 — primary text */
 
-    /* --- Card & Popover --- */
-    --card: 0 0% 100%;
-    --card-foreground: 220 25% 10%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 25% 10%;
+    /* --- Card & Popover (same as background for seamless neumorphism) --- */
+    --card: 216 20% 90%;              /* #E0E5EC — flush with surface */
+    --card-foreground: 220 20% 20%;
+    --popover: 216 20% 92%;           /* Slightly lighter popover */
+    --popover-foreground: 220 20% 20%;
 
-    /* --- Primary (Professional Blue) --- */
-    --primary: 217 72% 50%;
+    /* --- Primary (Electric Indigo Accent) --- */
+    --primary: 244 95% 63%;           /* #6C63FF */
     --primary-foreground: 0 0% 100%;
     --primary-label: 220 18% 26%;
     --primary-sub-label: 220 12% 48%;
 
-    /* --- Secondary --- */
-    --secondary: 214 32% 96%;
-    --secondary-foreground: 220 20% 18%;
+    /* --- Secondary (Soft muted surface) --- */
+    --secondary: 216 18% 86%;         /* Slightly darker than base */
+    --secondary-foreground: 220 20% 20%;
 
     /* --- Muted --- */
-    --muted: 214 32% 96%;
-    --muted-foreground: 215 16% 50%;
+    --muted: 216 16% 86%;
+    --muted-foreground: 216 12% 50%;
 
-    /* --- Accent --- */
-    --accent: 214 32% 96%;
-    --accent-foreground: 220 20% 18%;
+    /* --- Accent (matches primary for neumorphism) --- */
+    --accent: 244 95% 63%;            /* #6C63FF */
+    --accent-foreground: 0 0% 100%;
 
     /* --- Semantic: Destructive / Success / Warning --- */
     --destructive: 0 72% 51%;
@@ -48,87 +50,37 @@
     --warning-foreground: 0 0% 100%;
 
     /* --- Borders & Inputs --- */
-    --border: 220 16% 90%;
-    --input: 220 16% 90%;
-    --ring: 217 72% 50%;
+    --border: 216 16% 84%;            /* Subtle, near-invisible */
+    --input: 216 20% 90%;             /* Same as background — borderless inputs */
+    --ring: 244 95% 63%;              /* Accent ring */
 
-    /* --- Radius --- */
-    --radius: 0.625rem;
+    /* --- Radius (Hyper-rounded) --- */
+    --radius: 1rem;                   /* 16px base — components use lg/md/sm */
 
-    /* --- Sidebar --- */
-    --sidebar-background: 220 20% 98%;
+    /* --- Neumorphic Shadow Tokens (RGBA) --- */
+    --shadow-light: rgba(255, 255, 255, 0.8);
+    --shadow-dark: rgba(163, 177, 198, 0.6);
+    --shadow-light-strong: rgba(255, 255, 255, 0.9);
+    --shadow-dark-strong: rgba(163, 177, 198, 0.8);
+    --shadow-inset-light: rgba(255, 255, 255, 0.5);
+    --shadow-inset-dark: rgba(163, 177, 198, 0.5);
+
+    /* --- Sidebar (neumorphic navigation) --- */
+    --sidebar-background: 216 20% 90%;
     --sidebar-foreground: 220 15% 30%;
-    --sidebar-primary: 217 72% 50%;
+    --sidebar-primary: 244 95% 63%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 214 32% 96%;
+    --sidebar-accent: 216 18% 86%;
     --sidebar-accent-foreground: 220 15% 18%;
-    --sidebar-border: 220 16% 92%;
-    --sidebar-ring: 217 72% 50%;
+    --sidebar-border: 216 16% 86%;
+    --sidebar-ring: 244 95% 63%;
 
-    /* --- Chart Palette --- */
-    --chart-1: 217 72% 50%;
-    --chart-2: 152 60% 40%;
-    --chart-3: 38 92% 50%;
-    --chart-4: 270 50% 55%;
-    --chart-5: 340 65% 52%;
-  }
-
-  .dark {
-    /* --- Surface & Background --- */
-    --background: 224 30% 7%;
-    --foreground: 210 25% 93%;
-
-    /* --- Card & Popover --- */
-    --card: 224 25% 10%;
-    --card-foreground: 210 25% 93%;
-    --popover: 224 25% 10%;
-    --popover-foreground: 210 25% 93%;
-
-    /* --- Primary (Brighter for dark surfaces) --- */
-    --primary: 213 70% 55%;
-    --primary-foreground: 0 0% 100%;
-
-    /* --- Secondary --- */
-    --secondary: 220 20% 16%;
-    --secondary-foreground: 210 25% 93%;
-
-    /* --- Muted --- */
-    --muted: 220 20% 16%;
-    --muted-foreground: 215 15% 60%;
-
-    /* --- Accent --- */
-    --accent: 220 20% 16%;
-    --accent-foreground: 210 25% 93%;
-
-    /* --- Semantic --- */
-    --destructive: 0 62% 45%;
-    --destructive-foreground: 0 0% 100%;
-    --success: 152 50% 45%;
-    --success-foreground: 0 0% 100%;
-    --warning: 38 80% 55%;
-    --warning-foreground: 0 0% 100%;
-
-    /* --- Borders & Inputs --- */
-    --border: 220 15% 18%;
-    --input: 220 15% 18%;
-    --ring: 213 70% 55%;
-
-    /* --- Sidebar --- */
-    --sidebar-background: 224 30% 8%;
-    --sidebar-foreground: 210 20% 85%;
-    --sidebar-primary: 213 70% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 18% 14%;
-    --sidebar-accent-foreground: 210 20% 85%;
-    --sidebar-border: 220 15% 14%;
-    --sidebar-ring: 213 70% 55%;
-
-    /* --- Chart Palette (lighter for dark bg) --- */
-    --chart-1: 213 70% 60%;
-    --chart-2: 152 55% 50%;
-    --chart-3: 38 85% 58%;
-    --chart-4: 270 45% 62%;
-    --chart-5: 340 60% 58%;
+    /* --- Chart Palette (Neumorphic-friendly muted tones) --- */
+    --chart-1: 244 95% 63%;           /* Primary indigo */
+    --chart-2: 152 60% 40%;           /* Teal/green */
+    --chart-3: 38 80% 55%;            /* Warm amber */
+    --chart-4: 280 50% 55%;           /* Purple */
+    --chart-5: 340 55% 52%;           /* Rose */
   }
 }
 
@@ -142,31 +94,72 @@
     font-feature-settings: 'rlig' 1, 'calt' 1;
   }
 
-  /* Premium focus ring for keyboard navigation */
+  /* Neumorphic focus ring — soft glow instead of hard outline */
   :focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+    @apply outline-none ring-2 ring-ring/40 ring-offset-2 ring-offset-background;
   }
 
-  /* Smooth scrollbar styling */
+  /* Smooth scrollbar — neumorphic inset track */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-transparent;
+    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-border rounded-full;
+    background: var(--shadow-dark);
+    border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground/40;
+    background: rgba(163, 177, 198, 0.8);
   }
 }
 
 /* ============================================
-   Utility layer: reusable premium patterns
+   Neumorphic Utility Classes
    ============================================ */
 @layer utilities {
+  /* Extruded surface — raised element */
+  .neu-extruded {
+    box-shadow:
+      6px 6px 12px var(--shadow-dark),
+      -6px -6px 12px var(--shadow-light);
+  }
+
+  /* Extruded surface (subtle) — cards, containers */
+  .neu-extruded-sm {
+    box-shadow:
+      3px 3px 6px var(--shadow-dark),
+      -3px -3px 6px var(--shadow-light);
+  }
+
+  /* Inset/concave — inputs, wells */
+  .neu-inset {
+    box-shadow:
+      inset 3px 3px 6px var(--shadow-dark),
+      inset -3px -3px 6px var(--shadow-light);
+  }
+
+  /* Deep inset — pressed buttons, active states */
+  .neu-pressed {
+    box-shadow:
+      inset 4px 4px 8px var(--shadow-dark),
+      inset -4px -4px 8px var(--shadow-light);
+  }
+
+  /* Flat — no shadow, flush with surface */
+  .neu-flat {
+    box-shadow: none;
+  }
+
+  /* Hover elevation — intensified extruded */
+  .neu-hover {
+    box-shadow:
+      8px 8px 16px var(--shadow-dark-strong),
+      -8px -8px 16px var(--shadow-light-strong);
+  }
+
   /* Reduce motion for accessibility */
   @media (prefers-reduced-motion: reduce) {
     *,

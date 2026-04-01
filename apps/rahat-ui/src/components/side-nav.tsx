@@ -48,8 +48,8 @@ export default function SideNav() {
                       tooltip={item.title}
                       className={`transition-all duration-200 ${
                         isActive
-                          ? 'bg-primary text-primary-foreground rounded-md shadow-sm'
-                          : 'text-muted-foreground rounded-md hover:bg-accent hover:text-foreground'
+                          ? 'bg-primary/10 text-primary rounded-xl shadow-neu-inset-sm'
+                          : 'text-muted-foreground rounded-xl hover:shadow-neu-extruded-xs hover:text-foreground'
                       }`}
                     >
                       {createElement(getIcon(item.icon))}
@@ -95,10 +95,10 @@ export default function SideNav() {
               <Link
                 key={item.title}
                 href={item.path}
-                className={`flex h-9 w-9 items-center justify-center rounded-md transition-all duration-200 md:h-8 md:w-8 ${
+                className={`flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-200 md:h-8 md:w-8 ${
                   isActive
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                    ? 'bg-primary/10 text-primary shadow-neu-inset-sm'
+                    : 'text-muted-foreground hover:shadow-neu-extruded-xs hover:text-foreground'
                 }`}
               >
                 {item?.icon ? (

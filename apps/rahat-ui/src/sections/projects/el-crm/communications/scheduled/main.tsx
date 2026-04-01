@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
@@ -23,20 +22,15 @@ import {
   X,
   Zap,
   Clock,
-  History,
-  Ban,
-  RotateCcw,
-  Trash2,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useScheduledTableColumn, getStatus } from './useMsgTableColumns';
+import { useScheduledTableColumn } from './useMsgTableColumns';
 import {
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
-  RowSelectionState,
 } from '@tanstack/react-table';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import {
@@ -116,7 +110,6 @@ export default function ScheduledView() {
     setFilters({});
   };
 
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const columns = useScheduledTableColumn();
 
   const table = useReactTable({
@@ -125,15 +118,7 @@ export default function ScheduledView() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onRowSelectionChange: setRowSelection,
-    enableRowSelection: true,
-    state: {
-      rowSelection,
-    },
   });
-
-  const selectedRows = table.getFilteredSelectedRowModel().rows;
-  const selectedCount = selectedRows.length;
 
   const handleDateChange = (date: Date, type: string) => {
     setFilters((prev) => ({
@@ -292,11 +277,11 @@ export default function ScheduledView() {
                 </span>
               </div>
               <Link
-                href={`/projects/el-crm/${projectUUID}/communications/scheduled/automation-history`}
+                href={`/projects/el-crm/${projectUUID}/communications/scheduled/compose?tab=automatic`}
               >
                 <Button variant="ghost" size="sm" className="gap-1.5 h-7 text-xs">
-                  <History className="h-3.5 w-3.5" />
-                  View Automation History
+                  <Zap className="h-3.5 w-3.5" />
+                  View Automation
                 </Button>
               </Link>
             </div>
@@ -554,63 +539,6 @@ export default function ScheduledView() {
                 </div>
               ) : (
                 <>
-                  {selectedCount > 0 && (
-                    <div className="flex items-center justify-between border-b border-border px-5 py-3 bg-muted/30">
-                      <span className="text-sm text-muted-foreground">
-                        {selectedCount} item{selectedCount !== 1 ? 's' : ''} selected
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="gap-1.5 h-8 text-xs"
-                          onClick={() => {
-                            const pendingRows = selectedRows.filter(
-                              (r) => getStatus(r.original) === 'Scheduled',
-                            );
-                            if (pendingRows.length === 0) return;
-                            // TODO: Wire to bulk cancel endpoint when available
-                            setRowSelection({});
-                          }}
-                        >
-                          <Ban className="h-3.5 w-3.5" />
-                          Cancel Pending
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="gap-1.5 h-8 text-xs"
-                          onClick={() => {
-                            const failedRows = selectedRows.filter(
-                              (r) => getStatus(r.original) === 'Failed',
-                            );
-                            if (failedRows.length === 0) return;
-                            // TODO: Wire to bulk retry endpoint when available
-                            setRowSelection({});
-                          }}
-                        >
-                          <RotateCcw className="h-3.5 w-3.5" />
-                          Retry Failed
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="gap-1.5 h-8 text-xs text-destructive hover:text-destructive"
-                          onClick={() => {
-                            const draftRows = selectedRows.filter(
-                              (r) => getStatus(r.original) === 'Draft',
-                            );
-                            if (draftRows.length === 0) return;
-                            // TODO: Wire to bulk delete endpoint when available
-                            setRowSelection({});
-                          }}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                          Delete Drafts
-                        </Button>
-                      </div>
-                    </div>
-                  )}
                   <DemoTable
                     table={table}
                     tableHeight="h-[calc(100vh-515px)]"

@@ -8,13 +8,11 @@ import {
 } from '@rahat-ui/shadcn/components/card';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Label } from '@rahat-ui/shadcn/components/label';
-import { Button } from '@rahat-ui/shadcn/components/button';
-import { ArrowLeft, Play, Loader2, Zap } from 'lucide-react';
+import { ArrowLeft, Zap } from 'lucide-react';
 import Link from 'next/link';
 import {
   useAutomationDetail,
   useListElCrmSessionBroadcast,
-  useTriggerElCrmAutomationManual,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import useCommsLogsTableColumns from '../../useCommsLogsTableColumns';
@@ -36,8 +34,6 @@ export default function AutomationDetailPage() {
     projectUUID,
     automationId,
   );
-
-  const triggerManual = useTriggerElCrmAutomationManual(projectUUID);
 
   const rule = data?.rule;
   const logs = data?.logs || [];
@@ -74,22 +70,6 @@ export default function AutomationDetailPage() {
               Automation Details
             </h1>
           </div>
-          {rule?.isEnabled && (
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-2"
-              disabled={triggerManual.isPending}
-              onClick={() => triggerManual.mutate(automationId)}
-            >
-              {triggerManual.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Play className="h-4 w-4" />
-              )}
-              Run Now
-            </Button>
-          )}
         </div>
       </div>
       <div className="flex-1 p-6 space-y-6 overflow-auto">

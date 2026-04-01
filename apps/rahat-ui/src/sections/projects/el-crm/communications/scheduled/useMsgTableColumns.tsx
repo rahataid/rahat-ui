@@ -1,7 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { useParams } from 'next/navigation';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Eye } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -13,18 +12,6 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export function getStatus(row: any) {
-  // Prefer server-side status if available (CampaignStatus enum)
-  if (row?.status) {
-    const serverStatus = row.status as string;
-    const statusMap: Record<string, string> = {
-      DRAFT: 'Draft',
-      SCHEDULED: 'Scheduled',
-      SENT: 'Sent',
-      FAILED: 'Failed',
-    };
-    return statusMap[serverStatus] || serverStatus;
-  }
-  // Fallback to client-side derivation for backward compatibility
   const scheduledTime = row?.options?.scheduledTimestamp;
   const sessionId = row?.sessionId;
   if (scheduledTime && new Date(scheduledTime) > new Date()) return 'Scheduled';
@@ -104,38 +91,12 @@ export const useScheduledTableColumn = () => {
         return 'success';
       case 'Scheduled':
         return 'warning';
-      case 'Failed':
-        return 'destructive';
       default:
         return 'secondary';
     }
   };
 
   const columns: ColumnDef<any>[] = [
-    {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-          className="translate-y-[2px]"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-          className="translate-y-[2px]"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       accessorKey: 'name',
       header: () => (
@@ -220,29 +181,6 @@ export const useScheduledTableColumn = () => {
       cell: ({ row }) => {
         const status = getStatus(row.original);
         return <Badge variant={getStatusVariant(status)}>{status}</Badge>;
-      },
-    },
-    {
-      id: 'deliveryRate',
-      header: () => (
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Delivery Rate
-        </span>
-      ),
-      cell: ({ row }) => {
-        const status = getStatus(row.original);
-        const recipientCount = row.original?.recipientCount;
-        if (status !== 'Sent' || !row.original?.sessionId) {
-          return <span className="text-sm text-muted-foreground">—</span>;
-        }
-        if (!recipientCount) {
-          return <span className="text-sm text-muted-foreground">N/A</span>;
-        }
-        return (
-          <span className="text-sm tabular-nums font-medium text-success">
-            {recipientCount} sent
-          </span>
-        );
       },
     },
     {

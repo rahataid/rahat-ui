@@ -649,7 +649,7 @@ export default function ComposeScheduleView() {
             </CardHeader>
 
             <CardContent className="pt-6">
-              <Tabs defaultValue="manual" className="w-full">
+              <Tabs defaultValue={searchParams.get('tab') === 'automatic' ? 'automatic' : 'manual'} className="w-full">
                 <TabsList className="grid w-full grid-cols-2 mb-6">
                   <TabsTrigger value="manual" className="gap-2">
                     <Calendar className="h-4 w-4" />

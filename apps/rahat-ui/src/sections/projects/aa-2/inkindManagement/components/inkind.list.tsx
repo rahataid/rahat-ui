@@ -384,7 +384,7 @@ export default function InkindList() {
         header: 'Assigned Stock',
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.getValue('assignedStock') ?? 0}
+            {row.getValue('totalAssigned') ?? 0}
           </span>
         ),
       },
@@ -393,7 +393,7 @@ export default function InkindList() {
         header: 'Redeemed Stock',
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.getValue('redeemedStock') ?? 0}
+            {row.getValue('totalRedeemed') ?? 0}
           </span>
         ),
       },

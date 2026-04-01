@@ -22,9 +22,21 @@ interface Coordinate {
 
 interface TemperatureWatchMapProps {
   coordinates: Coordinate[];
+  title?: string;
+  description?: string;
+  indicatorTitle?: string;
+  popupLabel?: string;
+  unitLabel?: string;
 }
 
-function TemperatureWatchMap({ coordinates }: TemperatureWatchMapProps) {
+function TemperatureWatchMap({
+  coordinates,
+  title = 'Map',
+  description = 'Temperature Station Location',
+  indicatorTitle = 'Temperature Station',
+  popupLabel = 'Temperature',
+  unitLabel = '°C',
+}: TemperatureWatchMapProps) {
   const mapRef = React.useRef<MapRef>(null);
   const [selectedMarker, setSelectedMarker] = React.useState<Coordinate | null>(
     null,
@@ -42,9 +54,9 @@ function TemperatureWatchMap({ coordinates }: TemperatureWatchMapProps) {
   return (
     <div className="p-4 rounded-sm shadow border">
       <Heading
-        title="Map"
+        title={title}
         titleStyle="text-lg/7 font-semibold"
-        description="Temperature Station Location"
+        description={description}
       />
       {/* @ts-expect-error - StyledMapWrapper type definition issue */}
       <StyledMapWrapper className="relative overflow-hidden rounded-md h-[400px]">
@@ -52,7 +64,7 @@ function TemperatureWatchMap({ coordinates }: TemperatureWatchMapProps) {
         <div className="absolute top-2 right-2 bg-white p-4 rounded shadow-lg z-10 text-xs">
           <div className="flex space-x-2 items-center">
             <div className="w-5 h-5 rounded-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500" />
-            <p>Temperature Station</p>
+            <p>{indicatorTitle}</p>
           </div>
         </div>
 
@@ -87,8 +99,8 @@ function TemperatureWatchMap({ coordinates }: TemperatureWatchMapProps) {
               </p>
               {selectedMarker.value !== undefined && (
                 <p className="text-sm font-semibold mt-1">
-                  Temperature: {roundValue(selectedMarker.value)}
-                  {selectedMarker.unit || '°C'}
+                  {popupLabel}: {roundValue(selectedMarker.value)}
+                  {selectedMarker.unit || unitLabel}
                 </p>
               )}
             </Popup>

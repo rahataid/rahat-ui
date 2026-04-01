@@ -20,6 +20,9 @@ interface TemperatureHistorySectionProps {
   history: Record<string, unknown>[];
   columns: ColumnDef<any>[];
   unit?: string;
+  title?: string;
+  yaxisLabel?: string;
+  noDataLabel?: string;
 }
 
 export function TemperatureHistorySection({
@@ -31,6 +34,9 @@ export function TemperatureHistorySection({
   history,
   columns,
   unit = '°C',
+  title = 'Temperature History',
+  yaxisLabel = 'Temperature',
+  noDataLabel = 'temperature',
 }: TemperatureHistorySectionProps) {
   const renderContent = (timeFormat: 'h:mm a' | 'MMM d', period: string) => {
     if (isLoading) {
@@ -42,7 +48,7 @@ export function TemperatureHistorySection({
         <>
           <TimeSeriesChart
             data={history}
-            yaxisTitle={`Temperature (${unit})`}
+            yaxisTitle={`${yaxisLabel} (${unit})`}
             unit={unit}
             xDateFormat={timeFormat}
             yAxisFormatter={(value) => roundValue(value)}
@@ -55,7 +61,7 @@ export function TemperatureHistorySection({
     return (
       <div className="flex items-center justify-center p-8">
         <NoResult
-          message={`No ${period} temperature data available for this period`}
+          message={`No ${period} ${noDataLabel} data available for this period`}
         />
       </div>
     );
@@ -64,7 +70,7 @@ export function TemperatureHistorySection({
   return (
     <div className="p-4 rounded-sm border shadow">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-lg/7 font-semibold">Temperature History</p>
+        <p className="text-lg/7 font-semibold">{title}</p>
         <Tabs
           value={activeTab}
           onValueChange={(v) => onTabChange(v as 'hourly' | 'daily')}

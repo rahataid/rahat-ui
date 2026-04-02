@@ -115,11 +115,14 @@ export default function InkindAllocationDetail() {
   const groupName = groupInkind?.groupName ?? qGroupName;
   const inkindName = groupInkind?.inkindName ?? 'N/A';
   const inkindType = groupInkind?.inkindType ?? qInkindType;
-  const inkindAvailableStock = groupInkind?.inkindAvailableStock ?? qInkindAvailableStock;
+  const inkindAvailableStock = inkindType === 'WALK_IN'
+    ? qInkindAvailableStock
+    : (groupInkind?.inkindAvailableStock ?? qInkindAvailableStock);
   const quantityAllocated = groupInkind?.quantityAllocated ?? 0;
   const quantityRedeemed = groupInkind?.quantityRedeemed ?? 0;
   const totalBeneficiaries = groupInkind?.totalBeneficiaries ?? 0;
 
+  console.log('groupInkind', groupInkind, inkindType);
   const isWalkIn = inkindType === 'WALK_IN';
   const totalAvailableInkinds = isWalkIn
     ? inkindAvailableStock + quantityRedeemed
@@ -198,6 +201,8 @@ export default function InkindAllocationDetail() {
           redeemedAt: r.redeemedAt ?? '',
           inkindName,
           groupName,
+          inkindType,
+          inkindAvailableStock: String(inkindAvailableStock),
         });
         return (
           <TooltipComponent

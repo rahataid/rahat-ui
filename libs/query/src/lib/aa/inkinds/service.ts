@@ -310,24 +310,6 @@ export const useUpdateGroupInkindAllocation = (projectUUID: UUID) => {
   });
 };
 
-export const useGetGroupInkindDetail = (
-  projectUUID: UUID,
-  allocationUUID: string,
-) => {
-  const q = useProjectAction();
-
-  return useQuery({
-    queryKey: ['aaProject.groupInkinds.getOne', projectUUID, allocationUUID],
-    enabled: !!allocationUUID,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    queryFn: () =>
-      runAction(q, projectUUID, 'aaProject.groupInkinds.getOne', {
-        uuid: allocationUUID,
-      }),
-  });
-};
-
 export const useGetGroupInkindRedemptions = (
   projectUUID: UUID,
   allocationUUID: string,

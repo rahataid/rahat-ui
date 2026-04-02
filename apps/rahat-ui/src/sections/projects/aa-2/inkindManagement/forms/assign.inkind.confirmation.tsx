@@ -56,6 +56,7 @@ export default function AssignInkindConfirmation({
         groupId: formData.groupId,
         inkindId: formData.inkindId,
       });
+      
       onSuccess();
     } catch {
       // Error handled by the mutation's onError toast

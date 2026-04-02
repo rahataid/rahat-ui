@@ -329,6 +329,8 @@ const FALLBACK_TIMEZONES = [
   'Asia/Kolkata',
   'Asia/Dhaka',
   'Asia/Bangkok',
+  'Asia/Phnom_Penh',
+  'Asia/Shanghai',
   'Asia/Dubai',
   'Europe/London',
   'Europe/Berlin',

@@ -89,7 +89,7 @@ export default function InkindAllocationList() {
   });
 
   const { data, isLoading } = useGroupInkindAllocations(projectUUID, {
-    type: typeFilter
+    inkindType: typeFilter
   });
 
   const rows = useMemo<AllocationRow[]>(() => {

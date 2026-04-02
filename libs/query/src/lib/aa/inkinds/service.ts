@@ -254,14 +254,15 @@ export const useRemoveInkindStock = (projectUUID: UUID) => {
   });
 };
 
-export const useGroupInkindAllocations = (projectUUID: UUID) => {
+export const useGroupInkindAllocations = (projectUUID: UUID, payload?: any) => {
   const q = useProjectAction();
+  const paramsKey = JSON.stringify(payload ?? {});
 
   return useQuery({
-    queryKey: ['aaProject.groupInkinds.getByGroup', projectUUID],
+    queryKey: ['aaProject.groupInkinds.getByGroup', projectUUID, paramsKey],
     staleTime: 5 * 60 * 1000, // 5 minutes
     queryFn: () =>
-      runAction(q, projectUUID, 'aaProject.groupInkinds.getByGroup', {}),
+      runAction(q, projectUUID, 'aaProject.groupInkinds.getByGroup', payload ?? {}),
   });
 };
 

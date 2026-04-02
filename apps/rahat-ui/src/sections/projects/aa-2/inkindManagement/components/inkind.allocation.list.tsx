@@ -79,8 +79,6 @@ export default function InkindAllocationList() {
   const projectUUID = id as UUID;
   const router = useRouter();
 
-  const { data, isLoading } = useGroupInkindAllocations(projectUUID);
-
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
   const [columnVisibility, setColumnVisibility] =
@@ -88,6 +86,10 @@ export default function InkindAllocationList() {
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
+  });
+
+  const { data, isLoading } = useGroupInkindAllocations(projectUUID, {
+    type: typeFilter
   });
 
   const rows = useMemo<AllocationRow[]>(() => {
@@ -213,13 +215,8 @@ export default function InkindAllocationList() {
     },
   ];
 
-  const filteredRows = useMemo(
-    () => (typeFilter ? rows.filter((r) => r.inkindType === typeFilter) : rows),
-    [rows, typeFilter],
-  );
-
   const table = useReactTable({
-    data: filteredRows,
+    data: rows,
     columns,
     onPaginationChange: setPagination,
     onColumnVisibilityChange: setColumnVisibility,
@@ -279,7 +276,7 @@ export default function InkindAllocationList() {
         handlePrevPage={() => table.previousPage()}
         handlePageSizeChange={(size) => table.setPageSize(size as number)}
         meta={{
-          total: filteredRows.length,
+          total: rows.length,
           currentPage: pagination.pageIndex + 1,
           lastPage: table.getPageCount() || 1,
           perPage: pagination.pageSize,

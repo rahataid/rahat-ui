@@ -1,4 +1,4 @@
-name: AA MCN Main CI/CD
+name: AA Heatwave Main CI/CD
 on:
   push:
     branches:

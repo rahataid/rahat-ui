@@ -48,15 +48,21 @@ export default function InkindTransactionDetail() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <DataCard
-          title="Quantity Redeemed"
-          Icon={Package}
-          smallNumber={quantity}
-          className="h-24 w-full rounded-sm pt-1"
-        />
-        <DataCard
           title="Inkind Name"
           Icon={Package}
           smallNumber={inkindName}
+          className="h-24 w-full rounded-sm pt-1"
+        />
+        <DataCard
+            title="Group Name"
+            Icon={Package}
+            smallNumber={groupName}
+            className="h-24 w-full rounded-sm pt-1"
+          />
+        <DataCard
+          title="Quantity Redeemed"
+          Icon={Package}
+          smallNumber={quantity}
           className="h-24 w-full rounded-sm pt-1"
         />
       </div>
@@ -82,15 +88,12 @@ export default function InkindTransactionDetail() {
               copyable
             />
             <InfoItem label="Redeemed At" value={formatDate(redeemedAt)} />
-            <InfoItem label="Quantity Redeemed" value={quantity} />
             <InfoItem label="Vendor Name" value={vendorName || undefined} />
             <InfoItem
               label="Vendor Wallet Address"
               value={vendorWalletAddress || undefined}
               copyable
             />
-            <InfoItem label="Group Name" value={groupName} />
-            <InfoItem label="Inkind Assigned" value={inkindName} />
           </div>
         </CardContent>
       </Card>

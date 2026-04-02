@@ -8,11 +8,13 @@ import {
 import {
   AlertCircleIcon,
   AlertTriangle,
+  GitBranch,
   Plus,
   SquarePen,
   Undo2,
 } from 'lucide-react';
 import { TriggersListTabs, TriggersPhaseCard } from './components';
+import ExtendedTriggerLogicCard from './components/extended-trigger-logic.card';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useRevertPhase, useSinglePhase } from '@rahat-ui/query';
@@ -40,6 +42,12 @@ export default function PhaseDetail() {
   const handleEditPhase = () => {
     router.push(
       `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}/edit`,
+    );
+  };
+
+  const handleConfigureExtendedLogic = () => {
+    router.push(
+      `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}/extended-logic`,
     );
   };
 
@@ -82,6 +90,15 @@ export default function PhaseDetail() {
           description={`Detailed view of the ${phase?.name?.toLowerCase()} phase`}
         />
         <div className="flex space-x-2">
+          <TooltipWrapper tip="View or configure extended trigger logic">
+            <IconLabelBtn
+              variant="outline"
+              className="text-primary border-primary"
+              Icon={GitBranch}
+              name="View/Configure Logic"
+              handleClick={handleConfigureExtendedLogic}
+            />
+          </TooltipWrapper>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
@@ -196,6 +213,11 @@ export default function PhaseDetail() {
             isActive={phase?.isActive}
             chartType="donut"
             hidePin={true}
+          />
+          <ExtendedTriggerLogicCard
+            extendedTriggerLogic={phase?.extendedTriggerLogic}
+            triggers={phase?.triggers}
+            onConfigure={handleConfigureExtendedLogic}
           />
         </div>
 

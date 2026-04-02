@@ -34,7 +34,7 @@ jobs:
           secrets: |
             github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
             github/data/general/docker/esatya password | DOCKERHUB_TOKEN ;
-            github/data/rahat/rahat-ui/main/aa/mcn rahat-ui | ENV ;
+            github/data/rahat/rahat-ui/main/aa/heatwave rahat-ui | ENV ;
 
       - name: create environment file
         run: |

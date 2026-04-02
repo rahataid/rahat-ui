@@ -57,8 +57,7 @@ import {
   useDeleteInkind,
   useAddInkindStock,
   useRemoveInkindStock,
-  useUpdateInkind,
-  useGroupInkindAllocations,
+  useUpdateInkind
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useSwal } from 'apps/rahat-ui/src/components/swal';

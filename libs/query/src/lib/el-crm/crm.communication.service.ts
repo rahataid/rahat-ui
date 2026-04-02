@@ -38,46 +38,6 @@ const GET_AUTOMATION = 'elProject.campaign.automation.get';
 const DELETE_AUTOMATION = 'elProject.campaign.automation.delete';
 const AUTOMATION_DETAIL = 'elProject.campaign.automation.detail';
 
-const stableStringify = (value: unknown): string => {
-  if (value === null || value === undefined) return String(value);
-  if (typeof value !== 'object') return JSON.stringify(value);
-  if (Array.isArray(value)) {
-    return `[${value.map((item) => stableStringify(item)).join(',')}]`;
-  }
-
-  const entries = Object.entries(value as Record<string, unknown>).sort(([a], [b]) =>
-    a.localeCompare(b),
-  );
-  return `{${entries
-    .map(([key, val]) => `${JSON.stringify(key)}:${stableStringify(val)}`)
-    .join(',')}}`;
-};
-
-const hashString = (input: string): string => {
-  let hash = 2166136261;
-  for (let i = 0; i < input.length; i += 1) {
-    hash ^= input.charCodeAt(i);
-    hash = Math.imul(hash, 16777619);
-  }
-  return (hash >>> 0).toString(16);
-};
-
-const withIdempotency = <T extends Record<string, unknown>>(
-  action: string,
-  payload: T,
-): T & { idempotencyKey: string } => {
-  const existingKey = payload['idempotencyKey'] || payload['idempotency_key'];
-  if (typeof existingKey === 'string' && existingKey.trim().length > 0) {
-    return payload as T & { idempotencyKey: string };
-  }
-
-  const key = `${action}:${hashString(stableStringify(payload))}`;
-  return {
-    ...payload,
-    idempotencyKey: key,
-  };
-};
-
 const queryKeys = {
   //elCrmQueryKeys
   elCrmCampaignList: 'elCrmCampaignList',
@@ -109,7 +69,7 @@ export const useCreateElCrmCampaign = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: CREATE_CAMPAIGN,
-          payload: withIdempotency(CREATE_CAMPAIGN, data),
+          payload: data,
         },
       });
       return res.data;
@@ -148,7 +108,7 @@ export const useTriggerElCrmCampaign = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: TRIGGER_CAMPAIGN,
-          payload: withIdempotency(TRIGGER_CAMPAIGN, data),
+          payload: data,
         },
       });
       return res.data;
@@ -273,7 +233,7 @@ export const useCreateTemplate = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: CREATE_TEMPLATE,
-          payload: withIdempotency(CREATE_TEMPLATE, data),
+          payload: data,
         },
       });
       return res.data;
@@ -308,12 +268,11 @@ export const useDeleteTemplate = (projectUUID: UUID) => {
   });
   return useMutation({
     mutationFn: async (cuid: string) => {
-      const payload = withIdempotency(DELETE_TEMPLATE, { cuid });
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
           action: DELETE_TEMPLATE,
-          payload,
+          payload: { cuid },
         },
       });
       return res.data;
@@ -352,7 +311,7 @@ export const useSyncTemplate = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: SYNC_TEMPLATE,
-          payload: withIdempotency(SYNC_TEMPLATE, data),
+          payload: data,
         },
       });
       return res.data;
@@ -452,14 +411,11 @@ export const useRetryFailedSession = (uuid: UUID) => {
   return useMutation({
     // queryKey: ['retryfailed', uuid, communicationId],
     mutationFn: async (sessionId: string) => {
-      const payload = withIdempotency('elProject.campaign.retry_session', {
-        sessionId,
-      });
       const mutate = await q.mutateAsync({
         uuid,
         data: {
           action: 'elProject.campaign.retry_session',
-          payload,
+          payload: { sessionId },
         },
       });
       return mutate.data;
@@ -522,7 +478,7 @@ export const useToggleElCrmAutomation = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: TOGGLE_AUTOMATION,
-          payload: withIdempotency(TOGGLE_AUTOMATION, data),
+          payload: data,
         },
       });
       return res.data;
@@ -574,7 +530,7 @@ export const useCreateElCrmAutomationRule = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: CREATE_AUTOMATION,
-          payload: withIdempotency(CREATE_AUTOMATION, data),
+          payload: data,
         },
       });
       return res.data;
@@ -608,7 +564,7 @@ export const useUpdateElCrmAutomationRule = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: UPDATE_AUTOMATION,
-          payload: withIdempotency(UPDATE_AUTOMATION, data),
+          payload: data,
         },
       });
       return res.data;
@@ -641,10 +597,9 @@ export const useDeleteElCrmAutomationRule = (projectUUID: UUID) => {
 
   return useMutation({
     mutationFn: async (ruleUUID: string) => {
-      const payload = withIdempotency(DELETE_AUTOMATION, { uuid: ruleUUID });
       const res = await action.mutateAsync({
         uuid: projectUUID,
-        data: { action: DELETE_AUTOMATION, payload },
+        data: { action: DELETE_AUTOMATION, payload: { uuid: ruleUUID } },
       });
       return res.data;
     },

@@ -20,8 +20,7 @@ const unknownColor: WatchColors = {
   statusColor: 'bg-gray-100 text-gray-600 border border-gray-300',
 };
 
-// Temperature Colors - Matching gradient bar from -25°C to 45°C
-// Gradient: red-600 → orange-600 → orange-500 → orange-400 → amber-400 → yellow-400 → lime-400 → green-400 → green-500 → cyan-500 → sky-500 → blue-500 → blue-600 → indigo-600 → violet-600 → purple-500
+// Temperature Colors
 
 export const getTemperatureColor = (value: number | undefined): WatchColors => {
   if (value === undefined || value === null) return unknownColor;
@@ -156,9 +155,7 @@ export const getTemperatureColor = (value: number | undefined): WatchColors => {
   };
 };
 
-// Humidity Colors - Matching bluish gradient bar (dark blue at high humidity → light cyan at low)
-// Gradient: blue-900 → blue-600 → blue-500 → blue-400 → cyan-600 → cyan-500 → cyan-400 → cyan-300 → cyan-200 → cyan-100
-
+// Humidity Colors
 export const getHumidityColor = (value: number | undefined): WatchColors => {
   if (value === undefined || value === null) return unknownColor;
   

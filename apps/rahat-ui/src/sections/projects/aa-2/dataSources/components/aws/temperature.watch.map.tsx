@@ -27,6 +27,7 @@ interface TemperatureWatchMapProps {
   indicatorTitle?: string;
   popupLabel?: string;
   unitLabel?: string;
+  indicatorGradient?: string;
 }
 
 function TemperatureWatchMap({
@@ -36,6 +37,7 @@ function TemperatureWatchMap({
   indicatorTitle = 'Temperature Station',
   popupLabel = 'Temperature',
   unitLabel = '°C',
+  indicatorGradient = 'from-red-500 via-yellow-500 to-green-500',
 }: TemperatureWatchMapProps) {
   const mapRef = React.useRef<MapRef>(null);
   const [selectedMarker, setSelectedMarker] = React.useState<Coordinate | null>(
@@ -63,7 +65,7 @@ function TemperatureWatchMap({
         {/* Map Indicators */}
         <div className="absolute top-2 right-2 bg-white p-4 rounded shadow-lg z-10 text-xs">
           <div className="flex space-x-2 items-center">
-            <div className="w-5 h-5 rounded-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500" />
+            <div className={`w-5 h-5 rounded-full bg-gradient-to-r ${indicatorGradient}`} />
             <p>{indicatorTitle}</p>
           </div>
         </div>

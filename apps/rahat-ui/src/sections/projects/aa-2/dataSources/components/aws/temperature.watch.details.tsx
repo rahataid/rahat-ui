@@ -4,7 +4,6 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useDhmSingleSeriesTemperatureLevels } from '@rahat-ui/query';
 import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Globe, RadioTower } from 'lucide-react';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { getTemperatureColor } from './utils/color.utils';
@@ -62,7 +61,6 @@ export default function TemperatureWatchDetails() {
         ? getTemperatureColor(tempInfo.value)
         : {
             statusColor: 'bg-gray-400',
-            statusLabel: 'No Data',
             bg: 'bg-gray-50',
             textValue: 'text-gray-500',
             border: 'border-gray-200',
@@ -147,9 +145,6 @@ export default function TemperatureWatchDetails() {
                       }
                     />
                   </div>
-                  <Badge className={colors.statusColor}>
-                    {colors.statusLabel}
-                  </Badge>
                 </div>
                 <p className="text-sm text-green-600">
                   Last Synced at:{' '}

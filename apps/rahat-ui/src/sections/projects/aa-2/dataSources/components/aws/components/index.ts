@@ -1,3 +1,3 @@
 export { TemperatureValueCard } from './TemperatureValueCard';
-export { TemperatureScaleBar } from './TemperatureScaleBar';
+export { TemperatureScaleBar, HumidityScaleBar } from './TemperatureScaleBar';
 export { TemperatureHistorySection } from './TemperatureHistorySection';

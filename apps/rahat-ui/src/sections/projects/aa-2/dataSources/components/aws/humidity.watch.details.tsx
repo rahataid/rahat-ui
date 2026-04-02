@@ -4,7 +4,6 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useDhmSingleSeriesHumidityLevels } from '@rahat-ui/query';
 import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Globe, RadioTower } from 'lucide-react';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { getHumidityColor } from './utils/color.utils';
@@ -13,7 +12,7 @@ import { useTemperatureTableColumns } from '../../columns/useTemperatureTableCol
 import TemperatureWatchMap from './temperature.watch.map';
 import {
   TemperatureValueCard,
-  TemperatureScaleBar,
+  HumidityScaleBar,
   TemperatureHistorySection,
 } from './components';
 
@@ -28,7 +27,10 @@ export default function HumidityWatchDetails() {
 
   const humidityInfo = data?.info;
   const updatedAt = data?.updatedAt;
-  const columns = useTemperatureTableColumns(humidityInfo?.unit ?? '%');
+  const columns = useTemperatureTableColumns(
+    humidityInfo?.unit ?? '%',
+    'Relative Humidity',
+  );
 
   const history = useMemo(
     () => humidityInfo?.history ?? [],
@@ -70,7 +72,6 @@ export default function HumidityWatchDetails() {
         ? getHumidityColor(humidityInfo.value)
         : {
             statusColor: 'bg-gray-400',
-            statusLabel: 'No Data',
             bg: 'bg-gray-50',
             textValue: 'text-gray-500',
             border: 'border-gray-200',
@@ -134,9 +135,6 @@ export default function HumidityWatchDetails() {
                       }
                     />
                   </div>
-                  <Badge className={colors.statusColor}>
-                    {colors.statusLabel}
-                  </Badge>
                 </div>
                 <p className="text-sm text-green-600">
                   Last Synced at:{' '}
@@ -150,6 +148,7 @@ export default function HumidityWatchDetails() {
                 value={humidityInfo?.value}
                 unit={humidityInfo?.unit ?? '%'}
                 updatedAt={updatedAt}
+                label="Relative Humidity"
                 colors={colors}
               />
             </div>
@@ -177,7 +176,7 @@ export default function HumidityWatchDetails() {
 
           {/* Map with Humidity Scale */}
           <div className="flex gap-4">
-            <TemperatureScaleBar unit="%" />
+            <HumidityScaleBar unit="%" />
             <div className="flex-1">
               <TemperatureWatchMap
                 coordinates={mapCoordinates}
@@ -186,6 +185,7 @@ export default function HumidityWatchDetails() {
                 indicatorTitle="Humidity Station"
                 popupLabel="Humidity"
                 unitLabel="%"
+                indicatorGradient="from-blue-900 via-cyan-500 to-cyan-100"
               />
             </div>
           </div>
@@ -202,7 +202,7 @@ export default function HumidityWatchDetails() {
           columns={columns}
           unit={humidityInfo?.unit ?? '%'}
           title="Relative Humidity History"
-          yaxisLabel="Humidity"
+          yaxisLabel="Relative Humidity"
           noDataLabel="humidity"
         />
       </div>

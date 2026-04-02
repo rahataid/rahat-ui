@@ -53,7 +53,9 @@ export function TemperatureHistorySection({
             xDateFormat={timeFormat}
             yAxisFormatter={(value) => roundValue(value)}
           />
-          <WaterLevelTable tableData={history} columns={columns} />
+          <div className='h-[200px] overflow-auto '>
+            <WaterLevelTable tableData={history} columns={columns} />
+          </div>
         </>
       );
     }

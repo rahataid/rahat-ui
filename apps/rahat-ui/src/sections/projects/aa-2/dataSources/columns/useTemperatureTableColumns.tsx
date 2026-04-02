@@ -3,7 +3,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { convertToLocalTimeOrMillisecond } from 'apps/rahat-ui/src/utils/dateFormate';
 import { roundValue } from '../components/aws/utils/color.utils';
 
-export const useTemperatureTableColumns = (unit = '°C') => {
+export const useTemperatureTableColumns = (unit = '°C', label = 'Temperature') => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'datetime',
@@ -28,7 +28,7 @@ export const useTemperatureTableColumns = (unit = '°C') => {
     },
     {
       accessorKey: 'value',
-      header: `Temperature (${unit})`,
+      header: `${label} (${unit})`,
       cell: ({ row }) => {
         const val = row.getValue('value') as number;
         return (

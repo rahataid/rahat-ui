@@ -194,7 +194,7 @@ const TimeSeriesChart = ({
   };
 
   return (
-    <ApexChart options={options} series={series} type="area" height={400} />
+    <ApexChart options={options} series={series} type="area" height={350} />
   );
 };
 

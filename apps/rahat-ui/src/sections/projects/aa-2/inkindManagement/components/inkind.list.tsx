@@ -380,7 +380,7 @@ export default function InkindList() {
         ),
       },
       {
-        accessorKey: 'assignedStock',
+        accessorKey: 'totalAssigned',
         header: 'Assigned Stock',
         cell: ({ row }) => (
           <span className="font-semibold">
@@ -389,7 +389,7 @@ export default function InkindList() {
         ),
       },
       {
-        accessorKey: 'redeemedStock',
+        accessorKey: 'totalRedeemed',
         header: 'Redeemed Stock',
         cell: ({ row }) => (
           <span className="font-semibold">

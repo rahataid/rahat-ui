@@ -24,7 +24,15 @@ import {
   CustomPagination,
 } from 'apps/rahat-ui/src/common';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Eye } from 'lucide-react';
+import { Eye, ChevronDown } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { INKIND_TYPES, INKIND_TYPE_LABELS, InkindType } from '../schemas/inkind.validation';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 
@@ -35,6 +43,7 @@ type AllocationRow = {
   inkindId: string;
   inkindName: string;
   inkindType: string;
+  inkindAvailableStock: number;
   quantityAllocated: number;
   quantityRedeemed: number;
   beneficiaryCount: number;
@@ -70,16 +79,17 @@ export default function InkindAllocationList() {
   const projectUUID = id as UUID;
   const router = useRouter();
 
-  const { data, isLoading } = useGroupInkindAllocations(projectUUID);
-
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    [],
-  );
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
   const [columnVisibility, setColumnVisibility] =
     useState<VisibilityState>({});
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
+  });
+
+  const { data, isLoading } = useGroupInkindAllocations(projectUUID, {
+    inkindType: typeFilter
   });
 
   const rows = useMemo<AllocationRow[]>(() => {
@@ -97,6 +107,7 @@ export default function InkindAllocationList() {
           inkindId: item.inkindId ?? item.inkind?.uuid ?? '',
           inkindName: item.inkind?.name ?? item.inkindName ?? 'N/A',
           inkindType: item.inkind?.type ?? item.inkindType ?? 'N/A',
+          inkindAvailableStock: item.inkind?.availableStock ?? 0,
           quantityAllocated: item.quantityAllocated ?? 0,
           quantityRedeemed: item.quantityRedeemed ?? 0,
           beneficiaryCount: item.group?._count?.beneficiaries ?? 0,
@@ -139,24 +150,33 @@ export default function InkindAllocationList() {
       id: 'status',
       header: 'Status',
       cell: ({ row }) => {
-        const status = deriveStatus(
-          row.original.quantityAllocated,
-          row.original.quantityRedeemed,
-        );
+        const isWalkIn = row.original.inkindType === 'WALK_IN';
+        const status = isWalkIn
+          ? deriveStatus(
+              row.original.inkindAvailableStock + row.original.quantityRedeemed,
+              row.original.quantityRedeemed,
+            )
+          : deriveStatus(
+              row.original.quantityAllocated,
+              row.original.quantityRedeemed,
+            );
         return <Badge className={STATUS_STYLE[status]}>{status}</Badge>;
       },
     },
     {
       accessorKey: 'quantityRedeemed',
       header: 'Total Redeemed',
-      cell: ({ row }) => (
-        <span className="font-semibold">
-          {row.original.quantityRedeemed}{' '}
-          <span className="text-xs font-normal">
-            / {row.original.beneficiaryCount}
+      cell: ({ row }) => {
+        const isWalkIn = row.original.inkindType === 'WALK_IN';
+        return (
+          <span className="font-semibold">
+            {row.original.quantityRedeemed}{' '}
+            <span className="text-xs font-normal">
+              / {isWalkIn ? (row.original.inkindAvailableStock + row.original.quantityRedeemed) : row.original.beneficiaryCount}
+            </span>
           </span>
-        </span>
-      ),
+        );
+      },
     },
     {
       id: 'actions',
@@ -169,6 +189,8 @@ export default function InkindAllocationList() {
           inkindId: r.inkindId,
           groupName: r.groupName,
           inkindName: r.inkindName,
+          inkindType: r.inkindType,
+          inkindAvailableStock: String(r.inkindAvailableStock),
           quantityAllocated: String(r.quantityAllocated),
           quantityRedeemed: String(r.quantityRedeemed),
           beneficiaryCount: String(r.beneficiaryCount),
@@ -213,16 +235,36 @@ export default function InkindAllocationList() {
         titleStyle="text-lg"
         description="Inkind items assigned to beneficiary groups"
       />
-      <SearchInput
-        className="w-full mb-2"
-        name="Inkind Name"
-        value={
-          (table.getColumn('inkindName')?.getFilterValue() as string) ?? ''
-        }
-        onSearch={(e) =>
-          table.getColumn('inkindName')?.setFilterValue(e.target.value)
-        }
-      />
+      <div className="flex items-center gap-2 mb-2">
+        <SearchInput
+          className="flex-1"
+          name="Inkind Name"
+          value={
+            (table.getColumn('inkindName')?.getFilterValue() as string) ?? ''
+          }
+          onSearch={(e) =>
+            table.getColumn('inkindName')?.setFilterValue(e.target.value)
+          }
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="h-9 gap-1 shrink-0">
+              {typeFilter ? INKIND_TYPE_LABELS[typeFilter as InkindType] : 'All Types'}
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onSelect={() => setTypeFilter(undefined)}>
+              All Types
+            </DropdownMenuItem>
+            {INKIND_TYPES.map((t) => (
+              <DropdownMenuItem key={t} onSelect={() => setTypeFilter(t)}>
+                {INKIND_TYPE_LABELS[t]}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
       <DemoTable
         table={table}
         // tableHeight="h-[calc(100vh-420px)]"

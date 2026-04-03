@@ -86,13 +86,6 @@ export default function TemperatureWatchView() {
                   }
                   updatedAt={updatedAt}
                 />
-                <div>
-                  <span
-                    className={`inline-block text-xs font-semibold px-3 py-1 rounded-full mt-2 ${colors.statusColor}`}
-                  >
-                    {colors.statusLabel}
-                  </span>
-                </div>
               </div>
 
               {/* Station Info Grid */}

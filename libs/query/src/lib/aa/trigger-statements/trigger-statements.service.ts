@@ -500,7 +500,7 @@ export const useDhmSingleSeriesTemperatureLevels = (
   const riverBasin =
     settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.['river_basin'];
 
-  const parameter = payload.type === 'daily' ? 'TN_1D' : 'T_1H';
+  const parameter = payload.type === 'daily' ? 'TX_1D' : 'T_1H';
 
   return useQuery({
     queryKey: ['dhmsingleseriestemperaturelevels', uuid, parameter],
@@ -510,6 +510,35 @@ export const useDhmSingleSeriesTemperatureLevels = (
         uuid,
         data: {
           action: 'ms.temperature.getDhmSingleSeries',
+          payload: {
+            riverBasin,
+            parameter,
+          },
+        },
+      });
+      return mutate.data;
+    },
+    staleTime: 15 * 60 * 1000,
+  });
+};
+
+export const useDhmSingleSeriesHumidityLevels = (uuid: UUID) => {
+  const q = useProjectAction();
+
+  const settings = useProjectSettingsStore((state) => state.settings);
+  const riverBasin =
+    settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.['river_basin'];
+
+  const parameter = 'RH_1H';
+
+  return useQuery({
+    queryKey: ['dhmsingleserieshumiditylevels', uuid, parameter],
+    enabled: !!riverBasin,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.humidity.getDhmSingleSeries',
           payload: {
             riverBasin,
             parameter,

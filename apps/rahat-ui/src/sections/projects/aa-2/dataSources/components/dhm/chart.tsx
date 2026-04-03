@@ -98,13 +98,19 @@ const TimeSeriesChart = ({
       },
       min: minY - 0.5,
       max: maxY + 0.5,
-      labels: yAxisFormatter
-        ? {
-            formatter: function (value) {
-              return yAxisFormatter(value);
-            },
+      labels: {
+        formatter: function (value) {
+          if (typeof yAxisFormatter === 'function') {
+            try {
+              return yAxisFormatter(value as number);
+            } catch (error) {
+              console.warn('yAxisFormatter threw error:', error);
+              return `${value}`;
+            }
           }
-        : undefined,
+          return `${value}`;
+        },
+      },
     },
     tooltip: {
       shared: false,
@@ -188,7 +194,7 @@ const TimeSeriesChart = ({
   };
 
   return (
-    <ApexChart options={options} series={series} type="area" height={400} />
+    <ApexChart options={options} series={series} type="area" height={350} />
   );
 };
 

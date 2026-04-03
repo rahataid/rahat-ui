@@ -19,13 +19,6 @@ import {
   DataCard,
 } from 'apps/rahat-ui/src/common';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
 import { Eye, Package, ArrowUpDown } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { format } from 'date-fns';
@@ -86,6 +79,8 @@ export default function InkindAllocationDetail() {
   const sp = useSearchParams();
 
   const qGroupName = sp.get('groupName') ?? 'N/A';
+  const qInkindType = sp.get('inkindType') ?? '';
+  const qInkindAvailableStock = Number(sp.get('inkindAvailableStock') ?? 0);
 
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<'redeemedAt' | 'quantity'>('redeemedAt');
@@ -112,10 +107,23 @@ export default function InkindAllocationDetail() {
 
   const groupName = groupInkind?.groupName ?? qGroupName;
   const inkindName = groupInkind?.inkindName ?? 'N/A';
+  const inkindType = groupInkind?.inkindType ?? qInkindType;
+  const inkindAvailableStock = inkindType === 'WALK_IN'
+    ? qInkindAvailableStock
+    : (groupInkind?.inkindAvailableStock ?? qInkindAvailableStock);
   const quantityAllocated = groupInkind?.quantityAllocated ?? 0;
   const quantityRedeemed = groupInkind?.quantityRedeemed ?? 0;
   const totalBeneficiaries = groupInkind?.totalBeneficiaries ?? 0;
-  const status = deriveStatus(quantityAllocated, quantityRedeemed);
+
+  console.log('groupInkind', groupInkind, inkindType);
+  const isWalkIn = inkindType === 'WALK_IN';
+  const totalAvailableInkinds = isWalkIn
+    ? inkindAvailableStock + quantityRedeemed
+    : quantityAllocated;
+
+  const status = isWalkIn
+    ? deriveStatus(totalAvailableInkinds, quantityRedeemed)
+    : deriveStatus(quantityAllocated, quantityRedeemed);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
@@ -153,7 +161,7 @@ export default function InkindAllocationDetail() {
       accessorKey: 'quantity',
       header: 'Qty',
       cell: ({ row }) => (
-        <span className="font-semibold text-primary">
+        <span className="font-semibold">
           {row.original.quantity}
         </span>
       ),
@@ -162,7 +170,7 @@ export default function InkindAllocationDetail() {
       accessorKey: 'redeemedAt',
       header: 'Redeemed At',
       cell: ({ row }) => (
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm">
           {row.original.redeemedAt
             ? format(new Date(row.original.redeemedAt), 'MMM dd, yyyy, hh:mm a')
             : '—'}
@@ -186,6 +194,8 @@ export default function InkindAllocationDetail() {
           redeemedAt: r.redeemedAt ?? '',
           inkindName,
           groupName,
+          inkindType,
+          inkindAvailableStock: String(inkindAvailableStock),
         });
         return (
           <TooltipComponent
@@ -224,10 +234,11 @@ export default function InkindAllocationDetail() {
         badgeClassName={STATUS_STYLE[status]}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
         {[
           { name: 'Inkind Name', amount: inkindName },
           { name: 'No of Beneficiaries', amount: totalBeneficiaries },
+          { name: 'Total Available Inkinds', amount: totalAvailableInkinds },
           { name: 'Total Redeemed', amount: quantityRedeemed },
         ].map((card) => (
           <DataCard
@@ -260,21 +271,6 @@ export default function InkindAllocationDetail() {
                 setPage(1);
               }}
             />
-            <Select
-              value={sort}
-              onValueChange={(v) => {
-                setSort(v as 'redeemedAt' | 'quantity');
-                setPage(1);
-              }}
-            >
-              <SelectTrigger className="w-40 h-9 text-sm">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="redeemedAt">Redeemed At</SelectItem>
-                <SelectItem value="quantity">Quantity</SelectItem>
-              </SelectContent>
-            </Select>
             <Button
               variant="outline"
               size="sm"

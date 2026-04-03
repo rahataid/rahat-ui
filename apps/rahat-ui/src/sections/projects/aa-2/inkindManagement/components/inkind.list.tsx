@@ -42,7 +42,14 @@ import {
   Pencil,
   Loader2,
   AlertCircle,
+  ChevronDown,
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -50,8 +57,7 @@ import {
   useDeleteInkind,
   useAddInkindStock,
   useRemoveInkindStock,
-  useUpdateInkind,
-  useGroupInkindAllocations,
+  useUpdateInkind
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useSwal } from 'apps/rahat-ui/src/components/swal';
@@ -160,6 +166,7 @@ export default function InkindList() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
   const [stockDialog, setStockDialog] = useState<StockDialogState>({
     open: false,
     mode: 'add',
@@ -181,6 +188,7 @@ export default function InkindList() {
     perPage: pagination.pageSize,
     order: 'desc',
     sort: 'createdAt',
+    ...(typeFilter ? { type: typeFilter } : {}),
   });
 
   const deleteInkind = useDeleteInkind(projectUUID);
@@ -189,9 +197,6 @@ export default function InkindList() {
   const updateInkind = useUpdateInkind(projectUUID);
   const queryClient = useQueryClient();
   const dialog = useSwal();
-
-  console.log("tes", data);
-  console.log(data?.data);
 
   const isGroupAssigned = (itemUuid: string) => {
     const inkindDetails =  data?.data.find((a) => a.uuid == itemUuid);
@@ -374,20 +379,20 @@ export default function InkindList() {
         ),
       },
       {
-        accessorKey: 'assignedStock',
+        accessorKey: 'totalAssigned',
         header: 'Assigned Stock',
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.getValue('assignedStock') ?? 0}
+            {row.getValue('totalAssigned') ?? 0}
           </span>
         ),
       },
       {
-        accessorKey: 'redeemedStock',
+        accessorKey: 'totalRedeemed',
         header: 'Redeemed Stock',
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.getValue('redeemedStock') ?? 0}
+            {row.getValue('totalRedeemed') ?? 0}
           </span>
         ),
       },
@@ -475,14 +480,34 @@ export default function InkindList() {
           Create Inkind
         </Button>
       </div>
-      <SearchInput
-        className="w-full mb-2"
-        name="Inkind Name"
-        value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-        onSearch={(event) =>
-          table.getColumn('name')?.setFilterValue(event.target.value)
-        }
-      />
+      <div className="flex items-center gap-2 mb-2">
+        <SearchInput
+          className="flex-1"
+          name="Inkind Name"
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          onSearch={(event) =>
+            table.getColumn('name')?.setFilterValue(event.target.value)
+          }
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="h-9 gap-1 shrink-0">
+              {typeFilter ? INKIND_TYPE_LABELS[typeFilter as InkindType] : 'All Types'}
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onSelect={() => { setTypeFilter(undefined); setPagination((p) => ({ ...p, pageIndex: 0 })); }}>
+              All Types
+            </DropdownMenuItem>
+            {INKIND_TYPES.map((t) => (
+              <DropdownMenuItem key={t} onSelect={() => { setTypeFilter(t); setPagination((p) => ({ ...p, pageIndex: 0 })); }}>
+                {INKIND_TYPE_LABELS[t]}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
       <DemoTable
         table={table}
         // tableHeight="h-[calc(100vh - 300px)]"

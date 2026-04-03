@@ -102,6 +102,7 @@ export default function CustomersUploadPage() {
   };
 
   const handleRemoveFile = () => {
+    uploadCustomers.reset();
     setSelectedFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';

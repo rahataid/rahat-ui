@@ -646,7 +646,10 @@ export default function ComposeScheduleView() {
   const handleSubmit = async () => {
     if (!isScheduleDateTimeValid) return;
 
-    const options: Record<string, string | string[] | boolean | boolean[] | undefined> = {};
+    const options: Record<
+      string,
+      string | string[] | boolean | boolean[] | undefined
+    > = {};
 
     const categories = collectFilterValues(filterRows, 'category');
     const sources = collectFilterValues(filterRows, 'source');

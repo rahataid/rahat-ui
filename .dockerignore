@@ -16,6 +16,7 @@ apps/**/.next/
 # Env files
 .env*
 .env.*
+!.env
 
 # Logs
 *.log

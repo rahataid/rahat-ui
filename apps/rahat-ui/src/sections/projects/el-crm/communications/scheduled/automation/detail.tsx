@@ -34,7 +34,6 @@ export default function AutomationDetailPage() {
     projectUUID,
     automationId,
   );
-  console.log({ data });
 
   const rule = data?.rule;
   const logs = data?.logs || [];
@@ -60,15 +59,17 @@ export default function AutomationDetailPage() {
   return (
     <div className="flex flex-col h-full">
       <div className="border-b border-border bg-card px-6 py-5">
-        <div className="flex items-center gap-4">
-          <Link
-            href={`/projects/el-crm/${projectUUID}/communications/scheduled/compose`}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Automation Details
-          </h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link
+              href={`/projects/el-crm/${projectUUID}/communications/scheduled/compose`}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+              Automation Details
+            </h1>
+          </div>
         </div>
       </div>
       <div className="flex-1 p-6 space-y-6 overflow-auto">

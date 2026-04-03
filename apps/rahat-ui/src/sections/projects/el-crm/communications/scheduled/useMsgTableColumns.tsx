@@ -11,7 +11,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
-function getStatus(row: any) {
+export function getStatus(row: any) {
   const scheduledTime = row?.options?.scheduledTimestamp;
   const sessionId = row?.sessionId;
   if (scheduledTime && new Date(scheduledTime) > new Date()) return 'Scheduled';

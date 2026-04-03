@@ -12,12 +12,16 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/components/select';
 import {
+  AlertTriangle,
   CalendarClock,
   CalendarRange,
+  CheckCircle,
   Plus,
   Radio,
   SlidersHorizontal,
   X,
+  Zap,
+  Clock,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -77,9 +81,12 @@ export default function ScheduledView() {
     (value) => value !== undefined && value !== null && value !== '',
   );
 
-  const activeFilterCount = Object.values(filters || {}).filter(
-    (value) => value !== undefined && value !== null && value !== '',
-  ).length;
+  const activeFilterCount = [
+    filters?.message,
+    filters?.transportId,
+    filters?.status,
+    filters?.startDate || filters?.endDate ? 'dateRange' : undefined,
+  ].filter(Boolean).length;
 
   const isFutureScheduled = (item: any) => {
     const scheduledTime = item?.options?.scheduledTimestamp;
@@ -148,7 +155,47 @@ export default function ScheduledView() {
       iconColor: 'text-warning',
       tooltip: 'Messages scheduled for later delivery',
     },
+    {
+      title: 'Active Rules',
+      value: meta?.automation?.activeRules || 0,
+      icon: Zap,
+      color: 'text-foreground',
+      bgColor: 'bg-blue-500/5',
+      iconColor: 'text-blue-500',
+      tooltip: 'Number of active automation rules',
+    },
+    {
+      title: 'Auto Sent (24h)',
+      value: meta?.automation?.sent24h || 0,
+      icon: CheckCircle,
+      color: 'text-success',
+      bgColor: 'bg-emerald-500/5',
+      iconColor: 'text-emerald-500',
+      tooltip: 'Messages sent by automation in last 24 hours',
+    },
+    {
+      title: 'Auto Failed (24h)',
+      value: meta?.automation?.failed24h || 0,
+      icon: AlertTriangle,
+      color: 'text-destructive',
+      bgColor: 'bg-destructive/5',
+      iconColor: 'text-destructive',
+      tooltip: 'Automation messages that failed in last 24 hours',
+    },
   ];
+
+  const getNextAutomationRun = () => {
+    const now = new Date();
+    const nextRun = new Date(now);
+    nextRun.setUTCHours(0, 0, 0, 0);
+    if (nextRun <= now) {
+      nextRun.setUTCDate(nextRun.getUTCDate() + 1);
+    }
+    const diffMs = nextRun.getTime() - now.getTime();
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours}h ${minutes}m`;
+  };
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -182,7 +229,7 @@ export default function ScheduledView() {
 
         <div className="flex-1 p-6 space-y-6 overflow-auto">
           {/* Stats Grid */}
-          <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {statCards.map((stat) => (
               <Card
                 key={stat.title}
@@ -215,6 +262,30 @@ export default function ScheduledView() {
               </Card>
             ))}
           </div>
+
+          {/* Automation Info Bar */}
+          {(meta?.automation?.activeRules ?? 0) > 0 && (
+            <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-4 py-2.5">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <span>
+                  Next automation run in{' '}
+                  <span className="font-medium text-foreground">
+                    {getNextAutomationRun()}
+                  </span>{' '}
+                  (daily at midnight UTC)
+                </span>
+              </div>
+              <Link
+                href={`/projects/el-crm/${projectUUID}/communications/scheduled/compose?tab=automatic`}
+              >
+                <Button variant="ghost" size="sm" className="gap-1.5 h-7 text-xs">
+                  <Zap className="h-3.5 w-3.5" />
+                  View Automation
+                </Button>
+              </Link>
+            </div>
+          )}
 
           {/* Scheduled Table Card */}
           <Card className="flex flex-col">

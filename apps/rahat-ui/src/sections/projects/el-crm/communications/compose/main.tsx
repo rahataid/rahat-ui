@@ -30,6 +30,12 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import {
   useListElCrmTemplate,
   useListElCrmTransport,
 } from '@rahat-ui/query/lib/el-crm';
@@ -75,27 +81,32 @@ export default function ComposeMessageView() {
   };
 
   return (
+    <TooltipProvider delayDuration={200}>
     <div className="flex flex-col h-full">
-      <div className="border-b border-border bg-card/50 px-6 py-4">
-        <div className="flex items-center gap-4">
-          <Link href={`/projects/el-crm/${projectUUID}/communications`}>
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              {/* Back to Communications */}
-            </Button>
-          </Link>
+      <div className="border-b border-border bg-card px-6 py-5">
+        <div className="flex items-center gap-3">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link href={`/projects/el-crm/${projectUUID}/communications`}>
+                <Button variant="ghost" size="sm">
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>Back to communications</TooltipContent>
+          </Tooltip>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
               Compose Message
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm text-muted-foreground mt-1">
               Create and send a new message to your audience
             </p>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-6 overflow-auto">
         <Card>
           <CardHeader>
             <CardTitle>Compose Message</CardTitle>
@@ -244,11 +255,12 @@ export default function ComposeMessageView() {
                   <div className="flex justify-end space-x-2">
                     <Button
                       variant="outline"
+                      size="sm"
                       onClick={() => setShowTemplateCreator(false)}
                     >
                       Cancel
                     </Button>
-                    <Button onClick={handleCreateTemplate}>
+                    <Button size="sm" onClick={handleCreateTemplate}>
                       <Plus className="mr-2 h-4 w-4" />
                       Create Template
                     </Button>
@@ -293,18 +305,24 @@ export default function ComposeMessageView() {
             </div>
 
             {/* Send Button */}
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-3 pt-4 border-t">
               <Link href="/communication">
-                <Button variant="outline">Cancel</Button>
+                <Button variant="outline" size="sm">Cancel</Button>
               </Link>
-              <Button onClick={handleSendMessage} className="min-w-[120px]">
-                <Send className="mr-2 h-4 w-4" />
-                Send Message
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="sm" onClick={handleSendMessage} className="min-w-[120px]">
+                    <Send className="mr-2 h-4 w-4" />
+                    Send Message
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Send this message</TooltipContent>
+              </Tooltip>
             </div>
           </CardContent>
         </Card>
       </div>
     </div>
+    </TooltipProvider>
   );
 }

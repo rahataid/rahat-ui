@@ -4,8 +4,6 @@ import { useState } from 'react';
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from '@rahat-ui/shadcn/components/card';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import DemoTable from 'apps/rahat-ui/src/components/table';
@@ -15,7 +13,23 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { useConsumersTableColumn } from './useConsumersTableColumn';
-import { Search } from 'lucide-react';
+import {
+  Search,
+  Users,
+  CheckCircle,
+  XCircle,
+  CalendarCheck,
+  X,
+  SlidersHorizontal,
+} from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { Button } from '@rahat-ui/shadcn/components/button';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 const consumers = [
   {
@@ -67,9 +81,48 @@ export default function ConsumersView() {
   });
 
   const totalConsumers = consumers.length;
-  const messageDeliverySuccessful = 4; // Static value since we removed message status
-  const messageDeliveryFailed = 2; // Static value since we removed message status
-  const consumersCompleting1Year = 5; // Static value since we removed year completed
+  const messageDeliverySuccessful = 4;
+  const messageDeliveryFailed = 2;
+  const consumersCompleting1Year = 5;
+
+  const statCards = [
+    {
+      title: 'Total Consumers',
+      value: totalConsumers,
+      icon: Users,
+      color: 'text-foreground',
+      bgColor: 'bg-primary/5',
+      iconColor: 'text-primary',
+      tooltip: 'Total number of consumers enrolled in the program',
+    },
+    {
+      title: 'Delivery Successful',
+      value: messageDeliverySuccessful,
+      icon: CheckCircle,
+      color: 'text-success',
+      bgColor: 'bg-success/5',
+      iconColor: 'text-success',
+      tooltip: 'Messages successfully delivered to consumers',
+    },
+    {
+      title: 'Delivery Failed',
+      value: messageDeliveryFailed,
+      icon: XCircle,
+      color: 'text-destructive',
+      bgColor: 'bg-destructive/5',
+      iconColor: 'text-destructive',
+      tooltip: 'Messages that failed to deliver to consumers',
+    },
+    {
+      title: 'Completing 1 Year',
+      value: consumersCompleting1Year,
+      icon: CalendarCheck,
+      color: 'text-primary',
+      bgColor: 'bg-primary/5',
+      iconColor: 'text-primary',
+      tooltip: 'Consumers who have completed 1 year in the program',
+    },
+  ];
 
   const columns = useConsumersTableColumn();
   const table = useReactTable({
@@ -79,101 +132,135 @@ export default function ConsumersView() {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-  return (
-    <div className="flex flex-col h-full">
-      <div className="border-b border-border bg-card/50 px-6 py-4">
-        <h1 className="text-2xl font-bold text-foreground">Consumers</h1>
-        <p className="text-muted-foreground">
-          Track consumer engagement and program completion
-        </p>
-      </div>
 
-      <div className="flex-1 p-6">
-        <div className="grid gap-4 md:grid-cols-4 mb-6">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Consumers
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{totalConsumers}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                Message Delivery Successful
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                {messageDeliverySuccessful}
+  return (
+    <TooltipProvider delayDuration={200}>
+      <div className="flex flex-col h-full">
+        {/* Page Header */}
+        <div className="border-b border-border bg-card px-6 py-5">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            Consumers
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Track consumer engagement and program completion
+          </p>
+        </div>
+
+        <div className="flex-1 p-6 space-y-6 overflow-auto">
+          {/* Stats Grid */}
+          <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+            {statCards.map((stat) => (
+              <Card
+                key={stat.title}
+                className="relative overflow-hidden transition-shadow hover:shadow-md"
+              >
+                <CardContent className="p-5">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1.5">
+                      <p className="text-sm font-medium text-muted-foreground leading-none">
+                        {stat.title}
+                      </p>
+                      <p
+                        className={`text-3xl font-bold tracking-tight ${stat.color}`}
+                      >
+                        {stat.value}
+                      </p>
+                    </div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className={`rounded-lg p-2.5 ${stat.bgColor}`}>
+                          <stat.icon
+                            className={`h-5 w-5 ${stat.iconColor}`}
+                          />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p className="max-w-[220px]">{stat.tooltip}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Consumer Table Card */}
+          <Card className="flex flex-col">
+            {/* Filter Bar */}
+            <div className="border-b border-border px-5 py-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium text-foreground">
+                    Filters
+                  </span>
+                  {searchTerm && (
+                    <span className="inline-flex items-center justify-center h-5 min-w-[20px] rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                      1
+                    </span>
+                  )}
+                </div>
+                {searchTerm && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setSearchTerm('')}
+                    className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                    Clear all
+                  </Button>
+                )}
               </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                Message Delivery Failed
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">
-                {messageDeliveryFailed}
+
+              <div className="flex flex-wrap items-end gap-3">
+                <div className="flex-1 min-w-[180px] max-w-sm space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">
+                    Search
+                  </Label>
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by name or phone..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-8 h-9 text-sm"
+                    />
+                  </div>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                Consumers Completing 1 Year
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">
-                {consumersCompleting1Year}
-              </div>
+
+              {/* Active Filter Tags */}
+              {searchTerm && (
+                <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-border/50">
+                  <span className="text-xs text-muted-foreground">
+                    Showing {filteredConsumers.length} result
+                    {filteredConsumers.length !== 1 ? 's' : ''} for:
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
+                    &quot;{searchTerm}&quot;
+                    <button
+                      type="button"
+                      onClick={() => setSearchTerm('')}
+                      className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Table */}
+            <CardContent className="p-0">
+              <DemoTable
+                table={table}
+                tableHeight="h-[calc(100vh-530px)]"
+              />
             </CardContent>
           </Card>
         </div>
-
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="text-lg">Filters</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-4">
-              {/* Search */}
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Search consumers..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Consumers Table */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Consumer List</CardTitle>
-              <div className="text-sm text-muted-foreground">
-                Showing {filteredConsumers.length} of {consumers.length}{' '}
-                consumers
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <DemoTable table={table} tableHeight="h-[calc(100vh-595px)]" />
-          </CardContent>
-        </Card>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }

@@ -6,12 +6,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { CoinsIcon, Copy, CopyCheck, Ticket, Users2Icon } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import HeaderWithBack from '../../components/header.with.back';
+import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 export default function ChwDetail() {
   const { id, chwId } = useParams();
   const { data } = useCHWGet({ projectUUID: id, uuid: chwId as string });

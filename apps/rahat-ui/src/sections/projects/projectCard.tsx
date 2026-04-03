@@ -32,12 +32,12 @@ export default function CommonCard({
   return (
     <Card
       onClick={handleClick}
-      className={`cursor-pointer rounded-sm border shadow`}
+      className="cursor-pointer rounded-lg border shadow-card hover:shadow-card-hover transition-all duration-200 group"
     >
       <div className="p-4">
-        <div className="rounded-md bg-secondary flex justify-center">
+        <div className="rounded-lg bg-secondary/60 flex justify-center overflow-hidden">
           <Image
-            className="object-contain"
+            className="object-contain transition-transform duration-300 group-hover:scale-105"
             src={image}
             alt="project"
             height={200}
@@ -53,7 +53,7 @@ export default function CommonCard({
         >
           {badge}
         </Badge>
-        <p className="text-sm text-gray-500 line-clamp-2">{subTitle}</p>
+        <p className="text-sm text-muted-foreground line-clamp-2">{subTitle}</p>
       </CardContent>
     </Card>
   );

@@ -46,11 +46,11 @@ export default function SideNav() {
                   >
                     <SidebarMenuButton
                       tooltip={item.title}
-                      className={
+                      className={`transition-all duration-200 ${
                         isActive
-                          ? 'bg-blue-500 text-white rounded'
-                          : 'text-muted-foreground rounded hover:text-foreground'
-                      }
+                          ? 'bg-primary text-primary-foreground rounded-md shadow-sm'
+                          : 'text-muted-foreground rounded-md hover:bg-accent hover:text-foreground'
+                      }`}
                     >
                       {createElement(getIcon(item.icon))}
                       <span>{item.title}</span>
@@ -95,10 +95,10 @@ export default function SideNav() {
               <Link
                 key={item.title}
                 href={item.path}
-                className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors md:h-8 md:w-8 ${
+                className={`flex h-9 w-9 items-center justify-center rounded-md transition-all duration-200 md:h-8 md:w-8 ${
                   isActive
-                    ? 'bg-gray-700 text-white'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                 }`}
               >
                 {item?.icon ? (

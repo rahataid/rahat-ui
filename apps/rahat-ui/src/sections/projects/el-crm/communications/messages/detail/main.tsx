@@ -10,8 +10,28 @@ import {
 } from '@rahat-ui/shadcn/components/card';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
-import { Label } from '@rahat-ui/shadcn/components/label';
-import { ArrowLeft, RefreshCcw, Send } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/components/dialog';
+import {
+  ArrowLeft,
+  CalendarDays,
+  CheckCircle2,
+  CircleDollarSign,
+  FilterX,
+  Hash,
+  MessageSquareText,
+  RefreshCcw,
+  Send,
+  Signal,
+  Users,
+  XCircle,
+} from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { UUID } from 'crypto';
@@ -24,16 +44,24 @@ import {
   useRetryFailedSession,
 } from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
-import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import CommsLogsTable from '../../../../aa/communication-logs/comms.logs.table';
 import SearchInput from '../../../../components/search.input';
 import SelectComponent from '../../../../cambodia/select.component';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import React from 'react';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import useCommsLogsTableColumns from '../../useCommsLogsTableColumns';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import DemoTable from 'apps/rahat-ui/src/components/table';
+import { Label } from '@rahat-ui/shadcn/components/label';
 
 export default function MessageDetailPage() {
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState(false);
+
   const { id: projectUUID, messageId } = useParams() as {
     id: UUID;
     messageId: string;
@@ -53,16 +81,6 @@ export default function MessageDetailPage() {
     },
   );
 
-  const { data: logs } = useListElCrmSessionBroadcast(
-    projectUUID,
-    {
-      session: campaign?.sessionId || '',
-    },
-    {
-      queryKey: ['elCrmBroadCastCount', projectUUID, campaign?.sessionId],
-      enabled: !!campaign?.sessionId,
-    },
-  );
   const mutateRetry = useRetryFailedSession(projectUUID);
 
   const retryFailed = async () => {
@@ -83,9 +101,36 @@ export default function MessageDetailPage() {
     filters,
     setFilters,
   } = usePagination();
+
+  const { data: logs, isLoading: isLogsLoading } = useListElCrmSessionBroadcast(
+    projectUUID,
+    {
+      session: campaign?.sessionId || '',
+      ...pagination,
+      ...filters,
+    },
+    {
+      queryKey: ['elCrmBroadCastCount', projectUUID, campaign?.sessionId],
+      enabled: !!campaign?.sessionId,
+    },
+  );
+
+  // Calculate total price from logs
+  const totalPrice = React.useMemo(() => {
+    if (!logs?.data) return 0;
+    return logs.data.reduce((sum: number, log: any) => {
+      let price = log?.disposition?.price;
+      if (typeof price === 'string' && price.startsWith('-')) {
+        price = price.substring(1);
+      }
+      const num = parseFloat(price);
+      return sum + (isNaN(num) ? 0 : num);
+    }, 0);
+  }, [logs]);
+
   const table = useReactTable({
     manualPagination: true,
-    data: logs || [],
+    data: logs?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -95,65 +140,78 @@ export default function MessageDetailPage() {
       const value = event?.target?.value ?? '';
       setFilters({ ...filters, [key]: value });
     },
-    [filters],
+    [filters, setFilters],
   );
 
   const trigger = useTriggerElCrmCampaign(projectUUID);
 
-  const getChannelColor = (channel: string) => {
+  const getChannelVariant = (channel: string) => {
     switch (channel) {
       case 'SMS':
-        return 'bg-blue-100 text-blue-800';
+        return 'default';
       case 'WhatsApp':
-        return 'bg-green-100 text-green-800';
+        return 'success';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'secondary';
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusVariant = (status: string) => {
     switch (status) {
       case 'Sent':
-        return 'bg-green-100 text-green-800';
+        return 'success';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'secondary';
     }
   };
 
-  const handleSendMessage = () => {
-    console.log('Sending message:', campaign?.uuid);
-    trigger.mutate({ uuid: campaign?.uuid || '' });
+  const handleSendMessage = async () => {
+    if (!campaign?.uuid) return;
+    setIsConfirmDialogOpen(false);
+    await trigger.mutateAsync({ uuid: campaign.uuid });
+  };
+
+  const hasActiveFilters = Object.values(filters || {}).some(
+    (value) => value !== undefined && value !== null && value !== '',
+  );
+
+  const clearAllFilters = () => {
+    setFilters({});
+    setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
   if (!campaign) {
     return (
       <div className="flex flex-col h-full">
-        <div className="border-b border-border bg-card/50 px-6 py-4">
+        <div className="border-b border-border bg-card px-6 py-5">
           <div className="flex items-center gap-4">
             <Link
               href={`/projects/el-crm/${projectUUID}/communications/messages`}
             >
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back
+              <Button variant="ghost" size="sm">
+                <ArrowLeft className="h-4 w-4" />
               </Button>
             </Link>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">
-                Message Not Found
-              </h1>
-            </div>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+              Message Not Found
+            </h1>
           </div>
         </div>
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-muted-foreground mb-4">
-              The message you're looking for doesn't exist.
+          <div className="text-center space-y-3">
+            <div className="rounded-full bg-muted/50 p-4 mx-auto w-fit">
+              <MessageSquareText className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              The message you&apos;re looking for doesn&apos;t exist.
             </p>
             <Link
               href={`/projects/el-crm/${projectUUID}/communications/messages`}
             >
-              <Button>Go Back to Messages</Button>
+              <Button size="sm" variant="outline" className="mt-2">
+                <ArrowLeft className="mr-2 h-3.5 w-3.5" />
+                Back to Messages
+              </Button>
             </Link>
           </div>
         </div>
@@ -161,222 +219,470 @@ export default function MessageDetailPage() {
     );
   }
 
-  const handleFilterChange = (event: any) => {
-    if (event && event.target) {
-      const { name, value } = event.target;
-      const filterValue = value === 'ALL' ? '' : value;
-      table.getColumn(name)?.setFilterValue(filterValue);
-      setFilters({
-        ...filters,
-        [name]: filterValue,
-      });
-    }
-    setPagination({
-      ...pagination,
-      page: 1,
+  const handleFilterChange = (name: string, value: string) => {
+    setFilters((prev: any) => {
+      const updated = { ...prev };
+
+      if (value === 'ALL') delete updated[name];
+      else updated[name] = value;
+
+      return updated;
     });
+
+    setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
+  const meta = logs?.response.meta || { total: 0, currentPage: 0 };
+  const isSent = !!campaign.sessionId;
+  const deliveredCount = count?.SUCCESS ?? 0;
+  const failedCount = count?.FAIL ?? 0;
+  const totalRecipients = campaign?.recipientCount || 0;
+  const deliveryRate =
+    totalRecipients > 0
+      ? Math.round((deliveredCount / totalRecipients) * 100)
+      : 0;
+  const showRetryButton = failedCount > 0 || (count?.SCHEDULED ?? 0) > 0;
+
+  const statCards = [
+    {
+      title: 'Successfully Delivered',
+      value: deliveredCount.toLocaleString(),
+      subtitle:
+        totalRecipients > 0 ? `${deliveryRate}% delivery rate` : undefined,
+      icon: CheckCircle2,
+      iconColor: 'text-emerald-600',
+      bgColor: 'bg-emerald-500/10',
+      valueColor: 'text-emerald-700',
+    },
+    {
+      title: 'Failed Delivery',
+      value: failedCount.toLocaleString(),
+      subtitle:
+        totalRecipients > 0
+          ? `${Math.round((failedCount / totalRecipients) * 100)}% failure rate`
+          : undefined,
+      icon: XCircle,
+      iconColor: 'text-red-600',
+      bgColor: 'bg-red-500/10',
+      valueColor: failedCount > 0 ? 'text-red-700' : 'text-foreground',
+    },
+    {
+      title: 'Total Cost',
+      value: `$${totalPrice.toFixed(4)}`,
+      // subtitle:
+      //   totalRecipients > 0
+      //     ? `~$${(totalPrice / totalRecipients).toFixed(4)}/msg`
+      //     : undefined,
+      icon: CircleDollarSign,
+      iconColor: 'text-blue-600',
+      bgColor: 'bg-blue-500/10',
+      valueColor: 'text-foreground',
+    },
+  ];
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="border-b border-border bg-card/50 px-6 py-4">
-        <div className="flex justify-between items-center gap-4">
-          <div>
-            <Link
-              href={`/projects/el-crm/${projectUUID}/communications/messages`}
-            >
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">
-                {campaign.name}
-              </h1>
-              <p className="text-muted-foreground">View message details</p>
+    <TooltipProvider delayDuration={200}>
+      <div className="flex flex-col h-full">
+        {/* ── Header ── */}
+        <div className="border-b border-border bg-card px-6 py-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex items-start gap-3 min-w-0 flex-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={`/projects/el-crm/${projectUUID}/communications/messages`}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 shrink-0 mt-0.5"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>Back to messages</TooltipContent>
+              </Tooltip>
+
+              <div className="min-w-0 flex-1 space-y-1.5">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <h1 className="text-lg font-semibold tracking-tight text-foreground line-clamp-1">
+                        {campaign.name}
+                      </h1>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="bottom"
+                      align="start"
+                      className="max-w-sm"
+                    >
+                      <p className="text-sm">{campaign.name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Badge
+                    variant={getStatusVariant(isSent ? 'Sent' : 'Draft')}
+                    className="shrink-0"
+                  >
+                    {isSent ? 'Sent' : 'Draft'}
+                  </Badge>
+                </div>
+
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1.5">
+                    <Users className="h-3 w-3" />
+                    {totalRecipients.toLocaleString()} recipients
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <CalendarDays className="h-3 w-3" />
+                    {format(new Date(campaign.createdAt), 'MMM dd, yyyy')}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <Signal className="h-3 w-3" />
+                    {campaign.transportName}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              {showRetryButton && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={retryFailed}
+                      className="gap-2"
+                    >
+                      <RefreshCcw className="h-3.5 w-3.5" />
+                      Retry Failed
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Retry all failed deliveries</TooltipContent>
+                </Tooltip>
+              )}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    disabled={isSent || trigger.isPending}
+                    onClick={() => setIsConfirmDialogOpen(true)}
+                    className="gap-2"
+                  >
+                    <Send className="h-3.5 w-3.5" />
+                    {trigger.isPending ? 'Sending…' : 'Send Message'}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {isSent ? 'Message already sent' : 'Send this message now'}
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
-
-          <div className="flex gap-4">
-            {count && count?.FAIL > 0 && (
-              <Button type="button" onClick={retryFailed} className="gap-2 ">
-                <RefreshCcw className="h-3.5 w-3.5" />
-                Retry Failed Requests
-              </Button>
-            )}
-            <Button
-              disabled={!!campaign.sessionId}
-              onClick={handleSendMessage}
-              className="min-w-[140px]"
-            >
-              <Send className="mr-2 h-4 w-4" />
-              Send Message
-            </Button>
-          </div>
         </div>
-      </div>
-      {isLoading ? (
-        <Skeleton />
-      ) : (
-        <div className="flex flex-col lg:flex-row gap-4 w-full">
-          {/* Left Section  — 1/3 on large screens */}
-          <div className="flex-[2]">
-            <Card className="p-4 rounded-sm bg-white h-full">
-              <CardTitle className="flex gap-2 pb-2">
-                <Badge
-                  className={getStatusColor(
-                    campaign.sessionId ? 'Sent' : 'Draft',
-                  )}
+
+        {isLoading ? (
+          <div className="flex-1 p-6 space-y-6 overflow-auto">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-[104px] rounded-lg" />
+              ))}
+            </div>
+            <div className="grid gap-6 lg:grid-cols-3">
+              <Skeleton className="h-[380px] rounded-lg" />
+              <Skeleton className="h-[380px] rounded-lg lg:col-span-2" />
+            </div>
+          </div>
+        ) : (
+          <div className="flex-1 p-6 space-y-6 overflow-auto">
+            {/* ── KPI Strip ── */}
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
+              {statCards.map((stat) => (
+                <Card
+                  key={stat.title}
+                  className="relative overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
                 >
-                  {campaign.sessionId ? 'Sent' : 'Draft'}
-                </Badge>
-              </CardTitle>
-              <CardContent className="pl-1 pb-1  font-semibold flex flex-col gap-1">
-                <Label className="text-muted-foreground text-xs">
-                  Message Name:
-                </Label>
-                <Label className="text-base space-y-1 font-semibold">
-                  {campaign?.name}
-                </Label>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Right Section (Data Cards) — 2/3 on large screens */}
-          <div className=" flex-1 flex flex-wrap gap-4">
-            <DataCard
-              title="Successfully Delivered"
-              smallNumber={(count?.SUCCESS ?? 0).toString()}
-              className="rounded-sm w-full h-20 pt-10 pb-8"
-            />
-            <DataCard
-              title="Failed Delivered"
-              smallNumber={(count?.FAIL ?? 0).toString()}
-              className="rounded-sm w-full h-20 pt-10 pb-8"
-            />
-          </div>
-        </div>
-      )}
-
-      <div className="flex-1 p-6">
-        <div className="grid gap-6">
-          {/* Message Details Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Message Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* LEFT DETAILS SECTION */}
-                <div className="lg:col-span-1 space-y-6">
-                  <div className="flex justify-between">
-                    <div>
-                      <Label className="text-sm font-medium text-muted-foreground">
-                        Channel
-                      </Label>
-                      <div className="mt-2">
-                        <Badge
-                          className={getChannelColor(campaign.transportName)}
-                          variant="secondary"
+                  <CardContent className="p-5">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1 min-w-0">
+                        <p className="text-xs font-medium text-muted-foreground leading-none truncate">
+                          {stat.title}
+                        </p>
+                        <p
+                          className={`text-2xl font-bold tracking-tight tabular-nums ${stat.valueColor}`}
                         >
-                          {campaign.transportName}
-                        </Badge>
+                          {stat.value}
+                        </p>
+                        {stat.subtitle && (
+                          <p className="text-[11px] text-muted-foreground leading-tight">
+                            {stat.subtitle}
+                          </p>
+                        )}
+                      </div>
+                      <div
+                        className={`rounded-lg p-2 ${stat.bgColor} shrink-0`}
+                      >
+                        <stat.icon className={`h-4 w-4 ${stat.iconColor}`} />
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
-                    <div>
-                      <Label className="text-sm font-medium text-muted-foreground">
-                        Group
-                      </Label>
-                      <p className="text-sm mt-2">{campaign.targetType}</p>
+            {/* ── Content: Message Details + Delivery Logs ── */}
+            <div className="grid gap-6 lg:grid-cols-3">
+              {/* Message Details Sidebar */}
+              <Card className="overflow-hidden lg:col-span-1 self-start">
+                <CardHeader className="border-b px-5 py-4">
+                  <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                    <div className="rounded-md bg-primary/10 p-1.5">
+                      <MessageSquareText className="h-3.5 w-3.5 text-primary" />
                     </div>
+                    Message Details
+                  </CardTitle>
+                </CardHeader>
+
+                <div className="divide-y divide-border">
+                  {/* Channel */}
+                  <div className="flex items-center justify-between px-5 py-3.5">
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      Channel
+                    </span>
+                    <Badge variant={getChannelVariant(campaign.transportName)}>
+                      {campaign.transportName}
+                    </Badge>
                   </div>
 
-                  <div className="flex justify-between">
-                    <div>
-                      <Label className="text-sm font-medium text-muted-foreground">
-                        Recipients
-                      </Label>
-                      <p className="text-sm mt-2">
-                        {campaign?.recipientCount || 0}
-                      </p>
-                    </div>
-
-                    <div>
-                      <Label className="text-sm font-medium text-muted-foreground">
-                        Created Date
-                      </Label>
-                      <p className="text-sm mt-2">
-                        {format(new Date(campaign.createdAt), 'MMM dd, yyyy')}
-                      </p>
-                    </div>
+                  {/* Target Group */}
+                  <div className="flex items-center justify-between px-5 py-3.5">
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      Group
+                    </span>
+                    <span className="text-sm font-medium text-foreground">
+                      {campaign.targetType}
+                    </span>
                   </div>
-                  <div className="flex justify-between">
-                    <div>
-                      <Label className="text-sm font-medium text-muted-foreground">
-                        Message Content
-                      </Label>
-                      <Card className="mt-2">
-                        <CardContent className="p-4">
-                          <p className="text-sm whitespace-pre-wrap">
-                            {campaign.body}
-                          </p>
-                        </CardContent>
-                      </Card>
+
+                  {/* Recipients */}
+                  <div className="flex items-center justify-between px-5 py-3.5">
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      Recipients
+                    </span>
+                    <span className="text-sm font-semibold tabular-nums text-foreground">
+                      {totalRecipients.toLocaleString()}
+                    </span>
+                  </div>
+
+                  {/* Delivery Rate */}
+                  {isSent && (
+                    <div className="px-5 py-3.5 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                          Delivery Rate
+                        </span>
+                        <span
+                          className={`text-sm font-semibold tabular-nums ${
+                            deliveryRate >= 80
+                              ? 'text-emerald-600'
+                              : deliveryRate >= 50
+                              ? 'text-amber-600'
+                              : 'text-red-600'
+                          }`}
+                        >
+                          {deliveryRate}%
+                        </span>
+                      </div>
+                      <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${
+                            deliveryRate >= 80
+                              ? 'bg-emerald-500'
+                              : deliveryRate >= 50
+                              ? 'bg-amber-500'
+                              : 'bg-red-500'
+                          }`}
+                          style={{ width: `${Math.min(deliveryRate, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Message Content */}
+                  <div className="px-5 py-4">
+                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      Message Content
+                    </span>
+                    <div className="mt-2.5 rounded-lg border border-border/60 bg-muted/30 p-4 max-h-[280px] overflow-auto">
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/90">
+                        {campaign.body}
+                      </p>
                     </div>
                   </div>
                 </div>
+              </Card>
 
-                {/* RIGHT TABLE SECTION */}
-                <Card className="lg:col-span-2 rounded-sm">
-                  <CardHeader className="flex flex-row items-center gap-3 pb-0 pt-2 px-3">
-                    <SearchInput
-                      className="flex-1"
-                      value={filters.address}
-                      name="Audience"
-                      onSearch={(e) => handleSearch(e, 'address')}
-                    />
+              {/* Delivery Logs */}
+              <Card className="overflow-hidden lg:col-span-2">
+                <CardHeader className="space-y-3 border-b px-5 py-4">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                      <div className="rounded-md bg-primary/10 p-1.5">
+                        <Hash className="h-3.5 w-3.5 text-primary" />
+                      </div>
+                      Delivery Logs
+                      <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
+                        {meta?.total || 0}
+                      </span>
+                    </CardTitle>
+                    {hasActiveFilters && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-muted-foreground hover:text-foreground"
+                        onClick={clearAllFilters}
+                      >
+                        <FilterX className="mr-1.5 h-3.5 w-3.5" />
+                        Clear
+                      </Button>
+                    )}
+                  </div>
 
-                    <SelectComponent
-                      name="Status"
-                      options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
-                      onChange={(value) =>
-                        handleFilterChange({
-                          target: { name: 'status', value },
-                        })
-                      }
-                      value={filters?.status || ''}
-                    />
-                  </CardHeader>
+                  <div className="grid grid-cols-1 gap-2.5 md:grid-cols-4">
+                    <div className="md:col-span-3">
+                      <SearchInput
+                        value={filters.address}
+                        name="Audience"
+                        onSearch={(e) => handleSearch(e, 'address')}
+                      />
+                    </div>
 
-                  <CardContent className="px-3">
-                    <CommsLogsTable table={table} />
-                  </CardContent>
+                    <div className="md:col-span-1 !mt-0">
+                      <SelectComponent
+                        name="Status"
+                        options={['ALL', 'SUCCESS', 'PENDING', 'FAIL']}
+                        onChange={(value) =>
+                          handleFilterChange('status', value)
+                        }
+                        value={filters?.status ?? 'ALL'}
+                      />
+                    </div>
+                  </div>
+                </CardHeader>
 
-                  <CardFooter className="justify-end">
-                    <CustomPagination
-                      meta={{
-                        total: 0,
-                        currentPage: 0,
-                        lastPage: 0,
-                        perPage: 0,
-                        next: null,
-                        prev: null,
-                      }}
-                      handleNextPage={setNextPage}
-                      handlePrevPage={setPrevPage}
-                      handlePageSizeChange={setPerPage}
-                      currentPage={pagination.page}
-                      perPage={pagination.perPage}
-                      total={0}
-                    />
-                  </CardFooter>
-                </Card>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                <CardContent className="p-0">
+                  <DemoTable
+                    table={table}
+                    loading={isLogsLoading}
+                    tableHeight="h-[calc(100vh-535px)]"
+                  />
+                  <CustomPagination
+                    meta={meta}
+                    handleNextPage={setNextPage}
+                    handlePrevPage={setPrevPage}
+                    handlePageSizeChange={setPerPage}
+                    currentPage={pagination.page}
+                    perPage={pagination.perPage}
+                    total={meta?.total}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+
+      <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-primary/10 p-2.5">
+                <Send className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <DialogTitle>Confirm Message Send</DialogTitle>
+                <DialogDescription className="mt-1">
+                  Review the details below before sending this campaign.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-2">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Campaign
+                </Label>
+                <p className="mt-1 text-sm font-medium text-foreground break-words line-clamp-2">
+                  {campaign.name}
+                </p>
+              </div>
+              <div>
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Channel
+                </Label>
+                <div className="mt-1">
+                  <Badge variant={getChannelVariant(campaign.transportName)}>
+                    {campaign.transportName}
+                  </Badge>
+                </div>
+              </div>
+              <div>
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Group
+                </Label>
+                <p className="mt-1 text-sm font-medium text-foreground">
+                  {campaign.targetType}
+                </p>
+              </div>
+              <div>
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Recipients
+                </Label>
+                <p className="mt-1 text-sm font-semibold tabular-nums text-foreground">
+                  {(campaign?.recipientCount || 0).toLocaleString()}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-xs uppercase tracking-wide text-muted-foreground">
+                Message Content
+              </Label>
+              <Card className="mt-2">
+                <CardContent className="max-h-[200px] overflow-auto p-4">
+                  <p className="whitespace-pre-wrap break-words text-sm text-foreground">
+                    {campaign.body || '—'}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsConfirmDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSendMessage}
+              disabled={trigger.isPending}
+              className="gap-2"
+            >
+              <Send className="h-4 w-4" />
+              {trigger.isPending ? 'Sending…' : 'Send Message'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </TooltipProvider>
   );
 }

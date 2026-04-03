@@ -333,7 +333,7 @@ export default function DashboardView() {
                 CRM analytics and customer health overview
               </p>
             </div>
-            <Tooltip>
+            {/* <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-2">
                   <Download className="h-4 w-4" />
@@ -343,7 +343,7 @@ export default function DashboardView() {
               <TooltipContent>
                 <p>Export dashboard data as CSV</p>
               </TooltipContent>
-            </Tooltip>
+            </Tooltip> */}
           </div>
         </div>
 

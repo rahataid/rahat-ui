@@ -48,27 +48,20 @@ export function DialogComponent({
 
   return (
     <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         {/* <Button className="rounded-sm" onClick={() => setOpen(true)}>
           {buttonText}
         </Button> */}
-        <TooltipWrapper
-          tip={
-            data?._count?.Activity || data?.triggers?.length > 0
-              ? 'Cannot delete a phase with activities or triggers'
-              : 'Delete Phase'
-          }
-        >
-          <IconLabelBtn
-            Icon={buttonIcon}
-            handleClick={() => setOpen(true)}
-            name={buttonText}
-            variant={variant}
-            className={buttonClassName}
-            type="button"
-            disabled={data?._count?.Activity || data?.triggers?.length > 0}
-          />
-        </TooltipWrapper>
+
+        <IconLabelBtn
+          Icon={buttonIcon}
+          handleClick={() => setOpen(true)}
+          name={buttonText}
+          variant={variant}
+          className={buttonClassName}
+          type="button"
+          disabled={data?._count?.Activity > 0 || data?.triggers?.length > 0}
+        />
       </DialogTrigger>
       <DialogContent
         className="!rounded-sm"

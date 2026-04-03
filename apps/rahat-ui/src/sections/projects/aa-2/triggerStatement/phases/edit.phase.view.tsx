@@ -21,6 +21,7 @@ import {
   AddPhaseSchema,
   getAddPhaseDefaultValues,
 } from './phase.schema';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export default function EditPhaseView() {
   const params = useParams();
@@ -41,7 +42,6 @@ export default function EditPhaseView() {
   const { data: phase, isLoading } = useSinglePhase(projectId, phaseId, {
     enabled: !isDeleted,
   });
-
   const riverBasin =
     settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
       'river_basin'
@@ -141,18 +141,26 @@ export default function EditPhaseView() {
           title="Edit Phase"
           description="Edit the form below to update this phase"
         />
-        <DialogComponent
-          buttonIcon={Trash}
-          buttonText="Delete Phase"
-          dialogTitle="Delete Phase"
-          dialogDescription="Are you sure you want to delete this phase?"
-          confirmButtonText={deletePhase.isPending ? 'Deleting...' : 'Delete'}
-          handleClick={handleDeletePhase}
-          buttonClassName="rounded-sm w-full text-red-500 border-red-500"
-          confirmButtonClassName="rounded-sm w-full bg-red-500"
-          variant="outline"
-          data={phase}
-        />
+        <TooltipWrapper
+          tip={
+            phase?._count?.Activity > 0 || phase?.triggers?.length > 0
+              ? 'Cannot delete a phase with activities or triggers'
+              : 'Delete Phase'
+          }
+        >
+          <DialogComponent
+            buttonIcon={Trash}
+            buttonText="Delete Phase"
+            dialogTitle="Delete Phase"
+            dialogDescription="Are you sure you want to delete this phase?"
+            confirmButtonText={deletePhase.isPending ? 'Deleting...' : 'Delete'}
+            handleClick={handleDeletePhase}
+            buttonClassName="rounded-sm w-full text-red-500 border-red-500"
+            confirmButtonClassName="rounded-sm w-full bg-red-500"
+            variant="outline"
+            data={phase}
+          />
+        </TooltipWrapper>
       </div>
       <PhaseForm
         form={form}

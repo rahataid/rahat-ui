@@ -1,10 +1,31 @@
+# Git
 .git/
 .github/
+
+# Dependencies
 node_modules/
-.dockerignore
-.env.*
-Dockerfile
+
+# Build outputs (CRITICAL 🔥)
+dist/
+.next/
+apps/**/.next/
+
+# Nx cache
 .nx/
 
-# Local 
-apps/**/.next/
+# Env files
+.env*
+.env.*
+
+# Logs
+*.log
+
+# Docker
+Dockerfile*
+.dockerignore
+docker-compose*
+
+# Misc
+coverage/
+tmp/
+.cache/

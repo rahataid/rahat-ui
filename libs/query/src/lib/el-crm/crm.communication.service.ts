@@ -530,7 +530,10 @@ export const useCreateElCrmAutomationRule = (projectUUID: UUID) => {
     mutationFn: async (data: Record<string, unknown>) => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
-        data: { action: CREATE_AUTOMATION, payload: data },
+        data: {
+          action: CREATE_AUTOMATION,
+          payload: data,
+        },
       });
       return res.data;
     },
@@ -561,7 +564,10 @@ export const useUpdateElCrmAutomationRule = (projectUUID: UUID) => {
     mutationFn: async (data: { uuid: string } & Record<string, unknown>) => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
-        data: { action: UPDATE_AUTOMATION, payload: data },
+        data: {
+          action: UPDATE_AUTOMATION,
+          payload: data,
+        },
       });
       return res.data;
     },
@@ -595,7 +601,10 @@ export const useDeleteElCrmAutomationRule = (projectUUID: UUID) => {
     mutationFn: async (ruleUUID: string) => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
-        data: { action: DELETE_AUTOMATION, payload: { uuid: ruleUUID } },
+        data: {
+          action: DELETE_AUTOMATION,
+          payload: { uuid: ruleUUID },
+        },
       });
       return res.data;
     },

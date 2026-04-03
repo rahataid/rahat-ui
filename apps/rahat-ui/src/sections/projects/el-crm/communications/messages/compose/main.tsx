@@ -73,6 +73,12 @@ const AUDIENCE_GROUPS = [
 type FilterField = 'category' | 'source' | 'location' | 'isVerified';
 type FilterRow = { id: string; field: FilterField | ''; value: string };
 
+const collectFilterValues = (rows: FilterRow[], field: FilterField) =>
+  rows
+    .filter((row) => row.field === field)
+    .map((row) => row.value.trim())
+    .filter(Boolean);
+
 const FILTER_FIELD_OPTIONS: { value: FilterField; label: string }[] = [
   { value: 'category', label: 'Status' },
   { value: 'source', label: 'Source' },
@@ -135,13 +141,15 @@ export default function ComposeMessageView() {
   const createCampaign = useCreateElCrmCampaign(projectUUID);
 
   const filtersForCount = useMemo(() => {
-    const f: Record<string, string> = {};
-    for (const row of filterRows) {
-      if (!row.field || !row.value) continue;
-      if (row.field === 'category') f.category = row.value;
-      else if (row.field === 'source') f.source = row.value;
-      else if (row.field === 'location') f.location = row.value;
-    }
+    const f: Record<string, string[]> = {};
+    const categories = collectFilterValues(filterRows, 'category');
+    const sources = collectFilterValues(filterRows, 'source');
+    const locations = collectFilterValues(filterRows, 'location');
+
+    if (categories.length) f.category = categories;
+    if (sources.length) f.source = sources;
+    if (locations.length) f.location = locations;
+
     return f;
   }, [filterRows]);
 
@@ -193,16 +201,24 @@ export default function ComposeMessageView() {
     AUDIENCE_GROUPS.find((g) => g.id === selectedGroup)?.name ?? '';
 
   const handleSubmit = async () => {
-    const options: Record<string, string | undefined> = {};
+    const options: Record<string, string | string[] | boolean | boolean[] | undefined> = {};
 
-    for (const row of filterRows) {
-      if (!row.field || !row.value) continue;
-      if (row.field === 'category') options.vendorStatus = row.value;
-      else if (row.field === 'source') options.vendorSource = row.value;
-      else if (row.field === 'location') options.location = row.value;
-      else if (row.field === 'isVerified')
-        options.beneficiaryIsVerified = row.value;
-    }
+    const categories = collectFilterValues(filterRows, 'category');
+    const sources = collectFilterValues(filterRows, 'source');
+    const locations = collectFilterValues(filterRows, 'location');
+    const verified = Array.from(
+      new Set(
+        collectFilterValues(filterRows, 'isVerified').map(
+          (value) => value === 'true',
+        ),
+      ),
+    );
+
+    if (categories.length) options.vendorStatus = categories;
+    if (sources.length) options.vendorSource = sources;
+    if (locations.length) options.location = locations;
+    if (verified.length === 1) options.beneficiaryIsVerified = verified[0];
+    if (verified.length > 1) options.beneficiaryIsVerified = verified;
 
     const payload = {
       targetType: selectedGroup,
@@ -464,12 +480,19 @@ export default function ComposeMessageView() {
 
                           <div className="ml-10 space-y-2">
                             {filterRows.map((row) => {
-                              const usedFields = filterRows
-                                .filter((r) => r.id !== row.id && r.field)
-                                .map((r) => r.field);
                               const valueOptions = row.field
                                 ? FILTER_VALUE_OPTIONS[row.field as FilterField]
                                 : undefined;
+                              const selectedValuesForField = row.field
+                                ? filterRows
+                                    .filter(
+                                      (r) =>
+                                        r.id !== row.id &&
+                                        r.field === row.field &&
+                                        !!r.value,
+                                    )
+                                    .map((r) => r.value)
+                                : [];
                               return (
                                 <div
                                   key={row.id}
@@ -492,9 +515,6 @@ export default function ComposeMessageView() {
                                         <SelectItem
                                           key={opt.value}
                                           value={opt.value}
-                                          disabled={usedFields.includes(
-                                            opt.value,
-                                          )}
                                         >
                                           {opt.label}
                                         </SelectItem>
@@ -523,6 +543,12 @@ export default function ComposeMessageView() {
                                           <SelectItem
                                             key={opt.value}
                                             value={opt.value}
+                                            disabled={
+                                              opt.value !== row.value &&
+                                              selectedValuesForField.includes(
+                                                opt.value,
+                                              )
+                                            }
                                           >
                                             {opt.label}
                                           </SelectItem>
@@ -558,17 +584,15 @@ export default function ComposeMessageView() {
                               );
                             })}
 
-                            {filterRows.length < activeFieldOptions.length && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="gap-1.5 mt-1 text-muted-foreground"
-                                onClick={addFilterRow}
-                              >
-                                <Plus className="h-3.5 w-3.5" />
-                                Add Filter
-                              </Button>
-                            )}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-1.5 mt-1 text-muted-foreground"
+                              onClick={addFilterRow}
+                            >
+                              <Plus className="h-3.5 w-3.5" />
+                              Add Filter
+                            </Button>
 
                             {selectedGroup === 'VENDOR' && (
                               <div className="flex items-center gap-2 mt-3 text-sm text-muted-foreground">

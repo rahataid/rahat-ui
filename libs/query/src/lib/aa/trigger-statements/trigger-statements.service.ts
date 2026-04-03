@@ -522,6 +522,40 @@ export const useDhmSingleSeriesTemperatureLevels = (
   });
 };
 
+export const useDhmSingleSeriesHumidityLevels = (
+  uuid: UUID,
+  payload: {
+    type?: 'daily' | 'hourly';
+  },
+) => {
+  const q = useProjectAction();
+
+  const settings = useProjectSettingsStore((state) => state.settings);
+  const riverBasin =
+    settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.['river_basin'];
+
+  const parameter = payload.type === 'daily' ? 'RH_1D' : 'RH_1H';
+
+  return useQuery({
+    queryKey: ['dhmsingleserieshumiditylevels', uuid, parameter],
+    enabled: !!riverBasin,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.humidity.getDhmSingleSeries',
+          payload: {
+            riverBasin,
+            parameter,
+          },
+        },
+      });
+      return mutate.data;
+    },
+    staleTime: 15 * 60 * 1000,
+  });
+};
+
 export const useAllGlofasProbFlood = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
   const alert = useSwal();

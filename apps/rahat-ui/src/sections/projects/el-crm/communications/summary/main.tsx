@@ -24,75 +24,113 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { UUID } from 'crypto';
+import { useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import DemoTable from 'apps/rahat-ui/src/components/table';
-import { useCommsTableColumn } from './useCommsTableColumn';
 import {
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { useListElCrmCampaign, usePagination } from '@rahat-ui/query';
+import {
+  useCustomerStats,
+  useListElCrmCampaign,
+  usePagination,
+} from '@rahat-ui/query';
 import { useMsgTableColumn } from '../messages/useMsgTableColumns';
 
-const messageLogs = [
-  {
-    id: 1,
-    date: '2024-01-20',
-    channel: 'SMS',
-    group: 'Customers',
-    templateName: 'Welcome Message',
-    status: 'Delivered',
-    messageContent:
-      "Welcome to our service! We're excited to have you on board. Your account has been successfully created.",
-    groupStatus: 'Active customers - 245 recipients',
-  },
-  {
-    id: 2,
-    date: '2024-01-19',
-    channel: 'WhatsApp',
-    group: 'Customers',
-    templateName: 'Product Update',
-    status: 'Delivered',
-    messageContent:
-      "We've just launched new features in our app! Check out the latest updates and improvements.",
-    groupStatus: 'Active customers - 189 recipients',
-  },
-  {
-    id: 3,
-    date: '2024-01-18',
-    channel: 'SMS',
-    group: 'Customers',
-    templateName: 'Reminder',
-    status: 'Failed',
-    messageContent:
-      "Don't forget about your upcoming appointment scheduled for tomorrow at 2:00 PM.",
-    groupStatus: 'Inactive customers - 67 recipients',
-  },
-];
+const numberFormatter = new Intl.NumberFormat();
+
+const toNumber = (value: unknown): number => {
+  const num = Number(value);
+  return Number.isFinite(num) ? num : 0;
+};
+
+type StatsRow = {
+  name?: string;
+  data?: unknown;
+};
 
 export default function SummaryView() {
   const { id: projectUUID } = useParams() as { id: UUID };
 
-  const {
-    pagination,
-    selectedListItems,
-    setSelectedListItems,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-  } = usePagination();
+  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const columns = useMsgTableColumn();
+
   const { data, meta } = useListElCrmCampaign(projectUUID, {
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
   });
 
+  const { data: statsRows = [] } = useCustomerStats(projectUUID);
+
+  const {
+    totalMessagesSent,
+    successfulMessages,
+    failedMessages,
+    skippedMessages,
+    messagesToConsumers,
+    messagesToCustomers,
+    deliveryRate,
+    topAudience,
+  } = useMemo(() => {
+    const statsByName: Record<string, unknown> = {};
+
+    (Array.isArray(statsRows) ? statsRows : []).forEach((row: StatsRow) => {
+      if (row?.name) {
+        statsByName[row.name] = row.data;
+      }
+    });
+
+    const communicationStats =
+      (statsByName.COMMUNICATION_STATS as Record<string, unknown>) || {};
+
+    const getStatNumber = (name: string, fallback = 0) => {
+      return toNumber(statsByName[name]) || fallback;
+    };
+
+    const sent = getStatNumber(
+      'TOTAL_MESSAGES_SUCCESS',
+      toNumber(communicationStats.sent),
+    );
+    const failed = getStatNumber(
+      'TOTAL_MESSAGES_FAILED',
+      toNumber(communicationStats.failed),
+    );
+    const skipped = toNumber(communicationStats.skipped);
+    const total = getStatNumber(
+      'TOTAL_MESSAGES_SENT',
+      toNumber(communicationStats.totalMessages),
+    );
+    const consumers = getStatNumber('MESSAGES_TO_CONSUMERS');
+    const customers = getStatNumber('MESSAGES_TO_CUSTOMERS');
+
+    const rate =
+      toNumber(communicationStats.deliveryRate) ||
+      (total > 0 ? Math.round((sent / total) * 100) : 0);
+
+    return {
+      totalMessagesSent: total,
+      successfulMessages: sent,
+      failedMessages: failed,
+      skippedMessages: skipped,
+      messagesToConsumers: consumers,
+      messagesToCustomers: customers,
+      deliveryRate: rate,
+      topAudience:
+        consumers === customers
+          ? 'Balanced'
+          : consumers > customers
+            ? 'Consumers'
+            : 'Customers',
+    };
+  }, [statsRows]);
+
   const table = useReactTable({
     manualPagination: true,
-    data: data,
+    data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -132,39 +170,39 @@ export default function SummaryView() {
             {[
               {
                 title: 'Total Messages Sent',
-                value: '1,247',
+                value: numberFormatter.format(totalMessagesSent),
                 icon: MessageSquare,
                 color: 'text-primary',
                 bgColor: 'bg-primary/5',
                 iconColor: 'text-primary',
-                tooltip: 'Total messages sent across all channels',
+                tooltip: 'From stats table: TOTAL_MESSAGES_SENT',
               },
               {
                 title: 'Delivery Successful',
-                value: '1,156',
+                value: numberFormatter.format(successfulMessages),
                 icon: CheckCircle,
                 color: 'text-success',
                 bgColor: 'bg-success/5',
                 iconColor: 'text-success',
-                tooltip: 'Messages successfully delivered to recipients',
+                tooltip: 'From stats table: TOTAL_MESSAGES_SUCCESS',
               },
               {
                 title: 'Delivery Failed',
-                value: '91',
+                value: numberFormatter.format(failedMessages),
                 icon: XCircle,
                 color: 'text-destructive',
                 bgColor: 'bg-destructive/5',
                 iconColor: 'text-destructive',
-                tooltip: 'Messages that failed to deliver',
+                tooltip: 'From stats table: TOTAL_MESSAGES_FAILED',
               },
               {
-                title: 'Most Used Channel',
-                value: 'SMS',
+                title: 'Top Audience',
+                value: topAudience,
                 icon: Smartphone,
                 color: 'text-foreground',
                 bgColor: 'bg-muted',
                 iconColor: 'text-muted-foreground',
-                tooltip: 'The channel used most frequently for messaging',
+                tooltip: 'Based on MESSAGES_TO_CONSUMERS vs MESSAGES_TO_CUSTOMERS',
               },
             ].map((stat) => (
               <Card
@@ -203,21 +241,21 @@ export default function SummaryView() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium">
-                  Successful Delivery by Channel
+                  Message Volume by Audience
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <Badge variant="default">SMS</Badge>
-                    <span className="font-semibold tabular-nums text-success">
-                      456
+                    <Badge variant="secondary">Consumers</Badge>
+                    <span className="font-semibold tabular-nums text-foreground">
+                      {numberFormatter.format(messagesToConsumers)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <Badge variant="secondary">WhatsApp</Badge>
-                    <span className="font-semibold tabular-nums text-success">
-                      700
+                    <Badge variant="secondary">Customers</Badge>
+                    <span className="font-semibold tabular-nums text-foreground">
+                      {numberFormatter.format(messagesToCustomers)}
                     </span>
                   </div>
                 </div>
@@ -227,21 +265,33 @@ export default function SummaryView() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium">
-                  Failed Delivery by Channel
+                  Delivery Snapshot
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <Badge variant="default">SMS</Badge>
-                    <span className="font-semibold tabular-nums text-destructive">
-                      45
+                    <Badge variant="secondary">Sent</Badge>
+                    <span className="font-semibold tabular-nums text-success">
+                      {numberFormatter.format(successfulMessages)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <Badge variant="secondary">WhatsApp</Badge>
+                    <Badge variant="secondary">Failed</Badge>
                     <span className="font-semibold tabular-nums text-destructive">
-                      46
+                      {numberFormatter.format(failedMessages)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Badge variant="secondary">Skipped</Badge>
+                    <span className="font-semibold tabular-nums text-muted-foreground">
+                      {numberFormatter.format(skippedMessages)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Badge variant="secondary">Delivery Rate</Badge>
+                    <span className="font-semibold tabular-nums text-primary">
+                      {deliveryRate}%
                     </span>
                   </div>
                 </div>
@@ -249,7 +299,6 @@ export default function SummaryView() {
             </Card>
           </div>
 
-          {/* Message Logs Table */}
           <Card className="flex flex-col">
             <div className="border-b border-border px-5 py-4">
               <div className="flex items-center gap-2">
@@ -265,10 +314,7 @@ export default function SummaryView() {
               </div>
             </div>
             <CardContent className="p-0">
-              <DemoTable
-                table={table}
-                tableHeight="h-[calc(100vh-600px)]"
-              />
+              <DemoTable table={table} tableHeight="h-[calc(100vh-600px)]" />
               <CustomPagination
                 meta={meta || { total: 0, currentPage: 0 }}
                 handleNextPage={setNextPage}

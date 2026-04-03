@@ -415,9 +415,7 @@ export const useRetryFailedSession = (uuid: UUID) => {
         uuid,
         data: {
           action: 'elProject.campaign.retry_session',
-          payload: {
-            sessionId,
-          },
+          payload: { sessionId },
         },
       });
       return mutate.data;

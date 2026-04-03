@@ -323,12 +323,99 @@ const emptyCondition = (): RuleConditionRow => ({
   groupNo: 0,
 });
 
+const FALLBACK_TIMEZONES = [
+  'UTC',
+  'Asia/Kathmandu',
+  'Asia/Kolkata',
+  'Asia/Dhaka',
+  'Asia/Bangkok',
+  'Asia/Phnom_Penh',
+  'Asia/Shanghai',
+  'Asia/Dubai',
+  'Europe/London',
+  'Europe/Berlin',
+  'America/New_York',
+  'America/Chicago',
+  'America/Denver',
+  'America/Los_Angeles',
+  'Australia/Sydney',
+];
+
+const getTimeZoneOffsetMs = (date: Date, timeZone: string) => {
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+
+  const parts = formatter.formatToParts(date);
+  const dateParts = {
+    year: Number(parts.find((p) => p.type === 'year')?.value ?? 0),
+    month: Number(parts.find((p) => p.type === 'month')?.value ?? 0),
+    day: Number(parts.find((p) => p.type === 'day')?.value ?? 0),
+    hour: Number(parts.find((p) => p.type === 'hour')?.value ?? 0),
+    minute: Number(parts.find((p) => p.type === 'minute')?.value ?? 0),
+    second: Number(parts.find((p) => p.type === 'second')?.value ?? 0),
+  };
+
+  const utcTime = Date.UTC(
+    dateParts.year,
+    dateParts.month - 1,
+    dateParts.day,
+    dateParts.hour,
+    dateParts.minute,
+    dateParts.second,
+  );
+
+  return utcTime - date.getTime();
+};
+
+const zonedDateTimeToDate = (
+  date: string,
+  time: string,
+  timeZone: string,
+): Date | null => {
+  const [year, month, day] = date.split('-').map(Number);
+  const [hour, minute] = time.split(':').map(Number);
+
+  if (!year || !month || !day || Number.isNaN(hour) || Number.isNaN(minute)) {
+    return null;
+  }
+
+  const targetUtc = Date.UTC(year, month - 1, day, hour, minute, 0);
+  let utcTs = targetUtc;
+
+  // Run twice to stabilize around DST boundaries.
+  for (let i = 0; i < 2; i += 1) {
+    const offset = getTimeZoneOffsetMs(new Date(utcTs), timeZone);
+    utcTs = targetUtc - offset;
+  }
+
+  const result = new Date(utcTs);
+  return Number.isNaN(result.getTime()) ? null : result;
+};
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ComposeScheduleView() {
   const { id: projectUUID } = useParams() as { id: UUID };
   const router = useRouter();
   const searchParams = useSearchParams();
+  const detectedTimeZone =
+    Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  const scheduleTimeZones = useMemo(() => {
+    const listedTimeZones =
+      typeof (Intl as any).supportedValuesOf === 'function'
+        ? ((Intl as any).supportedValuesOf('timeZone') as string[])
+        : FALLBACK_TIMEZONES;
+    if (listedTimeZones.includes(detectedTimeZone)) return listedTimeZones;
+    return [detectedTimeZone, ...listedTimeZones];
+  }, [detectedTimeZone]);
 
   // Progressive wizard state
   const [selectedTransportId, setSelectedTransportId] = useState('');
@@ -339,6 +426,7 @@ export default function ComposeScheduleView() {
   const [campaignName, setCampaignName] = useState('');
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
+  const [scheduleTimeZone, setScheduleTimeZone] = useState(detectedTimeZone);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   // Automation rule creation state
@@ -491,10 +579,15 @@ export default function ComposeScheduleView() {
 
   const isScheduleDateTimeValid = useMemo(() => {
     if (!scheduleDate || !scheduleTime) return true;
-    const scheduled = new Date(`${scheduleDate}T${scheduleTime}`);
+    const scheduled = zonedDateTimeToDate(
+      scheduleDate,
+      scheduleTime,
+      scheduleTimeZone,
+    );
+    if (!scheduled) return false;
     if (Number.isNaN(scheduled.getTime())) return false;
     return scheduled.getTime() > Date.now();
-  }, [scheduleDate, scheduleTime]);
+  }, [scheduleDate, scheduleTime, scheduleTimeZone]);
 
   const canSubmit =
     !!campaignName &&
@@ -524,10 +617,18 @@ export default function ComposeScheduleView() {
 
   const scheduledAtLabel = useMemo(() => {
     if (!scheduleDate || !scheduleTime) return 'Not selected';
-    const scheduled = new Date(`${scheduleDate}T${scheduleTime}`);
+    const scheduled = zonedDateTimeToDate(
+      scheduleDate,
+      scheduleTime,
+      scheduleTimeZone,
+    );
+    if (!scheduled) return 'Invalid date/time';
     if (Number.isNaN(scheduled.getTime())) return 'Invalid date/time';
-    return scheduled.toLocaleString();
-  }, [scheduleDate, scheduleTime]);
+    return scheduled.toLocaleString(undefined, {
+      timeZone: scheduleTimeZone,
+      timeZoneName: 'short',
+    });
+  }, [scheduleDate, scheduleTime, scheduleTimeZone]);
 
   const activeFilters = useMemo(
     () => filterRows.filter((row) => row.field && row.value),
@@ -549,9 +650,15 @@ export default function ComposeScheduleView() {
     }
 
     if (scheduleDate && scheduleTime) {
-      options.scheduledTimestamp = new Date(
-        `${scheduleDate}T${scheduleTime}`,
-      ).toISOString();
+      const scheduledDate = zonedDateTimeToDate(
+        scheduleDate,
+        scheduleTime,
+        scheduleTimeZone,
+      );
+      if (!scheduledDate) return;
+
+      options.scheduledTimestamp = scheduledDate.toISOString();
+      options.scheduleTimezone = scheduleTimeZone;
       options.attemptIntervalMinutes = '5';
     }
 
@@ -581,6 +688,7 @@ export default function ComposeScheduleView() {
     setCampaignName('');
     setScheduleDate('');
     setScheduleTime('');
+    setScheduleTimeZone(detectedTimeZone);
   };
 
   const addFilterRow = () =>
@@ -1000,6 +1108,26 @@ export default function ComposeScheduleView() {
                                 }
                               />
                             </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Timezone</Label>
+                            <Select
+                              value={scheduleTimeZone}
+                              onValueChange={setScheduleTimeZone}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select timezone" />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-80">
+                                {scheduleTimeZones.map((tz) => (
+                                  <SelectItem key={tz} value={tz}>
+                                    {tz}
+                                    {tz === detectedTimeZone ? ' (Local)' : ''}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
 
                           {!isScheduleDateTimeValid && (
@@ -1514,6 +1642,10 @@ export default function ComposeScheduleView() {
                 <div>
                   <p className="text-muted-foreground">Scheduled For</p>
                   <p className="font-medium">{scheduledAtLabel}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Timezone</p>
+                  <p className="font-medium">{scheduleTimeZone}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Template</p>

@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { IconLabelBtn } from 'apps/rahat-ui/src/common';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 import { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
 
@@ -24,6 +25,7 @@ export type PaymentDialogProps = {
   buttonClassName?: string;
   confirmButtonClassName?: string;
   variant: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost';
+  data?: any;
 };
 export function DialogComponent({
   handleClick,
@@ -35,6 +37,7 @@ export function DialogComponent({
   buttonClassName = '',
   confirmButtonClassName = '',
   variant = 'default',
+  data,
 }: PaymentDialogProps) {
   const [open, setOpen] = useState(false);
 
@@ -49,14 +52,23 @@ export function DialogComponent({
         {/* <Button className="rounded-sm" onClick={() => setOpen(true)}>
           {buttonText}
         </Button> */}
-        <IconLabelBtn
-          Icon={buttonIcon}
-          handleClick={() => setOpen(true)}
-          name={buttonText}
-          variant={variant}
-          className={buttonClassName}
-          type="button"
-        />
+        <TooltipWrapper
+          tip={
+            data?._count?.Activity || data?.triggers?.length > 0
+              ? 'Cannot delete a phase with activities or triggers'
+              : 'Delete Phase'
+          }
+        >
+          <IconLabelBtn
+            Icon={buttonIcon}
+            handleClick={() => setOpen(true)}
+            name={buttonText}
+            variant={variant}
+            className={buttonClassName}
+            type="button"
+            disabled={data?._count?.Activity || data?.triggers?.length > 0}
+          />
+        </TooltipWrapper>
       </DialogTrigger>
       <DialogContent
         className="!rounded-sm"

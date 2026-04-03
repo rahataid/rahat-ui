@@ -8,6 +8,7 @@ type IProps = {
   subtitle: string;
   status?: string;
   badgeClassName?: string;
+  onBack?: () => void;
 };
 
 export function HeaderWithBack({
@@ -16,11 +17,12 @@ export function HeaderWithBack({
   subtitle,
   status,
   badgeClassName,
+  onBack,
 }: IProps) {
   return (
     <div className="mb-3">
       <div className="flex flex-col justify-center ml-1">
-        <Back path={path} />
+        <Back path={path} onBack={onBack} />
         <h1 className="font-semibold text-[28px]">
           {title} {status && <Badge className={badgeClassName}>{status}</Badge>}
         </h1>

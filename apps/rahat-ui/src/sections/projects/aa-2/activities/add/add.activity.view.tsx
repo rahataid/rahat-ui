@@ -43,8 +43,8 @@ import {
 import {
   CloudUpload,
   FileCheck,
-  Filter,
   Info,
+  LayoutTemplate,
   LoaderCircle,
   Minus,
   Plus,
@@ -75,6 +75,7 @@ import {
 } from 'apps/rahat-ui/src/types/activities';
 import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 export const DurationData = [
   { value: 'hours', label: 'Hours' },
   { value: 'days', label: 'Days' },
@@ -87,6 +88,9 @@ export default function AddActivities() {
   const pendingTemplateValue = useBoolean(false);
   const audioUploading = useBoolean(false);
   const viewTemplateOpen = useBoolean(false);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
+    null,
+  );
   const [communicationData, setCommunicationData] = useState<
     CommunicationData[]
   >([]);
@@ -326,6 +330,7 @@ export default function AddActivities() {
 
   const resetForm = () => {
     form.reset();
+    setSelectedTemplateId(null);
     communicationForm.reset();
     addCommunicationOpen.onFalse();
     setCommunicationData([]);
@@ -421,6 +426,7 @@ export default function AddActivities() {
   };
   const handleSelectTemplate = useCallback(
     (payload: Template) => {
+      setSelectedTemplateId(payload.uuid);
       form.clearErrors();
       setBasicFields(payload);
       setPhase(payload);
@@ -432,442 +438,455 @@ export default function AddActivities() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
-        <div className="p-4">
-          <div className=" mb-2 flex flex-col space-y-0">
-            <Back path={activitiesListPath} />
+        <div className={`flex ${viewTemplateOpen.value ? 'gap-0' : ''}`}>
+          <div
+            className={`p-4 ${
+              viewTemplateOpen.value ? 'w-4/5' : 'w-full'
+            } transition-all`}
+          >
+            <div className=" mb-2 flex flex-col space-y-0">
+              <Back path={activitiesListPath} />
 
-            <div className="mt-4 flex justify-between items-center">
-              <div>
-                <Heading
-                  title={`Add Activity `}
-                  description="Fill the form below to create new activity"
-                />
-              </div>
+              <div className="mt-4 flex justify-between items-center">
+                <div>
+                  <Heading
+                    title={`Add Activity `}
+                    description="Fill the form below to create new activity"
+                  />
+                </div>
 
-              <div className="flex justify-end mt-8">
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-36"
-                    onClick={resetForm}
-                  >
-                    Clear
-                  </Button>
+                <div className="flex justify-end mt-8 ">
+                  <div className="flex gap-2  items-center">
+                    <TooltipWrapper
+                      tip={'View templates to reuse for this activity'}
+                    >
+                      <LayoutTemplate
+                        type="button"
+                        onClick={viewTemplateOpen.onTrue}
+                        className="w-6 h-6 text-blue-500 cursor-pointer hover:text-blue-600 transition-colors"
+                      />
+                    </TooltipWrapper>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-36"
+                      onClick={resetForm}
+                    >
+                      Clear
+                    </Button>
 
-                  <Button
-                    className="gap-2"
-                    type="button"
-                    onClick={viewTemplateOpen.onTrue}
-                  >
-                    <Filter className="w-4 h-4" />
-                    View Templates
-                  </Button>
-                  {viewTemplateOpen.value && (
-                    <ViewTemplate
-                      open={viewTemplateOpen.value}
-                      setOpen={viewTemplateOpen.setValue}
-                      onSelectTemplate={handleSelectTemplate}
-                    />
-                  )}
-                  <Button
-                    className="w-36"
-                    type="submit"
-                    disabled={
-                      createActivity?.isPending ||
-                      uploadFile?.isPending ||
-                      audioUploading.value ||
-                      addCommunicationOpen.value ||
-                      !!form.formState.errors.responsibility
-                    }
-                  >
-                    Add
-                  </Button>
+                    <Button
+                      className="w-36"
+                      type="submit"
+                      disabled={
+                        createActivity?.isPending ||
+                        uploadFile?.isPending ||
+                        audioUploading.value ||
+                        addCommunicationOpen.value ||
+                        !!form.formState.errors.responsibility
+                      }
+                    >
+                      Add
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <ScrollArea className=" h-[calc(100vh-230px)]">
-            <div className="rounded-xl border p-4">
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => {
-                    return (
-                      <FormItem className="col-span-2">
-                        <FormLabel>Activity title</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="Enter activity title"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="responsibility"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Responsibility</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select responsibility" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {users?.data.map((item) => (
-                            <SelectItem
-                              key={item.id}
-                              value={item.uuid as string}
-                            >
-                              {item.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="responsibleStation"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Responsible Station</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="Enter responsible station"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="phaseId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phase</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={phaseId || field.value}
-                        value={phaseId || field.value}
-                        disabled={!!phaseId}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select phase" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {phases.map((item) => (
-                            <SelectItem key={item.id} value={item.uuid}>
-                              {item.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="categoryId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Category</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select category" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {categories.map((item) => (
-                            <SelectItem key={item.id} value={item.uuid}>
-                              {item.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="flex items-center gap-8">
+            <ScrollArea className=" h-[calc(100vh-230px)]">
+              <div className="rounded-xl border p-4">
+                <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="isTemplate"
-                    render={({ field }) => {
-                      return (
-                        <FormItem className=" w-[200px]">
-                          <div className="flex items-center justify-between w-full">
-                            <FormLabel>Save as Template</FormLabel>{' '}
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild className="-ml-4">
-                                  <Info
-                                    size={18}
-                                    className="text-muted-foreground cursor-help hover:text-primary transition-colors"
-                                  />
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>
-                                    This will save the activity as a template
-                                    for future use. If disabled, this will not
-                                    be saved as template
-                                  </p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                            <FormControl>
-                              <Switch
-                                checked={field.value}
-                                onCheckedChange={handleTemplateToggle}
-                              />
-                            </FormControl>
-                          </div>
-                        </FormItem>
-                      );
-                    }}
-                  />
-                </div>
-                {selectedPhase && selectedPhase?.name !== 'PREPAREDNESS' && (
-                  <FormField
-                    control={form.control}
-                    name="isAutomated"
+                    name="title"
                     render={({ field }) => {
                       return (
                         <FormItem className="col-span-2">
+                          <FormLabel>Activity title</FormLabel>
                           <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={(checked) =>
-                                field.onChange(checked)
-                              }
-                            />
-                          </FormControl>
-                          <FormLabel className="text-sm font-normal ml-2">
-                            Is Automated Activity?
-                          </FormLabel>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                )}
-                {selectedPhaseId && selectedPhase?.name !== 'PREPAREDNESS' && (
-                  <FormField
-                    control={form.control}
-                    name="leadTime"
-                    render={({ field }) => {
-                      const [lead, unitValue] = field.value?.split(' ') ?? [
-                        '',
-                        '',
-                      ];
-                      // Default unit to 'days' if not set
-                      const unit = !unitValue ? 'days' : unitValue;
-                      return (
-                        <FormItem>
-                          <FormLabel>Lead Time</FormLabel>
-                          <div className="grid grid-cols-4">
                             <Input
                               type="text"
-                              placeholder="Enter lead time"
-                              className="col-span-3 rounded-r-none"
-                              value={lead}
-                              onChange={(e) => {
-                                const newLead = e.target.value;
-                                field.onChange(
-                                  newLead ? `${newLead} ${unit}` : ` ${unit}`,
-                                );
-                              }}
+                              placeholder="Enter activity title"
+                              {...field}
                             />
-                            <Select
-                              value={unit}
-                              onValueChange={(val) => {
-                                field.onChange(
-                                  lead ? `${lead} ${val}` : ` ${val}`,
-                                );
-                              }}
-                            >
-                              <FormControl>
-                                <SelectTrigger className="rounded-l-none">
-                                  <SelectValue />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {DurationData.map((item) => (
-                                  <SelectItem
-                                    key={item.value}
-                                    value={item.value}
-                                  >
-                                    {item.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       );
                     }}
                   />
-                )}
 
+                  <FormField
+                    control={form.control}
+                    name="responsibility"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Responsibility</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select responsibility" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {users?.data.map((item) => (
+                              <SelectItem
+                                key={item.id}
+                                value={item.uuid as string}
+                              >
+                                {item.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="responsibleStation"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel>Responsible Station</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder="Enter responsible station"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phaseId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phase</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={phaseId || field.value}
+                          value={phaseId || field.value}
+                          disabled={!!phaseId}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select phase" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {phases.map((item) => (
+                              <SelectItem key={item.id} value={item.uuid}>
+                                {item.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="categoryId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select category" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {categories.map((item) => (
+                              <SelectItem key={item.id} value={item.uuid}>
+                                {item.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex items-center gap-8">
+                    <FormField
+                      control={form.control}
+                      name="isTemplate"
+                      render={({ field }) => {
+                        return (
+                          <FormItem className=" w-[200px]">
+                            <div className="flex items-center justify-between w-full">
+                              <FormLabel>Save as Template</FormLabel>{' '}
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild className="-ml-4">
+                                    <Info
+                                      size={18}
+                                      className="text-muted-foreground cursor-help hover:text-primary transition-colors"
+                                    />
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>
+                                      This will save the activity as a template
+                                      for future use. If disabled, this will not
+                                      be saved as template
+                                    </p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={handleTemplateToggle}
+                                />
+                              </FormControl>
+                            </div>
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  </div>
+                  {selectedPhase && selectedPhase?.name !== 'PREPAREDNESS' && (
+                    <FormField
+                      control={form.control}
+                      name="isAutomated"
+                      render={({ field }) => {
+                        return (
+                          <FormItem className="col-span-2">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={(checked) =>
+                                  field.onChange(checked)
+                                }
+                              />
+                            </FormControl>
+                            <FormLabel className="text-sm font-normal ml-2">
+                              Is Automated Activity?
+                            </FormLabel>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  )}
+                  {selectedPhaseId &&
+                    selectedPhase?.name !== 'PREPAREDNESS' && (
+                      <FormField
+                        control={form.control}
+                        name="leadTime"
+                        render={({ field }) => {
+                          const [lead, unitValue] = field.value?.split(' ') ?? [
+                            '',
+                            '',
+                          ];
+                          // Default unit to 'days' if not set
+                          const unit = !unitValue ? 'days' : unitValue;
+                          return (
+                            <FormItem>
+                              <FormLabel>Lead Time</FormLabel>
+                              <div className="grid grid-cols-4">
+                                <Input
+                                  type="text"
+                                  placeholder="Enter lead time"
+                                  className="col-span-3 rounded-r-none"
+                                  value={lead}
+                                  onChange={(e) => {
+                                    const newLead = e.target.value;
+                                    field.onChange(
+                                      newLead
+                                        ? `${newLead} ${unit}`
+                                        : ` ${unit}`,
+                                    );
+                                  }}
+                                />
+                                <Select
+                                  value={unit}
+                                  onValueChange={(val) => {
+                                    field.onChange(
+                                      lead ? `${lead} ${val}` : ` ${val}`,
+                                    );
+                                  }}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger className="rounded-l-none">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {DurationData.map((item) => (
+                                      <SelectItem
+                                        key={item.value}
+                                        value={item.value}
+                                      >
+                                        {item.label}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    )}
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => {
+                      return (
+                        <FormItem className="col-span-2 ">
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Enter description "
+                              className=" rounded"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </div>
                 <FormField
                   control={form.control}
-                  name="description"
+                  name="activityDocuments"
                   render={({ field }) => {
+                    const activityDocuments = field.value || [];
                     return (
-                      <FormItem className="col-span-2 ">
-                        <FormLabel>Description</FormLabel>
+                      <FormItem className="mt-4">
                         <FormControl>
-                          <Textarea
-                            placeholder="Enter description "
-                            className=" rounded"
-                            {...field}
-                          />
+                          <div className="relative border border-dashed rounded p-1.5">
+                            <div className="absolute inset-0 flex gap-2 items-center justify-center">
+                              <CloudUpload
+                                size={25}
+                                strokeWidth={2}
+                                className="text-primary"
+                              />
+                              <p className="text-sm font-medium">
+                                Drop files to upload, or{' '}
+                                <span className="text-primary">browse</span>
+                              </p>
+                            </div>
+                            <Input
+                              className="opacity-0 cursor-pointer"
+                              type="file"
+                              multiple
+                              onChange={handleFileChange}
+                            />
+                          </div>
                         </FormControl>
                         <FormMessage />
+                        <p className="text-xs text-end text-orange-500">
+                          *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
+                          CSV under 5 MB.
+                        </p>
+                        <div className="grid sm:grid-cols-2  lg:grid-cols-3 xl:grid-cols-5 gap-4 p-2">
+                          {activityDocuments?.map((file) => (
+                            <div
+                              key={file.fileName}
+                              className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 flex items-center gap-3 hover:cursor-pointer hover:bg-gray-100"
+                            >
+                              {uploadFile.isPending &&
+                              uploadingFileName === file.fileName ? (
+                                <LoaderCircle
+                                  strokeWidth={2.5}
+                                  className="text-green-600 animate-spin w-8 h-8"
+                                />
+                              ) : (
+                                <FileCheck
+                                  strokeWidth={2.5}
+                                  className="w-8 h-8 text-green-600"
+                                />
+                              )}
+                              <p className="text-xs  flex  items-center gap-2">
+                                {file.fileName}
+                              </p>
+                              <X
+                                strokeWidth={2.5}
+                                onClick={() => {
+                                  const updated = activityDocuments.filter(
+                                    (f) => f.fileName !== file.fileName,
+                                  );
+                                  field.onChange(updated);
+                                }}
+                                className="cursor-pointer text-red-500 w-8 h-8"
+                              />
+                            </div>
+                          ))}
+                        </div>
                       </FormItem>
                     );
                   }}
                 />
               </div>
-              <FormField
-                control={form.control}
-                name="activityDocuments"
-                render={({ field }) => {
-                  const activityDocuments = field.value || [];
-                  return (
-                    <FormItem className="mt-4">
-                      <FormControl>
-                        <div className="relative border border-dashed rounded p-1.5">
-                          <div className="absolute inset-0 flex gap-2 items-center justify-center">
-                            <CloudUpload
-                              size={25}
-                              strokeWidth={2}
-                              className="text-primary"
-                            />
-                            <p className="text-sm font-medium">
-                              Drop files to upload, or{' '}
-                              <span className="text-primary">browse</span>
-                            </p>
-                          </div>
-                          <Input
-                            className="opacity-0 cursor-pointer"
-                            type="file"
-                            multiple
-                            onChange={handleFileChange}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                      <p className="text-xs text-end text-orange-500">
-                        *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
-                        CSV under 5 MB.
-                      </p>
-                      <div className="grid sm:grid-cols-2  lg:grid-cols-3 xl:grid-cols-5 gap-4 p-2">
-                        {activityDocuments?.map((file) => (
-                          <div
-                            key={file.fileName}
-                            className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 flex items-center gap-3 hover:cursor-pointer hover:bg-gray-100"
-                          >
-                            {uploadFile.isPending &&
-                            uploadingFileName === file.fileName ? (
-                              <LoaderCircle
-                                strokeWidth={2.5}
-                                className="text-green-600 animate-spin w-8 h-8"
-                              />
-                            ) : (
-                              <FileCheck
-                                strokeWidth={2.5}
-                                className="w-8 h-8 text-green-600"
-                              />
-                            )}
-                            <p className="text-xs  flex  items-center gap-2">
-                              {file.fileName}
-                            </p>
-                            <X
-                              strokeWidth={2.5}
-                              onClick={() => {
-                                const updated = activityDocuments.filter(
-                                  (f) => f.fileName !== file.fileName,
-                                );
-                                field.onChange(updated);
-                              }}
-                              className="cursor-pointer text-red-500 w-8 h-8"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </FormItem>
-                  );
+
+              <Button
+                type="button"
+                variant="outline"
+                className="border-dashed border-primary text-primary text-md w-full mt-4"
+                onClick={() => {
+                  addCommunicationOpen.onToggle();
                 }}
+              >
+                Add Communication
+                {!addCommunicationOpen.value ? (
+                  <Plus className="ml-2" size={16} strokeWidth={3} />
+                ) : (
+                  <Minus className="ml-2" size={16} strokeWidth={3} />
+                )}
+              </Button>
+              {(addCommunicationOpen.value || editCommunicationOpen.value) && (
+                <AddCommunicationForm
+                  form={communicationForm}
+                  setOpen={addCommunicationOpen.setValue}
+                  onSave={handleSave}
+                  setLoading={audioUploading.setValue}
+                  appTransports={appTransports}
+                  isMultiSelect={true}
+                  editMode={editCommunicationOpen}
+                />
+              )}
+
+              <CommunicationDataCard
+                form={communicationForm}
+                communicationData={communicationData}
+                appTransports={appTransports}
+                onRemove={handleRemove}
+                setOpen={editCommunicationOpen.setValue}
+                open={editCommunicationOpen.value}
+              />
+            </ScrollArea>
+          </div>
+          {viewTemplateOpen.value && (
+            <div className="w-2/5">
+              <ViewTemplate
+                open={viewTemplateOpen.value}
+                setOpen={viewTemplateOpen.setValue}
+                onSelectTemplate={handleSelectTemplate}
+                selectedTemplateId={selectedTemplateId}
               />
             </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              className="border-dashed border-primary text-primary text-md w-full mt-4"
-              onClick={() => {
-                addCommunicationOpen.onToggle();
-              }}
-            >
-              Add Communication
-              {!addCommunicationOpen.value ? (
-                <Plus className="ml-2" size={16} strokeWidth={3} />
-              ) : (
-                <Minus className="ml-2" size={16} strokeWidth={3} />
-              )}
-            </Button>
-            {(addCommunicationOpen.value || editCommunicationOpen.value) && (
-              <AddCommunicationForm
-                form={communicationForm}
-                setOpen={addCommunicationOpen.setValue}
-                onSave={handleSave}
-                setLoading={audioUploading.setValue}
-                appTransports={appTransports}
-                isMultiSelect={true}
-                editMode={editCommunicationOpen}
-              />
-            )}
-
-            <CommunicationDataCard
-              form={communicationForm}
-              communicationData={communicationData}
-              appTransports={appTransports}
-              onRemove={handleRemove}
-              setOpen={editCommunicationOpen.setValue}
-              open={editCommunicationOpen.value}
-            />
-          </ScrollArea>
+          )}
         </div>
       </form>
       <ConfirmationDialog

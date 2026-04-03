@@ -9,7 +9,7 @@ import {
   AlertCircleIcon,
   AlertTriangle,
   Plus,
-  Settings,
+  SquarePen,
   Undo2,
 } from 'lucide-react';
 import { TriggersListTabs, TriggersPhaseCard } from './components';
@@ -23,6 +23,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/alert';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 export default function PhaseDetail() {
   const router = useRouter();
@@ -31,15 +32,21 @@ export default function PhaseDetail() {
   const phaseId = params.phaseId as UUID;
 
   const { data: phase, isLoading, error } = useSinglePhase(projectId, phaseId);
-
   const revertPhase = useRevertPhase();
-
   const handleAddTriggerClick = () => {
     router.push(`/projects/aa/${projectId}/trigger-statements/add`);
   };
 
+  const handleEditPhase = () => {
+    router.push(
+      `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}/edit`,
+    );
+  };
+
   const isDisabled =
     !phase?.isActive || !phase?.canRevert || revertPhase.isPending;
+
+  const isEditDisabled = phase?.isActive;
 
   const handleRevertPhase = async () => {
     await revertPhase.mutateAsync({
@@ -79,30 +86,42 @@ export default function PhaseDetail() {
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
           >
-            <IconLabelBtn
-              variant="outline"
-              Icon={Settings}
-              name="Manage Threshold"
-              handleClick={() => {
-                router.push(
-                  `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}/config-threshold`,
-                );
-              }}
-            />
+            <TooltipWrapper
+              tip="Cannot add triggers for an active phase"
+              disable={!phase?.isActive}
+            >
+              <IconLabelBtn
+                variant="outline"
+                className="text-primary border-primary"
+                Icon={Plus}
+                disabled={phase?.isActive}
+                name="Add Trigger"
+                handleClick={handleAddTriggerClick}
+              />
+            </TooltipWrapper>
           </RoleAuth>
-
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
           >
-            <IconLabelBtn
-              variant="outline"
-              className="text-primary border-primary"
-              Icon={Plus}
-              disabled={phase?.isActive}
-              name="Add Trigger"
-              handleClick={handleAddTriggerClick}
-            />
+            {isEditDisabled ? (
+              <TooltipWrapper
+                tip={'Cannot edit an active phase or a phase with triggers'}
+              >
+                <IconLabelBtn Icon={SquarePen} name="Edit Phase" disabled />
+              </TooltipWrapper>
+            ) : (
+              <TooltipWrapper tip="Edit Phase">
+                <CustomAlertDialog
+                  dialogTrigger={
+                    <IconLabelBtn Icon={SquarePen} name="Edit Phase" />
+                  }
+                  title="Edit Phase"
+                  description="Are you sure you want to edit this phase?"
+                  handleContinueClick={handleEditPhase}
+                />
+              </TooltipWrapper>
+            )}
           </RoleAuth>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
@@ -110,14 +129,26 @@ export default function PhaseDetail() {
           >
             <>
               {isDisabled ? (
-                <IconLabelBtn Icon={Undo2} name="Revert" disabled />
+                <TooltipWrapper
+                  tip={`${
+                    !phase?.isActive
+                      ? 'Cannot revert an inactive phase'
+                      : !phase?.canRevert
+                      ? 'The revert feature was not included for this phase during its creation.'
+                      : ''
+                  }`}
+                >
+                  <IconLabelBtn Icon={Undo2} name="Revert" disabled />
+                </TooltipWrapper>
               ) : (
-                <CustomAlertDialog
-                  dialogTrigger={<IconLabelBtn Icon={Undo2} name="Revert" />}
-                  title="Revert Phase"
-                  description="Are you sure you want to revert this phase?"
-                  handleContinueClick={handleRevertPhase}
-                />
+                <TooltipWrapper tip="Revert this phase to untriggered state">
+                  <CustomAlertDialog
+                    dialogTrigger={<IconLabelBtn Icon={Undo2} name="Revert" />}
+                    title="Revert Phase"
+                    description="Are you sure you want to revert this phase?"
+                    handleContinueClick={handleRevertPhase}
+                  />
+                </TooltipWrapper>
               )}
             </>
           </RoleAuth>
@@ -163,6 +194,8 @@ export default function PhaseDetail() {
             hideAddTrigger={true}
             hideViewDetails={true}
             isActive={phase?.isActive}
+            chartType="donut"
+            hidePin={true}
           />
         </div>
 

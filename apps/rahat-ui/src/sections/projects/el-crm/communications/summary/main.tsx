@@ -84,32 +84,18 @@ export default function SummaryView() {
       }
     });
 
-    const communicationStats =
-      (statsByName.COMMUNICATION_STATS as Record<string, unknown>) || {};
-
     const getStatNumber = (name: string, fallback = 0) => {
       return toNumber(statsByName[name]) || fallback;
     };
 
-    const sent = getStatNumber(
-      'TOTAL_MESSAGES_SUCCESS',
-      toNumber(communicationStats.sent),
-    );
-    const failed = getStatNumber(
-      'TOTAL_MESSAGES_FAILED',
-      toNumber(communicationStats.failed),
-    );
-    const skipped = toNumber(communicationStats.skipped);
-    const total = getStatNumber(
-      'TOTAL_MESSAGES_SENT',
-      toNumber(communicationStats.totalMessages),
-    );
+    const sent = getStatNumber('TOTAL_MESSAGES_SUCCESS');
+    const failed = getStatNumber('TOTAL_MESSAGES_FAILED');
+    const total = getStatNumber('TOTAL_MESSAGES_SENT');
+    const skipped = Math.max(total - sent - failed, 0);
     const consumers = getStatNumber('MESSAGES_TO_CONSUMERS');
     const customers = getStatNumber('MESSAGES_TO_CUSTOMERS');
 
-    const rate =
-      toNumber(communicationStats.deliveryRate) ||
-      (total > 0 ? Math.round((sent / total) * 100) : 0);
+    const rate = total > 0 ? Math.round((sent / total) * 100) : 0;
 
     return {
       totalMessagesSent: total,
@@ -123,8 +109,8 @@ export default function SummaryView() {
         consumers === customers
           ? 'Balanced'
           : consumers > customers
-            ? 'Consumers'
-            : 'Customers',
+          ? 'Consumers'
+          : 'Customers',
     };
   }, [statsRows]);
 
@@ -202,7 +188,8 @@ export default function SummaryView() {
                 color: 'text-foreground',
                 bgColor: 'bg-muted',
                 iconColor: 'text-muted-foreground',
-                tooltip: 'Based on MESSAGES_TO_CONSUMERS vs MESSAGES_TO_CUSTOMERS',
+                tooltip:
+                  'Based on MESSAGES_TO_CONSUMERS vs MESSAGES_TO_CUSTOMERS',
               },
             ].map((stat) => (
               <Card

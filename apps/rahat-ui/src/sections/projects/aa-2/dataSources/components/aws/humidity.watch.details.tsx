@@ -3,27 +3,22 @@
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useDhmSingleSeriesHumidityLevels } from '@rahat-ui/query';
-import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
+import { Back, Heading, TableLoader, NoResult } from 'apps/rahat-ui/src/common';
 import { Globe, RadioTower } from 'lucide-react';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
-import { getHumidityColor } from './utils/color.utils';
-import React, { useMemo, useState } from 'react';
+import { getHumidityColor, roundValue } from './utils/color.utils';
+import React, { useMemo } from 'react';
 import { useTemperatureTableColumns } from '../../columns/useTemperatureTableColumns';
 import TemperatureWatchMap from './temperature.watch.map';
-import {
-  TemperatureValueCard,
-  HumidityScaleBar,
-  TemperatureHistorySection,
-} from './components';
+import { TemperatureValueCard, HumidityScaleBar } from './components';
+import TimeSeriesChart from '../dhm/chart';
+import WaterLevelTable from '../dhm/table';
 
 export default function HumidityWatchDetails() {
   const { id: projectId } = useParams() as { id: UUID };
-  const [activeTab, setActiveTab] = useState<'hourly' | 'daily'>('hourly');
 
-  const { data, isLoading, error } = useDhmSingleSeriesHumidityLevels(
-    projectId,
-    { type: activeTab },
-  );
+  const { data, isLoading, error } =
+    useDhmSingleSeriesHumidityLevels(projectId);
 
   const humidityInfo = data?.info;
   const updatedAt = data?.updatedAt;
@@ -114,7 +109,7 @@ export default function HumidityWatchDetails() {
         <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-sm">
           <p className="text-sm text-yellow-800">
             <strong>No data available:</strong> There is currently no humidity
-            data available for the selected time period ({activeTab}).
+            data available for the selected time period.
           </p>
         </div>
       )}
@@ -191,20 +186,33 @@ export default function HumidityWatchDetails() {
           </div>
         </div>
 
-        {/* Right Column - Temperature History */}
-        <TemperatureHistorySection
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          isLoading={isLoading}
-          hasData={hasData}
-          isNoDataError={isNoDataError}
-          history={history}
-          columns={columns}
-          unit={humidityInfo?.unit ?? '%'}
-          title="Relative Humidity History"
-          yaxisLabel="Relative Humidity"
-          noDataLabel="humidity"
-        />
+        {/* Right Column - Humidity History */}
+        <div className="p-4 rounded-sm border shadow">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-lg/7 font-semibold">Relative Humidity History</p>
+          </div>
+
+          {isLoading ? (
+            <TableLoader />
+          ) : hasData ? (
+            <>
+              <TimeSeriesChart
+                data={history}
+                yaxisTitle={`Relative Humidity (${humidityInfo?.unit ?? '%'})`}
+                unit={humidityInfo?.unit ?? '%'}
+                xDateFormat={'h:mm a'}
+                yAxisFormatter={(value) => roundValue(value)}
+              />
+              <div className="h-[200px] overflow-auto ">
+                <WaterLevelTable tableData={history} columns={columns} />
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center justify-center p-8">
+              <NoResult message="No hourly humidity data available for this period" />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

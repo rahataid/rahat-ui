@@ -522,19 +522,14 @@ export const useDhmSingleSeriesTemperatureLevels = (
   });
 };
 
-export const useDhmSingleSeriesHumidityLevels = (
-  uuid: UUID,
-  payload: {
-    type?: 'daily' | 'hourly';
-  },
-) => {
+export const useDhmSingleSeriesHumidityLevels = (uuid: UUID) => {
   const q = useProjectAction();
 
   const settings = useProjectSettingsStore((state) => state.settings);
   const riverBasin =
     settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.['river_basin'];
 
-  const parameter = payload.type === 'daily' ? 'RH_1D' : 'RH_1H';
+  const parameter = 'RH_1H';
 
   return useQuery({
     queryKey: ['dhmsingleserieshumiditylevels', uuid, parameter],

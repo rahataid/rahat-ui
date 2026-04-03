@@ -500,7 +500,7 @@ export const useDhmSingleSeriesTemperatureLevels = (
   const riverBasin =
     settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.['river_basin'];
 
-  const parameter = payload.type === 'daily' ? 'TN_1D' : 'T_1H';
+  const parameter = payload.type === 'daily' ? 'TX_1D' : 'T_1H';
 
   return useQuery({
     queryKey: ['dhmsingleseriestemperaturelevels', uuid, parameter],

@@ -232,7 +232,7 @@ export default function InkindAllocationList() {
     <div>
       <Heading
         title="Allocation List"
-        titleStyle="text-lg"
+        titleStyle="font-medium text-lg"
         description="Inkind items assigned to beneficiary groups"
       />
       <div className="flex items-center gap-2 mb-2">

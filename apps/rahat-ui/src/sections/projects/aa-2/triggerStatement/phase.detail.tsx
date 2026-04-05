@@ -90,15 +90,6 @@ export default function PhaseDetail() {
           description={`Detailed view of the ${phase?.name?.toLowerCase()} phase`}
         />
         <div className="flex space-x-2">
-          <TooltipWrapper tip="View or configure extended trigger logic">
-            <IconLabelBtn
-              variant="outline"
-              className="text-primary border-primary"
-              Icon={GitBranch}
-              name="View/Configure Logic"
-              handleClick={handleConfigureExtendedLogic}
-            />
-          </TooltipWrapper>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}

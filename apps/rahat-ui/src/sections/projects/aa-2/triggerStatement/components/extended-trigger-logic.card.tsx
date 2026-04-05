@@ -118,7 +118,8 @@ export default function ExtendedTriggerLogicCard({
       </div>
 
       {hasConfig ? (
-        <div className="space-y-2">
+        <div className="max-h-[200px] overflow-y-auto">
+        <div className="space-y-2 pr-2.5">
           {extendedTriggerLogic.groups.map((group, i) => (
             <div key={i}>
               <GroupCard group={group} index={i} triggers={triggers} />
@@ -137,6 +138,7 @@ export default function ExtendedTriggerLogicCard({
               )}
             </div>
           ))}
+        </div>
         </div>
       ) : (
         <div className="text-center py-6 text-sm text-gray-400">

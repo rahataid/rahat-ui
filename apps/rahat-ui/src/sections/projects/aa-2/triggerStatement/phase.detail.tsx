@@ -17,7 +17,7 @@ import { TriggersListTabs, TriggersPhaseCard } from './components';
 import ExtendedTriggerLogicCard from './components/extended-trigger-logic.card';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useRevertPhase, useSinglePhase } from '@rahat-ui/query';
+import { useProjectSettingsGet, useRevertPhase, useSinglePhase } from '@rahat-ui/query';
 import {
   Alert,
   AlertDescription,
@@ -35,6 +35,10 @@ export default function PhaseDetail() {
 
   const { data: phase, isLoading, error } = useSinglePhase(projectId, phaseId);
   const revertPhase = useRevertPhase();
+  const { data: triggerLogicSetting } = useProjectSettingsGet(projectId, 'ENABLE_TRIGGER_LOGIC');
+  console.log('triggerLogicSetting', triggerLogicSetting);
+  const isTriggerLogicEnabled = triggerLogicSetting?.value === true || triggerLogicSetting?.value === 'true';
+
   const handleAddTriggerClick = () => {
     router.push(`/projects/aa/${projectId}/trigger-statements/add`);
   };
@@ -205,11 +209,13 @@ export default function PhaseDetail() {
             chartType="donut"
             hidePin={true}
           />
-          <ExtendedTriggerLogicCard
-            extendedTriggerLogic={phase?.extendedTriggerLogic}
-            triggers={phase?.triggers}
-            onConfigure={handleConfigureExtendedLogic}
-          />
+          {isTriggerLogicEnabled && (
+            <ExtendedTriggerLogicCard
+              extendedTriggerLogic={phase?.extendedTriggerLogic}
+              triggers={phase?.triggers}
+              onConfigure={handleConfigureExtendedLogic}
+            />
+          )}
         </div>
 
         <div className="p-4 border rounded-sm shadow flex-grow">

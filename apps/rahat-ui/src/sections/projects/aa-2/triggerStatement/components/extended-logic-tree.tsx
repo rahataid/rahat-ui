@@ -391,7 +391,7 @@ export function ExtendedLogicTree({
 
   const containerWidth = containerRef.current?.clientWidth ?? canvasWidth;
 
-  return (
+    return (
     <div ref={containerRef} className="w-full overflow-x-auto relative">
       <svg
         width={canvasWidth}

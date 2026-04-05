@@ -13,6 +13,21 @@ type TriggerItem = {
   title?: string;
 };
 
+type TriggerRef =
+  | string
+  | {
+      triggerLogicKey?: string;
+      logicKey?: string;
+      uuid?: string;
+    };
+
+
+function getTriggerRefKey(logicKey: TriggerRef): string {
+  return typeof logicKey === 'string'
+    ? logicKey
+    : logicKey?.triggerLogicKey || logicKey?.logicKey || logicKey?.uuid || '';
+}
+
 type IProps = {
   extendedTriggerLogic?: ExtendedTriggerLogic | null;
   triggers?: TriggerItem[];
@@ -20,11 +35,13 @@ type IProps = {
 };
 
 function resolveLogicKey(
-  logicKey: string,
+  logicKey: TriggerRef,
   triggers: TriggerItem[],
 ): string {
-  const found = triggers.find((t) => t.logicKey === logicKey);
-  return found?.title || logicKey;
+  const key = getTriggerRefKey(logicKey);
+
+  const found = triggers.find((t) => (t.logicKey || t.uuid) === key);
+  return found?.title || key;
 }
 
 function GroupCard({
@@ -54,10 +71,10 @@ function GroupCard({
       <div className="flex flex-wrap gap-1.5">
         {group.triggers.map((logicKey) => (
           <Badge
-            key={logicKey}
+            key={getTriggerRefKey(logicKey as TriggerRef)}
             className="bg-white border text-gray-700 font-normal text-xs"
           >
-            {resolveLogicKey(logicKey, triggers)}
+            {resolveLogicKey(logicKey as TriggerRef, triggers)}
           </Badge>
         ))}
       </div>

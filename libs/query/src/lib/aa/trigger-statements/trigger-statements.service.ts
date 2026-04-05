@@ -167,7 +167,14 @@ export const useConfigureExtendedLogic = () => {
       payload,
     }: {
       projectUUID: UUID;
-      payload: { phaseUuid: string; extendedTriggerLogic: any };
+      payload: {
+        uuid: string;
+        groups: {
+          operator: 'AND' | 'OR';
+          triggers: { triggerLogicKey: string }[];
+        }[];
+        joinOperator: 'AND' | 'OR';
+      };
     }) => {
       return q.mutateAsync({
         uuid: projectUUID,

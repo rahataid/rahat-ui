@@ -28,10 +28,23 @@ type TriggerItem = {
   title?: string;
 };
 
+type ExistingTriggerRef =
+  | string
+  | {
+      triggerLogicKey?: string;
+      logicKey?: string;
+      uuid?: string;
+    };
+
 const emptyGroup = (): ExtendedTriggerLogicGroup => ({
   operator: 'AND',
   triggers: [],
 });
+
+const getTriggerKey = (trigger: ExistingTriggerRef): string => {
+  if (typeof trigger === 'string') return trigger;
+  return trigger?.triggerLogicKey || trigger?.logicKey || trigger?.uuid || '';
+};
 
 export default function ExtendedLogicConfigView() {
   const router = useRouter();
@@ -55,7 +68,14 @@ export default function ExtendedLogicConfigView() {
         | ExtendedTriggerLogic
         | undefined;
       if (existing && existing.groups?.length > 0) {
-        setGroups(existing.groups.map((g) => ({ ...g, triggers: [...g.triggers] })));
+        setGroups(
+          existing.groups.map((g) => ({
+            ...g,
+            triggers: (g.triggers || [])
+              .map((trigger) => getTriggerKey(trigger as ExistingTriggerRef))
+              .filter(Boolean),
+          })),
+        );
         setJoinOperator(existing.joinOperator || 'AND');
       }
       setInitialized(true);
@@ -150,12 +170,21 @@ export default function ExtendedLogicConfigView() {
       groups,
       joinOperator,
     };
+
+    const payload = {
+      uuid: phaseId,
+      groups: extendedTriggerLogic.groups.map((group) => ({
+        operator: group.operator,
+        triggers: group.triggers.map((triggerLogicKey) => ({
+          triggerLogicKey,
+        })),
+      })),
+      joinOperator: extendedTriggerLogic.joinOperator,
+    };
+
     await configureExtendedLogic.mutateAsync({
       projectUUID: projectId,
-      payload: {
-        phaseUuid: phaseId,
-        extendedTriggerLogic,
-      },
+      payload,
     });
     router.push(
       `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}`,

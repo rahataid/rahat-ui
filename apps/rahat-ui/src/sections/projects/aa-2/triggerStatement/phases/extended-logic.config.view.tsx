@@ -16,16 +16,31 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { AlertCircleIcon, Eye, Plus, Settings2, Trash2, X } from 'lucide-react';
+import { AlertCircleIcon, Eye, GitBranch, List, Plus, Settings2, Trash2, X, Zap } from 'lucide-react';
+import { toLabel } from '../utils';
 import type {
   ExtendedTriggerLogic,
   ExtendedTriggerLogicGroup,
 } from '../types/extended-trigger-logic.types';
+import { ExtendedLogicTree, type TriggerDetail } from '../components/extended-logic-tree';
+import { SOURCE_CONFIG } from '../trigger.statement.schema';
 
 type TriggerItem = {
   uuid?: string;
   logicKey?: string;
   title?: string;
+  description?: string;
+  // Status fields from DB — update field names to match your API response
+  status?: boolean;
+  isTriggered?: boolean;
+  // Trigger condition fields
+  source?: string;
+  sourceSubType?: string;
+  stationId?: string;
+  stationName?: string;
+  operator?: string;
+  value?: number | string;
+  expression?: string;
 };
 
 type ExistingTriggerRef =
@@ -60,6 +75,7 @@ export default function ExtendedLogicConfigView() {
   const [validationError, setValidationError] = React.useState<string>('');
   const [initialized, setInitialized] = React.useState(false);
   const [mode, setMode] = React.useState<'configure' | 'view'>('configure');
+  const [viewDisplay, setViewDisplay] = React.useState<'graph' | 'list'>('graph');
 
   // Pre-populate from existing config once phase data loads
   React.useEffect(() => {
@@ -100,6 +116,50 @@ export default function ExtendedLogicConfigView() {
     },
     [phaseTriggers],
   );
+
+  // Build a map of logicKey → boolean status for the tree visualisation.
+  // Only includes triggers that have a defined status from the DB.
+  // Update the `status` field name below to match your API response shape.
+  const triggerStatuses = React.useMemo<Record<string, boolean>>(() => {
+    const map: Record<string, boolean> = {};
+    for (const t of phaseTriggers) {
+      const key = t.logicKey || t.uuid;
+      if (key && t.status !== undefined) {
+        map[key] = t.status;
+      }
+    }
+    return map;
+  }, [phaseTriggers]);
+
+  // Build a map of logicKey → full trigger details for tooltip display.
+  const triggerDetails = React.useMemo<Record<string, TriggerDetail>>(() => {
+    const map: Record<string, TriggerDetail> = {};
+    for (const t of phaseTriggers) {
+      const key = t.logicKey || t.uuid;
+      if (!key) continue;
+      const sourceLabel =
+        t.source && t.source in SOURCE_CONFIG
+          ? SOURCE_CONFIG[t.source as keyof typeof SOURCE_CONFIG].label
+          : undefined;
+      map[key] = {
+        title: t.title,
+        description: t.description,
+        logicKey: t.logicKey,
+        uuid: t.uuid,
+        status: t.status,
+        isTriggered: t.isTriggered ?? t.status,
+        source: t.source,
+        sourceLabel,
+        sourceSubType: t.sourceSubType,
+        stationId: t.stationId,
+        stationName: t.stationName,
+        operator: t.operator,
+        value: t.value,
+        expression: t.expression,
+      };
+    }
+    return map;
+  }, [phaseTriggers]);
 
   const handleAddGroup = () => {
     setGroups((prev) => [...prev, emptyGroup()]);
@@ -195,6 +255,16 @@ export default function ExtendedLogicConfigView() {
     router.push(
       `/projects/aa/${projectId}/trigger-statements/phase/${phaseId}`,
     );
+  };
+
+  const handleTriggerClick = (key: string) => {
+    const trigger = phaseTriggers.find(
+      (t) => (t.logicKey || t.uuid) === key,
+    );
+    const id = trigger?.uuid;
+    if (id) {
+      router.push(`/projects/aa/${projectId}/trigger-statements/${id}`);
+    }
   };
 
   if (isLoading) {
@@ -522,23 +592,65 @@ export default function ExtendedLogicConfigView() {
         ) : (
           <div className="rounded-xl border bg-slate-50/70 p-4 space-y-4">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-slate-700">Logic Graph View</p>
-              {groups.length > 1 && (
-                <Badge
-                  className={
-                    joinOperator === 'AND'
-                      ? 'bg-blue-600 text-white border-blue-700'
-                      : 'bg-orange-500 text-white border-orange-600'
-                  }
-                >
-                  Group Join: {joinOperator}
-                </Badge>
-              )}
+              <p className="text-sm font-semibold text-slate-700">
+                {viewDisplay === 'graph' ? 'Logic Graph View' : 'Logic List View'}
+              </p>
+              <div className="flex items-center gap-2">
+                {groups.length > 1 && viewDisplay === 'graph' && (
+                  <Badge
+                    className={
+                      joinOperator === 'AND'
+                        ? 'bg-blue-600 text-white border-blue-700'
+                        : 'bg-orange-500 text-white border-orange-600'
+                    }
+                  >
+                    Group Join: {joinOperator}
+                  </Badge>
+                )}
+                {/* Graph / List toggle */}
+                <div className="flex items-center rounded-md border bg-white overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setViewDisplay('graph')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors ${
+                      viewDisplay === 'graph'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-slate-500 hover:bg-slate-100'
+                    }`}
+                  >
+                    <GitBranch className="h-3.5 w-3.5" />
+                    Graph
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewDisplay('list')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors ${
+                      viewDisplay === 'list'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-slate-500 hover:bg-slate-100'
+                    }`}
+                  >
+                    <List className="h-3.5 w-3.5" />
+                    List
+                  </button>
+                </div>
+              </div>
             </div>
 
             {groups.length === 0 ? (
               <div className="rounded-lg border border-dashed bg-white p-8 text-center text-sm text-muted-foreground">
                 No extended trigger logic configured.
+              </div>
+            ) : viewDisplay === 'graph' ? (
+              <div className="rounded-lg border bg-white p-4 shadow-sm">
+                <ExtendedLogicTree
+                  groups={groups}
+                  joinOperator={joinOperator}
+                  getTriggerLabel={getTriggerLabel}
+                  triggerStatuses={triggerStatuses}
+                  triggerDetails={triggerDetails}
+                  onTriggerClick={handleTriggerClick}
+                />
               </div>
             ) : (
               <div className="space-y-6">
@@ -554,8 +666,7 @@ export default function ExtendedLogicConfigView() {
                     },
                     {
                       group: 'bg-emerald-50 border-emerald-200',
-                      trigger:
-                        'bg-emerald-100/80 border-emerald-200 text-emerald-900',
+                      trigger: 'bg-emerald-100/80 border-emerald-200 text-emerald-900',
                     },
                     {
                       group: 'bg-rose-50 border-rose-200',
@@ -567,82 +678,156 @@ export default function ExtendedLogicConfigView() {
                     },
                     {
                       group: 'bg-violet-50 border-violet-200',
-                      trigger:
-                        'bg-violet-100/80 border-violet-200 text-violet-900',
+                      trigger: 'bg-violet-100/80 border-violet-200 text-violet-900',
                     },
                   ];
                   const palette = viewColors[groupIndex % viewColors.length];
-
                   return (
-                  <div key={groupIndex}>
-                    <div
-                      className={`rounded-lg border p-4 shadow-sm space-y-3 ${palette.group}`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-semibold">Group {groupIndex + 1}</p>
-                        <Badge
-                          className={
-                            group.operator === 'AND'
-                              ? 'bg-blue-500 text-white border-blue-600'
-                              : 'bg-orange-500 text-white border-orange-600'
-                          }
-                        >
-                          Internal: {group.operator}
-                        </Badge>
-                      </div>
-
-                      {group.triggers.length === 0 ? (
-                        <div className="rounded-md border border-dashed bg-white/70 px-3 py-2 text-xs text-muted-foreground">
-                          No triggers in this group.
+                    <div key={groupIndex}>
+                      <div className={`rounded-lg border p-4 shadow-sm space-y-3 ${palette.group}`}>
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-semibold">Group {groupIndex + 1}</p>
+                          <Badge
+                            className={
+                              group.operator === 'AND'
+                                ? 'bg-blue-500 text-white border-blue-600'
+                                : 'bg-orange-500 text-white border-orange-600'
+                            }
+                          >
+                            Internal: {group.operator}
+                          </Badge>
                         </div>
-                      ) : (
-                        <div className="space-y-2 pt-1">
-                          {group.triggers.map((logicKey, triggerIndex) => (
-                            <div key={logicKey} className="space-y-2">
-                              {triggerIndex > 0 && (
-                                <div className="flex items-center gap-3 py-1">
-                                  <div className="flex-1 border-t border-dashed border-gray-300" />
-                                  <Badge
-                                    className={
-                                      group.operator === 'AND'
-                                        ? 'bg-blue-100 text-blue-700 border border-blue-300'
-                                        : 'bg-orange-100 text-orange-700 border border-orange-300'
-                                    }
-                                  >
-                                    {group.operator}
-                                  </Badge>
-                                  <div className="flex-1 border-t border-dashed border-gray-300" />
-                                </div>
-                              )}
+                        {group.triggers.length === 0 ? (
+                          <div className="rounded-md border border-dashed bg-white/70 px-3 py-2 text-xs text-muted-foreground">
+                            No triggers in this group.
+                          </div>
+                        ) : (
+                          <div className="space-y-2 pt-1">
+                            {group.triggers.map((logicKey, triggerIndex) => (
+                              <div key={logicKey} className="space-y-2">
+                                {triggerIndex > 0 && (
+                                  <div className="flex items-center gap-3 py-1">
+                                    <div className="flex-1 border-t border-dashed border-gray-300" />
+                                    <Badge
+                                      className={
+                                        group.operator === 'AND'
+                                          ? 'bg-blue-100 text-blue-700 border border-blue-300'
+                                          : 'bg-orange-100 text-orange-700 border border-orange-300'
+                                      }
+                                    >
+                                      {group.operator}
+                                    </Badge>
+                                    <div className="flex-1 border-t border-dashed border-gray-300" />
+                                  </div>
+                                )}
+                                {(() => {
+                                  const detail = triggerDetails[logicKey];
+                                  const isTriggered = detail?.isTriggered === true;
+                                  const isManual = detail?.source === 'MANUAL';
+                                  const triggerMode = isManual ? 'Manual' : 'Automated';
 
-                              <div
-                                className={`rounded-md border px-3 py-2 text-sm font-medium ${palette.trigger}`}
-                              >
-                                {getTriggerLabel(logicKey)}
+                                  return (
+                                    <div
+                                      className={`rounded-md border overflow-hidden transition-all ${
+                                        isTriggered
+                                          ? 'border-green-400 bg-green-50 shadow-sm shadow-green-100'
+                                          : `${palette.trigger} border`
+                                      } ${handleTriggerClick ? 'cursor-pointer hover:shadow-md' : ''}`}
+                                      onClick={() => handleTriggerClick(logicKey)}
+                                    >
+                                      {/* Header row */}
+                                      <div className={`flex items-center justify-between px-3 py-2 ${isTriggered ? 'border-b border-green-200' : 'border-b border-black/5'}`}>
+                                        <span className={`text-sm font-semibold truncate flex-1 mr-2 ${isTriggered ? 'text-green-900' : ''}`}>
+                                          {getTriggerLabel(logicKey)}
+                                        </span>
+                                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                                          {/* Manual / Automated badge */}
+                                          <span className={`inline-flex items-center gap-1 text-[10px] font-600 px-2 py-0.5 rounded-full border ${
+                                            isManual
+                                              ? 'bg-purple-50 text-purple-700 border-purple-200'
+                                              : 'bg-sky-50 text-sky-700 border-sky-200'
+                                          }`}>
+                                            <Zap className="h-2.5 w-2.5" />
+                                            {triggerMode}
+                                          </span>
+                                          {/* Triggered status badge */}
+                                          {detail?.isTriggered !== undefined && (
+                                            <span className={`inline-flex items-center text-[10px] font-700 px-2 py-0.5 rounded-full border ${
+                                              isTriggered
+                                                ? 'bg-green-100 text-green-700 border-green-300'
+                                                : 'bg-slate-100 text-slate-500 border-slate-200'
+                                            }`}>
+                                              {isTriggered ? '✓ Triggered' : '✗ Not triggered'}
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+
+                                      {/* Detail rows — only render if any detail exists */}
+                                      {detail && (
+                                        <div className="px-3 py-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                                          {detail.sourceLabel && (
+                                            <div>
+                                              <span className="text-muted-foreground">Source </span>
+                                              <span className="font-medium">{detail.sourceLabel}</span>
+                                            </div>
+                                          )}
+                                          {detail.sourceSubType && (
+                                            <div>
+                                              <span className="text-muted-foreground">Sub-type </span>
+                                              <span className="font-medium">{toLabel(detail.sourceSubType)}</span>
+                                            </div>
+                                          )}
+                                          {detail.stationName && (
+                                            <div>
+                                              <span className="text-muted-foreground">Station </span>
+                                              <span className="font-medium">
+                                                {detail.stationName}
+                                                {detail.stationId && (
+                                                  <span className="text-muted-foreground ml-1">({detail.stationId})</span>
+                                                )}
+                                              </span>
+                                            </div>
+                                          )}
+                                          {detail.operator !== undefined && detail.value !== undefined && (
+                                            <div>
+                                              <span className="text-muted-foreground">Condition </span>
+                                              <span className="font-medium font-mono">{detail.operator} {detail.value}</span>
+                                            </div>
+                                          )}
+                                          {detail.expression && (
+                                            <div className="col-span-2">
+                                              <span className="text-muted-foreground">Trigger Statement </span>
+                                              <span className="font-medium font-mono break-all">{detail.expression}</span>
+                                            </div>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })()}
                               </div>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      {groupIndex < groups.length - 1 && (
+                        <div className="flex items-center gap-3 py-4">
+                          <div className="flex-1 border-t border-dashed border-gray-300" />
+                          <Badge
+                            className={
+                              joinOperator === 'AND'
+                                ? 'bg-blue-600 text-white border-blue-700'
+                                : 'bg-orange-500 text-white border-orange-600'
+                            }
+                          >
+                            {joinOperator}
+                          </Badge>
+                          <div className="flex-1 border-t border-dashed border-gray-300" />
                         </div>
                       )}
                     </div>
-
-                    {groupIndex < groups.length - 1 && (
-                      <div className="flex items-center gap-3 py-4">
-                        <div className="flex-1 border-t border-dashed border-gray-300" />
-                        <Badge
-                          className={
-                            joinOperator === 'AND'
-                              ? 'bg-blue-600 text-white border-blue-700'
-                              : 'bg-orange-500 text-white border-orange-600'
-                          }
-                        >
-                          {joinOperator}
-                        </Badge>
-                        <div className="flex-1 border-t border-dashed border-gray-300" />
-                      </div>
-                    )}
-                  </div>
-                );
+                  );
                 })}
               </div>
             )}

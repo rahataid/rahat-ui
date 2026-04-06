@@ -5,6 +5,9 @@ import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagina
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+import { useProjectInfo } from '@rahat-ui/query';
+import { UUID } from 'crypto';
+import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
 type DailyMonitoringRow = {
   dataEntryBy?: string;
@@ -16,7 +19,11 @@ type DailyMonitoringRow = {
 export default function useDailyMonitoringTableColumn() {
   const { id: projectId } = useParams();
   const router = useRouter();
+  const { data: projectInfo } = useProjectInfo(projectId as UUID);
 
+  const stationHeading = getStationTitle(
+    projectInfo?.value?.project_type || '',
+  );
   const handleEyeClick = (id: string) => {
     setPaginationToLocalStorage();
     router.push(
@@ -50,7 +57,7 @@ export default function useDailyMonitoringTableColumn() {
 
     {
       accessorKey: 'riverBasin',
-      header: 'River Basin Demotable',
+      header: stationHeading,
       cell: ({ row }) => (
         <TruncatedCell text={row.getValue('riverBasin')} maxLength={35} />
       ),

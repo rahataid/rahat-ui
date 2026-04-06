@@ -200,6 +200,7 @@ import LineChartWrapper from './linechart-wrapper';
 import MapWrapper from './map-wrapper';
 import PieChartWrapper from './pie-chart-wrapper';
 import { useAuthStore } from '@rumsan/react-query';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 
 const token = useAuthStore.getState().token;
 
@@ -236,6 +237,7 @@ const DynamicReports: FC<DynamicReportsProps> = ({
   className,
 }) => {
   const [dynamicData, setDynamicData] = useState<{ [key: string]: any }>({});
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchDynamicData = async () => {
@@ -280,6 +282,7 @@ const DynamicReports: FC<DynamicReportsProps> = ({
       };
 
       const fetchAllData = async () => {
+        setIsLoading(true);
         const promises = Object.keys(dataSources).map(fetchDataForSource);
         const results = await Promise.all(promises);
         const dataMap: { [key: string]: any } = {};
@@ -287,6 +290,7 @@ const DynamicReports: FC<DynamicReportsProps> = ({
           if (data) dataMap[source] = data;
         });
         setDynamicData(dataMap);
+        setIsLoading(false);
       };
       fetchAllData();
     };
@@ -363,6 +367,22 @@ const DynamicReports: FC<DynamicReportsProps> = ({
       </div>
     </div>
   );
+
+  if (isLoading)
+    return (
+      <div className={className}>
+        {ui?.map((row, rowIndex) => (
+          <div key={rowIndex} className="mb-4">
+            {row?.title && <Skeleton className="h-6 w-48 mt-4 mb-2" />}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
+              {row.fields.map((_, colIndex) => (
+                <Skeleton key={colIndex} className="h-36 w-full rounded-md" />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
 
   return <div className={`${className}`}>{ui?.map(renderUIRow)}</div>;
 };

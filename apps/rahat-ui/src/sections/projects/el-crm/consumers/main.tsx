@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React from 'react';
 import {
   Card,
   CardContent,
@@ -9,7 +9,6 @@ import { Input } from '@rahat-ui/shadcn/components/input';
 import DemoTable from 'apps/rahat-ui/src/components/table';
 import {
   getCoreRowModel,
-  getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import { useConsumersTableColumn } from './useConsumersTableColumn';
@@ -30,60 +29,61 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-
-const consumers = [
-  {
-    id: 1,
-    name: 'Maria Garcia',
-    lastRedemptionDate: '2024-01-15', // renamed from lastPurchaseDate
-    phone: '+1-555-0201',
-  },
-  {
-    id: 2,
-    name: 'James Wilson',
-    lastRedemptionDate: '2024-01-12', // renamed from lastPurchaseDate
-    phone: '+1-555-0202',
-  },
-  {
-    id: 3,
-    name: 'Lisa Chen',
-    lastRedemptionDate: '2024-01-18', // renamed from lastPurchaseDate
-    phone: '+1-555-0203',
-  },
-  {
-    id: 4,
-    name: 'Robert Taylor',
-    lastRedemptionDate: '2024-01-20', // renamed from lastPurchaseDate
-    phone: '+1-555-0204',
-  },
-  {
-    id: 5,
-    name: 'Anna Rodriguez',
-    lastRedemptionDate: '2024-01-14', // renamed from lastPurchaseDate
-    phone: '+1-555-0205',
-  },
-  {
-    id: 6,
-    name: 'Kevin Lee',
-    lastRedemptionDate: '2024-01-16', // renamed from lastPurchaseDate
-    phone: '+1-555-0206',
-  },
-];
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import { useConsumers, usePagination } from '@rahat-ui/query';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
 export default function ConsumersView() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const { id: projectUUID } = useParams() as { id: UUID };
 
-  const filteredConsumers = consumers.filter((consumer) => {
-    const matchesSearch =
-      consumer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      consumer.phone.includes(searchTerm);
-    return matchesSearch;
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+    setFilters,
+    filters,
+  } = usePagination();
+
+  const debouncedFilters = useDebounce(filters, 1000);
+
+  const { consumers, meta, isLoading } = useConsumers(projectUUID, {
+    ...debouncedFilters,
+    ...pagination,
   });
 
+  const handleFilter = React.useCallback(
+    (key: string, value: any) => {
+      if (value === 'all') {
+        setFilters({ ...filters, [key]: null });
+        return;
+      }
+      setFilters({ ...filters, [key]: value });
+    },
+    [filters],
+  );
+
+  const handleSearch = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>, key: string) => {
+      setFilters({ ...filters, [key]: event.target.value });
+    },
+    [filters],
+  );
+
+  const activeFilterCount = React.useMemo(() => {
+    if (!filters) return 0;
+    return Object.values(filters as Record<string, any>).filter(
+      (v) => v !== null && v !== undefined && v !== '',
+    ).length;
+  }, [filters]);
+
   const totalConsumers = consumers.length;
-  const messageDeliverySuccessful = 4;
-  const messageDeliveryFailed = 2;
-  const consumersCompleting1Year = 5;
+  const messageDeliverySuccessful = 0;
+  const messageDeliveryFailed = 0;
+  const consumersCompleting1Year = 0;
 
   const statCards = [
     {
@@ -127,10 +127,9 @@ export default function ConsumersView() {
   const columns = useConsumersTableColumn();
   const table = useReactTable({
     manualPagination: true,
-    data: filteredConsumers,
+    data: consumers || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (
@@ -194,17 +193,17 @@ export default function ConsumersView() {
                   <span className="text-sm font-medium text-foreground">
                     Filters
                   </span>
-                  {searchTerm && (
+                  {activeFilterCount > 0 && (
                     <span className="inline-flex items-center justify-center h-5 min-w-[20px] rounded-full bg-primary px-1.5 text-[11px] font-semibold text-primary-foreground">
-                      1
+                      {activeFilterCount}
                     </span>
                   )}
                 </div>
-                {searchTerm && (
+                {activeFilterCount > 0 && (
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => setSearchTerm('')}
+                    onClick={() => setFilters({})}
                     className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
                   >
                     <X className="h-3.5 w-3.5" />
@@ -222,8 +221,8 @@ export default function ConsumersView() {
                     <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                     <Input
                       placeholder="Search by name or phone..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      value={filters?.name || ''}
+                      onChange={(e) => handleSearch(e, 'name')}
                       className="pl-8 h-9 text-sm"
                     />
                   </div>
@@ -231,22 +230,24 @@ export default function ConsumersView() {
               </div>
 
               {/* Active Filter Tags */}
-              {searchTerm && (
+              {activeFilterCount > 0 && (
                 <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-border/50">
                   <span className="text-xs text-muted-foreground">
-                    Showing {filteredConsumers.length} result
-                    {filteredConsumers.length !== 1 ? 's' : ''} for:
+                    Showing {meta?.total ?? 0} consumer
+                    {(meta?.total ?? 0) === 1 ? '' : 's'} for:
                   </span>
-                  <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
-                    &quot;{searchTerm}&quot;
-                    <button
-                      type="button"
-                      onClick={() => setSearchTerm('')}
-                      className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </span>
+                  {filters?.name && (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
+                      Name: {filters.name}
+                      <button
+                        type="button"
+                        onClick={() => handleFilter('name', 'all')}
+                        className="ml-0.5 rounded-sm hover:bg-muted-foreground/20 p-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  )}
                 </div>
               )}
             </div>
@@ -256,6 +257,16 @@ export default function ConsumersView() {
               <DemoTable
                 table={table}
                 tableHeight="h-[calc(100vh-530px)]"
+                loading={isLoading}
+              />
+              <CustomPagination
+                meta={meta}
+                handleNextPage={setNextPage}
+                handlePrevPage={setPrevPage}
+                handlePageSizeChange={setPerPage}
+                currentPage={pagination.page}
+                perPage={pagination.perPage}
+                total={meta.total}
               />
             </CardContent>
           </Card>

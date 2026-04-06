@@ -26,9 +26,7 @@ const TOAST_CONFIG = {
 const getErrorMessage = (error: unknown, fallback: string): string => {
   const err = error as any;
   const raw =
-    err?.response?.data?.message ||
-    err?.response?.message ||
-    err?.message;
+    err?.response?.data?.message || err?.response?.message || err?.message;
 
   if (Array.isArray(raw)) return raw.join('. ');
   if (typeof raw === 'string' && raw.length > 0) return raw;
@@ -90,7 +88,9 @@ export const useUploadCustomers = () => {
         toast.fire({
           title: 'Upload partially successful',
           icon: 'warning',
-          text: `${valid} of ${total} customers are being processed. ${failed} record${failed !== 1 ? 's' : ''} had errors — review them in Failed Batches.`,
+          text: `${valid} of ${total} customers are being processed. ${failed} record${
+            failed !== 1 ? 's' : ''
+          } had errors — review them in Failed Batches.`,
           timer: 6000,
         });
       }
@@ -102,7 +102,8 @@ export const useUploadCustomers = () => {
 
       let text: string;
       if (isEmptyFile) {
-        text = 'The uploaded file has no data. Please add customer records and try again.';
+        text =
+          'The uploaded file has no data. Please add customer records and try again.';
       } else if (isMissingHeaders) {
         text = `${detail}. Download the sample template for the correct format.`;
       } else {
@@ -117,6 +118,30 @@ export const useUploadCustomers = () => {
       });
     },
   });
+};
+
+export const useConsumers = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['consumers', uuid, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'elProject.crm.getAllBeneficiary',
+          payload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return {
+    ...query,
+    consumers: query.data?.data || [],
+    meta: query.data?.response?.meta || {},
+  };
 };
 
 export const useCustomers = (uuid: UUID, payload: any) => {
@@ -147,13 +172,7 @@ export const useExportCustomers = () => {
   const q = useProjectAction();
 
   return useMutation({
-    mutationFn: async ({
-      uuid,
-      payload,
-    }: {
-      uuid: UUID;
-      payload: any;
-    }) => {
+    mutationFn: async ({ uuid, payload }: { uuid: UUID; payload: any }) => {
       const result = await q.mutateAsync({
         uuid,
         data: {
@@ -253,7 +272,8 @@ export const useRetryCustomerImport = () => {
         icon: 'error',
         text: isValidation
           ? `${detail}. Please review the highlighted fields and correct them before retrying.`
-          : detail || 'Something went wrong. Please try again or contact support if the issue persists.',
+          : detail ||
+            'Something went wrong. Please try again or contact support if the issue persists.',
         timer: 5000,
       });
     },

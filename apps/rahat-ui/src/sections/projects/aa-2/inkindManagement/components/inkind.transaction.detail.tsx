@@ -49,23 +49,23 @@ export default function InkindTransactionDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <DataCard
           title="Inkind Name"
-          Icon={Package}
           smallNumber={inkindName}
-          className="h-24 w-full rounded-sm pt-1"
+                      className="border-solid rounded-md"
+            iconStyle="bg-white text-secondary-muted"
         />
         <DataCard
             title="Group Name"
-            Icon={Package}
             smallNumber={groupName}
-            className="h-24 w-full rounded-sm pt-1"
+                        className="border-solid rounded-md"
+            iconStyle="bg-white text-secondary-muted"
           />
         <DataCard
           title="Quantity Redeemed"
-          Icon={Package}
           smallNumber={quantity}
-          className="h-24 w-full rounded-sm pt-1"
+                      className="border-solid rounded-md"
+            iconStyle="bg-white text-secondary-muted"
         />
-      </div>
+      </div>  
 
       <Card className="rounded-sm">
         <CardContent className="p-6">

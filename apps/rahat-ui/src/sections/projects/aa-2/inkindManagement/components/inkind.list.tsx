@@ -466,7 +466,7 @@ export default function InkindList() {
       <div className="flex justify-between items-center">
         <Heading
           title="Budget Management List"
-          titleStyle="text-lg"
+          titleStyle="font-medium text-lg"
           description="List of all budget items"
         />
         <Button
@@ -536,7 +536,7 @@ export default function InkindList() {
       >
         <DialogContent className="w-[500px] max-w-[95vw]">
           <DialogHeader>
-            <DialogTitle className="text-lg">
+            <DialogTitle className="text-lg font-medium">
               {stockDialog.mode === 'add' ? 'Add Stock' : 'Remove Stock'}
             </DialogTitle>
           </DialogHeader>
@@ -625,7 +625,7 @@ export default function InkindList() {
       >
         <DialogContent className="w-[500px] max-w-[95vw]">
           <DialogHeader>
-            <DialogTitle className="text-lg">Update Inkind Item</DialogTitle>
+            <DialogTitle className="text-lg font-medium">Update Inkind Item</DialogTitle>
             <DialogDescription>
               Edit the details below, then review before saving.
             </DialogDescription>
@@ -750,7 +750,7 @@ export default function InkindList() {
       >
         <DialogContent className="w-[500px] max-w-[95vw]">
           <DialogHeader>
-            <DialogTitle className="text-lg flex items-center gap-2">
+            <DialogTitle className="text-lg font-medium flex items-center gap-2">
               Confirm Changes
             </DialogTitle>
             <DialogDescription>

@@ -42,12 +42,7 @@ export default function AssignInkindConfirmation({
   const cardData = [
     { label: 'Inkind Item', value: formData.inkindName },
     { label: 'Beneficiary Group', value: formData.groupName },
-    { label: 'Available Stock', value: formData.availableStock },
-    { label: 'Beneficiaries', value: formData.beneficiaryCount },
-    {
-      label: 'Stock After Assignment',
-      value: formData.availableStock - formData.beneficiaryCount,
-    },
+    { label: 'Available Stock', value: formData.availableStock }
   ];
 
   const handleSubmit = async () => {
@@ -108,6 +103,7 @@ export default function AssignInkindConfirmation({
         <Button
           type="button"
           variant="secondary"
+          className='px-10 rounded-sm'
           onClick={() => router.push(`/projects/aa/${id}/inkind-management?tab=${tab}`)}
           disabled={assignGroupInkind.isPending}
         >

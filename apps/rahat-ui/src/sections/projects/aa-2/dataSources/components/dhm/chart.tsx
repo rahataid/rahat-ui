@@ -4,6 +4,7 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import { format } from 'date-fns';
 import { convertToLocalTimeOrMillisecond } from 'apps/rahat-ui/src/utils/dateFormate';
+import { roundValue } from '../aws/utils/color.utils';
 
 const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -30,6 +31,8 @@ const TimeSeriesChart = ({
 }: ChartProps) => {
   if (!data || data.length === 0) return null;
 
+  const roundToOneDecimal = (value: number) => Number(roundValue(value));
+
   const keys = Object.keys(data[0]).filter((key) => key !== 'datetime');
 
   const sortedData = [...data].sort(
@@ -44,7 +47,11 @@ const TimeSeriesChart = ({
         return [0, d[key]]; // Fallback to 0 or handle error as needed
       }
       const { timestamp } = result;
-      return [timestamp, d[key]];
+      const value = Number(d[key]);
+      return [
+        timestamp,
+        Number.isFinite(value) ? roundToOneDecimal(value) : value,
+      ];
     }),
   }));
 
@@ -100,15 +107,16 @@ const TimeSeriesChart = ({
       max: maxY + 0.5,
       labels: {
         formatter: function (value) {
+          const roundedValue = roundValue(Number(value));
           if (typeof yAxisFormatter === 'function') {
             try {
-              return yAxisFormatter(value as number);
+              return yAxisFormatter(Number(roundedValue));
             } catch (error) {
               console.warn('yAxisFormatter threw error:', error);
-              return `${value}`;
+              return `${roundedValue}`;
             }
           }
-          return `${value}`;
+          return `${roundedValue}`;
         },
       },
     },
@@ -121,7 +129,7 @@ const TimeSeriesChart = ({
       },
       y: {
         formatter: function (value) {
-          return `${value} ${unit}`;
+          return `${roundValue(Number(value))} ${unit}`;
         },
       },
     },

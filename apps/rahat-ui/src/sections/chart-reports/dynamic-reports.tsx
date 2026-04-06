@@ -248,7 +248,7 @@ const DynamicReports: FC<DynamicReportsProps> = ({
             break;
           case 'url':
             try {
-              const response = await fetch(dataSource.args.url, {
+              const response = await fetch(dataSource.args.url.trim(), {
                 ...dataSource.args.apiCallData,
                 headers: {
                   'Content-Type': 'application/json',
@@ -259,7 +259,12 @@ const DynamicReports: FC<DynamicReportsProps> = ({
               if (!response.ok)
                 throw new Error(`Failed to fetch from ${dataSource.args.url}`);
               const res = await response.json();
-              fetchedData = res?.data;
+              const raw = res?.data;
+              fetchedData = Array.isArray(raw)
+                ? raw
+                : Array.isArray(raw?.benefStats)
+                ? raw.benefStats
+                : null;
             } catch (error) {
               console.error(error);
               fetchedData = null;

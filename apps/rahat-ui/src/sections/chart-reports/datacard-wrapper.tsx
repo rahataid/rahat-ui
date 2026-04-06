@@ -22,7 +22,7 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
   const [name, ...pathParts] = component.dataMap.split('.');
   const path = pathParts.join('.');
 
-  if (!actualData) return null;
+  if (!actualData || !Array.isArray(actualData)) return null;
 
   // Find the relevant object in actualData by name
   const relevantData = actualData?.find((d: any) => d.name === name);

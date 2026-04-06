@@ -74,6 +74,7 @@ import {
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useMemo, useState } from 'react';
+import { DashboardExportButton } from './exportButton';
 
 // -- Helpers ------------------------------------------------------------------
 
@@ -333,17 +334,17 @@ export default function DashboardView() {
                 CRM analytics and customer health overview
               </p>
             </div>
-            {/* <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Download className="h-4 w-4" />
-                  Export
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Export dashboard data as CSV</p>
-              </TooltipContent>
-            </Tooltip> */}
+            <DashboardExportButton
+              totalCustomers={totalCustomers}
+              activeCustomers={activeCustomers}
+              newlyInactiveCustomers={newlyInactiveCustomers}
+              inactiveCustomers={inactiveCustomers}
+              commStats={commStats}
+              automationHealth={automationHealth}
+              recentCampaigns={recentCampaigns}
+              recentImports={recentImports}
+              failedBatchCount={failedBatchCount}
+            />
           </div>
         </div>
 

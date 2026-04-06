@@ -1,21 +1,14 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import {
-  useGroupInkindAllocations,
-  useGetGroupInkindRedemptions,
-  useSingleBeneficiaryGroup,
-} from '@rahat-ui/query';
+import { useGetGroupInkindLogs } from '@rahat-ui/query';
 import {
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
   ColumnDef,
-  ColumnFiltersState,
   VisibilityState,
 } from '@tanstack/react-table';
 import {
@@ -25,19 +18,26 @@ import {
   HeaderWithBack,
   DataCard,
 } from 'apps/rahat-ui/src/common';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Eye, Package } from 'lucide-react';
+import { Eye, Package, ArrowUpDown } from 'lucide-react';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { format } from 'date-fns';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
 
-type RedemptionRow = {
+type LogRow = {
   uuid: string;
+  beneficiaryUuid: string;
   beneficiaryWalletAddress: string;
-  transactionId: string;
-  quantityDisbursed: number;
-  createdAt?: string;
+  beneficiaryPhone: string | null;
+  beneficiaryName: string | null;
+  vendorUuid: string;
+  vendorName: string;
+  vendorWalletAddress: string;
+  quantity: number;
+  txHash: string | null;
+  redeemedAt?: string;
 };
 
 function deriveStatus(
@@ -55,14 +55,20 @@ const STATUS_STYLE: Record<string, string> = {
   Completed: 'bg-green-100 text-green-500',
 };
 
-function formatRedemptions(raw: any[]): RedemptionRow[] {
+function formatLogs(raw: any[]): LogRow[] {
   return raw.map((r) => ({
     uuid: r.uuid ?? r.id ?? '',
+    beneficiaryUuid: r.beneficiary?.uuid ?? '',
     beneficiaryWalletAddress:
-      r.beneficiaryWalletAddress ?? r.walletAddress ?? r.address ?? 'N/A',
-    transactionId: r.transactionId ?? r.txHash ?? r.txnId ?? '',
-    quantityDisbursed: r.quantityDisbursed ?? r.quantity ?? 0,
-    createdAt: r.createdAt,
+      r.beneficiary?.walletAddress ?? r.walletAddress ?? 'N/A',
+    beneficiaryPhone: r.beneficiary?.phone ?? null,
+    beneficiaryName: r.beneficiary?.name ?? null,
+    vendorUuid: r.vendor?.uuid ?? '',
+    vendorName: r.vendor?.name ?? 'N/A',
+    vendorWalletAddress: r.vendor?.walletAddress ?? 'N/A',
+    quantity: r.quantity ?? r.quantityDisbursed ?? 0,
+    txHash: r.txHash ?? null,
+    redeemedAt: r.redeemedAt ?? r.createdAt,
   }));
 }
 
@@ -72,105 +78,101 @@ export default function InkindAllocationDetail() {
   const router = useRouter();
   const sp = useSearchParams();
 
-  const qGroupId = sp.get('groupId') ?? '';
-  const qInkindId = sp.get('inkindId') ?? '';
   const qGroupName = sp.get('groupName') ?? 'N/A';
-  const qInkindName = sp.get('inkindName') ?? 'N/A';
-  const qAllocated = Number(sp.get('quantityAllocated') ?? 0);
-  const qRedeemed = Number(sp.get('quantityRedeemed') ?? 0);
-  const qBeneficiaryCount = Number(sp.get('beneficiaryCount') ?? 0);
+  const qInkindType = sp.get('inkindType') ?? '';
+  const qInkindAvailableStock = Number(sp.get('inkindAvailableStock') ?? 0);
 
-  const { data: allData, isLoading: detailLoading } =
-    useGroupInkindAllocations(projectUUID);
-  const { data: redemptionsData, isLoading: redemptionsLoading } =
-    useGetGroupInkindRedemptions(projectUUID, allocationId as string);
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState<'redeemedAt' | 'quantity'>('redeemedAt');
+  const [order, setOrder] = useState<'asc' | 'desc'>('desc');
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
 
-  const detail = useMemo(() => {
-    const list = allData?.data ?? allData?.response?.data ?? allData;
-    if (!Array.isArray(list)) return null;
-    return (
-      list.find((item: any) => item.uuid === allocationId) ??
-      list.find(
-        (item: any) =>
-          (item.groupId ?? item.group?.uuid) === qGroupId &&
-          (item.inkindId ?? item.inkind?.uuid) === qInkindId,
-      ) ??
-      null
-    );
-  }, [allData, allocationId, qGroupId, qInkindId]);
+  const debouncedSearch = useDebounce(search, 500);
 
-  const groupId = detail?.groupId ?? detail?.group?.uuid ?? qGroupId;
-  const inkindId = detail?.inkindId ?? detail?.inkind?.uuid ?? qInkindId;
-  const groupName = detail?.group?.name ?? detail?.groupName ?? qGroupName;
-  const inkindName = detail?.inkind?.name ?? detail?.inkindName ?? qInkindName;
-  const quantityAllocated = detail?.quantityAllocated ?? qAllocated;
-  const quantityRedeemed = detail?.quantityRedeemed ?? qRedeemed;
-  const status = deriveStatus(quantityAllocated, quantityRedeemed);
-
-  const { data: groupData } = useSingleBeneficiaryGroup(
+  const { data: logsData, isLoading: logsLoading } = useGetGroupInkindLogs(
     projectUUID,
-    groupId as UUID,
+    allocationId as string,
+    {
+      search: debouncedSearch || undefined,
+      sort,
+      order,
+      page,
+      perPage,
+    },
   );
-  const beneficiaryCount =
-    groupData?._count?.groupedBeneficiaries ??
-    groupData?.groupedBeneficiaries?.length ??
-    qBeneficiaryCount;
 
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 10,
-  });
+  const groupInkind = logsData?.data?.groupInkind ?? null;
+  const meta = logsData?.meta ?? null;
 
-  const redemptionRows = useMemo<RedemptionRow[]>(() => {
-    const raw =
-      redemptionsData?.data ??
-      redemptionsData?.response?.data ??
-      redemptionsData;
-    return Array.isArray(raw) && raw.length > 0 ? formatRedemptions(raw) : [];
-  }, [redemptionsData]);
+  const groupName = groupInkind?.groupName ?? qGroupName;
+  const inkindName = groupInkind?.inkindName ?? 'N/A';
+  const inkindType = groupInkind?.inkindType ?? qInkindType;
+  const inkindAvailableStock = inkindType === 'WALK_IN'
+    ? qInkindAvailableStock
+    : (groupInkind?.inkindAvailableStock ?? qInkindAvailableStock);
+  const quantityAllocated = groupInkind?.quantityAllocated ?? 0;
+  const quantityRedeemed = groupInkind?.quantityRedeemed ?? 0;
+  const totalBeneficiaries = groupInkind?.totalBeneficiaries ?? 0;
 
-  const columns: ColumnDef<RedemptionRow>[] = [
+  console.log('groupInkind', groupInkind, inkindType);
+  const isWalkIn = inkindType === 'WALK_IN';
+  const totalAvailableInkinds = isWalkIn
+    ? inkindAvailableStock + quantityRedeemed
+    : quantityAllocated;
+
+  const status = isWalkIn
+    ? deriveStatus(totalAvailableInkinds, quantityRedeemed)
+    : deriveStatus(quantityAllocated, quantityRedeemed);
+
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+  const logRows = useMemo<LogRow[]>(() => {
+    const raw = logsData?.data?.logs;
+    return Array.isArray(raw) && raw.length > 0 ? formatLogs(raw) : [];
+  }, [logsData]);
+
+  const columns: ColumnDef<LogRow>[] = [
     {
       accessorKey: 'beneficiaryWalletAddress',
-      header: 'Wallet Address',
+      header: 'Beneficiary Wallet',
       cell: ({ row }) => (
         <TruncatedCell
-          text={row.original.beneficiaryWalletAddress || 'N/A'}
+          text={row.original.beneficiaryWalletAddress}
           maxLength={18}
         />
       ),
     },
     {
-      accessorKey: 'transactionId',
-      header: 'Transaction ID',
+      accessorKey: 'txHash',
+      header: 'Transaction Hash',
       cell: ({ row }) => (
-        <TruncatedCell
-          text={row.original.transactionId || 'N/A'}
-          maxLength={16}
-        />
+        <TruncatedCell text={row.original.txHash || 'N/A'} maxLength={18} />
       ),
     },
     {
-      accessorKey: 'quantityDisbursed',
-      header: 'Qty Disbursed',
+      accessorKey: 'vendorName',
+      header: 'Vendor',
       cell: ({ row }) => (
-        <span className="font-semibold text-primary">
-          {row.original.quantityDisbursed}
+        <TruncatedCell text={row.original.vendorName} maxLength={20} />
+      ),
+    },
+    {
+      accessorKey: 'quantity',
+      header: 'Qty',
+      cell: ({ row }) => (
+        <span className="font-semibold">
+          {row.original.quantity}
         </span>
       ),
     },
     {
-      accessorKey: 'createdAt',
-      header: 'Timestamp',
+      accessorKey: 'redeemedAt',
+      header: 'Redeemed At',
       cell: ({ row }) => (
-        <span className="text-sm text-muted-foreground">
-          {row.original.createdAt
-            ? format(new Date(row.original.createdAt), 'MMM dd, yyyy, hh:mm a')
+        <span className="text-sm">
+          {row.original.redeemedAt
+            ? format(new Date(row.original.redeemedAt), 'MMM dd, yyyy, hh:mm a')
             : '—'}
         </span>
       ),
@@ -179,32 +181,47 @@ export default function InkindAllocationDetail() {
       id: 'actions',
       header: 'Actions',
       enableHiding: false,
-      cell: ({ row }) => (
-        <TooltipComponent
-          Icon={Eye}
-          tip="View Transaction Details"
-          iconStyle="hover:text-primary cursor-pointer"
-          handleOnClick={() =>
-            router.push(
-              `/projects/aa/${id}/inkind-management/${allocationId}/transactions/${row.original.uuid}?groupId=${groupId}&inkindId=${inkindId}`,
-            )
-          }
-        />
-      ),
+      cell: ({ row }) => {
+        const r = row.original;
+        const params = new URLSearchParams({
+          beneficiaryWalletAddress: r.beneficiaryWalletAddress,
+          beneficiaryPhone: r.beneficiaryPhone ?? '',
+          beneficiaryName: r.beneficiaryName ?? '',
+          vendorName: r.vendorName,
+          vendorWalletAddress: r.vendorWalletAddress,
+          txHash: r.txHash ?? '',
+          quantity: String(r.quantity),
+          redeemedAt: r.redeemedAt ?? '',
+          inkindName,
+          groupName,
+          inkindType,
+          inkindAvailableStock: String(inkindAvailableStock),
+        });
+        return (
+          <TooltipComponent
+            Icon={Eye}
+            tip="View Transaction Details"
+            iconStyle="hover:text-primary cursor-pointer"
+            handleOnClick={() =>
+              router.push(
+                `/projects/aa/${id}/inkind-management/${allocationId}/transactions/${r.uuid}?${params}`,
+              )
+            }
+          />
+        );
+      },
     },
   ];
 
   const table = useReactTable({
-    data: redemptionRows,
+    data: logRows,
     columns,
-    onPaginationChange: setPagination,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: { columnVisibility, columnFilters, pagination },
+    manualPagination: true,
+    manualFiltering: true,
+    state: { columnVisibility },
   });
 
   return (
@@ -217,10 +234,11 @@ export default function InkindAllocationDetail() {
         badgeClassName={STATUS_STYLE[status]}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
         {[
           { name: 'Inkind Name', amount: inkindName },
-          { name: 'No of Beneficiaries', amount: beneficiaryCount },
+          { name: 'No of Beneficiaries', amount: totalBeneficiaries },
+          { name: 'Total Available Inkinds', amount: totalAvailableInkinds },
           { name: 'Total Redeemed', amount: quantityRedeemed },
         ].map((card) => (
           <DataCard
@@ -242,39 +260,53 @@ export default function InkindAllocationDetail() {
           <p className="text-xs text-muted-foreground mb-3">
             List of all beneficiaries who received this inkind
           </p>
-          <SearchInput
-            className="w-full mb-2"
-            name="Beneficiary Wallet Address"
-            value={
-              (table
-                .getColumn('beneficiaryWalletAddress')
-                ?.getFilterValue() as string) ?? ''
-            }
-            onSearch={(e) =>
-              table
-                .getColumn('beneficiaryWalletAddress')
-                ?.setFilterValue(e.target.value)
-            }
-          />
+
+          <div className="flex items-center gap-2 mb-3">
+            <SearchInput
+              className="flex-1"
+              name="Search by wallet / name / phone"
+              value={search}
+              onSearch={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-9 gap-1 text-sm"
+              onClick={() => {
+                setOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'));
+                setPage(1);
+              }}
+            >
+              <ArrowUpDown className="h-3.5 w-3.5" />
+              {order === 'desc' ? 'Desc' : 'Asc'}
+            </Button>
+          </div>
+
           <DemoTable
             table={table}
             tableHeight="h-[calc(100vh-520px)]"
-            loading={redemptionsLoading || detailLoading}
+            loading={logsLoading}
           />
           <CustomPagination
-            currentPage={pagination.pageIndex + 1}
-            handleNextPage={() => table.nextPage()}
-            handlePrevPage={() => table.previousPage()}
-            handlePageSizeChange={(size) => table.setPageSize(size as number)}
-            meta={{
-              total: redemptionRows.length,
-              currentPage: pagination.pageIndex + 1,
-              lastPage: table.getPageCount() || 1,
-              perPage: pagination.pageSize,
-              next: null,
-              prev: null,
+            currentPage={page}
+            handleNextPage={() => setPage((p) => p + 1)}
+            handlePrevPage={() => setPage((p) => Math.max(1, p - 1))}
+            handlePageSizeChange={(size) => {
+              setPerPage(size as number);
+              setPage(1);
             }}
-            perPage={pagination.pageSize}
+            meta={{
+              total: meta?.total ?? logRows.length,
+              currentPage: page,
+              lastPage: meta?.lastPage ?? 1,
+              perPage,
+              next: meta?.next ?? null,
+              prev: meta?.prev ?? null,
+            }}
+            perPage={perPage}
           />
         </CardContent>
       </Card>

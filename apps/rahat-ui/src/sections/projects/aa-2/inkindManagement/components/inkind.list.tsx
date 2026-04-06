@@ -42,7 +42,14 @@ import {
   Pencil,
   Loader2,
   AlertCircle,
+  ChevronDown,
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -50,8 +57,7 @@ import {
   useDeleteInkind,
   useAddInkindStock,
   useRemoveInkindStock,
-  useUpdateInkind,
-  useGroupInkindAllocations,
+  useUpdateInkind
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useSwal } from 'apps/rahat-ui/src/components/swal';
@@ -160,6 +166,7 @@ export default function InkindList() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
   const [stockDialog, setStockDialog] = useState<StockDialogState>({
     open: false,
     mode: 'add',
@@ -181,6 +188,7 @@ export default function InkindList() {
     perPage: pagination.pageSize,
     order: 'desc',
     sort: 'createdAt',
+    ...(typeFilter ? { type: typeFilter } : {}),
   });
 
   const deleteInkind = useDeleteInkind(projectUUID);
@@ -190,19 +198,13 @@ export default function InkindList() {
   const queryClient = useQueryClient();
   const dialog = useSwal();
 
-  const { data: allocationsData } = useGroupInkindAllocations(projectUUID);
-  const assignedInkindIds = useMemo<Set<string>>(() => {
-    const raw: unknown = allocationsData;
-    const list: { inkindId?: string }[] = Array.isArray(raw)
-      ? raw
-      : Array.isArray((raw as any)?.data)
-      ? (raw as any).data
-      : [];
-    return new Set(list.map((a) => a.inkindId).filter(Boolean) as string[]);
-  }, [allocationsData]);
+  const isGroupAssigned = (itemUuid: string) => {
+    const inkindDetails =  data?.data.find((a) => a.uuid == itemUuid);
+    return inkindDetails?.groupInkinds ? inkindDetails?.groupInkinds.length > 0 : false;
+  };
 
   const handleDelete = async (item: InkindItem) => {
-    if (assignedInkindIds.has(item.uuid)) {
+    if (isGroupAssigned(item.uuid)) {
       toast.error(
         'Inkind is already assigned to a group so cannot be removed.',
       );
@@ -377,20 +379,20 @@ export default function InkindList() {
         ),
       },
       {
-        accessorKey: 'assignedStock',
+        accessorKey: 'totalAssigned',
         header: 'Assigned Stock',
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.getValue('assignedStock') ?? 0}
+            {row.getValue('totalAssigned') ?? 0}
           </span>
         ),
       },
       {
-        accessorKey: 'redeemedStock',
+        accessorKey: 'totalRedeemed',
         header: 'Redeemed Stock',
         cell: ({ row }) => (
           <span className="font-semibold">
-            {row.getValue('redeemedStock') ?? 0}
+            {row.getValue('totalRedeemed') ?? 0}
           </span>
         ),
       },
@@ -399,7 +401,7 @@ export default function InkindList() {
         header: 'Actions',
         cell: ({ row }) => {
           const item = row.original;
-          const isAssigned = assignedInkindIds.has(item.uuid);
+          const isAssigned = isGroupAssigned(item.uuid);
           return (
             <TooltipProvider>
               <div className="flex items-center gap-1">
@@ -439,7 +441,7 @@ export default function InkindList() {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [assignedInkindIds],
+    [isGroupAssigned],
   );
 
   const table = useReactTable({
@@ -464,7 +466,7 @@ export default function InkindList() {
       <div className="flex justify-between items-center">
         <Heading
           title="Budget Management List"
-          titleStyle="text-lg"
+          titleStyle="font-medium text-lg"
           description="List of all budget items"
         />
         <Button
@@ -478,14 +480,34 @@ export default function InkindList() {
           Create Inkind
         </Button>
       </div>
-      <SearchInput
-        className="w-full mb-2"
-        name="Inkind Name"
-        value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-        onSearch={(event) =>
-          table.getColumn('name')?.setFilterValue(event.target.value)
-        }
-      />
+      <div className="flex items-center gap-2 mb-2">
+        <SearchInput
+          className="flex-1"
+          name="Inkind Name"
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          onSearch={(event) =>
+            table.getColumn('name')?.setFilterValue(event.target.value)
+          }
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="h-9 gap-1 shrink-0">
+              {typeFilter ? INKIND_TYPE_LABELS[typeFilter as InkindType] : 'All Types'}
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onSelect={() => { setTypeFilter(undefined); setPagination((p) => ({ ...p, pageIndex: 0 })); }}>
+              All Types
+            </DropdownMenuItem>
+            {INKIND_TYPES.map((t) => (
+              <DropdownMenuItem key={t} onSelect={() => { setTypeFilter(t); setPagination((p) => ({ ...p, pageIndex: 0 })); }}>
+                {INKIND_TYPE_LABELS[t]}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
       <DemoTable
         table={table}
         // tableHeight="h-[calc(100vh - 300px)]"
@@ -514,7 +536,7 @@ export default function InkindList() {
       >
         <DialogContent className="w-[500px] max-w-[95vw]">
           <DialogHeader>
-            <DialogTitle className="text-lg">
+            <DialogTitle className="text-lg font-medium">
               {stockDialog.mode === 'add' ? 'Add Stock' : 'Remove Stock'}
             </DialogTitle>
           </DialogHeader>
@@ -603,7 +625,7 @@ export default function InkindList() {
       >
         <DialogContent className="w-[500px] max-w-[95vw]">
           <DialogHeader>
-            <DialogTitle className="text-lg">Update Inkind Item</DialogTitle>
+            <DialogTitle className="text-lg font-medium">Update Inkind Item</DialogTitle>
             <DialogDescription>
               Edit the details below, then review before saving.
             </DialogDescription>
@@ -728,7 +750,7 @@ export default function InkindList() {
       >
         <DialogContent className="w-[500px] max-w-[95vw]">
           <DialogHeader>
-            <DialogTitle className="text-lg flex items-center gap-2">
+            <DialogTitle className="text-lg font-medium flex items-center gap-2">
               Confirm Changes
             </DialogTitle>
             <DialogDescription>

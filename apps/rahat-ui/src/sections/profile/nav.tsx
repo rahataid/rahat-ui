@@ -39,6 +39,12 @@ export function Nav() {
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const handleLogout = () => {
     const pinnedPhases = localStorage.getItem('aa_pinned_phases');
+    const triggerPinPhase = localStorage.getItem('TRIGGER_PIN_PHASE');
+    clearUser();
+    clearAuth();
+    if (pinnedPhases) localStorage.setItem('aa_pinned_phases', pinnedPhases);
+    if (triggerPinPhase)
+      localStorage.setItem('TRIGGER_PIN_PHASE', triggerPinPhase);
     clearUser();
     clearAuth();
     if (pinnedPhases) {

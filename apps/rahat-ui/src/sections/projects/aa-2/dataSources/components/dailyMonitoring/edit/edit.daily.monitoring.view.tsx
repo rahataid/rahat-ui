@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
 import {
+  useProjectInfo,
   useRemoveMonitoringWhileUpdating,
   useSingleMonitoring,
   useSources,
@@ -23,6 +24,7 @@ import InputFormField from '../input.form.field';
 import SelectFormField from '../select.form.field';
 import { useSelectItems } from '../useSelectItems';
 import { fieldLabels } from 'apps/rahat-ui/src/utils/fieldLabelValidation';
+import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 const fields = ['todayGLOFAS', 'days3', 'days5'] as const;
 
 export default function EditDailyMonitoring() {
@@ -34,6 +36,10 @@ export default function EditDailyMonitoring() {
 
   const { data: sources } = useSources(projectId, {});
 
+  const { data: projectInfo } = useProjectInfo(projectId as UUID);
+  const stationHeading = getStationTitle(
+    projectInfo?.value?.project_type || '',
+  );
   const riverBasins = React.useMemo(
     () =>
       sources?.map((source: any) => ({
@@ -547,8 +553,8 @@ export default function EditDailyMonitoring() {
                 key={form.watch('riverBasin')}
                 form={form}
                 name="riverBasin"
-                label="River Basin"
-                placeholder="Select river basin"
+                label={stationHeading}
+                placeholder={`Select ${stationHeading.toLowerCase()}`}
                 selectItems={riverBasins}
                 className="mx-2"
               />

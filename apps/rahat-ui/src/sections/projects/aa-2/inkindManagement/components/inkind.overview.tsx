@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { DataCard, Heading } from 'apps/rahat-ui/src/common';
+import { CustomPagination, DataCard, Heading } from 'apps/rahat-ui/src/common';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
@@ -55,6 +55,9 @@ type Movement = {
   groupInkind: {
     id: number;
     uuid: string;
+    group: {
+      name: string;
+    }
     groupId: string;
     inkindId: string;
     quantityAllocated: number;
@@ -135,40 +138,17 @@ export default function InkindOverview() {
   const { id } = useParams();
   const projectUUID = id as UUID;
 
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+
   const { data: summaryData } = useInkindsSummary(projectUUID);
-  const { data: txData } = useInkindTransactions(projectUUID);
-  const { data: groupsData } = useBeneficiaryGroups(projectUUID, {
-    page: 1,
-    perPage: 1000,
-  });
+  const { data: txData, isFetching: txFetching } = useInkindTransactions(projectUUID, { page, perPage });
 
-  const groupNameMap = React.useMemo<Record<string, string>>(() => {
-    const list: { uuid?: string; name?: string }[] =
-      (groupsData as any)?.data ?? groupsData ?? [];
-    return Object.fromEntries(
-      list.map((g) => [g.uuid ?? '', g.name ?? g.uuid ?? '']),
-    );
-  }, [groupsData]);
-
-  const inkindItems: any[] = summaryData?.data ?? [];
+  const inkindItemsSummary: any[] = summaryData?.data ?? [];
   const movements: Movement[] = txData?.data ?? [];
+  const meta = txData?.response?.meta;
   const [selectedMovement, setSelectedMovement] = useState<Movement | null>(
     null,
-  );
-
-  const totalAvailableStock = inkindItems.reduce(
-    (s: number, i: any) => s + (i.availableStock ?? 0),
-    0,
-  );
-
-  const totalAssignedStock = inkindItems.reduce(
-    (s: number, i: any) => s + (i.assignedStock ?? 0),
-    0,
-  );
-
-  const totalRedeemedStock = inkindItems.reduce(
-    (s: number, i: any) => s + (i.redeemedStock ?? 0),
-    0,
   );
 
   const sortedMovements = [...movements].sort(
@@ -179,7 +159,7 @@ export default function InkindOverview() {
     <div className="flex flex-col h-full">
       <Heading
         title="Inkind Overview"
-        titleStyle="text-lg"
+        titleStyle="font-medium text-lg"
         description="Overview of all in-kind items and stock movements"
       />
 
@@ -187,108 +167,131 @@ export default function InkindOverview() {
         <DataCard
           className="rounded-sm"
           title="Total Inkind Types"
-          number={String(inkindItems.length)}
+          number={String(inkindItemsSummary?.totalInkindTypes ? inkindItemsSummary.totalInkindTypes : 0)}
           subtitle="Distinct items registered"
         />
         <DataCard
           className="rounded-sm"
           title="Available Stock"
-          number={String(totalAvailableStock)}
+          number={String(inkindItemsSummary?.totalAvailableStock ? inkindItemsSummary.totalAvailableStock : 0)}
           subtitle="Units currently available"
         />
-                <DataCard
+        <DataCard
           className="rounded-sm"
           title="Assigned Stock"
-          number={String(totalAssignedStock)}
+          number={String(inkindItemsSummary?.totalAssignedStock ? inkindItemsSummary.totalAssignedStock : 0)}
           subtitle="Units currently assigned"
         />
-                <DataCard
+        <DataCard
           className="rounded-sm"
           title="Redeemed Stock"
-          number={String(totalRedeemedStock)}
+          number={String(inkindItemsSummary?.totalRedeemedStock ? inkindItemsSummary.totalRedeemedStock : 0)}
           subtitle="Units currently redeemed"
         />
       </div>
 
       <div className="flex flex-col flex-[2] border rounded-sm p-4 min-h-0">
-        <h1 className="text-sm font-semibold mb-0.5">Overall Inkind Flow</h1>
+        <div className="flex items-start justify-between mb-0.5">
+          <h1 className="text-lg font-medium">Overall Inkind Flow</h1>
+        </div>
         {movements.length !== 0 && (
           <p className="text-xs text-muted-foreground mb-3">
             Click on any logs to view details
           </p>
         )}
-        <ScrollArea className="flex-1 min-h-[200px] max-h-[50vh] overflow-auto items-center justify-center">
-          {movements.length === 0 ? (
-            <p className="text-sm text-muted-foreground align-center justify-center text-center py-6">
-              No records available.
-            </p>
-          ) : (
-            <div className="flex flex-col space-y-2">
-              {sortedMovements.map((movement) => {
-                const config =
-                  MOVEMENT_CONFIG[movement.type] ?? MOVEMENT_CONFIG['ADD'];
-                const { Icon } = config;
-                const isPositive =
-                  movement.type === 'ADD' || movement.type === 'UNLOCK';
+        <div className="relative flex-1 min-h-[150px]">
+          {txFetching && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 rounded-sm">
+              <div className="h-5 w-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            </div>
+          )}
+          <ScrollArea className="flex-1 min-h-[120px] max-h-[40vh] overflow-auto items-center justify-center">
+            {movements.length === 0 ? (
+              <p className="text-sm text-muted-foreground align-center justify-center text-center py-6">
+                No records available.
+              </p>
+            ) : (
+              <div className="flex flex-col space-y-2">
+                {sortedMovements.map((movement) => {
+                  const config =
+                    MOVEMENT_CONFIG[movement.type] ?? MOVEMENT_CONFIG['ADD'];
+                  const { Icon } = config;
+                  const isPositive =
+                    movement.type === 'ADD' || movement.type === 'UNLOCK';
 
-                return (
-                  <button
-                    key={movement.uuid}
-                    onClick={() => setSelectedMovement(movement)}
-                    className="flex items-center justify-between px-3 py-2.5 rounded-sm border border-gray-100 hover:bg-gray-50 transition-colors text-left w-full"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${config.bgColor}`}
-                      >
-                        <Icon
-                          size={15}
-                          className={config.color}
-                          strokeWidth={2}
-                        />
-                      </div>
-                      <div>
-                        <div className="flex flex-row items-center gap-2">
-                          <TruncatedCell text={movement.inkind?.name || '—'} maxLength={30} />
-                          <Badge className="bg-gray-200 text-gray-600">
-                            {formatLabel(INKIND_TYPE_LABELS[movement.inkind?.type])}
-                          </Badge>
+                  return (
+                    <button
+                      key={movement.uuid}
+                      onClick={() => setSelectedMovement(movement)}
+                      className="flex items-center justify-between px-3 py-2.5 rounded-sm border border-gray-100 hover:bg-gray-50 transition-colors text-left w-full"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${config.bgColor}`}
+                        >
+                          <Icon
+                            size={15}
+                            className={config.color}
+                            strokeWidth={2}
+                          />
                         </div>
-                        {movement.groupInkind && (
+                        <div>
+                          <div className="flex flex-row items-center gap-2">
+                            <TruncatedCell text={movement.inkind?.name || '—'} maxLength={30} />
+                            <Badge className="bg-gray-200 text-gray-600">
+                              {formatLabel(INKIND_TYPE_LABELS[movement.inkind?.type])}
+                            </Badge>
+                          </div>
+                          {movement.groupInkind && (
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {movement.groupInkind?.group?.name || '-'}
+                            </p>
+                          )}
                           <p className="text-xs text-muted-foreground mt-0.5">
-                            {groupNameMap[movement.groupInkind.groupId] ??
-                              movement.groupInkind.groupId.slice(0, 8) + '…'}
-                          </p>
-                        )}
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {movement.createdAt
-                            ? format(
+                            {movement.createdAt
+                              ? format(
                                 new Date(movement.createdAt),
                                 'dd MMM yyyy, HH:mm',
                               )
-                            : '—'}
-                        </p>
+                              : '—'}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className={`text-sm font-semibold ${config.color}`}>
-                        {isPositive ? '+' : '-'}
-                        {movement.quantity ?? 0}
-                      </span>
-                      <Badge
-                        variant="outline"
-                        className={`rounded-sm text-xs ${config.color} border-current`}
-                      >
-                        {config.label}
-                      </Badge>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </ScrollArea>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className={`text-sm font-semibold ${config.color}`}>
+                          {isPositive ? '+' : '-'}
+                          {movement.quantity ?? 0}
+                        </span>
+                        <Badge
+                          variant="outline"
+                          className={`rounded-sm text-xs ${config.color} border-current`}
+                        >
+                          {config.label}
+                        </Badge>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </ScrollArea>
+        </div>
       </div>
+      <CustomPagination
+        currentPage={page}
+        handleNextPage={() => setPage((p) => Math.min(meta?.lastPage ?? p, p + 1))}
+        handlePrevPage={() => setPage((p) => Math.max(1, p - 1))}
+        handlePageSizeChange={(size) => { setPerPage(size as number); setPage(1); }}
+        meta={{
+          total: meta?.total ?? 0,
+          currentPage: page,
+          lastPage: meta?.lastPage ?? 1,
+          perPage,
+          next: meta?.next ?? null,
+          prev: meta?.prev ?? null,
+        }}
+        perPage={perPage}
+      />
 
       <Sheet
         open={!!selectedMovement}
@@ -346,9 +349,9 @@ export default function InkindOverview() {
                         value={
                           selectedMovement.createdAt
                             ? format(
-                                new Date(selectedMovement.createdAt),
-                                'dd MMM yyyy, HH:mm:ss',
-                              )
+                              new Date(selectedMovement.createdAt),
+                              'dd MMM yyyy, HH:mm:ss',
+                            )
                             : '—'
                         }
                       />
@@ -378,9 +381,9 @@ export default function InkindOverview() {
                           icon={Layers}
                           label="Type"
                           value={
-                          <Badge className="bg-gray-200 text-gray-600">
-                            {formatLabel(INKIND_TYPE_LABELS[selectedMovement.inkind.type])}
-                          </Badge>
+                            <Badge className="bg-gray-200 text-gray-600">
+                              {formatLabel(INKIND_TYPE_LABELS[selectedMovement.inkind.type])}
+                            </Badge>
                           }
                         />
                         <DetailRow
@@ -411,48 +414,9 @@ export default function InkindOverview() {
                           icon={Users}
                           label="Group"
                           value={
-                            groupNameMap[
-                              selectedMovement.groupInkind.groupId
-                            ] ?? selectedMovement.groupInkind.groupId
-                          }
-                        />
-                        <DetailRow
-                          icon={Layers}
-                          label="Quantity Allocated"
-                          value={
                             <span className="text-primary font-bold">
-                              {selectedMovement.groupInkind.quantityAllocated}
+                              {selectedMovement.groupInkind.group?.name ?? '—'}
                             </span>
-                          }
-                        />
-                        <DetailRow
-                          icon={ShoppingBag}
-                          label="Quantity Redeemed"
-                          value={
-                            <span
-                              className={
-                                selectedMovement.groupInkind.quantityRedeemed >
-                                0
-                                  ? 'text-purple-600 font-bold'
-                                  : 'text-muted-foreground'
-                              }
-                            >
-                              {selectedMovement.groupInkind.quantityRedeemed}
-                            </span>
-                          }
-                        />
-                        <DetailRow
-                          icon={Calendar}
-                          label="Allocated At"
-                          value={
-                            selectedMovement.groupInkind.createdAt
-                              ? format(
-                                  new Date(
-                                    selectedMovement.groupInkind.createdAt,
-                                  ),
-                                  'dd MMM yyyy, HH:mm',
-                                )
-                              : '—'
                           }
                         />
                       </div>

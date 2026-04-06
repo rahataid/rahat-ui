@@ -9,9 +9,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-import ConfirmAddTrigger from './confirm.add.trigger';
 
 type IProps = {
   form: UseFormReturn<{
@@ -20,9 +18,14 @@ type IProps = {
     description?: string;
   }>;
   phase: any;
+  stationHeading?: string;
 };
 
-export default function AddManualTriggerForm({ form, phase }: IProps) {
+export default function AddManualTriggerForm({
+  form,
+  phase,
+  stationHeading,
+}: IProps) {
   return (
     <>
       <Form {...form}>
@@ -41,7 +44,7 @@ export default function AddManualTriggerForm({ form, phase }: IProps) {
               <FormMessage />
             </FormItem>
             <FormItem>
-              <FormLabel>River Basin</FormLabel>
+              <FormLabel>{stationHeading}</FormLabel>
               <FormControl>
                 <Input
                   className="bg-gray-300"

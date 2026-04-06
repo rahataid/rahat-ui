@@ -61,8 +61,7 @@ export const useInkinds = (
 
   return useQuery({
     queryKey: ['aa.inkinds.get', projectUUID, paramsString],
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    staleTime: 10 * 60 * 1000, // 10 minutes
     queryFn: () => runAction(q, projectUUID, 'aa.inkinds.get', { ...params }),
   });
 };
@@ -170,27 +169,30 @@ export const useInkindsSummary = (projectUUID: UUID) => {
   const q = useProjectAction();
 
   return useQuery({
-    queryKey: ['aa.inkinds.summary', projectUUID],
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    queryKey: ['aa.inkinds.getSummary', projectUUID],
+    staleTime: 5 * 60 * 1000, // 5 minutes
     queryFn: () =>
-      runAction(q, projectUUID, 'aa.inkinds.get', {
-        perPage: 1000,
-        order: 'desc',
-        sort: 'createdAt',
-      }),
+      runAction(q, projectUUID, 'aa.inkinds.getSummary', {}),
   });
 };
 
-export const useInkindTransactions = (projectUUID: UUID) => {
+export const useInkindTransactions = (
+  projectUUID: UUID,
+  params?: { page?: number; perPage?: number },
+) => {
   const q = useProjectAction();
+  const page = params?.page ?? 1;
+  const perPage = params?.perPage ?? 10;
 
   return useQuery({
-    queryKey: ['aa.inkindStock.getAllMovements', projectUUID],
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    queryKey: ['aa.inkindStock.getAllMovements', projectUUID, page, perPage],
+    staleTime: 5 * 60 * 1000,
+    placeholderData: (prev) => prev,
     queryFn: () =>
-      runAction(q, projectUUID, 'aaProject.inkindStock.getAllMovements', {}),
+      runAction(q, projectUUID, 'aaProject.inkindStock.getAllMovements', {
+        page,
+        perPage,
+      }),
   });
 };
 
@@ -209,7 +211,7 @@ export const useAddInkindStock = (projectUUID: UUID) => {
         queryKey: ['aa.inkinds.get', projectUUID],
       });
       queryClient.invalidateQueries({
-        queryKey: ['aa.inkinds.summary', projectUUID],
+        queryKey: ['aa.inkinds.getSummary', projectUUID],
       });
     },
     onError: (error: any) => {
@@ -238,7 +240,7 @@ export const useRemoveInkindStock = (projectUUID: UUID) => {
         queryKey: ['aa.inkinds.get', projectUUID],
       });
       queryClient.invalidateQueries({
-        queryKey: ['aa.inkinds.summary', projectUUID],
+        queryKey: ['aa.inkinds.getSummary', projectUUID],
       });
     },
     onError: (error: any) => {
@@ -252,15 +254,15 @@ export const useRemoveInkindStock = (projectUUID: UUID) => {
   });
 };
 
-export const useGroupInkindAllocations = (projectUUID: UUID) => {
+export const useGroupInkindAllocations = (projectUUID: UUID, payload?: any) => {
   const q = useProjectAction();
+  const paramsKey = JSON.stringify(payload ?? {});
 
   return useQuery({
-    queryKey: ['aaProject.groupInkinds.getByGroup', projectUUID],
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    queryKey: ['aaProject.groupInkinds.getByGroup', projectUUID, paramsKey],
+    staleTime: 5 * 60 * 1000, // 5 minutes
     queryFn: () =>
-      runAction(q, projectUUID, 'aaProject.groupInkinds.getByGroup', {}),
+      runAction(q, projectUUID, 'aaProject.groupInkinds.getByGroup', payload ?? {}),
   });
 };
 
@@ -294,7 +296,7 @@ export const useUpdateGroupInkindAllocation = (projectUUID: UUID) => {
         queryKey: ['aa.inkinds.get', projectUUID],
       });
       queryClient.invalidateQueries({
-        queryKey: ['aa.inkinds.summary', projectUUID],
+        queryKey: ['aa.inkinds.getSummary', projectUUID],
       });
     },
     onError: (error: any) => {
@@ -305,24 +307,6 @@ export const useUpdateGroupInkindAllocation = (projectUUID: UUID) => {
         text: error?.response?.data?.message || 'Error',
       });
     },
-  });
-};
-
-export const useGetGroupInkindDetail = (
-  projectUUID: UUID,
-  allocationUUID: string,
-) => {
-  const q = useProjectAction();
-
-  return useQuery({
-    queryKey: ['aaProject.groupInkinds.getOne', projectUUID, allocationUUID],
-    enabled: !!allocationUUID,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    queryFn: () =>
-      runAction(q, projectUUID, 'aaProject.groupInkinds.getOne', {
-        uuid: allocationUUID,
-      }),
   });
 };
 
@@ -348,6 +332,63 @@ export const useGetGroupInkindRedemptions = (
   });
 };
 
+export type GetGroupInkindLogsParams = {
+  search?: string;
+  sort?: 'redeemedAt' | 'quantity';
+  order?: 'asc' | 'desc';
+  page?: number;
+  perPage?: number;
+};
+
+export const useGetGroupInkindLogs = (
+  projectUUID: UUID,
+  allocationUUID: string,
+  params: GetGroupInkindLogsParams = {},
+) => {
+  const q = useProjectAction();
+  const paramsKey = JSON.stringify(params);
+
+  return useQuery({
+    queryKey: [
+      'aaProject.groupInkinds.getLogs',
+      projectUUID,
+      allocationUUID,
+      paramsKey,
+    ],
+    enabled: !!allocationUUID,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: () =>
+      runAction(q, projectUUID, 'aaProject.groupInkinds.getLogs', {
+        groupInkindId: allocationUUID,
+        ...params,
+      }),
+  });
+};
+
+export const useGetUnassignedGroupInkind = (
+  projectUUID: UUID,
+  inkindUUID: string,
+) => {
+  const q = useProjectAction();
+
+  return useQuery({
+    queryKey: [
+      'aaProject.groupInkinds.getUnassignedGroupInkind',
+      projectUUID,
+      inkindUUID,
+    ],
+    enabled: !!inkindUUID,
+    queryFn: () =>
+      runAction(
+        q,
+        projectUUID,
+        'aaProject.groupInkinds.getUnassignedGroupInkind',
+        { uuid: inkindUUID },
+      ),
+  });
+};
+
 export const useAssignGroupInkind = (projectUUID: UUID) => {
   const q = useProjectAction();
   const queryClient = useQueryClient();
@@ -369,6 +410,12 @@ export const useAssignGroupInkind = (projectUUID: UUID) => {
       });
       queryClient.invalidateQueries({
         queryKey: ['aa.inkinds.get', projectUUID],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['aa.inkinds.getSummary', projectUUID],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['aaProject.groupInkinds.getByGroup', projectUUID]
       });
     },
     onError: (error: any) => {

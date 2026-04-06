@@ -5,8 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useInkinds, useBeneficiaryGroups } from '@rahat-ui/query';
-import { BeneficiaryGroupListItem } from '@rahat-ui/types';
+import { useInkinds, useGetUnassignedGroupInkind } from '@rahat-ui/query';
 import { cn } from 'libs/shadcn/src';
 import { Button } from 'libs/shadcn/src/components/ui/button';
 import {
@@ -31,7 +30,6 @@ import {
   CommandList,
 } from 'libs/shadcn/src/components/ui/command';
 import { Check, ChevronDown } from 'lucide-react';
-import { toast } from 'react-toastify';
 import {
   AssignInkindSchema,
   AssignInkindValues,
@@ -55,22 +53,6 @@ export default function AssignInkindForm({ onNext }: Props) {
   const [inkindOpen, setInkindOpen] = useState(false);
   const [groupOpen, setGroupOpen] = useState(false);
 
-  const { data: inkindsData } = useInkinds(projectUUID, {
-    perPage: 1000,
-    order: 'asc',
-    sort: 'name',
-  });
-
-  const benGroups = useBeneficiaryGroups(projectUUID, {
-    page: 1,
-    perPage: 100,
-  });
-
-  const inkindItems: any[] = (inkindsData?.data ?? []).filter(
-    (i: any) => i.type === 'PRE_DEFINED',
-  );
-  const groups: BeneficiaryGroupListItem[] = benGroups.data ?? [];
-
   const form = useForm<AssignInkindValues>({
     resolver: zodResolver(AssignInkindSchema),
     defaultValues: { inkindId: '', groupId: '' },
@@ -81,31 +63,34 @@ export default function AssignInkindForm({ onNext }: Props) {
   const selectedInkindId = watch('inkindId');
   const selectedGroupId = watch('groupId');
 
+  const { data: inkindsData } = useInkinds(projectUUID, {
+    perPage: 1000,
+    order: 'asc',
+    sort: 'name',
+  });
+
+  const inkindItems: any[] = (inkindsData?.data ?? []).filter(
+    (i: any) => i.type === 'PRE_DEFINED',
+  );
+
+  const { data: unassignedGroupsData } = useGetUnassignedGroupInkind(
+    projectUUID,
+    selectedInkindId,
+  );
+  const groups: any[] = unassignedGroupsData?.data ?? [];
+
   const selectedInkind = inkindItems.find((i) => i.uuid === selectedInkindId);
-  const selectedGroup = groups.find((g) => g.uuid === selectedGroupId);
+  const selectedGroup = groups.find((g: any) => g.uuid === selectedGroupId);
 
   const onSubmit = (data: AssignInkindValues) => {
     const availableStock = selectedInkind?.availableStock ?? 0;
-    const beneficiaryCount = selectedGroup?._count?.groupedBeneficiaries ?? 0;
-
-    if (beneficiaryCount === 0) {
-      toast.error('The selected group has no beneficiaries.');
-      return;
-    }
-
-    if (availableStock < beneficiaryCount) {
-      toast.error(
-        `Not enough inkind stock. Available: ${availableStock}, required: ${beneficiaryCount} (one per beneficiary).`,
-      );
-      return;
-    }
 
     onNext({
       ...data,
       inkindName: selectedInkind?.name ?? '',
       groupName: selectedGroup?.name ?? '',
       availableStock,
-      beneficiaryCount,
+      beneficiaryCount: 0,
     });
   };
 
@@ -158,6 +143,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                                 setValue('inkindId', item.uuid, {
                                   shouldValidate: true,
                                 });
+                                setValue('groupId', '');
                                 setInkindOpen(false);
                               }}
                             >
@@ -207,6 +193,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                       <Button
                         variant="outline"
                         role="combobox"
+                        disabled={!selectedInkindId}
                         className={cn(
                           'justify-between font-normal',
                           !field.value && 'text-muted-foreground',
@@ -228,7 +215,7 @@ export default function AssignInkindForm({ onNext }: Props) {
                       <CommandList>
                         <CommandEmpty>No groups found.</CommandEmpty>
                         <CommandGroup>
-                          {groups.map((group: BeneficiaryGroupListItem) => (
+                          {groups.map((group: any) => (
                             <CommandItem
                               key={group.uuid}
                               value={group.uuid}
@@ -240,10 +227,6 @@ export default function AssignInkindForm({ onNext }: Props) {
                               }}
                             >
                               <span className="flex-1">{group.name}</span>
-                              <span className="text-xs text-muted-foreground mr-2">
-                                {group._count?.groupedBeneficiaries ?? 0}{' '}
-                                beneficiaries
-                              </span>
                               <Check
                                 className={cn(
                                   'ml-auto',
@@ -261,9 +244,9 @@ export default function AssignInkindForm({ onNext }: Props) {
                 </Popover>
                 {selectedGroup && (
                   <p className="text-xs text-muted-foreground -mt-1">
-                    Beneficiaries in group:{' '}
+                    Selected group:{' '}
                     <span className="font-semibold text-primary">
-                      {selectedGroup._count?.groupedBeneficiaries ?? 0}
+                      {selectedGroup.name}
                     </span>
                   </p>
                 )}

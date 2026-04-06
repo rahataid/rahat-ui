@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ControllerRenderProps, UseFormReturn } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 import {
   Form,
   FormControl,
@@ -25,6 +25,7 @@ import { Option, SOURCE_MAPPING } from '../utils';
 import { useGetSeriesByDataSource } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
 
 const operatorOptions = [
   { label: 'Greater than (>)', value: '>' },
@@ -50,6 +51,15 @@ const SOURCE_META = {
   prob_flood: {
     unit: '%',
     placeholder: 'Enter flood probability value in (%)',
+  },
+  // for heatwave
+  prob_humidity: {
+    unit: '%',
+    placeholder: 'Enter humidity probability value in (%)',
+  },
+  temperature_c: {
+    unit: '°C',
+    placeholder: 'Enter temperature value in (°C)',
   },
 } as const;
 
@@ -84,6 +94,7 @@ export default function AddAutomatedTriggerForm({
     projectId,
     selectedSource.dataSource?.toUpperCase() || '',
     selectedSource.type?.toUpperCase() || '',
+    triggerSourceSubType || '',
   );
 
   React.useEffect(() => {
@@ -288,6 +299,13 @@ export default function AddAutomatedTriggerForm({
                             {triggerSource === 'prob_flood' && (
                               <SourceSubTypeField label="Probability Period" />
                             )}
+                            {/* for heatwave */}
+                            {triggerSource === 'prob_humidity' && (
+                              <SourceSubTypeField label="Humidity Type" />
+                            )}
+                            {triggerSource === 'temperature_c' && (
+                              <SourceSubTypeField label="Temperature Type" />
+                            )}
                           </Select>
                           <FormMessage />
                         </FormItem>
@@ -314,7 +332,6 @@ export default function AddAutomatedTriggerForm({
                               }}
                               value={field.value}
                               key={field.value}
-                              // disabled={false}
                             >
                               <FormLabel>Station</FormLabel>
                               <FormControl>
@@ -332,6 +349,8 @@ export default function AddAutomatedTriggerForm({
                                       {option.stationName}
                                     </SelectItem>
                                   ))
+                                ) : isLoading ? (
+                                  <Loader />
                                 ) : (
                                   <p className="text-gray-500 text-sm">
                                     No station found
@@ -393,8 +412,12 @@ export default function AddAutomatedTriggerForm({
                           control={form.control}
                           name="triggerStatement.value"
                           render={({ field }) => {
-                            const meta = SOURCE_META[triggerSource];
-
+                            const meta =
+                              triggerSource && triggerSource in SOURCE_META
+                                ? SOURCE_META[
+                                    triggerSource as keyof typeof SOURCE_META
+                                  ]
+                                : undefined;
                             return (
                               <FormItem>
                                 <FormLabel>

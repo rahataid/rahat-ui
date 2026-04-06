@@ -1,14 +1,13 @@
 'use client';
 
 import React from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useGetGroupInkindDetail } from '@rahat-ui/query';
+import { useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   DataCard,
   HeaderWithBack,
-  TableLoader,
 } from 'apps/rahat-ui/src/common';
 import { Package } from 'lucide-react';
 import { formatDate } from '../inkind.helpers';
@@ -16,7 +15,8 @@ import InfoItem from 'apps/rahat-ui/src/sections/projects/aa-2/payout/benefTrans
 
 export default function InkindTransactionDetail() {
   const { id, allocationId } = useParams();
-  const projectUUID = id as UUID;
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const sp = useSearchParams();
 
   const beneficiaryWalletAddress = sp.get('beneficiaryWalletAddress') ?? '';
@@ -28,15 +28,8 @@ export default function InkindTransactionDetail() {
   const redeemedAt = sp.get('redeemedAt') ?? '';
   const inkindName = sp.get('inkindName') ?? 'N/A';
   const groupName = sp.get('groupName') ?? 'N/A';
-
-  const { data: allocationData, isLoading: allocationLoading } =
-    useGetGroupInkindDetail(projectUUID, allocationId as string);
-
-  const allocation = allocationData?.data;
-  const quantityAllocated = allocation?.quantityAllocated ?? 0;
-  const quantityRedeemed = allocation?.quantityRedeemed ?? 0;
-
-  if (allocationLoading) return <TableLoader />;
+  const inkindType = sp.get('inkindType') ?? '';
+  const inkindAvailableStock = sp.get('inkindAvailableStock') ?? '0';
 
   return (
     <div className="p-4 md:p-6 space-y-6">
@@ -44,22 +37,35 @@ export default function InkindTransactionDetail() {
         path={`/projects/aa/${id}/inkind-management/${allocationId}`}
         title="Transaction Log Details"
         subtitle="Detail view of the selected inkind disbursement transaction"
+        onBack={() => {
+          queryClient.invalidateQueries({
+            queryKey: ['aaProject.groupInkinds.getLogs', id as string, allocationId as string],
+          });
+          const params = new URLSearchParams({ inkindType, inkindAvailableStock });
+          router.push(`/projects/aa/${id}/inkind-management/${allocationId}?${params}`);
+        }}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <DataCard
-          title="Quantity Disbursed"
-          Icon={Package}
-          smallNumber={quantity}
-          className="h-24 w-full rounded-sm pt-1"
+          title="Inkind Name"
+          smallNumber={inkindName}
+                      className="border-solid rounded-md"
+            iconStyle="bg-white text-secondary-muted"
         />
         <DataCard
-          title="Inkind Name"
-          Icon={Package}
-          smallNumber={inkindName}
-          className="h-24 w-full rounded-sm pt-1"
+            title="Group Name"
+            smallNumber={groupName}
+                        className="border-solid rounded-md"
+            iconStyle="bg-white text-secondary-muted"
+          />
+        <DataCard
+          title="Quantity Redeemed"
+          smallNumber={quantity}
+                      className="border-solid rounded-md"
+            iconStyle="bg-white text-secondary-muted"
         />
-      </div>
+      </div>  
 
       <Card className="rounded-sm">
         <CardContent className="p-6">
@@ -82,15 +88,12 @@ export default function InkindTransactionDetail() {
               copyable
             />
             <InfoItem label="Redeemed At" value={formatDate(redeemedAt)} />
-            <InfoItem label="Quantity Disbursed" value={quantity} />
             <InfoItem label="Vendor Name" value={vendorName || undefined} />
             <InfoItem
               label="Vendor Wallet Address"
               value={vendorWalletAddress || undefined}
               copyable
             />
-            <InfoItem label="Group Name" value={groupName} />
-            <InfoItem label="Inkind Assigned" value={inkindName} />
           </div>
         </CardContent>
       </Card>

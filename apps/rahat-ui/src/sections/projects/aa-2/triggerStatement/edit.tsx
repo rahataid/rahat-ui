@@ -1,5 +1,5 @@
 import React from 'react';
-import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
+import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -9,6 +9,7 @@ import {
   useSingleTriggerStatement,
   useUpdateTriggerStatement,
   useGetDataSourceTypes,
+  useProjectInfo,
 } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -22,6 +23,7 @@ import {
   GLOFAS_LEGACY_MAPPING,
 } from './utils';
 import { triggerStatementSchema } from './trigger.statement.schema';
+import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
 export default function EditTrigger() {
   const router = useRouter();
@@ -35,6 +37,11 @@ export default function EditTrigger() {
   const { data: trigger, isLoading } = useSingleTriggerStatement(
     projectId,
     triggerRepeatKey,
+  );
+
+  const { data: projectInfo } = useProjectInfo(projectId as UUID);
+  const stationHeading = getStationTitle(
+    projectInfo?.value?.project_type || '',
   );
 
   const { data: dataSourceTypes, isLoading: isLoadingDataSourceTypes } =
@@ -383,6 +390,7 @@ export default function EditTrigger() {
               isEditing={true}
               sourceOptions={sourceOptions}
               subTypeOptions={subTypeOptions}
+              stationHeading={stationHeading}
             />
           ) : (
             <ManualTriggerAddForm
@@ -391,6 +399,7 @@ export default function EditTrigger() {
                 name: trigger?.phase?.name,
                 riverBasin: trigger?.phase?.source?.riverBasin,
               }}
+              stationHeading={stationHeading}
             />
           )}
           <div className="flex justify-end mt-4">

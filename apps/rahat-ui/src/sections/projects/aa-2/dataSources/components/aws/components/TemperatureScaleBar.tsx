@@ -12,7 +12,7 @@ export function TemperatureScaleBar({
       <p className="text-xs font-semibold text-gray-700 mb-3 text-center">
         In {unit}
       </p>
-      <div className="relative h-[400px]">
+      <div className="relative h-[440px]">
         {/* Gradient Bar */}
         <div className="absolute inset-0 w-full bg-[linear-gradient(to_bottom,rgb(220_38_38)_0%,rgb(234_88_12)_6.67%,rgb(249_115_22)_13.33%,rgb(251_146_60)_20%,rgb(251_191_36)_26.67%,rgb(250_204_21)_33.33%,rgb(163_230_53)_40%,rgb(74_222_128)_46.67%,rgb(34_197_94)_53.33%,rgb(6_182_212)_60%,rgb(14_165_233)_66.67%,rgb(59_130_246)_73.33%,rgb(37_99_235)_80%,rgb(79_70_229)_86.67%,rgb(124_58_237)_93.33%,rgb(168_85_247)_100%)]" />
 
@@ -24,6 +24,42 @@ export function TemperatureScaleBar({
               className="text-white text-xs font-semibold text-center leading-none"
             >
               {temp}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface HumidityScaleBarProps {
+  unit?: string;
+  humidityLevels?: number[];
+}
+
+export function HumidityScaleBar({
+  unit = '%',
+  humidityLevels = [
+    100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0,
+  ],
+}: HumidityScaleBarProps) {
+  return (
+    <div className="flex-shrink-0 bg-white rounded-sm border shadow p-3 w-20">
+      <p className="text-xs font-semibold text-gray-700 mb-3 text-center">
+        In {unit}
+      </p>
+      <div className="relative h-[440px]">
+        {/* Bluish Gradient Bar - from dark blue at top to light cyan at bottom */}
+        <div className="absolute inset-0 w-full bg-[linear-gradient(to_bottom,rgb(30_58_138)_0%,rgb(37_99_235)_13.33%,rgb(59_130_246)_26.67%,rgb(96_165_250)_40%,rgb(6_182_212)_53.33%,rgb(34_211_238)_66.67%,rgb(103_232_249)_80%,rgb(165_243_252)_93.33%,rgb(207_250_254)_100%)]" />
+
+        {/* Humidity Labels */}
+        <div className="absolute inset-0 flex flex-col justify-between py-1">
+          {humidityLevels.map((humidity) => (
+            <div
+              key={humidity}
+              className="text-white text-xs font-semibold text-center leading-none drop-shadow-sm"
+            >
+              {humidity}
             </div>
           ))}
         </div>

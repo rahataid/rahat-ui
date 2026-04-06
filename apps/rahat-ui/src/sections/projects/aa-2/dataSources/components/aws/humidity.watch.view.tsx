@@ -4,16 +4,17 @@ import {
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { Heading, NoResult, TableLoader } from 'apps/rahat-ui/src/common';
-import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { Globe, RadioTower } from 'lucide-react';
 import React, { useMemo } from 'react';
 import { UUID } from 'crypto';
 import { format } from 'date-fns';
-import { useParams } from 'next/navigation';
-import { getHumidityColor, roundValue } from './utils/color.utils';
+import { useParams, useRouter } from 'next/navigation';
+import { getHumidityColor } from './utils/color.utils';
+import { TemperatureValueCard } from './components';
 
 export default function HumidityWatchView() {
   const params = useParams();
+  const router = useRouter();
   const projectId = params.id as UUID;
   const formattedDate = format(new Date(), 'yyyy/MM/dd');
   const { settings } = useProjectSettingsStore((state) => ({
@@ -53,11 +54,17 @@ export default function HumidityWatchView() {
     <div className="flex flex-col space-y-6">
       {rh1hData.map((humInfo: any, index: number) => {
         const colors = getHumidityColor(humInfo?.value);
+        const seriesId = humInfo?.series_id || humInfo?.id || String(index);
 
         return (
           <div
-            key={index}
-            className="p-4 rounded-sm border shadow flex justify-between space-x-4"
+            key={seriesId}
+            className="p-4 rounded-sm border shadow flex justify-between space-x-4 cursor-pointer hover:shadow-md"
+            onClick={() =>
+              router.push(
+                `/projects/aa/${projectId}/data-sources/aws/humidity-watch/${seriesId}`,
+              )
+            }
           >
             <div className="w-full">
               <div className="flex justify-between gap-4">
@@ -69,16 +76,9 @@ export default function HumidityWatchView() {
                   }
                   updatedAt={updatedAt}
                 />
-                <div>
-                  <span
-                    className={`inline-block text-xs font-semibold px-3 py-1 rounded-full mt-2 ${colors.statusColor}`}
-                  >
-                    {colors.statusLabel}
-                  </span>{' '}
-                </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 mt-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="flex space-x-3 items-center">
                   <RadioTower className="text-gray-500" size={20} />
                   <div>
@@ -115,18 +115,13 @@ export default function HumidityWatchView() {
               </div>
             </div>
 
-            {/* Big Humidity Card */}
-            <div
-              className={`p-4 rounded-sm border shadow text-center w-64 flex-shrink-0 ${colors.bg} ${colors.border}`}
-            >
-              <p className={`font-semibold text-3xl/10 ${colors.textValue}`}>
-                {roundValue(humInfo?.value)}
-              </p>
-              <p className="text-sm/6 font-medium">Humidity</p>
-              <p className="text-gray-500 text-sm/6">
-                {dateFormat(updatedAt, 'eee, MMM d yyyy, hh:mm:ss a')}
-              </p>
-            </div>
+            <TemperatureValueCard
+              value={humInfo?.value}
+              unit={humInfo?.unit ?? '%'}
+              updatedAt={updatedAt}
+              label="Relative Humidity"
+              colors={colors}
+            />
           </div>
         );
       })}

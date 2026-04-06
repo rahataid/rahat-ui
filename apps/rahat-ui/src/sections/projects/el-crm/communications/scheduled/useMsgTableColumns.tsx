@@ -11,7 +11,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
-function getStatus(row: any) {
+export function getStatus(row: any) {
   const scheduledTime = row?.options?.scheduledTimestamp;
   const sessionId = row?.sessionId;
   if (scheduledTime && new Date(scheduledTime) > new Date()) return 'Scheduled';
@@ -32,6 +32,34 @@ function formatRelative(diffMs: number) {
   return `${Math.max(seconds, 1)}s`;
 }
 
+function formatScheduledDateTime(value: string, timeZone?: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '\u2014';
+
+  const formatOptions: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZoneName: 'shortOffset',
+    ...(timeZone ? { timeZone } : {}),
+  };
+
+  try {
+    return new Intl.DateTimeFormat('en-US', formatOptions).format(date);
+  } catch {
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      ...(timeZone ? { timeZone } : {}),
+    }).format(date);
+  }
+}
+
 function ScheduledDateCell({ value, row }: { value: string; row: any }) {
   const [now, setNow] = useState(() => new Date());
   const status = getStatus(row.original);
@@ -44,6 +72,9 @@ function ScheduledDateCell({ value, row }: { value: string; row: any }) {
   }, [isCountdown]);
 
   const scheduledDate = new Date(value);
+  const scheduleTimeZone = row?.original?.options?.scheduleTimezone as
+    | string
+    | undefined;
   const diffMs = scheduledDate.getTime() - now.getTime();
   const formatted = formatRelative(diffMs);
 
@@ -63,7 +94,9 @@ function ScheduledDateCell({ value, row }: { value: string; row: any }) {
 
   return (
     <div className="flex flex-col">
-      <span className="tabular-nums">{scheduledDate.toLocaleString()}</span>
+      <span className="tabular-nums">
+        {formatScheduledDateTime(value, scheduleTimeZone)}
+      </span>
       <span className={`text-xs mt-0.5 tabular-nums ${colorClass}`}>
         {relativeLabel}
       </span>

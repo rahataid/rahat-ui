@@ -1,76 +1,242 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Eye } from 'lucide-react';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { targetTypeMap } from '../const';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+
+export function getStatus(row: any) {
+  const scheduledTime = row?.options?.scheduledTimestamp;
+  const sessionId = row?.sessionId;
+  if (scheduledTime && new Date(scheduledTime) > new Date()) return 'Scheduled';
+  if (sessionId) return 'Sent';
+  return 'Draft';
+}
+
+function formatRelative(diffMs: number) {
+  const abs = Math.abs(diffMs);
+  const days = Math.floor(abs / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((abs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((abs % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((abs % (1000 * 60)) / 1000);
+
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  if (minutes > 0) return `${minutes}m ${seconds}s`;
+  return `${Math.max(seconds, 1)}s`;
+}
+
+function formatScheduledDateTime(value: string, timeZone?: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '\u2014';
+
+  const formatOptions: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZoneName: 'shortOffset',
+    ...(timeZone ? { timeZone } : {}),
+  };
+
+  try {
+    return new Intl.DateTimeFormat('en-US', formatOptions).format(date);
+  } catch {
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      ...(timeZone ? { timeZone } : {}),
+    }).format(date);
+  }
+}
+
+function ScheduledDateCell({ value, row }: { value: string; row: any }) {
+  const [now, setNow] = useState(() => new Date());
+  const status = getStatus(row.original);
+  const isCountdown = status === 'Scheduled' || status === 'Draft';
+
+  useEffect(() => {
+    if (!isCountdown) return;
+    const interval = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, [isCountdown]);
+
+  const scheduledDate = new Date(value);
+  const scheduleTimeZone = row?.original?.options?.scheduleTimezone as
+    | string
+    | undefined;
+  const diffMs = scheduledDate.getTime() - now.getTime();
+  const formatted = formatRelative(diffMs);
+
+  let relativeLabel = '';
+  let colorClass = 'text-muted-foreground';
+
+  if (status === 'Sent') {
+    relativeLabel = `${formatted} ago`;
+    colorClass = 'text-muted-foreground';
+  } else if (diffMs > 0) {
+    relativeLabel = `${formatted} remaining`;
+    colorClass = 'text-amber-600';
+  } else {
+    relativeLabel = `${formatted} overdue`;
+    colorClass = 'text-destructive';
+  }
+
+  return (
+    <div className="flex flex-col">
+      <span className="tabular-nums">
+        {formatScheduledDateTime(value, scheduleTimeZone)}
+      </span>
+      <span className={`text-xs mt-0.5 tabular-nums ${colorClass}`}>
+        {relativeLabel}
+      </span>
+    </div>
+  );
+}
 
 export const useScheduledTableColumn = () => {
   const { id } = useParams();
-  const router = useRouter();
 
-  const getChannelColor = (channel: string) => {
+  const getChannelVariant = (channel: string) => {
     switch (channel) {
       case 'SMS':
-        return 'bg-blue-100 text-blue-800';
+        return 'default';
       case 'WhatsApp':
-        return 'bg-green-100 text-green-800';
+        return 'success';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'secondary';
     }
   };
 
   const getStatusVariant = (status: string) => {
-    return status === 'Scheduled' ? 'default' : 'secondary';
+    switch (status) {
+      case 'Sent':
+        return 'success';
+      case 'Scheduled':
+        return 'warning';
+      default:
+        return 'secondary';
+    }
   };
 
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'templateName',
-      header: 'Template',
-      cell: ({ row }) => <div>{row.getValue('templateName')}</div>,
+      accessorKey: 'name',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Name
+        </span>
+      ),
+      cell: ({ row }) => {
+        const name = (row.getValue('name') as string) || '\u2014';
+        return (
+          <span
+            className="block max-w-[260px] truncate font-medium"
+            title={name}
+          >
+            {name}
+          </span>
+        );
+      },
     },
     {
-      accessorKey: 'channel',
-      header: 'Channel',
+      accessorKey: 'transportName',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Channel
+        </span>
+      ),
       cell: ({ row }) => (
-        <Badge
-          className={getChannelColor(row.getValue('channel'))}
-          variant="secondary"
-        >
-          {row.getValue('channel')}
+        <Badge variant={getChannelVariant(row.getValue('transportName'))}>
+          {row.getValue('transportName')}
         </Badge>
       ),
     },
     {
-      accessorKey: 'group',
-      header: 'Group',
-      cell: ({ row }) => <div>{row.getValue('group') || 'N/A'}</div>,
-    },
-    {
-      accessorKey: 'recipients',
-      header: 'Recipients',
-      cell: ({ row }) => <div>{row.getValue('recipients') || 'N/A'}</div>,
-    },
-    {
-      accessorKey: 'scheduledDate',
-      header: 'Scheduled Date',
-      cell: ({ row }) => <div>{row.getValue('scheduledDate') || 'N/A'}</div>,
-    },
-    {
-      accessorKey: 'status',
-      header: 'Status',
-      cell: ({ row }) => (
-        <Badge variant={getStatusVariant(row.getValue('status'))}>
-          {row.getValue('status')}
-        </Badge>
+      accessorKey: 'targetType',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Group
+        </span>
       ),
+      cell: ({ row }) => {
+        const value = row.getValue('targetType') as keyof typeof targetTypeMap;
+        return (
+          <span className="text-sm">{targetTypeMap[value] || '\u2014'}</span>
+        );
+      },
+    },
+    {
+      accessorKey: 'recipientCount',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Recipients
+        </span>
+      ),
+      cell: ({ row }) => (
+        <span className="text-sm tabular-nums">
+          {row.getValue('recipientCount') || '\u2014'}
+        </span>
+      ),
+    },
+    {
+      id: 'scheduledTimestamp',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Scheduled Date
+        </span>
+      ),
+      accessorFn: (row) => row.options?.scheduledTimestamp,
+      cell: ({ getValue, row }) => {
+        const value = getValue<string>();
+        if (!value)
+          return <span className="text-sm tabular-nums">{'\u2014'}</span>;
+        return <ScheduledDateCell value={value} row={row} />;
+      },
+    },
+    {
+      id: 'status',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Status
+        </span>
+      ),
+      cell: ({ row }) => {
+        const status = getStatus(row.original);
+        return <Badge variant={getStatusVariant(status)}>{status}</Badge>;
+      },
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: () => (
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Actions
+        </span>
+      ),
       enableHiding: false,
       cell: ({ row }) => {
-        return <Eye className="h-4 w-4 rounded-full hover:bg-gray-300" />;
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href={`/projects/el-crm/${id}/communications/scheduled/${row.original.uuid}`}
+              >
+                <Eye className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>View details</TooltipContent>
+          </Tooltip>
+        );
       },
     },
   ];

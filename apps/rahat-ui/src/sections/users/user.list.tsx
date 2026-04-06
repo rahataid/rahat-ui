@@ -27,8 +27,8 @@ export default function UsersTable({ table, loading }: IProps) {
 
   return (
     <>
-      <div className="p-4 border rounded-sm ">
-        <div className="flex items-center space-x-2 mb-2">
+      <div className="p-4 border rounded-lg shadow-card">
+        <div className="flex items-center space-x-2 mb-3">
           <Input
             placeholder="Search User..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
@@ -39,7 +39,6 @@ export default function UsersTable({ table, loading }: IProps) {
           />
           <ViewColumns table={table} />
           <AddButton
-            className="text-white border hover:border-blue-500 hover:text-blue-500"
             name="User"
             path="/users/add"
           />
@@ -50,7 +49,7 @@ export default function UsersTable({ table, loading }: IProps) {
               <TableLoader />
             ) : (
               <TableComponent>
-                <TableHeader className="bg-card sticky top-0">
+                <TableHeader className="bg-muted/50 sticky top-0">
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
                       {headerGroup.headers.map((header) => {

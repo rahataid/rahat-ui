@@ -4,7 +4,7 @@ const TableLoader = () => {
   return (
     <div className="h-table flex items-center justify-center">
       <Image
-        className="animate-pulse opacity-10"
+        className="animate-pulse opacity-[0.08] dark:opacity-[0.15]"
         alt="rahat logo"
         src={'/rahat_logo_standard.png'}
         height={150}

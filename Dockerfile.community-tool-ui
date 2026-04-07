@@ -1,14 +1,49 @@
-# Install dependencies only when needed
-FROM node:20-alpine AS deps
-WORKDIR /usr/src/app
-RUN npm install -g pnpm
-COPY dist/apps/community-tool-ui/package.json ./
-RUN pnpm install --shamefully-hoist
+FROM node:18-alpine AS base
 
-FROM node:20-alpine AS runner
-RUN npm install -g pnpm 
-USER node
-WORKDIR /usr/src/app
-COPY --chown=node:node dist/apps/community-tool-ui ./
-COPY --chown=node:node --from=deps /usr/src/app/node_modules ./node_modules
-CMD [ "pnpm", "start" ]
+# ------- Dependencies -------
+FROM base AS deps
+RUN apk add --no-cache libc6-compat python3 make g++
+WORKDIR /app
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@9.1.3 --activate
+
+# Copy only what pnpm needs to install deps
+COPY pnpm-lock.yaml package.json ./
+
+RUN pnpm install --frozen-lockfile
+
+# ------- Builder -------
+FROM base AS builder
+WORKDIR /app
+
+RUN corepack enable && corepack prepare pnpm@9.1.3 --activate
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Build community-tool-ui
+RUN pnpm nx run community-tool-ui:build
+
+# ------- Runner -------
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy the standalone output
+COPY --from=builder /app/dist/apps/community-tool-ui/.next/standalone ./
+COPY --from=builder /app/dist/apps/community-tool-ui/.next/static ./dist/apps/community-tool-ui/.next/static
+COPY --from=builder /app/apps/community-tool-ui/public ./apps/community-tool-ui/public
+
+USER nextjs
+
+EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["node", "apps/community-tool-ui/server.js"]

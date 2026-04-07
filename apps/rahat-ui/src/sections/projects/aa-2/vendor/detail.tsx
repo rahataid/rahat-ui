@@ -12,6 +12,8 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { Back, Heading } from '../../../../common';
 import { OverviewCard, ProfileCard, TransactionCard } from './components';
 import VendorsBeneficiaryList from './tables/beneficiary.table';
+import InKindBeneficiaryList from './tables/inkind.beneficiary.list';
+import InKindLogs from './tables/inkind.logs';
 import RedemptionRequestTable from './tables/redemption.request';
 import VendorsTransactionsHistory from './tables/transactions.history';
 import { useActiveTabDynamicKey } from 'apps/rahat-ui/src/utils/useActiveTabDynamicKey';
@@ -80,6 +82,18 @@ export default function Detail() {
           >
             Redemption Request
           </TabsTrigger>
+          <TabsTrigger
+            value="inKindBeneficiaryList"
+            className="w-full data-[state=active]:bg-white"
+          >
+            In-Kind Beneficiary List
+          </TabsTrigger>
+          <TabsTrigger
+            value="inKindLogs"
+            className="w-full data-[state=active]:bg-white"
+          >
+            In-Kind Logs
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="vendorOverview">
@@ -108,6 +122,12 @@ export default function Detail() {
 
         <TabsContent value="redemptionRequest">
           <RedemptionRequestTable />
+        </TabsContent>
+        <TabsContent value="inKindBeneficiaryList">
+          <InKindBeneficiaryList />
+        </TabsContent>
+        <TabsContent value="inKindLogs">
+          <InKindLogs />
         </TabsContent>
       </Tabs>
     </div>

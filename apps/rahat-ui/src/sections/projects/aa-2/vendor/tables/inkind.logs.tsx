@@ -8,7 +8,6 @@ import { DemoTable } from 'apps/rahat-ui/src/common/table';
 import { SearchInput } from 'apps/rahat-ui/src/common/search.input';
 import { CustomPagination, Heading } from 'apps/rahat-ui/src/common';
 import { usePagination } from '@rahat-ui/query/utils/use-pagination';
-import { Copy } from 'lucide-react';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 
 const mockData = {

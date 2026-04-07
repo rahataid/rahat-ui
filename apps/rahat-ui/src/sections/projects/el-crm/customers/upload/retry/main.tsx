@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import {
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
@@ -9,9 +11,10 @@ import { useFailedBatch } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import Link from 'next/link';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { ArrowLeft, AlertTriangle, Info } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Info, Search } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -22,6 +25,7 @@ import ClientSidePagination from '../../../../components/client.side.pagination'
 
 export default function CustomersUploadRetryView() {
   const { id: projectUUID } = useParams() as { id: UUID };
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { failedBatch, isLoading } = useFailedBatch(projectUUID, {});
 
@@ -31,7 +35,19 @@ export default function CustomersUploadRetryView() {
     data: failedBatch || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    state: {
+      globalFilter: searchQuery,
+    },
+    globalFilterFn: (row, _columnId, filterValue) => {
+      if (!filterValue) return true;
+      const vendors = row.original?.failedVendors as string[] | undefined;
+      if (!Array.isArray(vendors)) return false;
+      const query = filterValue.toLowerCase();
+      return vendors.some((code) => code.toLowerCase().includes(query));
+    },
+    onGlobalFilterChange: setSearchQuery,
   });
   const batchCount = failedBatch?.length || 0;
 
@@ -84,6 +100,17 @@ export default function CustomersUploadRetryView() {
               view the details of each batch and retry the import, or fix the
               issues in the detail view before retrying.
             </p>
+          </div>
+
+          {/* Search */}
+          <div className="relative max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by customer code..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
           </div>
 
           {/* Table Card */}

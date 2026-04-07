@@ -36,6 +36,7 @@ import {
   Label,
   RadialBarChart,
   RadialBar,
+  PolarAngleAxis,
 } from 'recharts';
 import {
   Users,
@@ -235,14 +236,9 @@ export default function DashboardView() {
   }, [customersByMonth, dateRange]);
 
   // Delivery gauge data for radial bar
+  // value is always 100; the arc length is controlled by endAngle
   const deliveryGaugeData = useMemo(
-    () => [
-      {
-        name: 'Delivery Rate',
-        value: commStats.deliveryRate,
-        fill: COLORS.gauge,
-      },
-    ],
+    () => [{ name: 'Delivery Rate', value: commStats.deliveryRate, fill: COLORS.gauge }],
     [commStats.deliveryRate],
   );
 
@@ -524,10 +520,17 @@ export default function DashboardView() {
                         barSize={12}
                         data={deliveryGaugeData}
                       >
+                        <PolarAngleAxis
+                          type="number"
+                          domain={[0, 100]}
+                          angleAxisId={0}
+                          tick={false}
+                        />
                         <RadialBar
                           dataKey="value"
                           background={{ fill: COLORS.gaugeTrack }}
                           cornerRadius={6}
+                          angleAxisId={0}
                         />
                       </RadialBarChart>
                     </ResponsiveContainer>

@@ -92,31 +92,37 @@ export default function CustomersUploadRetryView() {
         </div>
 
         <div className="flex-1 p-6 overflow-auto space-y-4">
-          {/* Info Banner */}
-          <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
-            <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-            <p className="text-sm text-muted-foreground">
-              These batches failed during import due to some errors. You can
-              view the details of each batch and retry the import, or fix the
-              issues in the detail view before retrying.
-            </p>
-          </div>
+          <div className="flex space-x-4 items-center">
+            {/* Info Banner */}
+            <div className="flex flex-1 items-start gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
+              <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+              <p className="text-sm text-muted-foreground">
+                These batches failed during import due to some errors. You can
+                view the details of each batch and retry the import, or fix the
+                issues in the detail view before retrying.
+              </p>
+            </div>
 
-          {/* Search */}
-          <div className="relative max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by customer code..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
+            {/* Search */}
+            <div className="relative max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by customer code..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
+            </div>
           </div>
 
           {/* Table Card */}
           <Card className="flex flex-col">
             <CardContent
-              className={`p-0 ${searchQuery ? '[&_tbody_tr]:bg-primary/5 [&_tbody_tr:hover]:bg-primary/10' : ''}`}
+              className={`p-0 ${
+                searchQuery
+                  ? '[&_tbody_tr]:bg-primary/5 [&_tbody_tr:hover]:bg-primary/10'
+                  : ''
+              }`}
             >
               <DemoTable table={table} loading={isLoading} />
               <ClientSidePagination table={table} />

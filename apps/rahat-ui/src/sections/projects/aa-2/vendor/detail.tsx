@@ -21,6 +21,15 @@ import { getVendorRedirectRoute } from 'apps/rahat-ui/src/utils/navigation';
 import { useGetVendor } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 
+const TabsTriggerStats = [
+  { title: 'Vendor Overview', value: 'vendorOverview' },
+  { title: 'Transaction History', value: 'transactionHistory' },
+  { title: 'Beneficiary List', value: 'beneficiaryList' },
+  { title: 'Redemption Request', value: 'redemptionRequest' },
+  { title: 'In-Kind Beneficiary List', value: 'inKindBeneficiaryList' },
+  { title: 'In-Kind Logs', value: 'inKindLogs' },
+];
+
 export default function Detail() {
   const { id, vendorId }: { id: string; vendorId: string } = useParams();
   const { activeTab, setActiveTab } = useActiveTabDynamicKey(
@@ -58,42 +67,15 @@ export default function Detail() {
       />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="border bg-secondary rounded">
-          <TabsTrigger
-            value="vendorOverview"
-            className="w-full data-[state=active]:bg-white"
-          >
-            Vendor Overview
-          </TabsTrigger>
-          <TabsTrigger
-            value="transactionHistory"
-            className="w-full data-[state=active]:bg-white"
-          >
-            Transaction History
-          </TabsTrigger>
-          <TabsTrigger
-            value="beneficiaryList"
-            className="w-full data-[state=active]:bg-white"
-          >
-            Beneficiary List
-          </TabsTrigger>
-          <TabsTrigger
-            value="redemptionRequest"
-            className="w-full data-[state=active]:bg-white"
-          >
-            Redemption Request
-          </TabsTrigger>
-          <TabsTrigger
-            value="inKindBeneficiaryList"
-            className="w-full data-[state=active]:bg-white"
-          >
-            In-Kind Beneficiary List
-          </TabsTrigger>
-          <TabsTrigger
-            value="inKindLogs"
-            className="w-full data-[state=active]:bg-white"
-          >
-            In-Kind Logs
-          </TabsTrigger>
+          {TabsTriggerStats.map((tab) => (
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className="w-full data-[state=active]:bg-white"
+            >
+              {tab.title}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
         <TabsContent value="vendorOverview">

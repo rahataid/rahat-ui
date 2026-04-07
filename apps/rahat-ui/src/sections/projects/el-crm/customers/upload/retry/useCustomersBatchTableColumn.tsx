@@ -76,17 +76,39 @@ export const useCustomersBatchTableColumn = () => {
       ),
       cell: ({ row }) => {
         const vendors = row.getValue('failedVendors') as string[];
-        const text = Array.isArray(vendors) ? vendors.join(', ') : '';
-        if (!text) return <span className="text-muted-foreground/60">—</span>;
+        if (!Array.isArray(vendors) || vendors.length === 0)
+          return <span className="text-muted-foreground/60">—</span>;
+        const preview = vendors.slice(0, 3).join(', ');
+        const remaining = vendors.length - 3;
         return (
           <Tooltip>
             <TooltipTrigger asChild>
               <span className="text-sm truncate max-w-[220px] block cursor-default">
-                {text}
+                {preview}
+                {remaining > 0 && (
+                  <span className="text-muted-foreground ml-1">
+                    +{remaining} more
+                  </span>
+                )}
               </span>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="max-w-[320px]">
-              <p className="text-xs">{text}</p>
+            <TooltipContent
+              side="bottom"
+              className="max-w-[400px] max-h-[300px] overflow-y-auto p-3"
+            >
+              <p className="text-xs font-medium mb-1.5">
+                {vendors.length} failed customers
+              </p>
+              <div className="flex flex-wrap gap-1">
+                {vendors.map((code, i) => (
+                  <span
+                    key={i}
+                    className="text-xs bg-muted px-1.5 py-0.5 rounded"
+                  >
+                    {code}
+                  </span>
+                ))}
+              </div>
             </TooltipContent>
           </Tooltip>
         );

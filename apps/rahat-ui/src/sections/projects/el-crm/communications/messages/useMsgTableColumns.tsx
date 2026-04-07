@@ -10,6 +10,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { formatDateTime } from '../../../../../utils';
 
 export const useMsgTableColumn = () => {
   const { id } = useParams();
@@ -100,20 +101,11 @@ export const useMsgTableColumn = () => {
       cell: ({ row }) => {
         const date = row.getValue('createdAt') as string;
         if (!date) return <span className="text-sm">\u2014</span>;
-        const d = new Date(date);
+        const { dateStr, timeStr } = formatDateTime(date);
         return (
           <span className="text-sm tabular-nums whitespace-nowrap">
-            {d.toLocaleDateString(undefined, {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-            })}
-            <span className="text-muted-foreground ml-1">
-              {d.toLocaleTimeString(undefined, {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </span>
+            {dateStr}
+            <span className="text-muted-foreground ml-1">{timeStr}</span>
           </span>
         );
       },

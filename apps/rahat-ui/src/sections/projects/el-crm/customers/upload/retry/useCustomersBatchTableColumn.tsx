@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
+import { formatDateTime } from 'apps/rahat-ui/src/utils';
 import { UUID } from 'crypto';
 import { Eye, RotateCcw, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -60,27 +61,17 @@ export const useCustomersBatchTableColumn = (searchQuery = '') => {
           Date
         </span>
       ),
-      cell: ({ row }) => (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span className="text-sm font-mono truncate max-w-[260px] block cursor-default">
-              {new Date(row.getValue('updatedAt') as string).toLocaleDateString(
-                'en-US',
-                {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                },
-              )}
-            </span>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">
-            <p className="font-mono text-xs">
-              {new Date(row.getValue('updatedAt') as string).toLocaleString()}
-            </p>
-          </TooltipContent>
-        </Tooltip>
-      ),
+      cell: ({ row }) => {
+        const date = row?.original?.updatedAt as string;
+        if (!date) return <span className="text-sm">\u2014</span>;
+        const { dateStr, timeStr } = formatDateTime(date);
+        return (
+          <span className="text-sm tabular-nums whitespace-nowrap">
+            {dateStr}
+            <span className="text-muted-foreground ml-1">{timeStr}</span>
+          </span>
+        );
+      },
     },
     {
       accessorKey: 'failedVendors',

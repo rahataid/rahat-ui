@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { DataCard, Heading } from 'apps/rahat-ui/src/common';
+import { CustomPagination, DataCard, Heading } from 'apps/rahat-ui/src/common';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
@@ -139,7 +139,7 @@ export default function InkindOverview() {
   const projectUUID = id as UUID;
 
   const [page, setPage] = useState(1);
-  const perPage = 10;
+  const [perPage, setPerPage] = useState(10);
 
   const { data: summaryData } = useInkindsSummary(projectUUID);
   const { data: txData, isFetching: txFetching } = useInkindTransactions(projectUUID, { page, perPage });
@@ -159,7 +159,7 @@ export default function InkindOverview() {
     <div className="flex flex-col h-full">
       <Heading
         title="Inkind Overview"
-        titleStyle="text-lg"
+        titleStyle="font-medium text-lg"
         description="Overview of all in-kind items and stock movements"
       />
 
@@ -192,89 +192,20 @@ export default function InkindOverview() {
 
       <div className="flex flex-col flex-[2] border rounded-sm p-4 min-h-0">
         <div className="flex items-start justify-between mb-0.5">
-          <h1 className="text-sm font-semibold">Overall Inkind Flow</h1>
-          {meta && meta.lastPage > 1 && (
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setPage(1)}
-                disabled={!meta.prev}
-                className="h-7 w-7 flex items-center justify-center rounded border text-xs disabled:opacity-40 hover:bg-muted transition-colors"
-              >
-                «
-              </button>
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={!meta.prev}
-                className="h-7 w-7 flex items-center justify-center rounded border text-xs disabled:opacity-40 hover:bg-muted transition-colors"
-              >
-                ‹
-              </button>
-              {(() => {
-                const total = meta.lastPage;
-                const current = meta.currentPage;
-                const delta = 1;
-                const pages: (number | '...')[] = [];
-                for (let i = 1; i <= total; i++) {
-                  if (
-                    i === 1 ||
-                    i === total ||
-                    (i >= current - delta && i <= current + delta)
-                  ) {
-                    pages.push(i);
-                  } else if (
-                    pages[pages.length - 1] !== '...'
-                  ) {
-                    pages.push('...');
-                  }
-                }
-                return pages.map((p, idx) =>
-                  p === '...' ? (
-                    <span key={`ellipsis-${idx}`} className="h-7 w-7 flex items-center justify-center text-xs text-muted-foreground">
-                      …
-                    </span>
-                  ) : (
-                    <button
-                      key={p}
-                      onClick={() => setPage(p)}
-                      className={`h-7 w-7 flex items-center justify-center rounded border text-xs transition-colors ${p === current
-                          ? 'bg-primary text-primary-foreground border-primary text-[#FFF]'
-                          : 'hover:bg-muted'
-                        }`}
-                    >
-                      {p}
-                    </button>
-                  ),
-                );
-              })()}
-              <button
-                onClick={() => setPage((p) => Math.min(meta.lastPage, p + 1))}
-                disabled={!meta.next}
-                className="h-7 w-7 flex items-center justify-center rounded border text-xs disabled:opacity-40 hover:bg-muted transition-colors"
-              >
-                ›
-              </button>
-              <button
-                onClick={() => setPage(meta.lastPage)}
-                disabled={!meta.next}
-                className="h-7 w-7 flex items-center justify-center rounded border text-xs disabled:opacity-40 hover:bg-muted transition-colors"
-              >
-                »
-              </button>
-            </div>
-          )}
+          <h1 className="text-lg font-medium">Overall Inkind Flow</h1>
         </div>
         {movements.length !== 0 && (
           <p className="text-xs text-muted-foreground mb-3">
             Click on any logs to view details
           </p>
         )}
-        <div className="relative flex-1 min-h-[200px]">
+        <div className="relative flex-1 min-h-[150px]">
           {txFetching && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 rounded-sm">
               <div className="h-5 w-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
             </div>
           )}
-          <ScrollArea className="flex-1 min-h-[200px] max-h-[50vh] overflow-auto items-center justify-center">
+          <ScrollArea className="flex-1 min-h-[120px] max-h-[40vh] overflow-auto items-center justify-center">
             {movements.length === 0 ? (
               <p className="text-sm text-muted-foreground align-center justify-center text-center py-6">
                 No records available.
@@ -346,6 +277,21 @@ export default function InkindOverview() {
           </ScrollArea>
         </div>
       </div>
+      <CustomPagination
+        currentPage={page}
+        handleNextPage={() => setPage((p) => Math.min(meta?.lastPage ?? p, p + 1))}
+        handlePrevPage={() => setPage((p) => Math.max(1, p - 1))}
+        handlePageSizeChange={(size) => { setPerPage(size as number); setPage(1); }}
+        meta={{
+          total: meta?.total ?? 0,
+          currentPage: page,
+          lastPage: meta?.lastPage ?? 1,
+          perPage,
+          next: meta?.next ?? null,
+          prev: meta?.prev ?? null,
+        }}
+        perPage={perPage}
+      />
 
       <Sheet
         open={!!selectedMovement}

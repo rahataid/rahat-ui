@@ -5,6 +5,7 @@ import { UUID } from 'crypto';
 import {
   PROJECT_SETTINGS_KEYS,
   useDeleteTriggerStatement,
+  useProjectInfo,
   useProjectSettingsStore,
   useProjectStore,
   useSingleTriggerStatement,
@@ -30,6 +31,7 @@ import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { AlertCircleIcon } from 'lucide-react';
 import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
 export default function TriggerStatementDetail() {
   const router = useRouter();
@@ -53,6 +55,14 @@ export default function TriggerStatementDetail() {
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
+  const { data: projectInfo, isLoading: isProjectInfoLoading } = useProjectInfo(
+    id as UUID,
+  );
+
+  const stationHeading = getStationTitle(
+    projectInfo?.value?.project_type || '',
+  );
+
   const phase = trigger?.phase?.name;
   const source = trigger?.source;
   const txnUrl = getExplorerUrl({
@@ -86,7 +96,7 @@ export default function TriggerStatementDetail() {
     );
   };
 
-  if (isLoading) {
+  if (isLoading || isProjectInfoLoading) {
     return <TableLoader />;
   }
 
@@ -200,7 +210,7 @@ export default function TriggerStatementDetail() {
             } text-sm/4 text-muted-foreground mt-6`}
           >
             <div>
-              <p className="mb-1">River Basin</p>
+              <p className="mb-1">{stationHeading}</p>
               <p>{trigger?.phase?.source?.riverBasin || 'N/A'}</p>
             </div>
             <div>

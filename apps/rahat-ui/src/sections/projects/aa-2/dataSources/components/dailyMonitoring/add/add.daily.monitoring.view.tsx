@@ -4,7 +4,11 @@ import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
-import { useCreateDailyMonitoring, useSources } from '@rahat-ui/query';
+import {
+  useCreateDailyMonitoring,
+  useProjectInfo,
+  useSources,
+} from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { UUID } from 'crypto';
@@ -12,6 +16,7 @@ import { Plus } from 'lucide-react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import SelectFormField from '../select.form.field';
+import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 import AddAnotherDataSource from './add.another.data.source';
 import { fieldLabels } from 'apps/rahat-ui/src/utils/fieldLabelValidation';
 const fields = ['todayGLOFAS', 'days3', 'days5'] as const;
@@ -22,6 +27,7 @@ export default function AddDailyMonitoring() {
   const router = useRouter();
 
   const { data: sources } = useSources(projectId, {});
+  const { data: projectInfo } = useProjectInfo(projectId);
 
   const riverBasins = React.useMemo(
     () =>
@@ -389,8 +395,10 @@ export default function AddDailyMonitoring() {
               <SelectFormField
                 form={form}
                 name="riverBasin"
-                label="River Basin"
-                placeholder="Select river basin"
+                label={getStationTitle(projectInfo?.value?.project_type) || ''}
+                placeholder={`Select ${getStationTitle(
+                  projectInfo?.value?.project_type,
+                ).toLowerCase()}`}
                 selectItems={riverBasins}
                 className="mx-2"
               />

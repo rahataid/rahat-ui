@@ -1,6 +1,10 @@
 'use client';
 
-import { useDailyMonitoring, usePagination } from '@rahat-ui/query';
+import {
+  useDailyMonitoring,
+  usePagination,
+  useProjectInfo,
+} from '@rahat-ui/query';
 import { cn } from '@rahat-ui/shadcn/src';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
@@ -31,6 +35,7 @@ import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import useDailyMonitoringTableColumn from '../useDailyMonitoringTableColumn';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 // TODO: This component will be removed if not used anywhere
 // import DailyMonitoringTable from './daily.monitoring.table';
 
@@ -44,6 +49,10 @@ export default function DailyMonitoringListView() {
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
+  );
+  const { data: projectInfo } = useProjectInfo(projectId as UUID);
+  const stationHeading = getStationTitle(
+    projectInfo?.value?.project_type || '',
   );
   const [paginationState, setPaginationState] = React.useState({
     pageIndex: 0,
@@ -84,7 +93,7 @@ export default function DailyMonitoringListView() {
           }
         />
         <SelectComponent
-          name="River Basin"
+          name={stationHeading}
           options={['ALL', 'MAHAKALI', 'KARNALI', 'BHERI']}
           value={
             (table.getColumn('riverBasin')?.getFilterValue() as string) ?? ''

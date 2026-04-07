@@ -9,6 +9,7 @@
     "nx:reset": "nx reset",
     "rahat:dev": "nx run rahat-ui:dev",
     "rahat:build": "nx run rahat-ui:build ",
+    "community-ui:build": "nx run community-tool-ui:build",
     "rahat:serve": "nx run rahat-ui:start",
     "build:all": "nx run-many --target=build --all  --exclude=@rahat-ui/source",
     "postbuild": "cp -R apps/rahat-ui/public dist/apps/rahat-ui",

@@ -1,12 +1,50 @@
-# Install dependencies only when needed
-FROM node:20-alpine AS deps
-WORKDIR /usr/src/app
-COPY dist/apps/rahat-ui/package.json ./
-RUN yarn install
+FROM node:18-alpine AS base
 
-FROM node:20-alpine AS runner
-USER node
-WORKDIR /usr/src/app
-COPY --chown=node:node dist/apps/rahat-ui/ ./
-COPY --chown=node:node --from=deps /usr/src/app/node_modules ./node_modules
-CMD [ "yarn", "start" ]
+# ------- Dependencies -------
+FROM base AS deps
+RUN apk add --no-cache libc6-compat python3 make g++
+WORKDIR /app
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@9.1.3 --activate
+
+# Copy only what pnpm needs to install deps
+COPY pnpm-lock.yaml package.json ./
+
+RUN pnpm install --frozen-lockfile
+
+# ------- Builder -------
+FROM base AS builder
+WORKDIR /app
+
+RUN corepack enable && corepack prepare pnpm@9.1.3 --activate
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Build rahat-ui (increase heap for large Next.js build)
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+RUN pnpm nx run rahat-ui:build
+
+# ------- Runner -------
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy the standalone output
+COPY --from=builder /app/dist/apps/rahat-ui/.next/standalone ./
+COPY --from=builder /app/dist/apps/rahat-ui/.next/static ./dist/apps/rahat-ui/.next/static
+COPY --from=builder /app/apps/rahat-ui/public ./apps/rahat-ui/public
+
+USER nextjs
+
+EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["node", "apps/rahat-ui/server.js"]

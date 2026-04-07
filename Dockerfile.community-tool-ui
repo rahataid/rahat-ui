@@ -22,7 +22,8 @@ RUN corepack enable && corepack prepare pnpm@9.1.3 --activate
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build community-tool-ui
+# Build community-tool-ui (increase heap for large Next.js build)
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN pnpm nx run community-tool-ui:build
 
 # ------- Runner -------

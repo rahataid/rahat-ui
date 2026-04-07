@@ -10,7 +10,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useActiveTabDynamicKey } from 'apps/rahat-ui/src/utils/useActiveTabDynamicKey';
 import { usePagination } from '@rahat-ui/query/utils/use-pagination';
 import { CustomPagination, Heading } from 'apps/rahat-ui/src/common';
-import { Copy, Eye } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 

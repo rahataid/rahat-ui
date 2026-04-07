@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
+import { formatDateTime } from 'apps/rahat-ui/src/utils';
 import { useParams, useRouter } from 'next/navigation';
 
 interface CustomerTableRow {
@@ -234,17 +235,13 @@ export const useCustomersTableColumn = () => {
       cell: ({ row }) => {
         const date = row.getValue('lastMessageSent') as string;
         if (!date) return <span className="text-muted-foreground/60">—</span>;
-        const dateObj = new Date(date);
-        const formatted = dateObj.toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-        });
-        const time = dateObj.toLocaleTimeString('en-US', {
-          hour: '2-digit',
-          minute: '2-digit',
-        });
-        return <span className="text-sm tabular-nums">{formatted} {time}</span>;
+        const { dateStr, timeStr } = formatDateTime(date);
+        return (
+          <span className="text-sm tabular-nums whitespace-nowrap">
+            {dateStr}
+            <span className="text-muted-foreground ml-1">{timeStr}</span>
+          </span>
+        );
       },
     },
   ];

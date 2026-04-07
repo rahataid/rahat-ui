@@ -184,15 +184,13 @@ export const useCustomersBatchTableColumn = (searchQuery = '') => {
         </span>
       ),
       cell: ({ row }) => {
-        const value = row.getValue('lastRetryAt');
-        if (!value) return <span className="text-muted-foreground/60">—</span>;
+        const date = row.getValue('lastRetryAt') as string;
+        if (!date) return <span className="text-muted-foreground/60">—</span>;
+        const { dateStr, timeStr } = formatDateTime(date);
         return (
-          <span className="text-sm tabular-nums">
-            {new Date(value as string).toLocaleDateString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
-            })}
+          <span className="text-sm tabular-nums whitespace-nowrap">
+            {dateStr}
+            <span className="text-muted-foreground ml-1">{timeStr}</span>
           </span>
         );
       },

@@ -28,12 +28,12 @@ export const SOURCE_CONFIG = {
   // for heatwave
   prob_humidity: {
     label: 'DHM Humidity',
-    sourceSubType: 'Humidity Probability',
+    sourceSubType: 'Humidity Probability (%)',
     subTypes: ['hourly', 'daily'],
   },
   temperature_c: {
     label: 'DHM Temperature',
-    sourceSubType: 'Temperature',
+    sourceSubType: 'Temperature (°C)',
     subTypes: ['hourly', 'daily'],
   },
 } as const;

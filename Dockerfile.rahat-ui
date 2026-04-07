@@ -41,6 +41,13 @@ COPY --from=builder /app/dist/apps/rahat-ui/.next/standalone ./
 COPY --from=builder /app/dist/apps/rahat-ui/.next/static ./dist/apps/rahat-ui/.next/static
 COPY --from=builder /app/apps/rahat-ui/public ./apps/rahat-ui/public
 
+# Install sharp for Next.js image optimization
+RUN cd /tmp && npm init -y && npm install sharp
+ENV NEXT_SHARP_PATH=/tmp/node_modules/sharp
+
+# Create cache directory with correct permissions
+RUN mkdir -p /app/dist/apps/rahat-ui/.next/cache && chown -R nextjs:nodejs /app/dist/apps/rahat-ui/.next/cache
+
 USER nextjs
 
 EXPOSE 3000

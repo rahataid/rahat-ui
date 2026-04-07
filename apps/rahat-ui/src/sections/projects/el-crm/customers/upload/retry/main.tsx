@@ -29,7 +29,7 @@ export default function CustomersUploadRetryView() {
 
   const { failedBatch, isLoading } = useFailedBatch(projectUUID, {});
 
-  const columns = useCustomersBatchTableColumn();
+  const columns = useCustomersBatchTableColumn(searchQuery);
 
   const table = useReactTable({
     data: failedBatch || [],
@@ -115,7 +115,9 @@ export default function CustomersUploadRetryView() {
 
           {/* Table Card */}
           <Card className="flex flex-col">
-            <CardContent className="p-0">
+            <CardContent
+              className={`p-0 ${searchQuery ? '[&_tbody_tr]:bg-primary/5 [&_tbody_tr:hover]:bg-primary/10' : ''}`}
+            >
               <DemoTable table={table} loading={isLoading} />
               <ClientSidePagination table={table} />
             </CardContent>

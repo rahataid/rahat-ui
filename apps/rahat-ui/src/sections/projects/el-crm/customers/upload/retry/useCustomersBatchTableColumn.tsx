@@ -11,7 +11,22 @@ import { UUID } from 'crypto';
 import { Eye, RotateCcw, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
-export const useCustomersBatchTableColumn = () => {
+function HighlightMatch({ text, query }: { text: string; query: string }) {
+  if (!query) return <>{text}</>;
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, idx)}
+      <mark className="bg-yellow-200 dark:bg-yellow-500/40 rounded-sm px-0.5">
+        {text.slice(idx, idx + query.length)}
+      </mark>
+      {text.slice(idx + query.length)}
+    </>
+  );
+}
+
+export const useCustomersBatchTableColumn = (searchQuery = '') => {
   const { id: projectUUID } = useParams() as {
     id: UUID;
   };
@@ -78,13 +93,18 @@ export const useCustomersBatchTableColumn = () => {
         const vendors = row.getValue('failedVendors') as string[];
         if (!Array.isArray(vendors) || vendors.length === 0)
           return <span className="text-muted-foreground/60">—</span>;
-        const preview = vendors.slice(0, 3).join(', ');
+        const preview = vendors.slice(0, 3);
         const remaining = vendors.length - 3;
         return (
           <Tooltip>
             <TooltipTrigger asChild>
               <span className="text-sm truncate max-w-[220px] block cursor-default">
-                {preview}
+                {preview.map((code, i) => (
+                  <span key={i}>
+                    {i > 0 && ', '}
+                    <HighlightMatch text={code} query={searchQuery} />
+                  </span>
+                ))}
                 {remaining > 0 && (
                   <span className="text-muted-foreground ml-1">
                     +{remaining} more
@@ -100,14 +120,23 @@ export const useCustomersBatchTableColumn = () => {
                 {vendors.length} failed customers
               </p>
               <div className="flex flex-wrap gap-1">
-                {vendors.map((code, i) => (
-                  <span
-                    key={i}
-                    className="text-xs bg-muted px-1.5 py-0.5 rounded"
-                  >
-                    {code}
-                  </span>
-                ))}
+                {vendors.map((code, i) => {
+                  const isMatch =
+                    searchQuery &&
+                    code.toLowerCase().includes(searchQuery.toLowerCase());
+                  return (
+                    <span
+                      key={i}
+                      className={`text-xs px-1.5 py-0.5 rounded ${
+                        isMatch
+                          ? 'bg-yellow-200 dark:bg-yellow-500/40 font-medium ring-1 ring-yellow-300 dark:ring-yellow-500/50'
+                          : 'bg-muted'
+                      }`}
+                    >
+                      <HighlightMatch text={code} query={searchQuery} />
+                    </span>
+                  );
+                })}
               </div>
             </TooltipContent>
           </Tooltip>

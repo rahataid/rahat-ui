@@ -293,6 +293,7 @@ export default function AddTriggerView() {
                   sourceOptions={sourceOptions}
                   subTypeOptions={subtypeOptionsBySource}
                   stationHeading={stationHeading}
+                  projectType={projectInfo?.value?.project_type}
                 />
               </TabsContent>
               <TabsContent value="manual">

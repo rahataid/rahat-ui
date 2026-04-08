@@ -21,7 +21,11 @@ import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { z } from 'zod';
 import { Info } from 'lucide-react';
 import { AutomatedFormSchema } from '../add.trigger.view';
-import { Option, SOURCE_MAPPING } from '../utils';
+import {
+  Option,
+  SOURCE_MAPPING,
+  filterSourceOptionsByProjectType,
+} from '../utils';
 import { useGetSeriesByDataSource } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -70,6 +74,7 @@ type IProps = {
   sourceOptions?: Option[];
   subTypeOptions?: Record<string, Option[]>;
   stationHeading?: string;
+  projectType?: string;
 };
 
 export default function AddAutomatedTriggerForm({
@@ -79,6 +84,7 @@ export default function AddAutomatedTriggerForm({
   sourceOptions,
   subTypeOptions,
   stationHeading,
+  projectType,
 }: IProps) {
   const source = form.watch('source');
   const triggerSource = form.watch('triggerStatement.source');
@@ -98,6 +104,12 @@ export default function AddAutomatedTriggerForm({
     selectedSource.type?.toUpperCase() || '',
     triggerSourceSubType || '',
   );
+
+  // Filter source options based on project type
+  const filteredSourceOptions = React.useMemo(() => {
+    if (!sourceOptions) return [];
+    return filterSourceOptionsByProjectType(sourceOptions, projectType || '');
+  }, [sourceOptions, projectType]);
 
   React.useEffect(() => {
     if (source && source in SOURCE_MAPPING) {
@@ -252,8 +264,8 @@ export default function AddAutomatedTriggerForm({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {sourceOptions?.length ? (
-                        sourceOptions?.map((option) => (
+                      {filteredSourceOptions?.length ? (
+                        filteredSourceOptions?.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
                             {option.label}
                           </SelectItem>

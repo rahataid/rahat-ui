@@ -93,6 +93,26 @@ export const buildSubtypeOptions = (
   );
 };
 
+// Filter source options based on project type
+export const filterSourceOptionsByProjectType = (
+  sourceOptions: Option[],
+  projectType: string,
+): Option[] => {
+  // If project type is explicitly HEAT_WAVE, show only humidity and temperature
+  if (projectType?.toUpperCase() === 'HEAT_WAVE') {
+    return sourceOptions.filter(
+      (option) =>
+        option.value === 'dhm:humidity' || option.value === 'dhm:temperature',
+    );
+  }
+
+  // For all other cases (including when projectType is undefined), exclude heatwave sources
+  return sourceOptions.filter(
+    (option) =>
+      option.value !== 'dhm:humidity' && option.value !== 'dhm:temperature',
+  );
+};
+
 export const SEP = ' • ';
 
 export const calculateRemainingTriggers = (

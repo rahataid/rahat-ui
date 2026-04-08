@@ -27,14 +27,22 @@ export function ForecastDataSection({
   const unit = sourceSubTypeLabel?.match(/\((.*?)\)/)?.[1] || '';
   const formattedSourceSubType = toLabel(sourceSubType);
 
+  const getDHMLabel = (
+    triggerSourceValue: string,
+    triggerSourceSubTypeValue: string,
+  ) => {
+    if (triggerSourceValue === 'prob_humidity') return 'Humidity Level';
+    if (triggerSourceValue === 'temperature_c') return 'Temperature Level';
+    if (triggerSourceValue === 'rainfall_mm') return 'Rainfall Level';
+    if (triggerSourceSubTypeValue === 'warning_level') return 'Warning Level';
+    if (triggerSourceSubTypeValue === 'danger_level') return 'Danger Level';
+    return 'Water Level';
+  };
+
   const setIconLabel = (source: string, triggerSourceSubType: string) => {
     switch (source) {
       case 'DHM':
-        return triggerSourceSubType === 'warning_level'
-          ? 'Warning Level'
-          : triggerSourceSubType === 'danger_level'
-          ? 'Danger Level'
-          : 'Rainfall Level';
+        return getDHMLabel(triggerSource, triggerSourceSubType);
 
       case 'GFH':
         return triggerSourceSubType === 'warning_discharge'

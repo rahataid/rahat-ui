@@ -1,5 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { AlertCircle, Download, Eye, Loader2, FolderDown } from 'lucide-react';
+import { AlertCircle, Eye, FolderDown } from 'lucide-react';
 import Link from 'next/link';
 import {
   Tooltip,
@@ -21,13 +21,10 @@ import {
 import { Import } from '@rahataid/sdk/clients';
 import {
   useDownloadImportErrors,
-  useImportProgress,
   useStartImport,
 } from '@rahat-ui/query';
 import { toast } from 'react-toastify';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
-import { useEffect } from 'react';
 
 function ImportActionCell({ row }: { row: any }) {
   const status = row.getValue('status') as string;
@@ -36,14 +33,12 @@ function ImportActionCell({ row }: { row: any }) {
   const beneficiaryCount = row.getValue('beneficiaryCount') as number;
 
   const startImport = useStartImport();
-  const { progress, isListening, startListening } = useImportProgress(uuid);
   const downloadErrors = useDownloadImportErrors();
 
   const handleStartImport = async () => {
     try {
       await startImport.mutateAsync(uuid);
-      toast.success('Import started');
-      startListening();
+      toast.success('Import has started. Please reload the page to check the status.');
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Failed to start import');
     }
@@ -57,13 +52,9 @@ function ImportActionCell({ row }: { row: any }) {
     }
   };
 
-  const currentStatus = progress?.status || status;
-  const isProcessing =
-    currentStatus === 'PROCESSING' || startImport.isPending || isListening;
-
   return (
     <div className="flex gap-2 items-center">
-      {currentStatus === 'NEW' && !isProcessing && (
+      {status === 'NEW' && (
         <AlertDialog>
           <TooltipProvider delayDuration={100}>
             <Tooltip>
@@ -75,11 +66,7 @@ function ImportActionCell({ row }: { row: any }) {
                     className="h-8 w-8"
                     disabled={startImport.isPending}
                   >
-                    {startImport.isPending ? (
-                      <Loader2 size={18} className="animate-spin" />
-                    ) : (
-                      <FolderDown size={18} strokeWidth={2} />
-                    )}
+                    <FolderDown size={18} strokeWidth={2} />
                   </Button>
                 </AlertDialogTrigger>
               </TooltipTrigger>
@@ -115,30 +102,7 @@ function ImportActionCell({ row }: { row: any }) {
         </AlertDialog>
       )}
 
-      {isProcessing && progress && (
-        <div className="flex items-center gap-2 min-w-[120px]">
-          <Progress
-            value={
-              progress.total > 0
-                ? (progress.processed / progress.total) * 100
-                : 0
-            }
-            className="h-2 w-20"
-          />
-          <span className="text-xs text-muted-foreground whitespace-nowrap">
-            {progress.processed}/{progress.total}
-          </span>
-        </div>
-      )}
-
-      {isProcessing && !progress && (
-        <div className="flex items-center gap-1">
-          <Loader2 size={14} className="animate-spin" />
-          <span className="text-xs text-muted-foreground">Processing...</span>
-        </div>
-      )}
-
-      {(currentStatus === 'FAILED' || (progress && progress.failed > 0)) && (
+      {status === 'FAILED' && (
         <TooltipProvider delayDuration={100}>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -178,24 +142,21 @@ function ImportActionCell({ row }: { row: any }) {
 
 function StatusCell({ row }: { row: any }) {
   const status = row.getValue('status') as string;
-  const uuid = row.original.uuid;
-  const { progress } = useImportProgress(uuid);
-  const currentStatus = progress?.status || status;
 
   return (
     <div
       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-        currentStatus === 'IMPORTED'
+        status === 'IMPORTED'
           ? 'bg-green-100 text-green-800'
-          : currentStatus === 'PROCESSING'
+          : status === 'PROCESSING'
             ? 'bg-yellow-100 text-yellow-800'
-            : currentStatus === 'FAILED'
+            : status === 'FAILED'
               ? 'bg-red-100 text-red-800'
               : 'bg-blue-100 text-blue-800'
       }`}
     >
-      {currentStatus}
-    </div>
+      {status}
+      </div>
   );
 }
 

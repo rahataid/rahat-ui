@@ -49,7 +49,7 @@ type BeneficiaryType = 'predefined' | 'walkin';
 const columns: ColumnDef<any>[] = [
   {
     accessorKey: 'walletAddress',
-    header: 'Wallet Address',
+    header: 'Beneficiary Wallet Address',
     cell: ({ row }) => (
       <div className="flex gap-2 items-center">
         {row.original.walletAddress}

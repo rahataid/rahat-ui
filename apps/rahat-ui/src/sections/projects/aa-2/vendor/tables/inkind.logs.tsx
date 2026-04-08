@@ -94,7 +94,7 @@ export default function InKindLogs() {
   const filteredData = React.useMemo(
     () =>
       mockData.data.filter((row) =>
-        row.txHash.toLowerCase().includes(search.toLowerCase()),
+        row.walletAddress.toLowerCase().includes(search.toLowerCase()),
       ),
     [search],
   );
@@ -112,10 +112,10 @@ export default function InKindLogs() {
       />
 
       <SearchInput
-        name="txhash"
+        name="walletAddress"
         value={search}
         onSearch={(e) => setSearch(e.target.value)}
-        placeholder="Search txHash"
+        placeholder="Search wallet"
       />
       <DemoTable table={table} />
       <CustomPagination

@@ -29,7 +29,11 @@ import GaugeReading from './components/gaugeReading';
 import GFHDetails from './components/gfh';
 import { GlofasSection } from './components/glofas';
 import { useParams, useRouter } from 'next/navigation';
-import { PROJECT_SETTINGS_KEYS, useProjectInfo, useTabConfiguration } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectInfo,
+  useTabConfiguration,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import Loader from 'apps/community-tool-ui/src/components/Loader';

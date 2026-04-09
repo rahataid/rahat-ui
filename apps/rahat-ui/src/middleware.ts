@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
-  const dev = process.env.NEXT_PUBLIC_ENVIRONMENT === 'development';
+  const dev =
+    process.env.NODE_ENV === 'development' ||
+    process.env.NEXT_PUBLIC_ENVIRONMENT === 'development';
 
   const cspHeader = `
   default-src 'self';
@@ -23,18 +25,16 @@ export function middleware(request: NextRequest) {
     .replace(/\n/g, ' ')
     .trim();
 
-  const requestHeaders = new Headers();
+  const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-nonce', nonce);
-  requestHeaders.set(
-    'Content-Security-Policy',
-    // Replace newline characters and spaces
-    cspHeader,
-  );
 
-  return NextResponse.next({
-    headers: requestHeaders,
+  const response = NextResponse.next({
     request: {
       headers: requestHeaders,
     },
   });
+
+  response.headers.set('Content-Security-Policy', cspHeader);
+
+  return response;
 }

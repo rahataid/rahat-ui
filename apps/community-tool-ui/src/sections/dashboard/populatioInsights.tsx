@@ -17,7 +17,7 @@ const PopulationInsights = ({ data }: Props) => {
   const vulnerabilityStatus =
     data?.data?.find((f) => f?.name === 'VULNERABIILTY_STATUS') || ([] as any);
 
-  const benefMapStatsocialProtectionBenefitss =
+  const benefMapStats =
     data?.data?.find((f) => f?.name === 'BENEFICIARY_MAP_STATS') || ([] as any);
 
   const filteredCoords =

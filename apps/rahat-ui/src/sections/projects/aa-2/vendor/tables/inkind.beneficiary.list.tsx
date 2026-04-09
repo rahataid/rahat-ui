@@ -13,67 +13,78 @@ import { CustomPagination, Heading } from 'apps/rahat-ui/src/common';
 import { Eye } from 'lucide-react';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
-
-const mockData = {
-  success: true,
-  data: [
-    {
-      uuid: '1',
-      walletAddress: '1A1zP1eP5Q...Gefi2',
-      groupName: 'Akash Group',
-      inKindName: 'Akash In-kind',
-      inKindQuantity: '1,000',
-      txHash: '1A1zP1eP5Q...Gefi2',
-    },
-    {
-      uuid: '2',
-      walletAddress: '1B1zP1eP5Q...Gefi2',
-      groupName: 'Aashman Group',
-      inKindName: 'Aashman In-kind',
-      inKindQuantity: '1,000',
-      txHash: '1B1zP1eP5Q...Gefi2',
-    },
-  ],
-  meta: {
-    total: 2,
-    lastPage: 1,
-    currentPage: 1,
-    perPage: 10,
-    prev: null,
-    next: null,
-  },
-};
+import { useParams } from 'next/navigation';
+import { useLogsDetailsByVendor } from '@rahat-ui/query';
+import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select';
+import { UUID } from 'crypto';
+import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 type BeneficiaryType = 'predefined' | 'walkin';
 
+const INKIND_TYPE_MAP: Record<BeneficiaryType, string> = {
+  predefined: 'PRE_DEFINED',
+  walkin: 'WALK_IN',
+};
+
 const columns: ColumnDef<any>[] = [
   {
-    accessorKey: 'walletAddress',
+    accessorKey: 'beneficiaryWallet',
     header: 'Beneficiary Wallet Address',
     cell: ({ row }) => (
       <div className="flex gap-2 items-center">
-        {row.original.walletAddress}
+        <TruncatedCell text={row.original.beneficiaryWallet} maxLength={10} />
         <CopyTooltip
-          value={row.getValue('walletAddress')}
+          value={row.getValue('beneficiaryWallet')}
           uniqueKey={row.original?.uuid}
         />
       </div>
     ),
   },
-  { accessorKey: 'groupName', header: 'Group Name' },
-  { accessorKey: 'inKindName', header: 'In-kind Name' },
-  { accessorKey: 'inKindQuantity', header: 'In-kind Quantity' },
+  {
+    accessorKey: 'groupName',
+    header: 'Group Name',
+    cell: ({ row }) => (
+      <TruncatedCell
+        text={row.original?.groupInkind?.group?.name ?? '—'}
+        maxLength={20}
+      />
+    ),
+  },
+  {
+    accessorKey: 'inKindName',
+    header: 'In-kind Name',
+    cell: ({ row }) => (
+      <TruncatedCell
+        text={row.original?.groupInkind?.inkind?.name ?? '—'}
+        maxLength={15}
+      />
+    ),
+  },
+  { accessorKey: 'quantity', header: 'In-kind Quantity' },
   {
     accessorKey: 'txHash',
     header: 'TxHash',
     cell: ({ row }) => (
       <div className="flex gap-2 items-center">
-        {row.original.txHash}
+        <TruncatedCell text={row.original.txHash || 'N/A'} maxLength={10} />
         <CopyTooltip
           value={row.getValue('txHash')}
           uniqueKey={row.original?.uuid}
         />
       </div>
+    ),
+  },
+  {
+    accessorKey: 'redeemedAt',
+    header: 'Timestamp',
+    cell: ({ row }) => (
+      <TruncatedCell
+        text={
+          row.original?.redeemedAt ? dateFormat(row.original.redeemedAt) : '—'
+        }
+        maxLength={10}
+      />
     ),
   },
   {
@@ -92,32 +103,74 @@ const columns: ColumnDef<any>[] = [
 ];
 
 export default function InKindBeneficiaryList() {
+  const { id, vendorId }: { id: UUID; vendorId: UUID } = useParams();
+
   const { activeTab, setActiveTab } = useActiveTabDynamicKey(
     'subTab',
     'predefined',
   );
-  const [search, setSearch] = React.useState('');
 
-  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
-    usePagination();
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+    filters,
+    setFilters,
+  } = usePagination();
 
-  const filteredData = React.useMemo(
-    () =>
-      mockData.data.filter((row) =>
-        row.walletAddress.toLowerCase().includes(search.toLowerCase()),
-      ),
-    [search],
+  const debounceSearch = useDebounce(filters, 500);
+
+  const handleSearch = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement> | null, key: string) => {
+      const value = event?.target?.value ?? '';
+      setFilters({ ...filters, [key]: value });
+    },
+    [filters],
   );
-  const table = useReactTable({
-    data: filteredData,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
+
+  const inkindType =
+    INKIND_TYPE_MAP[activeTab as BeneficiaryType] ?? 'PRE_DEFINED';
+
+  const { data: logsData, isLoading } = useLogsDetailsByVendor({
+    projectUuid: id,
+    vendorId: vendorId,
+    walletAddress: debounceSearch.walletAddress,
+    inkindType,
+    page: pagination.page,
+    perPage: pagination.perPage,
+  });
+
+  // Fetch counts for both tabs (no pagination / search filter)
+  const { data: predefinedData } = useLogsDetailsByVendor({
+    projectUuid: id,
+    vendorId: vendorId,
+    inkindType: 'PRE_DEFINED',
+    perPage: 1,
+    page: 1,
+  });
+
+  const { data: walkinData } = useLogsDetailsByVendor({
+    projectUuid: id,
+    vendorId: vendorId,
+    inkindType: 'WALK_IN',
+    perPage: 1,
+    page: 1,
   });
 
   const handleModeChange = (newMode: BeneficiaryType) => {
     setActiveTab(newMode);
     setPagination({ ...pagination, page: 1 });
+    setFilters({});
   };
+
+  const table = useReactTable({
+    manualPagination: true,
+    data: logsData?.data || [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
     <div className="space-y-4">
@@ -136,8 +189,7 @@ export default function InKindBeneficiaryList() {
               activeTab === 'predefined' ? 'bg-[#297AD6]' : 'bg-[#8390A2]'
             }`}
           >
-            {/* {totalOnlineBenefciary} */}
-            10
+            {predefinedData?.meta?.total ?? 0}
           </Badge>
         </button>
         <button
@@ -154,7 +206,7 @@ export default function InKindBeneficiaryList() {
               activeTab === 'walkin' ? 'bg-[#297AD6]' : 'bg-[#8390A2]'
             }`}
           >
-            5
+            {walkinData?.meta?.total ?? 0}
           </Badge>
         </button>
       </div>
@@ -168,20 +220,33 @@ export default function InKindBeneficiaryList() {
         } beneficiaries`}
       />
       <SearchInput
-        name="wallet"
-        value={search}
-        onSearch={(e) => setSearch(e.target.value)}
+        name="walletAddress"
+        value={filters?.walletAddress || ''}
+        onSearch={(e) => handleSearch(e, 'walletAddress')}
         placeholder="Search wallet"
       />
-      <DemoTable table={table} />
+      <DemoTable
+        table={table}
+        tableHeight={'h-[calc(400px)]'}
+        loading={isLoading}
+      />
       <CustomPagination
         currentPage={pagination.page}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}
-        meta={mockData.meta || { total: 0, currentPage: 0 }}
+        meta={
+          (logsData?.meta as any) || {
+            total: 0,
+            lastPage: 0,
+            currentPage: 0,
+            perPage: 0,
+            prev: null,
+            next: null,
+          }
+        }
         perPage={pagination?.perPage}
-        total={mockData.meta?.total || 0}
+        total={logsData?.meta?.total || 0}
       />
     </div>
   );

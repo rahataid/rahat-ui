@@ -7,11 +7,27 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
+import { formatDateTime } from 'apps/rahat-ui/src/utils';
 import { UUID } from 'crypto';
 import { Eye, RotateCcw, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
-export const useCustomersBatchTableColumn = () => {
+function HighlightMatch({ text, query }: { text: string; query: string }) {
+  if (!query) return <>{text}</>;
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, idx)}
+      <mark className="bg-yellow-200 dark:bg-yellow-500/40 rounded-sm px-0.5">
+        {text.slice(idx, idx + query.length)}
+      </mark>
+      {text.slice(idx + query.length)}
+    </>
+  );
+}
+
+export const useCustomersBatchTableColumn = (searchQuery = '') => {
   const { id: projectUUID } = useParams() as {
     id: UUID;
   };
@@ -45,27 +61,17 @@ export const useCustomersBatchTableColumn = () => {
           Date
         </span>
       ),
-      cell: ({ row }) => (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span className="text-sm font-mono truncate max-w-[260px] block cursor-default">
-              {new Date(row.getValue('updatedAt') as string).toLocaleDateString(
-                'en-US',
-                {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                },
-              )}
-            </span>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">
-            <p className="font-mono text-xs">
-              {new Date(row.getValue('updatedAt') as string).toLocaleString()}
-            </p>
-          </TooltipContent>
-        </Tooltip>
-      ),
+      cell: ({ row }) => {
+        const date = row?.original?.updatedAt as string;
+        if (!date) return <span className="text-sm">\u2014</span>;
+        const { dateStr, timeStr } = formatDateTime(date);
+        return (
+          <span className="text-sm tabular-nums whitespace-nowrap">
+            {dateStr}
+            <span className="text-muted-foreground ml-1">{timeStr}</span>
+          </span>
+        );
+      },
     },
     {
       accessorKey: 'failedVendors',
@@ -76,17 +82,53 @@ export const useCustomersBatchTableColumn = () => {
       ),
       cell: ({ row }) => {
         const vendors = row.getValue('failedVendors') as string[];
-        const text = Array.isArray(vendors) ? vendors.join(', ') : '';
-        if (!text) return <span className="text-muted-foreground/60">—</span>;
+        if (!Array.isArray(vendors) || vendors.length === 0)
+          return <span className="text-muted-foreground/60">—</span>;
+        const preview = vendors.slice(0, 3);
+        const remaining = vendors.length - 3;
         return (
           <Tooltip>
             <TooltipTrigger asChild>
               <span className="text-sm truncate max-w-[220px] block cursor-default">
-                {text}
+                {preview.map((code, i) => (
+                  <span key={i}>
+                    {i > 0 && ', '}
+                    <HighlightMatch text={code} query={searchQuery} />
+                  </span>
+                ))}
+                {remaining > 0 && (
+                  <span className="text-muted-foreground ml-1">
+                    +{remaining} more
+                  </span>
+                )}
               </span>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="max-w-[320px]">
-              <p className="text-xs">{text}</p>
+            <TooltipContent
+              side="bottom"
+              className="max-w-[400px] max-h-[300px] overflow-y-auto p-3"
+            >
+              <p className="text-xs font-medium mb-1.5">
+                {vendors.length} failed customers
+              </p>
+              <div className="flex flex-wrap gap-1">
+                {vendors.map((code, i) => {
+                  const isMatch =
+                    searchQuery &&
+                    code.toLowerCase().includes(searchQuery.toLowerCase());
+                  return (
+                    <span
+                      key={i}
+                      className={`text-xs px-1.5 py-0.5 rounded ${
+                        isMatch
+                          ? 'bg-yellow-200 dark:bg-yellow-500/40 font-medium ring-1 ring-yellow-300 dark:ring-yellow-500/50'
+                          : 'bg-muted'
+                      }`}
+                    >
+                      <HighlightMatch text={code} query={searchQuery} />
+                    </span>
+                  );
+                })}
+              </div>
             </TooltipContent>
           </Tooltip>
         );
@@ -142,15 +184,13 @@ export const useCustomersBatchTableColumn = () => {
         </span>
       ),
       cell: ({ row }) => {
-        const value = row.getValue('lastRetryAt');
-        if (!value) return <span className="text-muted-foreground/60">—</span>;
+        const date = row.getValue('lastRetryAt') as string;
+        if (!date) return <span className="text-muted-foreground/60">—</span>;
+        const { dateStr, timeStr } = formatDateTime(date);
         return (
-          <span className="text-sm tabular-nums">
-            {new Date(value as string).toLocaleDateString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
-            })}
+          <span className="text-sm tabular-nums whitespace-nowrap">
+            {dateStr}
+            <span className="text-muted-foreground ml-1">{timeStr}</span>
           </span>
         );
       },

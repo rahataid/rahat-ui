@@ -57,6 +57,19 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@rahat-ui/shadcn/src/components/ui/command';
+import {
   useCreateElCrmCampaign,
   useCreateElCrmAutomationRule,
   useDeleteElCrmAutomationRule,
@@ -381,6 +394,59 @@ const getTimeZoneOffsetMs = (date: Date, timeZone: string) => {
   return utcTime - date.getTime();
 };
 
+const getCurrentDateTimeInZone = (
+  tz: string,
+): { date: string; time: string } => {
+  const now = new Date();
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(now);
+
+  const year = parts.find((p) => p.type === 'year')?.value ?? '2024';
+  const month = parts.find((p) => p.type === 'month')?.value ?? '01';
+  const day = parts.find((p) => p.type === 'day')?.value ?? '01';
+  let hour = parts.find((p) => p.type === 'hour')?.value ?? '00';
+  const minute = parts.find((p) => p.type === 'minute')?.value ?? '00';
+
+  // Intl.DateTimeFormat with hour12:false can return '24' at midnight
+  if (hour === '24') hour = '00';
+
+  return {
+    date: `${year}-${month}-${day}`,
+    time: `${hour}:${minute}`,
+  };
+};
+
+const formatUtcDateInZone = (
+  utcDate: Date,
+  tz: string,
+): { date: string; time: string } => {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(utcDate);
+
+  const year = parts.find((p) => p.type === 'year')?.value ?? '2024';
+  const month = parts.find((p) => p.type === 'month')?.value ?? '01';
+  const day = parts.find((p) => p.type === 'day')?.value ?? '01';
+  let hour = parts.find((p) => p.type === 'hour')?.value ?? '00';
+  const minute = parts.find((p) => p.type === 'minute')?.value ?? '00';
+  if (hour === '24') hour = '00';
+
+  return { date: `${year}-${month}-${day}`, time: `${hour}:${minute}` };
+};
+
 const zonedDateTimeToDate = (
   date: string,
   time: string,
@@ -447,6 +513,8 @@ export default function ComposeScheduleView() {
   const [ruleCooldownDays, setRuleCooldownDays] = useState('');
   const [ruleMaxSends, setRuleMaxSends] = useState('');
   const [ruleFireOnce, setRuleFireOnce] = useState(false);
+
+  const [tzPopoverOpen, setTzPopoverOpen] = useState(false);
 
   const resetRuleBuilder = () => {
     setShowRuleBuilder(false);
@@ -696,6 +764,30 @@ export default function ComposeScheduleView() {
 
     setIsConfirmDialogOpen(false);
     router.push(`/projects/el-crm/${projectUUID}/communications/scheduled`);
+  };
+
+  const handleTimezoneChange = (tz: string) => {
+    if (scheduleDate && scheduleTime) {
+      // Convert the already-entered date/time from the current timezone to the
+      // new one so the same UTC instant is preserved (e.g. 11:23 PM Kathmandu
+      // becomes the equivalent local time in Karachi).
+      const utcDate = zonedDateTimeToDate(
+        scheduleDate,
+        scheduleTime,
+        scheduleTimeZone,
+      );
+      if (utcDate) {
+        const converted = formatUtcDateInZone(utcDate, tz);
+        setScheduleDate(converted.date);
+        setScheduleTime(converted.time);
+      }
+    } else {
+      // No time entered yet — seed with the current local time of the new zone.
+      const { date, time } = getCurrentDateTimeInZone(tz);
+      setScheduleDate(date);
+      setScheduleTime(time);
+    }
+    setScheduleTimeZone(tz);
   };
 
   const resetForm = () => {
@@ -1137,22 +1229,71 @@ export default function ComposeScheduleView() {
 
                           <div className="space-y-2">
                             <Label>Timezone</Label>
-                            <Select
-                              value={scheduleTimeZone}
-                              onValueChange={setScheduleTimeZone}
+                            <Popover
+                              open={tzPopoverOpen}
+                              onOpenChange={setTzPopoverOpen}
                             >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select timezone" />
-                              </SelectTrigger>
-                              <SelectContent className="max-h-80">
-                                {scheduleTimeZones.map((tz) => (
-                                  <SelectItem key={tz} value={tz}>
-                                    {tz}
-                                    {tz === detectedTimeZone ? ' (Local)' : ''}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  role="combobox"
+                                  aria-expanded={tzPopoverOpen}
+                                  className="w-full justify-between font-normal"
+                                >
+                                  <span className="truncate">
+                                    {scheduleTimeZone
+                                      ? scheduleTimeZone +
+                                        (scheduleTimeZone === detectedTimeZone
+                                          ? ' (Local)'
+                                          : '')
+                                      : 'Select timezone'}
+                                  </span>
+                                  <Check className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                className="w-[var(--radix-popover-trigger-width)] p-0"
+                                align="start"
+                                sideOffset={4}
+                              >
+                                <Command>
+                                  <CommandInput
+                                    placeholder="Search timezone..."
+                                    className="h-10"
+                                  />
+                                  <CommandList className="max-h-72">
+                                    <CommandEmpty>
+                                      No timezone found.
+                                    </CommandEmpty>
+                                    <CommandGroup>
+                                      {scheduleTimeZones.map((tz) => (
+                                        <CommandItem
+                                          key={tz}
+                                          value={tz}
+                                          onSelect={(val) => {
+                                            handleTimezoneChange(val);
+                                            setTzPopoverOpen(false);
+                                          }}
+                                        >
+                                          <Check
+                                            className={cn(
+                                              'mr-2 h-4 w-4',
+                                              scheduleTimeZone === tz
+                                                ? 'opacity-100'
+                                                : 'opacity-0',
+                                            )}
+                                          />
+                                          {tz}
+                                          {tz === detectedTimeZone
+                                            ? ' (Local)'
+                                            : ''}
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
                           </div>
 
                           {!isScheduleDateTimeValid && (

@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { CircleAlert, TriangleAlert } from 'lucide-react';
+import { formatDateTime } from '../../../../utils';
 
 const getStatusVariant = (status: string) => {
   if (status === BroadcastStatus.FAIL) return 'destructive';
@@ -126,20 +127,11 @@ export default function useCommsLogsTableColumns() {
       cell: ({ row }) => {
         const date = row?.original?.createdAt as string;
         if (!date) return <span className="text-sm">\u2014</span>;
-        const d = new Date(date);
+        const { dateStr, timeStr } = formatDateTime(date);
         return (
           <span className="text-sm tabular-nums whitespace-nowrap">
-            {d.toLocaleDateString(undefined, {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-            })}
-            <span className="text-muted-foreground ml-1">
-              {d.toLocaleTimeString(undefined, {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </span>
+            {dateStr}
+            <span className="text-muted-foreground ml-1">{timeStr}</span>
           </span>
         );
       },

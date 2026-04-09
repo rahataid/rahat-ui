@@ -101,6 +101,7 @@ export default function BatchDetailView() {
   const columns = useFailedCustomersTableColumn(handleCellChange, resetKey);
 
   const table = useReactTable({
+    manualPagination: true,
     data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),

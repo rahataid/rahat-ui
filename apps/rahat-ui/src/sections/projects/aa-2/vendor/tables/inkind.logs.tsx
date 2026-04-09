@@ -10,6 +10,8 @@ import { UUID } from 'crypto';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select';
 import { useInkindLogsColumn } from '../columns/useInkindlogsColumn';
+import { InKindLog } from '../types';
+import { PaginatedResult } from '@rumsan/sdk/types';
 
 export default function InKindLogs() {
   const { id, vendorId }: { id: UUID; vendorId: UUID } = useParams();
@@ -28,7 +30,6 @@ export default function InKindLogs() {
   const { data: logsData, isLoading } = useLogsDetailsByVendor({
     projectUuid: id,
     vendorId: vendorId,
-    walletAddress: debounceSearch.walletAddress,
     page: pagination.page,
     perPage: pagination.perPage,
     search: debounceSearch.walletAddress,
@@ -79,16 +80,7 @@ export default function InKindLogs() {
             handleNextPage={setNextPage}
             handlePrevPage={setPrevPage}
             handlePageSizeChange={setPerPage}
-            meta={
-              (logsData?.meta as any) || {
-                total: 0,
-                lastPage: 0,
-                currentPage: 0,
-                perPage: 0,
-                prev: null,
-                next: null,
-              }
-            }
+            meta={logsData?.meta as PaginatedResult<InKindLog>['meta']}
             perPage={pagination?.perPage}
             total={logsData?.meta?.total || 0}
           />

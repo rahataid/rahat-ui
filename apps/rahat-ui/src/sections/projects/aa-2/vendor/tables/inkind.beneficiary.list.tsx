@@ -1,5 +1,5 @@
 import React from 'react';
-import { useReactTable, getCoreRowModel } from '@tanstack/react-table';
+import { useReactTable, getCoreRowModel, Row } from '@tanstack/react-table';
 import { DemoTable } from 'apps/rahat-ui/src/common/table';
 import { SearchInput } from 'apps/rahat-ui/src/common/search.input';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -13,7 +13,8 @@ import { useLogsDetailsByVendor } from '@rahat-ui/query';
 import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select';
 import { UUID } from 'crypto';
 import { useInkindLogsColumn } from '../columns/useInkindlogsColumn';
-import { BeneficiaryType } from '../types';
+import { BeneficiaryType, InKindLog } from '../types';
+import { PaginatedResult } from '@rumsan/sdk/types';
 
 const INKIND_TYPE_MAP: Record<BeneficiaryType, string> = {
   predefined: 'PRE_DEFINED',
@@ -54,7 +55,6 @@ export default function InKindBeneficiaryList() {
   const { data: logsData, isLoading } = useLogsDetailsByVendor({
     projectUuid: id,
     vendorId: vendorId,
-    walletAddress: debounceSearch.walletAddress,
     inkindType,
     page: pagination.page,
     perPage: pagination.perPage,
@@ -88,7 +88,7 @@ export default function InKindBeneficiaryList() {
   const actionColumn = {
     id: 'action',
     header: 'Action',
-    cell: ({ row }: { row: any }) => (
+    cell: ({ row }: { row: Row<InKindLog> }) => (
       <div className="flex items-center gap-2">
         <TooltipComponent
           Icon={Eye}
@@ -179,16 +179,7 @@ export default function InKindBeneficiaryList() {
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}
-        meta={
-          (logsData?.meta as any) || {
-            total: 0,
-            lastPage: 0,
-            currentPage: 0,
-            perPage: 0,
-            prev: null,
-            next: null,
-          }
-        }
+        meta={logsData?.meta as PaginatedResult<InKindLog>['meta']}
         perPage={pagination?.perPage}
         total={logsData?.meta?.total || 0}
       />

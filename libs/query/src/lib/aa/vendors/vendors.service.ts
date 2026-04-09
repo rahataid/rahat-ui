@@ -256,7 +256,6 @@ export const useLogsDetailsByVendor = (payload: {
   page?: number;
   perPage?: number;
   search?: string;
-  walletAddress?: string;
 }) => {
   const q = useProjectAction<any[]>();
   const {
@@ -265,7 +264,6 @@ export const useLogsDetailsByVendor = (payload: {
     inkindType,
     page = 1,
     perPage = 10,
-    walletAddress,
     search,
   } = payload;
 
@@ -277,7 +275,6 @@ export const useLogsDetailsByVendor = (payload: {
       inkindType,
       page,
       perPage,
-      walletAddress,
       search,
     ],
     placeholderData: keepPreviousData,
@@ -295,7 +292,6 @@ export const useLogsDetailsByVendor = (payload: {
             page,
             perPage,
             search: search ?? '',
-            // walletAddress,
           },
         },
       });

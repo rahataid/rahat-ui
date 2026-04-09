@@ -140,6 +140,7 @@ export default function InKindBeneficiaryList() {
     inkindType,
     page: pagination.page,
     perPage: pagination.perPage,
+    search: debounceSearch.walletAddress,
   });
 
   // Fetch counts for both tabs (no pagination / search filter)
@@ -149,6 +150,7 @@ export default function InKindBeneficiaryList() {
     inkindType: 'PRE_DEFINED',
     perPage: 1,
     page: 1,
+    search: debounceSearch.walletAddress,
   });
 
   const { data: walkinData } = useLogsDetailsByVendor({

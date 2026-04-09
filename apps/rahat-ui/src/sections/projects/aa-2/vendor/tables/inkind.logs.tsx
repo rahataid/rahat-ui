@@ -151,6 +151,7 @@ export default function InKindLogs() {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
   return (
     <div className="space-y-4">
       <Heading

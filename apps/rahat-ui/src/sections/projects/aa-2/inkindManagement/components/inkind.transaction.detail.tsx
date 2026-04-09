@@ -5,10 +5,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import {
-  DataCard,
-  HeaderWithBack,
-} from 'apps/rahat-ui/src/common';
+import { DataCard, HeaderWithBack } from 'apps/rahat-ui/src/common';
 import { Package } from 'lucide-react';
 import { formatDate } from '../inkind.helpers';
 import InfoItem from 'apps/rahat-ui/src/sections/projects/aa-2/payout/benefTransactionDetails/infoItem';
@@ -39,10 +36,19 @@ export default function InkindTransactionDetail() {
         subtitle="Detail view of the selected inkind disbursement transaction"
         onBack={() => {
           queryClient.invalidateQueries({
-            queryKey: ['aaProject.groupInkinds.getLogs', id as string, allocationId as string],
+            queryKey: [
+              'aaProject.groupInkinds.getLogs',
+              id as string,
+              allocationId as string,
+            ],
           });
-          const params = new URLSearchParams({ inkindType, inkindAvailableStock });
-          router.push(`/projects/aa/${id}/inkind-management/${allocationId}?${params}`);
+          const params = new URLSearchParams({
+            inkindType,
+            inkindAvailableStock,
+          });
+          router.push(
+            `/projects/aa/${id}/inkind-management/${allocationId}?${params}`,
+          );
         }}
       />
 
@@ -50,22 +56,22 @@ export default function InkindTransactionDetail() {
         <DataCard
           title="Inkind Name"
           smallNumber={inkindName}
-                      className="border-solid rounded-md"
-            iconStyle="bg-white text-secondary-muted"
+          className="border-solid rounded-sm"
+          iconStyle="bg-white text-secondary-muted"
         />
         <DataCard
-            title="Group Name"
-            smallNumber={groupName}
-                        className="border-solid rounded-md"
-            iconStyle="bg-white text-secondary-muted"
-          />
+          title="Group Name"
+          smallNumber={groupName}
+          className="border-solid rounded-sm"
+          iconStyle="bg-white text-secondary-muted"
+        />
         <DataCard
           title="Quantity Redeemed"
           smallNumber={quantity}
-                      className="border-solid rounded-md"
-            iconStyle="bg-white text-secondary-muted"
+          className="border-solid rounded-sm"
+          iconStyle="bg-white text-secondary-muted"
         />
-      </div>  
+      </div>
 
       <Card className="rounded-sm">
         <CardContent className="p-6">

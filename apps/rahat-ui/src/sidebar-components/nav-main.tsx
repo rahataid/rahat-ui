@@ -76,7 +76,9 @@ export function NavMain(items: IProps) {
                 <CollapsibleContent>
                   <SidebarMenuSub>
                     {item.children?.map((subItem, subIndex) => {
-                      const isSubActive = subItem.path === currentPath;
+                      const isSubActive =
+                        (subItem.path as string)?.split('/')[5] ===
+                        activeSubPath;
                       return (
                         <SidebarMenuSubItem
                           key={subItem.title || `subitem-${subIndex}`}
@@ -89,7 +91,7 @@ export function NavMain(items: IProps) {
                                 className={`w-full flex items-center ${
                                   isSubActive
                                     ? 'bg-primary text-white rounded-md shadow-sm'
-                                    : ''
+                                    : 'text-muted-foreground rounded hover:text-foreground'
                                 }`}
                               >
                                 <span>{subItem.title}</span>
@@ -103,7 +105,7 @@ export function NavMain(items: IProps) {
                                 className={`w-full flex items-center ${
                                   isSubActive
                                     ? 'bg-primary text-white rounded-md shadow-sm'
-                                    : ''
+                                    : 'text-muted-foreground rounded hover:text-foreground'
                                 }`}
                               >
                                 <span>{subItem.title}</span>
@@ -125,7 +127,7 @@ export function NavMain(items: IProps) {
                     tooltip={item.title}
                     className={
                       isActive
-                        ? 'bg-blue-500 text-white rounded'
+                        ? 'bg-primary text-white rounded'
                         : 'text-muted-foreground rounded hover:text-foreground'
                     }
                   >

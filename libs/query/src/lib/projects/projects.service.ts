@@ -284,6 +284,24 @@ export const useAssignVendorToProject = () => {
   });
 };
 
+export const useProjectSettingsGet = (uuid: UUID, name: string) => {
+  const q = useProjectAction(['settings.get', name]);
+  return useQuery({
+    queryKey: ['settings.get', uuid, name],
+    enabled: !!uuid && !!name,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: { name },
+        },
+      });
+      return mutate.data;
+    },
+  });
+};
+
 export const useProjectContractSettings = (uuid: UUID) => {
   const q = useProjectAction(['PROJECT_SETTINGS_KEYS.CONTRACT']);
   const { setSettings, settings } = useProjectSettingsStore((state) => ({

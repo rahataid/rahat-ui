@@ -5,7 +5,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';
-import { getTargetClient } from '@rahataid/community-tool-sdk/clients';
+import { getTargetClient,getExportClient } from '@rahataid/community-tool-sdk/clients';
 import { TAGS } from '../config';
 import Swal from 'sweetalert2';
 import { Pagination } from '@rumsan/sdk/types';
@@ -121,6 +121,7 @@ export const useDownloadPinnedListBeneficiary = () => {
 export const useExportPinnedListBeneficiary = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const targetingClient = getTargetClient(rumsanService.client);
+  const exportClient = getExportClient(rumsanService.client);
   return useMutation(
     {
       mutationKey: [TAGS.EXPORT_TARGETED_BENEFICIARIES],
@@ -158,8 +159,8 @@ export const useExportPinnedListBeneficiary = () => {
                 groupUUID: payload?.groupUUID,
                 appURL: value,
               };
-              targetingClient
-                .exportTargetBeneficiary(inputData as any)
+              exportClient
+                .exportBeneficiariesToApp(inputData as any)
                 .then((data) => resolve(data))
                 .catch((error) => reject(error));
             });

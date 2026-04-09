@@ -16,6 +16,8 @@ export interface IProjectRedemption {
   approvedBy: string;
   transactionHash: string;
 }
+export type BeneficiaryType = 'predefined' | 'walkin';
+
 export interface InKindLog {
   uuid: UUID;
   beneficiaryWallet: string;

@@ -16,103 +16,74 @@ import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select';
+import { InKindLog } from '../types';
+import { useInkindLogsColumn } from '../columns/useInkindlogsColumn';
 
-interface InKindLog {
-  uuid: UUID;
-  beneficiaryWallet: string;
-  groupInkindId: UUID;
-  quantity: number;
-  redeemedAt: string;
-  txHash: string | null;
-  vendorUid: UUID;
-  beneficiary: {
-    uuid: UUID;
-    walletAddress: string;
-    phone: string | null;
-    extras: {
-      phone: string;
-      validPhoneNumber: boolean;
-    };
-  };
-  groupInkind: {
-    uuid: UUID;
-    inkind: {
-      uuid: UUID;
-      name: string;
-      type: string;
-    };
-    group: {
-      uuid: UUID;
-      name: string;
-    };
-  };
-}
+// const columns: ColumnDef<InKindLog>[] = [
+//   {
+//     accessorKey: 'groupName',
+//     header: 'Group Name',
+//     cell: ({ row }) => (
+//       <TruncatedCell
+//         text={row.original.groupInkind.group.name}
+//         maxLength={20}
+//       />
+//     ),
+//   },
 
-const columns: ColumnDef<InKindLog>[] = [
-  {
-    accessorKey: 'groupName',
-    header: 'Group Name',
-    cell: ({ row }) => (
-      <TruncatedCell
-        text={row.original.groupInkind.group.name}
-        maxLength={20}
-      />
-    ),
-  },
-
-  {
-    accessorKey: 'beneficiaryWallet',
-    header: 'Beneficiary Wallet Address',
-    cell: ({ row }) => (
-      <div className="flex gap-2 items-center">
-        <TruncatedCell text={row.original.beneficiaryWallet} maxLength={10} />
-        <CopyTooltip
-          value={row.getValue('beneficiaryWallet')}
-          uniqueKey={row.original?.uuid}
-        />
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'inKindName',
-    header: 'In-kind Name',
-    cell: ({ row }) => (
-      <TruncatedCell
-        text={row.original.groupInkind.inkind.name}
-        maxLength={15}
-      />
-    ),
-  },
-  {
-    accessorKey: 'quantity',
-    header: 'In-kind Quantity',
-  },
-  {
-    accessorKey: 'txHash',
-    header: 'TxHash',
-    cell: ({ row }) => (
-      <div className="flex gap-2 items-center">
-        <TruncatedCell text={row.original.txHash || 'N/A'} maxLength={10} />
-        <CopyTooltip
-          value={row.getValue('txHash')}
-          uniqueKey={row.original?.uuid}
-        />
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'redeemedAt',
-    header: 'Timestamp',
-    cell: ({ row }) => (
-      <TruncatedCell
-        text={
-          row?.original?.redeemedAt ? dateFormat(row?.original?.redeemedAt) : ''
-        }
-        maxLength={10}
-      />
-    ),
-  },
-];
+//   {
+//     accessorKey: 'beneficiaryWallet',
+//     header: 'Beneficiary Wallet Address',
+//     cell: ({ row }) => (
+//       <div className="flex gap-2 items-center">
+//         <TruncatedCell text={row.original.beneficiaryWallet} maxLength={10} />
+//         <CopyTooltip
+//           value={row.getValue('beneficiaryWallet')}
+//           uniqueKey={row.original?.uuid}
+//         />
+//       </div>
+//     ),
+//   },
+//   {
+//     accessorKey: 'inKindName',
+//     header: 'In-kind Name',
+//     cell: ({ row }) => (
+//       <TruncatedCell
+//         text={row.original.groupInkind.inkind.name}
+//         maxLength={15}
+//       />
+//     ),
+//   },
+//   {
+//     accessorKey: 'quantity',
+//     header: 'In-kind Quantity',
+//   },
+//   {
+//     accessorKey: 'txHash',
+//     header: 'TxHash',
+//     cell: ({ row }) => (
+//       <div className="flex gap-2 items-center">
+//         <TruncatedCell text={row.original.txHash || 'N/A'} maxLength={10} />
+//         <CopyTooltip
+//           value={row.getValue('txHash')}
+//           uniqueKey={row.original?.uuid}
+//         />
+//       </div>
+//     ),
+//   },
+//   {
+//     accessorKey: 'redeemedAt',
+//     header: 'Timestamp',
+//     cell: ({ row }) => (
+//       <TruncatedCell
+//         text={
+//           row?.original?.redeemedAt ? dateFormat(row?.original?.redeemedAt) : ''
+//         }
+//         maxLength={10}
+//       />
+//     ),
+//   },
+// ];
 
 export default function InKindLogs() {
   const { id, vendorId }: { id: UUID; vendorId: UUID } = useParams();
@@ -144,7 +115,7 @@ export default function InKindLogs() {
     },
     [filters],
   );
-
+  const columns = useInkindLogsColumn();
   const table = useReactTable({
     manualPagination: true,
     data: logsData?.data || [],

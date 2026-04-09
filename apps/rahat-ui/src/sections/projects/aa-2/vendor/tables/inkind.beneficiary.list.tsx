@@ -19,6 +19,7 @@ import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select
 import { UUID } from 'crypto';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { InKindLog } from '../types';
 
 type BeneficiaryType = 'predefined' | 'walkin';
 
@@ -27,7 +28,7 @@ const INKIND_TYPE_MAP: Record<BeneficiaryType, string> = {
   walkin: 'WALK_IN',
 };
 
-const columns: ColumnDef<any>[] = [
+const columns: ColumnDef<InKindLog>[] = [
   {
     accessorKey: 'beneficiaryWallet',
     header: 'Beneficiary Wallet Address',

@@ -156,6 +156,7 @@ export default function TriggerStatementView() {
                 isActive={d?.isActive}
                 isPinned={pinnedPhaseIds.includes(d.uuid)}
                 onTogglePin={() => togglePinPhase(d.uuid)}
+                hasExtendedLogic={!!d?.extendedTriggerLogic}
               />
             ))}
 

@@ -150,6 +150,62 @@ export const useUpdatePhase = () => {
   });
 };
 
+export const useConfigureExtendedLogic = () => {
+  const q = useProjectAction();
+  const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      payload,
+    }: {
+      projectUUID: UUID;
+      payload: {
+        uuid: string;
+        groups: {
+          operator: 'AND' | 'OR';
+          triggers: { triggerLogicKey: string }[];
+        }[];
+        joinOperator: 'AND' | 'OR';
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'ms.phases.configureExtendedLogic',
+          payload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['phase'] });
+      qc.invalidateQueries({ queryKey: ['phases'] });
+      qc.invalidateQueries({ queryKey: ['triggerstatements'] });
+      toast.fire({
+        title: 'Extended trigger logic configured successfully.',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while configuring extended trigger logic.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 export const useDeletePhase = () => {
   const q = useProjectAction();
   const qc = useQueryClient();

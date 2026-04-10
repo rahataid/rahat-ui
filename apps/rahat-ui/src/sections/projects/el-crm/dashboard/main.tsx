@@ -76,12 +76,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useMemo, useState } from 'react';
 import { DashboardExportButton } from './exportButton';
+import { getStat } from '../utils';
+import { formatNumber } from 'apps/rahat-ui/src/utils';
 
 // -- Helpers ------------------------------------------------------------------
-
-function getStat(stats: Stat[] | undefined, name: string): any {
-  return stats?.find((s: Stat) => s.name === name)?.data;
-}
 
 function formatMonth(raw: string): string {
   // "2024-01" → "Jan '24"
@@ -101,12 +99,6 @@ function formatMonth(raw: string): string {
     'Dec',
   ];
   return `${months[parseInt(m, 10) - 1]} '${y.slice(2)}`;
-}
-
-function formatNumber(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(n >= 10_000 ? 0 : 1)}K`;
-  return n.toLocaleString();
 }
 
 function pctOf(part: number, total: number): number {
@@ -238,7 +230,13 @@ export default function DashboardView() {
   // Delivery gauge data for radial bar
   // value is always 100; the arc length is controlled by endAngle
   const deliveryGaugeData = useMemo(
-    () => [{ name: 'Delivery Rate', value: commStats.deliveryRate, fill: COLORS.gauge }],
+    () => [
+      {
+        name: 'Delivery Rate',
+        value: commStats.deliveryRate,
+        fill: COLORS.gauge,
+      },
+    ],
     [commStats.deliveryRate],
   );
 

@@ -156,3 +156,10 @@ export const formatDateFromBloackChain = (dateString: string) => {
   const formattedDate = `${month} ${day}, ${year} ${hours12}:${minutes} ${period}`;
   return formattedDate;
 };
+
+export function formatNumber(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 100_000) return new Intl.NumberFormat('en-US').format(n);
+  return n.toLocaleString();
+}
+

@@ -193,11 +193,11 @@ export default function CustomersPage() {
 
   const handleDownloadCustomers = React.useCallback(async () => {
     try {
-      toast.fire({
-        title: 'Preparing export...',
-        icon: 'info',
-        text: 'Fetching all filtered customer data.',
-      });
+      // toast.fire({
+      //   title: 'Preparing export...',
+      //   icon: 'info',
+      //   text: 'Fetching all filtered customer data.',
+      // });
 
       const result = await exportCustomersMutation.mutateAsync({
         uuid: projectUUID,

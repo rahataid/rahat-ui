@@ -20,6 +20,7 @@ import { useAuthStore } from '@rumsan/react-query/auth';
 import { toast } from 'react-toastify';
 import { paths } from '../routes/paths';
 
+import { useTranslations } from 'next-intl';
 import ConnectWallet from './wallet/connect-wallet';
 import SearchInput from '../sections/projects/components/search.input';
 import React from 'react';
@@ -38,6 +39,7 @@ export function Nav({ hasDefaultHeader = true }) {
     (project) => project.type?.toLowerCase() === 'aa',
   );
 
+  const t = useTranslations('nav');
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const handleLogout = () => {
     const pinnedPhases = localStorage.getItem('aa_pinned_phases');
@@ -88,26 +90,26 @@ export function Nav({ hasDefaultHeader = true }) {
                   className="p-1 hover:bg-secondary rounded"
                   href={paths.profile.root}
                 >
-                  Profile
+                  {t('profile')}
                 </Link>
                 <Link
                   className="p-1 hover:bg-secondary rounded"
                   href={paths.dashboard.root}
                 >
-                  Home
+                  {t('home')}
                 </Link>
                 <Link
                   className="p-1 hover:bg-secondary rounded"
                   href={paths.settings.root}
                 >
-                  Settings
+                  {t('settings')}
                 </Link>
                 {/* <ThemeSwitch /> */}
                 <Badge
                   className="mt-2 rounded bg-primary text-white hover:border hover:cursor-pointer w-full p-1 flex justify-center"
                   onClick={handleLogout}
                 >
-                  Logout
+                  {t('logout')}
                 </Badge>
               </DropdownMenuGroup>
             </DropdownMenuContent>

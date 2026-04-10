@@ -1,0 +1,353 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "project": "Project",
+    "beneficiaries": "Beneficiaries",
+    "vendors": "Vendors",
+    "users": "Users",
+    "communications": "Communications",
+    "settings": "Settings",
+    "authApps": "Auth Apps",
+    "transactions": "Transactions",
+    "treasury": "Treasury",
+    "more": "More",
+    "home": "Home",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "common": {
+    "actions": {
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "continue": "Continue",
+      "delete": "Delete",
+      "edit": "Edit",
+      "reset": "Reset",
+      "clear": "Clear",
+      "download": "Download",
+      "save": "Save",
+      "saving": "Saving...",
+      "ok": "Ok",
+      "create": "Create",
+      "update": "Update",
+      "import": "Import",
+      "export": "Export",
+      "search": "Search",
+      "add": "Add",
+      "back": "Back",
+      "close": "Close",
+      "submit": "Submit",
+      "upload": "Upload",
+      "uploading": "Uploading...",
+      "addNew": "Add New"
+    },
+    "labels": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "phoneNumber": "Phone Number",
+      "address": "Address",
+      "status": "Status",
+      "date": "Date",
+      "type": "Type",
+      "description": "Description",
+      "notes": "Notes",
+      "gender": "Gender",
+      "age": "Age",
+      "estimatedAge": "Estimated age",
+      "walletAddress": "Wallet Address",
+      "bankingStatus": "Banking Status",
+      "internetStatus": "Internet Status",
+      "phoneStatus": "Phone Status",
+      "role": "Role",
+      "roles": "Roles"
+    },
+    "placeholders": {
+      "enterName": "Enter name",
+      "enterEmail": "Enter email address",
+      "enterPhone": "Enter phone number",
+      "enterAddress": "Enter address",
+      "enterDescription": "Enter description",
+      "enterWalletAddress": "Enter wallet address"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "pending": "Pending",
+      "unknown": "Unknown"
+    },
+    "validation": {
+      "required": "This field is required",
+      "invalidEmail": "Invalid email address",
+      "invalidPhone": "Invalid phone number",
+      "nameTooShort": "Name must be at least 4 characters",
+      "nameMustBeLetters": "Name can only contain letters and spaces",
+      "ageMustBePositive": "Age must be a positive integer",
+      "walletAddressLength": "The Ethereum address must be empty or 42 characters long",
+      "invalidAppAddress": "Invalid app address"
+    },
+    "noData": "No data available",
+    "loading": "Loading..."
+  },
+  "gender": {
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "unknown": "Unknown"
+  },
+  "phoneStatus": {
+    "smartPhone": "Smart Phone",
+    "featurePhone": "Feature Phone",
+    "noPhone": "No Phone",
+    "unknown": "Unknown"
+  },
+  "bankingStatus": {
+    "banked": "Banked",
+    "underBanked": "Under Banked",
+    "unBanked": "UnBanked",
+    "unknown": "Unknown"
+  },
+  "internetStatus": {
+    "homeInternet": "Home Internet",
+    "mobileInternet": "Mobile Internet",
+    "noInternet": "No Internet",
+    "unknown": "Unknown"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "dialogs": {
+    "deleteTitle": "Delete {name}",
+    "deleteDescription": "This action cannot be undone. This will permanently delete this {name}.",
+    "archiveTitle": "Archive {name}",
+    "archiveDescription": "This action cannot be undone. Are you sure?",
+    "confirmAction": "This action cannot be undone. Are you sure?"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Your Hub for Real-Time Analytics and Data Visualization of the system",
+    "tabs": {
+      "overview": "Overview",
+      "graphs": "Graphs"
+    },
+    "recentDeposits": "Recent Deposits"
+  },
+  "beneficiary": {
+    "title": "Beneficiary",
+    "titlePlural": "Beneficiaries",
+    "groups": "Beneficiary Groups",
+    "createTitle": "Create Beneficiary",
+    "createSubtitle": "Create a new beneficiary",
+    "editTitle": "Edit Beneficiary",
+    "editSubtitle": "Update beneficiary information",
+    "addBeneficiaries": "Add beneficiaries",
+    "importBeneficiaries": "Import beneficiaries",
+    "importFromCommunityTool": "Import from Community Tool",
+    "importFromExcel": "Import from Excel Sheet",
+    "beneficiaryName": "Beneficiary Name",
+    "enterBeneficiaryName": "Enter beneficiary name",
+    "enterBeneficiaryAddress": "Enter beneficiary address",
+    "enterEstimatedAge": "Enter estimated Age",
+    "selectPhoneStatus": "Select phone status",
+    "selectBankingStatus": "Select banking status",
+    "selectInternetStatus": "Select internet status",
+    "walletAddressNote": "* Wallet address is required. If not entered, it will be automatically filled.",
+    "addedSuccessfully": "Beneficiary added successfully!",
+    "failedToAdd": "Failed to add beneficiary",
+    "allAssignedToProject": "All selected beneficiaries are already assigned to the project",
+    "group": {
+      "title": "Beneficiary Group",
+      "groupName": "Beneficiary Group Name",
+      "editGroupName": "Edit Beneficiary Group Name",
+      "deleteGroup": "Delete Beneficiary Group",
+      "archiveGroup": "Archive Beneficiary Group",
+      "enterGroupName": "Enter beneficiary group name",
+      "groupAddedSuccessfully": "Beneficiary group added successfully!",
+      "failedToAddGroup": "Failed to add beneficiary group!",
+      "assignToProject": "Assign to Project"
+    },
+    "import": {
+      "title": "Import Beneficiaries",
+      "selectFile": "Select beneficiary file to update (Excel, JSON or CSV file)",
+      "downloadSample": "Download Sample",
+      "invalidFileFormat": "Invalid file format. Please upload Excel, JSON, or CSV files.",
+      "pleaseSelectFile": "Please select a file to upload",
+      "errorDownloading": "Error downloading file!",
+      "noFileChosen": "No File Chosen"
+    },
+    "columns": {
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "internetStatus": "Internet Status",
+      "phoneStatus": "Phone Status",
+      "bankingStatus": "Banking Status",
+      "walletAddress": "Wallet Address",
+      "gender": "Gender",
+      "projects": "Projects"
+    }
+  },
+  "vendor": {
+    "title": "Vendor",
+    "titlePlural": "Vendors",
+    "editTitle": "Edit Vendor",
+    "editSubtitle": "Edit Vendor Detail",
+    "vendorName": "Vendor Name",
+    "enterVendorName": "Enter vendor name",
+    "updatedSuccessfully": "Vendor updated successfully!",
+    "failedToUpdate": "Failed to update vendor",
+    "columns": {
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "walletAddress": "Wallet Address",
+      "gender": "Gender",
+      "status": "Status"
+    }
+  },
+  "user": {
+    "title": "User",
+    "titlePlural": "Users",
+    "createTitle": "Create User",
+    "createSubtitle": "Add a new user to the system",
+    "editTitle": "Edit User",
+    "editSubtitle": "Update user information",
+    "selectRole": "Please select role",
+    "selectGender": "Please select gender",
+    "addedSuccessfully": "User added successfully!",
+    "failedToAdd": "Failed to add user",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "role": "Role",
+      "status": "Status",
+      "walletAddress": "Wallet Address"
+    }
+  },
+  "project": {
+    "title": "Project",
+    "titlePlural": "Projects",
+    "createTitle": "Create Project",
+    "editTitle": "Edit Project",
+    "fundManagement": "Fund Management",
+    "createPayout": "Create Payout",
+    "assignFund": "Assign Fund",
+    "assignFunds": "Assign Funds",
+    "totalBeneficiaries": "Total Beneficiaries",
+    "totalBalance": "Total Balance",
+    "activeOwners": "Active Owners",
+    "triggers": "Triggers",
+    "activitiesStatus": "Activities Status",
+    "vulnerableGroups": "Vulnerable Groups",
+    "stakeholders": "Stakeholders",
+    "importStakeholders": "Import Stakeholders",
+    "selectStakeholders": "Select Stakeholders",
+    "householdCashSupport": "Household Receiving Cash Support",
+    "householdBankStatus": "Household Bank Status",
+    "householdPhoneAvailability": "Household Phone Availability",
+    "signatureThreshold": "Signature Threshold",
+    "totalBeneficiariesLabel": "Total Beneficiaries",
+    "activitiesWithCommunication": "Activities with Communication",
+    "activitiesAutomated": "Activities Automated",
+    "dailyMonitoring": "Daily Monitoring",
+    "addDailyMonitoring": "Add Daily Monitoring",
+    "editDailyMonitoring": "Edit Daily Monitoring",
+    "payout": {
+      "title": "Payout",
+      "createTitle": "Create Payout",
+      "initiatePayout": "Initiate Payout",
+      "verifyPayout": "Verify Payout"
+    },
+    "activities": {
+      "title": "Activities",
+      "status": "Activities Status"
+    }
+  },
+  "treasury": {
+    "title": "Treasury",
+    "createToken": "Create Token",
+    "createTokenTitle": "Create your ERC20 Token",
+    "assets": "Assets",
+    "transactions": "Transactions",
+    "token": {
+      "name": "Token Name",
+      "symbol": "Token Symbol",
+      "initialSupply": "Token Initial Supply",
+      "enterTokenName": "Enter your token name",
+      "enterTokenSymbol": "Enter your token symbol",
+      "enterInitialSupply": "Enter your token initial supply",
+      "writeDescription": "Write token description"
+    },
+    "recentDeposits": "Recent Deposits"
+  },
+  "communications": {
+    "title": "Communications",
+    "voice": "Voice",
+    "text": "Text",
+    "textCampaigns": "Text Campaigns",
+    "campaign": {
+      "title": "Campaign",
+      "createTitle": "Create Campaign",
+      "editTitle": "Edit Campaign",
+      "name": "Campaign Name",
+      "enterName": "Enter campaign name"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "addTitle": "Add Setting",
+    "editTitle": "Edit Setting",
+    "fieldDefinition": "Field Definition",
+    "key": "Key",
+    "value": "Value",
+    "enterKey": "Enter key",
+    "enterValue": "Enter value"
+  },
+  "authApps": {
+    "title": "Auth Apps",
+    "addNew": "Add New",
+    "appName": "Name",
+    "appAddress": "App Address",
+    "appDescription": "Description",
+    "enterAppName": "Enter app name",
+    "enterAppAddress": "Enter app address"
+  },
+  "profile": {
+    "title": "Profile",
+    "editProfile": "Edit Profile",
+    "personalInfo": "Personal Information"
+  },
+  "pagination": {
+    "next": "Next",
+    "previous": "Previous",
+    "rowsPerPage": "Rows per page",
+    "of": "of",
+    "page": "Page"
+  },
+  "table": {
+    "noResults": "No results found.",
+    "selectAll": "Select all",
+    "selectRow": "Select row",
+    "columns": "Columns",
+    "filters": "Filters"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "notFound": "Resource not found.",
+    "unauthorized": "You are not authorized to perform this action.",
+    "fileDownload": "Error downloading file!",
+    "invalidFileFormat": "Invalid file format. Please upload Excel, JSON, or CSV files.",
+    "pleaseSelectFile": "Please select a file to upload"
+  },
+  "success": {
+    "created": "{entity} created successfully!",
+    "updated": "{entity} updated successfully!",
+    "deleted": "{entity} deleted successfully!",
+    "imported": "Data imported successfully!",
+    "uploaded": "File uploaded successfully."
+  }
+}

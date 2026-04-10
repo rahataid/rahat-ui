@@ -1,4 +1,6 @@
 import { Toaster } from '@rahat-ui/shadcn/components/toaster';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -19,15 +21,18 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const messages = await getMessages();
+
   return (
     <html lang="en">
       <body>
         <title>Welcome to Rahat</title>
+        <NextIntlClientProvider messages={messages}>
         <Wagmi>
           <QueryProvider>
             <RSQueryProvider>
@@ -52,6 +57,7 @@ export default function RootLayout({
             </RSQueryProvider>
           </QueryProvider>
         </Wagmi>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

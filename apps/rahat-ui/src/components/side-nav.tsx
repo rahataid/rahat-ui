@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 import {
   Tooltip,
@@ -17,6 +18,7 @@ import Image from 'next/image';
 
 export default function SideNav() {
   const { data, subData } = useNavData();
+  const t = useTranslations('nav');
   const [more, setMore] = React.useState(false);
 
   const currentPath = usePathname();
@@ -31,6 +33,7 @@ export default function SideNav() {
         <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
           {data.map((item) => {
             const isActive = item.path.split('/')[1] === activePath;
+            const label = item.titleKey ? t(item.titleKey) : item.title;
             return (
               <Tooltip key={item.title}>
                 <TooltipTrigger asChild>
@@ -46,12 +49,12 @@ export default function SideNav() {
                     {item?.icon ? (
                       createElement(getIcon(item.icon))
                     ) : (
-                      <span className="text-2xl">{item.title[0]}</span>
+                      <span className="text-2xl">{label[0]}</span>
                     )}
-                    <span className="sr-only">{item.title}</span>
+                    <span className="sr-only">{label}</span>
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent side="right">{item.title}</TooltipContent>
+                <TooltipContent side="right">{label}</TooltipContent>
               </Tooltip>
             );
           })}
@@ -67,14 +70,15 @@ export default function SideNav() {
                     setMore(!more);
                   }}
                 />
-                <span className="sr-only">more</span>
+                <span className="sr-only">{t('more')}</span>
               </div>
             </TooltipTrigger>
-            <TooltipContent side="right">More</TooltipContent>
+            <TooltipContent side="right">{t('more')}</TooltipContent>
           </Tooltip>
           {more &&
             subData.map((item) => {
               const isActive = item.path.split('/')[1] === activePath;
+              const label = item.titleKey ? t(item.titleKey) : item.title;
               return (
                 <Tooltip key={item.title}>
                   <TooltipTrigger asChild>
@@ -90,12 +94,12 @@ export default function SideNav() {
                       {item?.icon ? (
                         createElement(getIcon(item.icon))
                       ) : (
-                        <span className="text-2xl">{item.title[0]}</span>
+                        <span className="text-2xl">{label[0]}</span>
                       )}
-                      <span className="sr-only">{item.title}</span>
+                      <span className="sr-only">{label}</span>
                     </Link>
                   </TooltipTrigger>
-                  <TooltipContent side="right">{item.title}</TooltipContent>
+                  <TooltipContent side="right">{label}</TooltipContent>
                 </Tooltip>
               );
             })}
@@ -114,10 +118,10 @@ export default function SideNav() {
                 }`}
               >
                 <Settings className="h-5 w-5" />
-                <span className="sr-only">Settings</span>
+                <span className="sr-only">{t('settings')}</span>
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="right">Settings</TooltipContent>
+            <TooltipContent side="right">{t('settings')}</TooltipContent>
           </Tooltip>
         </nav>
       </aside>

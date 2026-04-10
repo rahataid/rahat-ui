@@ -1,0 +1,353 @@
+{
+  "nav": {
+    "dashboard": "ड्यासबोर्ड",
+    "project": "परियोजना",
+    "beneficiaries": "लाभग्राहीहरू",
+    "vendors": "विक्रेताहरू",
+    "users": "प्रयोगकर्ताहरू",
+    "communications": "सञ्चार",
+    "settings": "सेटिङहरू",
+    "authApps": "प्रमाणीकरण एपहरू",
+    "transactions": "कारोबारहरू",
+    "treasury": "कोष",
+    "more": "थप",
+    "home": "गृहपृष्ठ",
+    "profile": "प्रोफाइल",
+    "logout": "लग आउट"
+  },
+  "common": {
+    "actions": {
+      "cancel": "रद्द गर्नुहोस्",
+      "confirm": "पुष्टि गर्नुहोस्",
+      "continue": "जारी राख्नुहोस्",
+      "delete": "मेटाउनुहोस्",
+      "edit": "सम्पादन गर्नुहोस्",
+      "reset": "रिसेट गर्नुहोस्",
+      "clear": "खाली गर्नुहोस्",
+      "download": "डाउनलोड गर्नुहोस्",
+      "save": "सुरक्षित गर्नुहोस्",
+      "saving": "सुरक्षित गर्दै...",
+      "ok": "ठीक छ",
+      "create": "सिर्जना गर्नुहोस्",
+      "update": "अपडेट गर्नुहोस्",
+      "import": "आयात गर्नुहोस्",
+      "export": "निर्यात गर्नुहोस्",
+      "search": "खोज्नुहोस्",
+      "add": "थप्नुहोस्",
+      "back": "पछाडि",
+      "close": "बन्द गर्नुहोस्",
+      "submit": "पेश गर्नुहोस्",
+      "upload": "अपलोड गर्नुहोस्",
+      "uploading": "अपलोड गर्दै...",
+      "addNew": "नयाँ थप्नुहोस्"
+    },
+    "labels": {
+      "name": "नाम",
+      "email": "इमेल",
+      "phone": "फोन",
+      "phoneNumber": "फोन नम्बर",
+      "address": "ठेगाना",
+      "status": "स्थिति",
+      "date": "मिति",
+      "type": "प्रकार",
+      "description": "विवरण",
+      "notes": "टिप्पणीहरू",
+      "gender": "लिङ्ग",
+      "age": "उमेर",
+      "estimatedAge": "अनुमानित उमेर",
+      "walletAddress": "वालेट ठेगाना",
+      "bankingStatus": "बैंकिङ स्थिति",
+      "internetStatus": "इन्टरनेट स्थिति",
+      "phoneStatus": "फोन स्थिति",
+      "role": "भूमिका",
+      "roles": "भूमिकाहरू"
+    },
+    "placeholders": {
+      "enterName": "नाम प्रविष्ट गर्नुहोस्",
+      "enterEmail": "इमेल ठेगाना प्रविष्ट गर्नुहोस्",
+      "enterPhone": "फोन नम्बर प्रविष्ट गर्नुहोस्",
+      "enterAddress": "ठेगाना प्रविष्ट गर्नुहोस्",
+      "enterDescription": "विवरण प्रविष्ट गर्नुहोस्",
+      "enterWalletAddress": "वालेट ठेगाना प्रविष्ट गर्नुहोस्"
+    },
+    "status": {
+      "active": "सक्रिय",
+      "inactive": "निष्क्रिय",
+      "pending": "विचाराधीन",
+      "unknown": "अज्ञात"
+    },
+    "validation": {
+      "required": "यो फिल्ड आवश्यक छ",
+      "invalidEmail": "अमान्य इमेल ठेगाना",
+      "invalidPhone": "अमान्य फोन नम्बर",
+      "nameTooShort": "नाम कम्तिमा ४ अक्षरको हुनुपर्छ",
+      "nameMustBeLetters": "नामले अक्षर र खाली ठाउँ मात्र समावेश गर्न सक्छ",
+      "ageMustBePositive": "उमेर सकारात्मक पूर्णांक हुनुपर्छ",
+      "walletAddressLength": "इथेरियम ठेगाना खाली वा ४२ अक्षर लामो हुनुपर्छ",
+      "invalidAppAddress": "अमान्य एप ठेगाना"
+    },
+    "noData": "कुनै डाटा उपलब्ध छैन",
+    "loading": "लोड हुँदैछ..."
+  },
+  "gender": {
+    "male": "पुरुष",
+    "female": "महिला",
+    "other": "अन्य",
+    "unknown": "अज्ञात"
+  },
+  "phoneStatus": {
+    "smartPhone": "स्मार्ट फोन",
+    "featurePhone": "फिचर फोन",
+    "noPhone": "फोन छैन",
+    "unknown": "अज्ञात"
+  },
+  "bankingStatus": {
+    "banked": "बैंक खाता भएको",
+    "underBanked": "आंशिक बैंकिङ",
+    "unBanked": "बैंक खाता नभएको",
+    "unknown": "अज्ञात"
+  },
+  "internetStatus": {
+    "homeInternet": "घरको इन्टरनेट",
+    "mobileInternet": "मोबाइल इन्टरनेट",
+    "noInternet": "इन्टरनेट छैन",
+    "unknown": "अज्ञात"
+  },
+  "theme": {
+    "label": "थिम",
+    "light": "उज्यालो",
+    "dark": "अँध्यारो",
+    "system": "प्रणाली"
+  },
+  "dialogs": {
+    "deleteTitle": "{name} मेटाउनुहोस्",
+    "deleteDescription": "यो कार्य पूर्ववत गर्न सकिँदैन। यसले यो {name} स्थायी रूपमा मेटाउनेछ।",
+    "archiveTitle": "{name} संग्रह गर्नुहोस्",
+    "archiveDescription": "यो कार्य पूर्ववत गर्न सकिँदैन। के तपाईं निश्चित हुनुहुन्छ?",
+    "confirmAction": "यो कार्य पूर्ववत गर्न सकिँदैन। के तपाईं निश्चित हुनुहुन्छ?"
+  },
+  "dashboard": {
+    "title": "ड्यासबोर्ड",
+    "subtitle": "प्रणालीको वास्तविक-समय विश्लेषण र डाटा दृश्यीकरणको लागि तपाईंको केन्द्र",
+    "tabs": {
+      "overview": "अवलोकन",
+      "graphs": "ग्राफहरू"
+    },
+    "recentDeposits": "हालका जम्माहरू"
+  },
+  "beneficiary": {
+    "title": "लाभग्राही",
+    "titlePlural": "लाभग्राहीहरू",
+    "groups": "लाभग्राही समूहहरू",
+    "createTitle": "लाभग्राही सिर्जना गर्नुहोस्",
+    "createSubtitle": "नयाँ लाभग्राही सिर्जना गर्नुहोस्",
+    "editTitle": "लाभग्राही सम्पादन गर्नुहोस्",
+    "editSubtitle": "लाभग्राहीको जानकारी अपडेट गर्नुहोस्",
+    "addBeneficiaries": "लाभग्राहीहरू थप्नुहोस्",
+    "importBeneficiaries": "लाभग्राहीहरू आयात गर्नुहोस्",
+    "importFromCommunityTool": "सामुदायिक उपकरणबाट आयात गर्नुहोस्",
+    "importFromExcel": "एक्सेल शिटबाट आयात गर्नुहोस्",
+    "beneficiaryName": "लाभग्राहीको नाम",
+    "enterBeneficiaryName": "लाभग्राहीको नाम प्रविष्ट गर्नुहोस्",
+    "enterBeneficiaryAddress": "लाभग्राहीको ठेगाना प्रविष्ट गर्नुहोस्",
+    "enterEstimatedAge": "अनुमानित उमेर प्रविष्ट गर्नुहोस्",
+    "selectPhoneStatus": "फोन स्थिति चयन गर्नुहोस्",
+    "selectBankingStatus": "बैंकिङ स्थिति चयन गर्नुहोस्",
+    "selectInternetStatus": "इन्टरनेट स्थिति चयन गर्नुहोस्",
+    "walletAddressNote": "* वालेट ठेगाना आवश्यक छ। प्रविष्ट नगरिएमा, यो स्वचालित रूपमा भरिनेछ।",
+    "addedSuccessfully": "लाभग्राही सफलतापूर्वक थपियो!",
+    "failedToAdd": "लाभग्राही थप्न असफल भयो",
+    "allAssignedToProject": "सबै चयन गरिएका लाभग्राहीहरू पहिले नै परियोजनामा तोकिएका छन्",
+    "group": {
+      "title": "लाभग्राही समूह",
+      "groupName": "लाभग्राही समूहको नाम",
+      "editGroupName": "लाभग्राही समूहको नाम सम्पादन गर्नुहोस्",
+      "deleteGroup": "लाभग्राही समूह मेटाउनुहोस्",
+      "archiveGroup": "लाभग्राही समूह संग्रह गर्नुहोस्",
+      "enterGroupName": "लाभग्राही समूहको नाम प्रविष्ट गर्नुहोस्",
+      "groupAddedSuccessfully": "लाभग्राही समूह सफलतापूर्वक थपियो!",
+      "failedToAddGroup": "लाभग्राही समूह थप्न असफल भयो!",
+      "assignToProject": "परियोजनामा तोक्नुहोस्"
+    },
+    "import": {
+      "title": "लाभग्राहीहरू आयात गर्नुहोस्",
+      "selectFile": "अपडेट गर्न लाभग्राही फाइल चयन गर्नुहोस् (Excel, JSON वा CSV फाइल)",
+      "downloadSample": "नमुना डाउनलोड गर्नुहोस्",
+      "invalidFileFormat": "अमान्य फाइल ढाँचा। कृपया Excel, JSON, वा CSV फाइलहरू अपलोड गर्नुहोस्।",
+      "pleaseSelectFile": "कृपया अपलोड गर्न फाइल चयन गर्नुहोस्",
+      "errorDownloading": "फाइल डाउनलोड गर्दा त्रुटि!",
+      "noFileChosen": "कुनै फाइल छानिएको छैन"
+    },
+    "columns": {
+      "name": "नाम",
+      "phone": "फोन",
+      "email": "इमेल",
+      "internetStatus": "इन्टरनेट स्थिति",
+      "phoneStatus": "फोन स्थिति",
+      "bankingStatus": "बैंकिङ स्थिति",
+      "walletAddress": "वालेट ठेगाना",
+      "gender": "लिङ्ग",
+      "projects": "परियोजनाहरू"
+    }
+  },
+  "vendor": {
+    "title": "विक्रेता",
+    "titlePlural": "विक्रेताहरू",
+    "editTitle": "विक्रेता सम्पादन गर्नुहोस्",
+    "editSubtitle": "विक्रेताको विवरण सम्पादन गर्नुहोस्",
+    "vendorName": "विक्रेताको नाम",
+    "enterVendorName": "विक्रेताको नाम प्रविष्ट गर्नुहोस्",
+    "updatedSuccessfully": "विक्रेता सफलतापूर्वक अपडेट भयो!",
+    "failedToUpdate": "विक्रेता अपडेट गर्न असफल भयो",
+    "columns": {
+      "name": "नाम",
+      "phone": "फोन",
+      "email": "इमेल",
+      "walletAddress": "वालेट ठेगाना",
+      "gender": "लिङ्ग",
+      "status": "स्थिति"
+    }
+  },
+  "user": {
+    "title": "प्रयोगकर्ता",
+    "titlePlural": "प्रयोगकर्ताहरू",
+    "createTitle": "प्रयोगकर्ता सिर्जना गर्नुहोस्",
+    "createSubtitle": "प्रणालीमा नयाँ प्रयोगकर्ता थप्नुहोस्",
+    "editTitle": "प्रयोगकर्ता सम्पादन गर्नुहोस्",
+    "editSubtitle": "प्रयोगकर्ताको जानकारी अपडेट गर्नुहोस्",
+    "selectRole": "कृपया भूमिका चयन गर्नुहोस्",
+    "selectGender": "कृपया लिङ्ग चयन गर्नुहोस्",
+    "addedSuccessfully": "प्रयोगकर्ता सफलतापूर्वक थपियो!",
+    "failedToAdd": "प्रयोगकर्ता थप्न असफल भयो",
+    "columns": {
+      "name": "नाम",
+      "email": "इमेल",
+      "phone": "फोन",
+      "role": "भूमिका",
+      "status": "स्थिति",
+      "walletAddress": "वालेट ठेगाना"
+    }
+  },
+  "project": {
+    "title": "परियोजना",
+    "titlePlural": "परियोजनाहरू",
+    "createTitle": "परियोजना सिर्जना गर्नुहोस्",
+    "editTitle": "परियोजना सम्पादन गर्नुहोस्",
+    "fundManagement": "कोष व्यवस्थापन",
+    "createPayout": "भुक्तानी सिर्जना गर्नुहोस्",
+    "assignFund": "कोष तोक्नुहोस्",
+    "assignFunds": "कोषहरू तोक्नुहोस्",
+    "totalBeneficiaries": "कुल लाभग्राहीहरू",
+    "totalBalance": "कुल मौज्दात",
+    "activeOwners": "सक्रिय मालिकहरू",
+    "triggers": "ट्रिगरहरू",
+    "activitiesStatus": "गतिविधि स्थिति",
+    "vulnerableGroups": "जोखिममा रहेका समूहहरू",
+    "stakeholders": "सरोकारवालाहरू",
+    "importStakeholders": "सरोकारवालाहरू आयात गर्नुहोस्",
+    "selectStakeholders": "सरोकारवालाहरू चयन गर्नुहोस्",
+    "householdCashSupport": "नगद सहायता प्राप्त गर्ने घरपरिवार",
+    "householdBankStatus": "घरपरिवारको बैंक स्थिति",
+    "householdPhoneAvailability": "घरपरिवारको फोन उपलब्धता",
+    "signatureThreshold": "हस्ताक्षर सीमा",
+    "totalBeneficiariesLabel": "कुल लाभग्राहीहरू",
+    "activitiesWithCommunication": "सञ्चारसहितका गतिविधिहरू",
+    "activitiesAutomated": "स्वचालित गतिविधिहरू",
+    "dailyMonitoring": "दैनिक अनुगमन",
+    "addDailyMonitoring": "दैनिक अनुगमन थप्नुहोस्",
+    "editDailyMonitoring": "दैनिक अनुगमन सम्पादन गर्नुहोस्",
+    "payout": {
+      "title": "भुक्तानी",
+      "createTitle": "भुक्तानी सिर्जना गर्नुहोस्",
+      "initiatePayout": "भुक्तानी सुरु गर्नुहोस्",
+      "verifyPayout": "भुक्तानी प्रमाणित गर्नुहोस्"
+    },
+    "activities": {
+      "title": "गतिविधिहरू",
+      "status": "गतिविधि स्थिति"
+    }
+  },
+  "treasury": {
+    "title": "कोष",
+    "createToken": "टोकन सिर्जना गर्नुहोस्",
+    "createTokenTitle": "आफ्नो ERC20 टोकन सिर्जना गर्नुहोस्",
+    "assets": "सम्पत्तिहरू",
+    "transactions": "कारोबारहरू",
+    "token": {
+      "name": "टोकनको नाम",
+      "symbol": "टोकन चिन्ह",
+      "initialSupply": "टोकन प्रारम्भिक आपूर्ति",
+      "enterTokenName": "आफ्नो टोकनको नाम प्रविष्ट गर्नुहोस्",
+      "enterTokenSymbol": "आफ्नो टोकन चिन्ह प्रविष्ट गर्नुहोस्",
+      "enterInitialSupply": "आफ्नो टोकन प्रारम्भिक आपूर्ति प्रविष्ट गर्नुहोस्",
+      "writeDescription": "टोकन विवरण लेख्नुहोस्"
+    },
+    "recentDeposits": "हालका जम्माहरू"
+  },
+  "communications": {
+    "title": "सञ्चार",
+    "voice": "भ्वाइस",
+    "text": "टेक्स्ट",
+    "textCampaigns": "टेक्स्ट अभियानहरू",
+    "campaign": {
+      "title": "अभियान",
+      "createTitle": "अभियान सिर्जना गर्नुहोस्",
+      "editTitle": "अभियान सम्पादन गर्नुहोस्",
+      "name": "अभियानको नाम",
+      "enterName": "अभियानको नाम प्रविष्ट गर्नुहोस्"
+    }
+  },
+  "settings": {
+    "title": "सेटिङहरू",
+    "addTitle": "सेटिङ थप्नुहोस्",
+    "editTitle": "सेटिङ सम्पादन गर्नुहोस्",
+    "fieldDefinition": "फिल्ड परिभाषा",
+    "key": "कुञ्जी",
+    "value": "मान",
+    "enterKey": "कुञ्जी प्रविष्ट गर्नुहोस्",
+    "enterValue": "मान प्रविष्ट गर्नुहोस्"
+  },
+  "authApps": {
+    "title": "प्रमाणीकरण एपहरू",
+    "addNew": "नयाँ थप्नुहोस्",
+    "appName": "नाम",
+    "appAddress": "एप ठेगाना",
+    "appDescription": "विवरण",
+    "enterAppName": "एपको नाम प्रविष्ट गर्नुहोस्",
+    "enterAppAddress": "एप ठेगाना प्रविष्ट गर्नुहोस्"
+  },
+  "profile": {
+    "title": "प्रोफाइल",
+    "editProfile": "प्रोफाइल सम्पादन गर्नुहोस्",
+    "personalInfo": "व्यक्तिगत जानकारी"
+  },
+  "pagination": {
+    "next": "अर्को",
+    "previous": "अघिल्लो",
+    "rowsPerPage": "प्रति पृष्ठ पङ्क्तिहरू",
+    "of": "मध्ये",
+    "page": "पृष्ठ"
+  },
+  "table": {
+    "noResults": "कुनै नतिजा भेटिएन।",
+    "selectAll": "सबै चयन गर्नुहोस्",
+    "selectRow": "पङ्क्ति चयन गर्नुहोस्",
+    "columns": "स्तम्भहरू",
+    "filters": "फिल्टरहरू"
+  },
+  "errors": {
+    "generic": "केही गलत भयो। कृपया फेरि प्रयास गर्नुहोस्।",
+    "notFound": "स्रोत भेटिएन।",
+    "unauthorized": "तपाईंलाई यो कार्य गर्ने अनुमति छैन।",
+    "fileDownload": "फाइल डाउनलोड गर्दा त्रुटि!",
+    "invalidFileFormat": "अमान्य फाइल ढाँचा। कृपया Excel, JSON, वा CSV फाइलहरू अपलोड गर्नुहोस्।",
+    "pleaseSelectFile": "कृपया अपलोड गर्न फाइल चयन गर्नुहोस्"
+  },
+  "success": {
+    "created": "{entity} सफलतापूर्वक सिर्जना भयो!",
+    "updated": "{entity} सफलतापूर्वक अपडेट भयो!",
+    "deleted": "{entity} सफलतापूर्वक मेटाइयो!",
+    "imported": "डाटा सफलतापूर्वक आयात भयो!",
+    "uploaded": "फाइल सफलतापूर्वक अपलोड भयो।"
+  }
+}

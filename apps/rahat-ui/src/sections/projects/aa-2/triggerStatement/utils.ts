@@ -66,7 +66,9 @@ export const formatMainLabel = (key: string, type: string) => {
     .replace('Prob Flood', 'Flood Probability (%)')
     .replace('Discharge M3s', 'Discharge (m³/s)')
     .replace('Water Level M', 'Water Level (m)')
-    .replace('Rainfall Mm', 'Rainfall (mm)');
+    .replace('Rainfall Mm', 'Rainfall (mm)')
+    .replace('Prob Humidity', 'Humidity (%)')
+    .replace('Temperature C', 'Temperature (°C)');
 };
 
 //*** Builders ***//

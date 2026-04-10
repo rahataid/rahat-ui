@@ -111,6 +111,9 @@ export default function AddAutomatedTriggerForm({
     return filterSourceOptionsByProjectType(sourceOptions, projectType || '');
   }, [sourceOptions, projectType]);
 
+  const computedStationHeading =
+    projectType === 'HEAT_WAVE' ? 'Heatwave Station' : stationHeading;
+
   React.useEffect(() => {
     if (source && source in SOURCE_MAPPING) {
       // Always update triggerStatement.source to match the selected source
@@ -213,7 +216,7 @@ export default function AddAutomatedTriggerForm({
             <FormMessage />
           </FormItem>
           <FormItem>
-            <FormLabel>{stationHeading}</FormLabel>
+            <FormLabel>{computedStationHeading}</FormLabel>
             <FormControl>
               <Input
                 className="bg-gray-300"

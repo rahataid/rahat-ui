@@ -31,12 +31,23 @@ export function ForecastDataSection({
     triggerSourceValue: string,
     triggerSourceSubTypeValue: string,
   ) => {
-    if (triggerSourceValue === 'prob_humidity') return 'Humidity Level';
-    if (triggerSourceValue === 'temperature_c') return 'Temperature Level';
-    if (triggerSourceValue === 'rainfall_mm') return 'Rainfall Level';
-    if (triggerSourceSubTypeValue === 'warning_level') return 'Warning Level';
-    if (triggerSourceSubTypeValue === 'danger_level') return 'Danger Level';
-    return 'Water Level';
+    switch (triggerSourceValue) {
+      case 'prob_humidity':
+        return 'Humidity Level';
+      case 'temperature_c':
+        return 'Temperature Level';
+      case 'rainfall_mm':
+        return 'Rainfall Level';
+      default:
+        switch (triggerSourceSubTypeValue) {
+          case 'warning_level':
+            return 'Warning Level';
+          case 'danger_level':
+            return 'Danger Level';
+          default:
+            return 'Water Level';
+        }
+    }
   };
 
   const setIconLabel = (source: string, triggerSourceSubType: string) => {

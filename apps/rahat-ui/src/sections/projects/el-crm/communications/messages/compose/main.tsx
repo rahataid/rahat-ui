@@ -70,7 +70,12 @@ const AUDIENCE_GROUPS = [
   },
 ];
 
-type FilterField = 'category' | 'source' | 'location' | 'isVerified';
+type FilterField =
+  | 'category'
+  | 'source'
+  | 'location'
+  | 'isVerified'
+  | 'customerCode';
 type FilterRow = { id: string; field: FilterField | ''; value: string };
 
 const collectFilterValues = (rows: FilterRow[], field: FilterField) =>
@@ -83,6 +88,7 @@ const FILTER_FIELD_OPTIONS: { value: FilterField; label: string }[] = [
   { value: 'category', label: 'Status' },
   { value: 'source', label: 'Source' },
   { value: 'location', label: 'Location' },
+  { value: 'customerCode', label: 'Customer Code' },
 ];
 
 const BENEFICIARY_FILTER_FIELD_OPTIONS: {
@@ -145,10 +151,12 @@ export default function ComposeMessageView() {
     const categories = collectFilterValues(filterRows, 'category');
     const sources = collectFilterValues(filterRows, 'source');
     const locations = collectFilterValues(filterRows, 'location');
+    const customerCodes = collectFilterValues(filterRows, 'customerCode');
 
     if (categories.length) f.category = categories;
     if (sources.length) f.source = sources;
     if (locations.length) f.location = locations;
+    if (customerCodes.length) f.customerCode = customerCodes;
 
     return f;
   }, [filterRows]);
@@ -209,6 +217,7 @@ export default function ComposeMessageView() {
     const categories = collectFilterValues(filterRows, 'category');
     const sources = collectFilterValues(filterRows, 'source');
     const locations = collectFilterValues(filterRows, 'location');
+    const customerCodes = collectFilterValues(filterRows, 'customerCode');
     const verified = Array.from(
       new Set(
         collectFilterValues(filterRows, 'isVerified').map(
@@ -220,6 +229,7 @@ export default function ComposeMessageView() {
     if (categories.length) options.vendorStatus = categories;
     if (sources.length) options.vendorSource = sources;
     if (locations.length) options.location = locations;
+    if (customerCodes.length) options.customerCode = customerCodes;
     if (verified.length === 1) options.beneficiaryIsVerified = verified[0];
     if (verified.length > 1) options.beneficiaryIsVerified = verified;
 

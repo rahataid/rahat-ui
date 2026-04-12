@@ -64,6 +64,8 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useSwal } from '@rahat-ui/query/swal';
+import { getStat } from '../utils';
+import { formatNumber } from 'apps/rahat-ui/src/utils';
 
 // Export configuration
 const CUSTOMER_EXPORT_CONFIG = {
@@ -162,15 +164,11 @@ export default function CustomersPage() {
 
   const { data: stats } = useCustomerStats(projectUUID);
 
-  const totalCustomers =
-    stats?.find((stat: Stat) => stat.name === 'TOTAL_CUSTOMER')?.data || 0;
-  const activeCustomers =
-    stats?.find((stat: Stat) => stat.name === 'ACTIVE_CUSTOMER')?.data || 0;
-  const inactiveCustomers =
-    stats?.find((stat: Stat) => stat.name === 'INACTIVE_CUSTOMER')?.data || 0;
-  const newlyInactiveCustomers =
-    stats?.find((stat: Stat) => stat.name === 'NEWLY_INACTIVE_CUSTOMER')
-      ?.data || 0;
+  const totalCustomers: number = getStat(stats, 'TOTAL_CUSTOMER') || 0;
+  const activeCustomers: number = getStat(stats, 'ACTIVE_CUSTOMER') || 0;
+  const inactiveCustomers: number = getStat(stats, 'INACTIVE_CUSTOMER') || 0;
+  const newlyInactiveCustomers: number =
+    getStat(stats, 'NEWLY_INACTIVE_CUSTOMER') || 0;
 
   const columns = useCustomersTableColumn();
 
@@ -195,11 +193,11 @@ export default function CustomersPage() {
 
   const handleDownloadCustomers = React.useCallback(async () => {
     try {
-      toast.fire({
-        title: 'Preparing export...',
-        icon: 'info',
-        text: 'Fetching all filtered customer data.',
-      });
+      // toast.fire({
+      //   title: 'Preparing export...',
+      //   icon: 'info',
+      //   text: 'Fetching all filtered customer data.',
+      // });
 
       const result = await exportCustomersMutation.mutateAsync({
         uuid: projectUUID,
@@ -390,7 +388,7 @@ export default function CustomersPage() {
                       <p
                         className={`text-3xl font-bold tracking-tight ${stat.color}`}
                       >
-                        {stat.value}
+                        {formatNumber(stat.value)}
                       </p>
                     </div>
                     <Tooltip>
@@ -493,9 +491,7 @@ export default function CustomersPage() {
 
                 {/* Search Customer Code */}
                 <div className="flex-1 min-w-[180px] space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">
-                    Code
-                  </Label>
+                  <Label className="text-xs text-muted-foreground">Code</Label>
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                     <Input

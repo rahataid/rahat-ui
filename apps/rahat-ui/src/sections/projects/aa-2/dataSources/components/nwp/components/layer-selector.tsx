@@ -2,17 +2,13 @@
 
 import { useState } from 'react';
 import type { GroupedLayers, WeatherLayer } from '../utils/weather-layers';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
 import {
   Thermometer,
   CloudRain,
@@ -53,75 +49,87 @@ export function LayerSelector({
     categories[0] || 'DHM-WRF',
   );
 
+  const getLayerImageSrc = (iconKey: string) => {
+    switch (iconKey) {
+      case 'thermometer':
+        return '/heatwave/temperature.png';
+      case 'cloud-rain':
+        return '/heatwave/precipitation.png';
+      case 'wind':
+        return '/heatwave/wind.png';
+      default:
+        return '/heatwave/temperature.png';
+    }
+  };
+
   return (
-    <Card className="p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 w-80">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <LayersIcon className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold">Weather Layers</h3>
-        </div>
-        <div className="flex items-center gap-2">
-          <Switch
-            id="layer-toggle"
-            checked={showLayer}
-            onCheckedChange={onShowLayerChange}
-          />
-          <Label htmlFor="layer-toggle" className="text-xs cursor-pointer">
-            {showLayer ? 'On' : 'Off'}
-          </Label>
-        </div>
-      </div>
+    <div className=" top-54 right-5 flex flex-col items-end gap-2 z-70">
+      {/* Tabs Section - Separate Card */}
+      <Card className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 rounded-sm shadow-lg px-2 py-1">
+        <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
+          <TabsList className="bg-transparent h-auto p-0 gap-1">
+            {categories.map((category) => (
+              <TabsTrigger
+                key={category}
+                value={category}
+                className="rounded-sm px-2 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium text-sm"
+              >
+                {category}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+      </Card>
 
-      {isLoading ? (
-        <div className="py-8 text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2" />
-          <p className="text-xs text-muted-foreground">Loading layers...</p>
-        </div>
-      ) : categories.length === 0 ? (
-        <div className="py-8 text-center">
-          <p className="text-xs text-muted-foreground">No layers available</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <div className="space-y-2 max-h-[300px] overflow-y-auto">
+      {/* Layer Buttons - Floating on the right */}
+      <div className="flex flex-row gap-2 items-end">
+        {isLoading ? (
+          <Card className="bg-background/55 backdrop-blur supports-[backdrop-filter]:bg-background/80 rounded-lg shadow-lg p-0">
+            <div className="animate-spin rounded-sm h-4 w-4 border-b-2 border-primary mx-auto" />
+          </Card>
+        ) : categories.length === 0 ? (
+          <Card className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 rounded-lg shadow-lg p-4">
+            <p className="text-xs text-muted-foreground">No layers available</p>
+          </Card>
+        ) : (
+          <div className="flex flex-col gap-2 items-end">
             {groupedLayers[selectedCategory]?.map((layer: WeatherLayer) => {
               const Icon =
                 iconMap[layer.icon as keyof typeof iconMap] || LayersIcon;
               const isSelected = selectedLayerId === layer.id;
-
               return (
-                <Button
+                <button
                   key={layer.id}
-                  variant={isSelected ? 'default' : 'outline'}
-                  className="w-full justify-start gap-3 h-auto py-3"
                   onClick={() => onLayerChange(layer.id)}
+                  className={`flex items-center justify-between gap-1 px-2  rounded-full shadow-md font-medium text-sm transition-colors duration-150 w-fit
+                    ${
+                      isSelected
+                        ? 'bg-gray-600 text-white'
+                        : 'bg-gray-500/80 text-white hover:bg-gray-600'
+                    }
+                  `}
+                  style={{
+                    border: isSelected ? '2px solid #3b82f6' : 'none',
+                    minWidth: '0',
+                  }}
                 >
-                  <Icon className="h-4 w-4 flex-shrink-0" />
-                  <div className="flex flex-col items-start text-left">
-                    <span className="font-medium text-sm">{layer.name}</span>
-                    <span className="text-xs opacity-80 font-normal">
-                      {layer.description}
-                    </span>
-                  </div>
-                </Button>
+                  <span className="flex items-center gap-2">
+                    {/* <Icon className="h-5 w-5" /> */}
+                    {layer.name}
+                  </span>
+                  <span className="-mr-2 w-[36px] h-[36px] rounded-full overflow-hidden border-2 border-white shadow-md inline-flex flex-shrink-0">
+                    <img
+                      src={getLayerImageSrc(layer.icon)}
+                      alt={layer.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
+                </button>
               );
             })}
           </div>
-        </div>
-      )}
-    </Card>
+        )}
+      </div>
+    </div>
   );
 }

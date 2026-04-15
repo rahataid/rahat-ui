@@ -22,10 +22,10 @@ export interface GroupedLayers {
 
 // Map model names to display categories
 const categoryMap: Record<string, string> = {
-  'gidc_wrf': 'DHM-WRF',
-  'gidc_wrfda': 'DHM-WRFDA',
-  'mfd_uems': 'WRF-EMS',
-  'gfs': 'GFS',
+  gidc_wrf: 'DHM-WRF',
+  gidc_wrfda: 'DHM-WRFDA',
+  mfd_uems: 'WRF-EMS',
+  gfs: 'GFS',
 };
 
 export const WMS_CONFIG = {
@@ -38,68 +38,110 @@ export const WMS_CONFIG = {
 } as const;
 
 // Map layer names to user-friendly display info
-const layerDisplayInfo: Record<string, { name: string; description: string; icon: string }> = {
+const layerDisplayInfo: Record<
+  string,
+  { name: string; description: string; icon: string }
+> = {
   'NWP:gidc_wrf_air_temperature': {
-    name: 'Air Temperature (WRF)',
+    name: 'Air Temperature',
     description: 'Surface air temperature forecast',
     icon: 'thermometer',
   },
   'NWP:gidc_wrf_hourly_precipitation': {
-    name: 'Hourly Precipitation (WRF)',
+    name: 'Hourly Precipitation',
     description: 'Hourly precipitation forecast',
     icon: 'cloud-rain',
   },
   'NWP:gidc_wrf_accumulated_precipitation': {
-    name: 'Accumulated Precipitation (WRF)',
+    name: 'Accumulated Precipitation',
     description: 'Total accumulated precipitation',
     icon: 'cloud-rain',
   },
   'NWP:gidc_wrf_wind_speed_coverage': {
-    name: 'Wind Speed (WRF)',
+    name: 'Wind Speed',
     description: 'Wind speed coverage forecast',
     icon: 'wind',
   },
   'NWP:gidc_wrf_wind_gust_coverage': {
-    name: 'Wind Gust (WRF)',
+    name: 'Wind Gust',
     description: 'Wind gust coverage forecast',
     icon: 'wind',
   },
   'NWP:gidc_wrfda_air_temperature': {
-    name: 'Air Temperature (WRFDA)',
+    name: 'Air Temperature',
     description: 'Data assimilation air temperature forecast',
     icon: 'thermometer',
   },
   'NWP:gidc_wrfda_hourly_precipitation': {
-    name: 'Hourly Precipitation (WRFDA)',
+    name: 'Hourly Precipitation',
     description: 'Data assimilation hourly precipitation',
     icon: 'cloud-rain',
   },
   'NWP:gidc_wrfda_accumulated_precipitation': {
-    name: 'Accumulated Precipitation (WRFDA)',
+    name: 'Accumulated Precipitation',
     description: 'Data assimilation total precipitation',
     icon: 'cloud-rain',
   },
   'NWP:gidc_wrfda_wind_speed_coverage': {
-    name: 'Wind Speed (WRFDA)',
+    name: 'Wind Speed',
     description: 'Data assimilation wind speed',
     icon: 'wind',
   },
   'NWP:gidc_wrfda_wind_gust_coverage': {
-    name: 'Wind Gust (WRFDA)',
+    name: 'Wind Gust',
     description: 'Data assimilation wind gust',
     icon: 'wind',
   },
   'NWP:gidc_wrfda_relative_humidity': {
-    name: 'Relative Humidity (WRFDA)',
+    name: 'Relative Humidity',
     description: 'Data assimilation relative humidity',
     icon: 'droplets',
   },
   'NWP:gidc_wrfda_total_cloud': {
-    name: 'Total Cloud Cover (WRFDA)',
+    name: 'Total Cloud Cover',
     description: 'Data assimilation cloud coverage',
     icon: 'cloud-rain',
   },
 };
+
+function getIconForBaseName(base: string): string {
+  const lower = base.toLowerCase();
+
+  switch (true) {
+    case lower.includes('temperature'):
+      return 'thermometer';
+    case lower.includes('precipitation') || lower.includes('rain'):
+      return 'cloud-rain';
+    case lower.includes('wind'):
+      return 'wind';
+    case lower.includes('humidity'):
+      return 'droplets';
+    case lower.includes('cloud'):
+      return 'cloud-rain';
+    default:
+      return 'layers';
+  }
+}
+
+function getFallbackDisplayInfo(layerName: string): {
+  name: string;
+  description: string;
+  icon: string;
+} {
+  const afterNamespace = layerName.split(':')[1] || layerName;
+  const base = afterNamespace;
+
+  const readable = base.replace(/_/g, ' ');
+  const capitalized = readable.replace(/\b\w/g, (c) => c.toUpperCase());
+
+  const icon = getIconForBaseName(base);
+
+  return {
+    name: capitalized || afterNamespace,
+    description: 'Weather forecast layer',
+    icon,
+  };
+}
 
 export async function fetchWeatherLayers(): Promise<{
   groupedLayers: GroupedLayers;
@@ -107,40 +149,41 @@ export async function fetchWeatherLayers(): Promise<{
 }> {
   try {
     const response = await fetch(WMS_CONFIG.apiUrl);
-    
+
     if (!response.ok) {
-      throw new Error(`Failed to fetch weather layers: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch weather layers: ${response.status} ${response.statusText}`,
+      );
     }
-    
+
     const data: WMSForecastResponse = await response.json();
-    
+
     // Validate data structure - API returns an array of forecast groups
     if (!Array.isArray(data) || data.length === 0) {
-      throw new Error('Invalid API response structure: expected array of forecast groups');
+      throw new Error(
+        'Invalid API response structure: expected array of forecast groups',
+      );
     }
-    
+
     // Group layers by category
     const groupedLayers: GroupedLayers = {};
     const allTimes: Date[] = [];
-    
+
     for (const group of data) {
       if (!group.layers || !Array.isArray(group.layers)) {
         continue;
       }
-      
+
       const category = categoryMap[group.name] || group.name.toUpperCase();
       groupedLayers[category] = [];
-      
+
       // Convert layers to WeatherLayer format
       for (const layerName of group.layers) {
-        const displayInfo = layerDisplayInfo[layerName] || {
-          name: layerName.split(':')[1]?.replace(/_/g, ' ') || layerName,
-          description: 'Weather forecast layer',
-          icon: 'layers',
-        };
-        
+        const displayInfo =
+          layerDisplayInfo[layerName] || getFallbackDisplayInfo(layerName);
+
         const id = layerName.split(':')[1] || layerName;
-        
+
         groupedLayers[category].push({
           id,
           name: displayInfo.name,
@@ -150,38 +193,38 @@ export async function fetchWeatherLayers(): Promise<{
           category,
         });
       }
-      
+
       // Parse available times from this group
       if (group.datetime) {
         const times = group.datetime
           .split(',')
           .map((timeStr) => new Date(timeStr.trim()))
           .filter((date) => !isNaN(date.getTime()));
-        
+
         allTimes.push(...times);
       }
     }
-    
+
     // Remove duplicate times and sort them
     const uniqueTimes = Array.from(new Set(allTimes.map((t) => t.getTime())))
       .map((timestamp) => new Date(timestamp))
       .sort((a, b) => a.getTime() - b.getTime());
-    
+
     return { groupedLayers, availableTimes: uniqueTimes };
   } catch (error) {
     console.error('[v0] Error fetching weather layers:', error);
-    
+
     // Return fallback data with some default times
     const now = new Date();
     const fallbackTimes: Date[] = [];
-    
+
     // Generate 24 hourly timestamps starting from current hour
     for (let i = 0; i < 24; i++) {
       const time = new Date(now);
       time.setHours(now.getHours() + i, 0, 0, 0);
       fallbackTimes.push(time);
     }
-    
+
     return {
       groupedLayers: {
         'DHM-WRF': [

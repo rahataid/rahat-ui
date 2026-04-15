@@ -160,34 +160,7 @@ export function NWPSection() {
 
           {/* Right Section - Weather Layers */}
           {showControls && (
-            <div className="absolute top-4 right-4 pointer-events-auto flex flex-col gap-4 max-h-[calc(100vh-120px)] overflow-auto">
-              {/* Weather Layer Toggle Button */}
-              {selectedLayer && showLayer && (
-                <button
-                  onClick={() =>
-                    setIsWeatherLayerVisible(!isWeatherLayerVisible)
-                  }
-                  className="w-80 bg-white rounded-lg shadow-lg p-2 hover:shadow-xl transition-shadow flex items-center justify-center gap-2 text-sm font-medium"
-                  title={
-                    isWeatherLayerVisible
-                      ? 'Hide weather layer'
-                      : 'Show weather layer'
-                  }
-                >
-                  {isWeatherLayerVisible ? (
-                    <>
-                      <Eye className="w-5 h-5 text-gray-700" />
-                      <span>Hide Weather Layer</span>
-                    </>
-                  ) : (
-                    <>
-                      <EyeOff className="w-5 h-5 text-gray-700" />
-                      <span>Show Weather Layer</span>
-                    </>
-                  )}
-                </button>
-              )}
-
+            <div className="absolute right-2 pointer-events-auto flex flex-col gap-4 max-h-[calc(100vh-120px)] overflow-auto">
               {/* Weather Layer Selector */}
               <div className="h-fit">
                 <LayerSelector
@@ -222,18 +195,46 @@ export function NWPSection() {
 
           {/* Bottom Section - Time Control (Video Player Style) */}
           {showControls && (
-            <div className="absolute bottom-4 left-4 right-4 pointer-events-auto">
-              <TimeControl
-                currentTime={currentTime}
-                onTimeChange={setCurrentTime}
-                opacity={opacity}
-                onOpacityChange={setOpacity}
-                availableTimes={availableTimes}
-                forecastHour={forecastHour}
-                maxForecastHours={maxForecastHours}
-                handleForecastChange={handleForecastChange}
-              />
-            </div>
+            <>
+              <div className="absolute bottom-4 left-4 right-4 pointer-events-auto">
+                <TimeControl
+                  currentTime={currentTime}
+                  onTimeChange={setCurrentTime}
+                  opacity={opacity}
+                  onOpacityChange={setOpacity}
+                  availableTimes={availableTimes}
+                  forecastHour={forecastHour}
+                  maxForecastHours={maxForecastHours}
+                  handleForecastChange={handleForecastChange}
+                />
+              </div>
+              {/* Weather Layer Toggle Button - moved to bottom right */}
+              {/* {selectedLayer && showLayer && (
+                <button
+                  onClick={() =>
+                    setIsWeatherLayerVisible(!isWeatherLayerVisible)
+                  }
+                  className="absolute bottom-4 right-4 w-80 bg-white rounded-lg shadow-lg p-2 hover:shadow-xl transition-shadow flex items-center justify-center gap-2 text-sm font-medium z-40"
+                  title={
+                    isWeatherLayerVisible
+                      ? 'Hide weather layer'
+                      : 'Show weather layer'
+                  }
+                >
+                  {isWeatherLayerVisible ? (
+                    <>
+                      <Eye className="w-5 h-5 text-gray-700" />
+                      <span>Hide Weather Layer</span>
+                    </>
+                  ) : (
+                    <>
+                      <EyeOff className="w-5 h-5 text-gray-700" />
+                      <span>Show Weather Layer</span>
+                    </>
+                  )}
+                </button>
+              )} */}
+            </>
           )}
         </div>
       </div>

@@ -100,7 +100,7 @@ export function ColorLegend({ selectedLayerId }: ColorLegendProps) {
   if (!config) return null;
 
   return (
-    <Card className="p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 w-24">
+    <Card className="p-22 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 w-16">
       <div className="flex flex-col items-center">
         <div className="text-xs font-bold mb-3 text-center text-gray-700">
           {config.unit}
@@ -108,7 +108,7 @@ export function ColorLegend({ selectedLayerId }: ColorLegendProps) {
         
         {/* Gradient Bar with Values Inside */}
         <div 
-          className="w-12 h-80 rounded relative overflow-hidden"
+          className="w-10 h-80 rounded relative overflow-hidden"
           style={{
             background: config.gradient,
             border: '2px solid rgba(0,0,0,0.3)',

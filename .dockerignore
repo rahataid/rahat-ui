@@ -3,8 +3,7 @@
 node_modules/
 .dockerignore
 .env.*
-Dockerfile
 .nx/
-
-# Local 
+dist/
 apps/**/.next/
+*.md

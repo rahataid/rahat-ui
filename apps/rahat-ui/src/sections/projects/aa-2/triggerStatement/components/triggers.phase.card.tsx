@@ -1,8 +1,9 @@
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { IconLabelBtn } from 'apps/rahat-ui/src/common';
-import { ArrowRight, Plus } from 'lucide-react';
+import { ArrowRight, Plus, Settings2 } from 'lucide-react';
 import TriggerDetailsCard from './trigger.details.card';
 import Image from 'next/image';
 import { CardHeading } from 'apps/rahat-ui/src/common/card.heading';
@@ -28,6 +29,7 @@ type IProps = {
   isPinned?: boolean;
   onTogglePin?: () => void;
   hidePin?: boolean;
+  hasExtendedLogic?: boolean;
 };
 
 export default function TriggersPhaseCard({
@@ -50,6 +52,7 @@ export default function TriggersPhaseCard({
   isPinned = false,
   onTogglePin,
   hidePin = false,
+  hasExtendedLogic = false,
 }: IProps) {
   const totalCharSeries = chartSeries.reduce((a, b) => a + b, 0);
   return (
@@ -172,6 +175,15 @@ export default function TriggersPhaseCard({
               colors={['#297AD6', '#E8C468']}
               height={15}
             />
+          </div>
+        )}
+
+        {hasExtendedLogic && (
+          <div className="mt-2 flex items-center gap-1.5">
+            <Badge className="bg-purple-100 text-purple-700 text-[10px] gap-1 font-normal">
+              <Settings2 className="h-3 w-3" />
+              Extended Logic
+            </Badge>
           </div>
         )}
       </div>

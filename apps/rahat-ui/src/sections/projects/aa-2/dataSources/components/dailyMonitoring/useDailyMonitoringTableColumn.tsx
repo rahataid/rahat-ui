@@ -3,25 +3,41 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { setPaginationToLocalStorage } from 'apps/rahat-ui/src/utils/prev.pagination.storage';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+import { useProjectInfo } from '@rahat-ui/query';
+import { UUID } from 'crypto';
+import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
+
+type DailyMonitoringRow = {
+  dataEntryBy?: string;
+  createdAt?: string;
+  riverBasin?: string;
+  groupKey: string;
+};
 
 export default function useDailyMonitoringTableColumn() {
   const { id: projectId } = useParams();
   const router = useRouter();
+  const { data: projectInfo } = useProjectInfo(projectId as UUID);
 
-  const handleEyeClick = (id: any) => {
+  const stationHeading = getStationTitle(
+    projectInfo?.value?.project_type || '',
+  );
+  const handleEyeClick = (id: string) => {
     setPaginationToLocalStorage();
     router.push(
       `/projects/aa/${projectId}/data-sources/daily-monitoring/${id}`,
     );
   };
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<DailyMonitoringRow>[] = [
     {
       accessorKey: 'dataEntryBy',
       header: 'Created By',
-      cell: ({ row }) => {
-        return row.getValue('dataEntryBy');
-      },
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('dataEntryBy')} maxLength={25} />
+      ),
     },
     {
       accessorKey: 'createdAt',
@@ -31,21 +47,20 @@ export default function useDailyMonitoringTableColumn() {
         const filterDate = new Date(filterValue);
         return rowDate.toDateString() === filterDate.toDateString();
       },
-      cell: ({ row }) => {
-        const createdAt = row.getValue('createdAt') as string;
-        if (createdAt) {
-          return dateFormat(createdAt);
-        }
-        return 'N/A';
-      },
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={dateFormat(row.getValue('createdAt')) || 'N/A'}
+          maxLength={30}
+        />
+      ),
     },
 
     {
       accessorKey: 'riverBasin',
-      header: 'River Basin',
-      cell: ({ row }) => {
-        return row.getValue('riverBasin');
-      },
+      header: stationHeading,
+      cell: ({ row }) => (
+        <TruncatedCell text={row.getValue('riverBasin')} maxLength={35} />
+      ),
     },
     {
       id: 'actions',
@@ -54,11 +69,11 @@ export default function useDailyMonitoringTableColumn() {
       cell: ({ row }) => {
         return (
           <div className="flex gap-4 items-center">
-            <Eye
-              className="cursor-pointer hover:text-primary"
-              size={20}
-              strokeWidth={1.5}
-              onClick={() => handleEyeClick(row.original.groupKey)}
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="cursor-pointer hover:text-primary"
+              handleOnClick={() => handleEyeClick(row.original.groupKey)}
             />
           </div>
         );

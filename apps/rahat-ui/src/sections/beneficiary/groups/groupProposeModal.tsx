@@ -77,8 +77,12 @@ export default function UpdateGroupProposeModal({
       selectedPurpose,
     };
     try {
-      await updateGroupPropose.mutateAsync(payload);
-      validateModal.onFalse();
+      await updateGroupPropose.mutateAsync(payload, {
+        onSuccess: () => {
+          window.location.reload();
+          validateModal.onFalse();
+        },
+      });
     } catch (err) {
       console.log('Error', err);
     }

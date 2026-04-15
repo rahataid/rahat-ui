@@ -24,7 +24,7 @@ export default function DemoTable({ table, tableHeight, loading }: IProps) {
         <SpinnerLoader />
       ) : (
         <TableComponent>
-          <TableHeader className="sticky top-0 bg-card z-50">
+          <TableHeader className="bg-card z-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {

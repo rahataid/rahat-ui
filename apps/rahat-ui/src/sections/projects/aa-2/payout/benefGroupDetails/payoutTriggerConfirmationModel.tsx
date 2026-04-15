@@ -11,9 +11,11 @@ import {
   AlertDialogAction,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { PayoutTransaction } from 'apps/rahat-ui/src/types/payout';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 
 type IProps = {
-  payoutData: any;
+  payoutData: PayoutTransaction;
   onConfirm: () => void;
 };
 
@@ -27,17 +29,25 @@ export default function PayoutConfirmationDialog({
         roles={[AARoles.ADMIN, AARoles.Municipality]}
         hasContent={false}
       >
-        <AlertDialogTrigger asChild>
-          {payoutData?.type === 'FSP' && (
-            <Button
-              className={`bg-blue-600 hover:bg-blue-700 text-white ${
-                !!payoutData?.isPayoutTriggered && 'hidden'
-              }`}
+        {payoutData?.type === 'FSP' &&
+          (payoutData?.extras?.paymentProviderName === 'NCHL' ||
+            payoutData?.extras?.paymentProviderName === 'Namaste Pay') && (
+            <TooltipWrapper
+              tip="Payout cannot be triggered because funds have not been disbursed to the beneficiary group."
+              disable={payoutData?.beneficiaryGroupToken?.isDisbursed}
             >
-              Trigger Payout
-            </Button>
+              <AlertDialogTrigger asChild>
+                <Button
+                  className={`bg-blue-600 hover:bg-blue-700 text-white ${
+                    !!payoutData?.isPayoutTriggered && 'hidden'
+                  }`}
+                  disabled={!payoutData?.beneficiaryGroupToken?.isDisbursed}
+                >
+                  Trigger Payout
+                </Button>
+              </AlertDialogTrigger>
+            </TooltipWrapper>
           )}
-        </AlertDialogTrigger>
       </RoleAuth>
       <AlertDialogContent className="max-w-lg">
         <AlertDialogHeader>

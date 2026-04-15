@@ -27,9 +27,8 @@
   "files.exclude": {
     "**/.git": true,
     "**/.DS_Store": true,
-    "**/dist": true
   },
-  "files.autoSave": "onFocusChange",
+  "files.autoSave": "afterDelay",
   // Terminal settings
   // Extensions settings
   "extensions.ignoreRecommendations": false,

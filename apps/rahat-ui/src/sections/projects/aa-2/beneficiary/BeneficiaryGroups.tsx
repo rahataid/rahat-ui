@@ -66,7 +66,7 @@ const BeneficiaryGroups = () => {
                   >
                     <div className="flex flex-col space-y-2">
                       <div
-                        className="cursor-pointer bg-secondary grid place-items-center h-28 rounded-xl"
+                        className="cursor-pointer bg-secondary grid place-items-center h-28 rounded-sm"
                         onClick={() => {
                           router.push(
                             `/projects/aa/${id}/beneficiary/groupDetails/${i.uuid}`,

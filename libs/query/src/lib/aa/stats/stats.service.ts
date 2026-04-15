@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
 import { useStatsStore } from './stats.store';
 import { UUID } from 'crypto';
+import { useSwal } from 'libs/query/src/swal';
 
 export const usePhasesStats = (uuid: UUID) => {
   const q = useProjectAction();
@@ -23,6 +24,7 @@ export const usePhasesStats = (uuid: UUID) => {
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   useEffect(() => {
@@ -48,6 +50,7 @@ export const useAllStats = (uuid: UUID) => {
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   return query;
@@ -68,6 +71,7 @@ export const useCommsStats = (uuid: UUID) => {
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   return query;
@@ -88,6 +92,7 @@ export const useSingleStat = (uuid: UUID, name: string) => {
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   return query;
@@ -110,6 +115,7 @@ export const useCommuicationStatsforBeneficiaryandStakeHolders = (
       });
       return mutate.data;
     },
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 
   return query;
@@ -133,6 +139,47 @@ export const useProjectDashboardReporting = (uuid: UUID) => {
       });
       return mutate.data;
     },
+  });
+
+  return query;
+};
+
+export const useTransportSessionStats = (uuid: UUID) => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  const query = useQuery({
+    queryKey: ['transportSessionStats', uuid],
+    queryFn: async () => {
+      try {
+        const mutate = await q.mutateAsync({
+          uuid,
+          data: {
+            action: 'ms.activities.communication.getTransportSessionStats',
+            payload: {
+              projectId: uuid,
+            },
+          },
+        });
+        return mutate.data;
+      } catch (error: any) {
+        const errorMessage =
+          error?.response?.data?.message || 'Failed to fetch transport stats';
+        toast.fire({
+          title: 'Error loading transport stats',
+          text: errorMessage,
+          icon: 'error',
+        });
+        throw error;
+      }
+    },
+    staleTime: 60 * 60 * 1000,
   });
 
   return query;

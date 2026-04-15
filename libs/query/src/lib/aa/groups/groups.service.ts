@@ -16,6 +16,7 @@ import {
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { useBeneficiaryGroupsStore } from '../../beneficiary/beneficiary-groups.store';
+import { BeneficiaryGroupListItem } from '@rahat-ui/types';
 
 type StakeholderGroupArgs = {
   projectUUID: UUID;
@@ -37,6 +38,7 @@ export const useCreateStakeholdersGroups = <
     'mutationFn'
   >,
 ): UseMutationResult<TData, TError, StakeholderGroupArgs, TContext> => {
+  const qc = useQueryClient();
   const q = useProjectAction();
   const alert = useSwal();
 
@@ -62,8 +64,11 @@ export const useCreateStakeholdersGroups = <
         },
       }) as TData;
     },
-    onSuccess: (data, variables, ctx) => {
+    onSuccess: async (data, variables, ctx) => {
       q.reset();
+      await qc.invalidateQueries({
+        queryKey: ['stakeholdersGroups'],
+      });
       options?.onSuccess?.(data, variables, ctx);
       toast.fire({
         title: 'Stakeholders Group added successfully',
@@ -133,7 +138,7 @@ export const useCreateBenficiariesGroups = () => {
       const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
-        title: 'Error while adding stakeholders group.',
+        title: 'Error while adding beneficiaries group.',
         icon: 'error',
         text: errorMessage,
       });
@@ -142,7 +147,6 @@ export const useCreateBenficiariesGroups = () => {
 };
 
 export const useReserveTokenForGroups = () => {
-  console.log('reached here');
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -162,6 +166,13 @@ export const useReserveTokenForGroups = () => {
         numberOfTokens: number;
         totalTokensReserved: number;
         title: string;
+        isPayoutIntegrated?: boolean;
+        params?: {
+          type: string;
+          mode: string;
+          payoutProcessorId?: string;
+          extras?: Record<string, string | undefined>;
+        };
       };
     }) => {
       const response = await q.mutateAsync({
@@ -193,6 +204,34 @@ export const useReserveTokenForGroups = () => {
   });
 };
 
+export const useValidateTokenAssignment = () => {
+  const q = useProjectAction();
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      groupId,
+    }: {
+      projectUUID: UUID;
+      groupId: string;
+    }) => {
+      const response = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.beneficiary.validate_token_assignment',
+          payload: { groupId },
+        },
+      });
+      return response?.data;
+    },
+    onSuccess: () => {
+      q.reset();
+    },
+    onError: (error: any) => {
+      q.reset();
+    },
+  });
+};
+
 export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
   const { setStakeholdersGroups, setStakeholdersGroupsMeta } =
@@ -213,6 +252,7 @@ export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
+    staleTime: 20 * 60 * 1000, // 20 minutes
   });
 
   useEffect(() => {
@@ -233,6 +273,7 @@ export const useBeneficiaryGroups = (uuid: UUID, payload: any) => {
 
   const query = useQuery({
     queryKey: ['stakeholdersGroups', uuid, payload],
+    staleTime: 5 * 60 * 1000, // 5 minutes
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -251,7 +292,10 @@ export const useBeneficiaryGroups = (uuid: UUID, payload: any) => {
     }
   }, [query.data]);
 
-  return { ...query, stakeholdersGroupsMeta: query?.data?.meta };
+  const groups: BeneficiaryGroupListItem[] = query.data?.data ?? [];
+  const meta = query.data?.meta;
+
+  return { ...query, data: groups, meta };
 };
 
 export const useSingleStakeholdersGroup = (
@@ -275,6 +319,33 @@ export const useSingleStakeholdersGroup = (
       return mutate.data;
     },
     enabled: !!stakeholdersGroupId,
+  });
+  return query;
+};
+
+export const useStakeholdersGroupByUuids = (
+  uuid: UUID,
+  stakeholdersGroupUuids: string[],
+  queryValidation: boolean,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['stakeholdersGroupDetailsByUuids', uuid, stakeholdersGroupUuids],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.stakeholders.getGroupDetailsByUuids',
+          payload: {
+            uuids: stakeholdersGroupUuids,
+          },
+        },
+      });
+      return mutate.data;
+    },
+    enabled: queryValidation,
+    staleTime: 10 * 60 * 1000, // 10 minutes
   });
   return query;
 };
@@ -324,6 +395,7 @@ export const useBeneficiariesGroups = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
+    staleTime: 20 * 60 * 1000, // 20 minutes
   });
 
   useEffect(() => {
@@ -378,10 +450,20 @@ export const useUpdateStakeholdersGroups = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: async (_, variables) => {
       q.reset();
+      await qc.invalidateQueries({
+        queryKey: ['stakeholdersGroups'],
+      });
+      await qc.invalidateQueries({
+        queryKey: ['stakeholdersGroup'],
+      });
       qc.invalidateQueries({
-        queryKey: ['stakeholdersGroups', 'stakeholders'],
+        queryKey: [
+          'stakeholdersGroup',
+          variables.projectUUID,
+          variables.stakeholdersGroupPayload.uuid,
+        ],
       });
       toast.fire({
         title: 'Stakeholders group updated successfully',
@@ -408,7 +490,7 @@ export const useDeleteStakeholdersGroups = () => {
     toast: true,
     position: 'top-end',
     showConfirmButton: false,
-    timer: 3000,
+    timer: 5000,
   });
   return useMutation({
     mutationFn: async ({
@@ -420,23 +502,28 @@ export const useDeleteStakeholdersGroups = () => {
         uuid: string;
       };
     }) => {
-      return q.mutateAsync({
+      const response = await q.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'aaProject.stakeholders.deleteGroup',
           payload: stakeholdersGroupPayload,
         },
       });
+      // return the full response so component can check isSuccess and activities
+      return response?.data || response;
     },
-    onSuccess: () => {
-      q.reset();
-      qc.invalidateQueries({
-        queryKey: ['stakeholdersGroups', 'stakeholders'],
-      });
-      toast.fire({
-        title: 'Stakeholders Group removed successfully',
-        icon: 'success',
-      });
+    onSuccess: (data) => {
+      // only show success toast if isSuccess is not false
+      if (data?.isSuccess === true) {
+        q.reset();
+        qc.invalidateQueries({
+          queryKey: ['stakeholdersGroups', 'stakeholders'],
+        });
+        toast.fire({
+          title: 'Stakeholders Group removed successfully',
+          icon: 'success',
+        });
+      }
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';

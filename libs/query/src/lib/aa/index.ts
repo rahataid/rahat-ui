@@ -1,4 +1,5 @@
 export * from './activities';
+export * from './settings';
 export * from './stats';
 export * from './trigger-statements';
 export * from './stakeholders';
@@ -10,3 +11,4 @@ export * from './communication';
 export * from './funManagement';
 export * from './vendors';
 export * from './payout';
+export * from './inkinds';

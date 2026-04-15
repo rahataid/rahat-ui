@@ -10,6 +10,7 @@ const ROOTS = {
   PROFILE: '/profile',
   TREASURY: '/treasury',
   COMMUNITYBENEFICIARY: '/community-beneficiary',
+  IMPORTBENEFICIARY: '/import-beneficiary',
   SETTINGS: '/settings',
   APPAUTHENTICATION: '/auth-apps',
 };
@@ -47,6 +48,7 @@ export const paths = {
         `${ROOTS.COMMUNICATION}/text/${id}/edit`,
     },
     communitybeneficiary: ROOTS.COMMUNITYBENEFICIARY,
+    importBeneficiary: ROOTS.IMPORTBENEFICIARY,
     appAuthentication: ROOTS.APPAUTHENTICATION,
   },
   settings: {

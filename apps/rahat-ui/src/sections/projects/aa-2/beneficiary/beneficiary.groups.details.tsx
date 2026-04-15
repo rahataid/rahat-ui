@@ -74,9 +74,6 @@ const BeneficiaryGroupsDetails = () => {
     );
   }, [groupDetails]);
 
-  const handleSearch = (e) => {
-    console.log(e.target.value);
-  };
   return (
     <div className="p-4 ">
       <div className="flex justify-between items-center">

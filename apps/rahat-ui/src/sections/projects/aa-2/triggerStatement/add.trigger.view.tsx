@@ -26,6 +26,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   useCreateTriggerStatement,
   useGetDataSourceTypes,
+  useProjectInfo,
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -44,6 +45,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
 export const AutomatedFormSchema = z.object({
   title: z.string().min(2, { message: 'Please enter trigger title' }),
@@ -73,6 +75,13 @@ export default function AddTriggerView() {
   // Generating source options starts //
   const { data: dataSourceTypes, isLoading: isLoadingDataSourceTypes } =
     useGetDataSourceTypes(projectId);
+
+  const { data: projectInfo, isLoading: isProjectInfoLoading } = useProjectInfo(
+    projectId as UUID,
+  );
+  const stationHeading = getStationTitle(
+    projectInfo?.value?.project_type || '',
+  );
 
   const SOURCES =
     dataSourceTypes?.value || ({} as Record<string, SourceConfig>);
@@ -251,7 +260,7 @@ export default function AddTriggerView() {
         title="Add Trigger"
         description="Fill the form below to create new trigger statement"
       />
-      {isLoadingDataSourceTypes ? (
+      {isLoadingDataSourceTypes || isProjectInfoLoading ? (
         <SpinnerLoader />
       ) : dataSourceTypes ? (
         <ScrollArea className="h-[calc(100vh-210px)] pr-3">
@@ -283,10 +292,15 @@ export default function AddTriggerView() {
                   phase={selectedPhase}
                   sourceOptions={sourceOptions}
                   subTypeOptions={subtypeOptionsBySource}
+                  stationHeading={stationHeading}
                 />
               </TabsContent>
               <TabsContent value="manual">
-                <ManualTriggerAddForm form={manualForm} phase={selectedPhase} />
+                <ManualTriggerAddForm
+                  form={manualForm}
+                  phase={selectedPhase}
+                  stationHeading={stationHeading}
+                />
               </TabsContent>
             </Tabs>
 

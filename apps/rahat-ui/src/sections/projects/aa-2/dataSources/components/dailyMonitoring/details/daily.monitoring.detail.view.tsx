@@ -1,7 +1,11 @@
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
-import { useRemoveMonitoring, useSingleMonitoring } from '@rahat-ui/query';
+import {
+  useProjectInfo,
+  useRemoveMonitoring,
+  useSingleMonitoring,
+} from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
@@ -24,6 +28,7 @@ import AccumulatedCard from './ncmrwf/ncmrwf.accumulated.card';
 import WeatherDashboard from './ncmrwf/ncmwrf.deterministic.problastic.weatherCard';
 import GaugereadingMonitoringCard from './gaugeReading/gaugeReading';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
+import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
 export default function DailyMonitoringDetailView() {
   const router = useRouter();
@@ -31,6 +36,10 @@ export default function DailyMonitoringDetailView() {
   const projectId = params.id as UUID;
   const monitoringId = params.monitoringId as UUID;
 
+  const { data: projectInfo } = useProjectInfo(projectId as UUID);
+  const stationHeading = getStationTitle(
+    projectInfo?.value?.project_type || '',
+  );
   const { data, isLoading } = useSingleMonitoring(projectId, monitoringId);
 
   const dataDetails = React.useMemo(() => {
@@ -172,7 +181,7 @@ export default function DailyMonitoringDetailView() {
           <div className="flex items-center gap-3 lg:justify-center ">
             <Waves className="h-5 w-5 text-gray-700" />
             <div>
-              <p className="text-md text-gray-700">River Basin</p>
+              <p className="text-md text-gray-700">{stationHeading}</p>
               <p className="text-muted-foreground text-sm">
                 {data?.data?.[0]?.riverBasin}
               </p>

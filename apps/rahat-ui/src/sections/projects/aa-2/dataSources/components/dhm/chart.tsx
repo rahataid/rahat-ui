@@ -15,6 +15,7 @@ type ChartProps = {
   yaxisTitle?: string;
   unit?: string;
   xDateFormat?: string; // format for x-axis date labels
+  yAxisFormatter?: (value: number) => string;
 };
 
 const TimeSeriesChart = ({
@@ -25,6 +26,7 @@ const TimeSeriesChart = ({
   xDateFormat = 'h:mm a',
   yaxisTitle = 'Water Level (m)',
   unit = '',
+  yAxisFormatter,
 }: ChartProps) => {
   if (!data || data.length === 0) return null;
 
@@ -96,6 +98,19 @@ const TimeSeriesChart = ({
       },
       min: minY - 0.5,
       max: maxY + 0.5,
+      labels: {
+        formatter: function (value) {
+          if (typeof yAxisFormatter === 'function') {
+            try {
+              return yAxisFormatter(value as number);
+            } catch (error) {
+              console.warn('yAxisFormatter threw error:', error);
+              return `${value}`;
+            }
+          }
+          return `${value}`;
+        },
+      },
     },
     tooltip: {
       shared: false,
@@ -179,7 +194,7 @@ const TimeSeriesChart = ({
   };
 
   return (
-    <ApexChart options={options} series={series} type="area" height={400} />
+    <ApexChart options={options} series={series} type="area" height={350} />
   );
 };
 

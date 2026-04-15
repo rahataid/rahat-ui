@@ -11,7 +11,7 @@ on:
       tag_suffix:
         description: "Tag suffix (e.g., test-load)"
         required: true
-        default: "demo-redcross"
+        default: "aa-dev"
         type: string
       vault_secret_path:
         description: "Vault secret path"
@@ -19,6 +19,7 @@ on:
         type: choice
         options:
           # Dev folder
+          - "[DEV] github/data/rahat/rahat-ui/dev/aa/dev"
           - "[DEV] github/data/rahat/rahat-ui/dev/aa/dev-qa"
           - "[DEV] github/data/rahat/rahat-ui/dev/aa/stellar"
           - "[DEV] github/data/rahat/rahat-ui/dev/aa/unicef"

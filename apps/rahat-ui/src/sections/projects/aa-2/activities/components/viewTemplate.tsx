@@ -1,0 +1,390 @@
+import React from 'react';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
+import { useParams } from 'next/navigation';
+import { useActivityTemplates } from '@rahat-ui/query/lib/aa/activities/activities.service';
+import { UUID } from 'crypto';
+import { Filter, Zap, Wrench, Eye, X } from 'lucide-react';
+import {
+  AUTOMATION_TYPE,
+  PHASE,
+} from 'apps/rahat-ui/src/constants/aa.constants';
+import {
+  useActivitiesStore,
+  useDebounce,
+  usePagination,
+} from '@rahat-ui/query';
+import { Template } from 'apps/rahat-ui/src/types/activities';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/accordion';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+
+interface ViewTemplateProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  onSelectTemplate?: (template: Template) => void;
+  selectedTemplateId?: string | null;
+}
+
+const ViewTemplate = ({
+  open,
+  setOpen,
+  onSelectTemplate,
+  selectedTemplateId,
+}: ViewTemplateProps) => {
+  const { id }: { id: UUID } = useParams();
+  const { pagination, filters, setNextPage, setPrevPage, setFilters } =
+    usePagination();
+  const { categories } = useActivitiesStore((state) => ({
+    categories: state.categories,
+  }));
+  const debouncedTitleSearch = useDebounce(filters.title || '', 500);
+
+  const { data: templates, isLoading } = useActivityTemplates(id, {
+    page: pagination.page,
+    perPage: pagination.perPage,
+    phase: filters.phase,
+    category: filters.category,
+    title: debouncedTitleSearch,
+    isAutomated:
+      filters.isAutomated === 'true'
+        ? 'true'
+        : filters.isAutomated === 'false'
+        ? 'false'
+        : '',
+    hasCommunication: filters.hasCommunication === 'true' ? 'true' : '',
+  });
+
+  return (
+    <>
+      <div className="border-l bg-background h-[calc(100vh-65px)] flex flex-col">
+        <div className="flex items-start justify-between p-3 border-b">
+          <div>
+            <h2 className="text-lg font-semibold">Activity Templates</h2>
+            <p className="text-sm text-muted-foreground">
+              Discover the filter activity templates for your workflow
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <X
+              className="w-5 h-5 text-muted-foreground cursor-pointer hover:text-foreground"
+              onClick={() => setOpen(false)}
+            />
+          </div>
+        </div>
+        <ScrollArea className="flex-1 overflow-hidden">
+          <div className="px-4">
+            {/* Filter Section */}
+            <div className="space-y-4">
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="filters" className="border-b">
+                  <AccordionTrigger className="hover:no-underline py-2">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Filter className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm font-semibold text-foreground">
+                        Filters
+                      </span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="grid grid-cols-1 gap-3">
+                      {/* Phase */}
+                      <div className="space-y-2 px-2">
+                        <label className="text-sm font-medium">Phase</label>
+                        <Select
+                          value={filters.phase === '' ? 'all' : filters.phase}
+                          onValueChange={(value) =>
+                            setFilters((prev: Template) => ({
+                              ...prev,
+                              phase: value === 'all' ? '' : value,
+                              page: 1,
+                            }))
+                          }
+                        >
+                          <SelectTrigger className="w-full border border-input rounded-sm px-3 py-2 text-sm bg-background hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring">
+                            <SelectValue placeholder="Select phase" />
+                          </SelectTrigger>
+
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Phase</SelectLabel>
+                              {PHASE.map((s) => (
+                                <SelectItem key={s.value} value={s.value}>
+                                  {s.label}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Category */}
+                      <div className="space-y-2 px-2">
+                        <label className="text-sm font-medium">Category</label>
+                        <Select
+                          value={
+                            filters.category === '' ? 'all' : filters.category
+                          }
+                          onValueChange={(value) =>
+                            setFilters((prev: Template) => ({
+                              ...prev,
+                              category: value === 'all' ? '' : value,
+                              page: 1,
+                            }))
+                          }
+                        >
+                          <SelectTrigger className="w-full border border-input rounded-sm px-3 py-2 text-sm bg-background hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring">
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Category</SelectLabel>
+                              <SelectItem value="all">All</SelectItem>
+                              {categories.map((cat) => (
+                                <SelectItem key={cat.uuid} value={cat.name}>
+                                  {cat.name}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Title */}
+                      <div className="space-y-2 px-2">
+                        <label className="text-sm font-medium">Title</label>
+                        <Input
+                          placeholder="Search by title..."
+                          value={filters.title}
+                          onChange={(e) =>
+                            setFilters((prev: Template) => ({
+                              ...prev,
+                              title: e.target.value,
+                              page: 1,
+                            }))
+                          }
+                          className="border-input rounded-sm "
+                        />
+                      </div>
+
+                      {/* Automated */}
+                      <div className="space-y-2 px-2">
+                        <label className="text-sm font-medium">Type</label>
+                        <Select
+                          value={
+                            filters.isAutomated === ''
+                              ? 'all'
+                              : filters.isAutomated?.toString()
+                          }
+                          onValueChange={(value) =>
+                            setFilters((prev: Template) => ({
+                              ...prev,
+                              isAutomated:
+                                value === 'all'
+                                  ? ''
+                                  : value === 'true'
+                                  ? 'true'
+                                  : 'false',
+                              page: 1,
+                            }))
+                          }
+                        >
+                          <SelectTrigger className="w-full border border-input rounded-sm px-3 py-2 text-sm bg-background hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring">
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Type</SelectLabel>
+                              {AUTOMATION_TYPE.map((type) => (
+                                <SelectItem key={type.value} value={type.value}>
+                                  {type.label}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {/* Has Communication  switch*/}
+                      <div className=" flex justify-between items-center space-y-2">
+                        <label className="text-sm font-medium ">
+                          Has Communication
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <label>No</label>
+                          <Switch
+                            checked={filters.hasCommunication === 'true'}
+                            onCheckedChange={(value) =>
+                              setFilters((prev: Template) => ({
+                                ...prev,
+                                hasCommunication: value ? 'true' : 'false',
+                                page: 1,
+                              }))
+                            }
+                          />
+                          <label>Yes</label>
+                        </div>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
+
+            {/* Template List */}
+            <div className="mt-8 space-y-3">
+              {isLoading && (
+                <div className="space-y-3">
+                  {[...Array(3)].map((_, i) => (
+                    <Skeleton key={i} className="h-24 rounded-lg" />
+                  ))}
+                </div>
+              )}
+
+              {!isLoading && templates?.data?.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                    <Filter className="w-6 h-6 text-muted-foreground" />
+                  </div>
+                  <p className="font-medium text-foreground">
+                    No templates found
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Try adjusting your filters
+                  </p>
+                </div>
+              )}
+
+              {templates?.data?.map((item: Template) => {
+                const isSelected = selectedTemplateId === item.uuid;
+                return (
+                  <div
+                    key={item.uuid}
+                    className={`group border rounded-xl p-4 hover:shadow-md transition-all duration-200 bg-card hover:bg-muted/50 ${
+                      isSelected
+                        ? 'border-primary border-2'
+                        : 'border-border hover:border-primary'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-base text-foreground  group-hover:text-primary transition-colors">
+                          <TruncatedCell
+                            text={item.title}
+                            maxLength={30}
+                            className=""
+                          />
+                        </h3>
+
+                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                          <TruncatedCell
+                            text={item.description}
+                            maxLength={30}
+                            className="max-w-[350px] text-wrap "
+                          />
+                        </p>
+
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {item.phase?.name && (
+                            <Badge variant="secondary" className="text-xs">
+                              {item.phase.name}
+                            </Badge>
+                          )}
+                          {item.category?.name && (
+                            <Badge variant="outline" className="text-xs">
+                              {item.category.name}
+                            </Badge>
+                          )}
+                          <Badge
+                            variant={item.isAutomated ? 'default' : 'secondary'}
+                            className="text-xs flex items-center gap-1"
+                          >
+                            {item.isAutomated ? (
+                              <>
+                                <Zap className="w-3 h-3" />
+                                Automated
+                              </>
+                            ) : (
+                              <>
+                                <Wrench className="w-3 h-3" />
+                                Manual
+                              </>
+                            )}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        className="w-full mt-4 gap-2"
+                        onClick={() => {
+                          onSelectTemplate?.(item);
+                        }}
+                      >
+                        <Eye className="w-4 h-4" />
+                        Apply Template
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {templates?.meta && (
+              <div className="flex items-center justify-between gap-3 mt-8 pt-6 border-t">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  type="button"
+                  disabled={!templates.meta.prev}
+                  onClick={() => setPrevPage()}
+                  className="flex-1"
+                >
+                  ← Previous
+                </Button>
+
+                <div className="px-4 py-2 rounded-md bg-muted text-center flex-1">
+                  <span className="text-sm font-medium">
+                    Page {templates.meta.currentPage} of{' '}
+                    {templates.meta.lastPage}
+                  </span>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  type="button"
+                  disabled={!templates.meta.next}
+                  onClick={() => setNextPage()}
+                  className="flex-1"
+                >
+                  Next →
+                </Button>
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+    </>
+  );
+};
+
+export default ViewTemplate;

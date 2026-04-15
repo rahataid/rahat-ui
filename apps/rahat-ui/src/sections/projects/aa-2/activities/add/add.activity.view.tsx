@@ -1,4 +1,3 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   useActivitiesCategories,
   useActivitiesStore,
@@ -12,6 +11,7 @@ import {
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import {
   Form,
   FormControl,
@@ -30,36 +30,74 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import {
-  ValidationAddress,
-  ValidationContent,
-} from '@rumsan/connect/src/types';
 import { useUserList } from '@rumsan/react-query';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
 import { UUID } from 'crypto';
 import {
+  TooltipContent,
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+} from 'libs/shadcn/src/components/ui/tooltip';
+import {
   CloudUpload,
   FileCheck,
+  Info,
+  LayoutTemplate,
   LoaderCircle,
   Minus,
   Plus,
   X,
 } from 'lucide-react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import * as React from 'react';
-import { useForm } from 'react-hook-form';
+import React, {
+  useMemo,
+  useEffect,
+  useState,
+  ChangeEvent,
+  useCallback,
+} from 'react';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
-import AddCommunicationForm from './add.communication.form';
-import CommunicationDataCard from './add.communicationDataCard';
-
+import AddCommunicationForm from '../components/communication.form';
+import CommunicationDataCard from '../components/communicationDataCard';
+import {
+  CommunicationData,
+  GroupType,
+} from 'apps/rahat-ui/src/types/communication';
+import { useActivityForm } from '../hooks/useActivityForm';
+import { buildCommunicationPayloads } from 'apps/rahat-ui/src/utils/buildCommunicationPayload';
+import ViewTemplate from 'apps/rahat-ui/src/sections/projects/aa-2/activities/components/viewTemplate';
+import {
+  CommunicationDetails,
+  Template,
+} from 'apps/rahat-ui/src/types/activities';
+import ConfirmationDialog from 'apps/rahat-ui/src/common/confirmationDialog';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
 export const DurationData = [
   { value: 'hours', label: 'Hours' },
   { value: 'days', label: 'Days' },
 ];
 
 export default function AddActivities() {
+  const addCommunicationOpen = useBoolean(false);
+  const editCommunicationOpen = useBoolean();
+  const templateConfirmDialog = useBoolean(false);
+  const pendingTemplateValue = useBoolean(false);
+  const audioUploading = useBoolean(false);
+  const viewTemplateOpen = useBoolean(false);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
+    null,
+  );
+  const [communicationData, setCommunicationData] = useState<
+    CommunicationData[]
+  >([]);
+
+  const [uploadingFileName, setUploadingFileName] = useState<string | null>(
+    null,
+  );
   const createActivity = useCreateActivities();
   const uploadFile = useUploadFile();
   const { id: projectID } = useParams();
@@ -67,8 +105,8 @@ export default function AddActivities() {
   const phaseId = searchParams.get('phaseId');
   const navPae = searchParams.get('nav');
   const router = useRouter();
-  const [open, setOpen] = React.useState(false);
-  const { data: users, isSuccess } = useUserList({
+
+  const { data: users } = useUserList({
     page: 1,
     perPage: 9999,
     sort: 'createdAt',
@@ -76,36 +114,14 @@ export default function AddActivities() {
   });
   useActivitiesCategories(projectID as UUID);
   usePhases(projectID as UUID);
-  const [communicationData, setCommunicationData] = React.useState<
-    {
-      communicationTitle?: string;
-      groupType: string;
-      groupId: string;
-      transportId: string;
-      message?: string;
-      subject?: string;
-      audioURL?: { mediaURL?: string; fileName?: string };
-    }[]
-  >([]);
 
-  const { categories, hazardTypes } = useActivitiesStore((state) => ({
+  const { categories } = useActivitiesStore((state) => ({
     categories: state.categories,
-    hazardTypes: state.hazardTypes,
   }));
   const { phases } = usePhasesStore((state) => ({
     phases: state.phases,
   }));
-  const [documents, setDocuments] = React.useState<
-    { id: number; name: string }[]
-  >([]);
 
-  const [allFiles, setAllFiles] = React.useState<
-    { mediaURL: string; fileName: string }[]
-  >([]);
-
-  const nextId = React.useRef(0);
-
-  const [audioUploading, setAudioUploading] = React.useState<boolean>(false);
   const activitiesListPath =
     navPae === 'mainPage'
       ? `/projects/aa/${projectID}/activities`
@@ -123,91 +139,19 @@ export default function AddActivities() {
   });
   const appTransports = useListAllTransports();
 
-  const FormSchema = z
-    .object({
-      title: z
-        .string()
-        .min(2, { message: 'Title must be at least 4 character' }),
-      responsibility: z
-        .string()
-        .min(2, { message: 'Please Select responsibility' }),
-      source: z
-        .string()
-        .min(2, { message: 'Please enter responsible station' }),
-      phaseId: z.string().min(1, { message: 'Please select phase' }),
-      categoryId: z.string().min(1, { message: 'Please select category' }),
-      leadTime: z.string().optional(),
-      description: z
-        .string()
-        .optional()
-        .refine((val) => !val || val.length > 4, {
-          message: 'Must be at least 5 characters',
-        }),
-      isAutomated: z.boolean().optional(),
-      activityDocuments: z
-        .array(
-          z.object({
-            mediaURL: z.string(),
-            fileName: z.string(),
-          }),
-        )
-        .optional(),
-      activityCommunication: z.array(
-        z.object({
-          communicationTitle: z.string(),
-          groupType: z.string().optional(),
-          groupId: z.string().optional(),
-          transportId: z.string().optional(),
-          message: z.string().optional(),
-          subject: z.string().optional(),
-          audioURL: z
-            .object({
-              mediaURL: z.string().optional(),
-              fileName: z.string().optional(),
-            })
-            .optional(),
-        }),
-      ),
-    })
-    .refine(
-      (data) => {
-        const selectedPhase = phases.find((p) => p.uuid === data.phaseId);
-        if (selectedPhase?.name !== 'PREPAREDNESS') {
-          return data.leadTime && data.leadTime.length > 0;
-        }
-        return true;
-      },
-      {
-        message: 'Lead time is required for this phase',
-        path: ['leadTime'],
-      },
-    );
+  const { FormSchema, form, communicationForm, defaultCommunicationValues } =
+    useActivityForm(phases, appTransports);
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      title: '',
-      responsibility: '',
-      source: '',
-      phaseId: phaseId || '',
-      categoryId: '',
-      leadTime: '',
-      description: '',
-      isAutomated: false,
-      activityDocuments: [],
-      activityCommunication: [],
-    },
-  });
-
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
       const filesArray = Array.from(files);
 
       for (const file of filesArray) {
-        const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
+        const currentFiles = form.getValues('activityDocuments') || [];
+        const isDuplicateFile = currentFiles.some(
+          (f) => f.fileName === file.name,
+        );
         if (isDuplicateFile) {
           toast.error(`Cannot upload duplicate file: ${file.name}`);
           continue;
@@ -217,21 +161,43 @@ export default function AddActivities() {
           continue;
         }
 
-        const newId = nextId.current++;
-        setDocuments((prev) => [...prev, { id: newId, name: file.name }]);
+        // Add temporary file entry immediately to show in UI
+        const tempFile = {
+          fileName: file.name,
+          mediaURL: '', // Will be updated after upload completes
+        };
+        form.setValue('activityDocuments', [...currentFiles, tempFile]);
+        setUploadingFileName(file.name);
 
         try {
           const formData = new FormData();
           formData.append('file', file);
           const { data: afterUpload } = await uploadFile.mutateAsync(formData);
-          setAllFiles((prev) => [...prev, afterUpload]);
+
+          // Replace temporary file with actual uploaded file
+          const updatedFiles = form.getValues('activityDocuments') || [];
+          const fileIndex = updatedFiles.findIndex(
+            (f) => f.fileName === file.name && f.mediaURL === '',
+          );
+          if (fileIndex !== -1) {
+            updatedFiles[fileIndex] = afterUpload;
+            form.setValue('activityDocuments', updatedFiles);
+          } else {
+            // Fallback: just add it if we can't find the temp entry
+            form.setValue('activityDocuments', [...currentFiles, afterUpload]);
+          }
         } catch (error) {
-          // Remove the document from the list if upload fails
-          setDocuments((prev) => prev.filter((doc) => doc.name !== file.name));
+          // Remove temporary file entry on error
+          const updatedFiles = form.getValues('activityDocuments') || [];
+          const filteredFiles = updatedFiles.filter(
+            (f) => !(f.fileName === file.name && f.mediaURL === ''),
+          );
+          form.setValue('activityDocuments', filteredFiles);
           toast.error(`Failed to upload ${file.name}`);
+        } finally {
+          setUploadingFileName(null);
         }
       }
-
       // Reset the input value to allow selecting the same files again
       event.target.value = '';
     }
@@ -239,42 +205,49 @@ export default function AddActivities() {
 
   const selectedPhaseId = form.watch('phaseId');
   const responsibility = form.watch('responsibility');
-  const selectedPhase = phases.find((d) => d.uuid === selectedPhaseId);
+  const selectedPhase = useMemo(
+    () => phases.find((d) => d.uuid === selectedPhaseId),
+    [phases, selectedPhaseId],
+  );
 
-  React.useEffect(() => {
-    form.setValue('activityDocuments', allFiles);
-  }, [allFiles, setAllFiles]);
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (selectedPhase?.name === 'PREPAREDNESS') {
       form.setValue('isAutomated', false);
     }
-  }, [selectedPhase]);
+  }, [selectedPhase, form]);
+
+  useEffect(() => {
+    if (phaseId && phases.length > 0) {
+      const phaseExists = phases.find((p) => p.uuid === phaseId);
+      if (phaseExists) {
+        form.setValue('phaseId', phaseId, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+      }
+    }
+  }, [phaseId, phases, form]);
 
   // Handle to add the communication data to  stored in a local state
   const handleSave = () => {
-    const activityCommunications = form.getValues(
-      'activityCommunication',
-    ) as any;
-
-    // Create a new communication entry
-    const newCommunication = {
-      communicationTitle: activityCommunications?.communicationTitle || '',
-      groupType: activityCommunications?.groupType || '',
-      groupId: activityCommunications?.groupId || '',
-      transportId: activityCommunications?.transportId || '',
-      message: activityCommunications?.message || '',
-      subject: activityCommunications?.subject || '',
+    const communicationFormData = communicationForm.getValues();
+    const newCommunication: CommunicationData = {
+      communicationTitle: communicationFormData?.communicationTitle || '',
+      groupType: (communicationFormData?.groupType || '') as GroupType,
+      groupId: communicationFormData?.groupId || [],
+      transportId: communicationFormData?.transportId || '',
+      message: communicationFormData?.message || '',
+      subject: communicationFormData?.subject || '',
       audioURL: {
-        mediaURL: activityCommunications?.audioURL?.mediaURL || '',
-        fileName: activityCommunications?.audioURL?.fileName || '',
+        mediaURL: communicationFormData?.audioURL?.mediaURL || '',
+        fileName: communicationFormData?.audioURL?.fileName || '',
       },
+      sessionId: communicationFormData?.sessionId || '',
+      communicationId: communicationFormData?.communicationId || '',
     };
-    // Append new communication to the array
-    const updatedCommunications = [...communicationData, newCommunication];
+    setCommunicationData([...communicationData, newCommunication]);
 
-    // Update form state
-    setCommunicationData(updatedCommunications);
+    communicationForm.reset(defaultCommunicationValues);
   };
   // Handle to remove the communication data from the array stored in a local state
   const handleRemove = (index: number) => {
@@ -283,10 +256,11 @@ export default function AddActivities() {
     );
     setCommunicationData(updatedCommunications);
   };
+
   const handleCreateActivities = async (data: z.infer<typeof FormSchema>) => {
     const manager =
       users?.data?.find((u) => u?.uuid === data.responsibility) || null;
-    const { responsibility, activityCommunication, ...rest } = data;
+    const { responsibility, ...rest } = data;
     const payloadData = {
       manager: manager
         ? {
@@ -296,45 +270,14 @@ export default function AddActivities() {
             phone: manager.phone ?? '',
           }
         : null,
-      activityCommunication: communicationData,
       ...rest,
     };
     let payload;
-    const activityCommunicationPayload = [];
-    if (payloadData?.activityCommunication?.length) {
-      for (const comms of payloadData.activityCommunication) {
-        const selectedTransport = appTransports?.find(
-          (t) => t.cuid === comms.transportId,
-        );
-        if (selectedTransport?.validationContent === ValidationContent.URL) {
-          activityCommunicationPayload.push({
-            communicationTitle: comms.communicationTitle,
-            groupType: comms.groupType,
-            groupId: comms.groupId,
-            transportId: comms.transportId,
-            message: comms.audioURL,
-          });
-        } else if (
-          selectedTransport?.validationAddress === ValidationAddress.EMAIL
-        ) {
-          activityCommunicationPayload.push({
-            communicationTitle: comms.communicationTitle,
-            groupType: comms.groupType,
-            groupId: comms.groupId,
-            transportId: comms.transportId,
-            subject: comms.subject,
-            message: comms.message,
-          });
-        } else {
-          activityCommunicationPayload.push({
-            communicationTitle: comms.communicationTitle,
-            groupType: comms.groupType,
-            groupId: comms.groupId,
-            transportId: comms.transportId,
-            message: comms.message,
-          });
-        }
-      }
+    if (communicationData?.length) {
+      const activityCommunicationPayload = buildCommunicationPayloads(
+        communicationData,
+        appTransports,
+      );
       payload = {
         ...payloadData,
         activityCommunication: activityCommunicationPayload,
@@ -352,12 +295,48 @@ export default function AddActivities() {
       console.error('Error::', e);
     } finally {
       form.reset();
-      setAllFiles([]);
-      setDocuments([]);
+      setCommunicationData([]);
     }
   };
 
-  React.useEffect(() => {
+  const handleTemplateToggle = (nextValue: boolean) => {
+    if (nextValue) {
+      pendingTemplateValue.onTrue();
+      templateConfirmDialog.onTrue();
+      return;
+    }
+
+    form.setValue('isTemplate', false, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  };
+
+  const confirmTemplateToggle = () => {
+    if (pendingTemplateValue.value) {
+      form.setValue('isTemplate', true, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+    pendingTemplateValue.onFalse();
+    templateConfirmDialog.onFalse();
+  };
+
+  const cancelTemplateToggle = () => {
+    pendingTemplateValue.onFalse();
+    templateConfirmDialog.onFalse();
+  };
+
+  const resetForm = () => {
+    form.reset();
+    setSelectedTemplateId(null);
+    communicationForm.reset();
+    addCommunicationOpen.onFalse();
+    setCommunicationData([]);
+  };
+
+  useEffect(() => {
     if (!responsibility) return;
 
     const selectedUser = users?.data?.find((u) => u.uuid === responsibility);
@@ -370,400 +349,553 @@ export default function AddActivities() {
     } else {
       form.clearErrors('responsibility');
     }
-  }, [responsibility, users]);
+  }, [responsibility, users, form]);
 
+  const setBasicFields = (payload: Template) => {
+    const fieldMappings = {
+      title: payload.title,
+      description: payload.description,
+      responsibility: payload.managerId,
+      responsibleStation: payload.responsibleStation,
+      leadTime: payload.leadTime,
+      isAutomated: payload.isAutomated,
+      activityDocuments: payload.activityDocuments,
+    } as const;
+
+    Object.entries(fieldMappings).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        form.setValue(key as keyof typeof fieldMappings, value);
+      }
+    });
+  };
+  const setPhase = (payload: Template) => {
+    if (!payload.phase?.name) return;
+
+    const phaseId = phases.find(
+      (p) => p.name.toLowerCase() === payload.phase!.name.toLowerCase(),
+    )?.uuid;
+
+    if (phaseId) {
+      form.setValue('phaseId', phaseId);
+    }
+  };
+  const setCategory = (payload: Template) => {
+    if (!payload.category?.name) return;
+
+    const categoryUuid = categories.find(
+      (c) => c.name.toLowerCase() === payload.category!.name.toLowerCase(),
+    )?.uuid;
+
+    if (categoryUuid) {
+      form.setValue('categoryId', categoryUuid);
+    }
+  };
+  const setCommunications = (payload: Template) => {
+    if (
+      !payload.activityCommunication ||
+      !Array.isArray(payload.activityCommunication) ||
+      payload.activityCommunication.length === 0
+    ) {
+      return;
+    }
+
+    const mappedCommunications: CommunicationData[] =
+      payload.activityCommunication.map((comm) =>
+        mapCommunication(comm as CommunicationDetails),
+      );
+    setCommunicationData(mappedCommunications);
+  };
+
+  const mapCommunication = (comm: CommunicationDetails): CommunicationData => {
+    const isAudioMessage =
+      typeof comm.message === 'object' && comm.message !== null;
+
+    return {
+      communicationTitle: comm.communicationTitle || '',
+      groupType: comm.groupType || '',
+      groupId: comm.groupId ? [comm.groupId] : [],
+      transportId: comm.transportId || '',
+      message: isAudioMessage ? '' : comm.message || '',
+      subject: comm.subject || '',
+      audioURL: isAudioMessage
+        ? comm.message
+        : comm.audioURL || { mediaURL: '', fileName: '' },
+      sessionId: comm.sessionId || '',
+      communicationId: comm.communicationId || '',
+    };
+  };
+  const handleSelectTemplate = useCallback(
+    (payload: Template) => {
+      setSelectedTemplateId(payload.uuid);
+      form.clearErrors();
+      setBasicFields(payload);
+      setPhase(payload);
+      setCategory(payload);
+      setCommunications(payload);
+    },
+    [form, phases, categories],
+  );
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
-        <div className="p-4">
-          <div className=" mb-2 flex flex-col space-y-0">
-            <Back path={activitiesListPath} />
+        <div className={`flex ${viewTemplateOpen.value ? 'gap-0' : ''}`}>
+          <div
+            className={`p-4 ${
+              viewTemplateOpen.value ? 'w-4/5' : 'w-full'
+            } transition-all`}
+          >
+            <div className=" mb-2 flex flex-col space-y-0">
+              <Back path={activitiesListPath} />
 
-            <div className="mt-4 flex justify-between items-center">
-              <div>
-                <Heading
-                  title={`Add Activity `}
-                  description="Fill the form below to create new activity"
-                />
-              </div>
+              <div className="mt-4 flex justify-between items-center">
+                <div>
+                  <Heading
+                    title={`Add Activity `}
+                    description="Fill the form below to create new activity"
+                  />
+                </div>
 
-              <div className="flex justify-end mt-8">
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-36"
-                    onClick={() => {
-                      form.reset();
-                    }}
-                  >
-                    Clear
-                  </Button>
-                  <Button
-                    className="w-36"
-                    type="submit"
-                    disabled={
-                      createActivity?.isPending ||
-                      uploadFile?.isPending ||
-                      audioUploading ||
-                      open ||
-                      !!form.formState.errors.responsibility
-                    }
-                  >
-                    Add
-                  </Button>
+                <div className="flex justify-end mt-8 ">
+                  <div className="flex gap-2  items-center">
+                    <TooltipWrapper
+                      tip={'View templates to reuse for this activity'}
+                    >
+                      <LayoutTemplate
+                        type="button"
+                        onClick={viewTemplateOpen.onTrue}
+                        className="w-6 h-6 text-blue-500 cursor-pointer hover:text-blue-600 transition-colors"
+                      />
+                    </TooltipWrapper>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-36"
+                      onClick={resetForm}
+                    >
+                      Clear
+                    </Button>
+
+                    <Button
+                      className="w-36"
+                      type="submit"
+                      disabled={
+                        createActivity?.isPending ||
+                        uploadFile?.isPending ||
+                        audioUploading.value ||
+                        addCommunicationOpen.value ||
+                        !!form.formState.errors.responsibility
+                      }
+                    >
+                      Add
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <ScrollArea className=" h-[calc(100vh-230px)]">
-            <div className="rounded-xl border p-4">
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => {
-                    return (
-                      <FormItem className="col-span-2">
-                        <FormLabel>Activity title</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="Enter activity title"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="responsibility"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Responsibility</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select responsibility" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {users?.data.map((item) => (
-                            <SelectItem
-                              key={item.id}
-                              value={item.uuid as string}
-                            >
-                              {item.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="source"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Responsible Station</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="Enter responsible station"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="phaseId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phase</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                        disabled={phaseId ? true : false}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select phase" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {phases.map((item) => (
-                            <SelectItem key={item.id} value={item.uuid}>
-                              {item.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="categoryId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Category</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select category" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {categories.map((item) => (
-                            <SelectItem key={item.id} value={item.uuid}>
-                              {item.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {selectedPhase && selectedPhase?.name !== 'PREPAREDNESS' && (
+            <ScrollArea className=" h-[calc(100vh-230px)]">
+              <div className="rounded-xl border p-4">
+                <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="isAutomated"
+                    name="title"
                     render={({ field }) => {
                       return (
                         <FormItem className="col-span-2">
+                          <FormLabel>Activity title</FormLabel>
                           <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={(checked) =>
-                                field.onChange(checked)
-                              }
-                            />
-                          </FormControl>
-                          <FormLabel className="text-sm font-normal ml-2">
-                            Is Automated Activity?
-                          </FormLabel>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                )}
-                {selectedPhaseId && selectedPhase?.name !== 'PREPAREDNESS' && (
-                  <FormField
-                    control={form.control}
-                    name="leadTime"
-                    render={({ field }) => {
-                      const [lead, unitValue] = field.value?.split(' ') ?? [
-                        '',
-                        '',
-                      ];
-                      // Default unit to 'days' if not set
-                      const unit = !unitValue ? 'days' : unitValue;
-                      return (
-                        <FormItem>
-                          <FormLabel>Lead Time</FormLabel>
-                          <div className="grid grid-cols-4">
                             <Input
                               type="text"
-                              placeholder="Enter lead time"
-                              className="col-span-3 rounded-r-none"
-                              value={lead}
-                              onChange={(e) => {
-                                const newLead = e.target.value;
-                                field.onChange(
-                                  newLead ? `${newLead} ${unit}` : ` ${unit}`,
-                                );
-                              }}
+                              placeholder="Enter activity title"
+                              {...field}
                             />
-                            <Select
-                              value={unit}
-                              onValueChange={(val) => {
-                                field.onChange(
-                                  lead ? `${lead} ${val}` : ` ${val}`,
-                                );
-                              }}
-                            >
-                              <FormControl>
-                                <SelectTrigger className="rounded-l-none">
-                                  <SelectValue />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {DurationData.map((item) => (
-                                  <SelectItem
-                                    key={item.value}
-                                    value={item.value}
-                                  >
-                                    {item.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       );
                     }}
                   />
-                )}
 
+                  <FormField
+                    control={form.control}
+                    name="responsibility"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Responsibility</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select responsibility" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {users?.data.map((item) => (
+                              <SelectItem
+                                key={item.id}
+                                value={item.uuid as string}
+                              >
+                                {item.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="responsibleStation"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel>Responsible Station</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder="Enter responsible station"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phaseId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phase</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={phaseId || field.value}
+                          value={phaseId || field.value}
+                          disabled={!!phaseId}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select phase" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {phases.map((item) => (
+                              <SelectItem key={item.id} value={item.uuid}>
+                                {item.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="categoryId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select category" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {categories.map((item) => (
+                              <SelectItem key={item.id} value={item.uuid}>
+                                {item.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex items-center gap-8">
+                    <FormField
+                      control={form.control}
+                      name="isTemplate"
+                      render={({ field }) => {
+                        return (
+                          <FormItem className=" w-[200px]">
+                            <div className="flex items-center justify-between w-full">
+                              <FormLabel>Save as Template</FormLabel>{' '}
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild className="-ml-4">
+                                    <Info
+                                      size={18}
+                                      className="text-muted-foreground cursor-help hover:text-primary transition-colors"
+                                    />
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>
+                                      This will save the activity as a template
+                                      for future use. If disabled, this will not
+                                      be saved as template
+                                    </p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={handleTemplateToggle}
+                                />
+                              </FormControl>
+                            </div>
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  </div>
+                  {selectedPhase && selectedPhase?.name !== 'PREPAREDNESS' && (
+                    <FormField
+                      control={form.control}
+                      name="isAutomated"
+                      render={({ field }) => {
+                        return (
+                          <FormItem className="col-span-2">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={(checked) =>
+                                  field.onChange(checked)
+                                }
+                              />
+                            </FormControl>
+                            <FormLabel className="text-sm font-normal ml-2">
+                              Is Automated Activity?
+                            </FormLabel>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  )}
+                  {selectedPhaseId &&
+                    selectedPhase?.name !== 'PREPAREDNESS' && (
+                      <FormField
+                        control={form.control}
+                        name="leadTime"
+                        render={({ field }) => {
+                          const [lead, unitValue] = field.value?.split(' ') ?? [
+                            '',
+                            '',
+                          ];
+                          // Default unit to 'days' if not set
+                          const unit = !unitValue ? 'days' : unitValue;
+                          return (
+                            <FormItem>
+                              <FormLabel>Lead Time</FormLabel>
+                              <div className="grid grid-cols-4">
+                                <Input
+                                  type="text"
+                                  placeholder="Enter lead time"
+                                  className="col-span-3 rounded-r-none"
+                                  value={lead}
+                                  onChange={(e) => {
+                                    const newLead = e.target.value;
+                                    field.onChange(
+                                      newLead
+                                        ? `${newLead} ${unit}`
+                                        : ` ${unit}`,
+                                    );
+                                  }}
+                                />
+                                <Select
+                                  value={unit}
+                                  onValueChange={(val) => {
+                                    field.onChange(
+                                      lead ? `${lead} ${val}` : ` ${val}`,
+                                    );
+                                  }}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger className="rounded-l-none">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {DurationData.map((item) => (
+                                      <SelectItem
+                                        key={item.value}
+                                        value={item.value}
+                                      >
+                                        {item.label}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    )}
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => {
+                      return (
+                        <FormItem className="col-span-2 ">
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Enter description "
+                              className=" rounded"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </div>
                 <FormField
                   control={form.control}
-                  name="description"
+                  name="activityDocuments"
                   render={({ field }) => {
+                    const activityDocuments = field.value || [];
                     return (
-                      <FormItem className="col-span-2">
-                        <FormLabel>Description</FormLabel>
+                      <FormItem className="mt-4">
                         <FormControl>
-                          <Textarea
-                            placeholder="Enter description"
-                            {...field}
-                          />
+                          <div className="relative border border-dashed rounded p-1.5">
+                            <div className="absolute inset-0 flex gap-2 items-center justify-center">
+                              <CloudUpload
+                                size={25}
+                                strokeWidth={2}
+                                className="text-primary"
+                              />
+                              <p className="text-sm font-medium">
+                                Drop files to upload, or{' '}
+                                <span className="text-primary">browse</span>
+                              </p>
+                            </div>
+                            <Input
+                              className="opacity-0 cursor-pointer"
+                              type="file"
+                              multiple
+                              onChange={handleFileChange}
+                            />
+                          </div>
                         </FormControl>
                         <FormMessage />
+                        <p className="text-xs text-end text-orange-500">
+                          *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
+                          CSV under 5 MB.
+                        </p>
+                        <div className="grid sm:grid-cols-2  lg:grid-cols-3 xl:grid-cols-5 gap-4 p-2">
+                          {activityDocuments?.map((file) => (
+                            <div
+                              key={file.fileName}
+                              className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 flex items-center gap-3 hover:cursor-pointer hover:bg-gray-100"
+                            >
+                              {uploadFile.isPending &&
+                              uploadingFileName === file.fileName ? (
+                                <LoaderCircle
+                                  strokeWidth={2.5}
+                                  className="text-green-600 animate-spin w-8 h-8"
+                                />
+                              ) : (
+                                <FileCheck
+                                  strokeWidth={2.5}
+                                  className="w-8 h-8 text-green-600"
+                                />
+                              )}
+                              <p className="text-xs  flex  items-center gap-2">
+                                {file.fileName}
+                              </p>
+                              <X
+                                strokeWidth={2.5}
+                                onClick={() => {
+                                  const updated = activityDocuments.filter(
+                                    (f) => f.fileName !== file.fileName,
+                                  );
+                                  field.onChange(updated);
+                                }}
+                                className="cursor-pointer text-red-500 w-8 h-8"
+                              />
+                            </div>
+                          ))}
+                        </div>
                       </FormItem>
                     );
                   }}
                 />
               </div>
-              <FormField
-                control={form.control}
-                name="activityDocuments"
-                render={({ field }) => {
-                  return (
-                    <FormItem className="mt-4">
-                      <FormControl>
-                        <div className="relative border border-dashed rounded p-1.5">
-                          <div className="absolute inset-0 flex gap-2 items-center justify-center">
-                            <CloudUpload
-                              size={25}
-                              strokeWidth={2}
-                              className="text-primary"
-                            />
-                            <p className="text-sm font-medium">
-                              Drop files to upload, or{' '}
-                              <span className="text-primary">browse</span>
-                            </p>
-                          </div>
-                          <Input
-                            className="opacity-0 cursor-pointer"
-                            type="file"
-                            multiple
-                            onChange={handleFileChange}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                      <p className="text-xs text-end text-orange-500">
-                        *Files must be JPEG, PNG, BMP, PDF, XLSX, DOC, DOCX or
-                        CSV under 5 MB.
-                      </p>
-                      <div className="grid sm:grid-cols-2  lg:grid-cols-3 xl:grid-cols-5 gap-4 p-2">
-                        {documents?.map((file) => (
-                          <div
-                            key={file.name}
-                            className="bg-white shadow-sm rounded-xl p-4 border border-gray-200 flex items-center gap-3 hover:cursor-pointer hover:bg-gray-100"
-                          >
-                            {uploadFile.isPending &&
-                            documents?.[documents?.length - 1].name ===
-                              file.name ? (
-                              <LoaderCircle
-                                strokeWidth={2.5}
-                                className="text-green-600 animate-spin w-8 h-8"
-                              />
-                            ) : (
-                              <FileCheck
-                                strokeWidth={2.5}
-                                className="w-8 h-8 text-green-600"
-                              />
-                            )}
-                            <p className="text-xs  flex  items-center gap-2">
-                              {file.name}
-                            </p>
-                            <X
-                              strokeWidth={2.5}
-                              onClick={() => {
-                                const newDocuments = documents?.filter(
-                                  (doc) => doc.name !== file.name,
-                                );
-                                setDocuments(newDocuments);
-                                const newFiles = allFiles?.filter(
-                                  (f) => f.fileName !== file.name,
-                                );
-                                setAllFiles(newFiles);
-                              }}
-                              className="cursor-pointer text-red-500 w-8 h-8"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </FormItem>
-                  );
+
+              <Button
+                type="button"
+                variant="outline"
+                className="border-dashed border-primary text-primary text-md w-full mt-4"
+                onClick={() => {
+                  addCommunicationOpen.onToggle();
                 }}
+              >
+                Add Communication
+                {!addCommunicationOpen.value ? (
+                  <Plus className="ml-2" size={16} strokeWidth={3} />
+                ) : (
+                  <Minus className="ml-2" size={16} strokeWidth={3} />
+                )}
+              </Button>
+              {(addCommunicationOpen.value || editCommunicationOpen.value) && (
+                <AddCommunicationForm
+                  form={communicationForm}
+                  setOpen={addCommunicationOpen.setValue}
+                  onSave={handleSave}
+                  setLoading={audioUploading.setValue}
+                  appTransports={appTransports}
+                  isMultiSelect={true}
+                  editMode={editCommunicationOpen}
+                />
+              )}
+
+              <CommunicationDataCard
+                form={communicationForm}
+                communicationData={communicationData}
+                appTransports={appTransports}
+                onRemove={handleRemove}
+                setOpen={editCommunicationOpen.setValue}
+                open={editCommunicationOpen.value}
+              />
+            </ScrollArea>
+          </div>
+          {viewTemplateOpen.value && (
+            <div className="w-2/5">
+              <ViewTemplate
+                open={viewTemplateOpen.value}
+                setOpen={viewTemplateOpen.setValue}
+                onSelectTemplate={handleSelectTemplate}
+                selectedTemplateId={selectedTemplateId}
               />
             </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              className="border-dashed border-primary text-primary text-md w-full mt-4"
-              onClick={() => {
-                setOpen(!open);
-              }}
-            >
-              Add Communication
-              {!open ? (
-                <Plus className="ml-2" size={16} strokeWidth={3} />
-              ) : (
-                <Minus className="ml-2" size={16} strokeWidth={3} />
-              )}
-            </Button>
-            {open && (
-              <AddCommunicationForm
-                form={form}
-                setOpen={setOpen}
-                onSave={() => {
-                  handleSave();
-                }}
-                setLoading={setAudioUploading}
-                appTransports={appTransports}
-              />
-            )}
-
-            <CommunicationDataCard
-              form={form}
-              communicationData={communicationData}
-              appTransports={appTransports}
-              onRemove={handleRemove}
-              setOpen={setOpen}
-            />
-          </ScrollArea>
+          )}
         </div>
       </form>
+      <ConfirmationDialog
+        isConfirmationDialogOpen={templateConfirmDialog.value}
+        onCancel={cancelTemplateToggle}
+        onConfirm={confirmTemplateToggle}
+        dialogTitle="Confirm Template"
+        dialogMessage="Are you sure you want to save this activity as a template?"
+      />
     </Form>
   );
 }

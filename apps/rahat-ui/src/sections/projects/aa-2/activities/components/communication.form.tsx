@@ -1,7 +1,7 @@
 import {
+  getBeneficiariesGroupByUuids,
   useBeneficiariesGroupStore,
-  useSingleBeneficiaryGroup,
-  useSingleStakeholdersGroup,
+  useStakeholdersGroupByUuids,
   useStakeholdersGroupsStore,
   useUploadFile,
 } from '@rahat-ui/query';
@@ -12,6 +12,9 @@ import {
   Dispatch,
   SetStateAction,
   ChangeEvent,
+  useMemo,
+  useCallback,
+  RefObject,
 } from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -27,17 +30,17 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import MultipleSelector, {
+  type Option,
+} from '@rahat-ui/shadcn/src/components/custom/multi-select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { Transport, ValidationContent } from '@rumsan/connect/src/types';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import * as React from 'react';
-import { get } from 'react-hook-form';
-import { AudioRecorder } from '../components/recorder';
+import { AudioRecorder } from './recorder';
 import {
   Tabs,
   TabsContent,
@@ -52,14 +55,30 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import {
+  validateStakeholderGroupFields,
+  validateBeneficiaryGroupFields,
+} from 'apps/rahat-ui/src/utils/validateGroupEmails';
+import { UseFormReturn } from 'react-hook-form';
+import { z } from 'zod';
+import { createCommunicationFormSchema } from '../schemas/activity.schemas';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { renderGroups } from './renderGroup';
+import { UseBooleanReturnType } from 'apps/rahat-ui/src/hooks/use-boolean';
 
-type IProps = {
-  form: any;
+type CommunicationFormData = z.infer<
+  ReturnType<typeof createCommunicationFormSchema>
+>;
+
+interface AddCommunicationFormProps {
+  form: UseFormReturn<CommunicationFormData>;
   setLoading: Dispatch<SetStateAction<boolean>>;
   appTransports: Transport[] | undefined;
   onSave: VoidFunction;
   setOpen: Dispatch<SetStateAction<boolean>>;
-};
+  isMultiSelect?: boolean;
+  editMode?: UseBooleanReturnType;
+}
 
 export default function AddCommunicationForm({
   form,
@@ -67,17 +86,12 @@ export default function AddCommunicationForm({
   appTransports,
   onSave,
   setOpen,
-}: IProps) {
+  isMultiSelect = false,
+  editMode,
+}: AddCommunicationFormProps) {
   const { id: projectId } = useParams();
-  const [audioFile, setAudioFile] = useState({
-    fileName: '',
-    mediaURL: '',
-  });
   const [contentType, setContentType] = useState<ValidationContent | ''>('');
-  const [address, setAddress] = useState(false);
-
   const [customFileName, setCustomFileName] = useState('');
-
   const [isRecording, setIsRecording] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [timer, setTimer] = useState(0);
@@ -85,6 +99,9 @@ export default function AddCommunicationForm({
   const [chunks, setChunks] = useState<Blob[]>([]);
   const [isPaused, setIsPaused] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [isEmailValidated, setIsEmailValidated] = useState<boolean | undefined>(
+    true,
+  );
 
   const mediaRef = useRef<MediaRecorder | null>(null);
   const timerRef = useRef<any>(null);
@@ -100,160 +117,66 @@ export default function AddCommunicationForm({
   const mm = pad(Math.floor((timer % 3600) / 60));
   const ss = pad(timer % 60);
 
-  const [isPlaying, setIsPlaying] = useState(false);
   const fileUpload = useUploadFile();
-
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
   );
-
   const beneficiaryGroups = useBeneficiariesGroupStore(
     (state) => state.beneficiariesGroups,
   );
-  console.log(beneficiaryGroups);
 
-  const activityCommunication = form.watch('activityCommunication') || {};
+  const groupType = form.watch('groupType');
+  const groupId = form.watch('groupId');
+  const { errors } = form.formState;
 
-  const fieldName = (name: string) => `activityCommunication.${name}`; // Dynamic field name generator
-  const selectedTransport = form.watch(fieldName('transportId'));
-  const groupType = form.watch(fieldName('groupType'));
-  const groupId = form.watch(fieldName('groupId'));
-
-  const transportData = appTransports?.find(
-    (t) => t.cuid === selectedTransport,
-  );
-  const isMessageRequired =
-    transportData?.name === 'EMAIL' || transportData?.name === 'SMS';
-
-  const isMessage =
-    isMessageRequired &&
-    (!activityCommunication.message ||
-      activityCommunication.message.trim() === '');
-  const isSaveDisabled =
-    !activityCommunication.groupType ||
-    !activityCommunication.groupId ||
-    fileUpload.isPending ||
-    !!get(form.formState.errors, fieldName('groupId')) ||
-    !activityCommunication.transportId ||
-    isMessage;
-
-  const stakeholderId = groupType === 'STAKEHOLDERS' && groupId;
-  const beneficiaryId = groupType === 'BENEFICIARY' && groupId;
-
-  const { data: stakeholdersGroup, isLoading } = useSingleStakeholdersGroup(
-    projectId as UUID,
-    stakeholderId,
-  );
-
-  const { data: beneficiaryGroup, isLoading: isLoadingss } =
-    useSingleBeneficiaryGroup(projectId as UUID, beneficiaryId);
-
-  /* validate group email is to check if there are any missing  emails in beneficiaries group and stakeholders group before adding any  data 
-   for the communication type email
-  */
-  const validateGroupEmails = ({
-    group,
-    type,
-    extractEmail,
-    form,
-    fieldName,
-  }: {
-    group: any;
-    type: 'stakeholders' | 'beneficiaries';
-    extractEmail: (item: any) => string | undefined;
-    form: any;
-    fieldName: (key: string) => string;
-  }) => {
-    if (group && Array.isArray(group)) {
-      const hasValidEmail = group.some((item) => {
-        const email = extractEmail(item);
-        return email?.trim() !== '';
-      });
-
-      if (!hasValidEmail) {
-        form.setError(fieldName('groupId'), {
-          type: 'manual',
-          message: `Email address is missing for some ${
-            type === 'stakeholders' ? 'stakeholders' : 'beneficiaries'
-          } in this group.`,
-        });
-      } else {
-        form.clearErrors(fieldName('groupId'));
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (!address) {
-      // Clear any previous errors if transport doesn't require email
-      form.clearErrors(fieldName('groupId'));
-      return;
-    }
-    validateGroupEmails({
-      group: stakeholdersGroup?.stakeholders,
-      type: 'stakeholders',
-      extractEmail: (s) => s?.email,
-      form,
-      fieldName,
-    });
-
-    validateGroupEmails({
-      group: beneficiaryGroup?.groupedBeneficiaries,
-      type: 'beneficiaries',
-      extractEmail: (s) => s?.Beneficiary?.pii?.email,
-      form,
-      fieldName,
-    });
-  }, [address, stakeholdersGroup, beneficiaryGroup]);
-
-  useEffect(() => {
-    // const transportData = appTransports?.find(
-    //   (t) => t.cuid === selectedTransport,
-    // );
-    setContentType(transportData?.validationContent as ValidationContent);
-    if (transportData?.validationAddress === 'EMAIL') {
-      setAddress(true);
-      form.setValue(fieldName('audioURL'), '');
-    } else {
-      setAddress(false);
-    }
-  }, [selectedTransport]);
-
-  const renderGroups = () => {
-    const selectedGroupType = form.watch(fieldName('groupType'));
-    let groups = <SelectLabel>Please select group type</SelectLabel>;
-    if (selectedGroupType === 'STAKEHOLDERS') {
+  // Convert groups to Option[] format
+  const groupOptions = useMemo<Option[]>(() => {
+    if (groupType === 'STAKEHOLDERS') {
       const stakeholdersGroupsList = stakeholdersGroups.filter(
         (a: any) => a?._count?.stakeholders > 0,
       );
-      if (stakeholdersGroupsList.length > 0) {
-        groups = stakeholdersGroupsList.map((group: any) => (
-          <SelectItem key={group.id} value={group.uuid}>
-            {group?.name}
-          </SelectItem>
-        ));
-      } else {
-        groups = <SelectLabel>No stakeholders groups found</SelectLabel>;
-      }
+      return stakeholdersGroupsList.map((group: any) => ({
+        label: group?.name || '',
+        value: group.uuid,
+      }));
     }
 
-    if (selectedGroupType === 'BENEFICIARY') {
+    if (groupType === 'BENEFICIARY') {
       const beneficiaryGroupsList = beneficiaryGroups.filter(
         (a: any) => a?._count?.groupedBeneficiaries > 0,
       );
-      if (beneficiaryGroupsList.length > 0) {
-        groups = beneficiaryGroupsList.map((group: any) => (
-          <SelectItem key={group.id} value={group.uuid}>
-            {group?.name}
-          </SelectItem>
-        ));
-      } else {
-        groups = <SelectLabel>No beneficiary groups found</SelectLabel>;
-      }
+      return beneficiaryGroupsList.map((group: any) => ({
+        label: group?.name || '',
+        value: group.uuid,
+      }));
     }
 
-    return groups;
-  };
+    return [];
+  }, [groupType, stakeholdersGroups, beneficiaryGroups]);
+
+  // Get actual selected options with labels
+  const selectedGroups = useMemo(() => {
+    if (!groupId) return [];
+    return groupId
+      .map((id: string) => groupOptions.find((opt: Option) => opt.value === id))
+      .filter(Boolean) as Option[];
+  }, [groupId, groupOptions]);
+
+  // Query enable validation goes here
+  const enableStakeholdersGroupQuery =
+    groupType === 'STAKEHOLDERS' && groupId.length > 0;
+  const enableBeneficiaryGroupQuery =
+    groupType === 'BENEFICIARY' && groupId.length > 0;
+
+  const { data: stakeholdersGroup, isLoading: stakeholdersGroupLoading } =
+    useStakeholdersGroupByUuids(
+      projectId as UUID,
+      groupId,
+      enableStakeholdersGroupQuery,
+    );
+
+  const { data: beneficiaryGroup, isLoading: beneficiaryGroupLoading } =
+    getBeneficiariesGroupByUuids(groupId, enableBeneficiaryGroupQuery);
 
   const handleAudioFileChange = async (
     fileOrEvent: File | ChangeEvent<HTMLInputElement>,
@@ -272,53 +195,39 @@ export default function AddCommunicationForm({
     const formData = new FormData();
     formData.append('file', file);
 
+    setLoading(true);
     try {
       const { data: afterUpload } = await fileUpload.mutateAsync(formData);
-      setAudioFile(afterUpload);
+      form.setValue('audioURL', afterUpload);
       // resetRecording(); // if this was from recording flow
     } catch (err) {
       console.error('File upload failed', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    form.setValue(fieldName('audioURL'), audioFile);
-  }, [audioFile, setAudioFile]);
+  const handleSave = async () => {
+    if (!isEmailValidated) {
+      return;
+    }
 
-  useEffect(() => {
-    setLoading(fileUpload.isPending);
-  }, [fileUpload.isPending, !fileUpload.isPending]);
+    const isAllValidated = await form.trigger();
+    if (!isAllValidated) return;
 
-  const handleSave = () => {
-    onSave(); // Call the save function
-    form.setValue(fieldName('communicationTitle'), '');
-    form.setValue(fieldName('groupId'), '');
-    form.setValue(fieldName('groupType'), '');
-    form.setValue(fieldName('message'), '');
-    form.setValue(fieldName('transportId'), '');
-    form.setValue(fieldName('audioURL'), '');
-    form.setValue(fieldName('subject'), '');
-    form.clearErrors(fieldName('groupId'));
-    setAudioFile({
-      fileName: '',
-      mediaURL: '',
-    });
+    onSave();
+    // form.reset();
+    form.setValue('audioURL', { fileName: '', mediaURL: '' });
     fileUpload.reset();
     setOpen(false);
-    // form.setValue('activityCommunication', {});
+    editMode?.onFalse();
   };
 
   const clearCommunicationForm = () => {
-    form.setValue(fieldName('groupId'), '');
-    form.setValue(fieldName('groupType'), '');
-    form.setValue(fieldName('message'), '');
-    form.setValue(fieldName('transportId'), '');
-    form.setValue(fieldName('audioURL'), '');
-    setAudioFile({
-      fileName: '',
-      mediaURL: '',
-    });
+    form.reset();
+    fileUpload.reset();
   };
+
   const updateTimer = () => {
     setTimer((t) => t + 1);
     timerRef.current = setTimeout(updateTimer, 1000);
@@ -388,18 +297,18 @@ export default function AddCommunicationForm({
     setChunks([]);
     setRecordedFile(null); // clear local preview URL
     setIsFinished(false);
-    setAudioFile({ fileName: '', mediaURL: '' }); // clear uploaded file
-    form.setValue(fieldName('audioURL'), ''); // reset form field
+    form.setValue('audioURL', { fileName: '', mediaURL: '' });
     fileUpload.reset(); // reset upload state
     setIsPaused(false);
   };
-  const pauseRecording = () => {
+
+  const pauseRecording = useCallback(() => {
     if (mediaRef.current?.state === 'recording') {
       mediaRef.current.pause();
       setIsPaused(true);
       clearTimeout(timerRef.current);
     }
-  };
+  }, []);
 
   const resumeRecording = () => {
     if (mediaRef.current?.state === 'paused') {
@@ -408,6 +317,7 @@ export default function AddCommunicationForm({
       updateTimer(); // resume timerresumeRecording
     }
   };
+
   const stopAll = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
     setIsRecording(false);
@@ -416,120 +326,134 @@ export default function AddCommunicationForm({
     streamRef.current?.getTracks().forEach((t) => t.stop());
     if (animationRef.current) cancelAnimationFrame(animationRef.current);
   };
-  useEffect(() => {
-    if (!selectedTransport || !appTransports?.length) return;
-
-    const transportData = appTransports.find(
-      (t) => t.cuid === selectedTransport,
-    );
-
-    const newContentType =
-      transportData?.validationContent as ValidationContent;
-
-    if (newContentType) {
-      setContentType(newContentType);
-
-      // 🧼 Reset fields if type changes
-      if (newContentType === ValidationContent.TEXT) {
-        form.setValue(fieldName('message'), '');
-        form.setValue(fieldName('audioURL'), {});
-      } else if (newContentType === ValidationContent.URL) {
-        form.setValue(fieldName('audioURL'), {});
-        setAudioFile({ fileName: '', mediaURL: '' });
-        setRecordedFile(null);
-        fileUpload.reset();
-      }
-    }
-
-    setAddress(transportData?.validationAddress === 'EMAIL');
-  }, [selectedTransport]);
-
-  // useEffect(() => {
-  //   const selectedGroupType = form.watch(fieldName('groupType'));
-  //   const selectedGroupId = form.watch(fieldName('groupId'));
-
-  //   if (!selectedGroupId || !selectedGroupType) return;
-
-  //   if (selectedGroupType === 'STAKEHOLDERS') {
-  //     const selectedGroup = stakeholdersGroups.find(
-  //       (g) => g.uuid === selectedGroupId,
-  //     );
-
-  //     if (selectedGroup?.stakeholders?.length === 0) {
-  //       form.setError(fieldName('groupId'), {
-  //         type: 'manual',
-  //         message: 'Selected stakeholder group is empty.',
-  //       });
-  //     } else {
-  //       form.clearErrors(fieldName('groupId'));
-  //     }
-  //   }
-
-  //   if (selectedGroupType === 'BENEFICIARY') {
-  //     const selectedGroup = beneficiaryGroups.find(
-  //       (g) => g.uuid === selectedGroupId,
-  //     );
-
-  //     if (selectedGroup?.groupedBeneficiaries?.length === 2) {
-  //       form.setError(fieldName('groupId'), {
-  //         type: 'manual',
-  //         message: 'Selected beneficiary group is empty.',
-  //       });
-  //     } else {
-  //       form.clearErrors(fieldName('groupId'));
-  //     }
-  //   }
-  // }, [
-  //   form.watch(fieldName('groupType')),
-  //   form.watch(fieldName('groupId')),
-  //   stakeholdersGroups,
-  //   beneficiaryGroups,
-  // ]);
 
   const removeFile = () => {
-    form.setValue(fieldName('audioURL'), {});
-    setAudioFile({ fileName: '', mediaURL: '' });
+    form.setValue('audioURL', { fileName: '', mediaURL: '' });
     setRecordedFile(null);
     fileUpload.reset();
   };
-  const isVoiceTransport =
-    transportData?.name?.toLowerCase().includes('voice') ||
-    transportData?.name?.toLowerCase().includes('ivr');
 
-  const isVoiceAudioMissing =
-    isVoiceTransport &&
-    (!activityCommunication.audioURL ||
-      (typeof activityCommunication.audioURL === 'string' &&
-        activityCommunication.audioURL.trim() === '') ||
-      (typeof activityCommunication.audioURL === 'object' &&
-        !activityCommunication.audioURL.mediaURL));
+  const transportId = form.watch('transportId');
+  const audioFile = form.watch('audioURL');
+
+  const isLoading = useMemo(
+    () => stakeholdersGroupLoading || beneficiaryGroupLoading,
+    [stakeholdersGroupLoading, beneficiaryGroupLoading],
+  );
+
+  const handleGroupTypeChange = (value: string) => {
+    form.setValue('groupType', value);
+    form.setValue('groupId', []); // reset group selection on type change
+  };
+
+  const transportData = useMemo(() => {
+    if (!transportId || !appTransports?.length) {
+      return;
+    }
+    return appTransports?.find((t) => t.cuid === transportId);
+  }, [transportId, appTransports]);
+
+  // Validate emails whenever group or transport changes
+  useEffect(() => {
+    if (!transportData) return;
+
+    if (!groupId.length) {
+      setIsEmailValidated(true);
+      form.clearErrors('groupId');
+      return;
+    }
+
+    if (transportData?.name === 'VOICE') {
+      // Clear any previous errors if transport doesn't require email
+      form.clearErrors('groupId');
+      setIsEmailValidated(true);
+      return;
+    }
+
+    const fieldName = transportData.name === 'EMAIL' ? 'email' : 'phone';
+    let result;
+
+    if (groupType === 'STAKEHOLDERS' && stakeholdersGroup) {
+      result = validateStakeholderGroupFields(stakeholdersGroup, fieldName);
+    }
+
+    if (groupType === 'BENEFICIARY' && beneficiaryGroup) {
+      result = validateBeneficiaryGroupFields(beneficiaryGroup, fieldName);
+    }
+
+    if (!result) return;
+
+    if (!result.valid) {
+      form.clearErrors('groupId');
+      // error are not display for second time if selected groupId is same so implemented this solution. if there is better solution we have to update code.
+      setTimeout(() => {
+        form.setError('groupId', {
+          type: 'manual',
+          message: `${fieldName} is missing for some beneficiaries in: ${result.invalidGroups.join(
+            ', ',
+          )}`,
+        });
+      }, 0);
+    } else {
+      form.clearErrors('groupId');
+    }
+
+    setIsEmailValidated(result.valid);
+  }, [stakeholdersGroup, beneficiaryGroup, transportData, groupType]);
+
+  // When transport type changes, reset relevant fields
+  useEffect(() => {
+    if (!transportData) {
+      return;
+    }
+
+    setContentType(transportData?.validationContent as ValidationContent);
+
+    if (transportData?.name === 'SMS' || transportData?.name === 'EMAIL') {
+      form.setValue('audioURL', { fileName: '', mediaURL: '' });
+    }
+
+    if (transportData?.name === 'SMS') {
+      form.setValue('subject', '');
+    }
+
+    if (transportData.name === 'VOICE') {
+      form.setValue('message', '');
+      form.setValue('subject', '');
+    }
+  }, [transportData]);
 
   return (
     <div className="border border-dashed rounded p-4 my-8">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-2">
         <h1 className="text-lg font-semibold">Add : Communication</h1>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <FormField
           control={form.control}
-          name={fieldName('communicationTitle')}
+          name="communicationTitle"
           render={({ field }) => (
             <FormItem className="col-span-2">
               <FormLabel>Communication Title</FormLabel>
               <FormControl>
                 <Input placeholder="Write Communication title" {...field} />
               </FormControl>
-              <FormMessage />
+              {errors.communicationTitle && (
+                <FormMessage>{errors.communicationTitle.message}</FormMessage>
+              )}
             </FormItem>
           )}
         />
         <FormField
           control={form.control}
-          name={fieldName('groupType')}
+          name="groupType"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Group Type</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value || ''}>
+              <Select
+                onValueChange={handleGroupTypeChange}
+                value={field.value || ''}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select group type" />
@@ -540,35 +464,98 @@ export default function AddCommunicationForm({
                   <SelectItem value="BENEFICIARY">Beneficiary</SelectItem>
                 </SelectContent>
               </Select>
-              <FormMessage />
+              {errors.groupType && (
+                <FormMessage>{errors.groupType.message}</FormMessage>
+              )}
             </FormItem>
           )}
         />
 
-        <FormField
-          control={form.control}
-          name={fieldName('groupId')}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Group</FormLabel>
-              <Select value={field.value} onValueChange={field.onChange}>
+        {isMultiSelect ? (
+          <FormField
+            control={form.control}
+            name="groupId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Groups</FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={'Select group'} />
-                  </SelectTrigger>
+                  <MultipleSelector
+                    options={groupOptions}
+                    value={selectedGroups}
+                    inputProps={{
+                      className: 'outline-none',
+                    }}
+                    className="max-h-20 overflow-y-auto"
+                    dropdownClassName="max-h-36 w-80"
+                    onChange={(options: Option[]) => {
+                      field.onChange(options.map((opt: Option) => opt.value));
+                    }}
+                    placeholder={
+                      groupType ? 'Select groups' : 'Select group type first'
+                    }
+                    loading={isLoading}
+                    loadingIndicator={
+                      <div className="flex items-center justify-center p-6">
+                        <Loader />
+                      </div>
+                    }
+                    emptyIndicator={
+                      <p className="text-sm text-muted-foreground">
+                        No groups found
+                      </p>
+                    }
+                    disabled={isLoading || !groupType}
+                  />
                 </FormControl>
-                <SelectContent>
-                  <SelectGroup>{renderGroups()}</SelectGroup>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                {errors.groupId && (
+                  <FormMessage>{errors.groupId.message}</FormMessage>
+                )}
+              </FormItem>
+            )}
+          />
+        ) : (
+          <FormField
+            control={form.control}
+            name="groupId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Groups</FormLabel>
+                <Select
+                  disabled={!groupType || isLoading}
+                  onValueChange={(value) => {
+                    // Set groupId as an array with the selected value
+                    field.onChange([value]);
+                  }}
+                  value={field.value?.[0] || ''}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={
+                          groupType
+                            ? 'Select groups'
+                            : 'Select group type first'
+                        }
+                      />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup>
+                      {renderGroups(groupOptions, isLoading)}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                {errors.groupId && (
+                  <FormMessage>{errors.groupId.message}</FormMessage>
+                )}
+              </FormItem>
+            )}
+          />
+        )}
 
         <FormField
           control={form.control}
-          name={fieldName('transportId')}
+          name="transportId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Communication Type</FormLabel>
@@ -591,7 +578,9 @@ export default function AddCommunicationForm({
                   })}
                 </SelectContent>
               </Select>
-              <FormMessage />
+              {errors.transportId && (
+                <FormMessage>{errors.transportId.message}</FormMessage>
+              )}
             </FormItem>
           )}
         />
@@ -613,7 +602,7 @@ export default function AddCommunicationForm({
               <TabsContent value="upload">
                 <FormField
                   control={form.control}
-                  name={fieldName('audioURL')}
+                  name="audioURL"
                   render={() => (
                     <FormItem className="col-span-2">
                       <FormControl>
@@ -644,7 +633,7 @@ export default function AddCommunicationForm({
               <TabsContent value="record">
                 <FormField
                   control={form.control}
-                  name={fieldName('audioURL')}
+                  name="audioURL"
                   render={() => {
                     return (
                       <FormItem>
@@ -696,6 +685,9 @@ export default function AddCommunicationForm({
                 />
               </TabsContent>
             </Tabs>
+            {errors.audioURL && (
+              <FormMessage>{errors.audioURL.message}</FormMessage>
+            )}
           </div>
         )}
 
@@ -711,11 +703,9 @@ export default function AddCommunicationForm({
                   src={audioFile?.mediaURL}
                   controls
                   className="w-full h-10 bg-none"
-                  onPlay={() => setIsPlaying(true)}
-                  onPause={() => setIsPlaying(false)}
                 />
                 <Trash2
-                  onClick={() => removeFile()}
+                  onClick={removeFile}
                   className="h-5 w-5s hover:cursor-pointer"
                   color="red"
                 />
@@ -723,17 +713,19 @@ export default function AddCommunicationForm({
             </div>
           )}
 
-        {address && (
+        {transportData?.name === 'EMAIL' && (
           <FormField
             control={form.control}
-            name={fieldName('subject')}
+            name="subject"
             render={({ field }) => (
               <FormItem className="col-span-2">
                 <FormLabel>Subject</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter subject" {...field} />
                 </FormControl>
-                <FormMessage />
+                {errors.subject && (
+                  <FormMessage>{errors.subject.message}</FormMessage>
+                )}
               </FormItem>
             )}
           />
@@ -742,7 +734,7 @@ export default function AddCommunicationForm({
         {contentType === ValidationContent.TEXT && (
           <FormField
             control={form.control}
-            name={fieldName('message')}
+            name="message"
             rules={{
               validate: (value) => {
                 if (!value) return true;
@@ -773,10 +765,14 @@ export default function AddCommunicationForm({
                       maxLength={maxLen}
                     />
                   </FormControl>
-                  <div className="text-right text-xs text-muted-foreground">
-                    {field.value?.length || 0} / {maxLen} characters
+                  <div className="flex justify-between items-center">
+                    {errors.message && (
+                      <FormMessage>{errors.message.message}</FormMessage>
+                    )}
+                    <p className="ml-auto text-xs text-muted-foreground">
+                      {field.value?.length || 0} / {maxLen} characters
+                    </p>
                   </div>
-                  <FormMessage />
                 </FormItem>
               );
             }}
@@ -790,13 +786,13 @@ export default function AddCommunicationForm({
           onClick={clearCommunicationForm}
           type="button"
         >
-          Remove
+          {editMode?.value ? 'Reset' : 'Clear'}
         </Button>
         <Button
           variant="outline"
           onClick={handleSave}
           type="button"
-          disabled={isSaveDisabled || isVoiceAudioMissing}
+          disabled={fileUpload.isPending}
         >
           Save
         </Button>

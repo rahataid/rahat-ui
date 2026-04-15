@@ -35,7 +35,6 @@ import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
 import BeneficiaryGroupsView from './groups/beneficiary-groups.view';
 import { ChevronDownIcon, CloudDownload, Download } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import AddButton from '../projects/components/add.btn';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -224,12 +223,12 @@ function BeneficiaryView() {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="min-w-(--radix-dropdown-menu-trigger-width)">
             <DropdownMenuItem
-              onClick={() => router.push('/community-beneficiary')}
+              onClick={() => router.push('/import-beneficiary')}
             >
               Import from Community Tool
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => router.push('/beneficiary/import')}
+              onClick={() => router.push('/beneficiary-import')}
             >
               Import from Excel Sheet
             </DropdownMenuItem>

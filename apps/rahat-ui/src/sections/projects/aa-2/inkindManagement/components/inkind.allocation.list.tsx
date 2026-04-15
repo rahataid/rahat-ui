@@ -1,0 +1,290 @@
+'use client';
+
+import React, { useMemo, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { UUID } from 'crypto';
+import {
+  useGroupInkindAllocations,
+  useBeneficiaryGroups,
+} from '@rahat-ui/query';
+import {
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+  ColumnDef,
+  ColumnFiltersState,
+  VisibilityState,
+} from '@tanstack/react-table';
+import {
+  DemoTable,
+  Heading,
+  SearchInput,
+  CustomPagination,
+} from 'apps/rahat-ui/src/common';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Eye, ChevronDown } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { INKIND_TYPES, INKIND_TYPE_LABELS, InkindType } from '../schemas/inkind.validation';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+
+type AllocationRow = {
+  uuid: string;
+  groupId: string;
+  groupName: string;
+  inkindId: string;
+  inkindName: string;
+  inkindType: string;
+  inkindAvailableStock: number;
+  quantityAllocated: number;
+  quantityRedeemed: number;
+  beneficiaryCount: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+function deriveStatus(
+  allocated: number,
+  redeemed: number,
+): 'Not Started' | 'In Progress' | 'Completed' {
+  if (redeemed === 0) return 'Not Started';
+  if (redeemed >= allocated) return 'Completed';
+  return 'In Progress';
+}
+
+const STATUS_STYLE: Record<string, string> = {
+  'Not Started': 'bg-gray-200 text-gray-600',
+  'In Progress': 'bg-yellow-100 text-yellow-600',
+  Completed: 'bg-green-100 text-green-500',
+};
+
+export function formatLabel(value: string) {
+  return value
+    .toLowerCase()
+    .split('_')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
+export default function InkindAllocationList() {
+  const { id } = useParams();
+  const projectUUID = id as UUID;
+  const router = useRouter();
+
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
+  const [columnVisibility, setColumnVisibility] =
+    useState<VisibilityState>({});
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const { data, isLoading } = useGroupInkindAllocations(projectUUID, {
+    inkindType: typeFilter
+  });
+
+  const rows = useMemo<AllocationRow[]>(() => {
+    const d = data?.data ?? data?.response?.data ?? data;
+    if (!Array.isArray(d) || d.length === 0) return [];
+
+    return d
+      .map((item: any) => {
+        const groupId = item.groupId ?? item.group?.uuid ?? '';
+
+        return {
+          uuid: item.uuid,
+          groupId,
+          groupName: item.group?.name ?? item.groupName ?? 'N/A',
+          inkindId: item.inkindId ?? item.inkind?.uuid ?? '',
+          inkindName: item.inkind?.name ?? item.inkindName ?? 'N/A',
+          inkindType: item.inkind?.type ?? item.inkindType ?? 'N/A',
+          inkindAvailableStock: item.inkind?.availableStock ?? 0,
+          quantityAllocated: item.quantityAllocated ?? 0,
+          quantityRedeemed: item.quantityRedeemed ?? 0,
+          beneficiaryCount: item.group?._count?.beneficiaries ?? 0,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+        };
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.updatedAt ?? b.createdAt ?? 0).getTime() -
+          new Date(a.updatedAt ?? a.createdAt ?? 0).getTime(),
+      );
+  }, [data]);
+
+  const columns: ColumnDef<AllocationRow>[] = [
+    {
+      accessorKey: 'inkindName',
+      header: 'Inkind Name',
+      cell: ({ row }) => (
+        <TruncatedCell text={row.original.inkindName} maxLength={20} />
+      ),
+    },
+    {
+      accessorKey: 'groupName',
+      header: 'Beneficiary Group',
+      cell: ({ row }) => (
+        <TruncatedCell text={row.original.groupName} maxLength={20} />
+      ),
+    },
+    {
+      accessorKey: 'inkindType',
+      header: 'Inkind Type',
+      cell: ({ row }) => (
+        <Badge className="bg-gray-200 text-gray-600">
+          {formatLabel(row.original.inkindType)}
+        </Badge>
+      ),
+    },
+    {
+      id: 'status',
+      header: 'Status',
+      cell: ({ row }) => {
+        const isWalkIn = row.original.inkindType === 'WALK_IN';
+        const status = isWalkIn
+          ? deriveStatus(
+              row.original.inkindAvailableStock + row.original.quantityRedeemed,
+              row.original.quantityRedeemed,
+            )
+          : deriveStatus(
+              row.original.quantityAllocated,
+              row.original.quantityRedeemed,
+            );
+        return <Badge className={STATUS_STYLE[status]}>{status}</Badge>;
+      },
+    },
+    {
+      accessorKey: 'quantityRedeemed',
+      header: 'Total Redeemed',
+      cell: ({ row }) => {
+        const isWalkIn = row.original.inkindType === 'WALK_IN';
+        return (
+          <span className="font-semibold">
+            {row.original.quantityRedeemed}{' '}
+            <span className="text-xs font-normal">
+              / {isWalkIn ? (row.original.inkindAvailableStock + row.original.quantityRedeemed) : row.original.beneficiaryCount}
+            </span>
+          </span>
+        );
+      },
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        const r = row.original;
+        const params = new URLSearchParams({
+          groupId: r.groupId,
+          inkindId: r.inkindId,
+          groupName: r.groupName,
+          inkindName: r.inkindName,
+          inkindType: r.inkindType,
+          inkindAvailableStock: String(r.inkindAvailableStock),
+          quantityAllocated: String(r.quantityAllocated),
+          quantityRedeemed: String(r.quantityRedeemed),
+          beneficiaryCount: String(r.beneficiaryCount),
+        });
+        console.debug(
+          'Navigating to details page with params:',
+          params.toString(),
+        );
+        return (
+          <TooltipComponent
+            Icon={Eye}
+            tip="View Details"
+            iconStyle="hover:text-primary cursor-pointer"
+            handleOnClick={() =>
+              router.push(
+                `/projects/aa/${id}/inkind-management/${r.uuid}?${params}`,
+              )
+            }
+          />
+        );
+      },
+    },
+  ];
+
+  const table = useReactTable({
+    data: rows,
+    columns,
+    onPaginationChange: setPagination,
+    onColumnVisibilityChange: setColumnVisibility,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    state: { columnVisibility, columnFilters, pagination },
+  });
+
+  return (
+    <div>
+      <Heading
+        title="Allocation List"
+        titleStyle="font-medium text-lg"
+        description="Inkind items assigned to beneficiary groups"
+      />
+      <div className="flex items-center gap-2 mb-2">
+        <SearchInput
+          className="flex-1"
+          name="Inkind Name"
+          value={
+            (table.getColumn('inkindName')?.getFilterValue() as string) ?? ''
+          }
+          onSearch={(e) =>
+            table.getColumn('inkindName')?.setFilterValue(e.target.value)
+          }
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="h-9 gap-1 shrink-0">
+              {typeFilter ? INKIND_TYPE_LABELS[typeFilter as InkindType] : 'All Types'}
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onSelect={() => setTypeFilter(undefined)}>
+              All Types
+            </DropdownMenuItem>
+            {INKIND_TYPES.map((t) => (
+              <DropdownMenuItem key={t} onSelect={() => setTypeFilter(t)}>
+                {INKIND_TYPE_LABELS[t]}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      <DemoTable
+        table={table}
+        // tableHeight="h-[calc(100vh-420px)]"
+        loading={isLoading}
+      />
+      <CustomPagination
+        currentPage={pagination.pageIndex + 1}
+        handleNextPage={() => table.nextPage()}
+        handlePrevPage={() => table.previousPage()}
+        handlePageSizeChange={(size) => table.setPageSize(size as number)}
+        meta={{
+          total: rows.length,
+          currentPage: pagination.pageIndex + 1,
+          lastPage: table.getPageCount() || 1,
+          perPage: pagination.pageSize,
+          next: null,
+          prev: null,
+        }}
+        perPage={pagination.pageSize}
+      />
+    </div>
+  );
+}

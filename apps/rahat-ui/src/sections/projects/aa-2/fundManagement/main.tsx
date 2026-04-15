@@ -23,20 +23,18 @@ export default function FundManagementView() {
           title="Fund Management"
           description="Track all the fund management reports here"
         />
-        {projectBalance && projectBalance > 0 && (
-          <RoleAuth
-            roles={[AARoles.ADMIN, AARoles.Municipality]}
-            hasContent={false}
-          >
-            <IconLabelBtn
-              Icon={Plus}
-              handleClick={() =>
-                router.push(`/projects/aa/${projectUUID}/fund-management/add`)
-              }
-              name="Assign Funds"
-            />
-          </RoleAuth>
-        )}
+        <RoleAuth
+          roles={[AARoles.ADMIN, AARoles.Municipality]}
+          hasContent={false}
+        >
+          <IconLabelBtn
+            Icon={Plus}
+            handleClick={() =>
+              router.push(`/projects/aa/${projectUUID}/fund-management/add`)
+            }
+            name="Assign Funds"
+          />
+        </RoleAuth>
       </div>
       <FundManagementTabs />
     </div>

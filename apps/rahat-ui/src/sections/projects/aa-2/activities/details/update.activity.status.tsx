@@ -184,7 +184,7 @@ export default function UpdateStatus() {
   React.useEffect(() => {
     if (activityDetail) {
       form.setValue('status', activityDetail?.status);
-      form.setValue('notes', activityDetail?.notes ?? ' ');
+      form.setValue('notes', activityDetail?.notes ?? '');
       form.setValue(
         'activityDocuments',
         activityDetail.activityDocuments ?? [],
@@ -250,7 +250,10 @@ export default function UpdateStatus() {
                           Add note
                         </FormLabel>
                         <FormControl>
-                          <Textarea placeholder="Write note" {...field} />
+                          <Textarea
+                            placeholder="Enter notes"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

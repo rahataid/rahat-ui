@@ -6,6 +6,7 @@ import {
   UsersRound,
   Phone,
   FolderDot,
+  Pencil,
 } from 'lucide-react';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import MembersTable from './members.table';
@@ -35,9 +36,10 @@ const UpdateGroupProposeModal = React.lazy(() => import('./groupProposeModal'));
 const AssignBeneficiaryToProjectModal = React.lazy(
   () => import('./assignToProjectModal'),
 );
+const GroupNameEditModal = React.lazy(() => import('./groupNameEditModal'));
 
 import * as XLSX from 'xlsx';
-import { Back, Heading, TableLoader } from 'apps/rahat-ui/src/common';
+import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
@@ -57,6 +59,7 @@ export default function GroupDetailView() {
   const removeModal = useBoolean();
   const groupProposeModal = useBoolean();
   const projectModal = useBoolean();
+  const editGroupNameModal = useBoolean(false);
 
   const handleAssignModalClick = () => {
     validateModal.onTrue();
@@ -171,23 +174,24 @@ export default function GroupDetailView() {
         beneficiaryGroupDetail={group?.data}
         removeModal={removeModal}
       />
-
       <ValidateBenefBankAccountByGroupUuid
         beneficiaryGroupDetail={group?.data}
         validateModal={validateModal}
       />
-
       <UpdateGroupProposeModal
         beneficiaryGroupDetail={group?.data}
         validateModal={groupProposeModal}
       />
-
       <AssignBeneficiaryToProjectModal
         beneficiaryGroupDetail={group?.data}
         projectModal={projectModal}
         assignedGroupId={assignedGroupId}
       />
-
+      <GroupNameEditModal
+        open={editGroupNameModal.value}
+        onOpenChange={editGroupNameModal.setValue}
+        beneficiaryGroupDetail={group?.data}
+      />
       <div className="p-4">
         <div className="flex justify-between items-center">
           <div>
@@ -227,6 +231,16 @@ export default function GroupDetailView() {
                   )}
                 </Badge>
               )}
+            {!group?.data?.beneficiaryGroupProject.length && (
+              <Button
+                variant={'outline'}
+                className="gap-2 text-gray-700 rounded-sm"
+                onClick={() => editGroupNameModal.onTrue()}
+              >
+                <Pencil className="w-4 h-4" />
+                Edit
+              </Button>
+            )}
             <Button
               variant={'outline'}
               className={`gap-2 text-gray-700 rounded-sm ${
@@ -332,7 +346,7 @@ export default function GroupDetailView() {
           name={group?.data?.name}
         />
       </div>
-      <ClientSidePagination table={table} />
+      <ClientSidePagination table={table} />,
     </>
   );
 }

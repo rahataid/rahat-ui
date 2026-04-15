@@ -34,19 +34,38 @@ const sourceValues = Object.keys(SOURCE_CONFIG) as [
 
 const operatorValues = ['>', '<', '=', '>=', '<='] as const;
 
-const numericValueSchema = z.coerce.number().finite();
+const fieldLabels: Record<keyof typeof SOURCE_CONFIG, string> = {
+  water_level_m: 'Level Type',
+  discharge_m3s: 'Discharge Type',
+  rainfall_mm: 'Measurement Period',
+  prob_flood: 'Probability Period',
+};
+
+const emptyStringToUndefined = (val: unknown) => (val === '' ? undefined : val);
+
+const sourceSchema = z.union([z.enum(sourceValues), z.literal('')]).optional();
+
+const operatorSchema = z
+  .union([z.enum(operatorValues), z.literal('')])
+  .optional();
+
+const valueSchema = z
+  .union([z.coerce.number().finite(), z.literal('')])
+  .optional();
 
 export const triggerStatementSchemaBase = z
   .object({
-    source: z.enum(sourceValues),
+    source: sourceSchema,
     sourceSubType: z.string().optional(),
     stationId: z.string().optional(),
     stationName: z.string().optional(),
-    operator: z.enum(operatorValues).optional(),
-    value: numericValueSchema.optional(),
+    operator: operatorSchema,
+    value: valueSchema,
     expression: z.string().trim().optional(),
   })
   .superRefine((data, ctx) => {
+    if (!data.source) return;
+
     if (!data.sourceSubType) {
       let message = 'Source subtype is required';
 
@@ -75,17 +94,46 @@ export const triggerStatementSchemaBase = z
     if (data.sourceSubType && !data.operator) {
       ctx.addIssue({
         path: ['operator'],
-        message: 'Operator is required ',
+        message: 'Operator is required',
         code: z.ZodIssueCode.custom,
       });
     }
 
-    if (data.sourceSubType && (data.value === undefined || isNaN(data.value))) {
+    if (
+      data.sourceSubType &&
+      (data.value === undefined ||
+        data.value === '' ||
+        (typeof data.value === 'number' && isNaN(data.value)))
+    ) {
       ctx.addIssue({
         path: ['value'],
-        message: 'Value is required ',
+        message: 'Value is required',
         code: z.ZodIssueCode.custom,
       });
+    }
+
+    if (typeof data.value === 'number' && !isNaN(data.value)) {
+      if (!Number.isInteger(data.value)) {
+        ctx.addIssue({
+          path: ['value'],
+          message: 'Value must be a positive integer',
+          code: z.ZodIssueCode.custom,
+        });
+      } else if (data.value <= 0) {
+        ctx.addIssue({
+          path: ['value'],
+          message: 'Value must be a positive integer',
+          code: z.ZodIssueCode.custom,
+        });
+      }
+
+      if (data.source === 'prob_flood' && data.value > 100) {
+        ctx.addIssue({
+          path: ['value'],
+          message: 'Value cannot exceed 100 for flood probability',
+          code: z.ZodIssueCode.custom,
+        });
+      }
     }
 
     if (
@@ -94,7 +142,7 @@ export const triggerStatementSchemaBase = z
     ) {
       ctx.addIssue({
         path: ['expression'],
-        message: 'expression must contain an operator and value',
+        message: 'Expression must contain an operator and value',
         code: z.ZodIssueCode.custom,
       });
     }
@@ -120,26 +168,27 @@ export const triggerStatementSchemaBase = z
 
 export const triggerStatementSchema = triggerStatementSchemaBase.superRefine(
   (value, ctx) => {
+    if (!value.source) return;
+
     const config = SOURCE_CONFIG[value.source];
     if (
       config &&
-      !(config.subTypes as readonly string[]).includes(
-        value.sourceSubType || '',
-      )
+      value.sourceSubType &&
+      !(config.subTypes as readonly string[]).includes(value.sourceSubType)
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: `sourceSubType must be one of [${config.subTypes.join(
-          ', ',
-        )}] for ${value.source}`,
+        message: `${
+          fieldLabels[value.source]
+        } must be one of [${config.subTypes.join(', ')}]`,
         path: ['sourceSubType'],
       });
     }
 
-    if (!value.expression?.includes(value.operator || '')) {
+    if (value.operator && !value.expression?.includes(value.operator)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'expression must include the selected operator',
+        message: 'Expression must include the selected operator',
         path: ['expression'],
       });
     }
@@ -150,7 +199,7 @@ export const triggerStatementSchema = triggerStatementSchemaBase.superRefine(
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'expression must reference the selected sourceSubType',
+        message: 'Expression must reference the selected sourceSubType',
         path: ['expression'],
       });
     }

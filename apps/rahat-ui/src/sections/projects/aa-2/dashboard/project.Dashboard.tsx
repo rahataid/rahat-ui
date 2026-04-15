@@ -17,7 +17,6 @@ import DashboardSkeleton from './dashboard.skeleton';
 
 export default function ProjectDashboard() {
   const project = useProjectStore((state) => state.singleProject) as Project;
-  console.log(project);
   const { id } = useParams();
   const projectId = id as UUID;
   useAAStations(projectId);

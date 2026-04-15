@@ -41,16 +41,12 @@ import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { X } from 'lucide-react';
 import { Tag, TagInput } from 'emblor';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 export default function AddGrievances() {
   const { id: projectID } = useParams();
   const router = useRouter();
-  const { user } = useUserStore((state) => ({
-    user: state.user,
-  }));
   const [formKey, setFormKey] = React.useState(0);
   const forceRerender = () => setFormKey((prev) => prev + 1);
   const grievancesListPath = `/projects/aa/${projectID}/grievances`;
@@ -130,11 +126,6 @@ export default function AddGrievances() {
         ...data,
         status: data.status || GrievanceStatus.NEW,
         tags: data?.tags?.map((tag) => tag.text) || [],
-        createdByUser: {
-          id: user?.data?.id,
-          name: user?.data?.name,
-          email: user?.data?.email,
-        },
       };
 
       await addGrievance.mutateAsync({

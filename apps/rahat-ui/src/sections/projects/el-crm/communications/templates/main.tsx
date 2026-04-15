@@ -195,7 +195,7 @@ export default function TemplatesView() {
     <TooltipProvider delayDuration={200}>
       <div className="flex flex-col h-full">
         {/* Page Header */}
-        <div className="border-b border-border bg-card px-6 py-5">
+        <div className="sticky top-0 z-10 border-b border-border bg-card px-6 py-5">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight text-foreground">
@@ -476,9 +476,16 @@ export default function TemplatesView() {
                       <CardHeader className="space-y-3 pb-2">
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0 flex-1">
-                            <CardTitle className="truncate text-lg">
-                              {template.name}
-                            </CardTitle>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <CardTitle className="truncate text-lg">
+                                  {template.name}
+                                </CardTitle>
+                              </TooltipTrigger>
+                              <TooltipContent side="bottom" className="max-w-xs break-words">
+                                <p>{template.name}</p>
+                              </TooltipContent>
+                            </Tooltip>
                             <CardDescription className="mt-1 text-xs">
                               Created{' '}
                               {new Date(
@@ -527,9 +534,16 @@ export default function TemplatesView() {
                       </CardHeader>
 
                       <CardContent className="flex flex-1 flex-col gap-4">
-                        <p className="line-clamp-3 text-sm text-muted-foreground">
-                          {template.body}
-                        </p>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <p className="line-clamp-3 text-sm text-muted-foreground">
+                              {template.body}
+                            </p>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="max-w-sm break-words">
+                            <p>{template.body}</p>
+                          </TooltipContent>
+                        </Tooltip>
 
                         {template.type === 'MEDIA' && mediaItems.length > 0 && (
                           <div className="space-y-2">

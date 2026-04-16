@@ -190,14 +190,6 @@ export default function DashboardView() {
   const recentCampaigns: RecentCampaign[] =
     getStat(stats, 'RECENT_CAMPAIGNS') || [];
   const recentImports: RecentImport[] = getStat(stats, 'RECENT_IMPORTS') || [];
-  const messagesToCustomerByCategoryCount = getStat(
-    stats,
-    'MESSAGES_TO_VENDOR_BY_CATEGORY_COUNT',
-  ) || {
-    ACTIVE: 0,
-    INACTIVE: 0,
-    NEWLY_INACTIVE: 0,
-  };
 
   // -- Derived Data -----------------------------------------------------------
 
@@ -207,17 +199,17 @@ export default function DashboardView() {
     () => [
       {
         name: 'Active',
-        value: messagesToCustomerByCategoryCount.ACTIVE,
+        value: activeCustomers,
         fill: COLORS.active,
       },
       {
         name: 'Newly Inactive',
-        value: messagesToCustomerByCategoryCount.NEWLY_INACTIVE,
+        value: newlyInactiveCustomers,
         fill: COLORS.newlyInactive,
       },
       {
         name: 'Inactive',
-        value: messagesToCustomerByCategoryCount.INACTIVE,
+        value: inactiveCustomers,
         fill: COLORS.inactive,
       },
     ],
@@ -397,7 +389,7 @@ export default function DashboardView() {
 
             {/* ── SECTION 2: Distribution + Delivery (equal split) ── */}
             <div className="grid gap-6 lg:grid-cols-2">
-              {/* Customer Category Message Distribution Donut */}
+              {/* Customer Category Distribution Donut */}
               <Card className="transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2">
@@ -406,7 +398,7 @@ export default function DashboardView() {
                     </div>
                     <div>
                       <CardTitle className="text-base font-semibold">
-                        Customer Message Distribution
+                        Customer Distribution
                       </CardTitle>
                       <CardDescription className="text-xs">
                         Breakdown by status

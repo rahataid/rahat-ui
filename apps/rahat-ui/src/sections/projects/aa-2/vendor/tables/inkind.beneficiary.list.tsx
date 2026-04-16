@@ -66,7 +66,7 @@ export default function InKindBeneficiaryList() {
     projectUuid: id,
     vendorId: vendorId,
     inkindType: 'PRE_DEFINED',
-    perPage: 1,
+    perPage: 10,
     page: 1,
     search: debounceSearch.walletAddress,
   });
@@ -75,7 +75,7 @@ export default function InKindBeneficiaryList() {
     projectUuid: id,
     vendorId: vendorId,
     inkindType: 'WALK_IN',
-    perPage: 1,
+    perPage: 10,
     page: 1,
   });
 

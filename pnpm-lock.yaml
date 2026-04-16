@@ -84,14 +84,14 @@ importers:
         specifier: 0.0.9
         version: 0.0.9
       '@rahataid/community-tool-sdk':
-        specifier: 0.0.36
-        version: 0.0.36
+        specifier: 0.0.37
+        version: 0.0.37
       '@rahataid/el-subgraph':
         specifier: 0.0.14
         version: 0.0.14
       '@rahataid/sdk':
-        specifier: 0.0.35
-        version: 0.0.35
+        specifier: 0.0.36
+        version: 0.0.36
       '@rumsan/communication':
         specifier: ^0.0.23
         version: 0.0.23
@@ -3151,14 +3151,14 @@ packages:
   '@rahataid/c2c-query@0.0.9':
     resolution: {integrity: sha512-ci7/VCXpea5aYeg0BSrnsBRetED0/l5RHk1/ANhTKbS1Z4VcogmZo2b28roMGe5cIKJXnX9F8pwgcyMaPC5dBg==}
 
-  '@rahataid/community-tool-sdk@0.0.36':
-    resolution: {integrity: sha512-4AhuyBktSdz85nSLneiEaWU5ku0d77WBgpee881ewWB2eqYVwFhwvrltjrYQeSYYT0JtBEZZmiiT6wP5SUhe+Q==}
+  '@rahataid/community-tool-sdk@0.0.37':
+    resolution: {integrity: sha512-P/X9NF74dp/f1MS6QLSGQZwC2EKMPeAfMWlb1286f3NHfDgmd6pWo86+QTD+9rzGYpUkWoK2hIIdMjfxkoOb9g==}
 
   '@rahataid/el-subgraph@0.0.14':
     resolution: {integrity: sha512-tBsvFOXbMquudfQCMnxVGZwvLWixC3TvN/Tqc43PY2UMr4JNOxYuBozMtUafYxxxiZtxaxu+n7tccWs+g6KoNQ==}
 
-  '@rahataid/sdk@0.0.35':
-    resolution: {integrity: sha512-8ZLXLMfr+ZXlrtidXSUCi/1oCsaTf2TA4VP7vEpJto+wN+ujUEb9Vfu2VFghbQ9hVTKGOWo0v0Wx0MqRZwxsUQ==}
+  '@rahataid/sdk@0.0.36':
+    resolution: {integrity: sha512-GAtsrZbZuLekwV684/b0/w2JIKzoRdT8qrOO4rdbH13agAyZxbs24+ETeR0KBLczjOYvCMgI5ddZ8a3lwGihkA==}
 
   '@react-leaflet/core@2.1.0':
     resolution: {integrity: sha512-Qk7Pfu8BSarKGqILj4x7bCSZ1pjuAPZ+qmRwH5S7mDS91VSbVVsJSrW4qA+GPrro8t69gFYVMWb1Zc4yFmPiVg==}
@@ -15649,7 +15649,7 @@ snapshots:
     dependencies:
       '@swc/helpers': 0.5.17
 
-  '@rahataid/community-tool-sdk@0.0.36':
+  '@rahataid/community-tool-sdk@0.0.37':
     dependencies:
       tslib: 2.8.1
 
@@ -15664,7 +15664,7 @@ snapshots:
     transitivePeerDependencies:
       - graphql
 
-  '@rahataid/sdk@0.0.35': {}
+  '@rahataid/sdk@0.0.36': {}
 
   '@react-leaflet/core@2.1.0(leaflet@1.9.4)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:

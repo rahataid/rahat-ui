@@ -1,4 +1,5 @@
 import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
+import { extractDataArray } from '../../utils/extractDataArray';
 
 type PiechartData = {
   component: any;
@@ -7,10 +8,7 @@ type PiechartData = {
 };
 
 const PieChartWrapper = ({ actualData, component, source }: PiechartData) => {
-  // Handle both array and object with nested benefStats array
-  const dataArray = Array.isArray(actualData)
-    ? actualData
-    : actualData?.benefStats || [];
+  const dataArray = extractDataArray(actualData);
 
   const chartStatsData = dataArray?.find(
     (d: any) => d.name === component?.dataMap,

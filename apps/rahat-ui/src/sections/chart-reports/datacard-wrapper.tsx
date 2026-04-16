@@ -4,6 +4,7 @@ import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import DataCard from '../../components/dataCard';
 import getIcon from '../../utils/getIcon';
+import { extractDataArray } from '../../utils/extractDataArray';
 type DataCardData = {
   component: any;
   source: any;
@@ -24,10 +25,7 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
 
   if (!actualData) return null;
 
-  // Handle both array and object with nested benefStats array
-  const dataArray = Array.isArray(actualData)
-    ? actualData
-    : actualData?.benefStats || [];
+  const dataArray = extractDataArray(actualData);
 
   // Find the relevant object in actualData by name
   const relevantData = dataArray?.find((d: any) => d.name === name);

@@ -6,7 +6,12 @@ type MapData = {
 };
 
 const MapWrapper = ({ actualData, component }: MapData) => {
-  const mapStatsData = actualData?.find(
+  // Handle both array and object with nested benefStats array
+  const dataArray = Array.isArray(actualData)
+    ? actualData
+    : actualData?.benefStats || [];
+
+  const mapStatsData = dataArray?.find(
     (d: any) => d.name === component?.dataMap,
   );
 

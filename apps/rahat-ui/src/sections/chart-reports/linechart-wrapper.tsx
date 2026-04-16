@@ -6,7 +6,12 @@ type LineChartData = {
 };
 
 const LineChartWrapper = ({ actualData, component }: LineChartData) => {
-  const lineChartStatsData = actualData?.find(
+  // Handle both array and object with nested benefStats array
+  const dataArray = Array.isArray(actualData)
+    ? actualData
+    : actualData?.benefStats || [];
+
+  const lineChartStatsData = dataArray?.find(
     (d: any) => d.name === component?.dataMap,
   );
 

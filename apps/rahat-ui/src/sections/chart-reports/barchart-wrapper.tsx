@@ -7,7 +7,12 @@ type BarChartData = {
 };
 
 const BarChartWrapper = ({ actualData, component }: BarChartData) => {
-  const barData = actualData?.find((d: any) => d.name === component?.dataMap);
+  // Handle both array and object with nested benefStats array
+  const dataArray = Array.isArray(actualData)
+    ? actualData
+    : actualData?.benefStats || [];
+
+  const barData = dataArray?.find((d: any) => d.name === component?.dataMap);
 
   const categories = barData?.data.map((b: any) => b.id);
   const series = barData?.data.map((b: any) => b.count);

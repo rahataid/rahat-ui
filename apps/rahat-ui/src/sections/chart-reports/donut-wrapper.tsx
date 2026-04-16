@@ -8,7 +8,12 @@ type DonutData = {
 };
 
 const DonutWrapper = ({ actualData, component, source }: DonutData) => {
-  const chartStatsData = actualData?.find(
+  // Handle both array and object with nested benefStats array
+  const dataArray = Array.isArray(actualData)
+    ? actualData
+    : actualData?.benefStats || [];
+
+  const chartStatsData = dataArray?.find(
     (d: any) => d.name === component?.dataMap,
   );
 

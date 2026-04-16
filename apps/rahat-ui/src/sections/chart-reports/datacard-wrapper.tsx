@@ -24,8 +24,13 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
 
   if (!actualData) return null;
 
+  // Handle both array and object with nested benefStats array
+  const dataArray = Array.isArray(actualData)
+    ? actualData
+    : actualData?.benefStats || [];
+
   // Find the relevant object in actualData by name
-  const relevantData = actualData?.find((d: any) => d.name === name);
+  const relevantData = dataArray?.find((d: any) => d.name === name);
 
   // Use getValueFromPath to find the value inside the relevant object
   // const cardDataValue =

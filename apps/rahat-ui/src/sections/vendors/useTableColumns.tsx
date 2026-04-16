@@ -47,7 +47,32 @@ export const useTableColumns = (handleAssignClick: any) => {
       accessorKey: 'projectName',
       header: 'Project Name',
       cell: ({ row }) => {
-        return <div className="font-medium">{row.getValue('projectName')}</div>;
+        const projects = row.getValue('projectName');
+
+        if (!Array.isArray(projects) || projects.length === 0) {
+          return <span className="text-gray-400 text-sm">NA</span>;
+        }
+
+        const visibleProjects = projects.slice(0, 2);
+        const remainingCount = projects.length - 2;
+
+        return (
+          <div className="flex flex-wrap gap-1.5 max-w-[250px]">
+            {visibleProjects.map((item, index) => (
+              <Badge
+                key={item?.Project?.id || index}
+                className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-full font-medium"
+              >
+                {item?.Project?.name || 'NA'}
+              </Badge>
+            ))}
+            {remainingCount > 0 && (
+              <Badge className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 border border-gray-200 rounded-full font-medium">
+                +{remainingCount} more
+              </Badge>
+            )}
+          </div>
+        );
       },
     },
 

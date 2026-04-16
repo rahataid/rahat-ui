@@ -50,8 +50,6 @@ export function NWPSection() {
   const [showControls, setShowControls] = useState(true);
   const [isWeatherLayerVisible, setIsWeatherLayerVisible] = useState(true);
   const [selectedRegion, setSelectedRegion] = useState<RegionType>('district');
-  const [forecastHour, setForecastHour] = useState(0);
-  const maxForecastHours = 72; // Maximum forecast hours
 
   // Fetch layers on mount
   useEffect(() => {
@@ -90,10 +88,6 @@ export function NWPSection() {
     }
     return undefined;
   }, [groupedLayers, selectedLayerId]);
-
-  const handleForecastChange = (hour: number) => {
-    setForecastHour(hour);
-  };
 
   const handleRegionChange = (region: RegionType) => {
     setSelectedRegion(region);
@@ -203,9 +197,6 @@ export function NWPSection() {
                   opacity={opacity}
                   onOpacityChange={setOpacity}
                   availableTimes={availableTimes}
-                  forecastHour={forecastHour}
-                  maxForecastHours={maxForecastHours}
-                  handleForecastChange={handleForecastChange}
                 />
               </div>
               {/* Weather Layer Toggle Button - moved to bottom right */}

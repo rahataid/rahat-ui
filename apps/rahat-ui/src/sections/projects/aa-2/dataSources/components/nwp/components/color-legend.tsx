@@ -107,7 +107,7 @@ export function ColorLegend({ selectedLayerId }: ColorLegendProps) {
   if (!config) return null;
 
   return (
-    <Card className="p-22 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 w-16 rounded-sm">
+    <Card className="p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 w-16 rounded-sm">
       <div className="flex flex-col items-center">
         <div className="text-xs font-bold mb-3 text-center text-gray-700">
           {config.unit}

@@ -12,9 +12,6 @@ interface TimeControlProps {
   opacity: number;
   onOpacityChange: (opacity: number) => void;
   availableTimes: Date[];
-  forecastHour: number;
-  maxForecastHours: number;
-  handleForecastChange: (hour: number) => void;
 }
 
 export function TimeControl({

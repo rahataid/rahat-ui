@@ -63,7 +63,7 @@ export function LayerSelector({
   };
 
   return (
-    <div className=" top-54 right-5 flex flex-col items-end gap-2 z-70">
+    <div className="flex flex-col items-end gap-2 z-50">
       {/* Tabs Section - Separate Card */}
       <Card className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 rounded-sm shadow-lg px-2 py-1">
         <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>

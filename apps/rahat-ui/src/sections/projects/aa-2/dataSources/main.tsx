@@ -118,11 +118,11 @@ export default function DataSources() {
   const projectType = projectInfo?.value?.project_type;
   const isHeatWave = projectType === 'HEAT_WAVE';
 
-  // Only fetch tab configuration for non-HEAT_WAVE projects
+  // Only fetch tab configuration for non-HEAT_WAVE projects after project info loads
   const { data, isLoading: isTabLoading } = useTabConfiguration(
     projectID as UUID,
     PROJECT_SETTINGS_KEYS.FORECAST_TAB_CONFIG,
-    !isHeatWave, 
+    !isProjectLoading && !isHeatWave,
   );
 
   const backendTabs = useMemo((): BackendTab[] => {
@@ -147,10 +147,26 @@ export default function DataSources() {
 
   // Set default active tab
   useEffect(() => {
-    if (!activeTab && !isTabLoading && backendTabs.length > 0) {
-      setActiveTab(backendTabs[0].value);
+    if (
+      !activeTab &&
+      !isProjectLoading &&
+      !isTabLoading &&
+      backendTabs.length > 0
+    ) {
+      if (isHeatWave) {
+        setActiveTab('aws');
+      } else {
+        setActiveTab(backendTabs[0].value);
+      }
     }
-  }, [activeTab, isTabLoading, backendTabs, setActiveTab]);
+  }, [
+    activeTab,
+    isProjectLoading,
+    isTabLoading,
+    backendTabs,
+    setActiveTab,
+    isHeatWave,
+  ]);
 
   useEffect(() => {
     if (

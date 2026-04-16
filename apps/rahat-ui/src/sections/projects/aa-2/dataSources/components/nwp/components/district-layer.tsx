@@ -23,25 +23,29 @@ export function DistrictLayer({
   const map = useMap();
   const geoJsonLayerRef = useRef<L.GeoJSON | null>(null);
 
-  useEffect(() => {
-    async function loadRegions() {
-      // Remove old layer if it exists - ONLY our tracked layer
-      if (geoJsonLayerRef.current && map.hasLayer(geoJsonLayerRef.current)) {
-        map.removeLayer(geoJsonLayerRef.current);
-        geoJsonLayerRef.current = null;
-      }
+  const removeCurrentLayer = () => {
+    if (geoJsonLayerRef.current && map.hasLayer(geoJsonLayerRef.current)) {
+      map.removeLayer(geoJsonLayerRef.current);
+    }
 
-      // Also remove any orphaned GeoJSON layers to ensure clean slate
-      map.eachLayer((layer) => {
-        if (layer instanceof L.GeoJSON) {
-          map.removeLayer(layer);
-        }
-      });
+    geoJsonLayerRef.current = null;
+  };
+
+  useEffect(() => {
+    let isActive = true;
+
+    async function loadRegions() {
+      removeCurrentLayer();
 
       if (!showRegions) return;
 
       try {
         const data = await fetchRegionsGeoJSON(regionType);
+
+        if (!isActive) {
+          return;
+        }
+
         const geoJsonStyle =
           regionType === 'province'
             ? {
@@ -106,12 +110,7 @@ export function DistrictLayer({
               onRegionHover?.(null);
 
               if (layer instanceof L.Path) {
-                layer.setStyle({
-                  weight: 1.5,
-                  opacity: 0.7,
-                  fillOpacity: 0.05,
-                  color: '#000000',
-                });
+                layer.setStyle(geoJsonStyle);
               }
             });
 
@@ -120,6 +119,10 @@ export function DistrictLayer({
             });
           },
         });
+
+        if (!isActive) {
+          return;
+        }
 
         geoJsonLayerRef.current.addTo(map);
       } catch (error) {
@@ -131,10 +134,8 @@ export function DistrictLayer({
 
     // Cleanup function
     return () => {
-      if (geoJsonLayerRef.current && map.hasLayer(geoJsonLayerRef.current)) {
-        map.removeLayer(geoJsonLayerRef.current);
-        geoJsonLayerRef.current = null;
-      }
+      isActive = false;
+      removeCurrentLayer();
     };
   }, [regionType, showRegions, map, onRegionHover]);
 

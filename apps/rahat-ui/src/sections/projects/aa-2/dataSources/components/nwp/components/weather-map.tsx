@@ -12,11 +12,16 @@ interface WeatherMapProps {
   timeValue: string;
   opacity: number;
   showLayer: boolean;
-  onRegionChange?: (region: RegionType) => void;
   selectedRegion?: RegionType;
 }
 
-export function WeatherMap({ selectedLayer, timeValue, opacity, showLayer, onRegionChange, selectedRegion = 'district' }: WeatherMapProps) {
+export function WeatherMap({
+  selectedLayer,
+  timeValue,
+  opacity,
+  showLayer,
+  selectedRegion = 'district',
+}: WeatherMapProps) {
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
@@ -49,7 +54,7 @@ export function WeatherMap({ selectedLayer, timeValue, opacity, showLayer, onReg
         )}
 
         {/* Region Boundaries Layer */}
-        <DistrictLayer 
+        <DistrictLayer
           regionType={selectedRegion}
           showRegions={true}
           onRegionHover={setHoveredRegion}
@@ -58,7 +63,7 @@ export function WeatherMap({ selectedLayer, timeValue, opacity, showLayer, onReg
 
       {/* Region Name Tooltip - Follows Cursor */}
       {hoveredRegion && (
-        <div 
+        <div
           className="fixed bg-black/80 text-white px-3 py-2 rounded text-sm font-medium pointer-events-none z-50"
           style={{
             left: `${tooltipPos.x + 10}px`,

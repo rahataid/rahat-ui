@@ -24,8 +24,11 @@ export interface InKindLog {
   groupInkindId: UUID;
   quantity: number;
   redeemedAt: string;
-  txHash: string | null;
+  txHash: string;
   vendorUuid: UUID;
+  Vendor: {
+    name: string;
+  };
   beneficiary: {
     uuid: UUID;
     walletAddress: string;

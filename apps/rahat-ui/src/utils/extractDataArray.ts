@@ -19,8 +19,8 @@ export const extractDataArray = (actualData: any): any[] => {
     return actualData;
   }
   
-  // If it's an object with benefStats, extract that array
-  if (actualData?.benefStats) {
+  // If it's an object with benefStats array, extract that array
+  if (actualData?.benefStats && Array.isArray(actualData.benefStats)) {
     return actualData.benefStats;
   }
   

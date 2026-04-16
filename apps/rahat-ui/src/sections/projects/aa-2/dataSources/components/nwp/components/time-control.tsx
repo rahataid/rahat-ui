@@ -96,7 +96,7 @@ export function TimeControl({
   const maxIndex = availableTimes.length - 1;
 
   return (
-    <div className="p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 rounded-lg border">
+    <div className="p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 rounded-sm border">
       <div className="flex items-center gap-6">
         {/* Playback Controls */}
         <div className="flex items-center gap-2">

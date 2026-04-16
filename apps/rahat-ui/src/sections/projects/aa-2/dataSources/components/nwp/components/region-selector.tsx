@@ -19,7 +19,7 @@ export function RegionSelector({
   ];
 
   return (
-    <Card className="p-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 w-50">
+    <Card className="p-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 w-50 rounded-sm">
       <label className="block text-sm font-medium text-gray-700 mb-2">
         Region Type
       </label>

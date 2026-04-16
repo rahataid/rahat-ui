@@ -1,5 +1,6 @@
 import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { extractDataArray } from '../../utils/extractDataArray';
 
 type BarChartData = {
   component: any;
@@ -7,7 +8,9 @@ type BarChartData = {
 };
 
 const BarChartWrapper = ({ actualData, component }: BarChartData) => {
-  const barData = actualData?.find((d: any) => d.name === component?.dataMap);
+  const dataArray = extractDataArray(actualData);
+
+  const barData = dataArray?.find((d: any) => d.name === component?.dataMap);
 
   const categories = barData?.data.map((b: any) => b.id);
   const series = barData?.data.map((b: any) => b.count);

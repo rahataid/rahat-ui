@@ -1,4 +1,5 @@
 import DashboardMap from '../dashboard/map';
+import { extractDataArray } from '../../utils/extractDataArray';
 
 type MapData = {
   component: any;
@@ -6,7 +7,9 @@ type MapData = {
 };
 
 const MapWrapper = ({ actualData, component }: MapData) => {
-  const mapStatsData = actualData?.find(
+  const dataArray = extractDataArray(actualData);
+
+  const mapStatsData = dataArray?.find(
     (d: any) => d.name === component?.dataMap,
   );
 

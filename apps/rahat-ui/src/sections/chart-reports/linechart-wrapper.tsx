@@ -1,4 +1,5 @@
 import { LineChart } from '@rahat-ui/shadcn/src/components/charts';
+import { extractDataArray } from '../../utils/extractDataArray';
 
 type LineChartData = {
   component: any;
@@ -6,7 +7,9 @@ type LineChartData = {
 };
 
 const LineChartWrapper = ({ actualData, component }: LineChartData) => {
-  const lineChartStatsData = actualData?.find(
+  const dataArray = extractDataArray(actualData);
+
+  const lineChartStatsData = dataArray?.find(
     (d: any) => d.name === component?.dataMap,
   );
 

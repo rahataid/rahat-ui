@@ -1,4 +1,5 @@
 import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
+import { extractDataArray } from '../../utils/extractDataArray';
 
 type PiechartData = {
   component: any;
@@ -7,7 +8,9 @@ type PiechartData = {
 };
 
 const PieChartWrapper = ({ actualData, component, source }: PiechartData) => {
-  const chartStatsData = actualData?.find(
+  const dataArray = extractDataArray(actualData);
+
+  const chartStatsData = dataArray?.find(
     (d: any) => d.name === component?.dataMap,
   );
 

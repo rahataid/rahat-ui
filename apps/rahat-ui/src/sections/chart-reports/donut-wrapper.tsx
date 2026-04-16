@@ -1,5 +1,6 @@
 import { ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
 import { humanizeString } from '../../utils';
+import { extractDataArray } from '../../utils/extractDataArray';
 
 type DonutData = {
   component: any;
@@ -8,7 +9,9 @@ type DonutData = {
 };
 
 const DonutWrapper = ({ actualData, component, source }: DonutData) => {
-  const chartStatsData = actualData?.find(
+  const dataArray = extractDataArray(actualData);
+
+  const chartStatsData = dataArray?.find(
     (d: any) => d.name === component?.dataMap,
   );
 

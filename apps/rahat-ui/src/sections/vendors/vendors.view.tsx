@@ -30,6 +30,7 @@ function VendorsView() {
 
   const addVendor = useAssignVendorToProject();
   const { data: vendorData } = useVendorList(pagination, refetch);
+
   const [selectedProject, setSelectedProject] = React.useState<UUID>();
   const [selectedRow, setSelectedRow] = React.useState(null) as any;
 
@@ -76,7 +77,6 @@ function VendorsView() {
       rowSelection,
     },
   });
-
   return (
     <>
       <div className="p-4">

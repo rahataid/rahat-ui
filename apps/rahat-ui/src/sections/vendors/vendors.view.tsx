@@ -77,7 +77,6 @@ function VendorsView() {
       rowSelection,
     },
   });
-  console.log(vendorData, 'vendor data');
   return (
     <>
       <div className="p-4">

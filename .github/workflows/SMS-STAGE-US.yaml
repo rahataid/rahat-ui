@@ -31,7 +31,7 @@ jobs:
           secrets: |
             github/data/general/docker/esatya username | DOCKERHUB_USERNAME ;
             github/data/general/docker/esatya password | DOCKERHUB_TOKEN ;
-            github/data/rahat/rahat-ui/stage/smsvocher-us rahat-ui | ENV ;
+            github/data/rahat/rahat-ui/stage/smsvoucher-us rahat-ui | ENV ;
 
       - name: Create environment file
         run: tee ./.env <<<"$ENV"

@@ -391,6 +391,7 @@ export default function EditTrigger() {
               sourceOptions={sourceOptions}
               subTypeOptions={subTypeOptions}
               stationHeading={stationHeading}
+              projectType={projectInfo?.value?.project_type}
             />
           ) : (
             <ManualTriggerAddForm

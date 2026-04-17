@@ -28,6 +28,9 @@ export const SOURCE_MAPPING = {
   'dhm:rainfall': 'rainfall_mm',
   glofas: 'prob_flood',
   gfh: 'discharge_m3s',
+  // for heatwave
+  'dhm:humidity': 'prob_humidity',
+  'dhm:temperature': 'temperature_c',
 } as const;
 
 // Maps trigger statement source values back to form source values
@@ -36,6 +39,9 @@ export const REVERSE_SOURCE_MAPPING: Record<string, string> = {
   rainfall_mm: 'dhm:rainfall',
   prob_flood: 'glofas',
   discharge_m3s: 'gfh',
+  // for heatwave
+  prob_humidity: 'dhm:humidity',
+  temperature_c: 'dhm:temperature',
 };
 
 // Legacy mapping for GLOFAS subtypes
@@ -60,7 +66,9 @@ export const formatMainLabel = (key: string, type: string) => {
     .replace('Prob Flood', 'Flood Probability (%)')
     .replace('Discharge M3s', 'Discharge (m³/s)')
     .replace('Water Level M', 'Water Level (m)')
-    .replace('Rainfall Mm', 'Rainfall (mm)');
+    .replace('Rainfall Mm', 'Rainfall (mm)')
+    .replace('Prob Humidity', 'Humidity (%)')
+    .replace('Temperature C', 'Temperature (°C)');
 };
 
 //*** Builders ***//
@@ -84,6 +92,26 @@ export const buildSubtypeOptions = (
         value: sub,
       })),
     ]),
+  );
+};
+
+// Filter source options based on project type
+export const filterSourceOptionsByProjectType = (
+  sourceOptions: Option[],
+  projectType: string,
+): Option[] => {
+  // If project type is explicitly HEAT_WAVE, show only humidity and temperature
+  if (projectType?.toUpperCase() === 'HEAT_WAVE') {
+    return sourceOptions.filter(
+      (option) =>
+        option.value === 'dhm:humidity' || option.value === 'dhm:temperature',
+    );
+  }
+
+  // For all other cases (including when projectType is undefined), exclude heatwave sources
+  return sourceOptions.filter(
+    (option) =>
+      option.value !== 'dhm:humidity' && option.value !== 'dhm:temperature',
   );
 };
 

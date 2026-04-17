@@ -21,10 +21,15 @@ import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { z } from 'zod';
 import { Info } from 'lucide-react';
 import { AutomatedFormSchema } from '../add.trigger.view';
-import { Option, SOURCE_MAPPING } from '../utils';
+import {
+  Option,
+  SOURCE_MAPPING,
+  filterSourceOptionsByProjectType,
+} from '../utils';
 import { useGetSeriesByDataSource } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
 
 const operatorOptions = [
   { label: 'Greater than (>)', value: '>' },
@@ -51,6 +56,15 @@ const SOURCE_META = {
     unit: '%',
     placeholder: 'Enter flood probability value in (%)',
   },
+  // for heatwave
+  prob_humidity: {
+    unit: '%',
+    placeholder: 'Enter humidity probability value in (%)',
+  },
+  temperature_c: {
+    unit: '°C',
+    placeholder: 'Enter temperature value in (°C)',
+  },
 } as const;
 
 type IProps = {
@@ -60,6 +74,7 @@ type IProps = {
   sourceOptions?: Option[];
   subTypeOptions?: Record<string, Option[]>;
   stationHeading?: string;
+  projectType?: string;
 };
 
 export default function AddAutomatedTriggerForm({
@@ -69,6 +84,7 @@ export default function AddAutomatedTriggerForm({
   sourceOptions,
   subTypeOptions,
   stationHeading,
+  projectType,
 }: IProps) {
   const source = form.watch('source');
   const triggerSource = form.watch('triggerStatement.source');
@@ -82,11 +98,21 @@ export default function AddAutomatedTriggerForm({
   const params = useParams();
   const projectId = params.id as UUID;
 
-  const { data: seriesList } = useGetSeriesByDataSource(
+  const { data: seriesList, isLoading } = useGetSeriesByDataSource(
     projectId,
     selectedSource.dataSource?.toUpperCase() || '',
     selectedSource.type?.toUpperCase() || '',
+    triggerSourceSubType || '',
   );
+
+  // Filter source options based on project type
+  const filteredSourceOptions = React.useMemo(() => {
+    if (!sourceOptions) return [];
+    return filterSourceOptionsByProjectType(sourceOptions, projectType || '');
+  }, [sourceOptions, projectType]);
+
+  const computedStationHeading =
+    projectType === 'HEAT_WAVE' ? 'Heatwave Station' : stationHeading;
 
   React.useEffect(() => {
     if (source && source in SOURCE_MAPPING) {
@@ -190,7 +216,7 @@ export default function AddAutomatedTriggerForm({
             <FormMessage />
           </FormItem>
           <FormItem>
-            <FormLabel>{stationHeading}</FormLabel>
+            <FormLabel>{computedStationHeading}</FormLabel>
             <FormControl>
               <Input
                 className="bg-gray-300"
@@ -241,8 +267,8 @@ export default function AddAutomatedTriggerForm({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {sourceOptions?.length ? (
-                        sourceOptions?.map((option) => (
+                      {filteredSourceOptions?.length ? (
+                        filteredSourceOptions?.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
                             {option.label}
                           </SelectItem>
@@ -286,6 +312,14 @@ export default function AddAutomatedTriggerForm({
                           )}
                           {triggerSource === 'prob_flood' && (
                             <SourceSubTypeField label="Probability Period" />
+                          )}
+
+                          {/* for heatwave */}
+                          {triggerSource === 'prob_humidity' && (
+                            <SourceSubTypeField label="Humidity Type" />
+                          )}
+                          {triggerSource === 'temperature_c' && (
+                            <SourceSubTypeField label="Temperature Type" />
                           )}
                         </Select>
                         <FormMessage />
@@ -375,6 +409,8 @@ export default function AddAutomatedTriggerForm({
                                       {option.label}
                                     </SelectItem>
                                   ))
+                                ) : isLoading ? (
+                                  <Loader />
                                 ) : (
                                   <p className="text-gray-500 text-sm">
                                     No operator found
@@ -387,13 +423,18 @@ export default function AddAutomatedTriggerForm({
                         );
                       }}
                     />
+
                     {triggerOperator && (
                       <FormField
                         control={form.control}
                         name="triggerStatement.value"
                         render={({ field }) => {
-                          const meta = SOURCE_META[triggerSource];
-
+                          const meta =
+                            triggerSource && triggerSource in SOURCE_META
+                              ? SOURCE_META[
+                                  triggerSource as keyof typeof SOURCE_META
+                                ]
+                              : undefined;
                           return (
                             <FormItem>
                               <FormLabel>

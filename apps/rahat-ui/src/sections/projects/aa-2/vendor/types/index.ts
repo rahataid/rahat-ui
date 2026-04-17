@@ -1,6 +1,7 @@
 export interface IProjectVendor {
   uuid: string;
   name: string;
+  extras?: Record<string, any>;
   phone: string;
   location: string;
 }

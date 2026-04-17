@@ -1,12 +1,14 @@
 'use client';
 
+import * as XLSX from 'xlsx';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { Download } from 'lucide-react';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { Download, FileText, FileSpreadsheet } from 'lucide-react';
 import type {
   CommunicationStats,
   AutomationHealth,
@@ -52,9 +54,9 @@ function formatDate(dateStr: string): string {
   });
 }
 
-// -- Export Logic -----------------------------------------------------------
+// -- Report Data Builder -----------------------------------------------------
 
-function generateTextReport(props: ExportButtonProps): string {
+function buildReportData(props: ExportButtonProps) {
   const {
     totalCustomers,
     activeCustomers,
@@ -72,50 +74,48 @@ function generateTextReport(props: ExportButtonProps): string {
   const inactivePct = pctOf(inactiveCustomers, totalCustomers);
   const newlyInactivePct = pctOf(newlyInactiveCustomers, totalCustomers);
 
-  let text = '================================================================================\n';
-  text += 'RAHAT CRM - DASHBOARD REPORT\n';
-  text += `Generated: ${timestamp}\n`;
-  text += '================================================================================\n\n';
+  const summaryRows: (string | number)[][] = [
+    ['RAHAT CRM - DASHBOARD REPORT'],
+    ['Generated', timestamp],
+    [],
+    ['Metric', 'Value', 'Percentage'],
+    ['Total Customers', totalCustomers, ''],
+    ['Active', activeCustomers, `${activePct}%`],
+    ['Newly Inactive', newlyInactiveCustomers, `${newlyInactivePct}%`],
+    ['Inactive', inactiveCustomers, `${inactivePct}%`],
+    [],
+    ['Communication', 'Count', ''],
+    ['Total Messages Sent', commStats.totalMessages, ''],
+    ['Messages Delivered', commStats.sent, ''],
+    ['Messages Failed', commStats.failed, ''],
+    ['Messages Skipped', commStats.skipped, ''],
+    ['Delivery Rate', `${commStats.deliveryRate}%`, ''],
+    [],
+    ['Automation Health', '', ''],
+    ['Total Rules', automationHealth.totalRules, ''],
+    ['Enabled Rules', automationHealth.enabledRules, ''],
+    ['Last Triggered', timeAgo(automationHealth.lastTriggeredAt), ''],
+    [],
+    ['Data Quality', '', ''],
+    ['Failed Import Batches', failedBatchCount, ''],
+  ];
 
-  // KPI Summary
-  text += '--- KPI SUMMARY ---\n';
-  text += `Total Customers:        ${totalCustomers.toLocaleString()}\n`;
-  text += `Active:                 ${activeCustomers.toLocaleString()} (${activePct}%)\n`;
-  text += `Newly Inactive:         ${newlyInactiveCustomers.toLocaleString()} (${newlyInactivePct}%)\n`;
-  text += `Inactive:               ${inactiveCustomers.toLocaleString()} (${inactivePct}%)\n`;
-  text += `Total Messages Sent:    ${commStats.totalMessages.toLocaleString()}\n`;
-  text += `Messages Delivered:     ${commStats.sent.toLocaleString()}\n`;
-  text += `Messages Failed:        ${commStats.failed.toLocaleString()}\n`;
-  text += `Messages Skipped:       ${commStats.skipped.toLocaleString()}\n`;
-  text += `Delivery Rate:          ${commStats.deliveryRate}%\n\n`;
-
-  // Automation Health
-  text += '--- AUTOMATION HEALTH ---\n';
-  text += `Total Rules:            ${automationHealth.totalRules}\n`;
-  text += `Enabled Rules:          ${automationHealth.enabledRules}\n`;
-  text += `Last Triggered:         ${timeAgo(automationHealth.lastTriggeredAt)}\n\n`;
-
-  // Data Quality
-  text += '--- DATA QUALITY ---\n';
-  text += `Failed Import Batches:  ${failedBatchCount}\n\n`;
-
-  // Recent Campaigns
-  text += '--- RECENT CAMPAIGNS (Last 5) ---\n';
+  const campaignRows: (string | number)[][] = [
+    ['Campaign Name', 'Recipients', 'Date'],
+  ];
   if (recentCampaigns.length > 0) {
-    recentCampaigns.forEach((campaign, idx) => {
-      text += `${idx + 1}. ${campaign.name}\n`;
-      text += `   Recipients: ${campaign.recipientCount.toLocaleString()}\n`;
-      text += `   Date: ${formatDate(campaign.createdAt)}\n`;
+    recentCampaigns.forEach((c) => {
+      campaignRows.push([c.name, c.recipientCount, formatDate(c.createdAt)]);
     });
   } else {
-    text += 'No campaigns yet\n';
+    campaignRows.push(['No campaigns yet', '', '']);
   }
-  text += '\n';
 
-  // Recent Imports
-  text += '--- RECENT IMPORTS ---\n';
+  const importRows: (string | number)[][] = [
+    ['Date', 'Records Processed', 'Successful', 'Failed', 'Status'],
+  ];
   if (recentImports.length > 0) {
-    recentImports.forEach((imp, idx) => {
+    recentImports.forEach((imp) => {
       const succeeded = Array.isArray(imp.successVendors)
         ? imp.successVendors.length
         : 0;
@@ -123,61 +123,108 @@ function generateTextReport(props: ExportButtonProps): string {
         ? imp.failedVendors.length
         : 0;
       const total = succeeded + failedCount;
-      text += `${idx + 1}. ${new Date(imp.createdAt).toLocaleDateString()}\n`;
-      text += `   Records Processed: ${total}\n`;
-      text += `   Successful: ${succeeded}\n`;
-      text += `   Failed: ${failedCount}\n`;
-      text += `   Status: ${imp.status}\n`;
+      importRows.push([
+        new Date(imp.createdAt).toLocaleDateString(),
+        total,
+        succeeded,
+        failedCount,
+        imp.status,
+      ]);
     });
   } else {
-    text += 'No import activity yet\n';
+    importRows.push(['No import activity yet', '', '', '', '']);
   }
-  text += '\n';
 
-  text += '================================================================================\n';
-  text += 'End of Report\n';
-  text += '================================================================================\n';
-
-  return text;
+  return { summaryRows, campaignRows, importRows };
 }
 
-function downloadTextFile(content: string, filename: string): void {
-  const blob = new Blob([content], { type: 'text/plain' });
+// -- CSV Export ---------------------------------------------------------------
+
+function exportAsCSV(props: ExportButtonProps): void {
+  const { summaryRows, campaignRows, importRows } = buildReportData(props);
+
+  const allRows = [
+    ...summaryRows,
+    [],
+    ['--- RECENT CAMPAIGNS ---'],
+    ...campaignRows,
+    [],
+    ['--- RECENT IMPORTS ---'],
+    ...importRows,
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet(allRows);
+  const csv = XLSX.utils.sheet_to_csv(ws);
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = filename;
+  link.download = `crm-dashboard-report-${new Date().toISOString().slice(0, 10)}.csv`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
   window.URL.revokeObjectURL(url);
 }
 
+// -- Excel Export -------------------------------------------------------------
+
+function exportAsExcel(props: ExportButtonProps): void {
+  const { summaryRows, campaignRows, importRows } = buildReportData(props);
+
+  const wb = XLSX.utils.book_new();
+
+  const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
+  wsSummary['!cols'] = [{ wch: 25 }, { wch: 20 }, { wch: 15 }];
+  XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
+
+  const wsCampaigns = XLSX.utils.aoa_to_sheet(campaignRows);
+  wsCampaigns['!cols'] = [{ wch: 35 }, { wch: 15 }, { wch: 15 }];
+  XLSX.utils.book_append_sheet(wb, wsCampaigns, 'Campaigns');
+
+  const wsImports = XLSX.utils.aoa_to_sheet(importRows);
+  wsImports['!cols'] = [
+    { wch: 15 },
+    { wch: 18 },
+    { wch: 12 },
+    { wch: 10 },
+    { wch: 15 },
+  ];
+  XLSX.utils.book_append_sheet(wb, wsImports, 'Imports');
+
+  XLSX.writeFile(
+    wb,
+    `crm-dashboard-report-${new Date().toISOString().slice(0, 10)}.xlsx`,
+  );
+}
+
 // -- Component ---------------------------------------------------------------
 
 export function DashboardExportButton(props: ExportButtonProps) {
-  const handleExport = () => {
-    const textContent = generateTextReport(props);
-    const filename = `crm-dashboard-report-${new Date().toISOString().slice(0, 10)}.txt`;
-    downloadTextFile(textContent, filename);
-  };
-
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-2"
-          onClick={handleExport}
-        >
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="sm" className="gap-2">
           <Download className="h-4 w-4" />
           Export
         </Button>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>Export dashboard data as text</p>
-      </TooltipContent>
-    </Tooltip>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem
+          className="cursor-pointer gap-2"
+          onClick={() => exportAsCSV(props)}
+        >
+          <FileText className="h-4 w-4" />
+          Download as CSV
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer gap-2"
+          onClick={() => exportAsExcel(props)}
+        >
+          <FileSpreadsheet className="h-4 w-4" />
+          Download as Excel
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

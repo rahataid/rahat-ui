@@ -284,6 +284,24 @@ export const useAssignVendorToProject = () => {
   });
 };
 
+export const useProjectSettingsGet = (uuid: UUID, name: string) => {
+  const q = useProjectAction(['settings.get', name]);
+  return useQuery({
+    queryKey: ['settings.get', uuid, name],
+    enabled: !!uuid && !!name,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: { name },
+        },
+      });
+      return mutate.data;
+    },
+  });
+};
+
 export const useProjectContractSettings = (uuid: UUID) => {
   const q = useProjectAction(['PROJECT_SETTINGS_KEYS.CONTRACT']);
   const { setSettings, settings } = useProjectSettingsStore((state) => ({
@@ -293,7 +311,8 @@ export const useProjectContractSettings = (uuid: UUID) => {
 
   const query = useQuery({
     queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid, PROJECT_SETTINGS_KEYS.CONTRACT],
-    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT]),
+    enabled:
+      !!uuid && isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT]),
     // enabled: !!settings[uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
@@ -344,7 +363,8 @@ export const useProjectSafeWalletSettings = (uuid: UUID) => {
       uuid,
       PROJECT_SETTINGS_KEYS.SAFE_WALLET,
     ],
-    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SAFE_WALLET]),
+    enabled:
+      !!uuid && isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SAFE_WALLET]),
     // enabled: !!settings[uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
@@ -391,7 +411,8 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
 
   const query = useQuery({
     queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid, PROJECT_SETTINGS_KEYS.SUBGRAPH],
-    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH]),
+    enabled:
+      !!uuid && isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH]),
     // enabled: !!settings[uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
@@ -443,7 +464,8 @@ export const useProjectBlockChainSettings = (uuid: UUID) => {
       uuid,
       PROJECT_SETTINGS_KEYS.BLOCKCHAIN,
     ],
-    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.BLOCKCHAIN]),
+    enabled:
+      !!uuid && isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.BLOCKCHAIN]),
     // enabled: !!settings[uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
@@ -632,7 +654,7 @@ export const useProjectList = (
       queryKey: [TAGS.GET_ALL_PROJECTS, payload],
       // todo, add support for pagination
       queryFn: () => projectClient.list(payload as any),
-      refetchOnWindowFocus: true,
+      staleTime: 5 * 60 * 60 * 1000, // 5 hours
       retryOnMount: true,
     },
     queryClient,
@@ -684,7 +706,7 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   const query = useQuery({
     queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, restPayloadString],
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    staleTime: 20 * 60 * 1000, // 20 minutes
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -878,7 +900,6 @@ export const useCHWList = (payload: any) => {
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.LIST, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await action.mutateAsync({
         uuid: projectUUID,
@@ -911,7 +932,6 @@ export const useCHWGet = (payload: any) => {
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.GET, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await action.mutateAsync({
         uuid: projectUUID,
@@ -944,7 +964,6 @@ export const useCambodiaBeneficiaries = (payload: any) => {
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -969,7 +988,6 @@ export const useCambodiaBeneficiary = (payload: any) => {
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.GET, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -999,7 +1017,6 @@ export const useCambodiaVendorsList = (payload: any) => {
     ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1024,7 +1041,6 @@ export const useCambodiaVendorGet = (payload: any) => {
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.VENDOR.GET_BY_UUID, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1054,7 +1070,6 @@ export const useCambodiaCommisionList = (payload: any) => {
     ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1084,7 +1099,6 @@ export const useCambodiaCommisionCurrent = (payload: any) => {
     ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1141,7 +1155,6 @@ export const useCambodiaDiscardedBeneficiaries = (payload: any) => {
     ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1165,7 +1178,6 @@ export const useCambodiaVendorsStats = (payload: any) => {
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.VENDOR.STATS, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1189,7 +1201,6 @@ export const useCambodiaHealthWorkerByUUIDStats = (payload: any) => {
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.STATS, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1216,7 +1227,6 @@ export const useCambodiaVendorHealthWorkers = (payload: any) => {
     ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1243,7 +1253,6 @@ export const useCambodiaVendorLeadConversions = (payload: any) => {
     ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1269,7 +1278,6 @@ export const useCambodiaHealthWorkersStats = (payload: any) => {
     ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1292,7 +1300,6 @@ export const useCambodiaCommsList = (payload: any) => {
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.COMMUNICATION.LIST, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1318,7 +1325,6 @@ export const useCambodiaBroadCastCounts = (payload: any) => {
     ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1341,7 +1347,6 @@ export const useCambodiaLineChartsReports = (payload: any) => {
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.LINE_STATS, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1368,7 +1373,6 @@ export const useCambodiaCommisionStats = (payload: any) => {
     ],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
@@ -1402,7 +1406,6 @@ export const useCambodiaProjectSettings = (payload: any) => {
     queryKey: [MS_CAM_ACTIONS.CAMBODIA.PROJECT_SETTINGS, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
-    refetchOnWindowFocus: true,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,

@@ -21,6 +21,30 @@ export type Option = {
   value: string;
 };
 
+//*** Constants ***//
+// Maps form source values to trigger statement source values
+export const SOURCE_MAPPING = {
+  'dhm:waterlevel': 'water_level_m',
+  'dhm:rainfall': 'rainfall_mm',
+  glofas: 'prob_flood',
+  gfh: 'discharge_m3s',
+} as const;
+
+// Maps trigger statement source values back to form source values
+export const REVERSE_SOURCE_MAPPING: Record<string, string> = {
+  water_level_m: 'dhm:waterlevel',
+  rainfall_mm: 'dhm:rainfall',
+  prob_flood: 'glofas',
+  discharge_m3s: 'gfh',
+};
+
+// Legacy mapping for GLOFAS subtypes
+export const GLOFAS_LEGACY_MAPPING: Record<string, string> = {
+  two_years_max_prob: 'two_years_return_period',
+  five_years_max_prob: 'five_years_return_period',
+  twenty_years_max_prob: 'twenty_years_return_period',
+};
+
 //*** Helpers ***//
 // Convert snake_case → "Snake Case"
 export const toLabel = (str: string): string =>

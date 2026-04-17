@@ -1,6 +1,7 @@
 'use client';
 import { ColumnDef } from '@tanstack/react-table';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
+import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 
 import {
   Tooltip,
@@ -9,22 +10,32 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { StatusChip, PriorityChip, TypeChip } from '../components';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
-import GrievanceDetailSplitView from '../details/grievance.detail.split.view';
 import { truncateEthAddress } from '@rumsan/sdk/utils/string.utils';
 import { formatDateFull } from 'apps/rahat-ui/src/utils/dateFormate';
-import { TooltipText } from 'apps/rahat-ui/src/components/tootltip.text';
-
-export const useGrievancesTableColumns = () => {
-  const { setSecondPanelComponent } = useSecondPanel();
-
-  const openSplitDetailView = (grievance: any) => {
-    setSecondPanelComponent(<GrievanceDetailSplitView grievance={grievance} />);
+import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
+import { UUID } from 'crypto';
+interface GrievanceTableRow {
+  id: string;
+  uuid: string;
+  title: string;
+  reportedBy: string;
+  type: string;
+  createdByUser: {
+    name: string;
   };
+  createdAt: string;
+  priority: string;
+  status: string;
+}
+export const useGrievancesTableColumns = () => {
+  const router = useRouter();
+  const { id: projectId } = useParams() as { id: UUID };
+  const searchParams = useSearchParams();
+  const redirectToHomeTab = searchParams.get('tab') || 'list';
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<GrievanceTableRow>[] = [
     {
       accessorKey: 'id',
       header: 'ID',
@@ -33,24 +44,12 @@ export const useGrievancesTableColumns = () => {
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: ({ row }) => (
-        <TooltipText
-          titleClassName="w-24"
-          title={row.getValue('title')}
-          content={row.getValue('title')}
-        />
-      ),
+      cell: ({ row }) => <TruncatedCell text={row.getValue('title')} />,
     },
     {
       accessorKey: 'reportedBy',
       header: 'Reported By',
-      cell: ({ row }) => (
-        <TooltipText
-          titleClassName="w-24"
-          title={row.getValue('reportedBy')}
-          content={row.getValue('reportedBy')}
-        />
-      ),
+      cell: ({ row }) => <TruncatedCell text={row.getValue('reportedBy')} />,
     },
     {
       accessorKey: 'type',
@@ -64,13 +63,18 @@ export const useGrievancesTableColumns = () => {
     {
       accessorKey: 'createdBy',
       header: 'Created By',
-      cell: ({ row }) => <div> {row.original?.createdByUser?.name}</div>,
+      cell: ({ row }) => (
+        <TruncatedCell
+          text={row.original?.createdByUser?.name}
+          maxLength={30}
+        />
+      ),
     },
     {
       accessorKey: 'createdAt',
       header: 'Created On',
       cell: ({ row }) => (
-        <div> {formatDateFull(row.getValue('createdAt'))}</div>
+        <TruncatedCell text={formatDateFull(row.getValue('createdAt'))} />
       ),
     },
     {
@@ -78,7 +82,11 @@ export const useGrievancesTableColumns = () => {
       header: 'Priority',
       cell: ({ row }) => (
         <div>
-          <PriorityChip priority={row.getValue('priority')} showIcon={false} />
+          <PriorityChip
+            priority={row.getValue('priority')}
+            showIcon={false}
+            className="text-[10px]"
+          />
         </div>
       ),
     },
@@ -87,7 +95,11 @@ export const useGrievancesTableColumns = () => {
       header: 'Status',
       cell: ({ row }) => (
         <div>
-          <StatusChip status={row.getValue('status')} showIcon={false} />
+          <StatusChip
+            status={row.getValue('status')}
+            showIcon={false}
+            className="text-[10px]"
+          />
         </div>
       ),
     },
@@ -98,11 +110,15 @@ export const useGrievancesTableColumns = () => {
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() => openSplitDetailView(row.original)}
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() =>
+                router.push(
+                  `/projects/aa/${projectId}/grievances/${row.original.uuid}?tab=${redirectToHomeTab}`,
+                )
+              }
             />
           </div>
         );
@@ -158,11 +174,11 @@ export const useProjectBeneficiaryGroupDetailsTableColumns = () => {
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={16}
-              strokeWidth={1.5}
-              onClick={() =>
+            <TooltipComponent
+              Icon={Eye}
+              tip="View Details"
+              iconStyle="hover:text-primary cursor-pointer"
+              handleOnClick={() =>
                 router.push(
                   `/projects/aa/${id}/beneficiary/${row?.original?.benefId}?groupId=${groupId}`,
                 )

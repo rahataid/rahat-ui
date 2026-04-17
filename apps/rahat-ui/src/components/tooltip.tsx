@@ -7,7 +7,7 @@ import {
 import { LucideIcon } from 'lucide-react';
 
 type IProps = {
-  handleOnClick: VoidFunction;
+  handleOnClick?: VoidFunction;
   Icon: LucideIcon;
   tip: string;
   iconStyle?: string;

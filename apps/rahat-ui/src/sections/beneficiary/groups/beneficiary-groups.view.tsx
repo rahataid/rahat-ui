@@ -14,6 +14,7 @@ import AssignBeneficiaryToProjectModal from './assignToProjectModal';
 import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { capitalizeFirstLetter } from 'apps/rahat-ui/src/utils';
 import { GroupPurpose } from 'apps/rahat-ui/src/constants/beneficiary.const';
+import { TruncatedCell } from '../../projects/aa-2/stakeholders/component/TruncatedCell';
 
 function BeneficiaryGroupsView() {
   const router = useRouter();
@@ -105,7 +106,7 @@ function BeneficiaryGroupsView() {
                       <div className="mb-2">
                         <div className="flex justify-between items-center">
                           <p className="text-lg font-semibold mb-1 text-[#3D3D51]">
-                            {i?.name ?? 'N/A'}
+                            <TruncatedCell text={i?.name ?? 'N/A'} />
                           </p>
                           <div>
                             {i?.isGroupValidForAA &&

@@ -1,6 +1,5 @@
 'use client';
 import * as React from 'react';
-import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
 
@@ -15,7 +14,7 @@ import { useParams, useRouter } from 'next/navigation';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { formatUnits } from 'viem';
 
-export const useProjectBeneficiaryTableColumns = (tokenNumber:number) => {
+export const useProjectBeneficiaryTableColumns = (tokenNumber: number) => {
   const router = useRouter();
   const { id } = useParams();
 
@@ -70,7 +69,12 @@ export const useProjectBeneficiaryTableColumns = (tokenNumber:number) => {
     {
       accessorKey: 'availableAmount',
       header: 'Available Amount',
-      cell: ({ row }) => <div> {formatUnits(row?.original?.remaningBalance,tokenNumber )|| 'N/A'}</div>,
+      cell: ({ row }) => (
+        <div>
+          {' '}
+          {formatUnits(row?.original?.remaningBalance, tokenNumber) || 'N/A'}
+        </div>
+      ),
     },
     {
       id: 'actions',

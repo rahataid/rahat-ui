@@ -12,6 +12,16 @@ import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 import { PROJECT_SETTINGS_KEYS } from 'libs/query/src/config';
 
+type ActivityTemplateFilters = {
+  page?: number;
+  perPage?: number;
+  phase?: string;
+  hasCommunication?: string;
+  category?: string;
+  title?: string;
+  isAutomated?: string;
+  appId?: string;
+};
 export const useActivitiesCategories = (uuid: UUID) => {
   const q = useProjectAction();
   const { setCategories } = useActivitiesStore((state) => ({
@@ -72,6 +82,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
+    staleTime: 30 * 60 * 1000, // 30 minutes
     placeholderData: keepPreviousData,
   });
 
@@ -86,6 +97,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
     id: d.uuid,
     title: d.title,
     responsibility: d?.manager?.name,
+    responsibleStation: d.responsibleStation,
     source: d?.phase?.source?.riverBasin,
     hazardType: d.hazardType?.name,
     category: d.category?.name,
@@ -135,6 +147,7 @@ export const useActivitiesHavingComms = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
+    staleTime: 30 * 60 * 1000, // 30 minutes
   });
   const activitiesData = query?.data?.data?.map((d: any) => ({
     id: d?.uuid,
@@ -191,12 +204,14 @@ export const useSingleActivity = (
         throw error;
       }
     },
+    staleTime: 30 * 60 * 1000, // 30 minutes
   });
   return query;
 };
 
 export const useCreateActivities = () => {
   const q = useProjectAction();
+  const qc = useQueryClient();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -220,10 +235,13 @@ export const useCreateActivities = () => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       q.reset();
+      qc.invalidateQueries({ queryKey: ['activities'] });
       toast.fire({
-        title: 'Activity added successfully',
+        title: data?.data?.isTemplate
+          ? 'Activity and its template added successfully'
+          : 'Activity created successfully',
         icon: 'success',
       });
     },
@@ -434,4 +452,28 @@ export const useUpdateActivityStatus = () => {
       });
     },
   });
+};
+
+export const useActivityTemplates = (
+  uuid: UUID,
+  filters: ActivityTemplateFilters,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['activityTemplates', uuid, filters],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'ms.library.getActivityTemplates',
+          payload: {
+            ...filters,
+          },
+        },
+      });
+      return mutate.response;
+    },
+  });
+  return query;
 };

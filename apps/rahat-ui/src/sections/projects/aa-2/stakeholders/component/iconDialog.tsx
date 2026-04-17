@@ -10,6 +10,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { IconLabelBtn } from 'apps/rahat-ui/src/common';
 import { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
@@ -24,6 +30,7 @@ export type IconDialogProps = {
   iconClassName?: string;
   confirmButtonClassName?: string;
   color?: string;
+  tip?: string;
   variant: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost';
 };
 export function IconDialogComponent({
@@ -37,19 +44,39 @@ export function IconDialogComponent({
   confirmButtonClassName = '',
   variant = 'default',
   color,
+  tip,
 }: IconDialogProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
       <DialogTrigger>
-        <Icon
-          className={iconClassName}
-          color={color}
-          onClick={() => setOpen(true)}
-          size={16}
-          strokeWidth={1.5}
-        />
+        {tip ? (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Icon
+                  className={iconClassName}
+                  color={color}
+                  onClick={() => setOpen(true)}
+                  size={16}
+                  strokeWidth={1.5}
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs font-medium">{tip}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : (
+          <Icon
+            className={iconClassName}
+            color={color}
+            onClick={() => setOpen(true)}
+            size={16}
+            strokeWidth={1.5}
+          />
+        )}
       </DialogTrigger>
       <DialogContent
         className="!rounded-sm"

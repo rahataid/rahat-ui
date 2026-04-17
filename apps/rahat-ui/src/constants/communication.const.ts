@@ -7,3 +7,9 @@ export const COMMUNICATION_NAV_ROUTE = {
   DEFAULT_TEXT: 'default_text',
   DEFAULT_VOICE: 'default_voice',
 };
+
+export const DEFAULT_TRANSPORTS = [
+  { transportId: 'voice-default', transportName: 'VOICE', total: 0 },
+  { transportId: 'sms-default', transportName: 'SMS', total: 0 },
+  { transportId: 'email-default', transportName: 'EMAIL', total: 0 },
+];

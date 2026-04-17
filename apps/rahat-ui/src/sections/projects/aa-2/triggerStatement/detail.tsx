@@ -5,6 +5,7 @@ import { UUID } from 'crypto';
 import {
   PROJECT_SETTINGS_KEYS,
   useDeleteTriggerStatement,
+  useProjectInfo,
   useProjectSettingsStore,
   useProjectStore,
   useSingleTriggerStatement,
@@ -29,6 +30,8 @@ import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 import { AARoles, RoleAuth } from '@rahat-ui/auth';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { AlertCircleIcon } from 'lucide-react';
+import TooltipWrapper from 'apps/rahat-ui/src/components/tooltip.wrapper';
+import { getStationTitle } from 'apps/rahat-ui/src/utils/getStationTitle';
 
 export default function TriggerStatementDetail() {
   const router = useRouter();
@@ -52,6 +55,14 @@ export default function TriggerStatementDetail() {
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
+  const { data: projectInfo, isLoading: isProjectInfoLoading } = useProjectInfo(
+    id as UUID,
+  );
+
+  const stationHeading = getStationTitle(
+    projectInfo?.value?.project_type || '',
+  );
+
   const phase = trigger?.phase?.name;
   const source = trigger?.source;
   const txnUrl = getExplorerUrl({
@@ -60,6 +71,18 @@ export default function TriggerStatementDetail() {
     value: trigger?.transactionHash,
   });
   const removeTrigger = useDeleteTriggerStatement();
+
+  const isEditDeleteDisabled = trigger?.isTriggered || trigger?.phase?.isActive;
+
+  const getEditDeleteTip = () => {
+    if (trigger?.isTriggered) {
+      return 'Cannot modify a triggered trigger';
+    }
+    if (trigger?.phase?.isActive) {
+      return 'Cannot modify trigger in an active phase';
+    }
+    return '';
+  };
 
   const versionType = type as string | undefined;
 
@@ -73,7 +96,7 @@ export default function TriggerStatementDetail() {
     );
   };
 
-  if (isLoading) {
+  if (isLoading || isProjectInfoLoading) {
     return <TableLoader />;
   }
 
@@ -116,32 +139,42 @@ export default function TriggerStatementDetail() {
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
           >
-            <DeleteButton
-              className={`rounded flex gap-1 items-center text-sm font-medium ${
-                version && 'hidden'
-              }`}
-              name="trigger"
-              label="Delete"
-              handleContinueClick={handleDelete}
-              disabled={trigger?.isTriggered || trigger?.phase?.isActive}
-            />
+            <TooltipWrapper
+              tip={isEditDeleteDisabled ? getEditDeleteTip() : ''}
+              disable={!isEditDeleteDisabled}
+            >
+              <DeleteButton
+                className={`rounded flex gap-1 items-center text-sm font-medium ${
+                  version && 'hidden'
+                }`}
+                name="trigger"
+                label="Delete"
+                handleContinueClick={handleDelete}
+                disabled={isEditDeleteDisabled}
+              />
+            </TooltipWrapper>
           </RoleAuth>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.Municipality]}
             hasContent={false}
           >
-            <EditButton
-              className={`rounded flex gap-1 items-center text-sm font-medium ${
-                version && 'hidden'
-              }`}
-              label="Edit"
-              onFallback={() =>
-                router.push(
-                  `/projects/aa/${id}/trigger-statements/${triggerIdKey}/edit`,
-                )
-              }
-              disabled={trigger?.phase?.isActive || trigger?.isTriggered}
-            />
+            <TooltipWrapper
+              tip={isEditDeleteDisabled ? getEditDeleteTip() : ''}
+              disable={!isEditDeleteDisabled}
+            >
+              <EditButton
+                className={`rounded flex gap-1 items-center text-sm font-medium ${
+                  version && 'hidden'
+                }`}
+                label="Edit"
+                onFallback={() =>
+                  router.push(
+                    `/projects/aa/${id}/trigger-statements/${triggerIdKey}/edit`,
+                  )
+                }
+                disabled={isEditDeleteDisabled}
+              />
+            </TooltipWrapper>
           </RoleAuth>
           <RoleAuth
             roles={[AARoles.ADMIN, AARoles.MANAGER, AARoles.Municipality]}
@@ -177,7 +210,7 @@ export default function TriggerStatementDetail() {
             } text-sm/4 text-muted-foreground mt-6`}
           >
             <div>
-              <p className="mb-1">River Basin</p>
+              <p className="mb-1">{stationHeading}</p>
               <p>{trigger?.phase?.source?.riverBasin || 'N/A'}</p>
             </div>
             <div>

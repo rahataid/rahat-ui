@@ -1,5 +1,3 @@
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { ArrowRight } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import RecentPaymentCard from './recent.payment.card';
@@ -17,14 +15,6 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
     <>
       <div className="flex justify-between mb-2">
         <h1 className="text-lg font-medium">Recent Payout</h1>
-        <Button
-          variant={'link'}
-          onClick={() => route.push(`/projects/aa/${id}/payout/list`)}
-          disabled={!payouts?.length}
-        >
-          View all Payout List
-          <ArrowRight className="ml-1" size={14} strokeWidth={1.5} />
-        </Button>
       </div>
 
       <div className="h-[calc(100vh-400px)] overflow-y-scroll overflow-x-hidden scrollbar-hidden">
@@ -50,7 +40,7 @@ const RecentPayout = ({ payouts }: RecentPayoutProps) => {
                 dateTime={item?.updatedAt}
                 onView={() =>
                   route.push(
-                    `/projects/aa/${id}/payout/details/${item?.uuid}?from=main-page`,
+                    `/projects/aa/${id}/payout/details/${item?.uuid}?from=payoutOverview`,
                   )
                 }
               />

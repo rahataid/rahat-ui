@@ -83,6 +83,7 @@ export const useBeneficiaryGroupsList = (payload: any): any => {
     {
       queryKey: [TAGS.GET_BENEFICIARIES_GROUPS, payload],
       queryFn: () => listBeneficiaryGroups(payload),
+      staleTime: 10 * 60 * 1000, // 10 minutes
     },
     queryClient,
   );
@@ -134,6 +135,11 @@ const updateBeneficiaryGroup = async (payload: any) => {
   return response?.data;
 };
 
+const beneficiariesGroupByUuids = async (uuids: string[]) => {
+  const response = await api.post(`/beneficiaries/groupDetails`, uuids);
+  return response?.data?.data;
+};
+
 export const useUpdateBeneficiaryGroup = () => {
   const qc = useQueryClient();
   const alert = useSwal();
@@ -145,8 +151,15 @@ export const useUpdateBeneficiaryGroup = () => {
   });
   return useMutation({
     mutationFn: (payload: any) => updateBeneficiaryGroup(payload),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_GROUPS] });
+    onSuccess: (_data, variables) => {
+      // TODO: This needs to be fixed
+      qc.invalidateQueries({
+        queryKey: [TAGS.GET_BENEFICIARIES_GROUPS],
+      });
+      qc.invalidateQueries({
+        queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
+      });
+
       toast.fire({
         title: 'Beneficiary Group updated successfully.',
         icon: 'success',
@@ -176,6 +189,7 @@ export const useBeneficiaryList = (payload: any): any => {
     {
       queryKey: [TAGS.GET_BENEFICIARIES, payload],
       queryFn: () => benClient.list(payload),
+      staleTime: 10 * 60 * 1000, // 10 minutes
       placeholderData: keepPreviousData,
     },
     queryClient,
@@ -306,8 +320,8 @@ export const useValidateBeneficaryBankAccount = () => {
   });
   return useMutation({
     mutationFn: (payload: any) => validateBeneficiaryBankAccount(payload),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [TAGS.VALIDATE_BENEFICIARIES] });
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: [TAGS.VALIDATE_BENEFICIARIES] });
       toast.fire({
         title: 'Accounts check in progress. Data will be listed soon',
         icon: 'success',
@@ -337,12 +351,15 @@ export const useUpdateGroupPropose = () => {
     mutationFn: (payload: any) =>
       updateGroupPropose(payload.uuid, payload.selectedPurpose),
     onSuccess: async (_data, variables) => {
-      if (variables?.uuid) {
-        await qc.invalidateQueries({
-          queryKey: ['GET_BENEFICIARY_GROUP', variables.uuid],
-          exact: false,
-        });
-      }
+      // TODO: This needs to be fixed
+      qc.removeQueries({
+        queryKey: [GET_BENEFICIARY_GROUP, variables?.uuid],
+        exact: true,
+      });
+      await qc.invalidateQueries({
+        queryKey: ['GET_BENEFICIARY_GROUP', variables?.uuid],
+        exact: false,
+      });
       toast.fire({
         title: 'Group propose updated successfully',
         icon: 'success',
@@ -483,9 +500,11 @@ export const useUploadBeneficiary = () => {
           return;
         }
         if (data?.data?.discardedBeneficiaries?.length > 0) {
-          const phoneNumber = data?.data?.discardedBeneficiaries?.map((d:any) => {
-            return d?.phoneNumber;
-          });
+          const phoneNumber = data?.data?.discardedBeneficiaries?.map(
+            (d: any) => {
+              return d?.phoneNumber;
+            },
+          );
           toast.fire({
             icon: 'success',
             title: `Some beneficiaries were discarded due to error in Xcapit Wallet Creation.${phoneNumber}`,
@@ -733,4 +752,18 @@ export const useExportBeneficiariesFailedBankAccount = (
     },
     queryClient,
   );
+};
+
+export const getBeneficiariesGroupByUuids = (
+  uuids: string[],
+  queryValidation: boolean,
+) => {
+  const query = useQuery({
+    queryKey: ['beneficiariesGroupDetailsByUuids', uuids],
+    queryFn: () => beneficiariesGroupByUuids(uuids),
+    enabled: queryValidation,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  return query;
 };

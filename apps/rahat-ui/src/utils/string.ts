@@ -47,3 +47,7 @@ export const formatNumber = (
 
   return new Intl.NumberFormat(locales[style || 'indian']).format(num);
 };
+
+export function normalizeTransportName(transportName: string): string {
+  return transportName.toUpperCase();
+}

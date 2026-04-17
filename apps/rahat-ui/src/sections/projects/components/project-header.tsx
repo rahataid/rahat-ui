@@ -46,20 +46,28 @@ export function ProjectNav({
   }));
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const handleLogout = () => {
+    const pinnedPhases = localStorage.getItem('aa_pinned_phases');
+    const triggerPinPhase = localStorage.getItem('TRIGGER_PIN_PHASE');
     clearUser();
     clearAuth();
+    if (pinnedPhases) localStorage.setItem('aa_pinned_phases', pinnedPhases);
+    if (triggerPinPhase)
+      localStorage.setItem('TRIGGER_PIN_PHASE', triggerPinPhase);
+    if (pinnedPhases) {
+      localStorage.setItem('aa_pinned_phases', pinnedPhases);
+    }
     toast.success('Logged out successfully.');
     // setTimeout(() => window.location.reload(), 1000);
     setTimeout(() => window.location.replace('/auth/login'), 1000);
   };
 
   return (
-    <div className="h-14 flex justify-between pl-2 pr-6 py-2 z-50 bg-card border-b">
+    <div className="sticky top-0 z-50 h-14 w-full flex items-center pl-2 pr-6 py-2 bg-card border-b">
       <div className="flex items-center space-x-4">
         <SidebarTrigger />
         {component}
       </div>
-      <div className="flex gap-4 items-center">
+      <div className="fixed top-2 right-6 z-50 flex gap-4 items-center">
         <ConnectWallet />
         {showNotification && <NotificationButton unreadCount={0} />}
         <DropdownMenu>

@@ -1,12 +1,28 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import * as XLSX from 'xlsx';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   ScrollArea,
@@ -22,10 +38,22 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/table';
 
 import { ClientSidePagination, HeaderWithBack } from 'apps/rahat-ui/src/common';
-import { CloudDownload, Repeat2, Share } from 'lucide-react';
+import {
+  CloudDownload,
+  FileWarning,
+  Info,
+  Repeat2,
+  Share,
+  Users,
+  X,
+} from 'lucide-react';
 import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
-import { useUploadStakeholders } from '@rahat-ui/query';
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  useUploadStakeholders,
+  useValidateStakeholders,
+  useStakeholdersGroups,
+} from '@rahat-ui/query';
 import {
   ColumnDef,
   flexRender,
@@ -39,155 +67,280 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import {
+  isEmailHeader,
+  isPhoneHeader,
+  isValidExtension,
+  normalizePhone,
+} from './stakeholders.helpers';
+import {
+  ALLOWED_EXTENSIONS,
+  CELL_STYLES,
+  FileExtension,
+  REQUIRED_HEADERS,
+} from './stakeholders.consts';
+interface ValidationError {
+  phone?: string;
+  email?: string;
+  field: string;
+  message: string;
+}
 
-const DOWNLOAD_FILE_URL = '/files/stakeholder-sample.xlsx';
-const requiredHeaders = [
-  'stakeholders name',
-  'phone number',
-  'designation',
-  'organization',
-  'district',
-  'municipality',
-];
+interface ValidationResponse {
+  newStakeholders: string[];
+  updateStakeholders: string[];
+  cleanedPayloads: unknown[];
+  isValid: boolean;
+  errors: ValidationError[];
+}
+
 export default function ImportStakeholder() {
+  // Constants goes here
+  const DOWNLOAD_FILE_URL = '/files/stakeholder-sample.xlsx';
+  const VALIDATION_COOLDOWN_SECONDS = 5;
+  const MAX_STAKEHOLDERS_PER_UPLOAD = 100;
+  const DEFAULT_PAGE_SIZE = 10;
+
+  // Router goes here
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
-  const [data, setData] = useState<any[][]>([]);
-  const [fileName, setFileName] = useState<string>('No File Choosen');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Query goes here
+  const queryClient = useQueryClient();
   const uploadStakeholders = useUploadStakeholders();
-  const [duplicatePhonesFromServer, setDuplicatePhonesFromServer] = useState<
-    Set<string>
-  >(new Set());
-  const [duplicateEmailFromServer, setDuplicateEmailFromServer] = useState<
-    Set<string>
-  >(new Set());
-  const [duplicatePhonesOnUpload, setDuplicatePhonesOnUpload] = useState<
-    Set<string>
-  >(new Set());
-  const [duplicateEmails, setDuplicateEmails] = useState<Set<string>>(
+  const validateStakeholders = useValidateStakeholders();
+  const { data: stakeholdersGroupsData } = useStakeholdersGroups(id, {
+    sort: 'createdAt',
+    order: 'desc',
+  });
+
+  // File State goes here
+  const [data, setData] = useState<string[][]>([]);
+  const [fileName, setFileName] = useState('No File Choosen');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // Modal State goes here
+  const showGroupModal = useBoolean();
+  const showGroupForm = useBoolean();
+  const [groupName, setGroupName] = useState('');
+  const [groupError, setGroupError] = useState('');
+
+  // Validation State goes here
+  const [isValidating, setIsValidating] = useState(false);
+  const [validationCooldown, setValidationCooldown] = useState(0);
+  const [validationResponse, setValidationResponse] =
+    useState<ValidationResponse | null>(null);
+
+  // Frontend validation states goes here
+  const [newStakeholderPhones, setNewStakeholderPhones] = useState<Set<string>>(
     new Set(),
   );
-  const [invalidPhoneStrings, setInvalidPhoneStrings] = useState<Set<string>>(
-    new Set(),
+  const [updateStakeholderPhones, setUpdateStakeholderPhones] = useState<
+    Set<string>
+  >(new Set());
+  const [errorPhones, setErrorPhones] = useState<Set<string>>(new Set());
+  const [errorEmails, setErrorEmails] = useState<Set<string>>(new Set());
+  const [errorMap, setErrorMap] = useState<Map<string, string>>(new Map());
+  const [duplicatePhonesInFile, setDuplicatePhonesInFile] = useState<
+    Set<string>
+  >(new Set());
+  const [duplicateEmailsInFile, setDuplicateEmailsInFile] = useState<
+    Set<string>
+  >(new Set());
+
+  // Derived functions goes here
+  const hasValidationErrors =
+    validationResponse !== null && !validationResponse.isValid;
+  const isValidated = validationResponse !== null && validationResponse.isValid;
+  const hasFrontendErrors =
+    duplicatePhonesInFile.size > 0 || duplicateEmailsInFile.size > 0;
+  const tableData = useMemo(() => data.slice(1), [data]);
+  const headers = useMemo(() => data[0] ?? [], [data]);
+
+  // Effect goes here
+  useEffect(() => {
+    if (validationCooldown <= 0) return;
+
+    const timer = setTimeout(() => {
+      setValidationCooldown((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [validationCooldown]);
+
+  // Handlers goes here
+  const getRowPhone = useCallback(
+    (row: string[]): string => {
+      const phoneIndex = headers.findIndex((h) =>
+        isPhoneHeader(h?.toString() ?? ''),
+      );
+      if (phoneIndex === -1) return '';
+      return normalizePhone(row[phoneIndex]?.toString().trim() ?? '');
+    },
+    [headers],
   );
 
-  const hasEmptyRequiredFields = () => {
+  const hasEmptyRequiredFields = useCallback((): boolean => {
     if (data.length < 2) return true;
 
-    const headers = data[0].map((h: any) => h?.toString().toLowerCase().trim());
-    console.log(headers);
+    const normalizedHeaders = headers.map((h) =>
+      h?.toString().toLowerCase().trim(),
+    );
 
     return data.slice(1).some((row) =>
-      requiredHeaders
-        .filter((h) => h !== 'email')
-        .some((header) => {
-          const index = headers.indexOf(header);
-          if (index === -1) return true; // required column missing
-          const cell = row[index];
-          return !cell || cell.toString().trim() === '';
-        }),
+      REQUIRED_HEADERS.some((header) => {
+        const index = normalizedHeaders.indexOf(header);
+        if (index === -1) return true;
+        const cell = row[index];
+        return !cell || cell.toString().trim() === '';
+      }),
     );
-  };
+  }, [data, headers]);
 
-  const columns = React.useMemo<ColumnDef<any>[]>(
-    () =>
-      data[0]?.map((header: any, index: number) => ({
-        accessorFn: (row: any) => row[index],
-        id: `col-${index}`,
-        header: () => header || `Column ${index + 1}`,
-        cell: ({ getValue, column }) => {
-          const value = getValue();
-          const colIndex = parseInt(column.id.replace('col-', ''), 10);
-          const headerText =
-            data[0]?.[colIndex]?.toString().toLowerCase() ?? '';
+  const resetValidationState = useCallback(() => {
+    setValidationResponse(null);
+    setNewStakeholderPhones(new Set());
+    setUpdateStakeholderPhones(new Set());
+    setErrorPhones(new Set());
+    setErrorEmails(new Set());
+    setErrorMap(new Map());
+    setDuplicatePhonesInFile(new Set());
+    setDuplicateEmailsInFile(new Set());
+  }, []);
 
-          const valueStr = value?.toString().trim();
-          const isPhone = /phone/.test(headerText);
-          const isEmail = /email/.test(headerText);
+  // Table helpers goes here
+  const getCellHighlight = useCallback(
+    (params: {
+      isMissing: boolean;
+      isDuplicatePhoneInFile: boolean;
+      isDuplicateEmailInFile: boolean;
+      isErrorPhone: boolean;
+      isErrorEmail: boolean;
+      isUpdateStakeholder: boolean;
+      isNewStakeholder: boolean;
+      errorMessage: string;
+    }): { className: string; tooltipMessage: string } => {
+      const {
+        isMissing,
+        isDuplicatePhoneInFile,
+        isDuplicateEmailInFile,
+        isErrorPhone,
+        isErrorEmail,
+        isUpdateStakeholder,
+        isNewStakeholder,
+        errorMessage,
+      } = params;
 
-          const isMissing =
-            (requiredHeaders.includes(headerText) && valueStr === '') ||
-            valueStr === null ||
-            valueStr === undefined;
-
-          const isInvalidPhone =
-            isPhone && valueStr && invalidPhoneStrings.has(valueStr);
-
-          const isDuplicatePhone =
-            isPhone && valueStr && duplicatePhonesOnUpload.has(valueStr);
-
-          const isDuplicatePhoneFromServer =
-            duplicatePhonesFromServer &&
-            valueStr &&
-            duplicatePhonesFromServer.has(valueStr);
-          const isDuplicateEmailsFromServer =
-            duplicateEmailFromServer &&
-            valueStr &&
-            duplicateEmailFromServer.has(valueStr);
-          const isDuplicateEmail =
-            isEmail && valueStr && duplicateEmails.has(valueStr);
-          return (
-            <TableCell
-              className={`
-    truncate max-w-[150px] cursor-pointer
-    ${
-      isMissing
-        ? 'bg-blue-100 text-white'
-        : isInvalidPhone
-        ? 'bg-blue-100 text-white'
-        : isDuplicatePhone
-        ? 'bg-red-100 text-red-500'
-        : isDuplicatePhoneFromServer
-        ? 'bg-red-100 text-red-500'
-        : isDuplicateEmail
-        ? 'bg-yellow-100 text-yellow-600'
-        : isDuplicateEmailsFromServer
-        ? 'bg-yellow-100 text-yellow-600'
-        : ''
-    }
-  `}
-            >
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className=" inline-block w-full min-h-[1.5rem]">
-                      {value?.toString()?.trim() || '--'}
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent side="top">
-                    {isMissing
-                      ? 'Required field is missing'
-                      : isInvalidPhone
-                      ? 'Invalid phone format as consist of a string'
-                      : isDuplicatePhone
-                      ? 'Phone is duplicated within the file'
-                      : isDuplicatePhoneFromServer
-                      ? 'Phone already exists in the database'
-                      : isDuplicateEmail
-                      ? 'Email is duplicated within the file'
-                      : isDuplicateEmailsFromServer
-                      ? 'Email already exists in the database'
-                      : ''}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </TableCell>
-          );
-        },
-      })) ?? [],
-    [
-      data,
-      duplicateEmailFromServer,
-      duplicateEmails,
-      duplicatePhonesFromServer,
-      duplicatePhonesOnUpload,
-      invalidPhoneStrings,
-    ],
+      if (isMissing) {
+        return {
+          className: CELL_STYLES.missing,
+          tooltipMessage: 'Required field is missing',
+        };
+      }
+      if (isDuplicatePhoneInFile) {
+        return {
+          className: CELL_STYLES.duplicatePhone,
+          tooltipMessage: 'Duplicate phone number in file',
+        };
+      }
+      if (isDuplicateEmailInFile) {
+        return {
+          className: CELL_STYLES.duplicateEmail,
+          tooltipMessage: 'Duplicate email in file',
+        };
+      }
+      if (isErrorPhone || isErrorEmail) {
+        return {
+          className: CELL_STYLES.error,
+          tooltipMessage: errorMessage || 'Validation error',
+        };
+      }
+      if (isUpdateStakeholder) {
+        return {
+          className: CELL_STYLES.update,
+          tooltipMessage:
+            'This data will overwrite existing stakeholder record',
+        };
+      }
+      if (isNewStakeholder) {
+        return {
+          className: CELL_STYLES.new,
+          tooltipMessage: 'New stakeholder',
+        };
+      }
+      return { className: '', tooltipMessage: '' };
+    },
+    [],
   );
 
-  const tableData = React.useMemo(() => data.slice(1), [data]);
+  // Table goes here
+  const columns = useMemo<ColumnDef<string[]>[]>(() => {
+    if (!headers.length) return [];
+
+    return headers.map((header, index) => ({
+      accessorFn: (row: string[]) => row[index],
+      id: `col-${index}`,
+      header: () => header || `Column ${index + 1}`,
+      cell: ({ getValue, row }) => {
+        const value = getValue() as string;
+        const headerText = header?.toString().toLowerCase() ?? '';
+        const valueStr = value?.toString().trim() ?? '';
+
+        const isPhone = isPhoneHeader(headerText);
+        const isEmail = isEmailHeader(headerText);
+        const normalizedPhone = isPhone ? normalizePhone(valueStr) : '';
+        const rowPhone = getRowPhone(row.original);
+
+        const { className, tooltipMessage } = getCellHighlight({
+          isMissing:
+            REQUIRED_HEADERS.includes(
+              headerText as (typeof REQUIRED_HEADERS)[number],
+            ) && !valueStr,
+          isDuplicatePhoneInFile:
+            isPhone && duplicatePhonesInFile.has(valueStr),
+          isDuplicateEmailInFile:
+            isEmail && duplicateEmailsInFile.has(valueStr.toLowerCase()),
+          isErrorPhone: isPhone && errorPhones.has(normalizedPhone),
+          isErrorEmail: isEmail && errorEmails.has(valueStr),
+          isUpdateStakeholder: updateStakeholderPhones.has(rowPhone),
+          isNewStakeholder: newStakeholderPhones.has(rowPhone),
+          errorMessage:
+            errorMap.get(normalizedPhone) || errorMap.get(valueStr) || '',
+        });
+
+        return (
+          <TableCell
+            className={`truncate max-w-[150px] cursor-pointer ${className}`}
+          >
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-block w-full min-h-[1.5rem]">
+                    {valueStr || '--'}
+                  </span>
+                </TooltipTrigger>
+                {tooltipMessage && (
+                  <TooltipContent side="top">{tooltipMessage}</TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
+          </TableCell>
+        );
+      },
+    }));
+  }, [
+    headers,
+    getRowPhone,
+    getCellHighlight,
+    newStakeholderPhones,
+    updateStakeholderPhones,
+    errorPhones,
+    errorEmails,
+    errorMap,
+    duplicatePhonesInFile,
+    duplicateEmailsInFile,
+  ]);
 
   const table = useReactTable({
     data: tableData,
@@ -195,73 +348,75 @@ export default function ImportStakeholder() {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
-      pagination: {
-        pageSize: 10,
-        pageIndex: 0,
-      },
+      pagination: { pageSize: DEFAULT_PAGE_SIZE, pageIndex: 0 },
     },
   });
 
-  const allowedExtensions: { [key: string]: string } = {
-    xlsx: 'excel',
-    xls: 'excel',
-    json: 'json',
-    csv: 'csv',
-  };
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    setDuplicatePhonesFromServer(new Set());
-    setData([]);
-    setFileName(file?.name || 'No File Choosen');
-    setSelectedFile(file || null);
+  // Handlers goes here
+  const handleFileUpload = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      resetValidationState();
+      setData([]);
+      setFileName(file?.name ?? 'No File Choosen');
+      setSelectedFile(file ?? null);
 
-    setFileName(file?.name as string);
-    const extension = file?.name.split('.').pop()?.toLowerCase();
-    if (
-      !extension ||
-      !Object.prototype.hasOwnProperty.call(allowedExtensions, extension)
-    ) {
-      return toast.error(
-        'Unsupported file format. Please upload an Excel, JSON, or CSV file.',
-      );
-    }
-    if (file) {
+      if (!file) return;
+
+      const extension = file.name.split('.').pop()?.toLowerCase();
+      if (!extension || !isValidExtension(extension)) {
+        toast.error(
+          'Unsupported file format. Please upload an Excel, JSON, or CSV file.',
+        );
+        return;
+      }
+
       const reader = new FileReader();
-
       reader.onload = (evt) => {
         const bstr = evt.target?.result;
         const wb = XLSX.read(bstr, { type: 'binary' });
-        const wsname = wb.SheetNames[0];
-        const ws = wb.Sheets[wsname];
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rawData = XLSX.utils.sheet_to_json(ws, {
+          header: 1,
+        }) as string[][];
 
-        const rawData = XLSX.utils.sheet_to_json(ws, { header: 1 }) as any[][];
-
-        // Filter out completely empty rows
         const filteredData = rawData.filter((row) =>
           row.some(
             (cell) => cell !== null && cell !== undefined && cell !== '',
           ),
         );
 
-        const columnCount = filteredData[0]?.length || 0;
+        if (filteredData.length === 0) {
+          toast.error('No data found in the file');
+          return;
+        }
 
-        const header = filteredData[0];
-
-        // Normalize header names
-        const normalizedHeaders = header.map((h) =>
+        const fileHeaders = filteredData[0];
+        const columnCount = fileHeaders.length;
+        const normalizedHeaders = fileHeaders.map((h) =>
           h?.toString().toLowerCase().trim(),
         );
 
-        const phoneIndex = header.findIndex((h) =>
-          h?.toString().toLowerCase().includes('phone'),
+        // Validate required headers
+        for (const required of REQUIRED_HEADERS) {
+          if (!normalizedHeaders.includes(required)) {
+            toast.error(
+              `File is missing the required field: "${required}". Download the sample file for reference.`,
+              { autoClose: 5000 },
+            );
+            return;
+          }
+        }
+
+        const phoneIndex = fileHeaders.findIndex((h) =>
+          isPhoneHeader(h?.toString() ?? ''),
         );
-        const emailIndex = header.findIndex((h) =>
-          h?.toString().toLowerCase().includes('email'),
+        const emailIndex = fileHeaders.findIndex((h) =>
+          isEmailHeader(h?.toString() ?? ''),
         );
 
         const seenPhones = new Set<string>();
         const duplicatePhones = new Set<string>();
-        const invalidPhoneStrings = new Set<string>();
         const seenEmails = new Set<string>();
         const duplicateEmails = new Set<string>();
 
@@ -271,181 +426,416 @@ export default function ImportStakeholder() {
 
           if (idx === 0) return newRow;
 
-          // Phone validation
+          // Check for duplicate phones
           if (phoneIndex !== -1) {
             const phone = newRow[phoneIndex]?.toString().trim() ?? '';
-
-            if (/[A-Za-z]/.test(phone) || phone.length !== 10) {
-              invalidPhoneStrings.add(phone);
+            if (phone) {
+              if (seenPhones.has(phone)) duplicatePhones.add(phone);
+              seenPhones.add(phone);
             }
-
-            if (seenPhones.has(phone)) duplicatePhones.add(phone);
-            seenPhones.add(phone);
-
-            newRow[phoneIndex] = phone;
           }
 
-          // Email validation
+          // Check for duplicate emails
           if (emailIndex !== -1) {
-            const email = newRow[emailIndex]?.toString().trim() ?? '';
-            if (seenEmails.has(email)) duplicateEmails.add(email);
-            seenEmails.add(email);
+            const email =
+              newRow[emailIndex]?.toString().trim().toLowerCase() ?? '';
+            if (email) {
+              if (seenEmails.has(email)) duplicateEmails.add(email);
+              seenEmails.add(email);
+            }
           }
 
           return newRow;
         });
 
-        // Check for missing required fields
-        for (const required of requiredHeaders) {
-          if (!normalizedHeaders.includes(required)) {
-            toast.error(
-              `File is missing the required field: "${required}". Download the sample file for reference.`,
-              {
-                autoClose: 5000,
-              },
-            );
-            return;
-          }
-        }
-
+        // Validate row count
         if (normalizedData.length === 1) {
-          return toast.error('No Stakeholder found in excel file');
+          toast.error('No stakeholders found in the file');
+          return;
         }
-        if (normalizedData.length > 100)
-          return toast.error(
-            'Maximum 100 stakeholders can be uploaded at a time',
+        if (normalizedData.length > MAX_STAKEHOLDERS_PER_UPLOAD + 1) {
+          toast.error(
+            `Maximum ${MAX_STAKEHOLDERS_PER_UPLOAD} stakeholders can be uploaded at a time`,
           );
+          return;
+        }
 
-        setDuplicatePhonesOnUpload(duplicatePhones);
-        setDuplicateEmails(duplicateEmails);
-        setInvalidPhoneStrings(invalidPhoneStrings);
-
+        setDuplicatePhonesInFile(duplicatePhones);
+        setDuplicateEmailsInFile(duplicateEmails);
         setData(normalizedData);
+
+        if (duplicatePhones.size > 0) {
+          toast.warn(
+            `${duplicatePhones.size} duplicate phone number(s) found in file`,
+            { autoClose: 5000 },
+          );
+        }
+        if (duplicateEmails.size > 0) {
+          toast.warn(
+            `${duplicateEmails.size} duplicate email(s) found in file`,
+            { autoClose: 5000 },
+          );
+        }
       };
 
       reader.readAsBinaryString(file);
-      setSelectedFile(file);
+    },
+    [resetValidationState],
+  );
+
+  const handleValidate = useCallback(async () => {
+    if (!selectedFile) {
+      toast.error('Please select a file to upload');
+      return;
     }
-  };
 
-  const handleUpload = async () => {
-    if (!selectedFile) return toast.error('Please select a file to upload');
+    if (hasEmptyRequiredFields()) {
+      toast.error('Fill all required fields first');
+      return;
+    }
 
-    // Determine doctype based on file extension
-    const extension = selectedFile.name.split('.').pop()?.toLowerCase();
-    if (
-      !extension ||
-      !Object.prototype.hasOwnProperty.call(allowedExtensions, extension)
-    ) {
-      return toast.error(
-        'Unsupported file format. Please upload an Excel, JSON, or CSV file.',
+    if (hasFrontendErrors) {
+      toast.error(
+        'Fix the duplicate phone/email errors highlighted in the sheet',
       );
+      return;
     }
 
-    const doctype = allowedExtensions[extension];
+    const extension = selectedFile.name.split('.').pop()?.toLowerCase();
+    if (!extension || !isValidExtension(extension)) {
+      toast.error('Unsupported file format');
+      return;
+    }
 
+    setIsValidating(true);
     try {
-      await uploadStakeholders.mutateAsync({
+      const response = await validateStakeholders.mutateAsync({
         selectedFile,
-        doctype,
+        doctype: ALLOWED_EXTENSIONS[extension],
         projectId: id,
       });
 
-      // Clear duplicates if successful
-      setDuplicatePhonesFromServer(new Set());
+      const validationData = response?.data as ValidationResponse;
+      setValidationResponse(validationData);
 
-      router.push(`/projects/aa/${id}/stakeholders?tab=stakeholders`);
-    } catch (error: any) {
-      const message: string =
-        error?.response?.data?.message || error?.message || '';
+      const newPhones = new Set(validationData.newStakeholders ?? []);
+      const updatePhones = new Set(validationData.updateStakeholders ?? []);
+      const errPhones = new Set<string>();
+      const errEmails = new Set<string>();
+      const errMap = new Map<string, string>();
 
-      const phoneMatch = message.match(/Phone\(s\):\s*([^|]+)/i);
-      if (phoneMatch) {
-        const phoneList = phoneMatch[1]
-          .split(',')
-          .map((p) => p.trim().replace(/^\+977/, ''))
-          .filter(Boolean);
-        setDuplicatePhonesFromServer(new Set(phoneList));
+      validationData.errors?.forEach((err) => {
+        if (err.field === 'phone' && err.phone) {
+          errPhones.add(err.phone);
+          errMap.set(err.phone, err.message);
+        }
+        if (err.field === 'email' && err.email) {
+          errEmails.add(err.email);
+          errMap.set(err.email, err.message);
+        }
+      });
+
+      setNewStakeholderPhones(newPhones);
+      setUpdateStakeholderPhones(updatePhones);
+      setErrorPhones(errPhones);
+      setErrorEmails(errEmails);
+      setErrorMap(errMap);
+
+      if (validationData.errors?.length > 0) {
+        toast.error(
+          `${validationData.errors.length} validation error(s) found. Fix the errors highlighted in the sheet.`,
+        );
+        setValidationCooldown(VALIDATION_COOLDOWN_SECONDS);
+      } else {
+        toast.success(
+          'Validation successful! You can now import the stakeholders.',
+        );
       }
-
-      const emailMatch = message.match(/Email\(s\):\s*(.+)/i);
-      if (emailMatch) {
-        const emailList = emailMatch[1]
-          .split(',')
-          .map((e) => e.trim())
-          .filter(Boolean);
-        setDuplicateEmailFromServer(new Set(emailList));
-      }
+    } catch (error: unknown) {
+      const errMsg =
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message ?? 'Validation failed';
+      toast.error(errMsg);
+      setValidationCooldown(VALIDATION_COOLDOWN_SECONDS);
+    } finally {
+      setIsValidating(false);
     }
-  };
+  }, [
+    selectedFile,
+    hasEmptyRequiredFields,
+    hasFrontendErrors,
+    validateStakeholders,
+    id,
+  ]);
 
-  const handleSampleDownload = (e) => {
+  const handleUpload = useCallback(() => {
+    if (!selectedFile) {
+      toast.error('Please select a file to upload');
+      return;
+    }
+
+    if (hasValidationErrors) {
+      toast.error('Fix the errors highlighted in the sheet before importing');
+      return;
+    }
+
+    const extension = selectedFile.name.split('.').pop()?.toLowerCase();
+    if (!extension || !isValidExtension(extension)) {
+      toast.error(
+        'Unsupported file format. Please upload an Excel, JSON, or CSV file.',
+      );
+      return;
+    }
+
+    showGroupModal.onTrue();
+  }, [selectedFile, hasValidationErrors, showGroupModal]);
+
+  // Actual upload handler for uploading after validation is complete along with group name
+  const handleActualUpload = useCallback(
+    async (isGroupCreate: boolean, groupNameValue?: string) => {
+      if (!selectedFile) return;
+
+      const extension = selectedFile.name
+        .split('.')
+        .pop()
+        ?.toLowerCase() as FileExtension;
+      const doctype = ALLOWED_EXTENSIONS[extension];
+
+      try {
+        const response = await uploadStakeholders.mutateAsync({
+          selectedFile,
+          doctype,
+          projectId: id,
+          isGroupCreate,
+          groupName: groupNameValue,
+        });
+
+        const successCount = response?.data?.successCount ?? 0;
+
+        const groupMsg =
+          isGroupCreate && groupNameValue
+            ? ` Group "${groupNameValue}" created.`
+            : '';
+        toast.success(
+          `${successCount == 0 ? '' : successCount} ${
+            successCount <= 1 ? 'Stakeholder' : 'Stakeholders'
+          } imported successfully!${groupMsg}`,
+        );
+
+        resetValidationState();
+        showGroupModal.onFalse();
+        showGroupForm.onFalse();
+        setGroupName('');
+
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['stakeholders'] }),
+          queryClient.invalidateQueries({ queryKey: ['stakeholdersGroups'] }),
+          queryClient.invalidateQueries({ queryKey: ['get_stakeholders'] }),
+        ]);
+
+        const tab =
+          isGroupCreate && groupNameValue
+            ? 'stakeholdersGroup'
+            : 'stakeholders';
+        router.push(`/projects/aa/${id}/stakeholders?tab=${tab}`);
+      } catch (error: unknown) {
+        const errMsg =
+          (error as { response?: { data?: { message?: string } } })?.response
+            ?.data?.message ?? 'Import failed';
+        toast.error(errMsg);
+      }
+    },
+    [
+      selectedFile,
+      uploadStakeholders,
+      id,
+      queryClient,
+      resetValidationState,
+      showGroupModal,
+      showGroupForm,
+      router,
+    ],
+  );
+
+  // Sample download handler
+  const handleSampleDownload = useCallback(() => {
     fetch(DOWNLOAD_FILE_URL)
       .then((response) => response.blob())
       .then((blob) => {
-        const url = window.URL.createObjectURL(new Blob([blob]));
+        const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', 'stakeholder.xlsx');
         document.body.appendChild(link);
         link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
       })
       .catch((error) => {
-        toast.error('Error downloading file!' + error);
+        toast.error(`Error downloading file: ${error}`);
       });
-  };
+  }, []);
 
-  // Empty required fields warning
-  React.useEffect(() => {
-    if (data.length > 1 && hasEmptyRequiredFields()) {
-      toast.error('Fill all required fields first');
+  // Download errors sheet setup goes here
+  const handleDownloadErrors = useCallback(() => {
+    if (!validationResponse?.errors?.length || !data.length) return;
+
+    const phoneIndex = headers.findIndex((h) =>
+      isPhoneHeader(h?.toString() ?? ''),
+    );
+    const emailIndex = headers.findIndex((h) =>
+      isEmailHeader(h?.toString() ?? ''),
+    );
+
+    const errorsByIdentifier = new Map<string, string>();
+    validationResponse.errors.forEach((err) => {
+      if (err.phone) errorsByIdentifier.set(err.phone, err.message);
+      if (err.email) errorsByIdentifier.set(err.email, err.message);
+    });
+
+    const newHeaders = [...headers, 'Remarks'];
+    const rowsWithRemarks = data.slice(1).map((row) => {
+      const phone =
+        phoneIndex !== -1
+          ? normalizePhone(row[phoneIndex]?.toString().trim() ?? '')
+          : '';
+      const email =
+        emailIndex !== -1 ? row[emailIndex]?.toString().trim() ?? '' : '';
+      const remark =
+        errorsByIdentifier.get(phone) || errorsByIdentifier.get(email) || '';
+      return [...row, remark];
+    });
+
+    const wsData = [newHeaders, ...rowsWithRemarks];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Stakeholders');
+    XLSX.writeFile(wb, 'stakeholder-errors.xlsx');
+  }, [validationResponse, data, headers]);
+
+  const handleClear = useCallback(() => {
+    setData([]);
+    setFileName('No File Choosen');
+    setSelectedFile(null);
+    resetValidationState();
+    if (inputRef.current) {
+      inputRef.current.value = '';
     }
-  }, [data]);
+  }, [resetValidationState]);
 
-  // Duplicate phone numbers in uploaded file
-  React.useEffect(() => {
-    if (duplicatePhonesOnUpload.size > 1) {
-      toast.warn(
-        `⚠️ ${duplicatePhonesOnUpload.size} duplicate phone number(s) found in uploaded file. They have been highlighted in red.`,
-        { autoClose: 5000 },
+  const handleGroupImport = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault();
+
+      const trimmedName = groupName.trim();
+      if (!trimmedName) {
+        setGroupError('Group name is required');
+        return;
+      }
+
+      const existingGroups = stakeholdersGroupsData?.data ?? [];
+      const groupExists = existingGroups.some(
+        (group: { name: string }) =>
+          group.name.toLowerCase() === trimmedName.toLowerCase(),
       );
-    }
-  }, [duplicatePhonesOnUpload]);
 
-  // Duplicate emails in uploaded file
-  React.useEffect(() => {
-    if (duplicateEmails.size > 1) {
-      toast.warn(
-        `⚠️ ${duplicateEmails.size} duplicate email address(es) found in uploaded file. They have been highlighted in yellow.`,
-        { autoClose: 5000 },
-      );
-    }
-  }, [duplicateEmails]);
+      if (groupExists) {
+        setGroupError('A group with this name already exists');
+        return;
+      }
 
-  console.log('emails', duplicateEmails);
+      await handleActualUpload(true, trimmedName);
+    },
+    [groupName, stakeholdersGroupsData, handleActualUpload],
+  );
+
+  const validateButtonText = useMemo(() => {
+    if (isValidating) return 'Validating...';
+    if (validationCooldown > 0) return `Validate (${validationCooldown}s)`;
+    return 'Validate';
+  }, [isValidating, validationCooldown]);
+
+  const isValidateDisabled =
+    data.length === 0 || isValidating || validationCooldown > 0;
+  const isImportDisabled = data.length === 0 || uploadStakeholders.isPending;
+
   return (
     <>
       <div className="p-4  h-[calc(100vh-120px)]">
-        <div className="flex justify-between items-center mb-2">
+        <div className="flex justify-between items-start mb-2">
           <HeaderWithBack
             title="Import Stakeholders"
             subtitle="List of all stakeholders you can import"
             path={`/projects/aa/${id}/stakeholders`}
           />
-          <div className="flex mt-4">
-            <Button
-              onClick={handleSampleDownload}
-              type="button"
-              variant="outline"
-            >
-              <CloudDownload size={22} className="mr-1" />
-              Download Sample
-            </Button>
+          <div className="flex flex-col items-end gap-2 mt-4">
+            <div className="flex gap-2">
+              {hasValidationErrors && (
+                <Button
+                  onClick={handleDownloadErrors}
+                  type="button"
+                  variant="outline"
+                >
+                  <FileWarning size={22} className="mr-1" />
+                  Download Errors
+                </Button>
+              )}
+              <Button
+                onClick={handleSampleDownload}
+                type="button"
+                variant="outline"
+              >
+                <CloudDownload size={22} className="mr-1" />
+                Download Sample
+              </Button>
+            </div>
+            {(hasFrontendErrors || validationResponse !== null) &&
+              data.length > 1 && (
+                <div className="flex flex-col gap-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded text-xs text-gray-600">
+                  {hasFrontendErrors && (
+                    <>
+                      {duplicatePhonesInFile.size > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span className="w-2.5 h-2.5 rounded-sm bg-red-200 border border-red-400" />
+                          <span>Duplicate phone number found in file</span>
+                        </div>
+                      )}
+                      {duplicateEmailsInFile.size > 0 && (
+                        <div className="flex items-center gap-2">
+                          <span className="w-2.5 h-2.5 rounded-sm bg-yellow-200 border border-yellow-400" />
+                          <span>Duplicate email found in file</span>
+                        </div>
+                      )}
+                    </>
+                  )}
+                  {hasValidationErrors && (
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-sm bg-red-200 border border-red-400" />
+                      <span>Validation error - invalid or duplicate data</span>
+                    </div>
+                  )}
+                  {validationResponse !== null &&
+                    newStakeholderPhones.size > 0 && (
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-sm bg-green-200 border border-green-400" />
+                        <span>New stakeholder will be created</span>
+                      </div>
+                    )}
+                  {validationResponse !== null &&
+                    updateStakeholderPhones.size > 0 && (
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-sm bg-yellow-200 border border-yellow-400" />
+                        <span>Existing stakeholder will be updated</span>
+                      </div>
+                    )}
+                </div>
+              )}
           </div>
         </div>
 
-        <div className=" p-4 border bg-card rounded-sm">
-          <div className="flex justify-between space-x-2">
+        <div className="p-4 border bg-card rounded-sm">
+          <div className="flex items-center gap-4 w-full">
+            {/* File Input */}
             <div className="relative w-full">
               <Input
                 type="file"
@@ -455,22 +845,22 @@ export default function ImportStakeholder() {
               />
 
               <div
-                className="flex items-center border rounded-md  cursor-pointer w-full"
+                className="flex items-center border rounded-sm cursor-pointer w-full"
                 onClick={() => inputRef.current?.click()}
               >
-                <span className="flex items-center bg-gray-100 text-blue-400 px-4 py-2 font-semibold text-sm hover:bg-gray-200 transition-colors space-x-3">
+                <span className="flex items-center rounded-sm bg-gray-100 text-blue-400 px-3 py-2 font-semibold text-sm hover:bg-gray-200 transition-colors whitespace-nowrap">
                   {selectedFile ? (
                     <>
-                      <Repeat2 size={22} className="px-1" /> Replace
+                      <Repeat2 size={18} className="mr-1" /> Replace
                     </>
                   ) : (
                     <>
-                      <Share size={22} className="px-1" />
+                      <Share size={18} className="mr-1" />
                       Choose File
                     </>
                   )}
                 </span>
-                <span className="px-4 py-2 flex-grow truncate">{fileName}</span>
+                <span className="px-3 py-2 truncate w-full">{fileName}</span>
               </div>
             </div>
           </div>
@@ -479,7 +869,7 @@ export default function ImportStakeholder() {
         <>
           {data.length > 1 && (
             <>
-              <div className="border-2 border-dashed border-black mt-6 mx-auto w-full">
+              <div className="border-2 border-dashed border-black mt-4 mx-auto w-full">
                 <ScrollArea className="h-[calc(100vh-430px)] w-full">
                   <Table className="table-auto w-full">
                     <TableHeader>
@@ -502,20 +892,28 @@ export default function ImportStakeholder() {
                       ))}
                     </TableHeader>
                     <TableBody>
-                      {table.getRowModel().rows.map((row) => (
-                        <TableRow key={row.id}>
-                          {row.getVisibleCells().map((cell) => (
-                            <React.Fragment key={cell.id}>
-                              {
-                                flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext(),
-                                ) as React.ReactNode
-                              }
-                            </React.Fragment>
-                          ))}
-                        </TableRow>
-                      ))}
+                      {table.getRowModel().rows.map((row) => {
+                        const rowPhone = getRowPhone(row.original);
+                        const isUpdateRow =
+                          updateStakeholderPhones.has(rowPhone);
+                        return (
+                          <TableRow
+                            key={row.id}
+                            className={isUpdateRow ? 'bg-yellow-50' : ''}
+                          >
+                            {row.getVisibleCells().map((cell) => (
+                              <React.Fragment key={cell.id}>
+                                {
+                                  flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext(),
+                                  ) as React.ReactNode
+                                }
+                              </React.Fragment>
+                            ))}
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
 
@@ -528,45 +926,191 @@ export default function ImportStakeholder() {
         </>
       </div>
       <div className="flex justify-between items-center py-2 px-4 border-t">
-        <div>
-          {data?.length ? <p>Total Count: {data?.length - 1 ?? 0}</p> : null}
-        </div>
+        <div>{data?.length > 0 && <p>Total Count: {data.length - 1}</p>}</div>
         <div className="flex space-x-2">
           <Button
             type="button"
             className="w-48"
             variant="outline"
-            onClick={() => {
-              setData([]);
-              setFileName('No File Choosen');
-              setSelectedFile(null);
-              setDuplicatePhonesOnUpload(new Set());
-              setDuplicateEmails(new Set());
-              setDuplicatePhonesFromServer(new Set());
-              setInvalidPhoneStrings(new Set());
-
-              if (inputRef.current) {
-                inputRef.current.value = '';
-              }
-            }}
+            onClick={handleClear}
           >
             Clear
           </Button>
 
-          <Button
-            className="w-48 bg-primary hover:ring-2 ring-primary"
-            onClick={handleUpload}
-            disabled={
-              data?.length === 0 ||
-              hasEmptyRequiredFields() ||
-              duplicatePhonesOnUpload.size > 1 ||
-              duplicateEmails.size > 1
-            }
-          >
-            Import
-          </Button>
+          {isValidated ? (
+            <Button
+              className="w-48 bg-primary hover:ring-2 ring-primary"
+              onClick={handleUpload}
+              disabled={isImportDisabled}
+            >
+              {uploadStakeholders.isPending ? 'Importing...' : 'Import'}
+            </Button>
+          ) : (
+            <Button
+              className="w-48 bg-primary hover:ring-2 ring-primary"
+              onClick={handleValidate}
+              disabled={isValidateDisabled}
+            >
+              {validateButtonText}
+            </Button>
+          )}
         </div>
       </div>
+
+      <Dialog
+        open={showGroupModal.value}
+        onOpenChange={(open) => {
+          if (!open && !uploadStakeholders.isPending) {
+            showGroupModal.onFalse();
+            showGroupForm.onFalse();
+            setGroupName('');
+            setGroupError('');
+          }
+        }}
+      >
+        <DialogContent className="rounded-sm max-w-md">
+          {!showGroupForm.value ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-center text-primary">
+                  Create a Group?
+                </DialogTitle>
+                <DialogDescription className="text-center">
+                  Would you like to organize the imported stakeholders into a
+                  group?
+                </DialogDescription>
+              </DialogHeader>
+
+              <p className="text-sm text-black mb-2 font-medium">
+                Choose an option below:
+              </p>
+
+              <div className="space-y-2 mb-2">
+                {/* Create a Group card */}
+                <div className="border hover-bg-blue-50/40 rounded-sm overflow-hidden">
+                  <div className="w-full text-left p-4 transition-colors">
+                    <div className="flex items-start gap-3">
+                      <Users
+                        size={30}
+                        className="px-1 mt-1 text-primary bg-gray-100 rounded-sm"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-gray-800">
+                            Create a Group
+                          </span>
+                          <span className="text-xs px-2 py-0.5 rounded-sm bg-gray-100 font-semibold text-blue-600">
+                            RECOMMENDED
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1">
+                          Name and organize these stakeholders for streamlined
+                          communication and bulk actions.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Skip for Now card */}
+                <div className="border border-gray-200 rounded-sm overflow-hidden">
+                  <div className="w-full text-left p-4 transition-colors">
+                    <div className="flex items-start gap-3">
+                      <X
+                        size={30}
+                        className="px-1 mt-0.5 text-primary rounded-sm bg-gray-100"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-gray-800">
+                            Skip for Now
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1">
+                          Stakeholders are saved individually. You can group
+                          them anytime from the stakeholder list.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  disabled={uploadStakeholders.isPending}
+                  onClick={() => handleActualUpload(false)}
+                >
+                  {uploadStakeholders.isPending ? 'Importing...' : 'Skip'}
+                </Button>
+                <Button
+                  className="flex-1"
+                  disabled={uploadStakeholders.isPending}
+                  onClick={() => showGroupForm.onTrue()}
+                >
+                  Create Group
+                </Button>
+              </div>
+            </>
+          ) : (
+            <form onSubmit={handleGroupImport}>
+              <DialogHeader>
+                <DialogTitle>Create Stakeholder Group</DialogTitle>
+                <DialogDescription>
+                  Enter a name for the group to organize the imported
+                  stakeholders.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="mt-4 mb-4">
+                <label className="block text-sm font-medium mb-2">
+                  Group Name <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="text"
+                  value={groupName}
+                  onChange={(e) => {
+                    setGroupName(e.target.value);
+                    setGroupError('');
+                  }}
+                  placeholder="Enter group name"
+                  className="w-full"
+                  autoFocus
+                  disabled={uploadStakeholders.isPending}
+                />
+                {groupError && (
+                  <p className="text-red-500 text-xs mt-1">{groupError}</p>
+                )}
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1 rounded-sm"
+                  disabled={uploadStakeholders.isPending}
+                  onClick={() => {
+                    showGroupForm.onFalse();
+                    setGroupName('');
+                    setGroupError('');
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  type="submit"
+                  className="flex-1 rounded-sm"
+                  disabled={uploadStakeholders.isPending}
+                >
+                  {uploadStakeholders.isPending
+                    ? 'Importing...'
+                    : 'Import with Group'}
+                </Button>
+              </div>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

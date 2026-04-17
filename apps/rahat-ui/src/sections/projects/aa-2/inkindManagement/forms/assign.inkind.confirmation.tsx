@@ -1,0 +1,129 @@
+'use client';
+
+import { Button } from 'libs/shadcn/src/components/ui/button';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Loader2, UserRound } from 'lucide-react';
+import { useAssignGroupInkind, useGetBeneficiaryGroup } from '@rahat-ui/query';
+import { useParams, useRouter } from 'next/navigation';
+import { UUID } from 'crypto';
+import { truncatedText } from 'apps/community-tool-ui/src/utils';
+import { NoResult } from 'apps/rahat-ui/src/common';
+import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
+
+interface AssignInkindSummary {
+  inkindId: string;
+  groupId: string;
+  inkindName: string;
+  groupName: string;
+  availableStock: number;
+  beneficiaryCount: number;
+}
+
+interface Props {
+  formData: AssignInkindSummary;
+  onSuccess: () => void;
+  tab: string | null;
+}
+
+export default function AssignInkindConfirmation({
+  formData,
+  onSuccess,
+  tab
+}: Props) {
+  const router = useRouter();
+  const { id } = useParams();
+  const projectUUID = id as UUID;
+  const assignGroupInkind = useAssignGroupInkind(projectUUID);
+
+  const group = useGetBeneficiaryGroup(formData.groupId as UUID);
+  const rawData = group?.data;
+  const beneficiaries: any[] =
+    rawData?.data?.groupedBeneficiaries ?? rawData?.groupedBeneficiaries ?? [];
+  const cardData = [
+    { label: 'Inkind Item', value: formData.inkindName },
+    { label: 'Beneficiary Group', value: formData.groupName },
+    { label: 'Available Stock', value: formData.availableStock }
+  ];
+
+  const handleSubmit = async () => {
+    try {
+      await assignGroupInkind.mutateAsync({
+        groupId: formData.groupId,
+        inkindId: formData.inkindId,
+      });
+      
+      onSuccess();
+    } catch {
+      // Error handled by the mutation's onError toast
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-[calc(100vh-220px)] p-2">
+      <div className="flex gap-3 flex-1 min-h-0 mb-3">
+        <div className="w-[60%] p-4 rounded-md bg-gray-50 flex flex-col space-y-4 overflow-y-auto">
+          <p className="font-semibold text-sm mb-1">Assignment Summary</p>
+          {cardData.map((item) => (
+            <div key={item.label}>
+              <p className="text-sm text-muted-foreground">{item.label}</p>
+              <TruncatedCell text={item.value as string} maxLength={30} className='text-lg font-semibold text-primary' />
+            </div>
+          ))}
+        </div>
+
+        <div className="w-[40%] p-4 rounded-md bg-gray-50 flex flex-col min-h-0">
+          <p className="font-semibold text-sm mb-2">
+            Beneficiaries List ({beneficiaries.length})
+          </p>
+          {group.isLoading || group.isFetching ? (
+            <div className="flex items-center justify-center h-24">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : beneficiaries.length === 0 ? (
+            <NoResult message="No beneficiaries found" size="small" />
+          ) : (
+            <div className="flex flex-col divide-y overflow-y-auto flex-1">
+              {beneficiaries.map((i: any) => (
+                <div
+                  key={i.Beneficiary?.walletAddress}
+                  className="flex items-center gap-2 py-1.5 shrink-0"
+                >
+                  <UserRound className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <p className="text-sm font-medium">
+                    {truncatedText(i.Beneficiary?.walletAddress ?? '', 10)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="flex justify-end space-x-2 pt-3 border-t">
+        <Button
+          type="button"
+          variant="secondary"
+          className='px-10 rounded-sm'
+          onClick={() => router.push(`/projects/aa/${id}/inkind-management?tab=${tab}`)}
+          disabled={assignGroupInkind.isPending}
+        >
+          Cancel
+        </Button>
+        <Button
+          className="px-10 rounded-sm"
+          onClick={handleSubmit}
+          disabled={assignGroupInkind.isPending}
+        >
+          {assignGroupInkind.isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Assigning...
+            </>
+          ) : (
+            'Assign Inkind'
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+}

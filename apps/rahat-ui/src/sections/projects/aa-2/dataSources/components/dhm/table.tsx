@@ -8,8 +8,13 @@ type IProps = {
 };
 
 export default function WaterLevelTable({ tableData, columns }: IProps) {
+  // Reverse data to show latest first (assuming data is sorted oldest to newest)
+  const reversedData = React.useMemo(() => {
+    return [...(tableData || [])].reverse();
+  }, [tableData]);
+
   const table = useReactTable({
-    data: tableData || [],
+    data: reversedData,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });

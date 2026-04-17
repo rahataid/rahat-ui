@@ -13,6 +13,7 @@ export const useListAllTransports = () => {
   const query = useQuery({
     queryFn: () => newCommunicationService.transport.list(),
     queryKey: [TAGS.NEW_COMMS.LIST_TRANSPORTS],
+    staleTime: 6 * 60 * 60 * 1000, // 6 hours
   });
 
   return query?.data?.data;
@@ -26,6 +27,7 @@ export const useListSessionLogs = (sessionId: string, payload: any) => {
       newCommunicationService.session.listBroadcasts(sessionId, payload),
 
     queryKey: ['TAGS.NEW_COMMS.LIST_TRANSPORTS', payload],
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
   return query;
 };
@@ -71,6 +73,7 @@ export const useSessionBroadCastCount = (sessions: string[]) => {
     queryFn: () => newCommunicationService.session.broadcastCount({ sessions }),
 
     queryKey: [TAGS.NEW_COMMS.LIST_TRANSPORTS, sessions],
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
   return query;
 };

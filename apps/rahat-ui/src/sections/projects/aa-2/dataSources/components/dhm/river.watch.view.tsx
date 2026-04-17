@@ -15,6 +15,7 @@ import { format } from 'date-fns';
 import { MapPin, RadioTower, Skull, TriangleAlert } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
+import { roundValue } from '../aws/utils/color.utils';
 
 export default function RiverWatchView() {
   const router = useRouter();
@@ -119,12 +120,12 @@ export default function RiverWatchView() {
           </div>
         </div>
         <div
-          className={`p-4 rounded-sm border shadow text-center w-64 ${renderCardColor(
+          className={`p-4 rounded-sm border shadow text-center w-80 ${renderCardColor(
             primaryRiverWatchInfo?.status,
           )}`}
         >
-          <p className="text-primary font-semibold text-3xl/10">
-            {primaryRiverWatchInfo?.waterLevel?.value}
+          <p className="text-primary w-full font-semibold text-3xl/10">
+            {roundValue(primaryRiverWatchInfo?.waterLevel?.value)}
           </p>
           <p className="text-sm/6 font-medium">Water Level</p>
           <p className="text-gray-500 text-sm/6">

@@ -37,6 +37,7 @@ import {
   buildSubtypeOptions,
   SEP,
   SourceConfig,
+  REVERSE_SOURCE_MAPPING,
 } from './utils';
 import {
   Alert,
@@ -192,12 +193,10 @@ export default function AddTriggerView() {
     const automatedData = {
       ...trigger,
       isMandatory: !trigger?.isMandatory,
-      source:
-        triggerSource === 'water_level_m'
-          ? 'dhm:waterlevel'
-          : triggerSource === 'rainfall_mm'
-          ? 'dhm:rainfall'
-          : trigger?.source?.toLowerCase(),
+      source: triggerSource
+        ? REVERSE_SOURCE_MAPPING[triggerSource] ||
+          trigger?.source?.toLowerCase()
+        : trigger?.source?.toLowerCase(),
     };
     const manualData = {
       ...trigger,
@@ -251,6 +250,9 @@ export default function AddTriggerView() {
     rainfall_mm: 'DHM Rainfall',
     prob_flood: 'GLOFAS Flood Probability',
     discharge_m3s: 'GFH Discharge',
+    // for heatwave
+    prob_humidity: 'DHM Humidity',
+    temperature_c: 'DHM Temperature',
   };
 
   return (
@@ -293,6 +295,7 @@ export default function AddTriggerView() {
                   sourceOptions={sourceOptions}
                   subTypeOptions={subtypeOptionsBySource}
                   stationHeading={stationHeading}
+                  projectType={projectInfo?.value?.project_type}
                 />
               </TabsContent>
               <TabsContent value="manual">
@@ -326,6 +329,9 @@ export default function AddTriggerView() {
                 handleAddAnother={handleAddAnotherTrigger}
                 handleSave={handleCreateTriggers}
                 isSubmitting={addTriggers?.isPending}
+                onCancel={() => {
+                  setOpen(false);
+                }}
               />
             </div>
           </div>

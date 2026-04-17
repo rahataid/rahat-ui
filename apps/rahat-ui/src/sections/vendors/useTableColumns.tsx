@@ -7,6 +7,7 @@ import VendorsDetailSplitView from './vendors.detail.split.view';
 import { IVendor } from './vendors.list.table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import TooltipComponent from '../../components/tooltip';
+import { useState } from 'react';
 
 export const useTableColumns = (handleAssignClick: any) => {
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
@@ -48,12 +49,13 @@ export const useTableColumns = (handleAssignClick: any) => {
       header: 'Project Name',
       cell: ({ row }) => {
         const projects = row.getValue('projectName');
+        const [showAll, setShowAll] = useState(false);
 
         if (!Array.isArray(projects) || projects.length === 0) {
           return <span className="text-gray-400 text-sm">NA</span>;
         }
 
-        const visibleProjects = projects.slice(0, 2);
+        const visibleProjects = showAll ? projects : projects.slice(0, 2);
         const remainingCount = projects.length - 2;
 
         return (
@@ -61,14 +63,17 @@ export const useTableColumns = (handleAssignClick: any) => {
             {visibleProjects.map((item, index) => (
               <Badge
                 key={item?.Project?.id || index}
-                className="text-xs px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-full font-medium"
+                className="text-xs px-2 py-0.5 bg-blue-50 text-blue-500 border border-blue-200 rounded-full font-medium"
               >
                 {item?.Project?.name || 'NA'}
               </Badge>
             ))}
             {remainingCount > 0 && (
-              <Badge className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 border border-gray-200 rounded-full font-medium">
-                +{remainingCount} more
+              <Badge
+                onClick={() => setShowAll((prev) => !prev)}
+                className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 border border-gray-200 rounded-full font-medium cursor-pointer hover:bg-gray-200 transition-colors"
+              >
+                {showAll ? 'Show less' : `+${remainingCount} more`}
               </Badge>
             )}
           </div>

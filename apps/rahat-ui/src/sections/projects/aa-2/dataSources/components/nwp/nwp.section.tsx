@@ -122,7 +122,7 @@ export function NWPSection() {
   }, [selectedLayerId]);
 
   return (
-    <div className="h-screen w-full flex flex-col">
+    <div className="h-[calc(100vh-220px)] w-full flex flex-col">
       {/* Main Content */}
       <div className="flex-1 relative overflow-hidden">
         {/* Map Container */}
@@ -140,7 +140,7 @@ export function NWPSection() {
         {/* Control Panels */}
         <div className="absolute inset-0 pointer-events-none">
           {/* Toggle Controls Button - Always visible */}
-          <button
+          {/* <button
             onClick={() => setShowControls(!showControls)}
             className="absolute left-4 bottom-24 z-30 bg-white rounded-lg shadow-lg p-2 hover:shadow-xl transition-shadow pointer-events-auto"
             title={showControls ? 'Hide controls' : 'Show controls'}
@@ -150,13 +150,13 @@ export function NWPSection() {
             ) : (
               <ChevronRight className="w-5 h-5 text-gray-700" />
             )}
-          </button>
+          </button> */}
 
           {/* Right Section - Weather Layers */}
           {showControls && (
             <div className="absolute right-2 pointer-events-auto flex flex-col gap-4 max-h-[calc(100vh-120px)] overflow-auto">
               {/* Weather Layer Selector */}
-              <div className="h-fit">
+              <div className="h-screen">
                 <LayerSelector
                   groupedLayers={groupedLayers}
                   selectedLayerId={selectedLayerId}
@@ -190,7 +190,7 @@ export function NWPSection() {
           {/* Bottom Section - Time Control (Video Player Style) */}
           {showControls && (
             <>
-              <div className="absolute bottom-4 left-4 right-4 pointer-events-auto">
+              <div className="absolute bottom-0 left-4 right-4 pointer-events-auto">
                 <TimeControl
                   currentTime={currentTime}
                   onTimeChange={setCurrentTime}

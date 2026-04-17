@@ -348,22 +348,18 @@ const emptyCondition = (): RuleConditionRow => ({
   groupNo: 0,
 });
 
-const FALLBACK_TIMEZONES = [
-  'UTC',
-  'Asia/Kathmandu',
+// Timezones limited to Indonesia, Cambodia, Bangladesh, and India
+const ALLOWED_TIMEZONES = [
+  // India
   'Asia/Kolkata',
+  // Bangladesh
   'Asia/Dhaka',
-  'Asia/Bangkok',
+  // Cambodia
   'Asia/Phnom_Penh',
-  'Asia/Shanghai',
-  'Asia/Dubai',
-  'Europe/London',
-  'Europe/Berlin',
-  'America/New_York',
-  'America/Chicago',
-  'America/Denver',
-  'America/Los_Angeles',
-  'Australia/Sydney',
+  // Indonesia
+  'Asia/Jakarta',
+  'Asia/Makassar',
+  'Asia/Jayapura',
 ];
 
 const getTimeZoneOffsetMs = (date: Date, timeZone: string) => {
@@ -487,12 +483,8 @@ export default function ComposeScheduleView() {
   const detectedTimeZone =
     Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
   const scheduleTimeZones = useMemo(() => {
-    const listedTimeZones =
-      typeof (Intl as any).supportedValuesOf === 'function'
-        ? ((Intl as any).supportedValuesOf('timeZone') as string[])
-        : FALLBACK_TIMEZONES;
-    if (listedTimeZones.includes(detectedTimeZone)) return listedTimeZones;
-    return [detectedTimeZone, ...listedTimeZones];
+    if (ALLOWED_TIMEZONES.includes(detectedTimeZone)) return ALLOWED_TIMEZONES;
+    return [detectedTimeZone, ...ALLOWED_TIMEZONES];
   }, [detectedTimeZone]);
 
   // Progressive wizard state

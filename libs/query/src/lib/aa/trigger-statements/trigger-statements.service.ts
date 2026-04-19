@@ -963,34 +963,52 @@ export const useGetDataSourceTypes = (uuid: UUID) => {
 
 export const useGetSeriesByDataSource = (
   uuid: UUID,
-  dataSource: string | null,
-  type: string | null,
+  dataSource: string,
+  type: string,
+  levelType: string,
 ) => {
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
   const q = useProjectAction([MS_TRIGGERS_KEYS.SERIES]);
   const { settings } = useProjectSettingsStore((state) => ({
     settings: state.settings,
   }));
 
   return useQuery({
-    queryKey: [MS_TRIGGERS_KEYS.SERIES, uuid, dataSource, type],
+    queryKey: [MS_TRIGGERS_KEYS.SERIES, uuid, dataSource, type, levelType],
     staleTime: 0,
-    enabled: !!dataSource,
+    enabled: !!dataSource && !!type && !!levelType,
     queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: 'ms.sourcesData.getSeriesByDataSource',
-          payload: {
-            dataSource,
-            type,
-            riverBasin:
-              settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
-                'river_basin'
-              ],
+      try {
+        const mutate = await q.mutateAsync({
+          uuid,
+          data: {
+            action: 'ms.sourcesData.getSeriesByDataSource',
+            payload: {
+              dataSource,
+              type,
+              levelType,
+              riverBasin:
+                settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.PROJECT_INFO]?.[
+                  'river_basin'
+                ],
+            },
           },
-        },
-      });
-      return mutate.data;
+        });
+        return mutate.data;
+      } catch (error: any) {
+        toast.fire({
+          title: 'Error loading series',
+          text: 'Failed to fetch series for the selected source',
+          icon: 'error',
+        });
+      }
     },
   });
 };

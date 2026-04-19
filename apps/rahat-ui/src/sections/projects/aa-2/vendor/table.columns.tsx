@@ -60,6 +60,28 @@ export const useProjectVendorTableColumns = (pagination: Pagination) => {
       cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
     },
     {
+      accessorKey: 'registeredApps',
+      header: 'Registered Apps',
+      cell: ({ row }) => {
+        const apps =
+          row.original?.extras?.registeredApps;
+
+        if (!apps?.length) {
+          return <div>N/A</div>;
+        }
+
+        return (
+          <div className="flex flex-wrap gap-1">
+            {apps.map((app, index) => (
+              <Badge key={index} className="bg-gray-200 text-gray-600">
+                {app}
+              </Badge>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
       id: 'actions',
       header: 'Actions',
       enableHiding: false,
@@ -128,9 +150,9 @@ export const useProjectVendorRedemptionTableColumns = () => {
           text={
             row.getValue('tokenAmount')
               ? `${Number(row.getValue('tokenAmount'))} ${getAssetCode(
-                  settings,
-                  id,
-                )}`
+                settings,
+                id,
+              )}`
               : 'N/A'
           }
           maxLength={15}
@@ -207,8 +229,8 @@ export const useProjectVendorRedemptionTableColumns = () => {
               row.original?.redemptionStatus === 'APPROVED'
                 ? 'Approved'
                 : row.original?.redemptionStatus === 'STELLAR_VERIFIED'
-                ? 'Requested ✓'
-                : 'Requested'
+                  ? 'Requested ✓'
+                  : 'Requested'
             }
             maxLength={15}
           />
@@ -244,7 +266,7 @@ export const useProjectVendorRedemptionTableColumns = () => {
                   <TruncatedCell
                     text={
                       row.original?.redemptionStatus === 'APPROVED' &&
-                      row.original?.approvedAt
+                        row.original?.approvedAt
                         ? dateFormat(row.original?.approvedAt)
                         : 'N/A'
                     }

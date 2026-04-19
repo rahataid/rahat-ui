@@ -25,6 +25,17 @@ export const SOURCE_CONFIG = {
       'twenty_years_return_period',
     ],
   },
+  // for heatwave
+  prob_humidity: {
+    label: 'DHM Humidity',
+    sourceSubType: 'Humidity Probability (%)',
+    subTypes: ['hourly', 'daily'],
+  },
+  temperature_c: {
+    label: 'DHM Temperature',
+    sourceSubType: 'Temperature (°C)',
+    subTypes: ['hourly', 'daily'],
+  },
 } as const;
 
 const sourceValues = Object.keys(SOURCE_CONFIG) as [
@@ -39,6 +50,9 @@ const fieldLabels: Record<keyof typeof SOURCE_CONFIG, string> = {
   discharge_m3s: 'Discharge Type',
   rainfall_mm: 'Measurement Period',
   prob_flood: 'Probability Period',
+  // for heatwave
+  prob_humidity: 'Humidity Period',
+  temperature_c: 'Temperature Period',
 };
 
 const emptyStringToUndefined = (val: unknown) => (val === '' ? undefined : val);

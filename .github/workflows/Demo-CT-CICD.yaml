@@ -1,4 +1,4 @@
-name: AA Dry Run CI/CD
+name: CT Demo CI/CD
 on:
   push:
     branches:

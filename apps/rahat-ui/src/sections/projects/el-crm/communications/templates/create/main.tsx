@@ -169,19 +169,20 @@ export default function CreateTemplateView() {
   }, []);
 
   const onSubmit = async (data: CreateTemplateForm) => {
-    console.log('Saving template:', data);
     if ((data?.media ?? []).length > 0) {
       data.type = 'MEDIA';
     }
-    await createTemplate.mutateAsync(data);
-    uploadedFilesRef.current.forEach((file) => {
-      if (file.previewUrl) {
-        URL.revokeObjectURL(file.previewUrl);
-      }
-    });
-    setUploadedFiles([]);
-    reset();
-    router.push(`/projects/el-crm/${projectUUID}/communications/templates`);
+    try {
+      await createTemplate.mutateAsync(data);
+      uploadedFilesRef.current.forEach((file) => {
+        if (file.previewUrl) {
+          URL.revokeObjectURL(file.previewUrl);
+        }
+      });
+      setUploadedFiles([]);
+      reset();
+      router.push(`/projects/el-crm/${projectUUID}/communications/templates`);
+    } catch {}
   };
 
   const handleFileChange = async (
@@ -303,9 +304,9 @@ export default function CreateTemplateView() {
   const selectedTransportName = useMemo(() => {
     if (!watchedTransport || !transport.data) return '';
     return (
-      transport.data.find(
-        (ch: any) => ch.cuid.toString() === watchedTransport,
-      )?.name?.toUpperCase() ?? ''
+      transport.data
+        .find((ch: any) => ch.cuid.toString() === watchedTransport)
+        ?.name?.toUpperCase() ?? ''
     );
   }, [watchedTransport, transport.data]);
 
@@ -416,13 +417,28 @@ export default function CreateTemplateView() {
                       <Input
                         id="template-name"
                         placeholder="e.g., Welcome Message"
+                        maxLength={100}
                         {...register('name')}
                       />
-                      {errors.name && (
-                        <p className="text-sm text-destructive">
-                          {errors.name.message}
+                      <div className="flex items-center justify-between">
+                        {errors.name ? (
+                          <p className="text-sm text-destructive">
+                            {errors.name.message}
+                          </p>
+                        ) : (
+                          <span />
+                        )}
+                        <p
+                          className={cn(
+                            'text-xs',
+                            (watchedName?.length ?? 0) >= 100
+                              ? 'text-destructive'
+                              : 'text-muted-foreground',
+                          )}
+                        >
+                          {watchedName?.length ?? 0}/100
                         </p>
-                      )}
+                      </div>
                     </div>
                   </StepCard>
                 )}
@@ -440,18 +456,32 @@ export default function CreateTemplateView() {
                       <Textarea
                         id="content"
                         placeholder="Enter your message template here... You can use {{variable}} for dynamic content"
+                        maxLength={2000}
                         {...register('body')}
                         rows={4}
                       />
-                      {errors.body && (
-                        <p className="text-sm text-destructive">
-                          {errors.body.message}
+                      <div className="flex items-center justify-between">
+                        {errors.body ? (
+                          <p className="text-sm text-destructive">
+                            {errors.body.message}
+                          </p>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">
+                            Tip: Use double curly braces {'{{variable}}'} for
+                            dynamic content like names, dates, etc.
+                          </p>
+                        )}
+                        <p
+                          className={cn(
+                            'text-xs whitespace-nowrap ml-4',
+                            (watchedBody?.length ?? 0) >= 2000
+                              ? 'text-destructive'
+                              : 'text-muted-foreground',
+                          )}
+                        >
+                          {watchedBody?.length ?? 0}/2000
                         </p>
-                      )}
-                      <p className="text-xs text-muted-foreground">
-                        Tip: Use double curly braces {'{{variable}}'} for
-                        dynamic content like names, dates, etc.
-                      </p>
+                      </div>
                     </div>
                   </StepCard>
                 )}
@@ -556,8 +586,7 @@ export default function CreateTemplateView() {
                                     variant="ghost"
                                     size="sm"
                                     disabled={
-                                      isUploading ||
-                                      file.status === 'uploading'
+                                      isUploading || file.status === 'uploading'
                                     }
                                     onClick={() => handleRemoveMedia(file.id)}
                                   >
@@ -570,6 +599,18 @@ export default function CreateTemplateView() {
                         )}
                       </div>
                     </div>
+
+                    {/* Validation error summary */}
+                    {Object.keys(errors).length > 0 && (
+                      <div className="flex items-center gap-2 rounded-md border border-destructive/50 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+                        <AlertCircle className="h-4 w-4 shrink-0" />
+                        <p>
+                          Please fix the errors above before submitting
+                          {errors.name && ` — ${errors.name.message}`}
+                          {errors.body && ` — ${errors.body.message}`}
+                        </p>
+                      </div>
+                    )}
 
                     {/* Action buttons */}
                     <div className="flex justify-end gap-3 pt-4 border-t">

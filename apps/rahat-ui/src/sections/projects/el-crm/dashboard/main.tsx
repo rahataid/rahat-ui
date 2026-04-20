@@ -197,13 +197,21 @@ export default function DashboardView() {
 
   const categoryDonutData = useMemo(
     () => [
-      { name: 'Active', value: activeCustomers, fill: COLORS.active },
+      {
+        name: 'Active',
+        value: activeCustomers,
+        fill: COLORS.active,
+      },
       {
         name: 'Newly Inactive',
         value: newlyInactiveCustomers,
         fill: COLORS.newlyInactive,
       },
-      { name: 'Inactive', value: inactiveCustomers, fill: COLORS.inactive },
+      {
+        name: 'Inactive',
+        value: inactiveCustomers,
+        fill: COLORS.inactive,
+      },
     ],
     [activeCustomers, newlyInactiveCustomers, inactiveCustomers],
   );

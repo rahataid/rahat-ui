@@ -108,9 +108,10 @@ export default function InkindAllocationDetail() {
   const groupName = groupInkind?.groupName ?? qGroupName;
   const inkindName = groupInkind?.inkindName ?? 'N/A';
   const inkindType = groupInkind?.inkindType ?? qInkindType;
-  const inkindAvailableStock = inkindType === 'WALK_IN'
-    ? qInkindAvailableStock
-    : (groupInkind?.inkindAvailableStock ?? qInkindAvailableStock);
+  const inkindAvailableStock =
+    inkindType === 'WALK_IN'
+      ? qInkindAvailableStock
+      : groupInkind?.inkindAvailableStock ?? qInkindAvailableStock;
   const quantityAllocated = groupInkind?.quantityAllocated ?? 0;
   const quantityRedeemed = groupInkind?.quantityRedeemed ?? 0;
   const totalBeneficiaries = groupInkind?.totalBeneficiaries ?? 0;
@@ -161,9 +162,7 @@ export default function InkindAllocationDetail() {
       accessorKey: 'quantity',
       header: 'Qty',
       cell: ({ row }) => (
-        <span className="font-semibold">
-          {row.original.quantity}
-        </span>
+        <span className="font-semibold">{row.original.quantity}</span>
       ),
     },
     {
@@ -245,7 +244,7 @@ export default function InkindAllocationDetail() {
             key={card.name}
             title={card.name}
             number={String(card.amount)}
-            className="border-solid rounded-md"
+            className="border-solid rounded-sm"
             iconStyle="bg-white text-secondary-muted"
           />
         ))}

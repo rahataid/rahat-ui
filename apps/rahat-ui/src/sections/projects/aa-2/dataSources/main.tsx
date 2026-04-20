@@ -29,13 +29,17 @@ import GaugeReading from './components/gaugeReading';
 import GFHDetails from './components/gfh';
 import { GlofasSection } from './components/glofas';
 import { useParams, useRouter } from 'next/navigation';
-import { PROJECT_SETTINGS_KEYS, useProjectInfo, useTabConfiguration } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectInfo,
+  useTabConfiguration,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { defaultForecastTab } from 'apps/rahat-ui/src/constants/aa.tabValues.constants';
 import { AWSSection } from './components/aws/aws.section';
-
+import { NWPSection } from './components/nwp/nwp.section';
 const componentMap = {
   dhm: DHMSection,
   glofas: GlofasSection,
@@ -44,7 +48,7 @@ const componentMap = {
   gfh: GFHDetails,
   externalLinks: ExternalLinks,
   aws: AWSSection,
-  // nwp: NWPSection,
+  nwp: NWPSection,
 } as const;
 
 type ComponentKey = keyof typeof componentMap;
@@ -107,31 +111,30 @@ export default function DataSources() {
   const { id: projectID } = useParams();
   const router = useRouter();
 
-  const { data, isLoading: isTabLoading } = useTabConfiguration(
-    projectID as UUID,
-    PROJECT_SETTINGS_KEYS.FORECAST_TAB_CONFIG,
-  );
-
   const { data: projectInfo, isLoading: isProjectLoading } = useProjectInfo(
     projectID as UUID,
   );
 
   const projectType = projectInfo?.value?.project_type;
+  const isHeatWave = projectType === 'HEAT_WAVE';
+
+  // Only fetch tab configuration for non-HEAT_WAVE projects after project info loads
+  const { data, isLoading: isTabLoading } = useTabConfiguration(
+    projectID as UUID,
+    PROJECT_SETTINGS_KEYS.FORECAST_TAB_CONFIG,
+    !isProjectLoading && !isHeatWave,
+  );
 
   const backendTabs = useMemo((): BackendTab[] => {
-    if (projectType === 'HEAT_WAVE') {
+    if (isHeatWave) {
       return [
-        { value: 'dhm', label: 'DHM' },
-        { value: 'dailyMonitoring', label: 'Daily Monitoring' },
-        { value: 'gaugeReading', label: 'Gauge Reading' },
-        { value: 'externalLinks', label: 'External Links' },
         { value: 'aws', label: 'AWS' },
-        // { value: 'nwp', label: 'NWP' },
+        { value: 'nwp', label: 'NWP' },
       ];
     }
 
     return data?.value?.tabs?.length > 0 ? data.value.tabs : defaultForecastTab;
-  }, [projectType, data]);
+  }, [isHeatWave, data]);
 
   const availableTabsConfig = useMemo(() => {
     return backendTabs
@@ -144,10 +147,26 @@ export default function DataSources() {
 
   // Set default active tab
   useEffect(() => {
-    if (!activeTab && !isTabLoading && backendTabs.length > 0) {
-      setActiveTab(backendTabs[0].value);
+    if (
+      !activeTab &&
+      !isProjectLoading &&
+      !isTabLoading &&
+      backendTabs.length > 0
+    ) {
+      if (isHeatWave) {
+        setActiveTab('aws');
+      } else {
+        setActiveTab(backendTabs[0].value);
+      }
     }
-  }, [activeTab, isTabLoading, backendTabs, setActiveTab]);
+  }, [
+    activeTab,
+    isProjectLoading,
+    isTabLoading,
+    backendTabs,
+    setActiveTab,
+    isHeatWave,
+  ]);
 
   useEffect(() => {
     if (

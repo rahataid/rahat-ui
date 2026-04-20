@@ -311,11 +311,16 @@ export const useRemoveMonitoringWhileUpdating = () => {
   });
 };
 
-export const useTabConfiguration = (uuid: UUID, name: string) => {
+export const useTabConfiguration = (
+  uuid: UUID,
+  name: string,
+  enabled = true,
+) => {
   const q = useProjectAction([name]);
   const query = useQuery({
     queryKey: [name, uuid],
     staleTime: Infinity,
+    enabled: enabled,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,

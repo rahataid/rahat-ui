@@ -9,7 +9,7 @@ export type WatchColors = {
 //Shared Utility
 export const roundValue = (value: number | undefined): string => {
   if (value === undefined || value === null) return '--';
-  return parseFloat(value.toFixed(3)).toString();
+  return parseFloat(value.toFixed(1)).toString();
 };
 
 const unknownColor: WatchColors = {

@@ -111,8 +111,8 @@ importers:
         specifier: ^1.0.125
         version: 1.0.133(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@rumsan/react-query':
-        specifier: 0.0.45
-        version: 0.0.45(@types/react@18.3.28)(bufferutil@4.1.0)(typescript@5.4.5)(utf-8-validate@6.0.6)(zod@3.25.76)
+        specifier: 0.0.43
+        version: 0.0.43
       '@rumsan/sdk':
         specifier: ^0.0.45
         version: 0.0.45
@@ -3331,9 +3331,6 @@ packages:
   '@rumsan/communication@0.0.23':
     resolution: {integrity: sha512-a4pV6Q9qiPDmW9vzQeaZL+KNft7DY5yulNxh2wFMhrOhXh/ALl7kH/NYTk4cF9gvcntqTdKBvl/blMKHhQD25Q==}
 
-  '@rumsan/communication@0.0.24':
-    resolution: {integrity: sha512-/rnWLKY39OVt9RBPKIM7AYog7Z43nIP7PIYSH05jYOsAFLlQ3MvPIGa/yKVQD7T4yIs45WmzBeKSCX4688lViw==}
-
   '@rumsan/connect@1.0.0':
     resolution: {integrity: sha512-zmItGc4vruGL2SSaOOTB0g1tME1Ss3MjwKRxC5rwh5pIW4oskAZAXHhnaPUTcyAw3S/wwStNYjImJJf3HO1TtQ==}
 
@@ -3355,8 +3352,8 @@ packages:
   '@rumsan/prisma@1.0.133':
     resolution: {integrity: sha512-rz7IxtFT5D1NPi4vhngkMQtnRq0z8hK+xCEcNSc/eVm6OZQfRLPhWiKT8agOH24z9iDQ44MMlNBSzH7chyykTw==}
 
-  '@rumsan/react-query@0.0.45':
-    resolution: {integrity: sha512-v6Vr5FdcpNp/c3X9Nt1g3nA5Tg0leS88v916i3wPjz1XGhcRM+1aEi5WKPWAj68HiWpm2/zWtiOM4f3+xF2KSQ==}
+  '@rumsan/react-query@0.0.43':
+    resolution: {integrity: sha512-ohmgouhVM/+I5x3AtT1TgYIHetSkcTJcwYpkatD36KIxFFJC9pzCNU5ETOG6rcLRc0LX2lp6iz0C0n0l1GiiJA==}
 
   '@rumsan/sdk@0.0.42':
     resolution: {integrity: sha512-aM5CjVIQhkiUuAWCd0RZDzl0i+dRw6VRslBUasFy9UJOlXZ9rmlJLLiX/2J7S4UTraAlfzKlWUsTQBgAeS2tmA==}
@@ -3366,9 +3363,6 @@ packages:
 
   '@rumsan/sdk@0.0.46':
     resolution: {integrity: sha512-USObythpmrA0kjLlzyGMW5+nmWx/lZX4FeUVXF7JQxgau7tmpNOKypQs10VgFMPG4JlifuutZQaG0GDYMRhg7w==}
-
-  '@rumsan/sdk@0.0.47':
-    resolution: {integrity: sha512-EHbRkUwkbbCfRIzjjnLaMSVi/GPqt827gNvU1qf5G2RL0Jo3bFDgXuzxUJB1ACXiQRa8GrLFOGLvYLbE1Ldmpw==}
 
   '@rumsan/sdk@0.1.102':
     resolution: {integrity: sha512-ohVRPpPZPKVU8/IXp3lsvR9Obmp1jiYnpV0cMRlDiczjevkvPi03Gx8/VLbIZ+h+jRsk/2XpMFZJxAM9L8ABvg==}
@@ -10448,10 +10442,6 @@ packages:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
     engines: {node: '>=0.10.0'}
 
-  react@18.3.1:
-    resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
-    engines: {node: '>=0.10.0'}
-
   read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
 
@@ -14189,7 +14179,7 @@ snapshots:
       '@noble/hashes': 1.8.0
       '@scure/base': 1.2.6
       '@types/debug': 4.1.13
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.3.4
       pony-cause: 2.1.11
       semver: 7.7.4
       uuid: 9.0.1
@@ -14203,7 +14193,7 @@ snapshots:
       '@noble/hashes': 1.8.0
       '@scure/base': 1.2.6
       '@types/debug': 4.1.13
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.3.4
       pony-cause: 2.1.11
       semver: 7.7.4
       uuid: 9.0.1
@@ -16404,8 +16394,6 @@ snapshots:
 
   '@rumsan/communication@0.0.23': {}
 
-  '@rumsan/communication@0.0.24': {}
-
   '@rumsan/connect@1.0.0':
     dependencies:
       tslib: 2.8.1
@@ -16473,24 +16461,11 @@ snapshots:
       - rxjs
       - supports-color
 
-  '@rumsan/react-query@0.0.45(@types/react@18.3.28)(bufferutil@4.1.0)(typescript@5.4.5)(utf-8-validate@6.0.6)(zod@3.25.76)':
+  '@rumsan/react-query@0.0.43':
     dependencies:
-      '@rumsan/communication': 0.0.24
-      '@rumsan/sdk': 0.0.47
-      '@tanstack/react-query': 5.22.2(react@18.3.1)
-      axios: 1.13.6
-      http-status-codes: 2.3.0
-      react: 18.3.1
-      viem: 2.47.6(bufferutil@4.1.0)(typescript@5.4.5)(utf-8-validate@6.0.6)(zod@3.25.76)
-      zustand: 4.5.7(@types/react@18.3.28)(react@18.3.1)
+      '@rumsan/sdk': 0.0.45
     transitivePeerDependencies:
-      - '@types/react'
-      - bufferutil
       - debug
-      - immer
-      - typescript
-      - utf-8-validate
-      - zod
 
   '@rumsan/sdk@0.0.42':
     dependencies:
@@ -16508,13 +16483,6 @@ snapshots:
       - debug
 
   '@rumsan/sdk@0.0.46':
-    dependencies:
-      axios: 1.13.6
-      http-status-codes: 2.3.0
-    transitivePeerDependencies:
-      - debug
-
-  '@rumsan/sdk@0.0.47':
     dependencies:
       axios: 1.13.6
       http-status-codes: 2.3.0
@@ -17063,7 +17031,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.29.2
       '@noble/curves': 1.9.7
-      '@noble/hashes': 1.8.0
+      '@noble/hashes': 1.4.0
       '@solana/buffer-layout': 4.0.1
       '@solana/codecs-numbers': 2.3.0(typescript@5.4.5)
       agentkeepalive: 4.6.0
@@ -17320,11 +17288,6 @@ snapshots:
     dependencies:
       '@tanstack/query-core': 5.22.2
       react: 18.2.0
-
-  '@tanstack/react-query@5.22.2(react@18.3.1)':
-    dependencies:
-      '@tanstack/query-core': 5.22.2
-      react: 18.3.1
 
   '@tanstack/react-table@8.21.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
@@ -22591,7 +22554,7 @@ snapshots:
 
   extension-port-stream@3.0.0:
     dependencies:
-      readable-stream: 4.7.0
+      readable-stream: 3.6.2
       webextension-polyfill: 0.10.0
 
   extract-zip@2.0.1(supports-color@8.1.1):
@@ -25277,7 +25240,7 @@ snapshots:
     dependencies:
       '@adraffy/ens-normalize': 1.11.1
       '@noble/curves': 1.8.1
-      '@noble/hashes': 1.8.0
+      '@noble/hashes': 1.7.1
       '@scure/bip32': 1.6.2
       '@scure/bip39': 1.5.4
       abitype: 1.0.8(typescript@5.4.5)(zod@3.25.76)
@@ -26292,10 +26255,6 @@ snapshots:
     dependencies:
       loose-envify: 1.4.0
 
-  react@18.3.1:
-    dependencies:
-      loose-envify: 1.4.0
-
   read-cache@1.0.0:
     dependencies:
       pify: 2.3.0
@@ -26584,7 +26543,7 @@ snapshots:
       '@types/uuid': 10.0.0
       '@types/ws': 8.18.1
       buffer: 6.0.3
-      eventemitter3: 5.0.4
+      eventemitter3: 5.0.1
       uuid: 11.1.0
       ws: 8.20.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     optionalDependencies:
@@ -28001,10 +27960,6 @@ snapshots:
     dependencies:
       react: 18.2.0
 
-  use-sync-external-store@1.6.0(react@18.3.1):
-    dependencies:
-      react: 18.3.1
-
   username-sync@1.0.3: {}
 
   utf-8-validate@5.0.10:
@@ -28597,13 +28552,6 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.28
       react: 18.2.0
-
-  zustand@4.5.7(@types/react@18.3.28)(react@18.3.1):
-    dependencies:
-      use-sync-external-store: 1.6.0(react@18.3.1)
-    optionalDependencies:
-      '@types/react': 18.3.28
-      react: 18.3.1
 
   zustand@5.0.0(@types/react@18.3.28)(react@18.2.0)(use-sync-external-store@1.4.0(react@18.2.0)):
     optionalDependencies:

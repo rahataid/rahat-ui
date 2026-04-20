@@ -248,3 +248,56 @@ export const useVendorTokenRedemptionList = (payload: any) => {
 
   return query;
 };
+
+export const useLogsDetailsByVendor = (payload: {
+  projectUuid: UUID;
+  vendorId: UUID;
+  inkindType?: string;
+  page?: number;
+  perPage?: number;
+  search?: string;
+}) => {
+  const q = useProjectAction<any[]>();
+  const {
+    projectUuid,
+    vendorId,
+    inkindType,
+    page = 1,
+    perPage = 10,
+    search,
+  } = payload;
+
+  const query = useQuery({
+    queryKey: [
+      'aa.stellar.getLogsDetailsByVendor',
+      projectUuid,
+      vendorId,
+      inkindType,
+      page,
+      perPage,
+      search,
+    ],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    enabled: !!projectUuid && !!vendorId,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUuid,
+        data: {
+          action: 'aaProject.groupInkinds.getLogsDetailsByVendor',
+          payload: {
+            vendorId,
+            inkindType: inkindType ?? '',
+            page,
+            perPage,
+            search: search ?? '',
+          },
+        },
+      });
+      return mutate.response;
+    },
+  });
+
+  return query;
+};

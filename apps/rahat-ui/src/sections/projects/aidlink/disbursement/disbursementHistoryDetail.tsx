@@ -63,7 +63,7 @@ export default function DisbursementHistoryDetail() {
   );
 
   const chainSettings = useProjectSettingsStore(
-    (state) => state?.settings?.[projectUUID]?.['BLOCKCHAIN'],
+    (state) => state?.settings?.[projectUUID]?.['CHAIN_SETTINGS'],
   );
   const { data: tokenNumber } = useReadRahatTokenDecimals({
     address: contractSettings?.rahattoken?.address,

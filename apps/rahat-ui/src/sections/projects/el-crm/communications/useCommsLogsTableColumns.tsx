@@ -125,7 +125,7 @@ export default function useCommsLogsTableColumns() {
         </span>
       ),
       cell: ({ row }) => {
-        const date = row?.original?.createdAt as string;
+        const date = row?.original?.updatedAt as string;
         if (!date) return <span className="text-sm">\u2014</span>;
         const { dateStr, timeStr } = formatDateTime(date);
         return (

@@ -493,3 +493,42 @@ export const useCreateAASafeTransaction = () => {
     },
   });
 };
+export const useGetTokenDetails = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['aa.tokenDetails', projectUUID],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.tokenDetails',
+          payload: {},
+        },
+      });
+      return mutate.response;
+    },
+  });
+  return query;
+};
+
+// export const useGetProjectFundDetails = (projectUUID: UUID) => {
+//   const q = useProjectAction();
+
+//   const query = useQuery({
+//     queryKey: ['aa.getProjectFundDetails', projectUUID],
+//     queryFn: async () => {
+//       const mutate = await q.mutateAsync({
+//         uuid: projectUUID,
+//         data: {
+//           action: 'aa.addProjectFund',
+//           payload: {
+//             amount: '1',
+//           },
+//         },
+//       });
+//       return mutate;
+//     },
+//   });
+//   return query;
+// };

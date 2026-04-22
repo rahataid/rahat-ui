@@ -95,11 +95,6 @@ export const useAssignBenToProject = () => {
       projectUUID: UUID;
       beneficiaryUUID: UUID;
     }) => {
-      console.log(
-        'assigning beneficiary to project',
-        beneficiaryUUID,
-        projectUUID,
-      );
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
@@ -428,7 +423,6 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
     },
     // initialData: settings?.[uuid],
   });
-
   useEffect(() => {
     if (!isEmpty(query.data)) {
       const settingsToUpdate = {
@@ -439,7 +433,6 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
         },
       };
       setSettings(settingsToUpdate);
-      window.location.reload();
       // setSettings({
       //   [uuid]: {
       //     [PROJECT_SETTINGS_KEYS.SUBGRAPH]: query?.data,
@@ -450,7 +443,6 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
 
   return query;
 };
-
 
 export const useAAProjectSettingsDatasource = (uuid: UUID) => {
   const q = useProjectAction([PROJECT_SETTINGS_KEYS.DATASOURCE]);
@@ -484,7 +476,6 @@ export const useAAProjectSettingsDatasource = (uuid: UUID) => {
 
   useEffect(() => {
     if (!isEmpty(query.data)) {
-      console.log('query data', query.data);
       const settingsToUpdate = {
         ...settings,
         [uuid]: {
@@ -493,7 +484,6 @@ export const useAAProjectSettingsDatasource = (uuid: UUID) => {
         },
       };
       setSettings(settingsToUpdate);
-      window.location.reload();
       // setSettings({
       //   [uuid]: {
       //     [PROJECT_SETTINGS_KEYS.SUBGRAPH]: query?.data,
@@ -543,7 +533,6 @@ export const useAAProjectSettingsHazardType = (uuid: UUID) => {
         },
       };
       setSettings(settingsToUpdate);
-      window.location.reload();
     }
   }, [query.data]);
 
@@ -576,7 +565,6 @@ export const useAAProjectSettingsContract = (uuid: UUID) => {
 
   useEffect(() => {
     if (!isEmpty(query.data)) {
-      console.log('query data', query.data);
       const settingsToUpdate = {
         ...settings,
         [uuid]: {
@@ -585,7 +573,6 @@ export const useAAProjectSettingsContract = (uuid: UUID) => {
         },
       };
       setSettings(settingsToUpdate);
-      window.location.reload();
     }
   }, [query.data]);
 

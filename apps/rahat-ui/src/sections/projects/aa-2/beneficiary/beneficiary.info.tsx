@@ -2,17 +2,24 @@ import React from 'react';
 import { Coins, Copy, CopyCheck, User } from 'lucide-react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { DataCard, DataItem } from 'apps/rahat-ui/src/common';
+import { useTokenDetails } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 type IProps = {
   beneficiary: any;
 };
 
 const BeneficiaryInfo = ({ beneficiary }: IProps) => {
+  const params = useParams();
+  const projectId = params.id as UUID;
+  const beneficiaryId = params.uuid as UUID;
   const { clickToCopy, copyAction } = useCopy();
-  const tokenData = {
-    assigned: { tokens: 12, amount: 1200 },
-    redeemed: { tokens: 8, amount: 800 },
-  };
+
+  const { data: tokenData, isPending } = useTokenDetails({
+    projectUUID: projectId,
+    beneficiaryUUID: beneficiaryId,
+  });
 
   const inKindItems = [
     {
@@ -48,14 +55,6 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
           </div>
         </div>
       </div>
-
-      {/* <DataCard
-        className="border-solid w-1/2 rounded-xl"
-        iconStyle="bg-white text-secondary-muted"
-        title="Token Assignedd"
-        Icon={Coins}
-        number={beneficiary?.benTokens || 0}
-      /> */}
 
       <div className="grid grid-cols-3 gap-6 py-4">
         <DataItem label="Age" value={beneficiary?.projectData?.age || 'N/A'} />
@@ -102,55 +101,76 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
         <h2 className="text-lg font-semibold mb-4">Token Benefits</h2>
 
         {/* Token Cards */}
-        <div className="flex gap-4 mb-6">
-          <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
-            <p className="text-sm text-gray-500">Assigned</p>
-            <h3 className="text-xl font-bold">
-              {tokenData.assigned.tokens} Tokens
-            </h3>
-            <p className="text-gray-600">
-              NPR {tokenData.assigned.amount.toLocaleString()}
-            </p>
-          </div>
+        {isPending ? (
+          <>
+            <div className="animate-pulse flex gap-4 mb-6">
+              <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
+                <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
+              </div>
 
-          <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
-            <p className="text-sm text-gray-500">Redeemed</p>
-            <h3 className="text-xl font-bold">
-              {tokenData.redeemed.tokens} Tokens
-            </h3>
-            <p className="text-gray-600">
-              NPR {tokenData.redeemed.amount.toLocaleString()}
-            </p>
-          </div>
-        </div>
+              <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
+                <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
+              </div>
+            </div>
+            <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
+              <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
+              <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex gap-4 mb-6">
+              <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
+                <p className="text-sm text-gray-500">Assigned</p>
+                <h3 className="text-xl font-bold">
+                  {tokenData?.assignedToken} Tokens
+                </h3>
+                <p className="text-gray-600">
+                  NPR {tokenData?.assignedToken * 100}
+                </p>
+              </div>
 
-        {/* In-kind Benefits */}
-        <h3 className="text-md font-semibold mb-3">In-kind Benefits</h3>
+              <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
+                <p className="text-sm text-gray-500">Redeemed</p>
+                <h3 className="text-xl font-bold">
+                  {tokenData?.redemmedToken} Tokens
+                </h3>
+                <p className="text-gray-600">
+                  NPR {tokenData?.redemmedToken * 100}
+                </p>
+              </div>
+            </div>
 
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-gray-500 font-medium border-b">
-              <th className="text-left pb-2 font-medium">In-kind items</th>
-              <th className="text-center pb-2 font-medium">Assigned</th>
-              <th className="text-center pb-2 font-medium">Redeemed</th>
-              <th className="text-center pb-2 font-medium">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {inKindItems.map((item, index) => (
-              <tr key={index} className="border-b last:border-none">
-                <td className="py-3 font-medium">{item.name}</td>
-                <td className="py-3 text-center">{item.assigned}</td>
-                <td className="py-3 text-center">{item.redeemed}</td>
-                <td className="py-3 text-center">
-                  <span className="px-3 py-1 bg-gray-200 rounded-full text-sm">
-                    {item.redeemed} of {item.assigned} redeemed
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            {/* In-kind Benefits */}
+            <h3 className="text-md font-semibold mb-3">In-kind Benefits</h3>
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-gray-500 font-medium border-b">
+                  <th className="text-left pb-2 font-medium">In-kind items</th>
+                  <th className="text-center pb-2 font-medium">Assigned</th>
+                  <th className="text-center pb-2 font-medium">Redeemed</th>
+                  <th className="text-center pb-2 font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {inKindItems.map((item, index) => (
+                  <tr key={index} className="border-b last:border-none">
+                    <td className="py-3 font-medium">{item.name}</td>
+                    <td className="py-3 text-center">{item.assigned}</td>
+                    <td className="py-3 text-center">{item.redeemed}</td>
+                    <td className="py-3 text-center">
+                      <span className="px-3 py-1 bg-gray-200 rounded-full text-sm">
+                        {item.redeemed} of {item.assigned} redeemed
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
       </div>
     </>
   );

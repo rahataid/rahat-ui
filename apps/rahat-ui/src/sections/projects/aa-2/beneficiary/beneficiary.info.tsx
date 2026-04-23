@@ -126,33 +126,6 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
                 <p className="text-gray-600">NPR {tokenData?.redemmedToken}</p>
               </div>
             </div>
-
-            {/* In-kind Benefits */}
-            {/* <h3 className="text-md font-semibold mb-3">In-kind Benefits</h3>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-gray-500 font-medium border-b">
-                  <th className="text-left pb-2 font-medium">In-kind items</th>
-                  <th className="text-center pb-2 font-medium">Assigned</th>
-                  <th className="text-center pb-2 font-medium">Redeemed</th>
-                  <th className="text-center pb-2 font-medium">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {inKindItems.map((item, index) => (
-                  <tr key={index} className="border-b last:border-none">
-                    <td className="py-3 font-medium">{item.name}</td>
-                    <td className="py-3 text-center">{item.assigned}</td>
-                    <td className="py-3 text-center">{item.redeemed}</td>
-                    <td className="py-3 text-center">
-                      <span className="px-3 py-1 bg-gray-200 rounded-full text-sm">
-                        {item.redeemed} of {item.assigned} redeemed
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table> */}
           </>
         )}
         <InkindDetails />

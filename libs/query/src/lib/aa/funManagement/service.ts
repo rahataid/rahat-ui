@@ -512,23 +512,45 @@ export const useGetTokenDetails = (projectUUID: UUID) => {
   return query;
 };
 
-// export const useGetProjectFundDetails = (projectUUID: UUID) => {
-//   const q = useProjectAction();
+export const useAddProjectFund = (projectUUID: UUID) => {
+  const q = useProjectAction();
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
 
-//   const query = useQuery({
-//     queryKey: ['aa.getProjectFundDetails', projectUUID],
-//     queryFn: async () => {
-//       const mutate = await q.mutateAsync({
-//         uuid: projectUUID,
-//         data: {
-//           action: 'aa.addProjectFund',
-//           payload: {
-//             amount: '1',
-//           },
-//         },
-//       });
-//       return mutate;
-//     },
-//   });
-//   return query;
-// };
+  return useMutation({
+    mutationFn: async ({ amount }: { amount: string }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.addProjectFund',
+          payload: { amount },
+        },
+      });
+    },
+    onSuccess: ({ data }) => {
+      q.reset();
+      toast.fire({
+        title: 'Fund added successfully.',
+        icon: 'success',
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['aa.tokenDetails', data.hash, projectUUID],
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while adding fund.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};

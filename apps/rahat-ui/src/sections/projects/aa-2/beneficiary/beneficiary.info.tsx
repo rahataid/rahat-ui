@@ -1,10 +1,11 @@
 import React from 'react';
-import { Coins, Copy, CopyCheck, User } from 'lucide-react';
+import { Copy, CopyCheck, User } from 'lucide-react';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
-import { DataCard, DataItem } from 'apps/rahat-ui/src/common';
+import { DataItem } from 'apps/rahat-ui/src/common';
 import { useTokenDetails } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
+import InkindDetails from './beneficiary.inkind.details';
 
 type IProps = {
   beneficiary: any;
@@ -20,19 +21,6 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
     projectUUID: projectId,
     beneficiaryUUID: beneficiaryId,
   });
-
-  const inKindItems = [
-    {
-      name: 'Umbrella',
-      assigned: 1,
-      redeemed: 0,
-    },
-    {
-      name: 'Water Bottle',
-      assigned: 2,
-      redeemed: 1,
-    },
-  ];
 
   return (
     <>
@@ -144,7 +132,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
             </div>
 
             {/* In-kind Benefits */}
-            <h3 className="text-md font-semibold mb-3">In-kind Benefits</h3>
+            {/* <h3 className="text-md font-semibold mb-3">In-kind Benefits</h3>
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-gray-500 font-medium border-b">
@@ -168,9 +156,10 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table> */}
           </>
         )}
+        <InkindDetails />
       </div>
     </>
   );

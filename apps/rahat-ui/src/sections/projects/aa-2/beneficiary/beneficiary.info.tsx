@@ -115,9 +115,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
                 <h3 className="text-xl font-bold">
                   {tokenData?.assignedToken} Tokens
                 </h3>
-                <p className="text-gray-600">
-                  NPR {tokenData?.assignedToken * 100}
-                </p>
+                <p className="text-gray-600">NPR {tokenData?.assignedToken}</p>
               </div>
 
               <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
@@ -125,9 +123,7 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
                 <h3 className="text-xl font-bold">
                   {tokenData?.redemmedToken} Tokens
                 </h3>
-                <p className="text-gray-600">
-                  NPR {tokenData?.redemmedToken * 100}
-                </p>
+                <p className="text-gray-600">NPR {tokenData?.redemmedToken}</p>
               </div>
             </div>
 

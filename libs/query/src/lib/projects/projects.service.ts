@@ -845,6 +845,34 @@ export const useTokenDetails = (payload: {
   });
   return query;
 };
+export const useInkindDetails = (payload: {
+  projectUUID: UUID;
+  beneficiaryUUID: UUID;
+}) => {
+  const q = useProjectAction();
+  const { projectUUID, beneficiaryUUID } = payload;
+
+  const query = useQuery({
+    queryKey: [
+      'aaProject.beneficiary.getInkindDetails',
+      { projectUUID, beneficiaryUUID },
+    ],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.beneficiary.inKindsDetails',
+          payload: {
+            beneficiaryUuid: beneficiaryUUID,
+          },
+        },
+      });
+      return mutate?.data;
+    },
+  });
+  return query;
+};
+
 export const useListELRedemption = (
   payload: Pagination & { uuid: UUID },
 ): any => {

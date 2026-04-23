@@ -4,27 +4,23 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { Heading, SpinnerLoader } from 'apps/rahat-ui/src/common';
-import { Coins, Wallet, ArrowUpRight, ArrowDownLeft, Hash } from 'lucide-react';
+import {
+  CustomPagination,
+  DemoTable,
+  Heading,
+  IconLabelBtn,
+  SpinnerLoader,
+} from 'apps/rahat-ui/src/common';
+import { Wallet, Coins } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useGetTokenDetails, usePagination } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { useState } from 'react';
 import { useTokenTransactionHistory } from '../columns/useTokenTransactionHistory';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-
-// ─── Dummy Data ────────────────────────────────────────────────────────────────
-
-const DUMMY_TOKEN = {
-  name: 'Rahat Token',
-  symbol: 'RHT',
-  decimals: 18,
-};
-
-const DUMMY_TOTAL_SUPPLY = '1,000,000';
-const DUMMY_PROJECT_BALANCE = '250,000';
+import AddFundDialog from './add.fund.dialog';
 
 const DUMMY_TRANSFER_HISTORY = [
   {
@@ -83,30 +79,12 @@ const DUMMY_TRANSFER_HISTORY = [
   },
 ];
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function shortenAddress(address: string): string {
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
-}
-
-function shortenHash(hash: string): string {
-  return `${hash.slice(0, 10)}...${hash.slice(-6)}`;
-}
-
-const statusVariantMap: Record<
-  string,
-  'default' | 'secondary' | 'destructive' | 'outline'
-> = {
-  CONFIRMED: 'default',
-  PENDING: 'secondary',
-  FAILED: 'destructive',
-};
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function Treasury() {
   const params = useParams();
   const projectId = params.id as UUID;
+  const [addFundOpen, setAddFundOpen] = useState(false);
   const {
     pagination,
     setNextPage,
@@ -128,17 +106,41 @@ export default function Treasury() {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  // const metaData = useMemo(() => {
+  //   const meta = DUMMY_TRANSFER_HISTORY;
+  //   return {
+  //     total: meta?.total || 0,
+  //     currentPage: meta?.currentPage || 1, // Changed from 0 to 1
+  //     lastPage: meta?.lastPage || 1, // Changed from 0 to 1
+  //     perPage: meta?.perPage || 10, // Changed from 0 to 10
+  //     next: meta?.next || null,
+  //     prev: meta?.prev || null,
+  //   };
+  // }, [groupsFundsData?.response?.meta]);
   return (
     <>
       {isPending ? (
         <SpinnerLoader />
       ) : (
         <div className="space-y-4">
-          <Heading
-            title="Treasury"
-            titleStyle="text-lg"
-            description="Overview of token supply, project balance, and transfer history"
+          <AddFundDialog
+            open={addFundOpen}
+            onClose={() => setAddFundOpen(false)}
+            projectUUID={projectId}
           />
+          <div className="flex justify-between">
+            <Heading
+              title="Treasury"
+              titleStyle="text-lg"
+              description="Overview of token supply, project balance, and transfer history"
+            />
+            <IconLabelBtn
+              Icon={Coins}
+              name="Add Fund"
+              handleClick={() => setAddFundOpen(true)}
+            />
+          </div>
 
           {/* ── Top Stats Cards ─────────────────────────────────── */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -191,85 +193,21 @@ export default function Treasury() {
           </Card>
 
           {/* ── Transfer History ────────────────────────────────── */}
-          <Card className="rounded-sm">
-            <CardHeader className="pb-2 p-4">
-              <CardTitle className="text-base font-medium flex items-center gap-2">
-                <Hash size={16} className="text-primary" />
-                Transfer History
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <ScrollArea className="h-[380px]">
-                <div className="divide-y">
-                  {/* Header row */}
-                  <div className="grid grid-cols-[2fr_2fr_2fr_1fr_1fr_1.5fr] gap-2 px-4 py-2 bg-secondary text-xs font-medium text-muted-foreground">
-                    <span>Tx Hash</span>
-                    <span>From</span>
-                    <span>To</span>
-                    <span>Amount</span>
-                    <span>Status</span>
-                    <span className="text-right">Date</span>
-                  </div>
-
-                  {DUMMY_TRANSFER_HISTORY.map((tx) => (
-                    <div
-                      key={tx.id}
-                      className="grid grid-cols-[2fr_2fr_2fr_1fr_1fr_1.5fr] gap-2 px-4 py-3 items-center text-sm hover:bg-secondary/50 transition-colors"
-                    >
-                      {/* Tx Hash */}
-                      <div className="flex items-center gap-1.5 font-mono text-xs text-primary">
-                        {tx.type === 'IN' ? (
-                          <ArrowDownLeft
-                            size={14}
-                            className="shrink-0 text-green-500"
-                          />
-                        ) : (
-                          <ArrowUpRight
-                            size={14}
-                            className="shrink-0 text-orange-500"
-                          />
-                        )}
-                        <span className="truncate">
-                          {shortenHash(tx.txHash)}
-                        </span>
-                      </div>
-
-                      {/* From */}
-                      <span className="font-mono text-xs text-muted-foreground truncate">
-                        {shortenAddress(tx.from)}
-                      </span>
-
-                      {/* To */}
-                      <span className="font-mono text-xs text-muted-foreground truncate">
-                        {shortenAddress(tx.to)}
-                      </span>
-
-                      {/* Amount */}
-                      <span className="font-medium text-xs">
-                        {tx.amount}{' '}
-                        <span className="text-muted-foreground">
-                          {DUMMY_TOKEN.symbol}
-                        </span>
-                      </span>
-
-                      {/* Status */}
-                      <Badge
-                        variant={statusVariantMap[tx.status] ?? 'outline'}
-                        className="text-xs w-fit px-2 py-0.5"
-                      >
-                        {tx.status}
-                      </Badge>
-
-                      {/* Date */}
-                      <span className="text-xs text-muted-foreground text-right">
-                        {tx.date}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
+          <DemoTable
+            table={table}
+            tableHeight="h-[calc(100vh-420px)]"
+            // loading={isLoading}
+            message="No Fund Management List Available"
+          />
+          {/* <CustomPagination
+            meta={metaData}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            currentPage={pagination.page}
+            perPage={pagination.perPage}
+            total={groupsFundsData?.response?.meta?.lastPage || 0}
+          /> */}
         </div>
       )}
     </>

@@ -39,7 +39,10 @@ export default function ColumnMappingTable({
   mappings,
 }: ColumnMappingTableProps) {
   const [columns, setColumns] = useState([]) as any[];
-  const { setMappings } = useBeneficiaryImportStore();
+  const { setMappings, fieldSuggestions } = useBeneficiaryImportStore();
+  console.log(fieldSuggestions, 'filedSuggestions from columMapingtable')
+  console.log(mappings, 'mappingss')
+  console.log(rawData, 'rawData')
 
   const extractColumns = () => {
     if (rawData.length > 0) {
@@ -80,19 +83,38 @@ export default function ColumnMappingTable({
       if (!found) return '';
       return found.targetField;
     } else {
-      // Search for variation match
-      const found = findFieldName(sourceField);
-      if (!found) return '';
-      if (found) {
-        myMappings.push({
-          sourceField: found.sourceField,
-          targetField: found.targetField,
-        });
+      let targetField = '';
+      // 1. Try AI Suggestions
+      const aiFound = fieldSuggestions.find(
+        (s) => s.sourceField === sourceField,
+      );
+      if (aiFound && aiFound.targetField) {
+        targetField = aiFound.targetField;
+      } else {
+        // 2. Search for variation match
+        const variationMatch = findFieldName(sourceField);
+        if (variationMatch) {
+          targetField = variationMatch.targetField;
+        }
       }
 
-      const filtered = filterUniqueTargetsOnly(myMappings, 'targetField');
-      setMappings(filtered);
-      return found.targetField;
+      if (targetField) {
+        // Avoid duplicate source fields in myMappings
+        const alreadyMapped = myMappings.find(
+          (m) => m.sourceField === sourceField,
+        );
+        if (!alreadyMapped) {
+          myMappings.push({
+            sourceField,
+            targetField,
+          });
+          const filtered = filterUniqueTargetsOnly(myMappings, 'targetField');
+          setMappings(filtered);
+        }
+        return targetField;
+      }
+
+      return '';
     }
   }
 

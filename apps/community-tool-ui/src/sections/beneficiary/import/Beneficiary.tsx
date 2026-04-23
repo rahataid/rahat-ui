@@ -30,9 +30,11 @@ import InfoBox from './InfoBox';
 
 import {
   useBeneficiaryImportStore,
+  useCommunitySettingList,
   useCreateImportSource,
   useExistingFieldMappings,
   useFetchKoboSettings,
+  useUploadCsvForMapping,
 } from '@rahat-ui/community-query';
 import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable, { resetMyMappings } from './ColumnMappingTable';
@@ -49,6 +51,16 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   const { data: kbSettings } = useFetchKoboSettings();
   const existingMapQuery = useExistingFieldMappings();
   const importSourceQuery = useCreateImportSource();
+  const { isLoading, data } = useCommunitySettingList({ page: 1, perPage: 20 });
+  const aiSetting = data?.data.find(
+    (setting: any) => setting.name === 'AI_API_URL',
+  );
+  const aiBaseurl = aiSetting?.value?.URL;
+
+
+  // filed suggesting api  Hooks
+  const uploadCsvForMapping = useUploadCsvForMapping();
+
 
   const {
     currentScreen,
@@ -75,8 +87,44 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     setValidBenef,
     hasUUID,
     setHasUUID,
+    fieldSuggestions,
+    setFieldSuggestions,
   } = useBeneficiaryImportStore();
   // ==========States=============
+
+
+
+  const fetchAiMappingSuggestions = async (file: File) => {
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const uploadResult = await uploadCsvForMapping.mutateAsync({
+        payload: formData,
+        baseURL: aiBaseurl,
+      });
+
+      if (uploadResult && uploadResult.classified_headers.length) {
+        const aiData = uploadResult.classified_headers.map((header: any) => ({
+          sourceField: header.header,
+          targetField: header.predicted_label,
+          other_similar: header.other_similar,
+          match: header.match,
+          similarity: header.similarity,
+        }));
+
+        setFieldSuggestions(aiData); // Store AI suggestions separately
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error('AI Mapping Error:', error);
+      setLoading(false);
+      // Silently fail - user can still map manually
+    }
+  };
 
   const fetchExistingMapping = async (importId: string) => {
     setMappings([]);
@@ -171,24 +219,51 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     setLoading(true);
     setRawData([]);
     const files = e.target.files || [];
+    if (!files.length) {
+      setLoading(false);
+      return;
+    }
     const fileName = formatNameString(files[0].name);
-    if (!files.length) return;
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      const data = e.target.result;
-      const workbook = xlsx.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const json = xlsx.utils.sheet_to_json(worksheet, {
-        defval: '',
-      }) as any;
-      const sanitized = removeFieldsWithUnderscore(json || []);
-      setRawData(sanitized);
+
+    const readFileAndFetchSuggestions = () => {
+      return new Promise<void>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async (event: any) => {
+          try {
+            const data = event.target.result;
+            const workbook = xlsx.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const json = xlsx.utils.sheet_to_json(worksheet, {
+              defval: '',
+            }) as any;
+            const sanitized = removeFieldsWithUnderscore(json || []);
+            setRawData(sanitized);
+            await fetchAiMappingSuggestions(files[0]);
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        };
+        reader.onerror = (error) => reject(error);
+        reader.readAsArrayBuffer(files[0]);
+      });
     };
-    reader.readAsArrayBuffer(files[0]);
-    setImportId(fileName);
-    await fetchExistingMapping(fileName);
-    setLoading(false);
+
+    try {
+      await readFileAndFetchSuggestions();
+      setImportId(fileName);
+      await fetchExistingMapping(fileName);
+    } catch (error) {
+      console.error('File selection error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error reading file',
+        text: 'There was an issue processing the uploaded file.',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoClick = () => {
@@ -228,10 +303,36 @@ export default function BenImp({ fieldDefinitions }: IProps) {
 
   const validateOrImport = (action: string) => {
     setValidBenef([]);
+
+    const finalMappings = [...mappings];
+
+    if (fieldSuggestions && fieldSuggestions.length > 0) {
+      fieldSuggestions.forEach((aiSuggestion: any) => {
+        const existingMapping = finalMappings.find(
+          (m: any) => m.sourceField === aiSuggestion.sourceField,
+        );
+
+        // If user hasn't manually selected this field
+        if (!existingMapping && aiSuggestion.targetField) {
+          if (aiSuggestion.similarity === 100) {
+            finalMappings.push({
+              sourceField: aiSuggestion.sourceField,
+              targetField: aiSuggestion.targetField,
+            });
+          } else {
+            console.log('ai mapping skipped');
+          }
+        } else if (existingMapping) {
+          console.log(' user already selected: skipping ai suggestion ');
+        }
+      });
+
+      setMappings(finalMappings);
+    }
     let finalPayload = rawData as any[];
     const selectedTargets = []; // Only submit selected target fields
 
-    for (let m of mappings) {
+    for (let m of finalMappings) {
       if (m.targetField === TARGET_FIELD.FIRSTNAME) {
         selectedTargets.push(TARGET_FIELD.FIRSTNAME);
         const replaced = finalPayload.map((item: any) => {

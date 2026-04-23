@@ -57,6 +57,7 @@ import React, {
   useState,
   ChangeEvent,
   useCallback,
+  useRef,
 } from 'react';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
@@ -98,6 +99,7 @@ export default function AddActivities() {
   const [uploadingFileName, setUploadingFileName] = useState<string | null>(
     null,
   );
+  const communicationFormRef = useRef<HTMLDivElement>(null);
   const createActivity = useCreateActivities();
   const uploadFile = useUploadFile();
   const { id: projectID } = useParams();
@@ -846,6 +848,18 @@ export default function AddActivities() {
                 className="border-dashed border-primary text-primary text-md w-full mt-4"
                 onClick={() => {
                   addCommunicationOpen.onToggle();
+                  // Scroll to communication form when opening
+                  if (!addCommunicationOpen.value) {
+                    setTimeout(() => {
+                      communicationFormRef.current?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start',
+                      });
+                      const firstInput =
+                        communicationFormRef.current?.querySelector('input');
+                      firstInput?.focus();
+                    }, 100);
+                  }
                 }}
               >
                 Add Communication
@@ -856,15 +870,17 @@ export default function AddActivities() {
                 )}
               </Button>
               {(addCommunicationOpen.value || editCommunicationOpen.value) && (
-                <AddCommunicationForm
-                  form={communicationForm}
-                  setOpen={addCommunicationOpen.setValue}
-                  onSave={handleSave}
-                  setLoading={audioUploading.setValue}
-                  appTransports={appTransports}
-                  isMultiSelect={true}
-                  editMode={editCommunicationOpen}
-                />
+                <div ref={communicationFormRef}>
+                  <AddCommunicationForm
+                    form={communicationForm}
+                    setOpen={addCommunicationOpen.setValue}
+                    onSave={handleSave}
+                    setLoading={audioUploading.setValue}
+                    appTransports={appTransports}
+                    isMultiSelect={true}
+                    editMode={editCommunicationOpen}
+                  />
+                </div>
               )}
 
               <CommunicationDataCard

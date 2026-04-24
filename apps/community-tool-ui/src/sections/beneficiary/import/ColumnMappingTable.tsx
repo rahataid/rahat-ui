@@ -40,9 +40,7 @@ export default function ColumnMappingTable({
 }: ColumnMappingTableProps) {
   const [columns, setColumns] = useState([]) as any[];
   const { setMappings, fieldSuggestions } = useBeneficiaryImportStore();
-  console.log(fieldSuggestions, 'filedSuggestions from columMapingtable')
-  console.log(mappings, 'mappingss')
-  console.log(rawData, 'rawData')
+
 
   const extractColumns = () => {
     if (rawData.length > 0) {
@@ -154,7 +152,12 @@ export default function ColumnMappingTable({
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span>{truncatedText(column, 40)}</span>
+                    <div className="flex items-center gap-1">
+                      <span>{truncatedText(column, 40)}</span>
+                      {fieldSuggestions.find((s) => s.sourceField === column) && (
+                        <span className="text-[10px] bg-blue-100 text-blue-600 px-1 rounded">AI</span>
+                      )}
+                    </div>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>{column}</p>
@@ -167,6 +170,10 @@ export default function ColumnMappingTable({
                 handleTargetFieldChange={handleTargetFieldChange}
                 column={column}
                 selectedField={getSelectedField(column)}
+                aiSuggestion={
+                  fieldSuggestions.find((s) => s.sourceField === column)
+                    ?.targetField
+                }
               />
             </th>
           ))}

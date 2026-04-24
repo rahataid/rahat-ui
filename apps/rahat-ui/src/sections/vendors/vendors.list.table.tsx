@@ -65,6 +65,10 @@ type IProps = {
   handleAssignProject: VoidFunction;
   projectModal: ProjectModalType;
   selectedRow: any;
+  statusFilter: string;
+  onStatusFilterChange: (value: string) => void;
+  projectFilter: string;
+  onProjectFilterChange: (value: string) => void;
 };
 
 export default function VendorsTable({
@@ -74,13 +78,17 @@ export default function VendorsTable({
   handleAssignProject,
   projectModal,
   selectedRow,
+  statusFilter,
+  onStatusFilterChange,
+  projectFilter,
+  onProjectFilterChange,
 }: IProps) {
-  const projectList = useProjectList({});
+  const projectList = useProjectList({ page: 1, perPage: 1000 });
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
   const projectNames =
-    (projectList?.data?.data?.length > 0 &&
-      projectList?.data?.data?.map((project: any) => project?.name)) ||
-    [];
+    (projectList?.data?.data && projectList.data.data.length > 0
+      ? projectList.data.data.map((project: any) => project?.name)
+      : []) || [];
 
   return (
     <div className="border rounded shadow p-3">
@@ -96,29 +104,20 @@ export default function VendorsTable({
 
         <SelectComponent
           onChange={(event) => {
-            table
-              .getColumn('status')
-              ?.setFilterValue(event === 'All' ? '' : event);
+            onStatusFilterChange(event === 'All' ? '' : event);
           }}
           name="Status"
           options={['All', 'Assigned', 'Pending']}
-          value={
-            (table.getColumn('status')?.getFilterValue() as string) || 'All'
-          }
+          value={statusFilter || 'All'}
         />
 
         <SelectComponent
           onChange={(event) => {
-            table
-              .getColumn('projectName')
-              ?.setFilterValue(event === 'All' ? '' : event);
+            onProjectFilterChange(event === 'All' ? '' : event);
           }}
           name="Project Name"
           options={['All', ...projectNames]}
-          value={
-            (table.getColumn('projectName')?.getFilterValue() as string) ||
-            'All'
-          }
+          value={projectFilter || 'All'}
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

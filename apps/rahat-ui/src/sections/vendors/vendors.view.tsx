@@ -23,13 +23,31 @@ import VendorsTable from './vendors.list.table';
 import CustomPagination from '../../components/customPagination';
 
 function VendorsView() {
-  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
+  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
+    usePagination();
 
   const projectModal = useBoolean();
   const [refetch, setRefetch] = React.useState(false);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [statusFilter, setStatusFilter] = React.useState('');
+  const [projectFilter, setProjectFilter] = React.useState('');
+
+  // Reset to page 1 whenever server-side filters change
+  React.useEffect(() => {
+    setPagination({ ...pagination, page: 1 });
+  }, [statusFilter, projectFilter]);
+
+  const vendorPayload = React.useMemo(
+    () => ({
+      ...pagination,
+      ...(statusFilter && { status: statusFilter }),
+      ...(projectFilter && { projectName: projectFilter }),
+    }),
+    [pagination, statusFilter, projectFilter],
+  );
 
   const addVendor = useAssignVendorToProject();
-  const { data: vendorData } = useVendorList(pagination, refetch);
+  const { data: vendorData } = useVendorList(vendorPayload, refetch);
 
   const [selectedProject, setSelectedProject] = React.useState<UUID>();
   const [selectedRow, setSelectedRow] = React.useState(null) as any;
@@ -40,7 +58,7 @@ function VendorsView() {
   };
   const handleAssignProject = async () => {
     if (!selectedProject) return alert('Please select a project');
-    const res = await addVendor.mutateAsync({
+    await addVendor.mutateAsync({
       vendorUUID: selectedRow?.id,
       projectUUID: selectedProject,
     });
@@ -49,9 +67,6 @@ function VendorsView() {
   };
   const columns = useTableColumns(handleAssignModalClick);
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
 
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -64,9 +79,9 @@ function VendorsView() {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
@@ -90,6 +105,10 @@ function VendorsView() {
           handleAssignProject={handleAssignProject}
           projectModal={projectModal}
           selectedRow={selectedRow}
+          statusFilter={statusFilter}
+          onStatusFilterChange={setStatusFilter}
+          projectFilter={projectFilter}
+          onProjectFilterChange={setProjectFilter}
         />
       </div>
       <CustomPagination

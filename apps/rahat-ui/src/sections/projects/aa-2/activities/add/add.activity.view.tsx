@@ -494,7 +494,7 @@ export default function AddActivities() {
                 </div>
               </div>
             </div>
-            <ScrollArea className=" h-[calc(100vh-230px)]">
+            <ScrollArea>
               <div className="rounded-xl border p-4">
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
@@ -855,9 +855,6 @@ export default function AddActivities() {
                         behavior: 'smooth',
                         block: 'start',
                       });
-                      const firstInput =
-                        communicationFormRef.current?.querySelector('input');
-                      firstInput?.focus();
                     }, 100);
                   }
                 }}

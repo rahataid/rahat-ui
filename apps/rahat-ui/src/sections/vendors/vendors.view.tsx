@@ -38,7 +38,6 @@ function VendorsView() {
     setSelectedRow(row);
     projectModal.onTrue();
   };
-
   const handleAssignProject = async () => {
     if (!selectedProject) return alert('Please select a project');
     const res = await addVendor.mutateAsync({
@@ -81,7 +80,7 @@ function VendorsView() {
     <>
       <div className="p-4">
         <div className="mb-4">
-          <h1 className="font-semibold text-2xl text-label">Vendors ss</h1>
+          <h1 className="font-semibold text-2xl text-label">Vendors</h1>
           <p className="text-sub-label">Here is the list of all the vendors</p>
         </div>
         <VendorsTable

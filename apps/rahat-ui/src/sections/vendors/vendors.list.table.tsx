@@ -41,7 +41,6 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { UUID } from 'crypto';
-import TableLoader from '../../components/table.loader';
 import Image from 'next/image';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import SelectComponent from '../projects/el-kenya/select.component';
@@ -102,8 +101,10 @@ export default function VendorsTable({
               ?.setFilterValue(event === 'All' ? '' : event);
           }}
           name="Status"
-          options={['All', 'Assigned', 'Not Assigned']}
-          value={(table.getColumn('status')?.getFilterValue() as string) || ''}
+          options={['All', 'Assigned', 'Pending']}
+          value={
+            (table.getColumn('status')?.getFilterValue() as string) || 'All'
+          }
         />
 
         <SelectComponent
@@ -115,7 +116,8 @@ export default function VendorsTable({
           name="Project Name"
           options={['All', ...projectNames]}
           value={
-            (table.getColumn('projectName')?.getFilterValue() as string) || ''
+            (table.getColumn('projectName')?.getFilterValue() as string) ||
+            'All'
           }
         />
         <DropdownMenu>

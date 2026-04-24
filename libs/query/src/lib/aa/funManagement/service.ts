@@ -540,7 +540,7 @@ export const useAddProjectFund = (projectUUID: UUID) => {
         icon: 'success',
       });
       queryClient.invalidateQueries({
-        queryKey: ['aa.tokenDetails', data.hash, projectUUID],
+        queryKey: ['aa.tokenDetails', projectUUID],
       });
     },
     onError: (error: any) => {

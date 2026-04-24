@@ -2,6 +2,7 @@ import { Hash } from 'lucide-react';
 import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import CopyTooltip from 'apps/rahat-ui/src/common/copyTooltip';
 import { ColumnDef } from '@tanstack/react-table';
+import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
 
 interface TokenTransaction {
   uuid: string;
@@ -10,10 +11,9 @@ interface TokenTransaction {
   to: string;
   blockNumber: number;
   value: string;
-  blockTimestamp: string;
+  blockTimeStamp: string;
 }
 export const useTokenTransactionHistory = () => {
-
   const columns: ColumnDef<TokenTransaction>[] = [
     {
       header: 'Transaction Hash',
@@ -60,7 +60,14 @@ export const useTokenTransactionHistory = () => {
     },
     {
       header: 'Date',
-      accessorKey: 'blockTimestamp',
+      accessorKey: 'blockTimeStamp',
+      cell: ({ row }) => {
+        const date = new Date(Number(row.original.blockTimeStamp) * 1000);
+        const formattedDate = row.original.blockTimeStamp
+          ? dateFormat(date)
+          : 'N/A';
+        return formattedDate;
+      },
     },
   ];
   return columns;

@@ -7,7 +7,6 @@ import {
 
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import {
-  CustomPagination,
   DemoTable,
   Heading,
   IconLabelBtn,
@@ -15,94 +14,25 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { Wallet, Coins } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { useGetTokenDetails, usePagination } from '@rahat-ui/query';
+import { useGetTokenDetails } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useState } from 'react';
 import { useTokenTransactionHistory } from '../columns/useTokenTransactionHistory';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import AddFundDialog from './add.fund.dialog';
 
-const DUMMY_TRANSFER_HISTORY = [
-  {
-    uuid: '1',
-    transactionHash: '0xabc1234567890abcdef1234567890abcdef12345678',
-    from: '0xA1B2C3D4E5F6A1B2C3D4E5F6A1B2C3D4E5F6A1B2',
-    to: '0xB2C3D4E5F6A1B2C3D4E5F6A1B2C3D4E5F6A1B2C3',
-    blockNumber: 12345678,
-    value: '10,000',
-    blockTimestamp: '2026-04-19T15:10:00Z',
-  },
-  {
-    uuid: '2',
-    transactionHash: '0xdef9876543210fedcba9876543210fedcba987654',
-    from: '0xC3D4E5F6A1B2C3D4E5F6A1B2C3D4E5F6A1B2C3D4',
-    to: '0xA1B2C3D4E5F6A1B2C3D4E5F6A1B2C3D4E5F6A1B2',
-    blockNumber: 12345678,
-    value: '10,000',
-    blockTimestamp: '2026-04-19T15:10:00Z',
-  },
-  {
-    uuid: '3',
-    transactionHash: '0x1234abcd5678efgh9012ijkl3456mnop7890qrst',
-    from: '0xA1B2C3D4E5F6A1B2C3D4E5F6A1B2C3D4E5F6A1B2',
-    to: '0xD4E5F6A1B2C3D4E5F6A1B2C3D4E5F6A1B2C3D4E5',
-    blockNumber: 12345678,
-    value: '10,000',
-    blockTimestamp: '2026-04-19T15:10:00Z',
-  },
-  {
-    uuid: '4',
-    transactionHash: '0x9876dcba5432efgh1098ijkl7654mnop3210qrst',
-    from: '0xE5F6A1B2C3D4E5F6A1B2C3D4E5F6A1B2C3D4E5F6',
-    to: '0xA1B2C3D4E5F6A1B2C3D4E5F6A1B2C3D4E5F6A1B2',
-    blockNumber: 12345678,
-    value: '10,000',
-    blockTimestamp: '2026-04-19T15:10:00Z',
-  },
-  {
-    uuid: '5',
-    transactionHash: '0xfedc9876543210abcdef9876543210abcdef9876',
-    from: '0xA1B2C3D4E5F6A1B2C3D4E5F6A1B2C3D4E5F6A1B2',
-    to: '0xF6A1B2C3D4E5F6A1B2C3D4E5F6A1B2C3D4E5F6A1',
-    blockNumber: 12345678,
-    value: '10,000',
-    blockTimestamp: '2026-04-19T15:10:00Z',
-  },
-  {
-    uuid: '6',
-    transactionHash: '0xabcdef1234567890abcdef1234567890abcdef12',
-    from: '0xB2C3D4E5F6A1B2C3D4E5F6A1B2C3D4E5F6A1B2C3',
-    to: '0xA1B2C3D4E5F6A1B2C3D4E5F6A1B2C3D4E5F6A1B2',
-    blockNumber: 12345678,
-    value: '10,000',
-    blockTimestamp: '2026-04-19T15:10:00Z',
-  },
-];
-
-// ─── Component ────────────────────────────────────────────────────────────────
-
 export default function Treasury() {
   const params = useParams();
   const projectId = params.id as UUID;
   const [addFundOpen, setAddFundOpen] = useState(false);
-  const {
-    pagination,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    setPagination,
-    setFilters,
-    filters,
-  } = usePagination();
 
   const { data: tokenDetails, isPending } = useGetTokenDetails(
     projectId as UUID,
   );
-  console.log('Token Details:', tokenDetails);
 
   const columns = useTokenTransactionHistory();
   const table = useReactTable({
-    data: DUMMY_TRANSFER_HISTORY,
+    data: tokenDetails?.data?.transfer || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -110,7 +40,9 @@ export default function Treasury() {
   return (
     <>
       {isPending ? (
-        <SpinnerLoader />
+        <div className="h-[calc(100vh-300px)]">
+          <SpinnerLoader />
+        </div>
       ) : (
         <div className="space-y-4">
           <AddFundDialog
@@ -185,18 +117,8 @@ export default function Treasury() {
           <DemoTable
             table={table}
             tableHeight="h-[calc(100vh-420px)]"
-            // loading={isLoading}
             message="No Fund Management List Available"
           />
-          {/* <CustomPagination
-            meta={metaData}
-            handleNextPage={setNextPage}
-            handlePrevPage={setPrevPage}
-            handlePageSizeChange={setPerPage}
-            currentPage={pagination.page}
-            perPage={pagination.perPage}
-            total={groupsFundsData?.response?.meta?.lastPage || 0}
-          /> */}
         </div>
       )}
     </>

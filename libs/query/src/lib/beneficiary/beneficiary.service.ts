@@ -113,6 +113,7 @@ export const useCreateBeneficiary = () => {
     mutationFn: (payload: any) => createNewBeneficiary(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_STATS] });
     },
   });
 };
@@ -293,6 +294,7 @@ export const useRemoveBeneficiaryFromProject = () => {
     mutationFn: (payload: any) => removeBeneficiary(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_STATS] });
       toast.fire({
         title: 'Beneficiary removed successfully',
         icon: 'success',
@@ -389,6 +391,7 @@ export const useRemoveBeneficiary = () => {
     mutationFn: (payload: any) => removeBeneficiary(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_STATS] });
       toast.fire({
         title: 'Beneficiary removed successfully',
         icon: 'success',

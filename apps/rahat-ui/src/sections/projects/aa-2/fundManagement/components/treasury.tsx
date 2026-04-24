@@ -107,17 +107,6 @@ export default function Treasury() {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  // const metaData = useMemo(() => {
-  //   const meta = DUMMY_TRANSFER_HISTORY;
-  //   return {
-  //     total: meta?.total || 0,
-  //     currentPage: meta?.currentPage || 1, // Changed from 0 to 1
-  //     lastPage: meta?.lastPage || 1, // Changed from 0 to 1
-  //     perPage: meta?.perPage || 10, // Changed from 0 to 10
-  //     next: meta?.next || null,
-  //     prev: meta?.prev || null,
-  //   };
-  // }, [groupsFundsData?.response?.meta]);
   return (
     <>
       {isPending ? (

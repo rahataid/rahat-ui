@@ -113,7 +113,9 @@ export const useCreateBeneficiary = () => {
     mutationFn: (payload: any) => createNewBeneficiary(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
-      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_STATS] });
+      console.log('Query invalidated for creating beneficiaries');
+
+      // qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_STATS] });
     },
   });
 };
@@ -294,7 +296,7 @@ export const useRemoveBeneficiaryFromProject = () => {
     mutationFn: (payload: any) => removeBeneficiary(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
-      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_STATS] });
+      // qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_STATS] });
       toast.fire({
         title: 'Beneficiary removed successfully',
         icon: 'success',
@@ -391,7 +393,9 @@ export const useRemoveBeneficiary = () => {
     mutationFn: (payload: any) => removeBeneficiary(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
-      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_STATS] });
+      console.log('Query invalidated for beneficiaries after removal');
+
+      // qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_STATS] });
       toast.fire({
         title: 'Beneficiary removed successfully',
         icon: 'success',

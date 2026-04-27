@@ -21,6 +21,7 @@ import { UUID } from 'crypto';
 import { useTableColumns } from './useTableColumns';
 import VendorsTable from './vendors.list.table';
 import CustomPagination from '../../components/customPagination';
+import { useDebounce } from '@rahat-ui/shadcn/src/components/custom/multi-select';
 
 function VendorsView() {
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
@@ -28,22 +29,28 @@ function VendorsView() {
 
   const projectModal = useBoolean();
   const [refetch, setRefetch] = React.useState(false);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
   const [statusFilter, setStatusFilter] = React.useState('');
   const [projectFilter, setProjectFilter] = React.useState('');
+  const [vendorNameFilter, setVendorNameFilter] = React.useState('');
 
   // Reset to page 1 whenever server-side filters change
   React.useEffect(() => {
     setPagination({ ...pagination, page: 1 });
-  }, [statusFilter, projectFilter]);
+  }, [statusFilter, projectFilter, vendorNameFilter]);
+
+  const debouncedNameSearch = useDebounce(vendorNameFilter, 500);
 
   const vendorPayload = React.useMemo(
     () => ({
       ...pagination,
+      ...(debouncedNameSearch && { vendorName: debouncedNameSearch }),
       ...(statusFilter && { status: statusFilter }),
       ...(projectFilter && { projectName: projectFilter }),
     }),
-    [pagination, statusFilter, projectFilter],
+    [pagination, debouncedNameSearch, statusFilter, projectFilter],
   );
 
   const addVendor = useAssignVendorToProject();
@@ -109,6 +116,8 @@ function VendorsView() {
           onStatusFilterChange={setStatusFilter}
           projectFilter={projectFilter}
           onProjectFilterChange={setProjectFilter}
+          vendorNameFilter={vendorNameFilter}
+          onVendorNameFilterChange={setVendorNameFilter}
         />
       </div>
       <CustomPagination

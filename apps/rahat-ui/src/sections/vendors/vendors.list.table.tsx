@@ -69,6 +69,8 @@ type IProps = {
   onStatusFilterChange: (value: string) => void;
   projectFilter: string;
   onProjectFilterChange: (value: string) => void;
+  vendorNameFilter: string;
+  onVendorNameFilterChange: (value: string) => void;
 };
 
 export default function VendorsTable({
@@ -82,6 +84,8 @@ export default function VendorsTable({
   onStatusFilterChange,
   projectFilter,
   onProjectFilterChange,
+  vendorNameFilter,
+  onVendorNameFilterChange,
 }: IProps) {
   const projectList = useProjectList({ page: 1, perPage: 1000 });
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
@@ -95,10 +99,8 @@ export default function VendorsTable({
       <div className="flex items-center mb-2 space-x-2">
         <Input
           placeholder="Search Vendors"
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
+          value={vendorNameFilter}
+          onChange={(event) => onVendorNameFilterChange(event.target.value)}
           className="rounded w-full"
         />
 

@@ -33,6 +33,7 @@ import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useUserList } from '@rumsan/react-query';
 import { Back, Heading } from 'apps/rahat-ui/src/common';
 import { validateFile } from 'apps/rahat-ui/src/utils/file.validation';
+import { isFileNameDuplicate } from 'apps/rahat-ui/src/utils/file.utils';
 import { UUID } from 'crypto';
 import {
   TooltipContent,
@@ -99,6 +100,9 @@ export default function AddActivities() {
   const [uploadingFileName, setUploadingFileName] = useState<string | null>(
     null,
   );
+  const [originalFileNames, setOriginalFileNames] = useState<
+    Map<string, string>
+  >(new Map());
   const communicationFormRef = useRef<HTMLDivElement>(null);
   const createActivity = useCreateActivities();
   const uploadFile = useUploadFile();
@@ -151,9 +155,22 @@ export default function AddActivities() {
 
       for (const file of filesArray) {
         const currentFiles = form.getValues('activityDocuments') || [];
-        const isDuplicateFile = currentFiles.some(
-          (f) => f.fileName === file.name,
+        const currentOriginalNames = originalFileNames;
+
+        // Check for duplicates using utility functions
+        const existingFileNames = currentFiles.map((f) => f.fileName);
+        const originalFileNamesList = Array.from(currentOriginalNames.values());
+
+        const isDuplicateInFiles = isFileNameDuplicate(
+          file.name,
+          existingFileNames,
         );
+        const isDuplicateInOriginals = originalFileNamesList.includes(
+          file.name,
+        );
+
+        const isDuplicateFile = isDuplicateInFiles || isDuplicateInOriginals;
+
         if (isDuplicateFile) {
           toast.error(`Cannot upload duplicate file: ${file.name}`);
           continue;
@@ -176,11 +193,20 @@ export default function AddActivities() {
           formData.append('file', file);
           const { data: afterUpload } = await uploadFile.mutateAsync(formData);
 
+          // Store the mapping of server filename to original filename
+          setOriginalFileNames((prev) => {
+            const newMap = new Map(prev);
+            newMap.set(afterUpload.fileName, file.name);
+            return newMap;
+          });
+
           // Replace temporary file with actual uploaded file
           const updatedFiles = form.getValues('activityDocuments') || [];
+
           const fileIndex = updatedFiles.findIndex(
             (f) => f.fileName === file.name && f.mediaURL === '',
           );
+
           if (fileIndex !== -1) {
             updatedFiles[fileIndex] = afterUpload;
             form.setValue('activityDocuments', updatedFiles);
@@ -200,6 +226,7 @@ export default function AddActivities() {
           setUploadingFileName(null);
         }
       }
+
       // Reset the input value to allow selecting the same files again
       event.target.value = '';
     }
@@ -298,6 +325,7 @@ export default function AddActivities() {
     } finally {
       form.reset();
       setCommunicationData([]);
+      setOriginalFileNames(new Map());
     }
   };
 
@@ -336,6 +364,7 @@ export default function AddActivities() {
     communicationForm.reset();
     addCommunicationOpen.onFalse();
     setCommunicationData([]);
+    setOriginalFileNames(new Map());
   };
 
   useEffect(() => {
@@ -452,7 +481,7 @@ export default function AddActivities() {
               <div className="mt-4 flex justify-between items-center">
                 <div>
                   <Heading
-                    title={`Add Activity `}
+                    title={`Add Activiy `}
                     description="Fill the form below to create new activity"
                   />
                 </div>
@@ -830,6 +859,13 @@ export default function AddActivities() {
                                     (f) => f.fileName !== file.fileName,
                                   );
                                   field.onChange(updated);
+
+                                  // Clean up originalFileNames mapping when file is removed
+                                  setOriginalFileNames((prev) => {
+                                    const newMap = new Map(prev);
+                                    newMap.delete(file.fileName);
+                                    return newMap;
+                                  });
                                 }}
                                 className="cursor-pointer text-red-500 w-8 h-8"
                               />

@@ -41,15 +41,23 @@ export function ConflictDialog({
   conflictType,
 }: ConflictDialogProps) {
   // Determine the conflict type and data to use
-  const isStakeholderConflict = conflictType === 'stakeholder' || groupNames || stakeholderName;
+  const isStakeholderConflict =
+    conflictType === 'stakeholder' || groupNames || stakeholderName;
   const conflictItems = items || activities || groupNames || [];
-  const displayName = entityName || groupName || stakeholderName || (isStakeholderConflict ? 'Stakeholder' : 'Stakeholder Group');
-  
+  const displayName =
+    entityName ||
+    groupName ||
+    stakeholderName ||
+    (isStakeholderConflict ? 'Stakeholder' : 'Stakeholder Group');
+
   // Auto-detect conflict type if not provided
   const detectedType = isStakeholderConflict ? 'stakeholder' : 'group';
-  
+
   // Set appropriate defaults based on conflict type
-  const defaultTitle = detectedType === 'stakeholder' ? 'Cannot Delete Stakeholder' : 'Cannot Delete Group';
+  const defaultTitle =
+    detectedType === 'stakeholder'
+      ? 'Cannot Delete Stakeholder'
+      : 'Cannot Delete Group';
   const finalTitle = title || defaultTitle;
 
   // Convert items to Activity[] format
@@ -63,15 +71,23 @@ export function ConflictDialog({
   // Configure messaging based on conflict type
   const config = {
     stakeholder: {
-      conflictDescription: `This stakeholder is currently linked to ${itemsList.length} stakeholder group${itemsList.length !== 1 ? 's' : ''} which are assigned to activities. Remove it from all of them to delete the stakeholder.`,
+      conflictDescription: `This stakeholder is currently linked to ${
+        itemsList.length
+      } stakeholder group${
+        itemsList.length !== 1 ? 's' : ''
+      } which are assigned to activities. Remove it from all of them to delete the stakeholder.`,
       listTitle: 'Stakeholder Groups:',
       // nextStep: 'Navigate to each stakeholder group listed above and remove this stakeholder from them. Once removed from all groups, you\'ll be able to delete the stakeholder.',
     },
     group: {
-      conflictDescription: `This stakeholder group is currently linked to ${itemsList.length} active communication${itemsList.length !== 1 ? 's' : ''}. Remove it from all of them to delete the group.`,
+      conflictDescription: `This stakeholder group is currently linked to ${
+        itemsList.length
+      } active communication${
+        itemsList.length !== 1 ? 's' : ''
+      }. Remove it from all of them to delete the group.`,
       listTitle: 'Communications:',
       // nextStep: 'Navigate to each communication listed above and unlink this group. Once removed from all communications, you\'ll be able to delete it.',
-    }
+    },
   };
 
   const currentConfig = config[detectedType as keyof typeof config];
@@ -104,7 +120,7 @@ export function ConflictDialog({
           </p>
 
           {/* Items List */}
-          <div className="space-y-2 rounded-lg bg-slate-900/5 p-4">
+          <div className="space-y-2 rounded-lg bg-slate-900/5 p-4 max-h-72 overflow-y-auto">
             {detectedType === 'stakeholder' && (
               <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">
                 {currentConfig.listTitle}

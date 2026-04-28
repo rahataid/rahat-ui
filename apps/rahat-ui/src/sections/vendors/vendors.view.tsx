@@ -6,7 +6,6 @@ import {
   SortingState,
   VisibilityState,
   getCoreRowModel,
-  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
@@ -32,9 +31,16 @@ function VendorsView() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const [statusFilter, setStatusFilter] = React.useState('');
-  const [projectFilter, setProjectFilter] = React.useState('');
-  const [vendorNameFilter, setVendorNameFilter] = React.useState('');
+
+  const statusFilter =
+    (columnFilters.find((filter) => filter.id === 'status')
+      ?.value as string) || '';
+  const projectFilter =
+    (columnFilters.find((filter) => filter.id === 'projectName')
+      ?.value as string) || '';
+  const vendorNameFilter =
+    (columnFilters.find((filter) => filter.id === 'name')?.value as string) ||
+    '';
 
   // Reset to page 1 whenever server-side filters change
   React.useEffect(() => {
@@ -86,7 +92,6 @@ function VendorsView() {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -112,12 +117,6 @@ function VendorsView() {
           handleAssignProject={handleAssignProject}
           projectModal={projectModal}
           selectedRow={selectedRow}
-          statusFilter={statusFilter}
-          onStatusFilterChange={setStatusFilter}
-          projectFilter={projectFilter}
-          onProjectFilterChange={setProjectFilter}
-          vendorNameFilter={vendorNameFilter}
-          onVendorNameFilterChange={setVendorNameFilter}
         />
       </div>
       <CustomPagination

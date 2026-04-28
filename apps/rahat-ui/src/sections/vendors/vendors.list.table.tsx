@@ -36,7 +36,6 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
@@ -44,6 +43,7 @@ import { UUID } from 'crypto';
 import Image from 'next/image';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import SelectComponent from '../projects/el-kenya/select.component';
+import { Project } from '@rahataid/sdk/project/project.types';
 
 export type IVendor = {
   id: string;
@@ -65,12 +65,6 @@ type IProps = {
   handleAssignProject: VoidFunction;
   projectModal: ProjectModalType;
   selectedRow: any;
-  statusFilter: string;
-  onStatusFilterChange: (value: string) => void;
-  projectFilter: string;
-  onProjectFilterChange: (value: string) => void;
-  vendorNameFilter: string;
-  onVendorNameFilterChange: (value: string) => void;
 };
 
 export default function VendorsTable({
@@ -80,18 +74,19 @@ export default function VendorsTable({
   handleAssignProject,
   projectModal,
   selectedRow,
-  statusFilter,
-  onStatusFilterChange,
-  projectFilter,
-  onProjectFilterChange,
-  vendorNameFilter,
-  onVendorNameFilterChange,
 }: IProps) {
   const projectList = useProjectList({ page: 1, perPage: 1000 });
+
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
+  const vendorNameFilter =
+    (table.getColumn('name')?.getFilterValue() as string) || '';
+  const statusFilter =
+    (table.getColumn('status')?.getFilterValue() as string) || '';
+  const projectFilter =
+    (table.getColumn('projectName')?.getFilterValue() as string) || '';
   const projectNames =
     (projectList?.data?.data && projectList.data.data.length > 0
-      ? projectList.data.data.map((project: any) => project?.name)
+      ? projectList.data.data.map((project: Project) => project?.name)
       : []) || [];
 
   return (
@@ -100,13 +95,17 @@ export default function VendorsTable({
         <Input
           placeholder="Search Vendors"
           value={vendorNameFilter}
-          onChange={(event) => onVendorNameFilterChange(event.target.value)}
+          onChange={(event) =>
+            table.getColumn('name')?.setFilterValue(event.target.value)
+          }
           className="rounded w-full"
         />
 
         <SelectComponent
           onChange={(event) => {
-            onStatusFilterChange(event === 'All' ? '' : event);
+            table
+              .getColumn('status')
+              ?.setFilterValue(event === 'All' ? '' : event);
           }}
           name="Status"
           options={['All', 'Assigned', 'Pending']}
@@ -115,7 +114,9 @@ export default function VendorsTable({
 
         <SelectComponent
           onChange={(event) => {
-            onProjectFilterChange(event === 'All' ? '' : event);
+            table
+              .getColumn('projectName')
+              ?.setFilterValue(event === 'All' ? '' : event);
           }}
           name="Project Name"
           options={['All', ...projectNames]}

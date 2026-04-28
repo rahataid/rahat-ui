@@ -10,7 +10,7 @@ import { useRSQuery } from '@rumsan/react-query';
 import { getVendorClient } from '@rahataid/sdk/clients';
 import { useVendorStore } from './vendors.store';
 import { TAGS } from '../../config';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { api } from '../../utils/api';
 import { UUID } from 'crypto';
 import { useSwal } from '../../swal';
@@ -26,29 +26,37 @@ export const useVendorList = (
     setMeta: state.setMeta,
   }));
 
-  const memoizedKey = useMemo(
-    () => [
-      TAGS.GET_VENDORS,
-      payload.page,
-      payload.perPage,
-      payload.vendorName,
-      payload.status,
-      payload.projectName,
-      refetch,
-    ],
-    [
-      payload.page,
-      payload.perPage,
-      payload.vendorName,
-      payload.status,
-      payload.projectName,
-      refetch,
-    ],
-  );
+  // const memoizedKey = useMemo(
+  //   () => [
+  //     TAGS.GET_VENDORS,
+  //     payload.page,
+  //     payload.perPage,
+  //     payload.vendorName,
+  //     payload.status,
+  //     payload.projectName,
+  //     refetch,
+  //   ],
+  //   [
+  //     payload.page,
+  //     payload.perPage,
+  //     payload.vendorName,
+  //     payload.status,
+  //     payload.projectName,
+  //     refetch,
+  //   ],
+  // );
 
   const vendor = useQuery(
     {
-      queryKey: memoizedKey,
+      queryKey: [
+        TAGS.GET_VENDORS,
+        payload.page,
+        payload.perPage,
+        payload.vendorName,
+        payload.status,
+        payload.projectName,
+        refetch,
+      ],
       select: (data) => {
         return {
           ...data,

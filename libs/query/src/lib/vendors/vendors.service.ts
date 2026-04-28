@@ -26,26 +26,6 @@ export const useVendorList = (
     setMeta: state.setMeta,
   }));
 
-  // const memoizedKey = useMemo(
-  //   () => [
-  //     TAGS.GET_VENDORS,
-  //     payload.page,
-  //     payload.perPage,
-  //     payload.vendorName,
-  //     payload.status,
-  //     payload.projectName,
-  //     refetch,
-  //   ],
-  //   [
-  //     payload.page,
-  //     payload.perPage,
-  //     payload.vendorName,
-  //     payload.status,
-  //     payload.projectName,
-  //     refetch,
-  //   ],
-  // );
-
   const vendor = useQuery(
     {
       queryKey: [

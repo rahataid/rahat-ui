@@ -1,126 +1,49 @@
-# -------- Base --------
-FROM node:20-alpine AS base
+# Stage 1: Dependencies
+FROM node:20-alpine AS deps
 WORKDIR /usr/src/app
-RUN corepack enable && corepack prepare pnpm@9.1.3 --activate
 
-# -------- Dependencies --------
-FROM base AS deps
-RUN apk add --no-cache libc6-compat python3 make g++
+# Enable Corepack for pnpm
+RUN corepack enable
+
+# Copy package manifests for caching
 COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# -------- Builder --------
-FROM base AS builder
+# Stage 2: Builder
+FROM node:20-alpine AS builder
+WORKDIR /usr/src/app
+RUN corepack enable
+
+# Copy dependencies from deps stage
 COPY --from=deps /usr/src/app/node_modules ./node_modules
+
+# Copy the full source code
 COPY . .
 
-ARG NEXT_PUBLIC_API_HOST_URL
-ARG NEXT_PUBLIC_API_COMMUNICATION_URL
-ARG NEXT_PUBLIC_API_APPLICATION_ID
-ENV NEXT_PUBLIC_API_HOST_URL=$NEXT_PUBLIC_API_HOST_URL
-ENV NEXT_PUBLIC_API_COMMUNICATION_URL=$NEXT_PUBLIC_API_COMMUNICATION_URL
-ENV NEXT_PUBLIC_API_APPLICATION_ID=$NEXT_PUBLIC_API_APPLICATION_ID
-
-ENV NODE_OPTIONS="--max-old-space-size=4096"
-ENV NEXT_TELEMETRY_DISABLED=1
+# Build the Next.js app
 RUN pnpm run rahat:build
-RUN [ -d "dist/apps/rahat-ui/.next/standalone" ] || (echo "ERROR: standalone build missing — ensure output: 'standalone' is set in next.config.js" && exit 1)
-RUN find dist/apps/rahat-ui/.next/standalone -name "*.map" -delete
 
-# -------- Runtime prep --------
-FROM node:20-alpine AS prep
+# Ensure .next exists for runtime
+RUN [ -d "dist/apps/rahat-ui/.next" ] || (echo "ERROR: .next build missing!" && exit 1)
 
-# Copy node binary to a known location
-RUN cp -p /usr/local/bin/node /node
-
-# Copy all shared libs to their original absolute paths
-RUN ldd /usr/local/bin/node 2>/dev/null | \
-  grep -oE '(/usr)?/lib[^ ]+' | sort -u | \
-  while read lib; do \
-  mkdir -p "/collect$(dirname $lib)"; \
-  cp -pL "$lib" "/collect$(dirname $lib)/"; \
-  done
-
-# Copy CA certs for HTTPS support
-RUN mkdir -p /collect/etc/ssl && cp -r /etc/ssl/certs /collect/etc/ssl/certs
-
-# -------- Runner --------
-FROM scratch
-
+# Stage 3: Runner / Production
+FROM node:20-alpine AS runner
 WORKDIR /usr/src/app
 
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3000
-ENV HOSTNAME=0.0.0.0
-ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+# Enable Corepack for pnpm at runtime
+RUN corepack enable
 
-# Node binary
-COPY --from=prep /node /node
+# Use non-root user for production safety
+USER node
 
-# Shared libs and CA certs at correct absolute paths
-COPY --from=prep /collect/ /
+# Copy built app and node_modules
+COPY --from=builder /usr/src/app/dist/apps/rahat-ui ./
+COPY --from=builder /usr/src/app/node_modules ./node_modules
 
-# Standalone app (self-contained, no node_modules needed)
-COPY --from=builder /usr/src/app/dist/apps/rahat-ui/.next/standalone ./
-# Static assets
-COPY --from=builder /usr/src/app/dist/apps/rahat-ui/.next/static \
-  ./dist/apps/rahat-ui/.next/static
-# Public assets
-COPY --from=builder /usr/src/app/apps/rahat-ui/public \
-  ./apps/rahat-ui/public
-
+# Expose default Next.js port
 EXPOSE 3000
 
-CMD ["/node", "apps/rahat-ui/server.js"]
-
-
-# # Stage 1: Dependencies
-# FROM node:20-alpine AS deps
-# WORKDIR /usr/src/app
-
-# # Enable Corepack for pnpm
-# RUN corepack enable
-
-# # Copy package manifests for caching
-# COPY package.json pnpm-lock.yaml ./
-
-# # Install dependencies
-# RUN pnpm install --frozen-lockfile
-
-# # Stage 2: Builder
-# FROM node:20-alpine AS builder
-# WORKDIR /usr/src/app
-# RUN corepack enable
-
-# # Copy dependencies from deps stage
-# COPY --from=deps /usr/src/app/node_modules ./node_modules
-
-# # Copy the full source code
-# COPY . .
-
-# # Build the Next.js app
-# RUN pnpm run rahat:build
-
-# # Ensure .next exists for runtime
-# RUN [ -d "dist/apps/rahat-ui/.next" ] || (echo "ERROR: .next build missing!" && exit 1)
-
-# # Stage 3: Runner / Production
-# FROM node:20-alpine AS runner
-# WORKDIR /usr/src/app
-
-# # Enable Corepack for pnpm at runtime
-# RUN corepack enable
-
-# # Use non-root user for production safety
-# USER node
-
-# # Copy built app and node_modules
-# COPY --from=builder /usr/src/app/dist/apps/rahat-ui ./
-# COPY --from=builder /usr/src/app/node_modules ./node_modules
-
-# # Expose default Next.js port
-# EXPOSE 3000
-
-# # Start Next.js in production
-# CMD ["node_modules/.bin/next", "start"]
+# Start Next.js in production
+CMD ["node_modules/.bin/next", "start"]

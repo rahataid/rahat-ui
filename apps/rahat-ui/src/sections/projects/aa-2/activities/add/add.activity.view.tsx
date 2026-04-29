@@ -481,7 +481,7 @@ export default function AddActivities() {
               <div className="mt-4 flex justify-between items-center">
                 <div>
                   <Heading
-                    title={`Add Activiy `}
+                    title={`Add Activity `}
                     description="Fill the form below to create new activity"
                   />
                 </div>

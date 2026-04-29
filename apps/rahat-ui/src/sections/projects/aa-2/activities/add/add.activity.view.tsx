@@ -57,6 +57,7 @@ import React, {
   useState,
   ChangeEvent,
   useCallback,
+  useRef,
 } from 'react';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
@@ -98,6 +99,7 @@ export default function AddActivities() {
   const [uploadingFileName, setUploadingFileName] = useState<string | null>(
     null,
   );
+  const communicationFormRef = useRef<HTMLDivElement>(null);
   const createActivity = useCreateActivities();
   const uploadFile = useUploadFile();
   const { id: projectID } = useParams();
@@ -492,7 +494,7 @@ export default function AddActivities() {
                 </div>
               </div>
             </div>
-            <ScrollArea className=" h-[calc(100vh-230px)]">
+            <ScrollArea>
               <div className="rounded-xl border p-4">
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
@@ -846,6 +848,15 @@ export default function AddActivities() {
                 className="border-dashed border-primary text-primary text-md w-full mt-4"
                 onClick={() => {
                   addCommunicationOpen.onToggle();
+                  // Scroll to communication form when opening
+                  if (!addCommunicationOpen.value) {
+                    setTimeout(() => {
+                      communicationFormRef.current?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start',
+                      });
+                    }, 100);
+                  }
                 }}
               >
                 Add Communication
@@ -856,15 +867,17 @@ export default function AddActivities() {
                 )}
               </Button>
               {(addCommunicationOpen.value || editCommunicationOpen.value) && (
-                <AddCommunicationForm
-                  form={communicationForm}
-                  setOpen={addCommunicationOpen.setValue}
-                  onSave={handleSave}
-                  setLoading={audioUploading.setValue}
-                  appTransports={appTransports}
-                  isMultiSelect={true}
-                  editMode={editCommunicationOpen}
-                />
+                <div ref={communicationFormRef}>
+                  <AddCommunicationForm
+                    form={communicationForm}
+                    setOpen={addCommunicationOpen.setValue}
+                    onSave={handleSave}
+                    setLoading={audioUploading.setValue}
+                    appTransports={appTransports}
+                    isMultiSelect={true}
+                    editMode={editCommunicationOpen}
+                  />
+                </div>
               )}
 
               <CommunicationDataCard

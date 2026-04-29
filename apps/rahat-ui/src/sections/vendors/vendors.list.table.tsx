@@ -36,15 +36,14 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { UUID } from 'crypto';
-import TableLoader from '../../components/table.loader';
 import Image from 'next/image';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import SelectComponent from '../projects/el-kenya/select.component';
+import { Project } from '@rahataid/sdk/project/project.types';
 
 export type IVendor = {
   id: string;
@@ -76,19 +75,26 @@ export default function VendorsTable({
   projectModal,
   selectedRow,
 }: IProps) {
-  const projectList = useProjectList({});
+  const projectList = useProjectList({ page: 1, perPage: 1000 });
+
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
+  const vendorNameFilter =
+    (table.getColumn('name')?.getFilterValue() as string) || '';
+  const statusFilter =
+    (table.getColumn('status')?.getFilterValue() as string) || '';
+  const projectFilter =
+    (table.getColumn('projectName')?.getFilterValue() as string) || '';
   const projectNames =
-    (projectList?.data?.data?.length > 0 &&
-      projectList?.data?.data?.map((project: any) => project?.name)) ||
-    [];
+    (projectList?.data?.data && projectList.data.data.length > 0
+      ? projectList.data.data.map((project: Project) => project?.name)
+      : []) || [];
 
   return (
     <div className="border rounded shadow p-3">
       <div className="flex items-center mb-2 space-x-2">
         <Input
           placeholder="Search Vendors"
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          value={vendorNameFilter}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
           }
@@ -102,8 +108,8 @@ export default function VendorsTable({
               ?.setFilterValue(event === 'All' ? '' : event);
           }}
           name="Status"
-          options={['All', 'Assigned', 'Not Assigned']}
-          value={(table.getColumn('status')?.getFilterValue() as string) || ''}
+          options={['All', 'Assigned', 'Pending']}
+          value={statusFilter || 'All'}
         />
 
         <SelectComponent
@@ -114,9 +120,7 @@ export default function VendorsTable({
           }}
           name="Project Name"
           options={['All', ...projectNames]}
-          value={
-            (table.getColumn('projectName')?.getFilterValue() as string) || ''
-          }
+          value={projectFilter || 'All'}
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

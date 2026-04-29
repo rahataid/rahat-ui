@@ -12,12 +12,23 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { Back, Heading } from '../../../../common';
 import { OverviewCard, ProfileCard, TransactionCard } from './components';
 import VendorsBeneficiaryList from './tables/beneficiary.table';
+import InKindBeneficiaryList from './tables/inkind.beneficiary.list';
+import InKindLogs from './tables/inkind.logs';
 import RedemptionRequestTable from './tables/redemption.request';
 import VendorsTransactionsHistory from './tables/transactions.history';
 import { useActiveTabDynamicKey } from 'apps/rahat-ui/src/utils/useActiveTabDynamicKey';
 import { getVendorRedirectRoute } from 'apps/rahat-ui/src/utils/navigation';
 import { useGetVendor } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+
+const TabsTriggerStats = [
+  { title: 'Vendor Overview', value: 'vendorOverview' },
+  { title: 'Transaction History', value: 'transactionHistory' },
+  { title: 'Beneficiary List', value: 'beneficiaryList' },
+  { title: 'Redemption Request', value: 'redemptionRequest' },
+  { title: 'In-Kind Beneficiary List', value: 'inKindBeneficiaryList' },
+  { title: 'In-Kind Logs', value: 'inKindLogs' },
+];
 
 export default function Detail() {
   const { id, vendorId }: { id: string; vendorId: string } = useParams();
@@ -56,30 +67,15 @@ export default function Detail() {
       />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="border bg-secondary rounded">
-          <TabsTrigger
-            value="vendorOverview"
-            className="w-full data-[state=active]:bg-white"
-          >
-            Vendor Overview
-          </TabsTrigger>
-          <TabsTrigger
-            value="transactionHistory"
-            className="w-full data-[state=active]:bg-white"
-          >
-            Transaction History
-          </TabsTrigger>
-          <TabsTrigger
-            value="beneficiaryList"
-            className="w-full data-[state=active]:bg-white"
-          >
-            Beneficiary List
-          </TabsTrigger>
-          <TabsTrigger
-            value="redemptionRequest"
-            className="w-full data-[state=active]:bg-white"
-          >
-            Redemption Request
-          </TabsTrigger>
+          {TabsTriggerStats.map((tab) => (
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className="w-full data-[state=active]:bg-white"
+            >
+              {tab.title}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
         <TabsContent value="vendorOverview">
@@ -108,6 +104,12 @@ export default function Detail() {
 
         <TabsContent value="redemptionRequest">
           <RedemptionRequestTable />
+        </TabsContent>
+        <TabsContent value="inKindBeneficiaryList">
+          <InKindBeneficiaryList />
+        </TabsContent>
+        <TabsContent value="inKindLogs">
+          <InKindLogs />
         </TabsContent>
       </Tabs>
     </div>

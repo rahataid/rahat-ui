@@ -46,7 +46,7 @@ const StakeholdersDetail = () => {
       }
 
       // Only navigate if deletion was successful
-      router.push(routeNav);
+      router.replace(routeNav);
     } catch (error) {
       // Error handler in the mutation will show error toast
       console.error('Error deleting stakeholder:', error);

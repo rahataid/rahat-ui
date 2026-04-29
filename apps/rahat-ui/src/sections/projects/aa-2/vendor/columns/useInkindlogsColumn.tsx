@@ -18,6 +18,14 @@ export const useInkindLogsColumn = () => {
     settings: s.settings,
   }));
 
+  const getTxUrl = (txHash?: string | null) =>
+    getExplorerUrl({
+      chainSettings:
+        settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+      target: 'tx',
+      value: txHash || '',
+    });
+
   const columns: ColumnDef<InKindLog>[] = [
     {
       accessorKey: 'groupName',
@@ -62,12 +70,7 @@ export const useInkindLogsColumn = () => {
       header: 'TxHash',
       cell: ({ row }) => {
         const txHash = row.original.txHash;
-        const txnUrl = getExplorerUrl({
-          chainSettings:
-            settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
-          target: 'tx',
-          value: txHash,
-        });
+        const txnUrl = getTxUrl(txHash);
 
         return (
           <div className="flex gap-2 items-center">

@@ -125,7 +125,6 @@ export default function InkindAllocationDetail() {
   const quantityRedeemed = groupInkind?.quantityRedeemed ?? 0;
   const totalBeneficiaries = groupInkind?.totalBeneficiaries ?? 0;
 
-  console.log('groupInkind', groupInkind, inkindType);
   const isWalkIn = inkindType === 'WALK_IN';
   const totalAvailableInkinds = isWalkIn
     ? inkindAvailableStock + quantityRedeemed
@@ -136,6 +135,14 @@ export default function InkindAllocationDetail() {
     : deriveStatus(quantityAllocated, quantityRedeemed);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+  const getTxUrl = (txHash?: string | null) =>
+    getExplorerUrl({
+      chainSettings:
+        settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+      target: 'tx',
+      value: txHash || '',
+    });
 
   const logRows = useMemo<LogRow[]>(() => {
     const raw = logsData?.data?.logs;
@@ -158,12 +165,7 @@ export default function InkindAllocationDetail() {
       header: 'Transaction Hash',
       cell: ({ row }) => {
         const txHash = row.original.txHash;
-        const txnUrl = getExplorerUrl({
-          chainSettings:
-            settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
-          target: 'tx',
-          value: txHash,
-        });
+        const txnUrl = getTxUrl(txHash);
 
         return txHash ? (
           <a

@@ -3,8 +3,21 @@ import { TruncatedCell } from '../../stakeholders/component/TruncatedCell';
 import { InKindLog } from '../types';
 import { ColumnDef } from '@tanstack/react-table';
 import { dateFormat } from 'apps/rahat-ui/src/utils/dateFormate';
+import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 export const useInkindLogsColumn = () => {
+  const params = useParams();
+  const projectId = params.id as UUID;
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
+
   const columns: ColumnDef<InKindLog>[] = [
     {
       accessorKey: 'groupName',
@@ -47,15 +60,36 @@ export const useInkindLogsColumn = () => {
     {
       accessorKey: 'txHash',
       header: 'TxHash',
-      cell: ({ row }) => (
-        <div className="flex gap-2 items-center">
-          <TruncatedCell text={row.original.txHash || 'N/A'} maxLength={10} />
-          <CopyTooltip
-            value={row.getValue('txHash')}
-            uniqueKey={row.original?.uuid}
-          />
-        </div>
-      ),
+      cell: ({ row }) => {
+        const txHash = row.original.txHash;
+        const txnUrl = getExplorerUrl({
+          chainSettings:
+            settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+          target: 'tx',
+          value: txHash,
+        });
+
+        return (
+          <div className="flex gap-2 items-center">
+            {txHash ? (
+              <a
+                href={txnUrl || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline cursor-pointer"
+              >
+                <TruncatedCell text={txHash} maxLength={10} />
+              </a>
+            ) : (
+              <TruncatedCell text="N/A" maxLength={10} />
+            )}
+            <CopyTooltip
+              value={row.getValue('txHash')}
+              uniqueKey={row.original?.uuid}
+            />
+          </div>
+        );
+      },
     },
     {
       accessorKey: 'redeemedAt',

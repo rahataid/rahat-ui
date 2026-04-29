@@ -169,7 +169,7 @@ function StakeholdersView() {
               name="Import Stakeholders"
               Icon={CloudDownload}
               handleClick={() =>
-                router.push(`/projects/aa/${projectId}/stakeholders/import`)
+                router.replace(`/projects/aa/${projectId}/stakeholders/import`)
               }
               variant="outline"
             />

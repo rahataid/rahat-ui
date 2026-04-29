@@ -100,9 +100,6 @@ export default function AddActivities() {
   const [uploadingFileName, setUploadingFileName] = useState<string | null>(
     null,
   );
-  const [originalFileNames, setOriginalFileNames] = useState<
-    Map<string, string>
-  >(new Map());
   const communicationFormRef = useRef<HTMLDivElement>(null);
   const createActivity = useCreateActivities();
   const uploadFile = useUploadFile();
@@ -155,19 +152,21 @@ export default function AddActivities() {
 
       for (const file of filesArray) {
         const currentFiles = form.getValues('activityDocuments') || [];
-        const currentOriginalNames = originalFileNames;
 
-        // Check for duplicates using utility functions
+        // Check for duplicates by comparing with both server and original file names
         const existingFileNames = currentFiles.map((f) => f.fileName);
-        const originalFileNamesList = Array.from(currentOriginalNames.values());
+        const existingOriginalNames = currentFiles
+          .map((f) => (f as any).originalFileName)
+          .filter(Boolean);
 
         const isDuplicateInFiles = isFileNameDuplicate(
           file.name,
           existingFileNames,
         );
-        const isDuplicateInOriginals = originalFileNamesList.includes(
-          file.name,
-        );
+        const isDuplicateInOriginals =
+          existingOriginalNames.some((origName: string) =>
+            isFileNameDuplicate(file.name, [origName]),
+          ) || existingOriginalNames.includes(file.name);
 
         const isDuplicateFile = isDuplicateInFiles || isDuplicateInOriginals;
 
@@ -184,6 +183,7 @@ export default function AddActivities() {
         const tempFile = {
           fileName: file.name,
           mediaURL: '', // Will be updated after upload completes
+          originalFileName: file.name, // Store original name for duplicate detection
         };
         form.setValue('activityDocuments', [...currentFiles, tempFile]);
         setUploadingFileName(file.name);
@@ -193,12 +193,11 @@ export default function AddActivities() {
           formData.append('file', file);
           const { data: afterUpload } = await uploadFile.mutateAsync(formData);
 
-          // Store the mapping of server filename to original filename
-          setOriginalFileNames((prev) => {
-            const newMap = new Map(prev);
-            newMap.set(afterUpload.fileName, file.name);
-            return newMap;
-          });
+          // Add originalFileName to track server-side name transformations
+          const uploadedFileWithOriginal = {
+            ...afterUpload,
+            originalFileName: file.name,
+          };
 
           // Replace temporary file with actual uploaded file
           const updatedFiles = form.getValues('activityDocuments') || [];
@@ -208,11 +207,14 @@ export default function AddActivities() {
           );
 
           if (fileIndex !== -1) {
-            updatedFiles[fileIndex] = afterUpload;
+            updatedFiles[fileIndex] = uploadedFileWithOriginal;
             form.setValue('activityDocuments', updatedFiles);
           } else {
             // Fallback: just add it if we can't find the temp entry
-            form.setValue('activityDocuments', [...currentFiles, afterUpload]);
+            form.setValue('activityDocuments', [
+              ...currentFiles,
+              uploadedFileWithOriginal,
+            ]);
           }
         } catch (error) {
           // Remove temporary file entry on error
@@ -325,7 +327,6 @@ export default function AddActivities() {
     } finally {
       form.reset();
       setCommunicationData([]);
-      setOriginalFileNames(new Map());
     }
   };
 
@@ -364,7 +365,6 @@ export default function AddActivities() {
     communicationForm.reset();
     addCommunicationOpen.onFalse();
     setCommunicationData([]);
-    setOriginalFileNames(new Map());
   };
 
   useEffect(() => {
@@ -859,13 +859,6 @@ export default function AddActivities() {
                                     (f) => f.fileName !== file.fileName,
                                   );
                                   field.onChange(updated);
-
-                                  // Clean up originalFileNames mapping when file is removed
-                                  setOriginalFileNames((prev) => {
-                                    const newMap = new Map(prev);
-                                    newMap.delete(file.fileName);
-                                    return newMap;
-                                  });
                                 }}
                                 className="cursor-pointer text-red-500 w-8 h-8"
                               />

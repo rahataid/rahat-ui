@@ -3,7 +3,11 @@
 import React, { useMemo, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useGetGroupInkindLogs } from '@rahat-ui/query';
+import {
+  useGetGroupInkindLogs,
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getSortedRowModel,
@@ -25,6 +29,7 @@ import { format } from 'date-fns';
 import TooltipComponent from 'apps/rahat-ui/src/components/tooltip';
 import { TruncatedCell } from 'apps/rahat-ui/src/sections/projects/aa-2/stakeholders/component/TruncatedCell';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 
 type LogRow = {
   uuid: string;
@@ -78,6 +83,10 @@ export default function InkindAllocationDetail() {
   const router = useRouter();
   const sp = useSearchParams();
 
+  const { settings } = useProjectSettingsStore((s) => ({
+    settings: s.settings,
+  }));
+
   const qGroupName = sp.get('groupName') ?? 'N/A';
   const qInkindType = sp.get('inkindType') ?? '';
   const qInkindAvailableStock = Number(sp.get('inkindAvailableStock') ?? 0);
@@ -116,7 +125,6 @@ export default function InkindAllocationDetail() {
   const quantityRedeemed = groupInkind?.quantityRedeemed ?? 0;
   const totalBeneficiaries = groupInkind?.totalBeneficiaries ?? 0;
 
-  console.log('groupInkind', groupInkind, inkindType);
   const isWalkIn = inkindType === 'WALK_IN';
   const totalAvailableInkinds = isWalkIn
     ? inkindAvailableStock + quantityRedeemed
@@ -127,6 +135,14 @@ export default function InkindAllocationDetail() {
     : deriveStatus(quantityAllocated, quantityRedeemed);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+  const getTxUrl = (txHash?: string | null) =>
+    getExplorerUrl({
+      chainSettings:
+        settings?.[projectUUID]?.[PROJECT_SETTINGS_KEYS.CHAIN_SETTINGS],
+      target: 'tx',
+      value: txHash || '',
+    });
 
   const logRows = useMemo<LogRow[]>(() => {
     const raw = logsData?.data?.logs;
@@ -147,9 +163,23 @@ export default function InkindAllocationDetail() {
     {
       accessorKey: 'txHash',
       header: 'Transaction Hash',
-      cell: ({ row }) => (
-        <TruncatedCell text={row.original.txHash || 'N/A'} maxLength={18} />
-      ),
+      cell: ({ row }) => {
+        const txHash = row.original.txHash;
+        const txnUrl = getTxUrl(txHash);
+
+        return txHash ? (
+          <a
+            href={txnUrl || '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline cursor-pointer"
+          >
+            <TruncatedCell text={txHash} maxLength={18} />
+          </a>
+        ) : (
+          <TruncatedCell text="N/A" maxLength={18} />
+        );
+      },
     },
     {
       accessorKey: 'vendorName',

@@ -3,7 +3,7 @@ import {
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
-import { Heading } from 'apps/rahat-ui/src/common';
+import { Heading, NoResult } from 'apps/rahat-ui/src/common';
 import useCopy from 'apps/rahat-ui/src/hooks/useCopy';
 import { getExplorerUrl } from 'apps/rahat-ui/src/utils';
 import { getAssetCode } from 'apps/rahat-ui/src/utils/stellar';
@@ -100,10 +100,21 @@ const Transaction = ({ amount, date, hash, title }: Txn) => {
 
 export default function TransactionCard({ transaction, loading }: Props) {
   const [activeTab, setActiveTab] = useState('fsp');
+
+  const fspTransactions =
+    transaction?.filter((txn) => txn.title === 'TOKEN_TRANSFER') || [];
+  const cvaTransactions =
+    transaction?.filter((txn) => txn.title === 'VENDOR_REIMBURSEMENT') || [];
+  const inKindTransactions =
+    transaction?.filter(
+      (txn) =>
+        txn.title !== 'TOKEN_TRANSFER' && txn.title !== 'VENDOR_REIMBURSEMENT',
+    ) || [];
+
   const TabsTriggerStats = [
-    { value: 'fsp', title: 'FSP', count: 0 },
-    { value: 'cva', title: 'CVA', count: 0 },
-    { value: 'inkind', title: 'In-kind', count: 0 },
+    { value: 'fsp', title: 'FSP', count: fspTransactions.length },
+    { value: 'cva', title: 'CVA', count: cvaTransactions.length },
+    { value: 'inkind', title: 'In-kind', count: inKindTransactions.length },
   ];
 
   return (
@@ -175,8 +186,7 @@ export default function TransactionCard({ transaction, loading }: Props) {
 
           <ScrollArea className="h-[calc(100vh-500px)]">
             <TabsContent value="fsp" className="mt-2  p-2">
-              {/* {renderTransactions(fspTransactions)} */}
-              {transaction?.map((txn) => {
+              {fspTransactions?.map((txn) => {
                 return (
                   <div className="mb-4 " key={txn.hash}>
                     <Transaction
@@ -188,11 +198,11 @@ export default function TransactionCard({ transaction, loading }: Props) {
                   </div>
                 );
               })}
+              {!fspTransactions.length && <NoResult />}
             </TabsContent>
 
             <TabsContent value="cva" className="mt-2  p-2">
-              {/* {renderTransactions(cvaTransactions)} */}
-              {transaction?.map((txn) => {
+              {cvaTransactions?.map((txn) => {
                 return (
                   <div className="mb-4 " key={txn.hash}>
                     <Transaction
@@ -204,11 +214,11 @@ export default function TransactionCard({ transaction, loading }: Props) {
                   </div>
                 );
               })}
+              {!cvaTransactions.length && <NoResult />}
             </TabsContent>
 
             <TabsContent value="inkind" className="mt-2  p-2 ">
-              {/* {renderInkindTransactions(inkindTransactions)} */}
-              {transaction?.map((txn) => {
+              {inKindTransactions?.map((txn) => {
                 return (
                   <div className="mb-4 " key={txn.hash}>
                     <Transaction
@@ -220,6 +230,7 @@ export default function TransactionCard({ transaction, loading }: Props) {
                   </div>
                 );
               })}
+              {!inKindTransactions.length && <NoResult />}
             </TabsContent>
           </ScrollArea>
         </Tabs>

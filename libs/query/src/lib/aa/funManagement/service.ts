@@ -493,17 +493,21 @@ export const useCreateAASafeTransaction = () => {
     },
   });
 };
-export const useGetTokenDetails = (projectUUID: UUID) => {
+export const useGetTokenDetails = (
+  projectUUID: UUID,
+  page = 1,
+  perPage = 10,
+) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['aa.tokenDetails', projectUUID],
+    queryKey: ['aa.tokenDetails', projectUUID, page, perPage],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'aa.tokenDetails',
-          payload: {},
+          payload: { page, perPage },
         },
       });
       return mutate.response;

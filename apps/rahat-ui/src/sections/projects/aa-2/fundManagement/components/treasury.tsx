@@ -7,6 +7,7 @@ import {
 
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import {
+  CustomPagination,
   DemoTable,
   Heading,
   IconLabelBtn,
@@ -14,9 +15,9 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { Wallet, Coins } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { useGetTokenDetails } from '@rahat-ui/query';
+import { useGetTokenDetails, usePagination } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTokenTransactionHistory } from '../columns/useTokenTransactionHistory';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import AddFundDialog from './add.fund.dialog';
@@ -25,14 +26,37 @@ export default function Treasury() {
   const params = useParams();
   const projectId = params.id as UUID;
   const [addFundOpen, setAddFundOpen] = useState(false);
-
+  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
+    usePagination();
   const { data: tokenDetails, isPending } = useGetTokenDetails(
     projectId as UUID,
+    pagination.page,
+    pagination.perPage,
   );
+
+  const transferData = tokenDetails?.data?.transferList?.data || [];
+  const totalTransfers = transferData.length;
+  const lastPage = Math.max(1, Math.ceil(totalTransfers / pagination.perPage));
+  const currentPage = Math.min(pagination.page, lastPage);
+
+  useEffect(() => {
+    if (pagination.page > lastPage) {
+      setPagination({
+        ...pagination,
+        page: lastPage,
+      });
+    }
+  }, [pagination, lastPage, setPagination]);
+
+  const paginatedTransfers = useMemo(() => {
+    const start = (currentPage - 1) * pagination.perPage;
+    const end = start + pagination.perPage;
+    return transferData.slice(start, end);
+  }, [transferData, currentPage, pagination.perPage]);
 
   const columns = useTokenTransactionHistory();
   const table = useReactTable({
-    data: tokenDetails?.data?.transfer || [],
+    data: paginatedTransfers,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -117,7 +141,24 @@ export default function Treasury() {
           <DemoTable
             table={table}
             tableHeight="h-[calc(100vh-420px)]"
-            message="No Fund Management List Available"
+            message="No token transfers have been made yet."
+          />
+          <CustomPagination
+            meta={{
+              ...tokenDetails?.data?.transferList?.meta,
+              total: totalTransfers,
+              page: currentPage,
+              perPage: pagination.perPage,
+              pageCount: lastPage,
+              lastPage,
+            }}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            currentPage={currentPage}
+            perPage={pagination.perPage}
+            setPagination={setPagination}
+            total={totalTransfers}
           />
         </div>
       )}

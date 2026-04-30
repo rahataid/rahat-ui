@@ -30,11 +30,11 @@ const InkindDetails = () => {
 
   const columns: ColumnDef<InKindItem>[] = [
     {
-      header: 'In-kind items',
+      header: 'Items',
       accessorKey: 'inkindName',
     },
     {
-      header: 'In-kind Type',
+      header: 'Type',
       accessorKey: 'inkindType',
       cell: ({ row }) => {
         const type = row.original.inkindType.replace('_', ' ');
@@ -64,7 +64,7 @@ const InkindDetails = () => {
         const status = row.original.status;
         return (
           <Badge className="text-xs w-full">
-            {status === 'REDEEMED' ? 'Redeemed' : 'Available'}
+            {status === 'REDEEMED' ? 'Redeemed' : ' Not Redeemed'}
           </Badge>
         );
       },

@@ -57,10 +57,8 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   );
   const aiBaseurl = aiSetting?.value?.URL;
 
-
   // filed suggesting api  Hooks
   const uploadCsvForMapping = useUploadCsvForMapping();
-
 
   const {
     currentScreen,
@@ -91,8 +89,6 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     setFieldSuggestions,
   } = useBeneficiaryImportStore();
   // ==========States=============
-
-
 
   const fetchAiMappingSuggestions = async (file: File) => {
     try {
@@ -228,18 +224,22 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     const readFileAndFetchSuggestions = () => {
       return new Promise<void>((resolve, reject) => {
         const reader = new FileReader();
+        const file = files[0];
+        const isCsv = file.name.toLowerCase().endsWith('.csv');
+
         reader.onload = async (event: any) => {
           try {
             const data = event.target.result;
-            const workbook = xlsx.read(data, { type: 'array' });
+            const workbook = xlsx.read(data, { type: 'array', raw: isCsv });
             const sheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[sheetName];
             const json = xlsx.utils.sheet_to_json(worksheet, {
               defval: '',
+              raw: isCsv,
             }) as any;
             const sanitized = removeFieldsWithUnderscore(json || []);
             setRawData(sanitized);
-            await fetchAiMappingSuggestions(files[0]);
+            await fetchAiMappingSuggestions(file);
             resolve();
           } catch (error) {
             reject(error);
@@ -332,7 +332,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     let finalPayload = rawData as any[];
     const selectedTargets = []; // Only submit selected target fields
 
-    for (let m of finalMappings) {
+    for (const m of finalMappings) {
       if (m.targetField === TARGET_FIELD.FIRSTNAME) {
         selectedTargets.push(TARGET_FIELD.FIRSTNAME);
         const replaced = finalPayload.map((item: any) => {

@@ -12,6 +12,13 @@ import { UUID } from 'crypto';
 import { ScrollArea } from 'libs/shadcn/src/components/ui/scroll-area';
 import { ArrowLeftRight, Copy, CopyCheck, Info } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
 
 type Txn = {
   title?: string;
@@ -29,6 +36,7 @@ type Props = {
 const Transaction = ({ amount, date, hash, title }: Txn) => {
   const { id } = useParams();
   const projectId = id as string;
+
   const { settings } = useProjectSettingsStore((s) => ({
     settings: s.settings,
   }));
@@ -91,6 +99,13 @@ const Transaction = ({ amount, date, hash, title }: Txn) => {
 };
 
 export default function TransactionCard({ transaction, loading }: Props) {
+  const [activeTab, setActiveTab] = useState('fsp');
+  const TabsTriggerStats = [
+    { value: 'fsp', title: 'FSP', count: 0 },
+    { value: 'cva', title: 'CVA', count: 0 },
+    { value: 'inkind', title: 'In-kind', count: 0 },
+  ];
+
   return (
     <div className="border rounded-sm p-4">
       <Heading
@@ -120,20 +135,94 @@ export default function TransactionCard({ transaction, loading }: Props) {
           ))}
         </div>
       ) : transaction?.length ? (
-        <ScrollArea className=" h-[calc(350px)]">
-          {transaction?.map((txn) => {
-            return (
-              <div className="mb-4" key={txn.hash}>
-                <Transaction
-                  amount={txn.amount}
-                  date={txn.date}
-                  hash={txn.hash}
-                  title={txn.title}
-                />
-              </div>
-            );
-          })}
-        </ScrollArea>
+        // <ScrollArea className=" h-[calc(350px)]">
+        //   {transaction?.map((txn) => {
+        //     return (
+        //       <div className="mb-4" key={txn.hash}>
+        //         <Transaction
+        //           amount={txn.amount}
+        //           date={txn.date}
+        //           hash={txn.hash}
+        //           title={txn.title}
+        //         />
+        //       </div>
+        //     );
+        //   })}
+        // </ScrollArea>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="border bg-secondary rounded w-full">
+            {TabsTriggerStats.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="w-full data-[state=active]:bg-white"
+              >
+                <span>{tab.title}</span>
+                <span
+                  className={`ml-2 text-xs font-semibold px-2 py-0.5 rounded-full
+                      ${
+                        activeTab === tab.value
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-300 text-gray-600'
+                      }`}
+                >
+                  {tab.count}
+                </span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          <ScrollArea className="h-[calc(100vh-500px)]">
+            <TabsContent value="fsp" className="mt-2  p-2">
+              {/* {renderTransactions(fspTransactions)} */}
+              {transaction?.map((txn) => {
+                return (
+                  <div className="mb-4 " key={txn.hash}>
+                    <Transaction
+                      amount={txn.amount}
+                      date={txn.date}
+                      hash={txn.hash}
+                      title={txn.title}
+                    />
+                  </div>
+                );
+              })}
+            </TabsContent>
+
+            <TabsContent value="cva" className="mt-2  p-2">
+              {/* {renderTransactions(cvaTransactions)} */}
+              {transaction?.map((txn) => {
+                return (
+                  <div className="mb-4 " key={txn.hash}>
+                    <Transaction
+                      amount={txn.amount}
+                      date={txn.date}
+                      hash={txn.hash}
+                      title={txn.title}
+                    />
+                  </div>
+                );
+              })}
+            </TabsContent>
+
+            <TabsContent value="inkind" className="mt-2  p-2 ">
+              {/* {renderInkindTransactions(inkindTransactions)} */}
+              {transaction?.map((txn) => {
+                return (
+                  <div className="mb-4 " key={txn.hash}>
+                    <Transaction
+                      amount={txn.amount}
+                      date={txn.date}
+                      hash={txn.hash}
+                      title={txn.title}
+                    />
+                  </div>
+                );
+              })}
+            </TabsContent>
+          </ScrollArea>
+        </Tabs>
       ) : (
         <div className="h-full grid place-items-center">
           <div className="flex flex-col items-center text-muted-foreground">

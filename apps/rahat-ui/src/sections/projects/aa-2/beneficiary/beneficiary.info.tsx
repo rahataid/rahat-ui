@@ -86,48 +86,56 @@ const BeneficiaryInfo = ({ beneficiary }: IProps) => {
       </div>
       <div className="p-4 border rounded-xl shadow-sm w-full max-w-2xl bg-white">
         {/* Title */}
-        <h2 className="text-lg font-semibold mb-4">Token Benefits</h2>
-
-        {/* Token Cards */}
-        {isPending ? (
+        {tokenData?.assignedToken || tokenData?.redemmedToken ? (
           <>
-            <div className="animate-pulse flex gap-4 mb-6">
-              <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
-                <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
-                <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
-              </div>
+            <h2 className="text-lg font-semibold mb-4">Token Benefits</h2>
+            {/* Token Cards */}
+            {isPending ? (
+              <>
+                <div className="animate-pulse flex gap-4 mb-6">
+                  <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
+                    <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
+                    <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
+                  </div>
 
-              <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
-                <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
-                <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
-              </div>
-            </div>
-            <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
-              <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
-              <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="flex gap-4 mb-6">
-              <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
-                <p className="text-sm text-gray-500">Assigned</p>
-                <h3 className="text-xl font-bold">
-                  {tokenData?.assignedToken} Tokens
-                </h3>
-                <p className="text-gray-600">NPR {tokenData?.assignedToken}</p>
-              </div>
+                  <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
+                    <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
+                    <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
+                  </div>
+                </div>
+                <div className="flex-1 bg-gray-200 rounded-xl p-4 text-center">
+                  <div className="h-6 bg-gray-300 rounded w-1/2 mx-auto mb-2"></div>
+                  <div className="h-4 bg-gray-300 rounded w-1/3 mx-auto"></div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex gap-4 mb-6">
+                  <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
+                    <p className="text-sm text-gray-500">Assigned</p>
+                    <h3 className="text-xl font-bold">
+                      {tokenData?.assignedToken} Tokens
+                    </h3>
+                    <p className="text-gray-600">
+                      NPR {tokenData?.assignedToken}
+                    </p>
+                  </div>
 
-              <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
-                <p className="text-sm text-gray-500">Redeemed</p>
-                <h3 className="text-xl font-bold">
-                  {tokenData?.redemmedToken} Tokens
-                </h3>
-                <p className="text-gray-600">NPR {tokenData?.redemmedToken}</p>
-              </div>
-            </div>
+                  <div className="flex-1 bg-gray-100 rounded-xl p-4 text-center">
+                    <p className="text-sm text-gray-500">Redeemed</p>
+                    <h3 className="text-xl font-bold">
+                      {tokenData?.redemmedToken} Tokens
+                    </h3>
+                    <p className="text-gray-600">
+                      NPR {tokenData?.redemmedToken}
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
           </>
-        )}
+        ) : null}
+
         <InkindDetails />
       </div>
     </>

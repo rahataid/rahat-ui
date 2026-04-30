@@ -61,9 +61,12 @@ const InkindDetails = () => {
       header: 'Status',
       accessorKey: 'status',
       cell: ({ row }) => {
-        const reedemed = row.original.redeemedAmount;
-        const available = row.original.availableAmount;
-        return <Badge>{`${reedemed} of ${available} redeemed`} </Badge>;
+        const status = row.original.status;
+        return (
+          <Badge className="text-xs w-full">
+            {status === 'REDEEMED' ? 'Redeemed' : 'Available'}
+          </Badge>
+        );
       },
     },
   ];

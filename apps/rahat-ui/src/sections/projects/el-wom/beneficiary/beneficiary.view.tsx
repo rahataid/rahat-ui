@@ -6,6 +6,7 @@ import {
 } from '@rahat-ui/query';
 import {
   getCoreRowModel,
+  getExpandedRowModel,
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
@@ -111,11 +112,20 @@ export default function BeneficiaryView() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    getSubRows: (row: any) =>
+      row?.isReferrer && row?.referralsMade?.length
+        ? row.referralsMade.map((e: any) => ({
+            ...e.Referral,
+            gender: e.Referral?.gender ?? e.Referral?.extras?.gender,
+          }))
+        : undefined,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
     getFilteredRowModel: getFilteredRowModel(),
-    getRowId(originalRow) {
-      return originalRow.walletAddress;
+    getRowId(originalRow, index, parent) {
+      const base = originalRow.walletAddress || originalRow.uuid || String(index);
+      return parent ? `${parent.id}.${base}` : base;
     },
 
     state: {

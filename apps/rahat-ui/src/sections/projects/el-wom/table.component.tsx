@@ -48,6 +48,8 @@ export default function ElkenyaTable({ table, tableHeight, loading }: IProps) {
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && 'selected'}
+                    data-depth={row.depth}
+                    className={row.depth > 0 ? 'bg-muted' : undefined}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>

@@ -1,8 +1,36 @@
 import { mapStatus } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye } from 'lucide-react';
+import { ChevronDown, ChevronRight, Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+
+export function getDynamicColor(status: string) {
+  if (status === 'LENSES') {
+    return 'bg-teal-50 text-teal-500';
+  }
+
+  if (status === 'FRAMES') {
+    return 'bg-violet-50 text-violet-500';
+  }
+
+  if (status === 'READING_GLASSES' || status === 'WALK_IN') {
+    return 'bg-blue-50 text-blue-500';
+  }
+
+  if (status === 'SINGLE_VISION') {
+    return 'bg-orange-50 text-orange-500';
+  }
+
+  if (status === 'PRE_DETERMINED' || status === 'REDEEMED') {
+    return 'bg-green-50 text-green-500';
+  }
+
+  if (status === 'NOT_REDEEMED') {
+    return 'bg-red-50 text-red-500';
+  }
+
+  return '';
+}
 
 interface BeneficiaryTableProps {
   handleViewClick: any;
@@ -13,35 +41,41 @@ export const useElkenyaBeneficiaryTableColumns = ({
   const { id } = useParams();
   const router = useRouter();
 
-  function getDynamicColor(status: string) {
-    if (status === 'LENSES') {
-      return 'bg-teal-50 text-teal-500';
-    }
-
-    if (status === 'FRAMES') {
-      return 'bg-violet-50 text-violet-500';
-    }
-
-    if (status === 'READING_GLASSES' || status === 'WALK_IN') {
-      return 'bg-blue-50 text-blue-500';
-    }
-
-    if (status === 'SINGLE_VISION') {
-      return 'bg-orange-50 text-orange-500';
-    }
-
-    if (status === 'PRE_DETERMINED' || status === 'REDEEMED') {
-      return 'bg-green-50 text-green-500';
-    }
-
-    if (status === 'NOT_REDEEMED') {
-      return 'bg-red-50 text-red-500';
-    }
-
-    return '';
-  }
-
   const columns: ColumnDef<any>[] = [
+    {
+      id: 'expander',
+      header: () => null,
+      cell: ({ row }) => {
+        const Icon = row.getIsExpanded() ? ChevronDown : ChevronRight;
+        const count = row.subRows?.length ?? 0;
+        return (
+          <div
+            style={{ paddingLeft: row.depth * 16 }}
+            className="flex items-center gap-1"
+          >
+            {row.getCanExpand() ? (
+              <>
+                <button
+                  type="button"
+                  onClick={row.getToggleExpandedHandler()}
+                  className="hover:text-primary cursor-pointer"
+                  aria-label={
+                    row.getIsExpanded() ? 'Collapse row' : 'Expand row'
+                  }
+                >
+                  <Icon size={16} strokeWidth={1.5} />
+                </button>
+                <Badge variant="secondary" className="px-1.5 py-0 text-xs">
+                  {count}
+                </Badge>
+              </>
+            ) : (
+              <span className="inline-block" />
+            )}
+          </div>
+        );
+      },
+    },
     {
       accessorKey: 'phone',
       header: 'Phone Number',
@@ -72,6 +106,11 @@ export const useElkenyaBeneficiaryTableColumns = ({
             : mapStatus(row.original.eyeCheckupStatus)}
         </Badge>
       ),
+    },
+    {
+      accessorKey: 'isReferrer',
+      header: 'Is Referrer',
+      cell: ({ row }) => <div>{row.original.isReferrer ? 'Yes' : 'No'}</div>,
     },
     {
       accessorKey: 'voucherType',

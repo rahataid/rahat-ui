@@ -235,6 +235,7 @@ export const useBulkAssignBenToProject = () => {
 
 export const useAssignVendorToProject = () => {
   const q = useProjectAction();
+  const queryClient = useQueryClient();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -266,6 +267,7 @@ export const useAssignVendorToProject = () => {
         title: 'Vendor Assigned Successfully',
         icon: 'success',
       });
+      queryClient.invalidateQueries({ queryKey: [TAGS.GET_VENDORS] });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';

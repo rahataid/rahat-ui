@@ -1,10 +1,11 @@
 'use client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
-import { act, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useFundAssignmentStore } from './store';
 import { useSwal } from 'libs/query/src/swal';
 import { UUID } from 'crypto';
+import { Pagination } from '@rumsan/sdk/types';
 
 export type InitiateFundTransfer = {
   from: string;
@@ -493,21 +494,17 @@ export const useCreateAASafeTransaction = () => {
     },
   });
 };
-export const useGetTokenDetails = (
-  projectUUID: UUID,
-  page = 1,
-  perPage = 10,
-) => {
+export const useGetTokenDetails = (projectUUID: UUID) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['aa.tokenDetails', projectUUID, page, perPage],
+    queryKey: ['aa.tokenDetails', projectUUID],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'aa.tokenDetails',
-          payload: { page, perPage },
+          payload: {},
         },
       });
       return mutate.response;
@@ -516,6 +513,24 @@ export const useGetTokenDetails = (
   return query;
 };
 
+export const useGetTransferList = (projectUUID: UUID, payload: Pagination) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['aa.transferList', projectUUID, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aa.transferList',
+          payload: { ...payload },
+        },
+      });
+      return mutate.response;
+    },
+  });
+  return query;
+};
 export const useAddProjectFund = (projectUUID: UUID) => {
   const q = useProjectAction();
   const queryClient = useQueryClient();

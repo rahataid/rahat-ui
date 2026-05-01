@@ -15,9 +15,13 @@ import {
 } from 'apps/rahat-ui/src/common';
 import { Wallet, Coins } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { useGetTokenDetails, usePagination } from '@rahat-ui/query';
+import {
+  useGetTokenDetails,
+  useGetTransferList,
+  usePagination,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useTokenTransactionHistory } from '../columns/useTokenTransactionHistory';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import AddFundDialog from './add.fund.dialog';
@@ -30,33 +34,17 @@ export default function Treasury() {
     usePagination();
   const { data: tokenDetails, isPending } = useGetTokenDetails(
     projectId as UUID,
-    pagination.page,
-    pagination.perPage,
+  );
+  const { data: transferHistory } = useGetTransferList(
+    projectId as UUID,
+    pagination,
   );
 
-  const transferData = tokenDetails?.data?.transferList?.data || [];
-  const totalTransfers = transferData.length;
-  const lastPage = Math.max(1, Math.ceil(totalTransfers / pagination.perPage));
-  const currentPage = Math.min(pagination.page, lastPage);
-
-  useEffect(() => {
-    if (pagination.page > lastPage) {
-      setPagination({
-        ...pagination,
-        page: lastPage,
-      });
-    }
-  }, [pagination, lastPage, setPagination]);
-
-  const paginatedTransfers = useMemo(() => {
-    const start = (currentPage - 1) * pagination.perPage;
-    const end = start + pagination.perPage;
-    return transferData.slice(start, end);
-  }, [transferData, currentPage, pagination.perPage]);
+  console.log('Transfer History:', transferHistory);
 
   const columns = useTokenTransactionHistory();
   const table = useReactTable({
-    data: paginatedTransfers,
+    data: transferHistory?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -144,21 +132,23 @@ export default function Treasury() {
             message="No token transfers have been made yet."
           />
           <CustomPagination
-            meta={{
-              ...tokenDetails?.data?.transferList?.meta,
-              total: totalTransfers,
-              page: currentPage,
-              perPage: pagination.perPage,
-              pageCount: lastPage,
-              lastPage,
-            }}
+            meta={
+              transferHistory?.meta || {
+                total: 0,
+                currentPage: 0,
+                lastPage: 0,
+                perPage: 10,
+                prev: null,
+                next: null,
+              }
+            }
             handleNextPage={setNextPage}
             handlePrevPage={setPrevPage}
             handlePageSizeChange={setPerPage}
-            currentPage={currentPage}
+            currentPage={pagination.page}
             perPage={pagination.perPage}
             setPagination={setPagination}
-            total={totalTransfers}
+            total={transferHistory?.meta?.total}
           />
         </div>
       )}

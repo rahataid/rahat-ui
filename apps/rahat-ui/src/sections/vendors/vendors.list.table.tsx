@@ -235,7 +235,7 @@ export default function VendorsTable({
               </SelectTrigger>
               <SelectContent>
                 {projectList.data?.data.length ? (
-                  <TooltipProvider delayDuration={100}>
+                  <TooltipProvider>
                     {projectList.data?.data.map((project: any) => {
                       const assignedProjects = Array.isArray(
                         selectedRow?.projectName,
@@ -259,10 +259,7 @@ export default function VendorsTable({
                                 {project.name}
                               </SelectItem>
                             </TooltipTrigger>
-                            <TooltipContent
-                              className="bg-secondary"
-                              side="right"
-                            >
+                            <TooltipContent className="bg-secondary">
                               <p className="text-xs font-medium">
                                 Project Already Assigned
                               </p>

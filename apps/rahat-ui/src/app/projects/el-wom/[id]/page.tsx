@@ -1,6 +1,6 @@
 'use client';
 import { useProject } from '@rahat-ui/query';
-import { ELKenyaProjectView } from 'apps/rahat-ui/src/sections/projects/sms-voucher';
+import { ELKenyaProjectView } from 'apps/rahat-ui/src/sections/projects/el-wom';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 

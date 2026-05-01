@@ -1,6 +1,6 @@
 'use client';
 
-import { ELKenyaVendorsView } from 'apps/rahat-ui/src/sections/projects/sms-voucher';
+import { ELKenyaVendorsView } from 'apps/rahat-ui/src/sections/projects/el-wom';
 
 const Page = () => {
   return <ELKenyaVendorsView />;

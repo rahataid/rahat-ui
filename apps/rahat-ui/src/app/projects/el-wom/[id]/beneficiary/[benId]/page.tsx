@@ -1,6 +1,6 @@
 'use client';
 
-import { ELKenyaBeneficiaryDetailView } from 'apps/rahat-ui/src/sections/projects/sms-voucher';
+import { ELKenyaBeneficiaryDetailView } from 'apps/rahat-ui/src/sections/projects/el-wom';
 
 const Page = () => {
   return <ELKenyaBeneficiaryDetailView />;

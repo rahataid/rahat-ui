@@ -39,15 +39,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { UUID } from 'crypto';
 import Image from 'next/image';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import TooltipWrapper from '../../components/tooltip.wrapper';
 import SelectComponent from '../projects/el-kenya/select.component';
 import { Project } from '@rahataid/sdk/project/project.types';
 
@@ -235,46 +230,33 @@ export default function VendorsTable({
               </SelectTrigger>
               <SelectContent>
                 {projectList.data?.data.length ? (
-                  <TooltipProvider>
-                    {projectList.data?.data.map((project: any) => {
-                      const assignedProjects = Array.isArray(
-                        selectedRow?.projectName,
-                      )
-                        ? selectedRow.projectName
-                        : [];
-                      const isAssigned = assignedProjects.some(
-                        (projectDetail) =>
-                          projectDetail.Project?.uuid === project.uuid,
-                      );
+                  projectList.data?.data.map((project: any) => {
+                    const assignedProjects = Array.isArray(
+                      selectedRow?.projectName,
+                    )
+                      ? selectedRow.projectName
+                      : [];
+                    const isAssigned = assignedProjects.some(
+                      (projectDetail) =>
+                        projectDetail.Project?.uuid === project.uuid,
+                    );
 
-                      if (isAssigned) {
-                        return (
-                          <Tooltip key={project.id}>
-                            <TooltipTrigger asChild>
-                              <SelectItem
-                                disabled
-                                className="data-[disabled]:pointer-events-auto data-[disabled]:cursor-not-allowed"
-                                value={project.uuid}
-                              >
-                                {project.name}
-                              </SelectItem>
-                            </TooltipTrigger>
-                            <TooltipContent className="bg-secondary">
-                              <p className="text-xs font-medium">
-                                Project Already Assigned
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        );
-                      }
-
-                      return (
-                        <SelectItem key={project.id} value={project.uuid}>
+                    return (
+                      <TooltipWrapper
+                        key={project.id}
+                        tip="Project Already Assigned"
+                        disable={!isAssigned}
+                      >
+                        <SelectItem
+                          disabled={isAssigned}
+                          className="data-[disabled]:pointer-events-auto data-[disabled]:cursor-not-allowed"
+                          value={project.uuid}
+                        >
                           {project.name}
                         </SelectItem>
-                      );
-                    })}
-                  </TooltipProvider>
+                      </TooltipWrapper>
+                    );
+                  })
                 ) : (
                   <p className="text-xs">No project found</p>
                 )}

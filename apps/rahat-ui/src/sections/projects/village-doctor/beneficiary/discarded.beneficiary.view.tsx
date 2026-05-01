@@ -85,9 +85,9 @@ export default function DiscardedBeneficiaryView() {
       <div className="p-4 bg-white ">
         <div className="flex justify-between items-center mb-4">
           <HeaderWithBack
-            title="Discarded Beneficiaries"
-            subtitle="Here is the list of all discarded beneficiaries"
-            path={`/projects/el-cambodia/${id}/beneficiary`}
+            title="Discarded Villagers"
+            subtitle="Here is the list of all discarded villagers"
+            path={`/projects/el-village-doctor/${id}/villagers`}
           />
         </div>
 

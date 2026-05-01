@@ -51,7 +51,7 @@ export default function ProjectLayoutRoot({
         })
       }
     >
-      <ProjectLayout projectType={'el-cambodia'}>
+      <ProjectLayout projectType={'el-village-doctor'}>
         {renderChildren()}
       </ProjectLayout>
     </CambodiaSubgraphProvider>

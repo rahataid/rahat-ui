@@ -79,9 +79,9 @@ export default function VendorsView() {
     <>
       <div className="p-4">
         <div className="mb-4">
-          <h1 className="font-semibold text-2xl">Vision Centers</h1>
+          <h1 className="font-semibold text-2xl">Optical Eye Center</h1>
           <p className="text-muted-foreground text-base">
-            Track all the vision center reports here.
+            Track all the optical eye center reports here.
           </p>
         </div>
         <div className="rounded border bg-card p-4">

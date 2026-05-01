@@ -1,7 +1,7 @@
 'use client';
-import { VendorsView } from 'apps/rahat-ui/src/sections/projects/cambodia/vendors';
+import { OpticalEyeCenterView } from 'apps/rahat-ui/src/sections/projects/village-doctor/vendors';
 import React from 'react';
 
 export default function Vendors() {
-  return <VendorsView />;
+  return <OpticalEyeCenterView />;
 }

@@ -1,2 +1,2 @@
-export { default as VendorsView } from './vendors.view';
-export { default as VendorsDetailView } from './vendors.details';
+export { default as OpticalEyeCenterView } from './vendors.view';
+export { default as OpticalEyeCenterDetailView } from './vendors.details';

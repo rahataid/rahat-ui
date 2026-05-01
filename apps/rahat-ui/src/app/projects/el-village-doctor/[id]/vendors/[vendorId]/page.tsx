@@ -1,9 +1,9 @@
 'use client';
 
-import { VendorsDetailView } from 'apps/rahat-ui/src/sections/projects/cambodia/vendors';
+import { OpticalEyeCenterDetailView } from 'apps/rahat-ui/src/sections/projects/village-doctor/vendors';
 
 const Page = () => {
-  return <VendorsDetailView />;
+  return <OpticalEyeCenterDetailView />;
 };
 
 export default Page;

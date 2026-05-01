@@ -21,7 +21,7 @@ import SelectComponent from '../select.component';
 import CambodiaTable from '../table.component';
 import { useCambodiaBeneficiaryTableColumns } from './use.beneficiary.table.columns';
 
-export default function BeneficiaryView() {
+export default function ELVillageDoctorVillagerView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -114,26 +114,26 @@ export default function BeneficiaryView() {
       TimeStamp: new Date(item.createdAt).toLocaleDateString(),
     }));
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Beneficiaries');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Villagers');
 
-    XLSX.writeFile(workbook, 'Beneficiaries.xlsx');
+    XLSX.writeFile(workbook, 'Villagers.xlsx');
   };
   return (
     <>
       <div className="p-4 bg-white ">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="font-semibold text-2xl mb-">Beneficiaries</h1>
+            <h1 className="font-semibold text-2xl mb-">Villagers</h1>
             <p className="text-muted-foreground">
-              Track all the beneficiaries here.
+              Track all the villagers here.
             </p>
           </div>
           <div className="flex space-x-3">
             <Link
-              href={`/projects/el-cambodia/${id}/beneficiary/discardedbenificary`}
+              href={`/projects/el-village-doctor/${id}/villagers/discardedvillager`}
             >
               <Button variant="outline">
-                <UserRoundX className="mr-2 h-4 w-4" /> Discarded Beneficiaries
+                <UserRoundX className="mr-2 h-4 w-4" /> Discarded Villagers
               </Button>
             </Link>
             {/* <Link href={`/projects/el-cambodia/${id}/beneficiary/upload`}>
@@ -143,7 +143,7 @@ export default function BeneficiaryView() {
             </Link> */}
 
             <Button variant="outline" onClick={() => handleDownload()}>
-              <Download className="mr-2 h-4 w-4" /> Download Beneficiaries
+              <Download className="mr-2 h-4 w-4" /> Download Villagers
             </Button>
           </div>
         </div>

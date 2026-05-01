@@ -1,1 +1,1 @@
-export { default as CambodiaProjectView } from './project.main.view';
+export { default as VillageDoctorProjectView } from './project.main.view';

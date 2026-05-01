@@ -1,0 +1,104 @@
+[NX Daemon Server] - 2026-04-29T09:40:18.548Z - Started listening on: /var/folders/5r/742z0bp97tx_qvcsd2b8z89c0000gn/T/3a6d09e20acb4ad66c51/d.sock
+[NX Daemon Server] - 2026-04-29T09:40:18.563Z - [WATCHER]: Subscribed to changes within: /Users/rs-24-07-mac/Documents/Rumsan/NEW VENDOR APP CAMBODIA/rahat-ui (native)
+[NX Daemon Server] - 2026-04-29T09:40:18.567Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2026-04-29T09:40:18.568Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2026-04-29T09:40:18.570Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2026-04-29T09:40:18.578Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2026-04-29T09:40:20.415Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2026-04-29T09:40:20.415Z - Established a connection. Number of open connections: 3
+[NX Daemon Server] - 2026-04-29T09:40:20.416Z - Closed a connection. Number of open connections: 2
+[NX Daemon Server] - 2026-04-29T09:40:20.469Z - [REQUEST]: Responding to the client. handleGlob
+[NX Daemon Server] - 2026-04-29T09:40:20.470Z - Done responding to the client handleGlob
+[NX Daemon Server] - 2026-04-29T09:40:20.470Z - Handled GLOB. Handling time: 52. Response time: 1.
+[NX Daemon Server] - 2026-04-29T09:40:20.470Z - Established a connection. Number of open connections: 3
+[NX Daemon Server] - 2026-04-29T09:40:20.470Z - Established a connection. Number of open connections: 4
+[NX Daemon Server] - 2026-04-29T09:40:20.471Z - Closed a connection. Number of open connections: 3
+[NX Daemon Server] - 2026-04-29T09:40:20.471Z - Established a connection. Number of open connections: 4
+[NX Daemon Server] - 2026-04-29T09:40:20.478Z - [REQUEST]: Responding to the client. handleGlob
+[NX Daemon Server] - 2026-04-29T09:40:20.479Z - Done responding to the client handleGlob
+[NX Daemon Server] - 2026-04-29T09:40:20.479Z - Handled GLOB. Handling time: 6. Response time: 1.
+[NX Daemon Server] - 2026-04-29T09:40:20.542Z - [REQUEST]: Responding to the client. handleGlob
+[NX Daemon Server] - 2026-04-29T09:40:20.542Z - Done responding to the client handleGlob
+[NX Daemon Server] - 2026-04-29T09:40:20.542Z - Handled GLOB. Handling time: 62. Response time: 0.
+[NX Daemon Server] - 2026-04-29T09:40:20.542Z - Established a connection. Number of open connections: 5
+[NX Daemon Server] - 2026-04-29T09:40:20.543Z - Closed a connection. Number of open connections: 4
+[NX Daemon Server] - 2026-04-29T09:40:20.612Z - [REQUEST]: Responding to the client. handleGlob
+[NX Daemon Server] - 2026-04-29T09:40:20.612Z - Done responding to the client handleGlob
+[NX Daemon Server] - 2026-04-29T09:40:20.612Z - Handled GLOB. Handling time: 68. Response time: 0.
+[NX Daemon Server] - 2026-04-29T09:40:20.703Z - [REQUEST]: Responding to the client. handleGlob
+[NX Daemon Server] - 2026-04-29T09:40:20.703Z - Done responding to the client handleGlob
+[NX Daemon Server] - 2026-04-29T09:40:20.703Z - Handled GLOB. Handling time: 89. Response time: 1.
+[NX Daemon Server] - 2026-04-29T09:40:20.753Z - [REQUEST]: Responding to the client. handleGlob
+[NX Daemon Server] - 2026-04-29T09:40:20.754Z - Done responding to the client handleGlob
+[NX Daemon Server] - 2026-04-29T09:40:20.754Z - Handled GLOB. Handling time: 49. Response time: 1.
+Plugin listed in `nx.json` not found: @nx/jest/plugin
+[NX Daemon Server] - 2026-04-29T09:40:22.049Z - [REQUEST]: Responding to the client with an error. Error when preparing serialized project graph. Could not load plugin @nx/jest/plugin
+LoadPluginError: Could not load plugin @nx/jest/plugin
+    at loadNxPluginAsync (/Users/rs-24-07-mac/Library/pnpm/global/5/.pnpm/nx@19.8.3/node_modules/nx/src/project-graph/plugins/loader.js:208:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async load (/Users/rs-24-07-mac/Library/pnpm/global/5/.pnpm/nx@19.8.3/node_modules/nx/src/project-graph/plugins/isolation/plugin-worker.js:26:30)
+    at async consumeMessage (/Users/rs-24-07-mac/Library/pnpm/global/5/.pnpm/nx@19.8.3/node_modules/nx/src/project-graph/plugins/isolation/messaging.js:38:26)
+[NX Daemon Server] - 2026-04-29T09:40:22.049Z - Done responding to the client null
+[NX Daemon Server] - 2026-04-29T09:40:22.050Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 3471. Response time: 1.
+[NX Daemon Server] - 2026-04-29T09:40:22.057Z - Closed a connection. Number of open connections: 3
+Plugin listed in `nx.json` not found: @nx/next/plugin
+Plugin listed in `nx.json` not found: @nx/eslint/plugin
+[NX Daemon Server] - 2026-04-29T09:42:03.629Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:03.703Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:03.776Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:03.878Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:03.972Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:04.027Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:04.079Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:04.139Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:04.225Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:04.286Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:04.338Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:04.397Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:04.450Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:04.534Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:04.587Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:04.641Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:04.694Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:04.759Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:42:04.813Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2026-04-29T09:43:44.172Z - [WATCHER]: _tmp_27889_3ce4bad15278aab80f7011a896789e6f was deleted
+[NX Daemon Server] - 2026-04-29T09:43:44.173Z - [WATCHER]: Processing file changes in outputs
+
+node:internal/process/promises:391
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+{
+  stack: 'LoadPluginError: Could not load plugin @nx/next/plugin\n' +
+    '    at loadNxPluginAsync (/Users/rs-24-07-mac/Library/pnpm/global/5/.pnpm/nx@19.8.3/node_modules/nx/src/project-graph/plugins/loader.js:208:15)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+    '    at async load (/Users/rs-24-07-mac/Library/pnpm/global/5/.pnpm/nx@19.8.3/node_modules/nx/src/project-graph/plugins/isolation/plugin-worker.js:26:30)\n' +
+    '    at async consumeMessage (/Users/rs-24-07-mac/Library/pnpm/global/5/.pnpm/nx@19.8.3/node_modules/nx/src/project-graph/plugins/isolation/messaging.js:38:26)',
+  message: 'Could not load plugin @nx/next/plugin',
+  cause: {
+    stack: "Error: Cannot find module '@nx/next/plugin'\n" +
+      'Require stack:\n' +
+      '- /Users/rs-24-07-mac/Library/pnpm/global/5/.pnpm/nx@19.8.3/node_modules/nx/src/project-graph/plugins/loader.js\n' +
+      '- /Users/rs-24-07-mac/Library/pnpm/global/5/.pnpm/nx@19.8.3/node_modules/nx/src/project-graph/plugins/isolation/plugin-worker.js\n' +
+      '    at Module._resolveFilename (node:internal/modules/cjs/loader:1225:15)\n' +
+      '    at Function.resolve (node:internal/modules/helpers:190:19)\n' +
+      '    at getPluginPathAndName (/Users/rs-24-07-mac/Library/pnpm/global/5/.pnpm/nx@19.8.3/node_modules/nx/src/project-graph/plugins/loader.js:144:30)\n' +
+      '    at loadNxPluginAsync (/Users/rs-24-07-mac/Library/pnpm/global/5/.pnpm/nx@19.8.3/node_modules/nx/src/project-graph/plugins/loader.js:200:42)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async load (/Users/rs-24-07-mac/Library/pnpm/global/5/.pnpm/nx@19.8.3/node_modules/nx/src/project-graph/plugins/isolation/plugin-worker.js:26:30)\n' +
+      '    at async consumeMessage (/Users/rs-24-07-mac/Library/pnpm/global/5/.pnpm/nx@19.8.3/node_modules/nx/src/project-graph/plugins/isolation/messaging.js:38:26)',
+    message: "Cannot find module '@nx/next/plugin'\n" +
+      'Require stack:\n' +
+      '- /Users/rs-24-07-mac/Library/pnpm/global/5/.pnpm/nx@19.8.3/node_modules/nx/src/project-graph/plugins/loader.js\n' +
+      '- /Users/rs-24-07-mac/Library/pnpm/global/5/.pnpm/nx@19.8.3/node_modules/nx/src/project-graph/plugins/isolation/plugin-worker.js',
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [
+      '/Users/rs-24-07-mac/Library/pnpm/global/5/.pnpm/nx@19.8.3/node_modules/nx/src/project-graph/plugins/loader.js',
+      '/Users/rs-24-07-mac/Library/pnpm/global/5/.pnpm/nx@19.8.3/node_modules/nx/src/project-graph/plugins/isolation/plugin-worker.js'
+    ]
+  },
+  plugin: '@nx/next/plugin',
+  name: 'LoadPluginError'
+}
+
+Node.js v20.18.1

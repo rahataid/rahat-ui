@@ -48,10 +48,10 @@ const ProjectMainView = () => {
 
   return (
     <div className="p-4 flex flex-col gap-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+      {/* <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
           <h1 className="font-semibold text-2xl md:text-[28px] mb-2">
-            Welcome to EL SMS Voucher Program
+            Welcome to EL WOM Program
           </h1>
           <p className="text-muted-foreground text-base">
             Your Hub for Real-Time Analytics and Data Visualization of the
@@ -61,7 +61,7 @@ const ProjectMainView = () => {
         <div className="mt-3 md:mt-0 w-full md:w-auto">
           <DownloadReportBtn handleDownload={handleDownload} />
         </div>
-      </div>
+      </div> */}
       <ELKenyaProjectDetail />
     </div>
   );

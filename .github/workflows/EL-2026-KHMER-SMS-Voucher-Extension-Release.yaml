@@ -1,4 +1,4 @@
-name: EL Release SMS Voucher Indonesia Extension 2026 CI/CD
+name: EL Release SMS Voucher Khmer Extension 2026 CI/CD
 on:
   workflow_dispatch:
 
@@ -15,7 +15,7 @@ jobs:
 
       - name: import env file
         env:
-          env_release: ${{ secrets.ENV_EL_RELEASE_SMS_VOUCHER_INDONESIA_EXTENSION_2026 }}
+          env_release: ${{ secrets.ENV_EL_RELEASE_SMS_VOUCHER_KHMER_EXTENSION_2026 }}
         run: |
           touch ./.env && echo "$env_release" >> ./.env
 
@@ -57,6 +57,6 @@ jobs:
           push: true
           no-cache: true
           tags: |
-            esatya/rahat-ui:el-release-smsvoucher-indonesia-extension-2026
-            esatya/rahat-ui:el-release-smsvoucher-indonesia-extension-2026-${{ env.VERSION }}
-            esatya/rahat-ui:el-release-smsvoucher-indonesia-extension-2026-${{ env.VERSION }}-${{ env.timestamp }}
+            esatya/rahat-ui:el-release-smsvoucher-Khmer-extension-2026
+            esatya/rahat-ui:el-release-smsvoucher-Khmer-extension-2026-${{ env.VERSION }}
+            esatya/rahat-ui:el-release-smsvoucher-Khmer-extension-2026-${{ env.VERSION }}-${{ env.timestamp }}

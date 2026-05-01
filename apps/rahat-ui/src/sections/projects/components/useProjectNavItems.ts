@@ -11,6 +11,7 @@ import { useNavItems as useCambodiaNavItems } from '../cambodia/useCambodiaNavIt
 import { useNavItems as useCommsNavItems } from '../comms/useCommsNavItems';
 import { useNavItems as useELKenyaNavItems } from '../el-kenya/useELKenyaNavItems';
 import { useNavItems as useELCRMNavItems } from '../el-crm';
+import { useNavItems as useELWOMNavItems } from '../el-wom/useELKenyaNavItems';
 
 const hooks = {
   [ProjectTypes.ANTICIPATORY_ACTION]: useAANavItems,
@@ -23,6 +24,7 @@ const hooks = {
   'el-cambodia': useCambodiaNavItems,
   'sms-voucher': useSmsVoucherNavItems,
   'el-crm': useELCRMNavItems,
+  'el-wom': useELWOMNavItems, // Reusing EL Kenya nav items for EL WOM since they are similar in structure. This can be changed to a dedicated hook if needed in the future.
   ALL: useProjectListNavItems,
 };
 

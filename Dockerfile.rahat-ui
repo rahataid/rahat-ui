@@ -3,7 +3,7 @@ FROM node:20-alpine AS deps
 WORKDIR /usr/src/app
 
 # Enable Corepack for pnpm
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@8.14.1 --activate
 
 # Copy package manifests for caching
 COPY package.json pnpm-lock.yaml ./
@@ -14,8 +14,7 @@ RUN pnpm install --frozen-lockfile
 # Stage 2: Builder
 FROM node:20-alpine AS builder
 WORKDIR /usr/src/app
-RUN corepack enable
-
+RUN corepack enable && corepack prepare pnpm@8.14.1 --activate
 # Copy dependencies from deps stage
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 
@@ -33,7 +32,7 @@ FROM node:20-alpine AS runner
 WORKDIR /usr/src/app
 
 # Enable Corepack for pnpm at runtime
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@8.14.1 --activate
 
 # Use non-root user for production safety
 USER node

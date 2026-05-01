@@ -39,6 +39,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { UUID } from 'crypto';
 import Image from 'next/image';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
@@ -47,7 +53,8 @@ import { Project } from '@rahataid/sdk/project/project.types';
 
 export type IVendor = {
   id: string;
-  projectName: string;
+  name: string;
+  projectName: Array<{ Project: { id: string; uuid: string; name: string } }>;
   status: 'pending' | 'processing' | 'success' | 'failed';
   email: string;
   walletAddress: `0x${string}`;
@@ -64,7 +71,7 @@ type IProps = {
   setSelectedProject: (id: UUID) => void;
   handleAssignProject: VoidFunction;
   projectModal: ProjectModalType;
-  selectedRow: any;
+  selectedRow: IVendor | null;
 };
 
 export default function VendorsTable({
@@ -84,9 +91,11 @@ export default function VendorsTable({
     (table.getColumn('status')?.getFilterValue() as string) || '';
   const projectFilter =
     (table.getColumn('projectName')?.getFilterValue() as string) || '';
-  const projectNames =
+  const projectNames: string[] =
     (projectList?.data?.data && projectList.data.data.length > 0
-      ? projectList.data.data.map((project: Project) => project?.name)
+      ? projectList.data.data
+          .map((project: Project) => project?.name)
+          .filter((name): name is string => Boolean(name))
       : []) || [];
 
   return (
@@ -103,9 +112,9 @@ export default function VendorsTable({
 
         <SelectComponent
           onChange={(event) => {
-            table
-              .getColumn('status')
-              ?.setFilterValue(event === 'All' ? '' : event);
+            const nextStatusFilter: string =
+              !event || event === 'All' ? '' : event;
+            table.getColumn('status')?.setFilterValue(nextStatusFilter);
           }}
           name="Status"
           options={['All', 'Assigned', 'Pending']}
@@ -114,9 +123,9 @@ export default function VendorsTable({
 
         <SelectComponent
           onChange={(event) => {
-            table
-              .getColumn('projectName')
-              ?.setFilterValue(event === 'All' ? '' : event);
+            const nextProjectFilter: string =
+              !event || event === 'All' ? '' : event;
+            table.getColumn('projectName')?.setFilterValue(nextProjectFilter);
           }}
           name="Project Name"
           options={['All', ...projectNames]}
@@ -226,17 +235,49 @@ export default function VendorsTable({
               </SelectTrigger>
               <SelectContent>
                 {projectList.data?.data.length ? (
-                  projectList.data?.data.map((project: any) => {
-                    return (
-                      <SelectItem
-                        disabled={selectedRow?.projectName === project.name} //TODO FROM ID
-                        key={project.id}
-                        value={project.uuid}
-                      >
-                        {project.name}
-                      </SelectItem>
-                    );
-                  })
+                  <TooltipProvider delayDuration={100}>
+                    {projectList.data?.data.map((project: any) => {
+                      const assignedProjects = Array.isArray(
+                        selectedRow?.projectName,
+                      )
+                        ? selectedRow.projectName
+                        : [];
+                      const isAssigned = assignedProjects.some(
+                        (projectDetail) =>
+                          projectDetail.Project?.uuid === project.uuid,
+                      );
+
+                      if (isAssigned) {
+                        return (
+                          <Tooltip key={project.id}>
+                            <TooltipTrigger asChild>
+                              <SelectItem
+                                disabled
+                                className="data-[disabled]:pointer-events-auto data-[disabled]:cursor-not-allowed"
+                                value={project.uuid}
+                              >
+                                {project.name}
+                              </SelectItem>
+                            </TooltipTrigger>
+                            <TooltipContent
+                              className="bg-secondary"
+                              side="right"
+                            >
+                              <p className="text-xs font-medium">
+                                Project Already Assigned
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        );
+                      }
+
+                      return (
+                        <SelectItem key={project.id} value={project.uuid}>
+                          {project.name}
+                        </SelectItem>
+                      );
+                    })}
+                  </TooltipProvider>
                 ) : (
                   <p className="text-xs">No project found</p>
                 )}
